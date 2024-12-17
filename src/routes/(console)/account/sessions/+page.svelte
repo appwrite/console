@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent } from '$lib/actions/analytics';
@@ -20,6 +21,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { Browser, type Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import { addNotification } from '$lib/stores/notifications';
+    import { onMount } from 'svelte';
 
     export let data: PageData;
 
@@ -29,12 +32,37 @@
         return sdk.forProject.avatars.getBrowser(code, 40, 40);
     }
 
+    function logoutSessionId(sessionId: string) {
+        const session = data.sessions.sessions.find((s) => s.$id === sessionId);
+        if (session) {
+            logout(session);
+        }
+    }
+
     async function logout(session: Models.Session) {
-        await sdk.forConsole.account.deleteSession(session.$id);
-        await invalidate(Dependencies.ACCOUNT_SESSIONS);
-        trackEvent(Submit.AccountDeleteSession);
-        if (session.current) {
-            await goto(`${base}/login`);
+        let result;
+        try {
+            result = await sdk.forConsole.account.deleteSession(session.$id);
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: `There was an error deleting your user session. <a href="?sessionId=${session.$id}" class="u-underline">Try again</a>`,
+                isHtml: true
+            });
+        }
+
+        if (result) {
+            trackEvent(Submit.AccountDeleteSession);
+            if (session.current) {
+                await invalidate(Dependencies.ACCOUNT);
+                await goto(`${base}/login`);
+            } else {
+                await invalidate(Dependencies.ACCOUNT_SESSIONS);
+                addNotification({
+                    type: 'success',
+                    message: `User session has been deleted`
+                });
+            }
         }
     }
 
@@ -44,6 +72,20 @@
         trackEvent(Submit.AccountDeleteAllSessions);
         await goto(`${base}/login`);
     }
+
+    onMount(() => {
+        return page.subscribe(($page) => {
+            const url = new URL($page.url);
+            const sessionId = url.searchParams.get('sessionId');
+            if (sessionId) {
+                logoutSessionId(sessionId);
+            }
+
+            // Clear the sessionId param from the URL
+            url.searchParams.delete('sessionId');
+            goto(url.pathname + url.search, { replaceState: true });
+        });
+    });
 </script>
 
 <Container>

@@ -11,7 +11,8 @@
     export let disabled: Props['disabled'] = false;
     export let type: Props['type'] = 'button';
     export let variant: Props['variant'] = 'default';
-    export let size: Props['size'] = 'medium';
+    export let size: Props['size'] = 'm';
+    export let external = false;
 
     function track() {
         if (!event) {
@@ -26,7 +27,16 @@
 </script>
 
 {#if href}
-    <Link.Anchor on:click on:mousedown on:click={track} {href} {disabled} {variant} {size}>
+    <Link.Anchor
+        on:click
+        on:mousedown
+        on:click={track}
+        {href}
+        {disabled}
+        {variant}
+        {size}
+        target={external ? '_blank' : ''}
+        rel={external ? 'noopener noreferrer' : ''}>
         <slot />
     </Link.Anchor>
 {:else}

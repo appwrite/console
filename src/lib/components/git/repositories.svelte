@@ -11,6 +11,8 @@
     import { createEventDispatcher } from 'svelte';
     import { Layout, Table, Typography, Icon, Avatar } from '@appwrite.io/pink-svelte';
     import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
+    import ConnectGit from './connectGit.svelte';
+    import Link from '$lib/elements/link.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -18,19 +20,33 @@
     export let selectedRepository: string = null;
     export let hasInstallations = false;
     export let action: 'button' | 'select' = 'select';
+    export let installationList = $installations;
+    export let product: 'functions' | 'sites' = 'functions';
 
     $: {
-        hasInstallations = $installations?.total > 0;
+        hasInstallations = installationList?.total > 0;
     }
 
     let selectedInstallation = null;
     async function loadInstallations() {
-        const { installations } = await sdk.forProject.vcs.listInstallations();
-        if (installations.length) {
-            selectedInstallation = installations[0].$id;
-            installation.set(installations.find((entry) => entry.$id === selectedInstallation));
+        if (installationList) {
+            if (installationList.installations.length) {
+                selectedInstallation = installationList.installations[0].$id;
+                installation.set(
+                    installationList.installations.find(
+                        (entry) => entry.$id === selectedInstallation
+                    )
+                );
+            }
+            return installationList.installations;
+        } else {
+            const { installations } = await sdk.forProject.vcs.listInstallations();
+            if (installations.length) {
+                selectedInstallation = installations[0].$id;
+                installation.set(installations.find((entry) => entry.$id === selectedInstallation));
+            }
+            return installations;
         }
-        return installations;
     }
 
     let search = '';
@@ -54,21 +70,6 @@
         }
 
         return $repositories.repositories.slice(0, 4);
-    }
-
-    function connectGitHub() {
-        const redirect = new URL($page.url);
-        if (callbackState) {
-            Object.keys(callbackState).forEach((key) => {
-                redirect.searchParams.append(key, callbackState[key]);
-            });
-        }
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('project', $page.params.project);
-        target.searchParams.set('success', redirect.toString());
-        target.searchParams.set('failure', redirect.toString());
-        target.searchParams.set('mode', 'admin');
-        return target;
     }
 </script>
 
@@ -110,9 +111,8 @@
                 </Layout.Stack>
             {/await}
             <p>
-                Manage organization configuration in your <a
-                    class="link"
-                    href={`${base}/project-${$page.params.project}/settings`}>project settings</a
+                Manage organization configuration in your <Link
+                    href={`${base}/project-${$page.params.project}/settings`}>project settings</Link
                 >.
             </p>
         </Layout.Stack>
@@ -137,16 +137,18 @@
                                                 on:change={() => repository.set(repo)}
                                                 value={repo.id} />
                                         {/if}
-
-                                        <Avatar
-                                            size="xs"
-                                            src={repo?.runtime
-                                                ? `${base}/icons/${$app.themeInUse}/color/${
-                                                      repo.runtime.split('-')[0]
-                                                  }.svg`
-                                                : ''}
-                                            alt={repo.name} />
-
+                                        {#if product === 'sites'}
+                                            <Avatar size="xs" alt={repo.name} />
+                                        {:else}
+                                            <Avatar
+                                                size="xs"
+                                                src={repo?.runtime
+                                                    ? `${base}/icons/${$app.themeInUse}/color/${
+                                                          repo.runtime.split('-')[0]
+                                                      }.svg`
+                                                    : ''}
+                                                alt={repo.name} />
+                                        {/if}
                                         <Layout.Stack gap="s" direction="row" alignItems="center">
                                             <Typography.Text truncate>
                                                 {repo.name}
@@ -166,57 +168,34 @@
                                             </time>
                                         </Layout.Stack>
                                         {#if action === 'button'}
-                                            <div class="u-margin-inline-start-auto">
+                                            <Layout.Stack direction="row" justifyContent="flex-end">
                                                 <Button
                                                     size="s"
                                                     secondary
                                                     on:click={() => dispatch('connect', repo)}>
                                                     Connect
                                                 </Button>
-                                            </div>
+                                            </Layout.Stack>
                                         {/if}
                                     </Layout.Stack>
                                 </Table.Cell>
                             </Table.Row>
                         {/each}
                     </Table.Root>
-                {:else if search}
-                    <EmptySearch hidePages>
-                        <div class="common-section">
-                            <div class="u-text-center common-section">
-                                <b class="body-text-2 u-bold">Sorry we couldn't find "{search}"</b>
-                                <p>There are no repositories that match your search.</p>
-                            </div>
-                            <div class="u-flex u-gap-16 common-section u-main-center">
+                {:else}
+                    <EmptySearch hidePages bind:search target="repositories">
+                        <svelte:fragment slot="actions">
+                            {#if search}
                                 <Button secondary on:click={() => (search = '')}>
                                     Clear search
                                 </Button>
-                            </div>
-                        </div>
+                            {/if}
+                        </svelte:fragment>
                     </EmptySearch>
-                {:else}
-                    <EmptySearch hidePages />
                 {/if}
             {/await}
         {/if}
     </Layout.Stack>
 {:else}
-    <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
-        <Button href={connectGitHub().toString()} fullWidth secondary>
-            <span class="icon-github" aria-hidden="true" />
-            <span class="text">GitHub</span>
-        </Button>
-        <Button disabled fullWidth secondary>
-            <span class="icon-gitlab" aria-hidden="true" />
-            <span class="text">GitLab (coming soon)</span>
-        </Button>
-        <Button disabled fullWidth secondary>
-            <span class="icon-bitBucket" aria-hidden="true" />
-            <span class="text">BitBucket (coming soon)</span>
-        </Button>
-        <Button disabled fullWidth secondary>
-            <span class="icon-azure" aria-hidden="true" />
-            <span class="text">Azure (coming soon)</span>
-        </Button>
-    </div>
+    <ConnectGit {callbackState} />
 {/if}

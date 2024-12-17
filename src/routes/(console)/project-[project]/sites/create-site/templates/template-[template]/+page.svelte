@@ -4,14 +4,7 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
-    import {
-        Button,
-        Form,
-        InputChoice,
-        InputRadio,
-        InputSelect,
-        InputText
-    } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -28,14 +21,14 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import Repositories from '$lib/components/repositories.svelte';
     import Details from '../../details.svelte';
     import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Query, ServeRuntime } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
+    import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
 
     export let data;
 
@@ -104,32 +97,45 @@
     }
 
     async function create() {
+        if (connectBehaviour === 'now' && !selectedRepository) {
+            addNotification({
+                type: 'error',
+                message: 'Please select a repository'
+            });
+            return;
+        }
         try {
+            const fr = Object.values(Framework).find((f) => f === framework.key);
+            const buildRuntime = Object.values(BuildRuntime).find(
+                (f) => f === framework.buildRuntime
+            );
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                Framework.Sveltekit,
-                BuildRuntime.Node22,
-                ServeRuntime.Static1,
+                fr,
+                buildRuntime,
                 undefined,
                 undefined,
                 framework.installCommand,
                 framework.buildCommand,
                 framework.outputDirectory,
                 domain,
-                selectedInstallationId,
-                selectedRepository,
-                branch,
-                silentMode,
-                rootDir,
-                data.template.providerRepositoryId,
-                data.template.providerOwner,
-                framework.providerRootDirectory,
-                data.template.providerVersion,
-                undefined //TODO: add specification
+                framework.adapter,
+                selectedInstallationId || undefined,
+                framework.fallbackFile,
+                selectedRepository || undefined,
+                branch || undefined,
+                selectedRepository ? silentMode : undefined,
+                rootDir || undefined,
+                data.template.providerRepositoryId || undefined,
+                data.template.providerOwner || undefined,
+                framework.providerRootDirectory || undefined,
+                data.template.providerVersion || undefined
             );
 
-            trackEvent(Submit.SiteCreate, {});
+            trackEvent(Submit.SiteCreate, {
+                source: 'template'
+            });
 
             const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
                 Query.limit(1)
@@ -212,53 +218,13 @@
                     {#if hasInstallations}
                         <Fieldset legend="Git repositoy">
                             <Layout.Stack gap="xl">
-                                <Layout.Stack direction="row" gap="xl">
-                                    <InputRadio
-                                        size="s"
-                                        label="Create new repository"
-                                        bind:group={repositoryBehaviour}
-                                        value="new"
-                                        id="new"
-                                        name="new" />
-                                    <InputRadio
-                                        size="s"
-                                        label="Connect existing repository"
-                                        bind:group={repositoryBehaviour}
-                                        value="existing"
-                                        id="existing"
-                                        name="existing" />
-                                </Layout.Stack>
+                                <RepositoryBehaviour bind:repositoryBehaviour />
                                 {#if repositoryBehaviour === 'new'}
-                                    <Layout.Stack gap="l">
-                                        <InputSelect
-                                            id="installation"
-                                            label="Git organization"
-                                            options={data.installations.installations.map(
-                                                (entry) => {
-                                                    return {
-                                                        label: entry.organization,
-                                                        value: entry.$id
-                                                    };
-                                                }
-                                            )}
-                                            on:change={() => {
-                                                $installation =
-                                                    data.installations.installations.find(
-                                                        (entry) =>
-                                                            entry.$id === selectedInstallationId
-                                                    );
-                                            }}
-                                            bind:value={selectedInstallationId} />
-                                        <InputText
-                                            id="repositoryName"
-                                            label="Repository name"
-                                            placeholder="my-repository"
-                                            bind:value={repositoryName} />
-                                        <InputChoice
-                                            id="repositoryPrivate"
-                                            label="Keep repository private"
-                                            bind:value={repositoryPrivate} />
-                                    </Layout.Stack>
+                                    <NewRepository
+                                        bind:selectedInstallationId
+                                        installations={data.installations}
+                                        bind:repositoryName
+                                        bind:repositoryPrivate />
                                     <Layout.Stack gap="xl" alignItems="flex-end">
                                         <Divider />
 
@@ -273,14 +239,11 @@
                                     <Repositories
                                         bind:hasInstallations
                                         bind:selectedRepository
+                                        product="sites"
                                         action="button"
-                                        callbackState={{
-                                            from: 'github',
-                                            to: 'cover'
-                                        }}
                                         on:connect={(e) => {
                                             trackEvent('click_connect_repository', {
-                                                from: 'cover'
+                                                from: 'template-wizard'
                                             });
                                             repository.set(e.detail);
                                             repositoryName = e.detail.name;
@@ -319,14 +282,13 @@
                 <Typography.Text variant="m-500" truncate>
                     {name || data.template.name}
                 </Typography.Text>
-
-                <Button secondary size="s">View demo</Button>
+                <!-- TODO: re-enable -->
+                <Button secondary size="s" href={data.template.demoUrl} disabled>View demo</Button>
             </Layout.Stack>
 
             <Image
                 objectPosition="top"
-                src={data.template?.preview ??
-                    'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
+                src={data.template.demoImage}
                 alt={data.template.name}
                 width={357}
                 height={200} />
@@ -334,8 +296,9 @@
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
-        <Button fullWidthMobile size="s" secondary on:click={() => (showExitModal = true)}
-            >Cancel</Button>
+        <Button fullWidthMobile size="s" secondary on:click={() => (showExitModal = true)}>
+            Cancel
+        </Button>
         <Button
             fullWidthMobile
             size="s"

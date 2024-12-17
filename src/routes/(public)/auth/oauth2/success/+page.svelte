@@ -42,9 +42,9 @@
 {/await}
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
     // override padding for screens bigger than mobile
-    @media #{$break2open} {
+    @media #{devices.$break2open} {
         article.card {
             padding: 2rem !important;
         }

@@ -2,6 +2,7 @@
     import Card from '$lib/components/card.svelte';
     import { Button, InputText } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
+    import { consoleVariables } from '$routes/(console)/store';
     import { ResourceType } from '@appwrite.io/console';
     import { Fieldset, Layout, Divider, Status, Typography } from '@appwrite.io/pink-svelte';
 
@@ -30,7 +31,7 @@
                 <InputText id="domain" placeholder="my-domain" bind:value={domain}>
                     <svelte:fragment slot="end">
                         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                            .appwrite.global
+                            .{$consoleVariables._APP_DOMAIN_TARGET}
                         </Typography.Text>
                     </svelte:fragment>
                 </InputText>
@@ -47,8 +48,10 @@
                         domain = orginalDomain;
                         showConfig = false;
                     }}>Cancel</Button>
-                <Button secondary disabled={!domainSuccess} on:click={() => (showConfig = false)}
-                    >Update</Button>
+
+                <Button secondary disabled={!domainSuccess} on:click={() => (showConfig = false)}>
+                    Update
+                </Button>
             </Layout.Stack>
         </Layout.Stack>
     </Fieldset>
@@ -58,12 +61,14 @@
             <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
                 <Layout.Stack direction="row" gap="s" alignItems="center">
                     <span class="icon-globe-alt"></span>
-                    {domain}.appwrite.global
+                    {domain}.{$consoleVariables._APP_DOMAIN_TARGET}
                 </Layout.Stack>
             </Typography.Text>
+            <!-- TODO: reenable -->
             <Button
                 size="s"
                 secondary
+                disabled
                 on:click={() => {
                     showConfig = true;
                 }}>

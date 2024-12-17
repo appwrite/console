@@ -51,7 +51,7 @@
 </ModalWrapper>
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/mixins/_scroll.scss';
+    @use '@appwrite.io/pink/src/abstract/mixins/scroll';
 
     .mk-grid {
         overflow: hidden;
@@ -60,7 +60,7 @@
         }
         &-item-2 {
             overflow: auto;
-            @include scroll;
+            @include scroll.scroll;
         }
     }
 

@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics.js';
     import Card from '$lib/components/card.svelte';
-    import Repositories from '$lib/components/repositories.svelte';
+    import { Repositories } from '$lib/components/git/index.js';
     import Button from '$lib/elements/forms/button.svelte';
     import { Wizard } from '$lib/layout';
     import { installation, repository } from '$lib/stores/vcs.js';
@@ -29,11 +29,8 @@
     <Repositories
         bind:hasInstallations
         bind:selectedRepository
+        product="sites"
         action="button"
-        callbackState={{
-            from: 'github',
-            to: 'cover'
-        }}
         on:connect={onConnect} />
     <svelte:fragment slot="aside">
         <Card>

@@ -6,7 +6,7 @@
     import { members, organization, organizationList } from '$lib/stores/organization';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { projects } from '../store';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -55,7 +55,10 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$organization.name} has been flagged for deletion`
+                message:
+                    $organization.billingPlan === BillingPlan.FREE
+                        ? `${$organization.name} has been deleted`
+                        : `${$organization.name} has been flagged for deletion`
             });
         } catch (e) {
             error = e.message;

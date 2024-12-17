@@ -1,6 +1,6 @@
 <script lang="ts">
     import { tooltip as tooltipAction } from '$lib/actions/tooltip';
-    import { Input, Selector } from '@appwrite.io/pink-svelte';
+    import { Layout, Selector } from '@appwrite.io/pink-svelte';
     import { Helper } from '.';
 
     export let type: 'checkbox' | 'switchbox' = 'checkbox';
@@ -31,55 +31,55 @@
 </script>
 
 <label class="choice-item" for={id}>
-    {#if type === 'switchbox'}
-        <input
-            {id}
-            {disabled}
-            {required}
-            type="checkbox"
-            class:switch={type === 'switchbox'}
-            aria-checked={value}
-            bind:this={element}
-            bind:checked={value}
-            on:change
-            on:invalid={handleInvalid} />
-    {:else}
-        <Selector.Checkbox
-            {id}
-            {disabled}
-            size="s"
-            {required}
-            bind:value
-            bind:checked={value}
-            on:change />
-    {/if}
+    <Layout.Stack direction="row" alignItems="flex-start">
+        {#if type === 'switchbox'}
+            <Selector.Switch
+                {id}
+                {disabled}
+                {required}
+                bind:value
+                bind:checked={value}
+                on:change
+                on:invalid={handleInvalid} />
+        {:else}
+            <Selector.Checkbox
+                {id}
+                {disabled}
+                size="s"
+                {required}
+                bind:value
+                bind:checked={value}
+                on:invalid={handleInvalid}
+                on:change />
+        {/if}
 
-    <div class="choice-item-content" class:u-width-full-line={fullWidth}>
-        {#if (label && showLabel) || tooltip}
-            <div class="u-flex u-gap-4">
-                {#if label}
-                    <span class:u-hide={!showLabel} class="choice-item-title">
-                        {label}
-                    </span>
-                {/if}
-                {#if tooltip}
-                    <button
-                        type="button"
-                        class="tooltip"
-                        aria-label="variables info"
-                        use:tooltipAction={{ content: tooltip }}>
-                        <span
-                            class="icon-info"
-                            aria-hidden="true"
-                            style="font-size: var(--icon-size-small)" />
-                    </button>
-                {/if}
-            </div>
-        {/if}
-        {#if $$slots.default}
-            <p class="choice-item-paragraph"><slot /></p>
-        {/if}
-    </div>
+        <div class="choice-item-content" class:u-width-full-line={fullWidth}>
+            {#if (label && showLabel) || tooltip}
+                <div class="u-flex u-gap-4">
+                    {#if label}
+                        <span class:u-hide={!showLabel} class="choice-item-title">
+                            {label}
+                        </span>
+                    {/if}
+                    {#if tooltip}
+                        <button
+                            type="button"
+                            class="tooltip"
+                            aria-label="variables info"
+                            use:tooltipAction={{ content: tooltip }}>
+                            <span
+                                class="icon-info"
+                                aria-hidden="true"
+                                style="font-size: var(--icon-size-small)" />
+                        </button>
+                    {/if}
+                </div>
+            {/if}
+            {#if $$slots.default}
+                <p class="choice-item-paragraph"><slot /></p>
+            {/if}
+        </div>
+    </Layout.Stack>
 </label>
 {#if error}
     <Helper type="warning">{error}</Helper>

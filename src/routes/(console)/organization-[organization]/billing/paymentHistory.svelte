@@ -49,6 +49,7 @@
             Query.limit(limit),
             Query.offset(offset),
             Query.notEqual('from', $organization.billingCurrentInvoiceDate),
+            Query.notEqual('status', 'pending'),
             Query.orderDesc('$createdAt')
         ]);
     }

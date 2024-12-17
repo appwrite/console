@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Collapsible, CollapsibleItem, Empty } from '$lib/components';
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
-    import type { Models } from '@appwrite.io/console';
     import {
         Fieldset,
         Layout,
@@ -23,10 +22,11 @@
     } from '@appwrite.io/pink-icons-svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
     import ImportSiteVariablesModal from './importSiteVariablesModal.svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    //TODO: fix type after backend fix
     export let frameworks: Models.Framework[];
-    export let selectedFramework = frameworks[0];
+    export let selectedFramework: Models.Framework;
+
     export let variables: Partial<Models.Variable>[] = [];
     export let installCommand = '';
     export let buildCommand = '';
@@ -37,7 +37,7 @@
     let showSecretModal = false;
 
     let currentVariable: Partial<Models.Variable>;
-    let frameworkId = selectedFramework.$id;
+    let frameworkId = selectedFramework.key;
 
     function markAsSecret() {
         let variable = variables.find((v) => v.key === currentVariable.key);
@@ -46,7 +46,7 @@
         }
     }
 
-    $: frameworkData = frameworks.find((framework) => framework.$id === framework.$id);
+    $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework.key);
 </script>
 
 <Fieldset legend="Configuration">
@@ -57,11 +57,11 @@
             placeholder="Select framework"
             bind:value={frameworkId}
             options={frameworks.map((framework) => ({
-                value: framework.$id,
+                value: framework.key,
                 label: framework.name
             }))}
             on:change={() => {
-                selectedFramework = frameworks.find((framework) => framework.$id === frameworkId);
+                selectedFramework = frameworks.find((framework) => framework.key === frameworkId);
             }} />
 
         <Collapsible>
@@ -76,7 +76,7 @@
                             id="installCommand"
                             label="Install command"
                             bind:value={installCommand}
-                            placeholder={frameworkData?.installCommand} />
+                            placeholder={frameworkData?.defaultInstallCommand} />
                         <Button secondary size="s" on:click={() => (installCommand = '')}>
                             Reset
                         </Button>
@@ -86,7 +86,7 @@
                             id="buildCommand"
                             label="Build command"
                             bind:value={buildCommand}
-                            placeholder={frameworkData?.buildCommand} />
+                            placeholder={frameworkData?.defaultBuildCommand} />
                         <Button secondary size="s" on:click={() => (buildCommand = '')}>
                             Reset
                         </Button>
@@ -96,7 +96,7 @@
                             id="outputDirectory"
                             label="Output directory"
                             bind:value={outputDirectory}
-                            placeholder={frameworkData?.outputDirectory} />
+                            placeholder={frameworkData?.defaultOutputDirectory} />
                         <Button secondary size="s" on:click={() => (outputDirectory = '')}>
                             Reset
                         </Button>
@@ -124,11 +124,14 @@
                                     <Table.Row>
                                         <Table.Cell>{variable.key}</Table.Cell>
                                         <Table.Cell>
+                                            <!-- TODO: fix max width -->
                                             <div style="max-width: 20rem">
                                                 {#if variable.secret}
                                                     <Badge content="Secret" variant="secondary" />
                                                 {:else}
-                                                    <HiddenText text={variable.value} />
+                                                    <HiddenText
+                                                        isVisible={false}
+                                                        text={variable.value} />
                                                 {/if}
                                             </div>
                                         </Table.Cell>

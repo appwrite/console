@@ -6,47 +6,21 @@
     // import { templatesList } from '$lib/stores/templates';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { onMount } from 'svelte';
     import { canWriteSites } from '$lib/stores/roles.js';
-    import { Icon, Popover, Image } from '@appwrite.io/pink-svelte';
+    import { Icon, Popover, Image, ActionMenu } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
-    import { IconDotsHorizontal } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconRefresh } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import CreateSiteModal from './createSiteModal.svelte';
-    import { calculateTime } from '$lib/helpers/timeConversion';
     import { timeFromNow } from '$lib/helpers/date';
-    import EmptyLight from './empty-light.png';
+    import EmptyLight from './(images)/empty-light.png';
     import { app } from '$lib/stores/app';
-    import EmptyDark from './empty-dark.png';
+    import EmptyDark from './(images)/empty-dark.png';
 
     export let data;
     let show = false;
-
-    onMount(async () => {
-        // const from = $page.url.searchParams.get('from');
-        // if (from === 'github') {
-        //     const to = $page.url.searchParams.get('to');
-        //     switch (to) {
-        //         case 'template': {
-        //             const step = $page.url.searchParams.get('step');
-        //             const template = $page.url.searchParams.get('template');
-        //             const templateConfig = $page.url.searchParams.get('templateConfig');
-        //             templateStore.set(
-        //                 (await $templatesList).templates.find((item) => item.id === template)
-        //             );
-        //             templateConfigStore.set(JSON.parse(templateConfig));
-        //             wizard.start(CreateTemplate);
-        //             wizard.setStep(Number(step));
-        //             break;
-        //         }
-        //         case 'cover':
-        //             openWizard();
-        //             break;
-        //     }
-        // }
-    });
 
     $: $registerCommands([
         {
@@ -67,7 +41,7 @@
     $updateCommandGroupRanks({ sites: 1000 });
 
     // TODO: remove
-    const TMPSITEROLES = !$canWriteSites;
+    const TMPSITEROLES = true;
 </script>
 
 <Container>
@@ -87,7 +61,7 @@
                         title={site.name}
                         description={`Deployed ${timeFromNow(site.$updatedAt)}`}
                         src={site.preview ??
-                            'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
+                            `https://placehold.co/600x400/111/bbb?text=Screenshot+coming+soon&font=inter`}
                         alt={site.name}>
                         <Popover placement="bottom-end" let:toggle>
                             <Button
@@ -99,7 +73,13 @@
                                     toggle(e);
                                 }}>
                                 <Icon size="s" icon={IconDotsHorizontal} /></Button>
-                            <p slot="tooltip">Tooltip content</p>
+                            <svelte:fragment slot="tooltip">
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Button leadingIcon={IconRefresh} disabled>
+                                        Redeploy
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </svelte:fragment>
                         </Popover>
                     </Card.Media>
                 </Card.Link>

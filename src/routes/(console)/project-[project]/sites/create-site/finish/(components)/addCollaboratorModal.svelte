@@ -14,8 +14,9 @@
     import { roles } from '$lib/stores/billing';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import Roles from '$lib/components/roles/roles.svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
-    export let showCreate = false;
+    export let show = false;
 
     const dispatch = createEventDispatcher();
 
@@ -24,7 +25,7 @@
     let email: string,
         name: string,
         error: string,
-        role: string = 'developer';
+        role: string = 'viewer';
 
     async function create() {
         try {
@@ -41,7 +42,7 @@
             await invalidate(Dependencies.ORGANIZATION);
             await invalidate(Dependencies.MEMBERS);
 
-            showCreate = false;
+            show = false;
             addNotification({
                 type: 'success',
                 message: `Invite has been sent to ${email}`
@@ -54,27 +55,31 @@
         }
     }
 
-    $: if (!showCreate) {
+    $: if (!show) {
         error = null;
         email = null;
         name = null;
     }
+
+    // TODO: fix design
 </script>
 
-<Modal title="Add collaborators" {error} bind:show={showCreate} onSubmit={create}>
+<Modal title="Add collaborators" {error} bind:show onSubmit={create}>
     <span slot="description">
         Share your progress and start collaborating by adding members to your organization.
     </span>
-    <InputEmail
-        required
-        id="email"
-        label="Email"
-        placeholder="Enter email"
-        autofocus={true}
-        bind:value={email} />
-    <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
+    <Layout.Stack direction="row">
+        <InputEmail
+            required
+            id="email"
+            label="Email"
+            placeholder="Enter email"
+            autofocus={true}
+            bind:value={email} />
+        <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
+    </Layout.Stack>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
+        <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit submissionLoader>Send invite</Button>
     </svelte:fragment>
 </Modal>

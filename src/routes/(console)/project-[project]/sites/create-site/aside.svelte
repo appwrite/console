@@ -9,13 +9,14 @@
         IconVue,
         IconGitBranch
     } from '@appwrite.io/pink-icons-svelte';
+    import { consoleVariables } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
 
-    export let framework: Models.Framework;
+    export let framework: Partial<Models.Framework>;
     export let repositoryName: string;
     export let branch: string;
     export let rootDir: string;
-    export let domain: string;
+    export let domain: string = '';
     export let showAfter = true;
 
     function getIcon(fr: string) {
@@ -39,7 +40,7 @@
         <slot />
         <Layout.Stack gap="l">
             {#if framework?.name}
-                {@const frameworkIcon = getIcon(framework.name)}
+                {@const frameworkIcon = getIcon(framework.key)}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Framework</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
@@ -89,7 +90,9 @@
                         variant="m-500"
                         color="--color-fgcolor-neutral-primary"
                         truncate>
-                        https://{domain}.appwrite.global
+                        {$consoleVariables._APP_OPTIONS_FORCE_HTTPS
+                            ? 'https://'
+                            : 'http://'}{domain}.{$consoleVariables._APP_DOMAIN_TARGET}
                     </Typography.Text>
                 </Layout.Stack>
             {/if}

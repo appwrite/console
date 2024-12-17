@@ -1,21 +1,24 @@
 <script lang="ts">
-    import { Button, InputSecret } from '$lib/elements/forms';
+    import { Button, InputChoice, InputPassword } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
-    import { InputText, FormList } from '$lib/elements/forms';
+    import { InputText } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import type { Models } from '@appwrite.io/console';
     import Alert from '$lib/components/alert.svelte';
     import { project } from './store';
     import { base } from '$app/paths';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let isGlobal: boolean;
+    export let product: 'function' | 'site' = 'function';
     export let showCreate = false;
     export let selectedVar: Partial<Models.Variable> = null;
 
     let pair = {
         $id: selectedVar?.$id,
         key: selectedVar?.key,
-        value: selectedVar?.value
+        value: selectedVar?.value,
+        secret: selectedVar?.secret
     };
 
     const dispatch = createEventDispatcher();
@@ -35,17 +38,18 @@
     }
 </script>
 
-<Modal bind:show={showCreate} onSubmit={handleVariable} size="big">
-    <svelte:fragment slot="title">
-        {selectedVar ? 'Update' : 'Create'}
-        {isGlobal ? 'global' : 'environment'} variable
-    </svelte:fragment>
-    <div class="u-flex u-flex-vertical u-gap-24">
-        <p class="u-text">
+<Modal
+    bind:show={showCreate}
+    onSubmit={handleVariable}
+    title={`${selectedVar ? 'Update' : 'Create'} ${isGlobal ? 'global' : 'environment'} variable`}>
+    <svelte:fragment slot="description">
+        <span>
             Set the environment variables or secret keys that will be passed to {isGlobal
-                ? 'all functions within your project'
-                : 'your function'}.
-        </p>
+                ? `all ${product}s within your project`
+                : `your ${product}s`}.
+        </span>
+    </svelte:fragment>
+    <Layout.Stack>
         {#if !isGlobal}
             <Alert type="info">
                 <p class="text">
@@ -53,13 +57,11 @@
                         href={`${base}/project-${$project.$id}/settings/variables`}
                         title="Project settings"
                         class="link">
-                        project settings</a> and a function environment variable, the global variable
-                    will be ignored.
+                        project settings</a>
+                    and a {product} environment variable, the global variable will be ignored.
                 </p>
             </Alert>
         {/if}
-    </div>
-    <FormList>
         <InputText
             id="key"
             label="Key"
@@ -68,8 +70,15 @@
             required
             autofocus
             autocomplete={false} />
-        <InputSecret id="value" label="Value" placeholder="Enter value" bind:value={pair.value} />
-    </FormList>
+        <InputPassword
+            id="value"
+            label="Value"
+            placeholder="Enter value"
+            bind:value={pair.value}
+            minlength={0} />
+        <InputChoice id="secret" label="Secret" bind:value={pair.secret}>
+            If selected, you and your team won't be able to read the values after creation.</InputChoice>
+    </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button secondary on:click={close}>Cancel</Button>
         <Button submit>{selectedVar ? 'Update' : 'Create'}</Button>

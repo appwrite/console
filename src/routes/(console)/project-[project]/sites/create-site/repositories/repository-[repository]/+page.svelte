@@ -8,7 +8,7 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { sortBranches } from '$lib/stores/vcs';
+    import { installation, repository, sortBranches } from '$lib/stores/vcs';
     import { Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
@@ -16,8 +16,9 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Query, ServeRuntime } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
 
     export let data;
     let showExitModal = false;
@@ -27,25 +28,20 @@
 
     let name = '';
     let id = '';
-    let framework: Models.Framework;
+    let framework: Models.Framework = data.frameworks.frameworks[0];
+    let adapter = framework?.adapters[0];
     let branch: string;
-    let rootDir = '';
-    let installCommand = 'npm ci';
-    let buildCommand = 'npm run build';
-    let outputDirectory = 'dist';
-    let variables: Partial<Models.Variable>[] = [
-        {
-            key: 'APPWRITE_ENDPOINT',
-            value: 'fsssf',
-            secret: false
-        },
-        {
-            key: 'APPWRITE_ENDPOINT2',
-            value: '',
-            secret: true
-        }
-    ];
+    let rootDir = './';
+    let installCommand = adapter?.installCommand;
+    let buildCommand = adapter?.buildCommand;
+    let outputDirectory = adapter?.outputDirectory;
+    let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
+
+    onMount(() => {
+        installation.set(data.installation);
+        repository.set(data.repository);
+    });
 
     async function loadBranches() {
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
@@ -64,19 +60,24 @@
 
     async function create() {
         try {
+            const fr = Object.values(Framework).find((f) => f === framework.key);
+            const buildRuntime = Object.values(BuildRuntime).find(
+                (f) => f === framework.buildRuntime
+            );
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                Framework.Sveltekit,
-                BuildRuntime.Node22,
-                ServeRuntime.Static1,
+                fr,
+                buildRuntime,
                 undefined,
                 undefined,
                 installCommand,
                 buildCommand,
                 outputDirectory,
                 undefined,
-                data.installation.providerInstallationId,
+                framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
+                data.installation.$id,
+                null,
                 data.repository.id,
                 branch,
                 silentMode,
@@ -170,8 +171,9 @@
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
-        <Button size="s" fullWidthMobile secondary on:click={() => (showExitModal = true)}
-            >Cancel</Button>
+        <Button size="s" fullWidthMobile secondary on:click={() => (showExitModal = true)}>
+            Cancel
+        </Button>
         <Button
             size="s"
             fullWidthMobile

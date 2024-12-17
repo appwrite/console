@@ -196,6 +196,7 @@ export enum Submit {
     AuthPasswordDictionaryUpdate = 'submit_auth_password_dictionary_update',
     AuthPersonalDataCheckUpdate = 'submit_auth_personal_data_check_update',
     AuthSessionAlertsUpdate = 'submit_auth_session_alerts_update',
+    AuthMembershipPrivacyUpdate = 'submit_auth_membership_privacy_update',
     AuthMockNumbersUpdate = 'submit_auth_mock_numbers_update',
     SessionsLengthUpdate = 'submit_sessions_length_update',
     SessionsLimitUpdate = 'submit_sessions_limit_update',
@@ -334,5 +335,8 @@ export enum Submit {
     SiteUpdateTimeout = 'submit_site_update_timeout',
     SiteUpdateEvents = 'submit_site_update_events',
     SiteUpdateScopes = 'submit_site_key_update_scopes',
-    SiteConnectRepo = 'submit_site_connect_repo'
+    SiteUpdateBuildSettings = 'submit_site_update_build_settings',
+    SiteUpdateSinglePageApplication = 'submit_site_update_single_page_application',
+    SiteConnectRepo = 'submit_site_connect_repo',
+    SiteRedeploy = 'submit_site_redeploy'
 }

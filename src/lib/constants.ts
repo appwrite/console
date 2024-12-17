@@ -61,7 +61,8 @@ export enum Dependencies {
     MESSAGING_TOPIC = 'dependency:messaging_topic',
     MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers',
     SITE = 'dependency:site',
-    SITES = 'dependency:sites'
+    SITES = 'dependency:sites',
+    SITES_DOMAINS = 'dependency:sites_domains'
 }
 
 export const defaultScopes: string[] = [
@@ -119,8 +120,8 @@ export const defaultScopes: string[] = [
     'topics.write',
     'billing.read',
     'billing.write',
-    'sites:read',
-    'sites:write'
+    'sites.read',
+    'sites.write'
 ];
 
 export const defaultRoles: string[] = ['owner'];
@@ -364,13 +365,13 @@ export const scopes: {
         icon: 'globe'
     },
     {
-        scope: 'sites:read',
+        scope: 'sites.read',
         description: "Access to read your project's sites and deployments",
         category: 'Sites',
         icon: 'globe'
     },
     {
-        scope: 'sites:write',
+        scope: 'sites.write',
         description: "Access to create, update, and delete your project's sites and deployments",
         category: 'Sites',
         icon: 'globe'
@@ -485,6 +486,7 @@ export enum BillingPlan {
     FREE = 'tier-0',
     PRO = 'tier-1',
     SCALE = 'tier-2',
+    GITHUB_EDUCATION = 'auto-1',
     CUSTOM = 'cont-1'
 }
 

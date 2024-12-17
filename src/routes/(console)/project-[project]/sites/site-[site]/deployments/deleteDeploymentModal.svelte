@@ -13,11 +13,11 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forProject.functions.deleteDeployment(
+            await sdk.forProject.sites.deleteDeployment(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );
-            await invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.SITE);
             showDelete = false;
             addNotification({
                 type: 'success',

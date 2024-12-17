@@ -4,10 +4,10 @@
     import { Layout } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import RepoDark from './repositoryDark.svg';
-    import RepoLight from './repositoryLight.svg';
-    import TemplateDark from './templateDark.svg';
-    import TemplateLight from './templateLight.svg';
+    import RepoDark from './(images)/repositoryDark.svg';
+    import RepoLight from './(images)/repositoryLight.svg';
+    import TemplateDark from './(images)/templateDark.svg';
+    import TemplateLight from './(images)/templateLight.svg';
     import { app } from '$lib/stores/app';
 
     export let show = false;
@@ -18,7 +18,7 @@
     }
 </script>
 
-<Modal title="Create site" size="big" bind:show>
+<Modal title="Create site" bind:show>
     <Layout.Stack direction="row" gap="m" wrap="wrap">
         <div style="flex-grow: 1; min-width: 245px">
             <LabelCard

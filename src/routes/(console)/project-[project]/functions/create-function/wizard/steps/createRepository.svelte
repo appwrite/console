@@ -9,10 +9,10 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import Repositories from '$lib/components/repositories.svelte';
     import { template, templateConfig } from '../../store';
     import { Box } from '$lib/components';
     import { installation, repository } from '$lib/stores/vcs';
+    import { Repositories } from '$lib/components/git';
 
     let selectedInstallationId: string;
     let hasInstallations: boolean;

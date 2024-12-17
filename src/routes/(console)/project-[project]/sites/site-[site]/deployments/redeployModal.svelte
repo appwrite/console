@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
-    import { func } from './store';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -11,42 +10,32 @@
 
     export let show = false;
     export let selectedDeployment: Models.Deployment = null;
+    export let site: Models.Site;
     let error: string;
 
     async function redeploy() {
         try {
-            await sdk.forProject.functions.createBuild(
-                $func.$id,
-                selectedDeployment.$id,
-                selectedDeployment.buildId
-            );
+            await sdk.forProject.sites.createBuild(site.$id, selectedDeployment.$id);
             addNotification({
                 type: 'success',
-                message: `Redeploying ${$func.name}`
+                message: `Redeploying ${site.name}`
             });
-            trackEvent(Submit.FunctionRedeploy);
+            trackEvent(Submit.SiteRedeploy);
 
-            invalidate(Dependencies.FUNCTION);
+            invalidate(Dependencies.SITE);
             invalidate(Dependencies.DEPLOYMENTS);
             show = false;
         } catch (e) {
             error = e.message;
-
-            trackError(e, Submit.FunctionRedeploy);
+            trackError(e, Submit.SiteRedeploy);
         }
     }
 </script>
 
-<Modal
-    title="Redeploy function"
-    size="big"
-    bind:show
-    bind:error
-    onSubmit={redeploy}
-    headerDivider={false}>
+<Modal title="Redeploy site" bind:show bind:error onSubmit={redeploy} headerDivider={false}>
     <p class="text">
-        Are you sure you want to redeploy <b>{$func.name}</b>? Redeploying may affect your
-        production code.
+        Are you sure you want to redeploy <b>{site.name}</b>? Redeploying may affect your production
+        code.
     </p>
 
     <svelte:fragment slot="footer">

@@ -11,7 +11,6 @@
     import { requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
     import { sdk } from '$lib/stores/sdk';
-    import { campaigns } from '$lib/stores/campaigns';
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
     import { Root } from '@appwrite.io/pink-svelte';
@@ -54,8 +53,11 @@
         if ($page.url.searchParams.has('code')) {
             const code = $page.url.searchParams.get('code');
             const coupon = await sdk.forConsole.billing.getCoupon(code).catch<null>(() => null);
-            if (coupon?.campaign && campaigns.has(coupon.campaign)) {
-                if ($user) {
+            if (coupon?.campaign) {
+                const campaign = await sdk.forConsole.billing
+                    .getCampaign(coupon.campaign)
+                    .catch<null>(() => null);
+                if (campaign && $user) {
                     goto(`${base}/apply-credit?code=${code}`);
                     loading.set(false);
                     return;
@@ -63,9 +65,12 @@
             }
         }
         if (user && $page.url.searchParams.has('campaign')) {
-            const campaign = $page.url.searchParams.get('campaign');
-            if (campaigns.has(campaign)) {
-                goto(`${base}/apply-credit?campaign=${campaign}`);
+            const campaignId = $page.url.searchParams.get('campaign');
+            const campaign = await sdk.forConsole.billing
+                .getCampaign(campaignId)
+                .catch<null>(() => null);
+            if (campaign) {
+                goto(`${base}/apply-credit?campaign=${campaign.$id}`);
                 loading.set(false);
                 return;
             }
@@ -111,9 +116,9 @@
     <Progress />
 </Root>
 
-<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
+
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);
         --p-tooltip--bg-color: var(--color-neutral-80);
@@ -194,7 +199,7 @@
     .is-cloud {
         --heading-font: 'Aeonik Pro', arial, sans-serif;
         .heading-level {
-            @media #{$break3open} {
+            @media #{devices.$break3open} {
                 &-1,
                 &-2,
                 &-3,

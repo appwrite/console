@@ -13,6 +13,7 @@
         Database = 'Database',
         Functions = 'Functions',
         Messaging = 'Messaging',
+        Sites = 'Sites',
         Storage = 'Storage',
         Other = 'Other'
     }

@@ -2,6 +2,7 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { Organization, OrganizationList } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
+import type { Campaign } from '$lib/stores/campaigns';
 
 export type PaymentMethodData = {
     $id: string;
@@ -708,6 +709,28 @@ export class Billing {
         );
     }
 
+    async getCampaign(campaignId: string): Promise<Campaign> {
+        const path = `/console/campaigns/${campaignId}`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('GET', uri, {
+            'content-type': 'application/json'
+        });
+    }
+
+    async setMembership(
+        programId: string
+    ): Promise<{ $createdAt: string } | { error: { code: number; message: string } }> {
+        const path = `/console/programs/${programId}/memberships`;
+        const uri = new URL(this.client.config.endpoint + path);
+        try {
+            return await this.client.call('POST', uri, {
+                'content-type': 'application/json'
+            });
+        } catch (e) {
+            return { error: { code: e.code, message: e.message } };
+        }
+    }
+
     async getCoupon(couponId: string): Promise<Coupon> {
         const path = `/console/coupons/${couponId}`;
         const params = {
@@ -951,7 +974,7 @@ export class Billing {
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
-            'post',
+            'patch',
             uri,
             {
                 'content-type': 'application/json'
