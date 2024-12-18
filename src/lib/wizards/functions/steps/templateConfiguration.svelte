@@ -5,7 +5,11 @@
     import { WizardStep } from '$lib/layout';
     import { runtimesList } from '$lib/stores/runtimes';
     import { specificationsList } from '$lib/stores/specifications';
+    import { BillingPlan } from '$lib/constants';
+    import SpecificationsTooltip from '../components/specificationsTooltip.svelte';
     import { template, templateConfig } from '../store';
+    import { organization } from '$lib/stores/organization';
+    import { isCloud } from '$lib/system';
 
     let showCustomId = false;
 
@@ -99,6 +103,9 @@
                 required
                 disabled={specificationOptions.length < 1}
                 options={specificationOptions}
+                popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
+                    ? SpecificationsTooltip
+                    : null}
                 bind:value={$templateConfig.specification} />
         {/await}
     </FormList>
