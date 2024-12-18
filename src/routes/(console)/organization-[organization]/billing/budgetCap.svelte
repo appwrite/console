@@ -59,6 +59,7 @@
                 class="link">Learn more about usage rates.</button>
         </p>
         <svelte:fragment slot="aside">
+            <!--            TODO: show this based on the plan detail for budgetcap-->
             {#if $organization?.billingPlan === BillingPlan.FREE}
                 <Alert type="info">
                     <svelte:fragment slot="title">

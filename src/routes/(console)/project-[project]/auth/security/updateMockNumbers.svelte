@@ -26,6 +26,7 @@
     $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
+    //TODO check for plan details on if mocknumbers is allowed
     let isComponentDisabled: boolean =
         isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
     let emptyStateTitle: string = isSelfHosted
