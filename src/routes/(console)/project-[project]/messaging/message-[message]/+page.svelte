@@ -12,6 +12,7 @@
     import { MessagingProviderType } from '@appwrite.io/console';
     import UpdateTopics from './updateTopics.svelte';
     import UpdateTargets from './updateTargets.svelte';
+    import Recipients from './recipients.svelte';
     import { onMount } from 'svelte';
 
     export let data: PageData;
@@ -34,6 +35,7 @@
     {/if}
     <UpdateTopics message={$message} selectedTopicsById={data.topicsById} />
     <UpdateTargets message={$message} selectedTargetsById={data.targetsById} />
+    <Recipients message={$message} selectedRecipients={data.messageRecipients} />
     {#if $message.status !== 'processing'}
         <Delete message={$message} />
     {/if}
