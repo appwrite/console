@@ -26,7 +26,7 @@
     let showActivate = false;
 
     let enableScrollButton = false;
-    let codePanelContent: HTMLElement; /* var to avoid frequent querySelector calls */
+    let codePanelContent: HTMLElement;
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);

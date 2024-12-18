@@ -21,7 +21,7 @@
                 icon="github"
                 iconStyle="font-size:20px">
                 <Trim alternativeTrim>
-                    <span style="white-space: pre-wrap">
+                    <span style:white-space="pre-wrap">
                         {deployment.providerRepositoryOwner}/{deployment.providerRepositoryName}
                     </span>
                 </Trim>
