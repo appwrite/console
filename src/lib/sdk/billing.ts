@@ -281,6 +281,7 @@ export type Plan = {
     trialDays: number;
     isAvailable: boolean;
     selfService: boolean;
+    premiumSupport: boolean;
 };
 
 export type PlansInfo = {
