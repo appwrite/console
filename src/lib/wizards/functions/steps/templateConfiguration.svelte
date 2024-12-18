@@ -4,6 +4,7 @@
     import { FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { runtimesList } from '$lib/stores/runtimes';
+    import { specificationsList } from '$lib/stores/specifications';
     import { template, templateConfig } from '../store';
 
     let showCustomId = false;
@@ -11,6 +12,10 @@
     async function beforeSubmit() {
         if (!$templateConfig.runtime) {
             throw new Error('Please select a runtime.');
+        }
+
+        if (!$templateConfig.specification) {
+            throw new Error('Please select a specification.');
         }
     }
 
@@ -26,6 +31,22 @@
             });
 
         return options;
+    }
+
+    async function loadSpecifications() {
+        const specificationOptions = (await $specificationsList).specifications.map((size) => ({
+            label:
+                `${size.cpus} CPU, ${size.memory} MB RAM` +
+                (!size.enabled ? ` (Upgrade to use this)` : ''),
+            value: size.slug,
+            disabled: !size.enabled
+        }));
+
+        if (!$templateConfig.specification && specificationOptions.length > 0) {
+            $templateConfig.specification = specificationOptions[0].value;
+        }
+
+        return specificationOptions;
     }
 </script>
 
@@ -60,6 +81,25 @@
                 disabled={options.length < 1}
                 {options}
                 bind:value={$templateConfig.runtime} />
+        {/await}
+        {#await loadSpecifications()}
+            <InputSelect
+                label="CPU and memory"
+                id="specification"
+                placeholder="Loading specifications..."
+                required
+                disabled
+                options={[]}
+                value={null} />
+        {:then specificationOptions}
+            <InputSelect
+                label="CPU and memory"
+                id="specification"
+                placeholder="Select specification"
+                required
+                disabled={specificationOptions.length < 1}
+                options={specificationOptions}
+                bind:value={$templateConfig.specification} />
         {/await}
     </FormList>
 
