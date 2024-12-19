@@ -77,11 +77,7 @@
             </LabelCard>
         </li>
         <li>
-            <LabelCard
-                name="plan"
-                bind:group={billingPlan}
-                value={BillingPlan.SCALE}
-                padding={1.5}>
+            <LabelCard name="plan" bind:group={billingPlan} value={BillingPlan.SCALE} padding={1.5}>
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
