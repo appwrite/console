@@ -11,6 +11,8 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
     import { base } from '$app/paths';
+    import { wizard } from '$lib/stores/wizard';
+    import { redirect } from '@sveltejs/kit';
 
     export let show = false;
     let addresses: AddressesList;
@@ -188,9 +190,12 @@
         </FormList>
     {:else}
         <Alert
-            >There are no billing addresses linked to your account, please <a
-                href={`${base}/account/payments`}
-                class="link">add one</a> first</Alert>
+            buttons={[
+                {
+                    slot: 'Add address',
+                    href: `${base}/account/payments`
+                }
+            ]}>There are no billing addresses linked to your account.</Alert>
     {/if}
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
