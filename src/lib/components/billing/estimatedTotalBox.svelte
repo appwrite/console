@@ -34,17 +34,14 @@
           : 0;
 
     $: extraSeatsCost = (collaborators?.length ?? 0) * (selectedPlan?.addons?.member?.price ?? 0);
-    $: grossCost =
-        isScaleUpgrade || isScaleDowngrade
-            ? selectedPlan.price + extraSeatsCost - unUsedBalances
-            : selectedPlan.price + extraSeatsCost;
+    $: grossCost = isScaleUpgrade
+        ? selectedPlan.price + extraSeatsCost - unUsedBalances
+        : selectedPlan.price + extraSeatsCost;
     $: estimatedTotal =
         couponData?.status === 'active' ? Math.max(0, grossCost - couponData.credits) : grossCost;
     $: trialEndDate = new Date(
         billingPayDate.getTime() + selectedPlan.trialDays * 24 * 60 * 60 * 1000
     );
-
-    $: isRefund = isScaleDowngrade && grossCost < 0;
 </script>
 
 <section
@@ -83,11 +80,6 @@
             </div>
             <p class="text">-{formatCurrency(unUsedBalances)}</p>
         </div>
-    {:else if isScaleDowngrade}
-        <div class="u-flex u-main-space-between">
-            <span>Unused {currentOrgPlan.name} plan balance</span>
-            <p class="text">-{formatCurrency(currentOrgPlan.price)}</p>
-        </div>
     {/if}
 
     {#if couponData?.status === 'active'}
@@ -107,15 +99,28 @@
     </div>
 
     <p class="text u-margin-block-start-16">
-        You'll {isRefund ? 'receive a refund of' : 'pay'}
-        <span class="u-bold">{formatCurrency(estimatedTotal)}</span>
-        now, with our first billing cycle starting on
-        <span class="u-bold"
-            >{!selectedPlan.trialDays
-                ? toLocaleDate(billingPayDate.toString())
-                : toLocaleDate(trialEndDate.toString())}</span
-        >. Once your credits run out, you'll be charged
-        <span class="u-bold">{formatCurrency(selectedPlan.price)}</span> plus usage fees every 30 days.
+        {#if isScaleDowngrade}
+            You'll continue using the {currentOrgPlan.name} plan until your current cycle ends on
+            <span class="u-bold"
+                >{!selectedPlan.trialDays
+                    ? toLocaleDate(billingPayDate.toString())
+                    : toLocaleDate(trialEndDate.toString())}</span
+            >. Starting the next cycle, your plan will switch to {selectedPlan.name}, and you'll be
+            charged
+            <span class="u-bold">{formatCurrency(grossCost)}</span>
+            every 30 days.
+        {:else}
+            You'll pay
+            <span class="u-bold">{formatCurrency(estimatedTotal)}</span>
+            now, with our first billing cycle starting on
+            <span class="u-bold"
+                >{!selectedPlan.trialDays
+                    ? toLocaleDate(billingPayDate.toString())
+                    : toLocaleDate(trialEndDate.toString())}</span
+            >. Once your credits run out, you'll be charged
+            <span class="u-bold">{formatCurrency(selectedPlan.price)}</span> plus usage fees every 30
+            days.
+        {/if}
     </p>
 
     <FormList class="u-margin-block-start-24">
