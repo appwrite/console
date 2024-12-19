@@ -101,7 +101,7 @@
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);
             addNotification({
-                message: 'Deployment has been created successfully',
+                message: 'Deployment upload started',
                 type: 'success'
             });
         } catch (error) {

@@ -4,5 +4,5 @@
 </script>
 
 {#if $uploader?.isOpen}
-    <Upload.Box bind:files={$uploader.files} on:close={() => uploader.close()}></Upload.Box>
+    <Upload.Box files={$uploader.files} on:close={() => uploader.close()} />
 {/if}
