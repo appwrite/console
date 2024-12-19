@@ -282,6 +282,10 @@ export type Plan = {
     isAvailable: boolean;
     selfService: boolean;
     premiumSupport: boolean;
+    budgeting: boolean;
+    supportsMockNumbers: boolean;
+    backupsEnabled: boolean;
+    backupPolicies: number;
 };
 
 export type PlansInfo = {
