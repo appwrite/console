@@ -267,7 +267,7 @@
             </Collapsible>
         </svelte:fragment>
     </CardGrid>-->
-    {#if isCloud && !$currentPlan.emailBranding}
+    {#if isCloud && $currentPlan.emailBranding}
         <EmailSignature />
     {/if}
 </Container>

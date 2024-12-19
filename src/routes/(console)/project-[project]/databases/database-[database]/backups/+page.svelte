@@ -194,7 +194,6 @@
                     buttonText="Manual backup"
                     buttonEvent="create_backup"
                     buttonType="secondary"
-                    hasLimitations={false}
                     buttonDisabled={isDisabled}
                     buttonMethod={() => {
                         $showCreateBackup = true;
