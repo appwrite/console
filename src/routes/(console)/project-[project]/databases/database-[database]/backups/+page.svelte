@@ -11,9 +11,9 @@
     import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { isCloud, isSelfHosted } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { feedback } from '$lib/stores/feedback';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
@@ -24,19 +24,12 @@
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
-    // TODO: check the plan to see if the custom policies are disabled
-    let isDisabled = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+    let isDisabled = isSelfHosted || (isCloud && !$currentPlan.backupsEnabled);
 
     export let data: PageData;
 
     $: hasPolicyCreationLimitations = () => {
-        // allow when on Pro and no policy exists
-        // TODO: check the plan to see if the custom policies are disabled and limitations
-        if ($organization?.billingPlan === BillingPlan.PRO) {
-            return data.policies.total > 0;
-        } else if ($organization?.billingPlan === BillingPlan.SCALE) {
-            return false;
-        }
+        return data.policies.total >= $currentPlan.backupPolicies;
     };
 
     const showFeedbackNotification = () => {
@@ -187,6 +180,8 @@
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
                     hasLimitations={hasPolicyCreationLimitations()}
+                    maxPolicies={$currentPlan.backupPolicies}
+                    policiesCreated={data.policies.total}
                     buttonMethod={() => {
                         $showCreatePolicy = true;
                         trackEvent('click_policy_create');

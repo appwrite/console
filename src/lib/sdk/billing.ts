@@ -286,6 +286,7 @@ export type Plan = {
     supportsMockNumbers: boolean;
     backupsEnabled: boolean;
     backupPolicies: number;
+    emailBranding: boolean;
 };
 
 export type PlansInfo = {
