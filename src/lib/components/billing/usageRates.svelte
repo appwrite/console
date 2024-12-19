@@ -67,7 +67,7 @@
             following rates. Next billing period: {toLocaleDate(nextDate)}.
         </p>
     {/if}
-    <Table noStyles>
+    <Table noStyles noMargin>
         <TableHeader>
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Limit</TableCellHead>
