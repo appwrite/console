@@ -28,10 +28,6 @@
 
     export let data: PageData;
 
-    $: hasPolicyCreationLimitations = () => {
-        return data.policies.total >= $currentPlan.backupPolicies;
-    };
-
     const showFeedbackNotification = () => {
         let counter = localStorage.getItem('createBackupsCounter');
         const parsedCounter = counter ? parseInt(counter, 10) : 0;
@@ -179,7 +175,6 @@
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
-                    hasLimitations={hasPolicyCreationLimitations()}
                     maxPolicies={$currentPlan.backupPolicies}
                     policiesCreated={data.policies.total}
                     buttonMethod={() => {
