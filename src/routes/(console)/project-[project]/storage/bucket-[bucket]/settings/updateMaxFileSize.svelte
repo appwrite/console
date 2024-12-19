@@ -16,6 +16,11 @@
     const service = currentPlan['fileSize'];
     const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize, 1000);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
+    $: selectedUnit = $unit;
+
+    $: maxValue = function formMaxFileSize() {
+        return (service * 1000 * 1000) / units.find((unit) => unit.name === selectedUnit).value;
+    };
 
     function updateMaxSize() {
         updateBucket(
@@ -64,7 +69,7 @@
                     disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
                     placeholder={$bucket.maximumFileSize.toString()}
                     min={0}
-                    max={isCloud ? service : Infinity}
+                    max={isCloud ? maxValue() : Infinity}
                     bind:value={$value} />
                 <InputSelect
                     id="bytes"

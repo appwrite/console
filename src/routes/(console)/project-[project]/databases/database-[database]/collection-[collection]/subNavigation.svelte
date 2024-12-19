@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { showCreate } from '../store';
     import type { PageData } from './$types';
+    import { showSubNavigation } from '$lib/stores/layout';
 
     $: data = $page.data as PageData;
     $: project = $page.params.project;
@@ -24,7 +25,10 @@
     <h5 class="eyebrow-heading-3 u-padding-block-12 is-not-mobile">Collections</h5>
     <button
         class="button is-text is-full-width u-main-start u-padding-inline-0"
-        on:click={() => ($showCreate = true)}>
+        on:click={() => {
+            $showCreate = true;
+            $showSubNavigation = false;
+        }}>
         <span class="icon-plus" aria-hidden="true" />
         <span class="text">Create collection</span>
     </button>

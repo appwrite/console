@@ -85,6 +85,7 @@
                         <InputNumber
                             placeholder="Add budget cap"
                             id="cap"
+                            autofocus
                             label="Budget cap (USD)"
                             bind:value={budget} />
                     {/if}

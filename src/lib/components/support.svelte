@@ -5,18 +5,14 @@
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import { isCloud } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { localeTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
+    import { currentPlan } from '$lib/stores/organization';
 
     export let show = false;
 
-    // TODO: fix to use plan details with 'premiumSupport' property
-    $: isPaid =
-        $organization?.billingPlan === BillingPlan.PRO ||
-        $organization?.billingPlan === BillingPlan.SCALE;
+    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? false;
 
     $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeTimezoneName()}`;
 </script>
@@ -25,14 +21,13 @@
     <section class="drop-section u-grid u-gap-24 u-padding-24">
         <div>
             <h4 class="eyebrow-heading-3">Premium support</h4>
-            {#if isPaid}
+            {#if hasPremiumSupport}
                 <p class="u-line-height-1-5 u-margin-block-start-8">
                     Get personalized support from the Appwrite team from <b>{supportTimings}</b>
                 </p>
             {/if}
         </div>
-        <!-- TODO: fix to use plan details with 'premiumSupport' property -->
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if !hasPremiumSupport}
             <Button
                 fullWidth
                 href={$upgradeURL}
