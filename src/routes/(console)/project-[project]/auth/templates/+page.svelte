@@ -50,8 +50,7 @@
     // import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { currentPlan } from '$lib/stores/organization';
     import EmailSignature from './emailSignature.svelte';
     import { isCloud } from '$lib/system';
     import type {
@@ -268,7 +267,7 @@
             </Collapsible>
         </svelte:fragment>
     </CardGrid>-->
-    {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+    {#if isCloud && $currentPlan.emailBranding}
         <EmailSignature />
     {/if}
 </Container>

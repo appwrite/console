@@ -9,8 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { currentPlan } from '$lib/stores/organization';
     import { isCloud, isSelfHosted } from '$lib/system';
     import MockNumbersLight from './mock-numbers-light.png';
     import MockNumbersDark from './mock-numbers-dark.png';
@@ -27,7 +26,7 @@
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
     let isComponentDisabled: boolean =
-        isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+        isSelfHosted || (isCloud && !$currentPlan.supportsMockNumbers);
     let emptyStateTitle: string = isSelfHosted
         ? 'Available on Appwrite Cloud'
         : 'Upgrade to add mock phone numbers';

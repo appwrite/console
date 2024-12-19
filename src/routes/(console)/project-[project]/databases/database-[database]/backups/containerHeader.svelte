@@ -4,14 +4,13 @@
     import { Pill } from '$lib/elements';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
-    import { BillingPlan } from '$lib/constants';
-    import { organization } from '$lib/stores/organization';
 
     export let isFlex = true;
     export let title: string;
 
     export let buttonText: string = null;
-    export let hasLimitations: boolean = true;
+    export let policiesCreated: number = 0;
+    export let maxPolicies: number = 0;
     export let buttonMethod: () => void = null;
     export let buttonEvent: string = buttonText?.toLocaleLowerCase();
     export let buttonDisabled = false;
@@ -27,16 +26,16 @@
     <div class="u-flex u-cross-child-center u-cross-center u-gap-12">
         <div class="body-text-1 u-bold backups-title">{title}</div>
 
-        {#if hasLimitations && $organization.billingPlan === BillingPlan.PRO}
+        {#if title === 'Policies' && policiesCreated >= maxPolicies}
             <div style="height: 40px; padding-block-start: 4px">
                 <DropList bind:show={showDropdown} width="16">
                     <Pill button on:click={() => (showDropdown = true)}>
-                        <span class="icon-info" />1/1 created
+                        <span class="icon-info" />{policiesCreated}/{maxPolicies} created
                     </Pill>
                     <svelte:fragment slot="list">
                         <slot name="tooltip">
                             <span>
-                                You are limited to one policy on Pro plan.
+                                You are limited to one policy on your plan.
                                 <button
                                     class="u-underline"
                                     on:click={() => {
@@ -52,14 +51,10 @@
         {/if}
     </div>
 
-    {#if !hasLimitations}
+    {#if title === 'Backups' || policiesCreated < maxPolicies}
         <Button
             event={buttonEvent}
-            on:click={hasLimitations
-                ? () => {
-                      showDropdown = true;
-                  }
-                : buttonMethod}
+            on:click={buttonMethod}
             disabled={buttonDisabled}
             text={buttonType === 'text'}
             secondary={buttonType === 'secondary'}>
