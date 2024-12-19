@@ -6,7 +6,6 @@
     import { organization } from '$lib/stores/organization';
 
     export let title: string;
-    // TODO: this .FREE plan so be checked against the correct plan value, not the actual tier
     export let tooltipContent =
         $organization?.billingPlan === BillingPlan.FREE
             ? `Upgrade to add more ${title.toLocaleLowerCase()}`
