@@ -8,8 +8,7 @@ type UploaderFile = {
     resourceId: string;
     name: string;
     progress: number;
-    completed: boolean;
-    failed: boolean;
+    status: 'failed' | 'pending' | 'success';
     error?: string;
 };
 export type Uploader = {
@@ -75,8 +74,7 @@ const createUploader = () => {
                 resourceId: bucketId,
                 name: file.name,
                 progress: 0,
-                completed: false,
-                failed: false
+                status: 'pending'
             };
             update((n) => {
                 n.isOpen = true;
@@ -92,13 +90,13 @@ const createUploader = () => {
                 (p) => {
                     newFile.$id = p.$id;
                     newFile.progress = p.progress;
-                    newFile.completed = p.progress === 100;
+                    newFile.status = p.progress === 100 ? 'success' : 'pending';
                     updateFile(p.$id, newFile);
                 }
             );
             newFile.$id = uploadedFile.$id;
             newFile.progress = 100;
-            newFile.completed = true;
+            newFile.status = 'success';
             updateFile(newFile.$id, newFile);
         },
         uploadSiteDeployment: async (siteId: string, code: File) => {
@@ -107,8 +105,7 @@ const createUploader = () => {
                 resourceId: siteId,
                 name: code.name,
                 progress: 0,
-                completed: false,
-                failed: false
+                status: 'pending'
             };
             update((n) => {
                 n.isOpen = true;
@@ -126,13 +123,13 @@ const createUploader = () => {
                 (p) => {
                     newDeployment.$id = p.$id;
                     newDeployment.progress = p.progress;
-                    newDeployment.completed = p.progress === 100;
+                    newDeployment.status = p.progress === 100 ? 'success' : 'pending';
                     updateFile(p.$id, newDeployment);
                 }
             );
             newDeployment.$id = uploadedFile.$id;
             newDeployment.progress = 100;
-            newDeployment.completed = true;
+            newDeployment.status = 'success';
             updateFile(newDeployment.$id, newDeployment);
         },
         removeFromQueue: (id: string) => {
