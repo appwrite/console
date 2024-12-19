@@ -6,15 +6,25 @@
     import { onMount } from 'svelte';
     import { createFunction } from '../store';
     import { runtimesList } from '$lib/stores/runtimes';
+    import { specificationsList } from '$lib/stores/specifications';
 
     let showCustomId = false;
 
     let options = [];
+    let specificationOptions = [];
 
     onMount(async () => {
         options = (await $runtimesList).runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
+        }));
+
+        specificationOptions = (await $specificationsList).specifications.map((size) => ({
+            label:
+                `${size.cpus} CPU, ${size.memory} MB RAM` +
+                (!size.enabled ? ` (Upgrade to use this)` : ''),
+            value: size.slug,
+            disabled: !size.enabled
         }));
     });
 </script>
@@ -38,6 +48,15 @@
             bind:value={$createFunction.runtime}
             {options}
             required />
+
+        <InputSelect
+            label="CPU and memory"
+            id="specification"
+            placeholder="Select specification"
+            required
+            disabled={specificationOptions.length < 1}
+            options={specificationOptions}
+            bind:value={$createFunction.specification} />
 
         {#if !showCustomId}
             <div>
