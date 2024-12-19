@@ -1,11 +1,11 @@
-import { Client, type Models, Storage } from '@appwrite.io/console';
+import { Client, type Models, Sites, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import { getProjectId } from '$lib/helpers/project';
 import { getApiEndpoint } from '$lib/stores/sdk';
 
 type UploaderFile = {
     $id: string;
-    bucketId: string;
+    resourceId: string;
     name: string;
     progress: number;
     completed: boolean;
@@ -18,13 +18,16 @@ export type Uploader = {
     files: UploaderFile[];
 };
 
-const temporaryStorage = () => {
-    const clientProject = new Client()
-        .setEndpoint(getApiEndpoint())
-        .setMode('admin')
-        .setProject(getProjectId());
+const createAdminClient = () => {
+    return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());
+};
 
-    return new Storage(clientProject);
+const temporaryStorage = () => {
+    return new Storage(createAdminClient());
+};
+
+const temporarySites = () => {
+    return new Sites(createAdminClient());
 };
 
 const createUploader = () => {
@@ -69,7 +72,7 @@ const createUploader = () => {
         uploadFile: async (bucketId: string, id: string, file: File, permissions: string[]) => {
             const newFile: UploaderFile = {
                 $id: id,
-                bucketId: bucketId,
+                resourceId: bucketId,
                 name: file.name,
                 progress: 0,
                 completed: false,
@@ -97,6 +100,40 @@ const createUploader = () => {
             newFile.progress = 100;
             newFile.completed = true;
             updateFile(newFile.$id, newFile);
+        },
+        uploadSiteDeployment: async (siteId: string, code: File) => {
+            const newDeployment: UploaderFile = {
+                $id: '',
+                resourceId: siteId,
+                name: code.name,
+                progress: 0,
+                completed: false,
+                failed: false
+            };
+            update((n) => {
+                n.isOpen = true;
+                n.isCollapsed = false;
+                n.files.unshift(newDeployment);
+                return n;
+            });
+            const uploadedFile = await temporarySites().createDeployment(
+                siteId,
+                code,
+                true,
+                undefined,
+                undefined,
+                undefined,
+                (p) => {
+                    newDeployment.$id = p.$id;
+                    newDeployment.progress = p.progress;
+                    newDeployment.completed = p.progress === 100;
+                    updateFile(p.$id, newDeployment);
+                }
+            );
+            newDeployment.$id = uploadedFile.$id;
+            newDeployment.progress = 100;
+            newDeployment.completed = true;
+            updateFile(newDeployment.$id, newDeployment);
         },
         removeFromQueue: (id: string) => {
             update((n) => {

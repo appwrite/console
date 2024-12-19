@@ -45,7 +45,7 @@
                             <div class="u-margin-inline-end-16">
                                 <Avatar
                                     size={32}
-                                    src={getPreview(file.$id, file.bucketId)}
+                                    src={getPreview(file.$id, file.resourceId)}
                                     name={file.name} />
                             </div>
 
