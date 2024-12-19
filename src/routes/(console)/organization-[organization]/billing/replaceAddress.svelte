@@ -11,8 +11,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
     import { base } from '$app/paths';
-    import { wizard } from '$lib/stores/wizard';
-    import { redirect } from '@sveltejs/kit';
 
     export let show = false;
     let addresses: AddressesList;
