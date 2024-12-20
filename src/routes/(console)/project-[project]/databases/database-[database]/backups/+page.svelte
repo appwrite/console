@@ -11,9 +11,9 @@
     import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { isCloud, isSelfHosted } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { feedback } from '$lib/stores/feedback';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
@@ -24,18 +24,9 @@
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
-    let isDisabled = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+    let isDisabled = isSelfHosted || (isCloud && !$currentPlan.backupsEnabled);
 
     export let data: PageData;
-
-    $: hasPolicyCreationLimitations = () => {
-        // allow when on Pro and no policy exists
-        if ($organization?.billingPlan === BillingPlan.PRO) {
-            return data.policies.total > 0;
-        } else if ($organization?.billingPlan === BillingPlan.SCALE) {
-            return false;
-        }
-    };
 
     const showFeedbackNotification = () => {
         let counter = localStorage.getItem('createBackupsCounter');
@@ -184,7 +175,8 @@
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
-                    hasLimitations={hasPolicyCreationLimitations()}
+                    maxPolicies={$currentPlan.backupPolicies}
+                    policiesCreated={data.policies.total}
                     buttonMethod={() => {
                         $showCreatePolicy = true;
                         trackEvent('click_policy_create');
@@ -202,7 +194,6 @@
                     buttonText="Manual backup"
                     buttonEvent="create_backup"
                     buttonType="secondary"
-                    hasLimitations={false}
                     buttonDisabled={isDisabled}
                     buttonMethod={() => {
                         $showCreateBackup = true;
