@@ -35,7 +35,7 @@
                     <svelte:fragment slot="list">
                         <slot name="tooltip">
                             <span>
-                                You are limited to one policy on your plan.
+                                You are limited to {maxPolicies} policy on your plan.
                                 <button
                                     class="u-underline"
                                     on:click={() => {
