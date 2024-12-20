@@ -145,9 +145,6 @@
         <p class="text">The total number of users across all projects in your organization.</p>
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.users}
-                {@const users = data.organizationUsage.users.filter(
-                    (user) => new Date(user.date) < new Date()
-                )}
                 {@const current = data.organizationUsage.usersTotal}
                 {@const max = getServiceLimit('users', tier, plan)}
                 <ProgressBarBig
@@ -171,7 +168,7 @@
                             {
                                 name: 'Users',
                                 data: accumulateFromEndingTotal(
-                                    users,
+                                    data.usersUsageToDate,
                                     data.organizationUsage.usersTotal
                                 )
                             }
