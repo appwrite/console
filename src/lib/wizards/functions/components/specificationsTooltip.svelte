@@ -1,30 +1,24 @@
+<script lang="ts">
+    import { Button } from '$lib/elements/forms';
+    import { upgradeURL } from '$lib/stores/billing';
+</script>
+
 <div class="u-flex-vertical u-gap-16">
-    <div class="u-flex-vertical u-gap-8">
-        <p>Additional CPU and RAM are available for Pro and Scale teams.</p>
-        <p>
-            <a
-                class="link"
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://appwrite.io/docs/products/functions/specificatinos">Learn more</a>
-        </p>
+    <p>Additional CPU and RAM are available for Pro and Scale teams.</p>
+    <div class="u-flex u-gap-8 u-cross-center">
+        <a
+            class="u-bold u-block"
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://appwrite.io/docs/products/functions/specifications">Learn more</a>
+        <Button href={$upgradeURL} secondary fullWidthMobile event={'specifications_cta_upgrade'}>
+            <span class="text">Upgrade Plan</span>
+        </Button>
     </div>
 </div>
 
 <style>
-    div {
-        color: hsl(var(--color-neutral-50));
-        line-height: 1.25rem;
-        &:first-child {
-            color: hsl(var(--color-neutral-70));
-        }
-    }
-
-    :global(.theme-dark) div {
-        color: hsl(var(--color-neutral-20));
-
-        &:first-child {
-            color: hsl(var(--color-neutral-10));
-        }
+    a {
+        flex-grow: 1;
     }
 </style>

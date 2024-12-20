@@ -7,6 +7,10 @@
     import { createFunction } from '../store';
     import { runtimesList } from '$lib/stores/runtimes';
     import { specificationsList } from '$lib/stores/specifications';
+    import { isCloud } from '$lib/system';
+    import { organization } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
+    import SpecificationsTooltip from '../components/specificationsTooltip.svelte';
 
     let showCustomId = false;
 
@@ -56,6 +60,9 @@
             required
             disabled={specificationOptions.length < 1}
             options={specificationOptions}
+            popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
+                ? SpecificationsTooltip
+                : null}
             bind:value={$createFunction.specification} />
 
         {#if !showCustomId}
