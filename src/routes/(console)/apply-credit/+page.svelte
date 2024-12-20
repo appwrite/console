@@ -189,6 +189,18 @@
     $: selectedOrg = $organizationList?.teams?.find(
         (team) => team.$id === selectedOrgId
     ) as Organization;
+
+    function getNewBillingPlan(organization: Organization): BillingPlan {
+        if (organization?.billingPlan === BillingPlan.SCALE) {
+            return BillingPlan.SCALE;
+        } else if (campaign?.plan) {
+            return campaign.plan;
+        } else {
+            return BillingPlan.PRO;
+        }
+    }
+
+    $: billingPlan = getNewBillingPlan(selectedOrg);
 </script>
 
 <svelte:head>
@@ -268,7 +280,7 @@
                     </div>
                 </div>
             {/if}
-            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE}
+            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
