@@ -280,7 +280,7 @@
                     </div>
                 </div>
             {/if}
-            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE}
+            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
