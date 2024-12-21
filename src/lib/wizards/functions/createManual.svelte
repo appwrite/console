@@ -37,7 +37,18 @@
                 undefined,
                 undefined,
                 $createFunction.entrypoint,
-                $createFunction.commands || undefined
+                $createFunction.commands || undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                $createFunction.specification
             );
             await sdk.forProject.functions.createDeployment(
                 response.$id,
