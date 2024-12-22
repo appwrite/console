@@ -17,8 +17,9 @@
     export let members: Models.MembershipList;
     export let currentPlan: Plan;
     export let creditList: CreditList;
+    export let currentInvoice: Invoice | undefined = undefined
 
-    const currentInvoice: Invoice | undefined = invoices.length > 0 ? invoices[0] : undefined;
+    // const currentInvoice: Invoice | undefined = invoices.length > 0 ? invoices[0] : undefined;
     const extraMembers = members.total > 1 ? members.total - 1 : 0;
     const availableCredit = creditList.available;
     const today = new Date();
@@ -45,7 +46,7 @@
             <Collapsible>
                 <CollapsibleItem noContent>
                     <span class="body-text-2">
-                        {tierToPlan($organization?.billingPlan)?.name} plan</span>
+                        {currentPlan.name} plan</span>
                     <div class="body-text-2 u-margin-inline-start-auto">
                         {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
                             ? formatCurrency(0)

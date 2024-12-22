@@ -107,7 +107,7 @@
             billingPlan = BillingPlan.PRO;
         }
 
-        const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
+        const currentPlan = await sdk.forConsole.billing.getOrganizationPlan($organization?.$id);
         selfService = currentPlan.selfService;
     });
 

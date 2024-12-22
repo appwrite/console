@@ -21,9 +21,15 @@ export const load: PageLoad = async ({ parent, depends }) => {
     const billingAddressId = (organization as Organization)?.billingAddressId;
     const billingAddressPromise: Promise<Address> = billingAddressId
         ? sdk.forConsole.billing
-              .getOrganizationBillingAddress(organization.$id, billingAddressId)
-              .catch(() => null)
+            .getOrganizationBillingAddress(organization.$id, billingAddressId)
+            .catch(() => null)
         : null;
+
+    const billingAggregationId = (organization as Organization)?.billingAggregationId;
+    const billingInvoiceId = (organization as Organization)?.billingInvoiceId;
+
+    const billingAggregation = await sdk.forConsole.billing.getAggregation(organization.$id, billingAggregationId);
+    console.log(billingAggregation);
 
     const [
         paymentMethods,
@@ -32,18 +38,22 @@ export const load: PageLoad = async ({ parent, depends }) => {
         billingAddress,
         currentPlan,
         creditList,
-        invoices
+        invoices,
+        aggregationBillingPlan,
+        billingInvoice,
     ] = await Promise.all([
         sdk.forConsole.billing.listPaymentMethods(),
         sdk.forConsole.billing.listAddresses(),
         sdk.forConsole.billing.listAggregation(organization.$id),
         billingAddressPromise,
-        sdk.forConsole.billing.getPlan(organization.$id),
+        sdk.forConsole.billing.getOrganizationPlan(organization.$id),
         sdk.forConsole.billing.listCredits(organization.$id),
         sdk.forConsole.billing.listInvoices(organization.$id, [
             Query.limit(1),
             Query.equal('from', organization.billingCurrentInvoiceDate)
-        ])
+        ]),
+        sdk.forConsole.billing.getPlan(billingAggregation.plan),
+        sdk.forConsole.billing.getInvoice(organization.$id, billingInvoiceId)
     ]);
 
     return {
@@ -52,7 +62,10 @@ export const load: PageLoad = async ({ parent, depends }) => {
         aggregationList,
         billingAddress,
         currentPlan,
+        aggregationBillingPlan,
         creditList,
-        invoices
+        invoices,
+        billingAggregation,
+        billingInvoice
     };
 };
