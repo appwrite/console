@@ -39,7 +39,7 @@
         </p>
         <svelte:fragment slot="aside">
             <p class="text u-bold">
-                Billing period: {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
+                Due at: {toLocaleDate(
                     $organization?.billingNextInvoiceDate
                 )}
             </p>
