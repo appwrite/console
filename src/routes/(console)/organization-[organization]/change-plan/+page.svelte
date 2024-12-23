@@ -33,10 +33,11 @@
     import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
+        currentPlan,
         organization,
         organizationList,
-        type Organization,
-        type OrganizationError
+        type OrganizationError,
+        type Organization
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe.js';
@@ -107,8 +108,7 @@
             billingPlan = BillingPlan.PRO;
         }
 
-        const currentPlan = await sdk.forConsole.billing.getOrganizationPlan($organization?.$id);
-        selfService = currentPlan.selfService;
+        selfService = $currentPlan?.selfService ?? true;
     });
 
     async function loadPaymentMethods() {

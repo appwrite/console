@@ -29,14 +29,12 @@ export const load: PageLoad = async ({ parent, depends }) => {
     const billingInvoiceId = (organization as Organization)?.billingInvoiceId;
 
     const billingAggregation = await sdk.forConsole.billing.getAggregation(organization.$id, billingAggregationId);
-    console.log(billingAggregation);
 
     const [
         paymentMethods,
         addressList,
         aggregationList,
         billingAddress,
-        currentPlan,
         creditList,
         invoices,
         aggregationBillingPlan,
@@ -46,7 +44,6 @@ export const load: PageLoad = async ({ parent, depends }) => {
         sdk.forConsole.billing.listAddresses(),
         sdk.forConsole.billing.listAggregation(organization.$id),
         billingAddressPromise,
-        sdk.forConsole.billing.getOrganizationPlan(organization.$id),
         sdk.forConsole.billing.listCredits(organization.$id),
         sdk.forConsole.billing.listInvoices(organization.$id, [
             Query.limit(1),
@@ -61,7 +58,6 @@ export const load: PageLoad = async ({ parent, depends }) => {
         addressList,
         aggregationList,
         billingAddress,
-        currentPlan,
         aggregationBillingPlan,
         creditList,
         invoices,

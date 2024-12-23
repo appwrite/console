@@ -25,6 +25,9 @@
     let showCancel = false;
     let showActivate = false;
 
+    let enableScrollButton = false;
+    let codePanelContent: HTMLElement;
+
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
@@ -36,23 +39,41 @@
         );
     }
 
+    function handleScroll() {
+        const threshold = codePanelContent.clientHeight * 0.25;
+        enableScrollButton = codePanelContent.scrollTop > threshold;
+    }
+
     onMount(() => {
         logs = $deployment.buildLogs;
+
+        codePanelContent = document.querySelector('.code-panel-content');
+        codePanelContent.addEventListener('scroll', handleScroll);
+
         if ($deployment.status === 'ready') {
             return;
         }
-        return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            if (
-                message.events.includes(
-                    `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
-                )
-            ) {
-                logs = message.payload['logs'];
-                if (message.payload.status === 'ready') {
-                    invalidate(Dependencies.DEPLOYMENT);
+
+        const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
+            'console',
+            (message) => {
+                if (
+                    message.events.includes(
+                        `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
+                    )
+                ) {
+                    logs = message.payload['logs'];
+                    if (message.payload.status === 'ready') {
+                        invalidate(Dependencies.DEPLOYMENT);
+                    }
                 }
             }
-        });
+        );
+
+        return () => {
+            unsubscribe();
+            codePanelContent.removeEventListener('scroll', handleScroll);
+        };
     });
 </script>
 
@@ -103,7 +124,8 @@
                             <span class="icon-external-link" aria-hidden="true" /> Raw data</Button> -->
                     <Button
                         secondary
-                        on:click={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                        disabled={!enableScrollButton}
+                        on:click={() => codePanelContent?.scrollTo({ top: 0, behavior: 'smooth' })}>
                         <span class="icon-arrow-sm-up" aria-hidden="true" /> Scroll to top</Button>
                 </div>
             </header>
@@ -135,3 +157,15 @@
 <Delete selectedDeployment={$deployment} bind:showDelete />
 <Cancel selectedDeployment={$deployment} bind:showCancel />
 <Activate selectedDeployment={$deployment} bind:showActivate on:activated={handleActivate} />
+
+<style>
+    @media (max-width: 768px) {
+        .code-panel-header {
+            flex-direction: column;
+        }
+    }
+
+    .code-panel-content {
+        max-height: 50vh;
+    }
+</style>
