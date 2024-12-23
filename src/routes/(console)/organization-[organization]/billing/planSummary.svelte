@@ -3,7 +3,7 @@
     import { CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import type { CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -13,7 +13,6 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { type Models } from '@appwrite.io/console';
 
-    export let invoices: Array<Invoice>;
     export let members: Models.MembershipList;
     export let currentPlan: Plan;
     export let creditList: CreditList;

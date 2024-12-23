@@ -124,8 +124,7 @@
         creditList={data?.creditList}
         members={data?.members}
         currentPlan={data?.aggregationBillingPlan}
-        currentInvoice={data?.billingInvoice}
-        invoices={data?.invoices.invoices} />
+        currentInvoice={data?.billingInvoice} />
     <PaymentHistory />
     <PaymentMethods />
     <BillingAddress billingAddress={data?.billingAddress} />

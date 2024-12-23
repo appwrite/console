@@ -36,7 +36,6 @@ export const load: PageLoad = async ({ parent, depends }) => {
         aggregationList,
         billingAddress,
         creditList,
-        invoices,
         aggregationBillingPlan,
         billingInvoice,
     ] = await Promise.all([
@@ -45,10 +44,6 @@ export const load: PageLoad = async ({ parent, depends }) => {
         sdk.forConsole.billing.listAggregation(organization.$id),
         billingAddressPromise,
         sdk.forConsole.billing.listCredits(organization.$id),
-        sdk.forConsole.billing.listInvoices(organization.$id, [
-            Query.limit(1),
-            Query.equal('from', organization.billingCurrentInvoiceDate)
-        ]),
         sdk.forConsole.billing.getPlan(billingAggregation.plan),
         sdk.forConsole.billing.getInvoice(organization.$id, billingInvoiceId)
     ]);
@@ -60,7 +55,6 @@ export const load: PageLoad = async ({ parent, depends }) => {
         billingAddress,
         aggregationBillingPlan,
         creditList,
-        invoices,
         billingAggregation,
         billingInvoice
     };
