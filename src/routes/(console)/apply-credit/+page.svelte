@@ -190,11 +190,10 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: if (selectedOrg?.billingPlan === BillingPlan.SCALE) {
-        billingPlan = BillingPlan.SCALE;
-    } else if (campaign?.plan) {
-        billingPlan = campaign.plan;
-    }
+    $: billingPlan =
+        selectedOrg?.billingPlan === BillingPlan.SCALE
+            ? BillingPlan.SCALE
+            : (campaign?.plan ?? BillingPlan.PRO);
 </script>
 
 <svelte:head>
