@@ -4,7 +4,6 @@ import type { Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes } = await parent();
@@ -26,32 +25,40 @@ export const load: PageLoad = async ({ parent, depends }) => {
         : null;
 
     const billingAggregationId = (organization as Organization)?.billingAggregationId;
-    const billingInvoiceId = (organization as Organization)?.billingInvoiceId;
 
-    const billingAggregation = await sdk.forConsole.billing.getAggregation(organization.$id, billingAggregationId);
+    let billingAggregation = null;
+    try {
+        billingAggregation = await sdk.forConsole.billing.getAggregation(organization.$id, billingAggregationId);
+    } catch (e) {
+        // ignore error
+    }
+    
+    const billingInvoiceId = (organization as Organization)?.billingInvoiceId;
+    let billingInvoice = null;
+    try {
+        billingInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, billingInvoiceId)
+    } catch (e) {
+        // ignore error
+    }
+
 
     const [
         paymentMethods,
         addressList,
-        aggregationList,
         billingAddress,
         creditList,
         aggregationBillingPlan,
-        billingInvoice,
     ] = await Promise.all([
         sdk.forConsole.billing.listPaymentMethods(),
         sdk.forConsole.billing.listAddresses(),
-        sdk.forConsole.billing.listAggregation(organization.$id),
         billingAddressPromise,
         sdk.forConsole.billing.listCredits(organization.$id),
         sdk.forConsole.billing.getPlan(billingAggregation.plan),
-        sdk.forConsole.billing.getInvoice(organization.$id, billingInvoiceId)
     ]);
 
     return {
         paymentMethods,
         addressList,
-        aggregationList,
         billingAddress,
         aggregationBillingPlan,
         creditList,
