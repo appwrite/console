@@ -28,7 +28,6 @@
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
-    import { organization } from '$lib/stores/organization';
 
     let showDropdown = [];
     let showFailedError = false;
@@ -48,8 +47,6 @@
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
-            Query.notEqual('from', $organization.billingCurrentInvoiceDate),
-            Query.notEqual('status', 'pending'),
             Query.orderDesc('$createdAt')
         ]);
     }
