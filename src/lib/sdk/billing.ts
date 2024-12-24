@@ -291,6 +291,7 @@ export type Plan = {
     backupsEnabled: boolean;
     backupPolicies: number;
     emailBranding: boolean;
+    supportsCredit: boolean;
 };
 
 export type PlansInfo = {

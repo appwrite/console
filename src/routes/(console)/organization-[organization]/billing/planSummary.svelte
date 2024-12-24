@@ -132,7 +132,7 @@
                     </CollapsibleItem>
                 {/if}
 
-                {#if $organization?.billingPlan !== BillingPlan.FREE && availableCredit > 0}
+                {#if currentPlan.supportsCredit && availableCredit > 0}
                     <CollapsibleItem noContent gap={4}>
                         <span class="body-text-2 u-flex u-cross-center u-gap-2"
                             ><svg
@@ -206,7 +206,7 @@
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button
                         text
-                        disabled={$organization?.markedForDeletion}
+                        disabled={($organization?.markedForDeletion || $organization.billingPlanDowngrade !== null)}
                         href={$upgradeURL}
                         on:click={() =>
                             trackEvent('click_organization_plan_update', {
