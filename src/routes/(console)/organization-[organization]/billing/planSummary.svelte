@@ -8,17 +8,18 @@
     import type { CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { type Models } from '@appwrite.io/console';
-    import { sdk } from '$lib/stores/sdk';
-    import { invalidate } from '$app/navigation';
+    import CancelDowngradeModel from './cancelDowngradeModel.svelte';
 
     export let members: Models.MembershipList;
     export let currentPlan: Plan;
     export let creditList: CreditList;
     export let currentInvoice: Invoice | undefined = undefined;
+
+    let showCancel: boolean = false;
 
     const extraMembers = members.total > 1 ? members.total - 1 : 0;
     const availableCredit = creditList.available;
@@ -28,17 +29,6 @@
         $plansInfo.get($organization.billingPlan)?.trialDays;
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
     const extraAddons = currentInvoice ? currentInvoice.usage?.length : 0;
-
-    const cancelDowngrade = async () => {
-        await sdk.forConsole.billing.cancelDowngrade(
-            $organization.$id
-        );
-        await invalidate(Dependencies.ORGANIZATION);
-        trackEvent('click_organization_plan_update', {
-            from: 'button',
-            source: 'billing_tab'
-        });
-    };
 </script>
 
 {#if $organization}
@@ -214,7 +204,7 @@
             {:else}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     {#if $organization?.billingPlanDowngrade !== null}
-                        <Button text on:click={cancelDowngrade}>Cancel change</Button>
+                        <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
                     {:else}
                         <Button
                             text
@@ -236,3 +226,4 @@
         </svelte:fragment>
     </CardGrid>
 {/if}
+<CancelDowngradeModel bind:showCancel />
