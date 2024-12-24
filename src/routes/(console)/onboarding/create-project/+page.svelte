@@ -11,7 +11,6 @@
     import Loading from './loading.svelte';
     import { BillingPlan } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { addNotification } from '$lib/stores/notifications';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
 
@@ -25,6 +24,10 @@
     onMount(async () => {
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
+            regions.regions.forEach((region) => {
+                const img = new Image();
+                img.src = getFlagUrl(region.flag);
+            });
         }
     });
 
