@@ -113,7 +113,7 @@
     "gradient-border-button-secondary-bottom": "var(--color-border-neutral)",
     "gradient-border-button-secondary-top": "var(--color-border-neutral-strong)",
     "color-fgcolor-on-invert": "var(--neutral-25)",
-    "font-family-brand": "Inter",
+    "font-family-brand": "Aeonik Pro",
     "font-family-sansserif": "Inter",
     "font-family-monospace": "Aeonik Fono",
     "font-family-code": "Fira Code",
