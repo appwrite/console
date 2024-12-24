@@ -273,13 +273,13 @@
     }
 
     .icon-container {
-        width: calc(var(--cell-dimension) + 20px);
+        width: calc(var(--cell-dimension) + 10px);
         aspect-ratio: 1/1;
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: -10px;
-        margin-left: -10px;
+        margin-top: -5px;
+        margin-left: -5px;
         border-radius: var(--border-radius-container);
         opacity: 0.2;
         transition:
@@ -287,6 +287,12 @@
                 var(--show-icon-color-delay),
             box-shadow var(--icon-colorize-animation-duration) var(--animation-type)
                 var(--show-icon-color-delay);
+
+        @media (min-width: 768px) {
+            width: calc(var(--cell-dimension) + 20px);
+            margin-top: -10px;
+            margin-left: -10px;
+        }
     }
 
     .icon-content {
