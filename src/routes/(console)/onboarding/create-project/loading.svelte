@@ -1,15 +1,38 @@
 <script>
     import { Spinner, Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
+    import { onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
 
     export let startAnimation = false;
+
+    const loadingSentences = ['Setting up 20 authentication methods...', 'Doing something else...'];
+    let currentSentenceIndex = 0;
+    let visible = true;
+
+    onMount(() => {
+        const interval = setInterval(() => {
+            visible = false;
+            currentSentenceIndex = (currentSentenceIndex + 1) % loadingSentences.length;
+            setTimeout(() => {
+                visible = true;
+            }, 1000);
+        }, 5000);
+
+        return () => clearInterval(interval);
+    });
 </script>
 
 <div class="grid-container" class:start-animation={startAnimation}>
     <div class="static-loader">
         <Spinner />
         <Typography.Title size="l">Creating your project</Typography.Title>
-        <span id="subtitle">Setting up 20 authentication methods...</span>
+
+        <div style="height: 30px">
+            {#if visible}
+                <span id="subtitle" transition:fade>{loadingSentences[currentSentenceIndex]}</span>
+            {/if}
+        </div>
     </div>
     <div class="title-container">
         <Typography.Title size="l">Welcome to Appwrite</Typography.Title>
@@ -116,9 +139,11 @@
         --icon-move-to-center-animation-duration: 0.8s; // duration of icons merging together
         --icons-fade-out-animation-duration: 0.25s; //duration of icons disappearing animation
         --welcome-to-appwrite-animation-duration: 0.8s; //duration of fading in the welcome to appwrite text
+        --fade-in-animation-component-duration: 1s; //duration for the entire icon grid to show up
 
+        --show-icon-color-delay: calc(var(--fade-in-animation-component-duration) + 0.5s);
         --icon-move-to-center-delay: calc(
-            var(--icon-colorize-animation-duration) + 0.5s
+            var(--show-icon-color-delay) + 0.5s
         ); //delay before the icons merging together is started
         --icons-fade-out-delay: calc(
             var(--icon-move-to-center-delay) + 0.4s
@@ -127,7 +152,7 @@
             var(--icons-fade-out-delay) + 0.4s
         ); //delay before the last icon start disappearing before the appwrite logo shows up
         --appwrite-icon-fade-in-delay: calc(
-            var(--final-icon-fade-out-delay) - 0.1s
+            var(--final-icon-fade-out-delay) + 0.1s
         ); //delay before the appwrite logo appears
         --welcome-to-appwrite-delay: calc(var(--icon-move-to-center-delay) + 0.3s);
 
@@ -152,6 +177,7 @@
         --negative-triple-cell-dimension: calc(var(--cell-dimension) * -3);
         --negative-quadriple-cell-dimension: calc(var(--cell-dimension) * -4);
     }
+
     .static-loader {
         z-index: 1;
         display: flex;
@@ -175,6 +201,8 @@
             var(--welcome-to-appwrite-delay);
     }
     .grid {
+        opacity: 0;
+        transition: opacity var(--fade-in-animation-component-duration) var(--animation-type);
         display: grid;
         grid-template-columns: var(--half-cell-dimension) repeat(5, var(--cell-dimension)) var(
                 --half-cell-dimension
@@ -185,6 +213,10 @@
             grid-template-columns: repeat(9, var(--cell-dimension));
             grid-template-rows: 180px repeat(4, var(--cell-dimension));
         }
+    }
+
+    .start-animation .grid {
+        opacity: 1;
     }
 
     .icon {
@@ -246,12 +278,12 @@
         margin-top: -10px;
         margin-left: -10px;
         border-radius: var(--border-radius-container);
-        border: 2.5px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 13px 13px 0 rgba(0, 0, 0, 0.04);
         opacity: 0.2;
         transition:
-            opacity var(--icon-colorize-animation-duration) var(--animation-type),
-            box-shadow var(--icon-colorize-animation-duration) var(--animation-type);
+            opacity var(--icon-colorize-animation-duration) var(--animation-type)
+                var(--show-icon-color-delay),
+            box-shadow var(--icon-colorize-animation-duration) var(--animation-type)
+                var(--show-icon-color-delay);
     }
 
     .icon-content {
@@ -259,21 +291,32 @@
         aspect-ratio: 1/1;
         border-radius: var(--border-radius-content);
         border: 0.5px solid #ededf0;
-        box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.05);
         display: flex;
         justify-content: center;
         align-items: center;
-        filter: grayscale(1);
-        transition: filter var(--icon-colorize-animation-duration) var(--animation-type);
+        filter: grayscale(100%);
 
         img {
             width: var(--icon-width);
         }
     }
 
+    @keyframes grayscale-animation {
+        100% {
+            -webkit-filter: grayscale(0%);
+            filter: grayscale(0%);
+        }
+    }
+
     .start-animation .icon-container {
         opacity: 1;
         background: rgba(255, 255, 255, 0.5);
+        border: 2.5px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 13px 13px 0 rgba(0, 0, 0, 0.04);
+    }
+
+    .start-animation .icon-content {
+        box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.05);
     }
 
     .start-animation .icon1 {
@@ -326,7 +369,9 @@
     }
 
     .start-animation .icon-content {
-        filter: grayscale(0);
+        animation: grayscale-animation var(--icon-colorize-animation-duration) var(--animation-type)
+            var(--show-icon-color-delay);
+        animation-fill-mode: forwards;
     }
 
     .icon1 {
@@ -388,6 +433,89 @@
         @media (min-width: 768px) {
             grid-row-start: 4;
             grid-column-start: 7;
+        }
+    }
+
+    .shimmer {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.1);
+        background: -webkit-gradient(
+            linear,
+            left top,
+            right top,
+            from(#222),
+            to(#222),
+            color-stop(0.5, #fff)
+        );
+        background: -moz-gradient(
+            linear,
+            left top,
+            right top,
+            from(#222),
+            to(#222),
+            color-stop(0.5, #fff)
+        );
+        background: gradient(
+            linear,
+            left top,
+            right top,
+            from(#222),
+            to(#222),
+            color-stop(0.5, #fff)
+        );
+        -webkit-background-size: 125px 100%;
+        -moz-background-size: 125px 100%;
+        background-size: 125px 100%;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        -webkit-animation-name: shimmer;
+        -moz-animation-name: shimmer;
+        animation-name: shimmer;
+        -webkit-animation-duration: 2s;
+        -moz-animation-duration: 2s;
+        animation-duration: 2s;
+        -webkit-animation-iteration-count: infinite;
+        -moz-animation-iteration-count: infinite;
+        animation-iteration-count: infinite;
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        background-color: #222;
+    }
+
+    @-moz-keyframes shimmer {
+        0% {
+            background-position: top left;
+        }
+        100% {
+            background-position: top right;
+        }
+    }
+
+    @-webkit-keyframes shimmer {
+        0% {
+            background-position: top left;
+        }
+        100% {
+            background-position: top right;
+        }
+    }
+
+    @-o-keyframes shimmer {
+        0% {
+            background-position: top left;
+        }
+        100% {
+            background-position: top right;
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: top left;
+        }
+        100% {
+            background-position: top right;
         }
     }
 </style>
