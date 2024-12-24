@@ -186,7 +186,7 @@
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
@@ -202,7 +202,7 @@
                         Upgrade
                     </Button>
                 </div>
-            {:else if $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+            {:else}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button
                         text
