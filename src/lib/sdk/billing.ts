@@ -462,6 +462,19 @@ export class Billing {
             params
         );
     }
+    async cancelDowngrade(
+        organizationId: string
+    ): Promise<Organization | OrganizationError> {
+        const path = `/organizations/${organizationId}/plan/cancel`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            }
+        );
+    }
 
     async updateBudget(
         organizationId: string,

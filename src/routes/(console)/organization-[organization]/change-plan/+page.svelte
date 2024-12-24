@@ -155,6 +155,8 @@
                 })
             });
 
+            await invalidate(Dependencies.ORGANIZATION);
+
             await goto(previousPage);
             addNotification({
                 type: 'success',

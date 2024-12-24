@@ -53,7 +53,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
         sdk.forConsole.billing.listAddresses(),
         billingAddressPromise,
         sdk.forConsole.billing.listCredits(organization.$id),
-        sdk.forConsole.billing.getPlan(billingAggregation.plan),
+        sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan),
     ]);
 
     return {

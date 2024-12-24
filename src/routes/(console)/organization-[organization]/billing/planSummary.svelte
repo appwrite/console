@@ -8,17 +8,18 @@
     import type { CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { type Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
 
     export let members: Models.MembershipList;
     export let currentPlan: Plan;
     export let creditList: CreditList;
-    export let currentInvoice: Invoice | undefined = undefined
+    export let currentInvoice: Invoice | undefined = undefined;
 
-    // const currentInvoice: Invoice | undefined = invoices.length > 0 ? invoices[0] : undefined;
     const extraMembers = members.total > 1 ? members.total - 1 : 0;
     const availableCredit = creditList.available;
     const today = new Date();
@@ -27,6 +28,17 @@
         $plansInfo.get($organization.billingPlan)?.trialDays;
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
     const extraAddons = currentInvoice ? currentInvoice.usage?.length : 0;
+
+    const cancelDowngrade = async () => {
+        await sdk.forConsole.billing.cancelDowngrade(
+            $organization.$id
+        );
+        await invalidate(Dependencies.ORGANIZATION);
+        trackEvent('click_organization_plan_update', {
+            from: 'button',
+            source: 'billing_tab'
+        });
+    };
 </script>
 
 {#if $organization}
@@ -38,14 +50,11 @@
         </p>
         <svelte:fragment slot="aside">
             <p class="text u-bold">
-                Due at: {toLocaleDate(
-                    $organization?.billingNextInvoiceDate
-                )}
+                Due at: {toLocaleDate($organization?.billingNextInvoiceDate)}
             </p>
             <Collapsible>
                 <CollapsibleItem noContent>
-                    <span class="body-text-2">
-                        {currentPlan.name} plan</span>
+                    <span class="body-text-2"> {currentPlan.name} plan</span>
                     <div class="body-text-2 u-margin-inline-start-auto">
                         {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
                             ? formatCurrency(0)
@@ -204,17 +213,21 @@
                 </div>
             {:else}
                 <div class="u-flex u-gap-16 u-flex-wrap">
-                    <Button
-                        text
-                        disabled={($organization?.markedForDeletion || $organization.billingPlanDowngrade !== null)}
-                        href={$upgradeURL}
-                        on:click={() =>
-                            trackEvent('click_organization_plan_update', {
-                                from: 'button',
-                                source: 'billing_tab'
-                            })}>
-                        Change plan
-                    </Button>
+                    {#if $organization?.billingPlanDowngrade !== null}
+                        <Button text on:click={cancelDowngrade}>Cancel change</Button>
+                    {:else}
+                        <Button
+                            text
+                            disabled={$organization?.markedForDeletion}
+                            href={$upgradeURL}
+                            on:click={() =>
+                                trackEvent('click_organization_plan_update', {
+                                    from: 'button',
+                                    source: 'billing_tab'
+                                })}>
+                            Change plan
+                        </Button>
+                    {/if}
                     <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
                     </Button>
