@@ -234,10 +234,10 @@
     }
 
     .border-right {
-        border-right: 1px solid #e4e4e7;
+        border-right: 1px solid #f0f0f3;
     }
     .border-bottom {
-        border-bottom: 1px solid #e4e4e7;
+        border-bottom: 1px solid #f0f0f3;
         grid-column: 1/8;
         @media (min-width: 768px) {
             grid-column: 1/10;
