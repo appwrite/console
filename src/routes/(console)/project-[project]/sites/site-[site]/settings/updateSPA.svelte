@@ -23,6 +23,7 @@
 
     async function updateSPA() {
         try {
+            console.log(spa);
             await sdk.forProject.sites.update(
                 site.$id,
                 site.name,
@@ -75,7 +76,6 @@
                             id="fallback"
                             label="Fallback"
                             placeholder="Enter fallback"
-                            required
                             bind:value={fallback} />
                     {/if}
                 </Layout.Stack>
@@ -83,7 +83,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button submit>Update</Button>
+            <Button disabled={spa ? site.adapter === 'static' : site.adapter === 'ssr'} submit
+                >Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

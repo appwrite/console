@@ -24,7 +24,15 @@
 
     onMount(async () => {
         installations = await sdk.forProject.vcs.listInstallations();
-
+        if (!site?.installationId && installations.total > 0) {
+            installation.set(installations.installations[0]);
+        }
+        if (!$repository?.id && hasRepository) {
+            $repository = await sdk.forProject.vcs.getRepository(
+                $installation.$id,
+                site.providerRepositoryId
+            );
+        }
         console.log(installations);
     });
 
@@ -95,7 +103,7 @@
                 <Layout.Stack direction="row" alignItems="center" gap="s">
                     <Icon size="s" icon={IconGithub} />
                     <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
-                        {$repository.organization}/{$repository.name}
+                        {$repository?.organization}/{$repository?.name}
                     </Typography.Text>
                 </Layout.Stack>
             </Layout.Stack>
