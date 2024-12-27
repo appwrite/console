@@ -125,6 +125,12 @@
 </div>
 
 <style lang="scss">
+    :global(.theme-dark) {
+        --icon-container-background-color: rgba(50, 50, 50, 0.5);
+    }
+    :global(.theme-light) {
+        --icon-container-background-color: rgba(255, 255, 255, 0.5);
+    }
     .grid-container {
         max-width: 100vw;
         overflow-x: hidden;
@@ -237,10 +243,10 @@
     }
 
     .border-right {
-        border-right: 1px solid #f0f0f3;
+        border-right: 1px solid var(--color-border-neutral);
     }
     .border-bottom {
-        border-bottom: 1px solid #f0f0f3;
+        border-bottom: 1px solid var(--color-border-neutral);
         grid-column: 1/8;
         @media (min-width: 768px) {
             grid-column: 1/10;
@@ -299,7 +305,7 @@
         width: var(--cell-dimension);
         aspect-ratio: 1/1;
         border-radius: var(--border-radius-content);
-        border: 0.5px solid #ededf0;
+        border: 0.5px solid var(--color-border-neutral);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -319,13 +325,20 @@
 
     .start-animation .icon-container {
         opacity: 1;
-        background: rgba(255, 255, 255, 0.5);
         border: 2.5px solid rgba(255, 255, 255, 0.08);
         box-shadow: 0 13px 13px 0 rgba(0, 0, 0, 0.04);
+        animation: background-animation var(--icon-colorize-animation-duration)
+            var(--animation-type) var(--show-icon-color-delay);
+        animation-fill-mode: forwards;
     }
 
-    .start-animation .icon-content {
-        box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.05);
+    @keyframes background-animation {
+        from {
+            background: transparent;
+        }
+        to {
+            background: var(--icon-container-background-color);
+        }
     }
 
     .start-animation .icon1 {
