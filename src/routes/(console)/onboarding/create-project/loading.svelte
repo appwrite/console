@@ -10,7 +10,15 @@
     let currentSentenceIndex = 0;
     let visible = true;
 
+    function handleResize() {
+        startAnimation = false;
+        setTimeout(() => {
+            startAnimation = true;
+        }, 1500);
+    }
+
     onMount(() => {
+        window.addEventListener('resize', handleResize);
         const interval = setInterval(() => {
             visible = false;
             currentSentenceIndex = (currentSentenceIndex + 1) % loadingSentences.length;
@@ -19,7 +27,10 @@
             }, 1000);
         }, 5000);
 
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('resize', handleResize);
+        };
     });
 </script>
 
