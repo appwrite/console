@@ -7,6 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { parse } from 'envfile';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let isGlobal: boolean;
     export let showEditor = false;
@@ -166,7 +167,7 @@
                 class="buttons-list u-gap-8 u-cross-center u-position-absolute d u-inset-block-end-1 u-inset-inline-end-1 u-padding-block-8 u-padding-inline-12"
                 style="border-end-end-radius:0.0625rem;">
                 <li class="buttons-list-item">
-                    <div class="tooltip" aria-label={`Download .${tab} file`}>
+                    <Tooltip>
                         <button
                             on:click={() => downloadVariables()}
                             type="button"
@@ -174,10 +175,8 @@
                             aria-label={`Download .${tab} file`}>
                             <span class="icon-download" aria-hidden="true" />
                         </button>
-                        <span class="tooltip-popup" role="tooltip">
-                            Download .{tab} file.
-                        </span>
-                    </div>
+                        <p slot="tooltip">Download .{tab} file.</p>
+                    </Tooltip>
                 </li>
                 <li class="buttons-list-item">
                     <div bind:this={copyParent}>
