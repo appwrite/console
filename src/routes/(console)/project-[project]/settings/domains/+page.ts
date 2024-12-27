@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ depends, url }) => {
 
     return {
         rules: await sdk.forProject.proxy.listRules([
-            Query.equal('resourceType', ResourceType.Api)
+            Query.equal('resourceType', ResourceType.Site)
         ]),
         create: url.searchParams.get('create') !== null
     };
