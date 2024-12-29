@@ -174,6 +174,10 @@ export type Aggregation = {
      * Usage logs for the billing period.
      */
     resources: OrganizationUsage;
+    /**
+     * Aggregation billing plan
+     */
+    plan: string;
 };
 
 export type OrganizationUsage = {
@@ -281,6 +285,13 @@ export type Plan = {
     trialDays: number;
     isAvailable: boolean;
     selfService: boolean;
+    premiumSupport: boolean;
+    budgeting: boolean;
+    supportsMockNumbers: boolean;
+    backupsEnabled: boolean;
+    backupPolicies: number;
+    emailBranding: boolean;
+    supportsCredit: boolean;
 };
 
 export type PlansInfo = {
@@ -385,19 +396,27 @@ export class Billing {
         );
     }
 
-    async getPlan(organizationId: string): Promise<Plan> {
+    async getOrganizationPlan(organizationId: string): Promise<Plan> {
         const path = `/organizations/${organizationId}/plan`;
-        const params = {
-            organizationId
-        };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
             uri,
             {
                 'content-type': 'application/json'
-            },
-            params
+            }
+        );
+    }
+
+    async getPlan(planId: string): Promise<Plan> {
+        const path = `/console/plans/${planId}`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            }
         );
     }
 
@@ -438,6 +457,19 @@ export class Billing {
                 'content-type': 'application/json'
             },
             params
+        );
+    }
+    async cancelDowngrade(
+        organizationId: string
+    ): Promise<Organization | OrganizationError> {
+        const path = `/organizations/${organizationId}/plan/cancel`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            }
         );
     }
 

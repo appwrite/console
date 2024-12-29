@@ -2,6 +2,7 @@ import { page } from '$app/stores';
 import { derived, writable } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
 import type { Tier } from './billing';
+import type { Plan } from '$lib/sdk/billing';
 
 export type OrganizationError = {
     status: number;
@@ -29,6 +30,8 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     amount: number;
     billingTaxId?: string;
     billingPlanDowngrade?: Tier;
+    billingAggregationId: string;
+    billingInvoiceId: string;
 };
 
 export type OrganizationList = {
@@ -52,4 +55,5 @@ export const organizationList = derived(
 );
 
 export const organization = derived(page, ($page) => $page.data?.organization as Organization);
+export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Plan);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);

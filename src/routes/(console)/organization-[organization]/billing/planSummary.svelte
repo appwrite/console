@@ -3,7 +3,7 @@
     import { CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import type { CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -12,13 +12,15 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { type Models } from '@appwrite.io/console';
+    import CancelDowngradeModel from './cancelDowngradeModel.svelte';
 
-    export let invoices: Array<Invoice>;
     export let members: Models.MembershipList;
     export let currentPlan: Plan;
     export let creditList: CreditList;
+    export let currentInvoice: Invoice | undefined = undefined;
 
-    const currentInvoice: Invoice | undefined = invoices.length > 0 ? invoices[0] : undefined;
+    let showCancel: boolean = false;
+
     const extraMembers = members.total > 1 ? members.total - 1 : 0;
     const availableCredit = creditList.available;
     const today = new Date();
@@ -38,14 +40,11 @@
         </p>
         <svelte:fragment slot="aside">
             <p class="text u-bold">
-                Billing period: {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
-                    $organization?.billingNextInvoiceDate
-                )}
+                Due at: {toLocaleDate($organization?.billingNextInvoiceDate)}
             </p>
             <Collapsible>
                 <CollapsibleItem noContent>
-                    <span class="body-text-2">
-                        {tierToPlan($organization?.billingPlan)?.name} plan</span>
+                    <span class="body-text-2"> {currentPlan.name} plan</span>
                     <div class="body-text-2 u-margin-inline-start-auto">
                         {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
                             ? formatCurrency(0)
@@ -54,7 +53,7 @@
                               : ''}
                     </div>
                 </CollapsibleItem>
-                {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION && extraUsage > 0}
+                {#if currentPlan.budgeting && extraUsage > 0}
                     <CollapsibleItem isInfo gap={8}>
                         <svelte:fragment slot="beforetitle">
                             <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
@@ -132,7 +131,7 @@
                     </CollapsibleItem>
                 {/if}
 
-                {#if $organization?.billingPlan !== BillingPlan.FREE && availableCredit > 0}
+                {#if currentPlan.supportsCredit && availableCredit > 0}
                     <CollapsibleItem noContent gap={4}>
                         <span class="body-text-2 u-flex u-cross-center u-gap-2"
                             ><svg
@@ -186,7 +185,7 @@
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
@@ -202,19 +201,23 @@
                         Upgrade
                     </Button>
                 </div>
-            {:else if $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+            {:else}
                 <div class="u-flex u-gap-16 u-flex-wrap">
-                    <Button
-                        text
-                        disabled={$organization?.markedForDeletion}
-                        href={$upgradeURL}
-                        on:click={() =>
-                            trackEvent('click_organization_plan_update', {
-                                from: 'button',
-                                source: 'billing_tab'
-                            })}>
-                        Change plan
-                    </Button>
+                    {#if $organization?.billingPlanDowngrade !== null}
+                        <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
+                    {:else}
+                        <Button
+                            text
+                            disabled={$organization?.markedForDeletion}
+                            href={$upgradeURL}
+                            on:click={() =>
+                                trackEvent('click_organization_plan_update', {
+                                    from: 'button',
+                                    source: 'billing_tab'
+                                })}>
+                            Change plan
+                        </Button>
+                    {/if}
                     <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
                     </Button>
@@ -223,3 +226,4 @@
         </svelte:fragment>
     </CardGrid>
 {/if}
+<CancelDowngradeModel bind:showCancel />

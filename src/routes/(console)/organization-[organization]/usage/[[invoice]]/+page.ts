@@ -45,7 +45,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
         sdk.forConsole.teams.listMemberships(params.organization),
-        sdk.forConsole.billing.getPlan(org.$id)
+        sdk.forConsole.billing.getOrganizationPlan(org.$id)
     ]);
 
     const projectNames: { [key: string]: Models.Project } = {};
