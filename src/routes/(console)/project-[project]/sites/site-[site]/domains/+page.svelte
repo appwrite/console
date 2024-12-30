@@ -35,7 +35,7 @@
         <Button
             href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
             <Icon icon={IconPlus} size="s" />
-            Add Domain
+            Add domain
         </Button>
     </Layout.Stack>
     <Table.Root>
