@@ -23,7 +23,7 @@
         InputTextarea,
         Label
     } from '$lib/elements/forms';
-    import { formatCurrency } from '$lib/helpers/numbers.js';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
@@ -40,7 +40,7 @@
         type Organization
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { confirmPayment } from '$lib/stores/stripe.js';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
     import { onMount } from 'svelte';
@@ -212,7 +212,7 @@
     async function upgrade() {
         try {
             //Add collaborators
-            var newCollaborators = [];
+            let newCollaborators = [];
             if (collaborators?.length) {
                 newCollaborators = collaborators.filter(
                     (collaborator) =>
@@ -371,11 +371,12 @@
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
                 <EstimatedTotalBox
+                    {isDowngrade}
                     {billingPlan}
                     {collaborators}
                     bind:couponData
                     bind:billingBudget
-                    {isDowngrade} />
+                    currentTier={$organization.billingPlan} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}

@@ -130,8 +130,8 @@ export async function confirmPayment(
             clientSecret: clientSecret,
             confirmParams: {
                 return_url: url,
-                payment_method: paymentMethod.providerMethodId,
-            },
+                payment_method: paymentMethod.providerMethodId
+            }
         });
         if (error) {
             if (returnError) {
