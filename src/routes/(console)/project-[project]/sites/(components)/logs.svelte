@@ -138,7 +138,7 @@
                         <Code lang="text" code={buildLogs.replace(/\\n/g, '\n')} />
                     </div> -->
     <Layout.Stack alignItems="flex-end">
-        {#if status !== 'ready'}
+        {#if ['processing', 'building'].includes(status)}
             <Button size="xs" text on:click={cancelDeployment}>Cancel deployment</Button>
         {/if}
     </Layout.Stack>
