@@ -49,7 +49,7 @@
         <input id={label} type="text" {value} readonly />
         <div class="options-list">
             {#key appendTo}
-                <Copy {value} {appendTo}>
+                <Copy {value}>
                     <span class="icon-duplicate" aria-hidden="true" />
                 </Copy>
             {/key}
