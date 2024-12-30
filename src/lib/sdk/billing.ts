@@ -257,13 +257,23 @@ export type AdditionalResource = {
     multiplier?: number;
 };
 
+export type PlanAddon = {
+    supported: boolean;
+    currency: string;
+    invoiceDesc: string;
+    price: number;
+    limit: number,
+    value: number;
+    type: string;
+
+}
+
 export type Plan = {
     $id: string;
     name: string;
     price: number;
     bandwidth: number;
     storage: number;
-    members: number;
     webhooks: number;
     users: number;
     teams: number;
@@ -274,7 +284,7 @@ export type Plan = {
     executions: number;
     realtime: number;
     logs: number;
-    addons: {
+    usage: {
         bandwidth: AdditionalResource;
         executions: AdditionalResource;
         member: AdditionalResource;
@@ -282,6 +292,9 @@ export type Plan = {
         storage: AdditionalResource;
         users: AdditionalResource;
     };
+    addons: {
+        seats: PlanAddon
+    }
     trialDays: number;
     isAvailable: boolean;
     selfService: boolean;
