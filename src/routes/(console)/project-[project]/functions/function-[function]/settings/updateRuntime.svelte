@@ -103,7 +103,7 @@
                     required
                     hideRequired />
                 <InputSelect
-                    label="Specification"
+                    label="CPU and memory"
                     id="size"
                     placeholder="Select runtime specification"
                     bind:value={specification}
