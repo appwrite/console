@@ -45,7 +45,7 @@
     <svelte:fragment slot="description">
         <span>
             Set the environment variables or secret keys that will be passed to {!isGlobal
-                ? `your ${product}s`
+                ? `your ${product}`
                 : `all functions and sites within your project`}.
         </span>
     </svelte:fragment>
