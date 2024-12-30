@@ -175,7 +175,7 @@
                             aria-label={`Download .${tab} file`}>
                             <span class="icon-download" aria-hidden="true" />
                         </button>
-                        <p slot="tooltip">Download .{tab} file.</p>
+                        <p slot="tooltip">Download .{tab} file</p>
                     </Tooltip>
                 </li>
                 <li class="buttons-list-item">
