@@ -18,6 +18,7 @@
 
     let files: FileList;
     let error: string;
+    export let product: 'function' | 'site' = 'function';
 
     async function handleSubmit() {
         try {
@@ -72,9 +73,9 @@
         <p>
             Import new {isGlobal ? 'global' : 'environment'} variables from
             <span class="inline-code">.env</span>
-            file that will be passed to {isGlobal
-                ? 'all functions within your project'
-                : 'your function'}.
+            file that will be passed to {!isGlobal
+                ? `your ${product}`
+                : 'all functions and sites within your project'}.
         </p>
 
         {#if variableList.total > 0}
