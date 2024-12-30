@@ -6,6 +6,7 @@ import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
+import { isCloud } from '$lib/system';
 import { base } from '$app/paths';
 import type { Account } from '$lib/stores/user';
 import type { AppwriteException } from '@appwrite.io/console';
@@ -27,8 +28,8 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
 
     if (account) {
         return {
-            account: account,
-            organizations: await sdk.forConsole.teams.list()
+            account,
+            organizations: isCloud ? await sdk.forConsole.billing.listOrganization() : await sdk.forConsole.teams.list()
         };
     }
 

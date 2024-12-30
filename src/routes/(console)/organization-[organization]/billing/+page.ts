@@ -4,7 +4,6 @@ import type { Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
-import { Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes } = await parent();
@@ -21,29 +20,49 @@ export const load: PageLoad = async ({ parent, depends }) => {
     const billingAddressId = (organization as Organization)?.billingAddressId;
     const billingAddressPromise: Promise<Address> = billingAddressId
         ? sdk.forConsole.billing
-              .getOrganizationBillingAddress(organization.$id, billingAddressId)
-              .catch(() => null)
+            .getOrganizationBillingAddress(organization.$id, billingAddressId)
+            .catch(() => null)
         : null;
 
-    const [paymentMethods, addressList, aggregationList, billingAddress, creditList, invoices] =
-        await Promise.all([
-            sdk.forConsole.billing.listPaymentMethods(),
-            sdk.forConsole.billing.listAddresses(),
-            sdk.forConsole.billing.listAggregation(organization.$id),
-            billingAddressPromise,
-            sdk.forConsole.billing.listCredits(organization.$id),
-            sdk.forConsole.billing.listInvoices(organization.$id, [
-                Query.limit(1),
-                Query.equal('from', organization.billingCurrentInvoiceDate)
-            ])
-        ]);
+    const billingAggregationId = (organization as Organization)?.billingAggregationId;
+
+    let billingAggregation = null;
+    try {
+        billingAggregation = await sdk.forConsole.billing.getAggregation(organization.$id, billingAggregationId);
+    } catch (e) {
+        // ignore error
+    }
+    
+    const billingInvoiceId = (organization as Organization)?.billingInvoiceId;
+    let billingInvoice = null;
+    try {
+        billingInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, billingInvoiceId)
+    } catch (e) {
+        // ignore error
+    }
+
+
+    const [
+        paymentMethods,
+        addressList,
+        billingAddress,
+        creditList,
+        aggregationBillingPlan,
+    ] = await Promise.all([
+        sdk.forConsole.billing.listPaymentMethods(),
+        sdk.forConsole.billing.listAddresses(),
+        billingAddressPromise,
+        sdk.forConsole.billing.listCredits(organization.$id),
+        sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan),
+    ]);
 
     return {
         paymentMethods,
         addressList,
-        aggregationList,
         billingAddress,
+        aggregationBillingPlan,
         creditList,
-        invoices
+        billingAggregation,
+        billingInvoice
     };
 };

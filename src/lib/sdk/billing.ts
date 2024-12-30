@@ -1,5 +1,5 @@
 import type { Client, Models } from '@appwrite.io/console';
-import type { Organization, OrganizationList } from '../stores/organization';
+import type { OrganizationError, Organization, OrganizationList } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
@@ -174,6 +174,10 @@ export type Aggregation = {
      * Usage logs for the billing period.
      */
     resources: OrganizationUsage;
+    /**
+     * Aggregation billing plan
+     */
+    plan: string;
 };
 
 export type OrganizationUsage = {
@@ -253,13 +257,23 @@ export type AdditionalResource = {
     multiplier?: number;
 };
 
+export type PlanAddon = {
+    supported: boolean;
+    currency: string;
+    invoiceDesc: string;
+    price: number;
+    limit: number,
+    value: number;
+    type: string;
+
+}
+
 export type Plan = {
     $id: string;
     name: string;
     price: number;
     bandwidth: number;
     storage: number;
-    members: number;
     webhooks: number;
     users: number;
     teams: number;
@@ -270,7 +284,7 @@ export type Plan = {
     executions: number;
     realtime: number;
     logs: number;
-    addons: {
+    usage: {
         bandwidth: AdditionalResource;
         executions: AdditionalResource;
         member: AdditionalResource;
@@ -278,6 +292,9 @@ export type Plan = {
         storage: AdditionalResource;
         users: AdditionalResource;
     };
+    addons: {
+        seats: PlanAddon
+    }
     trialDays: number;
     isAvailable: boolean;
     selfService: boolean;
@@ -287,6 +304,7 @@ export type Plan = {
     backupsEnabled: boolean;
     backupPolicies: number;
     emailBranding: boolean;
+    supportsCredit: boolean;
 };
 
 export type PlansInfo = {
@@ -324,20 +342,48 @@ export class Billing {
         );
     }
 
+    async validateOrganization(
+        organizationId: string,
+        invites: string[],
+    ): Promise<Organization> {
+        const path = `/organizations/${organizationId}/validate`;
+        const params = {
+            organizationId,
+            invites,
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'PATCH',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async createOrganization(
         organizationId: string,
         name: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
-    ): Promise<Organization> {
+        billingAddressId: string = null,
+        couponId: string = null,
+        invites: Array<string> = [],
+        budget: number = undefined,
+        taxId: string = null
+    ): Promise<Organization | OrganizationError> {
         const path = `/organizations`;
         const params = {
             organizationId,
             name,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            couponId,
+            invites,
+            budget,
+            taxId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -366,19 +412,27 @@ export class Billing {
         );
     }
 
-    async getPlan(organizationId: string): Promise<Plan> {
+    async getOrganizationPlan(organizationId: string): Promise<Plan> {
         const path = `/organizations/${organizationId}/plan`;
-        const params = {
-            organizationId
-        };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
             uri,
             {
                 'content-type': 'application/json'
-            },
-            params
+            }
+        );
+    }
+
+    async getPlan(planId: string): Promise<Plan> {
+        const path = `/console/plans/${planId}`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            }
         );
     }
 
@@ -394,14 +448,22 @@ export class Billing {
         organizationId: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
-    ): Promise<Organization> {
+        billingAddressId: string = undefined,
+        couponId: string = null,
+        invites: Array<string> = [],
+        budget: number = undefined,
+        taxId: string = null
+    ): Promise<Organization | OrganizationError> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
             organizationId,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            couponId,
+            invites,
+            budget,
+            taxId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -411,6 +473,19 @@ export class Billing {
                 'content-type': 'application/json'
             },
             params
+        );
+    }
+    async cancelDowngrade(
+        organizationId: string
+    ): Promise<Organization | OrganizationError> {
+        const path = `/organizations/${organizationId}/plan/cancel`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            }
         );
     }
 
