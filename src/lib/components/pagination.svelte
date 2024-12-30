@@ -7,10 +7,11 @@
     export let offset: number;
     export let hidePages = false;
 
-    $: totalPages = Math.ceil(sum / limit);
     $: currentPage = Math.floor(offset / limit + 1);
-    $: pages = pagination(currentPage, totalPages);
 
+    // TODO: check if we even need these now due to Pink V2.
+    /*$: totalPages = Math.ceil(sum / limit);
+    $: pages = pagination(currentPage, totalPages);
     function pagination(page: number, total: number) {
         const pagesShown = 5;
         const start = Math.max(
@@ -26,7 +27,7 @@
             ...Array.from({ length: end + 1 - start }, (_, i) => i + start),
             ...(end < total - 1 ? ['...', total] : end < total ? [total] : [])
         ];
-    }
+    }*/
 
     function getLink(page: number): string {
         const url = new URL($pageStore.url);
@@ -40,7 +41,7 @@
     }
 </script>
 
-<Pagination page={currentPage} total={totalPages} {limit} createLink={getLink} />
+<Pagination page={currentPage} total={sum} {limit} createLink={getLink} />
 <!-- {#if totalPages > 1}
     {#key $pageStore.url}
         <nav class="pagination">
