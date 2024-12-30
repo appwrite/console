@@ -55,8 +55,8 @@
         <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 4; " />
         <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 5; " />
         <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 6; " />
-        <div class="border-right is-only-desktop" style="grid-row: 1 / 6; grid-column-start: 7; " />
-        <div class="border-right is-only-desktop" style="grid-row: 1 / 6; grid-column-start: 8; " />
+        <div class="border-right is-not-mobile" style="grid-row: 1 / 6; grid-column-start: 7; " />
+        <div class="border-right is-not-mobile" style="grid-row: 1 / 6; grid-column-start: 8; " />
 
         <div class="border-bottom" style="grid-row-start: 1;" />
         <div class="border-bottom" style="grid-row-start: 2;" />
@@ -71,56 +71,88 @@
         <div class="icon icon1">
             <div class="icon-container">
                 <div class="icon-content">
-                    <img src={`${base}/images/onboarding/icon1.svg`} alt="" />
+                    <img src={`${base}/images/onboarding/icon1.svg`} class="u-only-light" alt="" />
+                    <img
+                        src={`${base}/images/onboarding/icon1-dark.svg`}
+                        class="u-only-dark"
+                        alt="" />
                 </div>
             </div>
         </div>
         <div class="icon icon2">
             <div class="icon-container">
                 <div class="icon-content">
-                    <img src={`${base}/images/onboarding/icon2.svg`} alt="" />
+                    <img src={`${base}/images/onboarding/icon2.svg`} class="u-only-light" alt="" />
+                    <img
+                        src={`${base}/images/onboarding/icon2-dark.svg`}
+                        class="u-only-dark"
+                        alt="" />
                 </div>
             </div>
         </div>
         <div class="icon icon3">
             <div class="icon-container">
                 <div class="icon-content">
-                    <img src={`${base}/images/onboarding/icon3.svg`} alt="" />
+                    <img src={`${base}/images/onboarding/icon3.svg`} class="u-only-light" alt="" />
+                    <img
+                        src={`${base}/images/onboarding/icon3-dark.svg`}
+                        class="u-only-dark"
+                        alt="" />
                 </div>
             </div>
         </div>
         <div class="icon icon4">
             <div class="icon-container">
                 <div class="icon-content">
-                    <img src={`${base}/images/onboarding/icon4.svg`} alt="" />
+                    <img src={`${base}/images/onboarding/icon4.svg`} class="u-only-light" alt="" />
+                    <img
+                        src={`${base}/images/onboarding/icon4-dark.svg`}
+                        class="u-only-dark"
+                        alt="" />
                 </div>
             </div>
         </div>
         <div class="icon icon5">
             <div class="icon-container">
                 <div class="icon-content">
-                    <img src={`${base}/images/onboarding/icon5.svg`} alt="" />
+                    <img src={`${base}/images/onboarding/icon5.svg`} class="u-only-light" alt="" />
+                    <img
+                        src={`${base}/images/onboarding/icon5-dark.svg`}
+                        class="u-only-dark"
+                        alt="" />
                 </div>
             </div>
         </div>
         <div class="icon icon6">
             <div class="icon-container">
                 <div class="icon-content">
-                    <img src={`${base}/images/onboarding/icon6.svg`} alt="" />
+                    <img src={`${base}/images/onboarding/icon6.svg`} class="u-only-light" alt="" />
+                    <img
+                        src={`${base}/images/onboarding/icon6-dark.svg`}
+                        class="u-only-dark"
+                        alt="" />
                 </div>
             </div>
         </div>
         <div class="icon icon7">
             <div class="icon-container">
                 <div class="icon-content">
-                    <img src={`${base}/images/onboarding/icon6.svg`} alt="" />
+                    <img src={`${base}/images/onboarding/icon6.svg`} class="u-only-light" alt="" />
+                    <img
+                        src={`${base}/images/onboarding/icon6-dark.svg`}
+                        class="u-only-dark"
+                        alt="" />
                 </div>
             </div>
         </div>
         <div class="icon icon8">
             <div class="icon-container">
                 <div class="icon-content">
-                    <img src={`${base}/images/onboarding/icon6.svg`} alt="" />
+                    <img src={`${base}/images/onboarding/icon6.svg`} class="u-only-light" alt="" />
+                    <img
+                        src={`${base}/images/onboarding/icon6-dark.svg`}
+                        class="u-only-dark"
+                        alt="" />
                 </div>
             </div>
         </div>
@@ -137,10 +169,18 @@
 
 <style lang="scss">
     :global(.theme-dark) {
-        --icon-container-background-color: rgba(50, 50, 50, 0.5);
+        --icon-content-background-color: var(--color-bgcolor-neutral-primary, #1d1d21);
+        --icon-content-border-color: var(--color-overlay-skeleton);
+        --icon-container-background-color: #242427;
+        --icon-container-border-color: rgba(255, 255, 255, 0.02);
+        --box-shadow: none;
     }
     :global(.theme-light) {
+        --icon-content-background-color: var(--neutral-0, #ffffff);
+        --icon-content-border-color: var(--neutral-50, #ededf0);
         --icon-container-background-color: rgba(255, 255, 255, 0.5);
+        --icon-container-border-color: rgba(0, 0, 0, 0.02);
+        --box-shadow: 0 12.973px 12.973px 0 rgba(0, 0, 0, 0.04);
     }
     .grid-container {
         max-width: 100vw;
@@ -221,7 +261,7 @@
             var(--welcome-to-appwrite-delay);
     }
     .grid {
-        opacity: 0;
+        opacity: 1;
         transition: opacity var(--fade-in-animation-component-duration) var(--animation-type);
         display: grid;
         grid-template-columns: var(--half-cell-dimension) repeat(5, var(--cell-dimension)) var(
@@ -239,6 +279,73 @@
         opacity: 1;
     }
 
+    .icon-container {
+        width: calc(var(--cell-dimension) + 10px);
+        padding: 5px;
+        aspect-ratio: 1/1;
+        margin-top: -5px;
+        margin-left: -5px;
+        box-sizing: border-box;
+
+        border-radius: var(--border-radius-container);
+        border-width: 1px;
+        border-color: transparent;
+        border-style: solid;
+        transition: all var(--icon-colorize-animation-duration) var(--animation-type)
+            var(--show-icon-color-delay);
+
+        @media (min-width: 768px) {
+            width: calc(var(--cell-dimension) + 20px);
+            margin-top: -10px;
+            margin-left: -10px;
+            padding: 10px;
+        }
+    }
+
+    .start-animation .icon-container {
+        background-color: var(--icon-container-background-color);
+        border-color: var(--icon-container-border-color);
+        box-shadow: var(--box-shadow);
+    }
+
+    .icon-content {
+        width: var(--cell-dimension);
+        aspect-ratio: 1/1;
+        border-radius: var(--border-radius-content);
+
+        border-width: 1px;
+        border-color: transparent;
+        border-style: solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        filter: grayscale(100%);
+        transition: all var(--icon-colorize-animation-duration) var(--animation-type)
+            var(--show-icon-color-delay);
+
+        img {
+            width: var(--icon-width);
+        }
+    }
+
+    .start-animation .icon-content {
+        background: var(--icon-content-background-color);
+        border-color: var(--icon-content-border-color);
+    }
+
+    .start-animation .icon-content {
+        animation: grayscale-animation var(--icon-colorize-animation-duration) var(--animation-type)
+            var(--show-icon-color-delay);
+        animation-fill-mode: forwards;
+    }
+
+    @keyframes grayscale-animation {
+        100% {
+            -webkit-filter: grayscale(0%);
+            filter: grayscale(0%);
+        }
+    }
+
     .icon {
         transition: transform var(--icon-move-to-center-animation-duration) var(--animation-type)
             var(--icon-move-to-center-delay);
@@ -253,6 +360,12 @@
         }
     }
 
+    .start-animation .appwrite {
+        opacity: 1;
+        transition: opacity var(--icons-fade-out-animation-duration) var(--animation-type)
+            var(--appwrite-icon-fade-in-delay);
+    }
+
     .border-right {
         border-right: 1px solid var(--color-border-neutral);
     }
@@ -265,90 +378,43 @@
     }
 
     .vertical-fade-top {
-        background: linear-gradient(to bottom, hsl(var(--p-body-bg-color)) 0%, transparent 100%);
+        background: linear-gradient(
+            to bottom,
+            var(--color-bgcolor-neutral-default, #19191c) 0%,
+            transparent 100%
+        );
         grid-column: 1/8;
         @media (min-width: 768px) {
             grid-column: 1/10;
         }
     }
     .vertical-fade-bottom {
-        background: linear-gradient(to top, hsl(var(--p-body-bg-color)) 0%, transparent 100%);
+        background: linear-gradient(
+            to top,
+            var(--color-bgcolor-neutral-default, #19191c) 0%,
+            transparent 100%
+        );
         grid-column: 1/8;
         @media (min-width: 768px) {
             grid-column: 1/10;
         }
     }
     .horizontal-fade-left {
-        background: linear-gradient(to right, hsl(var(--p-body-bg-color)) 0%, transparent 100%);
+        background: linear-gradient(
+            to right,
+            var(--color-bgcolor-neutral-default, #19191c) 0%,
+            transparent 100%
+        );
     }
     .horizontal-fade-right {
-        background: linear-gradient(to left, hsl(var(--p-body-bg-color)) 0%, transparent 100%);
+        background: linear-gradient(
+            to left,
+            var(--color-bgcolor-neutral-default, #19191c) 0%,
+            transparent 100%
+        );
         grid-column-start: 7;
         @media (min-width: 768px) {
             grid-column-start: 9;
-        }
-    }
-
-    .icon-container {
-        width: calc(var(--cell-dimension) + 10px);
-        aspect-ratio: 1/1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: -5px;
-        margin-left: -5px;
-        border-radius: var(--border-radius-container);
-        opacity: 0.2;
-        transition:
-            opacity var(--icon-colorize-animation-duration) var(--animation-type)
-                var(--show-icon-color-delay),
-            box-shadow var(--icon-colorize-animation-duration) var(--animation-type)
-                var(--show-icon-color-delay);
-
-        @media (min-width: 768px) {
-            width: calc(var(--cell-dimension) + 20px);
-            margin-top: -10px;
-            margin-left: -10px;
-        }
-    }
-
-    .icon-content {
-        width: var(--cell-dimension);
-        aspect-ratio: 1/1;
-        border-radius: var(--border-radius-content);
-        border: 0.5px solid var(--color-border-neutral);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        filter: grayscale(100%);
-
-        img {
-            width: var(--icon-width);
-        }
-    }
-
-    @keyframes grayscale-animation {
-        100% {
-            -webkit-filter: grayscale(0%);
-            filter: grayscale(0%);
-        }
-    }
-
-    .start-animation .icon-container {
-        opacity: 1;
-        border: 2.5px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 13px 13px 0 rgba(0, 0, 0, 0.04);
-        animation: background-animation var(--icon-colorize-animation-duration)
-            var(--animation-type) var(--show-icon-color-delay);
-        animation-fill-mode: forwards;
-    }
-
-    @keyframes background-animation {
-        from {
-            background: transparent;
-        }
-        to {
-            background: var(--icon-container-background-color);
         }
     }
 
@@ -380,31 +446,6 @@
     .start-animation .icon8 {
         transform: translateY(var(--negative-cell-dimension))
             translateX(var(--negative-double-cell-dimension));
-    }
-
-    .start-animation .icon:not(.icon8) .icon-container {
-        box-shadow: 0 13px 13px 0 rgba(0, 0, 0, 0);
-    }
-    .start-animation .icon:not(.icon8) .icon-content {
-        opacity: 0;
-        transition: opacity var(--icons-fade-out-animation-duration) var(--animation-type)
-            var(--icons-fade-out-delay);
-    }
-    .start-animation .icon8 .icon-content {
-        opacity: 0;
-        transition: opacity var(--icons-fade-out-animation-duration) var(--animation-type)
-            var(--final-icon-fade-out-delay);
-    }
-    .start-animation .appwrite {
-        opacity: 1;
-        transition: opacity var(--icons-fade-out-animation-duration) var(--animation-type)
-            var(--appwrite-icon-fade-in-delay);
-    }
-
-    .start-animation .icon-content {
-        animation: grayscale-animation var(--icon-colorize-animation-duration) var(--animation-type)
-            var(--show-icon-color-delay);
-        animation-fill-mode: forwards;
     }
 
     .icon1 {

@@ -158,13 +158,15 @@
 
 <style lang="scss">
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
-
+    :global(body) {
+        background: var(--color-bgcolor-neutral-default, #19191c);
+    }
     .page-container {
         width: calc(100% - 2rem);
         margin: 0 1rem;
         min-height: 100vh;
         gap: 4.5rem;
-        color: var(--color-fgcolor-neutral-primary, #2d2d31);
+        background: var(--color-bgcolor-neutral-default, #19191c);
 
         @media #{$break2open} {
             width: 700px;
