@@ -95,7 +95,7 @@
 
     async function cancelDeployment() {
         try {
-            await sdk.forProject.functions.updateDeploymentBuild(
+            await sdk.forProject.sites.updateDeploymentBuild(
                 deployment.resourceId,
                 deployment.$id
             );
