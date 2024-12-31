@@ -2,6 +2,7 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { throttle } from '$lib/helpers/functions';
     import { onMount } from 'svelte';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let alternativeTrim = false;
     let showTooltip = false;
@@ -24,5 +25,8 @@
         content: container?.innerText ?? undefined,
         maxWidth: '30rem'
     }}>
-    <span><slot /></span>
+    <Tooltip inline={false}
+        ><span class="text u-trim"><slot /></span><span slot="tooltip"
+            >{container?.innerText ?? undefined}</span
+        ></Tooltip>
 </span>
