@@ -58,11 +58,7 @@
                 <p class="u-line-height-2">
                     {totalSize.value + totalSize.unit}
                     <Tooltip>
-                        <button
-                            type="button"
-                            on:click|preventDefault
-                            class="tooltip"
-                            aria-label="input tooltip">
+                        <button type="button" on:click|preventDefault aria-label="input tooltip">
                             <span
                                 class="icon-info"
                                 aria-hidden="true"
