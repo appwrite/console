@@ -162,7 +162,7 @@
                 <CollapsibleItem noContent gap={4}>
                     <span class="body-text-2">Current total (USD)</span>
                     <Tooltip>
-                        <span class="tooltip u-cross-center" aria-label="total info">
+                        <span class="u-cross-center" aria-label="total info">
                             <span class="icon-info" aria-hidden="true"></span>
                         </span>
                         <span slot="tooltip"
