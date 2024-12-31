@@ -14,8 +14,8 @@
     import ansicolor from 'ansicolor';
     import { onMount } from 'svelte';
 
-    export let deployment: Models.Deployment;
     export let site: Models.Site;
+    export let deployment: Models.Deployment;
 
     let { status, buildLogs } = deployment;
 
@@ -26,12 +26,12 @@
                     `sites.${deployment.resourceId}.deployments.${deployment.$id}.update`
                 )
             ) {
-                console.log(response.payload);
-                // buildLogs = response.payload.logs;
-                // status = response.payload.status;
-                const payload = response.payload as Models.Deployment;
-                buildLogs = payload.buildLogs;
-                status = payload.status;
+                status = response.payload.status;
+                // Models.Deployment has no `logs`, the payload sends `logs` though
+                buildLogs = response.payload.logs;
+
+                console.log(`realtime logs: ${JSON.stringify(response.payload, null, 2)}`);
+
                 if (status === 'ready') {
                     goto(
                         `${base}/project-${$page.params.project}/sites/create-site/finish?site=${site.$id}`
@@ -81,9 +81,10 @@
                   lightCyan: [133, 219, 216]
               };
 
-    function formatLogs(logs: { timestamp: string; content: string }[]) {
+    function formatLogs(logs: { timestamp: string; content: string }[] = []) {
         let output = '';
-        const sum = logs.map((n) => n.content).join('');
+        // TODO: type class needs an update
+        const sum = logs.map((n) => `${n.timestamp} ${n.content}`).join('\n');
         const iterator = ansicolor.parse(sum);
         for (const element of iterator) {
             if (element.color && !element.color.name) output += `<span>${element.text}</span>`;
@@ -94,10 +95,7 @@
 
     async function cancelDeployment() {
         try {
-            await sdk.forProject.functions.updateDeploymentBuild(
-                deployment.resourceId,
-                deployment.$id
-            );
+            await sdk.forProject.sites.updateDeploymentBuild(deployment.resourceId, deployment.$id);
             await invalidate(Dependencies.DEPLOYMENTS);
             addNotification({
                 type: 'success',
@@ -138,7 +136,7 @@
                         <Code lang="text" code={buildLogs.replace(/\\n/g, '\n')} />
                     </div> -->
     <Layout.Stack alignItems="flex-end">
-        {#if status !== 'ready'}
+        {#if ['processing', 'building'].includes(status)}
             <Button size="xs" text on:click={cancelDeployment}>Cancel deployment</Button>
         {/if}
     </Layout.Stack>
