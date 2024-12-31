@@ -133,7 +133,6 @@
                     &nbsp;<button
                         type="button"
                         on:click={() => (show = !show)}
-                        class="tooltip"
                         aria-label="input tooltip">
                         <span
                             class="icon-info"
