@@ -17,6 +17,8 @@
     export let proxyRuleList: Models.ProxyRuleList = { total: 0, rules: [] };
 
     let show = false;
+    const siteUrl =
+        deployment.domain ?? (proxyRuleList.total ? proxyRuleList.rules[0].domain : undefined);
 
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
 </script>
@@ -112,6 +114,6 @@
     </Layout.Stack>
 </Card>
 
-{#if show && deployment.domain}
-    <OpenOnMobileModal bind:show siteURL={deployment.domain} />
+{#if show && siteUrl}
+    <OpenOnMobileModal bind:show siteURL={siteUrl} />
 {/if}
