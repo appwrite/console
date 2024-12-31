@@ -15,6 +15,7 @@
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import { getContext } from 'svelte';
     import type { Writable } from 'svelte/store';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let isOpen = false;
 
@@ -63,38 +64,34 @@
                 <section class="drop-section">
                     <ul class="drop-list">
                         <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/overview`
-                                )}
-                                on:click={() => trackEvent('click_menu_overview')}
-                                href={projectPath}
-                                use:tooltip={{
-                                    content: 'Overview',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-chart-bar" aria-hidden="true" />
-                                <span class="text">Overview</span>
-                            </a>
+                            <Tooltip placement="right" disabled={!narrow} inline={false}>
+                                <a
+                                    class="drop-button"
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/overview`
+                                    )}
+                                    on:click={() => trackEvent('click_menu_overview')}
+                                    href={projectPath}>
+                                    <span class="icon-chart-bar" aria-hidden="true" />
+                                    <span class="text">Overview</span>
+                                </a>
+                                <div slot="tooltip">Overview</div>
+                            </Tooltip>
                         </li>
                         <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/auth`
-                                )}
-                                on:click={() => trackEvent('click_menu_auth')}
-                                href={`${projectPath}/auth`}
-                                use:tooltip={{
-                                    content: 'Auth',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-user-group" aria-hidden="true" />
-                                <span class="text">Auth</span>
-                            </a>
+                            <Tooltip placement="right" disabled={!narrow} inline={false}>
+                                <a
+                                    class="drop-button"
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/auth`
+                                    )}
+                                    on:click={() => trackEvent('click_menu_auth')}
+                                    href={`${projectPath}/auth`}>
+                                    <span class="icon-user-group" aria-hidden="true" />
+                                    <span class="text">Auth</span>
+                                </a>
+                                <div slot="tooltip">Auth</div>
+                            </Tooltip>
                         </li>
                         {#if $canSeeDatabases}
                             <li class="drop-list-item">

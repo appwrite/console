@@ -13,7 +13,7 @@
         type EventResource,
         type EventService
     } from '$lib/constants';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
     import { trackEvent } from '$lib/actions/analytics';
 
     // Props
@@ -352,16 +352,18 @@
             </div>
             <div class="options-list">
                 {#key copyParent}
-                    <button
-                        on:click={(e) => {
-                            customInput = inputValue;
-                            toggleShowInput(e);
-                        }}
-                        use:tooltip={{ content: 'Edit event', appendTo: copyParent }}
-                        class="options-list-button"
-                        aria-label="edit event">
-                        <span class="icon-pencil" aria-hidden="true" />
-                    </button>
+                    <Tooltip>
+                        <button
+                            on:click={(e) => {
+                                customInput = inputValue;
+                                toggleShowInput(e);
+                            }}
+                            class="options-list-button"
+                            aria-label="edit event">
+                            <span class="icon-pencil" aria-hidden="true" />
+                        </button>
+                        <div slot="tooltip">Edit event</div>
+                    </Tooltip>
                     <button
                         disabled={!inputValue}
                         class="options-list-button"
