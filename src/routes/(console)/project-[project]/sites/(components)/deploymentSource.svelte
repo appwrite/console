@@ -12,8 +12,6 @@
     import { ActionMenu, Layout, Popover, Icon } from '@appwrite.io/pink-svelte';
 
     export let deployment: Models.Deployment;
-
-    $: console.log(deployment);
 </script>
 
 {#if deployment.type === 'vcs'}
@@ -40,13 +38,14 @@
                     {deployment.providerBranch}
                 </ActionMenu.Item.Anchor>
                 {#if deployment?.providerCommitMessage && deployment?.providerCommitHash && deployment?.providerCommitUrl}
+                    <!-- TODO: either the Popover or this Anchor needs to correctly manage the width -->
                     <ActionMenu.Item.Anchor
                         href={deployment.providerCommitUrl}
                         external
                         leadingIcon={IconGitCommit}>
                         <Trim alternativeTrim>
                             {deployment?.providerCommitHash?.substring(0, 7)}
-                            {deployment.providerCommitMessage}
+                            {deployment.providerCommitMessage.substring(0, 15)}...
                         </Trim>
                     </ActionMenu.Item.Anchor>
                 {/if}
