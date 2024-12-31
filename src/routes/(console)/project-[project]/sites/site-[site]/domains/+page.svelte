@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { PaginationWithLimit } from '$lib/components/index.js';
-    import { Button, InputCheckbox, InputSearch } from '$lib/elements/forms';
+    import { Button, InputSearch } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
@@ -40,16 +40,12 @@
     </Layout.Stack>
     <Table.Root>
         <svelte:fragment slot="header">
-            <Table.Header.Selector />
             <Table.Header.Cell>Domain</Table.Header.Cell>
             <Table.Header.Cell>Updated</Table.Header.Cell>
             <Table.Header.Cell />
         </svelte:fragment>
         {#each data.domains.rules as domain}
             <Table.Row>
-                <Table.Cell>
-                    <InputCheckbox id={domain.domain} />
-                </Table.Cell>
                 <Table.Cell>
                     <Layout.Stack direction="row" alignItems="center" gap="xs">
                         <Link
