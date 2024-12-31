@@ -55,7 +55,10 @@
                         </Layout.Stack>
                     {/if}
                 </Layout.Stack>
-                <Button icon text on:click={() => (show = true)}><Icon icon={IconQrcode} /></Button>
+                {#if siteUrl}
+                    <Button icon text on:click={() => (show = true)}
+                        ><Icon icon={IconQrcode} /></Button>
+                {/if}
             </Layout.Stack>
             {#if proxyRuleList?.total}
                 <Layout.Stack gap="xs">
