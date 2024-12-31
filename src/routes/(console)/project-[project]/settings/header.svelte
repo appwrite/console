@@ -18,7 +18,7 @@
         },
         {
             href: `${path}/domains`,
-            title: 'Custom Domains',
+            title: 'Custom domains',
             event: 'domains'
         },
         {
