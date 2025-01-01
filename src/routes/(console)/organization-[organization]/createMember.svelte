@@ -60,22 +60,6 @@
 </script>
 
 <Modal title="Invite member" {error} size="big" bind:show={showCreate} onSubmit={create}>
-    {#if isCloud}
-        {#if $organization?.billingPlan === BillingPlan.PRO}
-            <!-- <Alert type="info">
-                You can add unlimited organization members on the {plan.name} plan for
-                <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.
-            </Alert> -->
-            <Alert type="info">
-                New roles are free until 1st January 2025. <a
-                    class="link"
-                    href="https://appwrite.io/docs/advanced/platform/roles"
-                    target="_blank"
-                    rel="noopener noreferrer">Learn more</a
-                >.
-            </Alert>
-        {/if}
-    {/if}
     <FormList>
         <InputEmail
             required
