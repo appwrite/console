@@ -8,8 +8,6 @@
     import Logs from '../../(components)/logs.svelte';
 
     export let data;
-
-    $: console.log(data.deployment);
 </script>
 
 <Wizard
