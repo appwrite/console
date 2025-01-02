@@ -27,7 +27,7 @@
     let classes: string = '';
     export { classes as class };
     export let submissionLoader = false;
-    export let showLoaderAnyway = false;
+    export let forceShowLoader = false;
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -86,7 +86,7 @@
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
         --button-width={fullWidth ? '100%' : undefined}>
-        {#if ($isSubmitting && submissionLoader) || (showLoaderAnyway && submissionLoader)}
+        {#if ($isSubmitting && submissionLoader) || (forceShowLoader && submissionLoader)}
             <span
                 class="loader is-small"
                 style:--p-loader-base-full-color="transparent"

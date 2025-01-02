@@ -236,7 +236,7 @@
                                         <Button
                                             size="s"
                                             on:click={createRepository}
-                                            showLoaderAnyway={true}
+                                            forceShowLoader
                                             submissionLoader={isCreatingRepository}
                                             disabled={!repositoryName ||
                                                 !$installation?.$id ||
