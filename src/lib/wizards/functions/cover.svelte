@@ -19,7 +19,8 @@
             repositoryBehaviour: 'new',
             repositoryName: template.id,
             repositoryPrivate: true,
-            repositoryId: null
+            repositoryId: null,
+            specification: null
         });
         wizard.start(CreateTemplate);
     }
