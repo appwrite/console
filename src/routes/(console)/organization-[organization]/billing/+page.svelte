@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import BudgetAlert from './budgetAlert.svelte';
     import BudgetCap from './budgetCap.svelte';
     import PlanSummary from './planSummary.svelte';
@@ -122,7 +122,7 @@
     <PlanSummary
         creditList={data?.creditList}
         members={data?.members}
-        currentPlan={data?.currentPlan}
+        currentPlan={$currentPlan}
         invoices={data?.invoices.invoices} />
     <PaymentHistory />
     <PaymentMethods />

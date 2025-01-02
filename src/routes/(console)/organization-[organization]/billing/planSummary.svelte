@@ -212,7 +212,6 @@
         </svelte:fragment>
         <svelte:fragment slot="actions">
             {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                <!-- TODO: make center on mobile and have different styles. -->
                 <div
                     class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
                     <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>

@@ -5,15 +5,22 @@
     import { Button, Form, FormItem, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
-    import { getServiceLimit, readOnly, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { readOnly, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
+    import type { Plan } from '$lib/sdk/billing';
+    export let currentPlan: Plan;
 
-    const service = getServiceLimit('fileSize');
+    const service = currentPlan['fileSize'];
     const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize, 1000);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
+    $: selectedUnit = $unit;
+
+    $: maxValue = function formMaxFileSize() {
+        return (service * 1000 * 1000) / units.find((unit) => unit.name === selectedUnit).value;
+    };
 
     function updateMaxSize() {
         updateBucket(
@@ -35,10 +42,9 @@
         <svelte:fragment slot="aside">
             {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
-                {@const plan = tierToPlan($organization?.billingPlan)}
                 <Alert type="info">
                     <p class="text">
-                        The {plan.name} plan has a maximum upload file size limit of {Math.floor(
+                        The {currentPlan.name} plan has a maximum upload file size limit of {Math.floor(
                             parseInt(size.value)
                         )}{size.unit}.
                         {#if $organization?.billingPlan === BillingPlan.FREE}
@@ -63,7 +69,7 @@
                     disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
                     placeholder={$bucket.maximumFileSize.toString()}
                     min={0}
-                    max={isCloud ? service : Infinity}
+                    max={isCloud ? maxValue() : Infinity}
                     bind:value={$value} />
                 <InputSelect
                     id="bytes"
