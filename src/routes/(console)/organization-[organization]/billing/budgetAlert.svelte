@@ -40,7 +40,7 @@
         if (alerts.some((alert) => alert === selectedAlert)) {
             return;
         }
-        if (alerts.length <= 2) {
+        if (alerts.length <= 3) {
             alerts = [...alerts, selectedAlert ? selectedAlert : parseInt(search)];
             search = '';
             selectedAlert = null;
@@ -60,7 +60,7 @@
             addNotification({
                 type: 'success',
                 isHtml: true,
-                message: `<span>A budget alert has been added to <b>${$organization.name}</b></span>`
+                message: `<span> ${alerts.length === 0 ? 'Budget alerts removed from' : alerts.length > 1 ? `Budget alerts added to` : 'A budget alert has been added to'} <b>${$organization.name}</b> </span>`
             });
             trackEvent(Submit.BudgetAlertsUpdate, {
                 alerts
@@ -112,12 +112,13 @@
                             id="alerts"
                             {options}
                             bind:search
+                            interactiveOutput
                             bind:value={selectedAlert}
                             on:select={() => (search = selectedAlert.toString())} />
                         <div style="align-self: flex-end">
                             <Button
                                 secondary
-                                disabled={alerts.length > 2 || (!search && !selectedAlert)}
+                                disabled={alerts.length > 3 || (!search && !selectedAlert)}
                                 on:click={addAlert}>
                                 Add alert
                             </Button>
