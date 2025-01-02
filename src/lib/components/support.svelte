@@ -3,19 +3,16 @@
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import { isSupportOnline, showSupportModal } from '$routes/(console)/wizard/support/store';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { localeShortTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
+    import { currentPlan } from '$lib/stores/organization';
 
     export let show = false;
 
-    $: isPaid =
-        $organization?.billingPlan === BillingPlan.PRO ||
-        $organization?.billingPlan === BillingPlan.SCALE;
+    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? false;
 
     $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeShortTimezoneName()}`;
 
@@ -73,7 +70,7 @@
 
             {#if option.showSupport}
                 <div class="u-flex u-gap-12 u-cross-center">
-                    {#if !isPaid}
+                    {#if !hasPremiumSupport}
                         <Button
                             href={$upgradeURL}
                             on:click={() => {
