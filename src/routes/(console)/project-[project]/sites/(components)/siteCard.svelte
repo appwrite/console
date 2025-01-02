@@ -18,7 +18,7 @@
 
     let show = false;
     const siteUrl =
-        deployment.domain ?? (proxyRuleList.total ? proxyRuleList.rules[0].domain : undefined);
+        deployment.domain ?? (proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : undefined);
 
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
 </script>
