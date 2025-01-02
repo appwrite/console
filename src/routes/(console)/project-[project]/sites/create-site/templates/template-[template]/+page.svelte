@@ -33,6 +33,7 @@
     export let data;
 
     let showExitModal = false;
+    let isCreatingRepository = false;
     let hasInstallations = !!data?.installations?.total;
 
     let formComponent: Form;
@@ -80,6 +81,7 @@
 
     async function createRepository() {
         try {
+            isCreatingRepository = true;
             const repo = await sdk.forProject.vcs.createRepository(
                 $installation.$id,
                 repositoryName,
@@ -93,6 +95,8 @@
                 type: 'error',
                 message: error.message
             });
+        } finally {
+            isCreatingRepository = false;
         }
     }
 
@@ -220,12 +224,13 @@
                 </Layout.Stack>
                 {#if connectBehaviour === 'now'}
                     {#if hasInstallations}
-                        <Fieldset legend="Git repositoy">
+                        <Fieldset legend="Git repository">
                             <Layout.Stack gap="xl">
                                 <RepositoryBehaviour bind:repositoryBehaviour />
                                 {#if repositoryBehaviour === 'new'}
                                     <NewRepository
                                         bind:selectedInstallationId
+                                        disableFields={isCreatingRepository}
                                         installations={data.installations}
                                         bind:repositoryName
                                         bind:repositoryPrivate />
@@ -235,7 +240,11 @@
                                         <Button
                                             size="s"
                                             on:click={createRepository}
-                                            disabled={!repositoryName || !$installation?.$id}>
+                                            forceShowLoader
+                                            submissionLoader={isCreatingRepository}
+                                            disabled={!repositoryName ||
+                                                !$installation?.$id ||
+                                                isCreatingRepository}>
                                             Create
                                         </Button>
                                     </Layout.Stack>
