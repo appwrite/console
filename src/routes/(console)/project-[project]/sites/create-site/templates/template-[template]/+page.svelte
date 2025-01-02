@@ -158,6 +158,10 @@
         selectedInstallationId = $installation?.$id;
         repositoryName = name.split(' ').join('-').toLowerCase();
     }
+
+    $: if (connectBehaviour === 'later') {
+        selectedRepository = null;
+    }
 </script>
 
 <svelte:head>
