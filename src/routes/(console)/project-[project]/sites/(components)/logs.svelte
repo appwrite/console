@@ -14,8 +14,8 @@
     import ansicolor from 'ansicolor';
     import { onMount } from 'svelte';
 
-    export let deployment: Models.Deployment;
     export let site: Models.Site;
+    export let deployment: Models.Deployment;
 
     let { status, buildLogs } = deployment;
 
@@ -26,12 +26,10 @@
                     `sites.${deployment.resourceId}.deployments.${deployment.$id}.update`
                 )
             ) {
-                console.log(response.payload);
-                // buildLogs = response.payload.logs;
-                // status = response.payload.status;
-                const payload = response.payload as Models.Deployment;
-                buildLogs = payload.buildLogs;
-                status = payload.status;
+                status = response.payload.status;
+                // Models.Deployment has no `logs`, the payload sends `logs` though
+                buildLogs = response.payload.logs;
+
                 if (status === 'ready') {
                     goto(
                         `${base}/project-${$page.params.project}/sites/create-site/finish?site=${site.$id}`
