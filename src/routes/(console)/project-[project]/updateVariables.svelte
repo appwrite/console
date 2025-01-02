@@ -191,12 +191,12 @@
     </Heading>
     {#if isGlobal}
         <p>
-            Set the environment variables or secret keys that will be passed to all functions within
-            your project.
+            Set the environment variables or secret keys that will be passed to all functions and
+            sites within your project.
         </p>
     {:else}
         <p>
-            Set the environment variables or secret keys that will be passed to your function.
+            Set the environment variables or secret keys that will be passed to your {product}.
             Global variables can be found in <Link
                 href={`${base}/project-${$project.$id}/settings#variables`}>
                 project settings</Link
@@ -375,6 +375,7 @@
 
 {#if showVariablesUpload}
     <UploadVariables
+        {product}
         {isGlobal}
         {sdkCreateVariable}
         {sdkUpdateVariable}
