@@ -6,7 +6,7 @@
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization } from '$lib/stores/organization';
+    import { organization, currentPlan } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
 
@@ -37,7 +37,7 @@
         } catch (error) {
             addNotification({
                 type: 'error',
-                message: `There was an error enabling your budget cap`
+                message: error.message
             });
             trackError(error, Submit.BudgetCapUpdate);
         }
@@ -57,7 +57,7 @@
             beginning of each billing cycle.
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if !$currentPlan.budgeting}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Budget caps are a Pro plan feature
@@ -86,6 +86,7 @@
                         <InputNumber
                             placeholder="Add budget cap"
                             id="cap"
+                            autofocus
                             label="Budget cap (USD)"
                             bind:value={budget} />
                     {/if}

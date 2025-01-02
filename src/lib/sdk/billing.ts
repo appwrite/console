@@ -281,6 +281,12 @@ export type Plan = {
     trialDays: number;
     isAvailable: boolean;
     selfService: boolean;
+    premiumSupport: boolean;
+    budgeting: boolean;
+    supportsMockNumbers: boolean;
+    backupsEnabled: boolean;
+    backupPolicies: number;
+    emailBranding: boolean;
 };
 
 export type PlansInfo = {
