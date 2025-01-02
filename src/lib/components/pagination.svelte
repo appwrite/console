@@ -5,8 +5,6 @@
     export let sum: number;
     export let limit: number;
     export let offset: number;
-    // eslint-disable-next-line svelte/valid-compile
-    export let hidePages = false;
 
     $: currentPage = Math.floor(offset / limit + 1);
 
