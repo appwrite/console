@@ -30,8 +30,6 @@
                 // Models.Deployment has no `logs`, the payload sends `logs` though
                 buildLogs = response.payload.logs;
 
-                console.log(`realtime logs: ${JSON.stringify(response.payload, null, 2)}`);
-
                 if (status === 'ready') {
                     goto(
                         `${base}/project-${$page.params.project}/sites/create-site/finish?site=${site.$id}`
