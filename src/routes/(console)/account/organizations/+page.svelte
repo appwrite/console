@@ -18,10 +18,10 @@
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
     import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
-    import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
     let addOrganization = false;
@@ -72,26 +72,25 @@
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
                             {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                                <div
-                                    class="u-flex u-cross-center"
-                                    use:tooltip={{
-                                        content:
-                                            'You are limited to 1 free organization per account'
-                                    }}>
-                                    <Pill class="eyebrow-heading-3"
-                                        >{tierToPlan(organization?.billingPlan)?.name}</Pill>
-                                </div>
+                                <Tooltip>
+                                    <div class="u-flex u-cross-center">
+                                        <Pill class="eyebrow-heading-3"
+                                            >{tierToPlan(organization?.billingPlan)?.name}</Pill>
+                                    </div>
+                                    <span slot="tooltip"
+                                        >You are limited to 1 free organization per account</span>
+                                </Tooltip>
                             {/if}
                             {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
-                                <div
-                                    class="u-flex u-cross-center"
-                                    use:tooltip={{
-                                        content: `Your trial ends on ${toLocaleDate(
+                                <Tooltip>
+                                    <div class="u-flex u-cross-center">
+                                        <Pill class="eyebrow-heading-3">TRIAL</Pill>
+                                    </div>
+                                    <span slot="tooltip"
+                                        >{`Your trial ends on ${toLocaleDate(
                                             organization.billingStartDate
-                                        )}. ${$daysLeftInTrial} days remaining.`
-                                    }}>
-                                    <Pill class="eyebrow-heading-3">TRIAL</Pill>
-                                </div>
+                                        )}. ${$daysLeftInTrial} days remaining.`}</span>
+                                </Tooltip>
                             {/if}
                         {/if}
                     </svelte:fragment>

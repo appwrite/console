@@ -23,7 +23,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
     import { Pill } from '$lib/elements';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -147,12 +147,13 @@
                                 </TableCellText>
                                 <TableCellText title="expiry date">
                                     {#if credit.status === 'expired'}
-                                        <span
-                                            use:tooltip={{
-                                                content: toLocaleDate(credit.expiration)
-                                            }}>
-                                            <Pill>Expired</Pill>
-                                        </span>
+                                        <Tooltip>
+                                            <span>
+                                                <Pill>Expired</Pill>
+                                            </span>
+                                            <span slot="tooltip"
+                                                >{toLocaleDate(credit.expiration)}</span>
+                                        </Tooltip>
                                     {:else}
                                         {toLocaleDate(credit.expiration)}
                                     {/if}

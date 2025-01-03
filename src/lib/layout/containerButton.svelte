@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let title: string;
     export let tooltipContent =
@@ -22,11 +22,7 @@
     export let buttonType: 'primary' | 'secondary' | 'text' = 'primary';
 </script>
 
-<div
-    use:tooltip={{
-        content: tooltipContent,
-        disabled: !disabled
-    }}>
+<Tooltip {disabled}>
     <Button
         size="s"
         text={buttonType === 'text'}
@@ -40,4 +36,5 @@
         {/if}
         <span class="text">{buttonText}</span>
     </Button>
-</div>
+    <div slot="tooltip">{tooltipContent}</div>
+</Tooltip>

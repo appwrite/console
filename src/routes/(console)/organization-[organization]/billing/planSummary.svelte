@@ -10,8 +10,8 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import { tooltip } from '$lib/actions/tooltip';
     import { type Models } from '@appwrite.io/console';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let invoices: Array<Invoice>;
     export let members: Models.MembershipList;
@@ -161,15 +161,14 @@
 
                 <CollapsibleItem noContent gap={4}>
                     <span class="body-text-2">Current total (USD)</span>
-                    <span class="tooltip u-cross-center" aria-label="total info">
-                        <span
-                            class="icon-info"
-                            aria-hidden="true"
-                            use:tooltip={{
-                                content:
-                                    'Totals displayed are estimates updated every 24 hours and may not accurately reflect your invoice.'
-                            }}></span>
-                    </span>
+                    <Tooltip>
+                        <span class="u-cross-center" aria-label="total info">
+                            <span class="icon-info" aria-hidden="true"></span>
+                        </span>
+                        <span slot="tooltip"
+                            >Totals displayed are estimates updated every 24 hours and may not
+                            accurately reflect your invoice.</span>
+                    </Tooltip>
                     <div class="body-text-2 u-margin-inline-start-auto">
                         {$organization?.billingPlan === BillingPlan.FREE ||
                         $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION

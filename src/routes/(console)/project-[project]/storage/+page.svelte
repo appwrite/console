@@ -9,12 +9,12 @@
     import Create from './create.svelte';
     import { Container, ContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
-    import { tooltip } from '$lib/actions/tooltip';
     import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import { canWriteBuckets } from '$lib/stores/roles';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -54,26 +54,28 @@
 
                     <svelte:fragment slot="icons">
                         <li>
-                            <span
-                                class:u-opacity-20={!bucket.encryption}
-                                class="icon-lock-closed"
-                                aria-hidden="true"
-                                use:tooltip={{
-                                    content: bucket.encryption
+                            <Tooltip>
+                                <span
+                                    class:u-opacity-20={!bucket.encryption}
+                                    class="icon-lock-closed"
+                                    aria-hidden="true" />
+                                <span slot="tooltip"
+                                    >{bucket.encryption
                                         ? 'Encryption enabled'
-                                        : 'Encryption disabled'
-                                }} />
+                                        : 'Encryption disabled'}</span>
+                            </Tooltip>
                         </li>
                         <li>
-                            <span
-                                class:u-opacity-20={!bucket.antivirus}
-                                class="icon-shield-check"
-                                aria-hidden="true"
-                                use:tooltip={{
-                                    content: bucket.antivirus
+                            <Tooltip>
+                                <span
+                                    class:u-opacity-20={!bucket.antivirus}
+                                    class="icon-shield-check"
+                                    aria-hidden="true" />
+                                <span slot="tooltip"
+                                    >{bucket.antivirus
                                         ? 'Antivirus enabled'
-                                        : 'Antivirus disabled'
-                                }} />
+                                        : 'Antivirus disabled'}</span>
+                            </Tooltip>
                         </li>
                     </svelte:fragment>
                 </GridItem1>

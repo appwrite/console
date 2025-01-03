@@ -40,10 +40,10 @@
     import Repositories from './components/repositories.svelte';
     import CreateManual from './createManual.svelte';
     import CreateGit from './createGit.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import { featuredTemplatesList, starterTemplate } from '$lib/stores/templates';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
@@ -168,22 +168,22 @@
                                 {/each}
 
                                 {#if templates.length < 6}
-                                    <li
-                                        use:tooltip={{
-                                            content: 'More runtimes coming soon'
-                                        }}>
-                                        <Box
-                                            class="u-width-full-line u-flex u-cross-center u-gap-8"
-                                            padding={16}
-                                            radius="small">
-                                            <AvatarGroup
-                                                icons={['dotnet', 'deno']}
-                                                total={4}
-                                                avatarSize="small"
-                                                color="u-color-text-gray"
-                                                bordered />
-                                        </Box>
-                                    </li>
+                                    <Tooltip>
+                                        <li>
+                                            <Box
+                                                class="u-width-full-line u-flex u-cross-center u-gap-8"
+                                                padding={16}
+                                                radius="small">
+                                                <AvatarGroup
+                                                    icons={['dotnet', 'deno']}
+                                                    total={4}
+                                                    avatarSize="small"
+                                                    color="u-color-text-gray"
+                                                    bordered />
+                                            </Box>
+                                        </li>
+                                        <span slot="tooltip">More runtimes coming soon</span>
+                                    </Tooltip>
                                 {/if}
                             {/await}
                         </ul>
