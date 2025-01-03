@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { FormList } from '$lib/elements/forms/index.js';
 
+    export let siteName = '';
     export let showDelete = false;
     const siteId = $page.params.site;
 
@@ -41,9 +42,10 @@
     icon="exclamation"
     state="warning">
     <FormList>
+        <p data-private>Are you sure you want to delete <b>{siteName}</b>?</p>
         <p data-private>
-            Are you sure you want to delete this site and all associated deployments from your
-            project?
+            The site and all associated deployments will be permanently deleted. This action is
+            irreversible.
         </p>
 
         <div class="input-check-box-friction">

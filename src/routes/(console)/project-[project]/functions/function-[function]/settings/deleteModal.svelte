@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { FormList } from '$lib/elements/forms/index.js';
+    import { func } from '$routes/(console)/project-[project]/functions/function-[function]/store';
 
     export let showDelete = false;
     const functionId = $page.params.function;
@@ -42,9 +43,10 @@
     state="warning"
     headerDivider={false}>
     <FormList>
+        <p data-private>Are you sure you want to delete <b>{$func.name}</b>?</p>
         <p data-private>
-            Are you sure you want to delete this function and all associated deployments from your
-            project?
+            The function and all associated deployments will be permanently deleted. This action is
+            irreversible.
         </p>
 
         <div class="input-check-box-friction">
