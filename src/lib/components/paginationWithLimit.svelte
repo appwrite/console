@@ -1,6 +1,7 @@
 <script lang="ts">
     import Limit from './limit.svelte';
     import Pagination from './pagination.svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let limit: number;
     export let offset: number;
@@ -8,9 +9,7 @@
     export let name: string;
 </script>
 
-<div class="u-flex u-cross-baseline u-margin-block-start-32 u-flex-wrap">
+<Layout.Stack direction="row" alignItems="center" wrap="wrap" justifyContent="space-between">
     <Limit {limit} sum={total} {name} />
-    <div class="u-margin-inline-start-auto">
-        <Pagination {limit} {offset} sum={total} />
-    </div>
-</div>
+    <Pagination {limit} {offset} sum={total} />
+</Layout.Stack>

@@ -1,9 +1,10 @@
 <script lang="ts">
     import { throttle } from '$lib/helpers/functions';
+    import { Tabs } from '@appwrite.io/pink-svelte';
 
     let showLeft = false;
     let showRight = false;
-    let tabsList: HTMLUListElement;
+    let tabsList: HTMLDivElement;
 
     function slide(direction: 'left' | 'right') {
         let scrollCompleted = 0;
@@ -32,7 +33,7 @@
 
 <svelte:window on:resize={throttle(onScroll, 25)} />
 
-<div class="tabs">
+<div style="margin-block-start: auto; ">
     {#if showLeft}
         <button
             class="tabs-button-scroll is-start"
@@ -49,11 +50,9 @@
             <span class="icon-cheveron-right" aria-hidden="true" />
         </button>
     {/if}
-    <ul
-        class="tabs-list scroll-shadow-horizontal"
-        role="tablist"
-        bind:this={tabsList}
-        on:scroll={throttle(onScroll, 25)}>
-        <slot />
-    </ul>
+    <div class=" scroll-shadow-horizontal" bind:this={tabsList} on:scroll={throttle(onScroll, 25)}>
+        <Tabs.Root>
+            <slot />
+        </Tabs.Root>
+    </div>
 </div>

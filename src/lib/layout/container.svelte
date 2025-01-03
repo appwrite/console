@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Layout } from '@appwrite.io/pink-svelte';
     export let overlapCover = false;
     export let size: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' = null;
 
@@ -12,5 +13,7 @@
     {style}
     class:u-margin-block-start-24={!overlapCover}
     class:u-margin-block-start-negative-56={overlapCover}>
-    <slot />
+    <Layout.Stack gap="xl">
+        <slot />
+    </Layout.Stack>
 </div>

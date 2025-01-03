@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { clickOnEnter } from '$lib/helpers/a11y';
+    import { Card, Layout } from '@appwrite.io/pink-svelte';
+    import type Base from '@appwrite.io/pink-svelte/dist/card/Base.svelte';
+    import type { ComponentProps } from 'svelte';
 
     type BaseProps = {
         isTile?: boolean;
@@ -19,7 +21,7 @@
         isButton?: never;
     };
 
-    type $$Props = BaseProps & (ButtonProps | AnchorProps | BaseProps);
+    type $$Props = BaseProps & (ButtonProps | AnchorProps | BaseProps) & ComponentProps<Base>;
 
     export let isTile = false;
     export let isDashed = false;
@@ -29,31 +31,35 @@
     let classes = '';
     export { classes as class };
     export let style = '';
+    export let padding: $$Props['padding'] = 'm';
+    export let radius: $$Props['radius'] = 'm';
+    export let variant: $$Props['variant'] = 'primary';
 
-    function getElement() {
-        switch (true) {
-            case !!href:
-                return 'a';
-            case isButton:
-                return 'button';
-            default:
-                return 'article';
-        }
-    }
+    $: resolvedClasses = [!isTile && 'common-section', classes].filter(Boolean).join(' ');
 </script>
 
-<svelte:element
-    this={getElement()}
-    class="card {classes}"
-    class:common-section={!isTile}
-    class:is-border-dashed={isDashed}
-    class:is-danger={danger}
-    class:is-allowed-focus={href}
-    {...$$restProps}
-    {style}
-    on:click
-    on:keyup={clickOnEnter}
-    role={href || isButton ? 'button' : 'presentation'}
-    {href}>
-    <slot />
-</svelte:element>
+{#if href}
+    <Card.Link class={resolvedClasses} {href} {style} {padding} {radius} {variant} on:click>
+        <Layout.Stack gap="xl">
+            <slot />
+        </Layout.Stack>
+    </Card.Link>
+{:else if isButton}
+    <Card.Button class={resolvedClasses} {style} {padding} {radius} {variant} on:click>
+        <Layout.Stack gap="xl">
+            <slot />
+        </Layout.Stack>
+    </Card.Button>
+{:else}
+    <Card.Base
+        class={resolvedClasses}
+        {style}
+        border={isDashed ? 'dashed' : 'solid'}
+        {padding}
+        {radius}
+        {variant}>
+        <Layout.Stack gap="xl">
+            <slot />
+        </Layout.Stack>
+    </Card.Base>
+{/if}

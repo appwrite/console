@@ -72,7 +72,7 @@
                             <TableCell>
                                 <Button
                                     on:click={() => (showDelete = true)}
-                                    round
+                                    icon
                                     text
                                     ariaLabel="Delete authenticator">
                                     <span class="icon-trash" aria-hidden="true" />

@@ -25,13 +25,11 @@
     $: disabled = !value || $groups.has(value);
 </script>
 
-<Modal
-    title="Custom permission"
-    description="Custom permissions allow you to grant access to specific users or teams using their ID and
-role."
-    bind:show
-    on:close={reset}
-    onSubmit={create}>
+<Modal title="Custom permission" bind:show on:close={reset} onSubmit={create}>
+    <span slot="description">
+        Custom permissions allow you to grant access to specific users or teams using their ID and
+        role.
+    </span>
     <FormList>
         <FormItem>
             <InputText

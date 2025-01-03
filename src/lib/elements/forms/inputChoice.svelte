@@ -1,6 +1,7 @@
 <script lang="ts">
     import { tooltip as tooltipAction } from '$lib/actions/tooltip';
-    import { FormItem, Helper } from '.';
+    import { Layout, Selector } from '@appwrite.io/pink-svelte';
+    import { Helper } from '.';
 
     export let type: 'checkbox' | 'switchbox' = 'checkbox';
     export let label: string;
@@ -29,19 +30,28 @@
     }
 </script>
 
-<FormItem>
-    <label class="choice-item" for={id}>
-        <input
-            {id}
-            {disabled}
-            {required}
-            type="checkbox"
-            class:switch={type === 'switchbox'}
-            aria-checked={value}
-            bind:this={element}
-            bind:checked={value}
-            on:change
-            on:invalid={handleInvalid} />
+<div class="choice-item">
+    <Layout.Stack direction="row" alignItems="flex-start">
+        {#if type === 'switchbox'}
+            <Selector.Switch
+                {id}
+                {disabled}
+                {required}
+                bind:value
+                bind:checked={value}
+                on:change
+                on:invalid={handleInvalid} />
+        {:else}
+            <Selector.Checkbox
+                {id}
+                {disabled}
+                size="s"
+                {required}
+                bind:value
+                bind:checked={value}
+                on:invalid={handleInvalid}
+                on:change />
+        {/if}
 
         <div class="choice-item-content" class:u-width-full-line={fullWidth}>
             {#if (label && showLabel) || tooltip}
@@ -69,8 +79,8 @@
                 <p class="choice-item-paragraph"><slot /></p>
             {/if}
         </div>
-    </label>
-    {#if error}
-        <Helper type="warning">{error}</Helper>
-    {/if}
-</FormItem>
+    </Layout.Stack>
+</div>
+{#if error}
+    <Helper type="warning">{error}</Helper>
+{/if}

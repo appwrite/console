@@ -39,7 +39,7 @@ test('shows button - danger', () => {
 });
 
 test('shows button - round', () => {
-    const { getByRole } = render(Button, { round: true });
+    const { getByRole } = render(Button, { icon: true });
 
     expect(getByRole('button')).toHaveClass('is-only-icon');
 });

@@ -114,7 +114,7 @@
                 <TableCell width={40} showOverflow>
                     <DropList bind:show={showDropdown[index]} placement="bottom-start" noArrow>
                         <Button
-                            round
+                            icon
                             text
                             ariaLabel="More options"
                             on:click={() => {

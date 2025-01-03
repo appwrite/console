@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import { WizardWithSteps } from '$lib/layout';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import Step3 from './wizard/step3.svelte';
@@ -152,4 +152,4 @@
     $wizard.finalAction = create;
 </script>
 
-<Wizard title="Create message" steps={stepsComponents} finalAction="Send" />
+<WizardWithSteps title="Create message" steps={stepsComponents} finalAction="Send" />
