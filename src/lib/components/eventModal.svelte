@@ -368,7 +368,7 @@
                         disabled={!inputValue}
                         class="options-list-button"
                         aria-label="copy text">
-                        <Copy value={inputValue} appendTo={copyParent}>
+                        <Copy value={inputValue} tooltipDisabled={!inputValue}>
                             <span class="icon-duplicate" aria-hidden="true" />
                         </Copy>
                     </button>

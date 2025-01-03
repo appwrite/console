@@ -9,6 +9,7 @@
     export let value: string;
     export let event: string = null;
     export let eventContext = 'click_id_tag';
+    export let tooltipDisabled = false;
 
     let content = 'Click to copy';
 
@@ -32,7 +33,7 @@
     }
 </script>
 
-<Tooltip>
+<Tooltip disabled={tooltipDisabled}>
     <span
         data-private
         role="button"
