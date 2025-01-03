@@ -4,11 +4,10 @@
     import {
         TableBody,
         TableCell,
-        TableCellLink,
         TableCellHead,
         TableHeader,
-        TableRow,
-        Table
+        Table,
+        TableRowLink
     } from '$lib/elements/table';
     import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -225,27 +224,26 @@
                         }
                     ]} />
                 {#if data.usage.executionsBreakdown.length > 0}
-                    <Table noMargin noStyles>
+                    <Table noMargin noStyles style="table-layout: auto">
                         <TableHeader>
-                            <TableCellHead width={285}>Function</TableCellHead>
+                            <TableCellHead>Function</TableCellHead>
                             <TableCellHead>Usage</TableCellHead>
-                            <TableCellHead width={140} />
+                            <TableCellHead />
                         </TableHeader>
                         <TableBody>
                             {#each data.usage.executionsBreakdown as func}
-                                <TableRow>
+                                <TableRowLink
+                                    href={`${baseRoute}/functions/function-${func.resourceId}`}>
                                     <TableCell title="Function">
                                         {func.name ?? func.resourceId}
                                     </TableCell>
                                     <TableCell title="Usage">
                                         {formatNum(func.value)} executions
                                     </TableCell>
-                                    <TableCellLink
-                                        href={`${baseRoute}/functions/function-${func.resourceId}`}
-                                        title="View function">
-                                        View function
-                                    </TableCellLink>
-                                </TableRow>
+                                    <TableCell right={true}>
+                                        <span class="icon-cheveron-right u-cross-child-center" />
+                                    </TableCell>
+                                </TableRowLink>
                             {/each}
                         </TableBody>
                     </Table>

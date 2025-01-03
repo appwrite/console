@@ -44,9 +44,9 @@
     title={`${selectedVar ? 'Update' : 'Create'} ${isGlobal ? 'global' : 'environment'} variable`}>
     <svelte:fragment slot="description">
         <span>
-            Set the environment variables or secret keys that will be passed to {isGlobal
-                ? `all ${product}s within your project`
-                : `your ${product}s`}.
+            Set the environment variables or secret keys that will be passed to {!isGlobal
+                ? `your ${product}`
+                : `all functions and sites within your project`}.
         </span>
     </svelte:fragment>
     <Layout.Stack>

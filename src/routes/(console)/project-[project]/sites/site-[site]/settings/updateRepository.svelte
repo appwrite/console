@@ -82,7 +82,7 @@
                 silentMode || undefined,
                 selectedDir || undefined
             );
-            await invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',
                 message: `${site.name} git configuration has been updated successfully`

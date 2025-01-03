@@ -30,7 +30,7 @@
     }
 </script>
 
-<label class="choice-item" for={id}>
+<div class="choice-item">
     <Layout.Stack direction="row" alignItems="flex-start">
         {#if type === 'switchbox'}
             <Selector.Switch
@@ -79,7 +79,7 @@
             {/if}
         </div>
     </Layout.Stack>
-</label>
+</div>
 {#if error}
     <Helper type="warning">{error}</Helper>
 {/if}

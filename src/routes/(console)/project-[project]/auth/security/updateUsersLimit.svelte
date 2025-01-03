@@ -9,6 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import { tick } from 'svelte';
 
     let isLimited = $project?.authLimit !== 0;
     let newLimit = isLimited ? $project?.authLimit : 100;
@@ -40,6 +41,14 @@
             });
             trackError(error, Submit.AuthLimitUpdate);
         }
+    }
+
+    let maxUsersInputField: HTMLInputElement | null = null;
+
+    $: if (isLimited && maxUsersInputField) {
+        tick().then(() => {
+            maxUsersInputField.focus();
+        });
     }
 </script>
 
@@ -96,7 +105,8 @@
                         class="input-text"
                         max="10000"
                         disabled={!isLimited}
-                        bind:value={newLimit} />
+                        bind:value={newLimit}
+                        bind:this={maxUsersInputField} />
                 </div>
             </li>
         </ul>

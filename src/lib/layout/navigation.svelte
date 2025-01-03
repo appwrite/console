@@ -15,8 +15,10 @@
     import { getContext } from 'svelte';
     import type { Writable } from 'svelte/store';
     import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { showSubNavigation } from '$lib/stores/layout';
 
     export let isOpen = false;
+
 
     $: project = $page.params.project;
     $: projectPath = `${base}/project-${project}`;
@@ -44,12 +46,12 @@
     }
 
     function openFeedback() {
-        isOpen = false;
+        $showSubNavigation = false;
         wizard.start(Create);
     }
 
     function openSupport() {
-        isOpen = false;
+        $showSubNavigation = false;
         $showSupportModal = true;
     }
 </script>
