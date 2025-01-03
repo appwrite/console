@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { tooltip as tooltipAction } from '$lib/actions/tooltip';
     import { Tooltip } from '@appwrite.io/pink-svelte';
 
     interface $$Props extends Partial<HTMLLabelElement> {
@@ -32,9 +31,8 @@
 {/if}
 
 {#if tooltip}
-    <Tooltip>
+    <Tooltip placement="top">
         <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)" />
-
-        <p slot="tooltip">{tooltip}</p>
+        <div slot="tooltip">{tooltip}</div>
     </Tooltip>
 {/if}
