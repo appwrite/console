@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { FormList } from '$lib/elements/forms/index.js';
-    import { func } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+    import { func } from '../store';
 
     export let showDelete = false;
     const functionId = $page.params.function;
