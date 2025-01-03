@@ -19,6 +19,7 @@
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
     import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -184,12 +185,14 @@
                                 required>
                                 <button
                                     slot="options"
-                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
                                     on:click={() => (number.otp = generateOTP())}
                                     class="options-list-button"
                                     aria-label="regenerate text"
                                     type="button">
-                                    <span class="icon-refresh" aria-hidden="true"></span>
+                                    <Tooltip
+                                        ><span class="icon-refresh" aria-hidden="true"></span><span
+                                            slot="tooltip">Regenerate</span
+                                        ></Tooltip>
                                 </button>
                             </InputOTP>
                             <FormItemPart>
@@ -201,7 +204,10 @@
                                     on:click={() => {
                                         deletePhoneNumber(index);
                                     }}>
-                                    <span class="icon-x" aria-hidden="true" />
+                                    <Tooltip
+                                        ><span class="icon-refresh" aria-hidden="true"></span><span
+                                            slot="tooltip">Regenerate</span
+                                        ></Tooltip>
                                 </Button>
                             </FormItemPart>
                         </FormItem>
