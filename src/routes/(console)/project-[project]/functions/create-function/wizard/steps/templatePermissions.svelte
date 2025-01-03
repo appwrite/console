@@ -38,7 +38,7 @@
                     <p class="name u-bold">
                         Public (anyone can execute) <Tooltip
                             ><span class="icon-info" />
-                            <span
+                            <span slot="tooltip"
                                 >You can further customize execute permissions in your function
                                 settings.</span>
                         </Tooltip>
