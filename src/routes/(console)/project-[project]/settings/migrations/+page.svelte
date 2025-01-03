@@ -191,7 +191,7 @@
                                         {capitalize(status)}
                                     </Status>
                                 </TableCell>
-                                <TableCell title="">
+                                <TableCell title="" showOverflow>
                                     <div class="u-flex u-main-end">
                                         <Button secondary on:click={() => showDetails(entry)}
                                             >Details</Button>

@@ -143,7 +143,6 @@
         <Heading tag="h6" size="7">Users</Heading>
 
         <p class="text">The total number of users across all projects in your organization.</p>
-
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.users}
                 {@const current = data.organizationUsage.usersTotal}
@@ -169,7 +168,7 @@
                             {
                                 name: 'Users',
                                 data: accumulateFromEndingTotal(
-                                    data.organizationUsage.users,
+                                    data.usersUsageToDate,
                                     data.organizationUsage.usersTotal
                                 )
                             }

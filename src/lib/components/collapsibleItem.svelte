@@ -57,9 +57,9 @@
 
 <style lang="scss">
     // TODO: remove once pink is updated
-    .collapsible-item {
+    .collapsible-item:not(.is-info) {
         .collapsible-wrapper {
-            padding-left: 0;
+            padding-left: 0.5rem;
         }
         .collapsible-wrapper.is-disabled {
             cursor: not-allowed;
