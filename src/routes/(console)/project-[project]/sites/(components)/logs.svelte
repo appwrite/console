@@ -93,10 +93,7 @@
 
     async function cancelDeployment() {
         try {
-            await sdk.forProject.sites.updateDeploymentBuild(
-                deployment.resourceId,
-                deployment.$id
-            );
+            await sdk.forProject.sites.updateDeploymentBuild(deployment.resourceId, deployment.$id);
             await invalidate(Dependencies.DEPLOYMENTS);
             addNotification({
                 type: 'success',

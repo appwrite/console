@@ -30,4 +30,4 @@
     </svelte:fragment>
 </CardGrid>
 
-<Delete bind:showDelete />
+<Delete siteName={site.name} bind:showDelete />
