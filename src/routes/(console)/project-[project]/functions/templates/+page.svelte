@@ -2,7 +2,6 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip.js';
     import {
         Collapsible,
         CollapsibleItem,
@@ -21,6 +20,7 @@
     import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
     import { debounce } from '$lib/helpers/debounce';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -228,15 +228,15 @@
                                         {/each}
                                         {#if hidden.length}
                                             <li class="avatars-group-item">
-                                                <div
-                                                    class="avatar is-size-small"
-                                                    use:tooltip={{
-                                                        content: hidden
+                                                <Tooltip>
+                                                    <div class="avatar is-size-small">
+                                                        +{hidden.length}
+                                                    </div>
+                                                    <span slot="tooltip"
+                                                        >{hidden
                                                             .map((n) => n.name)
-                                                            .join(', ')
-                                                    }}>
-                                                    +{hidden.length}
-                                                </div>
+                                                            .join(', ')}</span>
+                                                </Tooltip>
                                             </li>
                                         {/if}
                                     </ul>

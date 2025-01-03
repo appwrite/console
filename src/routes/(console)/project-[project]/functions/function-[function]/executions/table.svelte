@@ -19,6 +19,7 @@
     import { func } from '../store';
     import Delete from './delete.svelte';
     import { Button } from '$lib/elements/forms';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let showDropdown = [];
     let showDelete = false;
@@ -64,23 +65,24 @@
                         {:else if column.id === 'status'}
                             <TableCell width={column.width} title={column.title}>
                                 {@const status = execution.status}
-                                <div
-                                    use:tooltip={{
-                                        content: `Scheduled to execute on ${toLocaleDateTime(execution.scheduledAt)}`,
-                                        disabled: !execution?.scheduledAt || status !== 'scheduled'
-                                    }}>
-                                    <Pill
-                                        warning={status === 'waiting' || status === 'building'}
-                                        danger={status === 'failed'}
-                                        info={status === 'completed' || status === 'ready'}>
-                                        {#if status === 'scheduled'}
-                                            <span class="icon-clock" aria-hidden="true" />
-                                            {timeFromNow(execution.scheduledAt)}
-                                        {:else}
-                                            {status}
-                                        {/if}
-                                    </Pill>
-                                </div>
+                                <Tooltip
+                                    disabled={!execution?.scheduledAt || status !== 'scheduled'}>
+                                    <div>
+                                        <Pill
+                                            warning={status === 'waiting' || status === 'building'}
+                                            danger={status === 'failed'}
+                                            info={status === 'completed' || status === 'ready'}>
+                                            {#if status === 'scheduled'}
+                                                <span class="icon-clock" aria-hidden="true" />
+                                                {timeFromNow(execution.scheduledAt)}
+                                            {:else}
+                                                {status}
+                                            {/if}
+                                        </Pill>
+                                    </div>
+                                    <span slot="tooltip"
+                                        >{`Scheduled to execute on ${toLocaleDateTime(execution.scheduledAt)}`}</span>
+                                </Tooltip>
                             </TableCell>
                         {:else if column.id === '$createdAt'}
                             <TableCellText width={column.width} title={column.title}>

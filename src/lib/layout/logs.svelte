@@ -19,6 +19,7 @@
     import { Button } from '$lib/elements/forms';
     import { BillingPlan } from '$lib/constants';
     import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -129,27 +130,27 @@
                         {/if}
                     </ul>
                     <div class="status u-margin-inline-start-auto">
-                        <div
-                            use:tooltip={{
-                                content: `Scheduled to execute on ${toLocaleDateTime(execution.scheduledAt)}`,
-                                disabled:
-                                    !execution?.scheduledAt || execution.status !== 'scheduled',
-                                maxWidth: 180
-                            }}>
-                            <Pill
-                                warning={execution.status === 'waiting' ||
-                                    execution.status === 'building'}
-                                danger={execution.status === 'failed'}
-                                info={execution.status === 'completed' ||
-                                    execution.status === 'ready'}>
-                                {#if execution.status === 'scheduled'}
-                                    <span class="icon-clock" aria-hidden="true" />
-                                    {timeFromNow(execution.scheduledAt)}
-                                {:else}
-                                    {execution.status}
-                                {/if}
-                            </Pill>
-                        </div>
+                        <Tooltip
+                            maxWidth="180px"
+                            disabled={!execution?.scheduledAt || execution.status !== 'scheduled'}>
+                            <div>
+                                <Pill
+                                    warning={execution.status === 'waiting' ||
+                                        execution.status === 'building'}
+                                    danger={execution.status === 'failed'}
+                                    info={execution.status === 'completed' ||
+                                        execution.status === 'ready'}>
+                                    {#if execution.status === 'scheduled'}
+                                        <span class="icon-clock" aria-hidden="true" />
+                                        {timeFromNow(execution.scheduledAt)}
+                                    {:else}
+                                        {execution.status}
+                                    {/if}
+                                </Pill>
+                            </div>
+                            <span slot="tooltip"
+                                >{`Scheduled to execute on ${toLocaleDateTime(execution.scheduledAt)}`}</span>
+                        </Tooltip>
                     </div>
                 </div>
             </div>

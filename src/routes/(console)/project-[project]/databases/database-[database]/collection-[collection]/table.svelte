@@ -3,7 +3,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Alert, FloatingActionBar, Id, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputChoice } from '$lib/elements/forms';
@@ -31,6 +30,7 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
     import type { ColumnType } from '$lib/helpers/types';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -221,15 +221,12 @@
                         {:else}
                             {@const formatted = formatColumn(document[column.id])}
                             <TableCell>
-                                <div
-                                    class="u-width-fit-content"
-                                    use:tooltip={{
-                                        content: formatted.whole,
-                                        disabled: !formatted.truncated
-                                    }}
-                                    data-private>
-                                    {formatted.value}
-                                </div>
+                                <Tooltip disabled={!formatted.truncated}>
+                                    <div class="u-width-fit-content" data-private>
+                                        {formatted.value}
+                                    </div>
+                                    <span>{formatted.whole}</span>
+                                </Tooltip>
                             </TableCell>
                         {/if}
                     {/if}

@@ -28,6 +28,7 @@
     import { functionsList } from './store';
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -113,13 +114,12 @@
                     <svelte:fragment slot="icons">
                         {#if func.schedule}
                             <li>
-                                <span
-                                    class="icon-clock"
-                                    aria-hidden="true"
-                                    use:tooltip={{
-                                        content: `Next execution:
-                                        ${getNextScheduledExecution(func)}`
-                                    }} />
+                                <Tooltip>
+                                    <span class="icon-clock" aria-hidden="true" />
+                                    <span slot="tooltip"
+                                        >{`Next execution:
+                                        ${getNextScheduledExecution(func)}`}</span>
+                                </Tooltip>
                             </li>
                         {/if}
                     </svelte:fragment>

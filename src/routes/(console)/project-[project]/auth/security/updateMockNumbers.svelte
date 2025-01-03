@@ -164,12 +164,14 @@
                                 required>
                                 <button
                                     slot="options"
-                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
                                     on:click={() => (number.phone = generateNumber())}
                                     class="options-list-button"
                                     aria-label="regenerate text"
                                     type="button">
-                                    <span class="icon-refresh" aria-hidden="true"></span>
+                                    <Tooltip>
+                                        <span class="icon-refresh" aria-hidden="true"></span>
+                                        <span slot="tooltip">Regenerate</span>
+                                    </Tooltip>
                                 </button>
                             </InputPhone>
                             <InputOTP

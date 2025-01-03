@@ -33,6 +33,7 @@
     import { readOnly } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { canWriteTeams } from '$lib/stores/roles';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -51,19 +52,18 @@
         let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name">
             {#if $canWriteTeams}
-                <div
-                    use:tooltip={{
-                        content: `Upgrade to add more teams`,
-                        disabled: !isButtonDisabled
-                    }}>
-                    <Button
-                        on:click={() => ($showCreateTeam = true)}
-                        event="create_team"
-                        disabled={isButtonDisabled}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create team</span>
-                    </Button>
-                </div>
+                <Tooltip disabled={!isButtonDisabled}>
+                    <div>
+                        <Button
+                            on:click={() => ($showCreateTeam = true)}
+                            event="create_team"
+                            disabled={isButtonDisabled}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Create team</span>
+                        </Button>
+                    </div>
+                    <span slot="tooltip">Upgrade to add more teams</span>
+                </Tooltip>
             {/if}
         </SearchQuery>
     </ContainerHeader>
