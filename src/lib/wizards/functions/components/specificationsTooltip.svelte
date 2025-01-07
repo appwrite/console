@@ -10,7 +10,7 @@
             class="u-bold u-block"
             target="_blank"
             rel="noopener noreferrer"
-            href="https://appwrite.io/docs/products/functions/specifications">Learn more</a>
+            href="https://appwrite.io/docs/advanced/platform/specifications">Learn more</a>
         <Button href={$upgradeURL} secondary fullWidthMobile event={'specifications_cta_upgrade'}>
             <span class="text">Upgrade Plan</span>
         </Button>
