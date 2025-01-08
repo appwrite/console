@@ -2,7 +2,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
-    import { tooltip } from '$lib/actions/tooltip';
     import { BillingPlan } from '$lib/constants';
     import { isMac } from '$lib/helpers/platform';
     import { slide } from '$lib/helpers/transition';
@@ -15,7 +14,11 @@
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import { getContext } from 'svelte';
     import type { Writable } from 'svelte/store';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
     import { showSubNavigation } from '$lib/stores/layout';
+
+    export let isOpen = false;
+
 
     $: project = $page.params.project;
     $: projectPath = `${base}/project-${project}`;
@@ -62,143 +65,127 @@
                 <section class="drop-section">
                     <ul class="drop-list">
                         <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/overview`
-                                )}
-                                on:click={() => trackEvent('click_menu_overview')}
-                                href={projectPath}
-                                use:tooltip={{
-                                    content: 'Overview',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-chart-bar" aria-hidden="true" />
-                                <span class="text">Overview</span>
-                            </a>
-                        </li>
-                        <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/auth`
-                                )}
-                                on:click={() => trackEvent('click_menu_auth')}
-                                href={`${projectPath}/auth`}
-                                use:tooltip={{
-                                    content: 'Auth',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-user-group" aria-hidden="true" />
-                                <span class="text">Auth</span>
-                            </a>
-                        </li>
-                        {#if $canSeeDatabases}
-                            <li class="drop-list-item">
+                            <Tooltip placement="right" disabled={!narrow} inline={false}>
                                 <a
                                     class="drop-button"
                                     class:is-selected={$page.url.pathname.startsWith(
-                                        `${projectPath}/databases`
+                                        `${projectPath}/overview`
                                     )}
-                                    on:click={() => trackEvent('click_menu_databases')}
-                                    href={`${projectPath}/databases`}
-                                    use:tooltip={{
-                                        content: 'Databases',
-                                        placement: 'right',
-                                        disabled: !narrow
-                                    }}>
-                                    <span class="icon-database" aria-hidden="true" />
-                                    <span class="text">Databases</span>
+                                    on:click={() => trackEvent('click_menu_overview')}
+                                    href={projectPath}>
+                                    <span class="icon-chart-bar" aria-hidden="true" />
+                                    <span class="text">Overview</span>
                                 </a>
+                                <div slot="tooltip">Overview</div>
+                            </Tooltip>
+                        </li>
+                        <li class="drop-list-item">
+                            <Tooltip placement="right" disabled={!narrow} inline={false}>
+                                <a
+                                    class="drop-button"
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/auth`
+                                    )}
+                                    on:click={() => trackEvent('click_menu_auth')}
+                                    href={`${projectPath}/auth`}>
+                                    <span class="icon-user-group" aria-hidden="true" />
+                                    <span class="text">Auth</span>
+                                </a>
+                                <div slot="tooltip">Auth</div>
+                            </Tooltip>
+                        </li>
+                        {#if $canSeeDatabases}
+                            <li class="drop-list-item">
+                                <Tooltip placement="right" disabled={!narrow} inline={false}>
+                                    <a
+                                        class="drop-button"
+                                        class:is-selected={$page.url.pathname.startsWith(
+                                            `${projectPath}/databases`
+                                        )}
+                                        on:click={() => trackEvent('click_menu_databases')}
+                                        href={`${projectPath}/databases`}>
+                                        <span class="icon-database" aria-hidden="true" />
+                                        <span class="text">Databases</span>
+                                    </a>
+                                    <span slot="tooltip">Databases</span>
+                                </Tooltip>
                             </li>
                         {/if}
                         <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/functions`
-                                )}
-                                on:click={() => trackEvent('click_menu_functions')}
-                                href={`${projectPath}/functions`}
-                                use:tooltip={{
-                                    content: 'Functions',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-lightning-bolt" aria-hidden="true" />
-                                <span class="text">Functions</span>
-                            </a>
+                            <Tooltip placement="right" disabled={!narrow} inline={false}>
+                                <a
+                                    class="drop-button"
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/functions`
+                                    )}
+                                    on:click={() => trackEvent('click_menu_functions')}
+                                    href={`${projectPath}/functions`}>
+                                    <span class="icon-lightning-bolt" aria-hidden="true" />
+                                    <span class="text">Functions</span>
+                                </a>
+                                <span slot="tooltip">Functions</span>
+                            </Tooltip>
                         </li>
                         <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/messaging`
-                                )}
-                                on:click={() => trackEvent('click_menu_messaging')}
-                                href={`${projectPath}/messaging`}
-                                use:tooltip={{
-                                    content: 'Messaging',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-send" aria-hidden="true" />
-                                <span class="text">Messaging</span>
-                            </a>
+                            <Tooltip placement="right" disabled={!narrow} inline={false}>
+                                <a
+                                    class="drop-button"
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/messaging`
+                                    )}
+                                    on:click={() => trackEvent('click_menu_messaging')}
+                                    href={`${projectPath}/messaging`}>
+                                    <span class="icon-send" aria-hidden="true" />
+                                    <span class="text">Messaging</span>
+                                </a>
+                                <span slot="tooltip">Messaging</span>
+                            </Tooltip>
                         </li>
                         <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/sites`
-                                )}
-                                on:click={() => trackEvent('click_menu_sites')}
-                                href={`${projectPath}/sites`}
-                                use:tooltip={{
-                                    content: 'Sites',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-globe-alt" aria-hidden="true" />
-                                <span class="text">Sites</span>
-                            </a>
+                            <Tooltip placement="right" disabled={!narrow} inline={false}>
+                                <a
+                                    class="drop-button"
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/sites`
+                                    )}
+                                    on:click={() => trackEvent('click_menu_sites')}
+                                    href={`${projectPath}/sites`}>
+                                    <span class="icon-globe-alt" aria-hidden="true" />
+                                    <span class="text">Sites</span>
+                                </a>
+                                <span slot="tooltip">Sites</span>
+                            </Tooltip>
                         </li>
                         <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/storage`
-                                )}
-                                on:click={() => trackEvent('click_menu_storage')}
-                                href={`${projectPath}/storage`}
-                                use:tooltip={{
-                                    content: 'Storage',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-folder" aria-hidden="true" />
-                                <span class="text">Storage</span>
-                            </a>
+                            <Tooltip placement="right" disabled={!narrow} inline={false}>
+                                <a
+                                    class="drop-button"
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/storage`
+                                    )}
+                                    on:click={() => trackEvent('click_menu_storage')}
+                                    href={`${projectPath}/storage`}>
+                                    <span class="icon-folder" aria-hidden="true" />
+                                    <span class="text">Storage</span>
+                                </a>
+                                <span slot="tooltip">Storage</span>
+                            </Tooltip>
                         </li>
                         <li class="drop-list-item is-not-desktop">
-                            <a
-                                class="drop-button"
-                                href={`${projectPath}/settings`}
-                                on:click={() => trackEvent('click_menu_settings')}
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/settings`
-                                )}
-                                title="Settings"
-                                use:tooltip={{
-                                    content: 'Settings',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-cog" aria-hidden="true" />
-                                <span class="text">Settings</span>
-                            </a>
+                            <Tooltip placement="right" disabled={!narrow} inline={false}>
+                                <a
+                                    class="drop-button"
+                                    href={`${projectPath}/settings`}
+                                    on:click={() => trackEvent('click_menu_settings')}
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/settings`
+                                    )}
+                                    title="Settings">
+                                    <span class="icon-cog" aria-hidden="true" />
+                                    <span class="text">Settings</span>
+                                </a>
+                                <span slot="tooltip">Settings</span>
+                            </Tooltip>
                         </li>
                     </ul>
                 </section>
@@ -206,20 +193,20 @@
 
             <div class="side-nav-bottom">
                 <section class="drop-section">
-                    <a
-                        class="drop-button is-only-desktop"
-                        href={`${projectPath}/settings`}
-                        on:click={() => trackEvent('click_menu_settings')}
-                        class:is-selected={$page.url.pathname.startsWith(`${projectPath}/settings`)}
-                        title="Settings"
-                        use:tooltip={{
-                            content: 'Settings',
-                            placement: 'right',
-                            disabled: !narrow
-                        }}>
-                        <span class="icon-cog" aria-hidden="true" />
-                        <span class="text">Settings</span>
-                    </a>
+                    <Tooltip placement="right" disabled={!narrow} inline={false}>
+                        <a
+                            class="drop-button is-only-desktop"
+                            href={`${projectPath}/settings`}
+                            on:click={() => trackEvent('click_menu_settings')}
+                            class:is-selected={$page.url.pathname.startsWith(
+                                `${projectPath}/settings`
+                            )}
+                            title="Settings">
+                            <span class="icon-cog" aria-hidden="true" />
+                            <span class="text">Settings</span>
+                        </a>
+                        <span slot="tooltip">Settings</span>
+                    </Tooltip>
 
                     <ul class="drop-list is-not-desktop">
                         {#if isCloud && $organization?.billingPlan !== BillingPlan.SCALE}
@@ -245,18 +232,18 @@
         {/if}
 
         {#if subNavigation}
-            <button
-                class="side-nav-button button is-small is-secondary is-not-mobile"
-                aria-label="resize menu"
-                on:click={() => (narrow = !narrow)}
-                use:tooltip={{
-                    content: isMac() ? '⌥ + S' : 'Alt + S'
-                }}>
-                <span
-                    class:icon-cheveron-right={narrow}
-                    class:icon-cheveron-left={!narrow}
-                    aria-hidden="true" />
-            </button>
+            <Tooltip placement="right" disabled={!narrow} inline={false}>
+                <button
+                    class="side-nav-button button is-small is-secondary is-not-mobile"
+                    aria-label="resize menu"
+                    on:click={() => (narrow = !narrow)}>
+                    <span
+                        class:icon-cheveron-right={narrow}
+                        class:icon-cheveron-left={!narrow}
+                        aria-hidden="true" />
+                </button>
+                <span slot="tooltip">{isMac() ? '⌥ + S' : 'Alt + S'}</span>
+            </Tooltip>
         {/if}
     </div>
 

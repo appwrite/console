@@ -44,12 +44,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
-    import { tooltip } from '$lib/actions/tooltip';
     import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -96,19 +96,18 @@
     <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={usedStorage}>
         <svelte:fragment let:isButtonDisabled>
             <SearchQuery search={data.search} placeholder="Search by filename">
-                <div
-                    use:tooltip={{
-                        content: `Upgrade to add more files`,
-                        disabled: !isButtonDisabled
-                    }}>
-                    <Button
-                        on:click={() => wizard.start(Create)}
-                        event="create_file"
-                        disabled={isButtonDisabled}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create file</span>
-                    </Button>
-                </div>
+                <Tooltip disabled={!isButtonDisabled}>
+                    <div>
+                        <Button
+                            on:click={() => wizard.start(Create)}
+                            event="create_file"
+                            disabled={isButtonDisabled}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Create file</span>
+                        </Button>
+                    </div>
+                    <span slot="tooltip">Upgrade to add more files</span>
+                </Tooltip>
             </SearchQuery>
         </svelte:fragment>
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>

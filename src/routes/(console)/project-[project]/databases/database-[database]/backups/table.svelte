@@ -27,6 +27,7 @@
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
     import { Dependencies } from '$lib/constants';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -155,12 +156,12 @@
             <TableRow>
                 <TableCellCheck id={backup.$id} bind:selectedIds={selectedBackups} />
                 <TableCell title={backup.$createdAt}>
-                    <span
-                        use:tooltip={{
-                            content: timeFromNow(backup.$createdAt)
-                        }}>
-                        {cleanBackupName(backup)}
-                    </span>
+                    <Tooltip>
+                        <span>
+                            {cleanBackupName(backup)}
+                        </span>
+                        <span slot="tooltip">{timeFromNow(backup.$createdAt)}</span>
+                    </Tooltip>
                 </TableCell>
                 <TableCell title="Backup Size">
                     {#if backup.status === 'completed'}
@@ -184,14 +185,15 @@
                 </TableCell>
                 <TableCell title="Backup Policy">
                     <div class="u-flex u-main-space-between u-cross-baseline">
-                        <span
-                            use:tooltip={{
-                                content: policy
+                        <Tooltip>
+                            <span>
+                                {policy?.name || 'Manual'}
+                            </span>
+                            <span slot="tooltip"
+                                >{policy
                                     ? `Retained until: ${formattedRetainedUntil}`
-                                    : `Retained forever`
-                            }}>
-                            {policy?.name || 'Manual'}
-                        </span>
+                                    : `Retained forever`}</span>
+                        </Tooltip>
                     </div>
                 </TableCell>
 

@@ -20,7 +20,7 @@
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlan } from '$lib/constants';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let tier: Tier;
     export let members: number;
@@ -74,9 +74,10 @@
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Free limit</TableCellHead>
             <TableCellHead>
-                Excess usage <span
-                    use:tooltip={{ content: 'Metrics are estimates updated every 24 hours' }}
-                    class="icon-info"></span>
+                Excess usage <Tooltip
+                    ><span class="icon-info"></span>
+                    <span slot="tooltip">Metrics are estimates updated every 24 hours</span>
+                </Tooltip>
             </TableCellHead>
         </TableHeader>
         <TableBody>

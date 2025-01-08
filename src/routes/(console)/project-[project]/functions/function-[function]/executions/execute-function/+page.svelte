@@ -4,7 +4,6 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { timer } from '$lib/actions/timer';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Alert, Card, Id } from '$lib/components';
 
     import { Dependencies } from '$lib/constants';
@@ -45,6 +44,7 @@
         toLocaleTimeISO
     } from '$lib/helpers/date';
     import { last } from '$lib/helpers/array';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let previousPage: string = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/executions`;
 
@@ -195,12 +195,13 @@
                         <h3>
                             <span class="body-text-2 u-bold">Headers</span>
                             <span class="optional">(optional)</span>
-                            <span
-                                use:tooltip={{
-                                    content:
-                                        'Headers should contain alphanumeric characters (a-z, A-Z, and 0-9) and hyphens only (- and _).'
-                                }}
-                                class="icon-info"></span>
+                            <Tooltip placement="top"
+                                ><span class="icon-info"></span>
+                                <div slot="tooltip">
+                                    Headers should contain alphanumeric characters (a-z, A-Z, and
+                                    0-9) and hyphens only (- and _).
+                                </div>
+                            </Tooltip>
                         </h3>
 
                         <FormList class="u-gap-8 u-margin-block-start-8">
@@ -356,30 +357,29 @@
                         <p>
                             {humanFileSize(deployment.size + deployment.buildSize).value +
                                 humanFileSize(deployment.size + deployment.buildSize).unit}
-                            <button
-                                type="button"
-                                on:click|preventDefault
-                                class="tooltip"
-                                aria-label="input tooltip"
-                                use:tooltip={{
-                                    content: `
-                                <p><b>Deployment size:</b> ${
-                                    humanFileSize(deployment.size).value +
-                                    humanFileSize(deployment.size).unit
-                                }</p>
-                                <p><b>Build size:</b> ${
-                                    humanFileSize(deployment.buildSize).value +
-                                    humanFileSize(deployment.buildSize).unit
-                                }</p>
-                            `,
-                                    allowHTML: true,
-                                    appendTo: 'parent'
-                                }}>
-                                <span
-                                    class="icon-info"
-                                    aria-hidden="true"
-                                    style="font-size: var(--icon-size-small)" />
-                            </button>
+                            <Tooltip>
+                                <button
+                                    type="button"
+                                    on:click|preventDefault
+                                    aria-label="input tooltip">
+                                    <span
+                                        class="icon-info"
+                                        aria-hidden="true"
+                                        style="font-size: var(--icon-size-small)" />
+                                </button>
+                                <div slot="tooltip">
+                                    <p>
+                                        <b>Deployment size:</b>
+                                        {humanFileSize(deployment.size).value +
+                                            humanFileSize(deployment.size).unit}
+                                    </p>
+                                    <p>
+                                        <b>Build size:</b>
+                                        {humanFileSize(deployment.buildSize).value +
+                                            humanFileSize(deployment.buildSize).unit}
+                                    </p>
+                                </div>
+                            </Tooltip>
                         </p>
                     </li>
                 </ul>

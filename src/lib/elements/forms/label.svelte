@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { tooltip as tooltipAction } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     interface $$Props extends Partial<HTMLLabelElement> {
         required?: boolean;
@@ -31,12 +31,8 @@
 {/if}
 
 {#if tooltip}
-    <button
-        type="button"
-        on:click|preventDefault
-        class="tooltip"
-        aria-label="input tooltip"
-        use:tooltipAction={{ content: tooltip, appendTo: 'parent' }}>
+    <Tooltip placement="top">
         <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)" />
-    </button>
+        <div slot="tooltip">{tooltip}</div>
+    </Tooltip>
 {/if}

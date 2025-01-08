@@ -15,6 +15,7 @@
     import { registerCommands } from '$lib/commandCenter';
     import { tooltip } from '$lib/actions/tooltip';
     import { canWriteDatabases } from '$lib/stores/roles';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -57,19 +58,18 @@
                     hideColumns={!data.databases.total}
                     hideView={!data.databases.total} />
                 {#if $canWriteDatabases}
-                    <div
-                        use:tooltip={{
-                            content: `Upgrade to add more databases`,
-                            disabled: !isCreationDisabled
-                        }}>
-                        <Button
-                            on:click={() => (showCreate = true)}
-                            event="create_database"
-                            disabled={isCreationDisabled}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Create database</span>
-                        </Button>
-                    </div>
+                    <Tooltip disabled={!isCreationDisabled}>
+                        <div>
+                            <Button
+                                on:click={() => (showCreate = true)}
+                                event="create_database"
+                                disabled={isCreationDisabled}>
+                                <span class="icon-plus" aria-hidden="true" />
+                                <span class="text">Create database</span>
+                            </Button>
+                        </div>
+                        <span slot="tooltip">Upgrade to add more databases</span>
+                    </Tooltip>
                 {/if}
             </div>
         </svelte:fragment>
