@@ -218,7 +218,6 @@
                         View estimated usage
                     </Button>
                     <Button
-                        text
                         disabled={$organization?.markedForDeletion}
                         href={$upgradeURL}
                         on:click={() =>
