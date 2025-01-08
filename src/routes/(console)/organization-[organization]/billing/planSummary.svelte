@@ -181,7 +181,7 @@
                                 noContent
                                 gap={4}
                                 style="margin-block-start: 1rem; padding-block: unset;"
-                                wrapperStyle="padding-block: unset; padding-inline-end: unset;">
+                                wrapperStyle="padding-block: unset; padding-inline: unset;">
                                 <span class="body-text-2">Current total (USD)</span>
                                 <span class="tooltip u-cross-center" aria-label="total info">
                                     <span
@@ -214,7 +214,7 @@
             {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <div
                     class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
-                    <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
+                    <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
                     </Button>
                     <Button
