@@ -49,14 +49,12 @@
             irreversible.
         </p>
 
-        <div class="input-check-box-friction">
-            <InputCheckbox
-                required
-                size="s"
-                id="delete_policy"
-                bind:checked={confirmedDeletion}
-                label="I understand and confirm" />
-        </div>
+        <InputCheckbox
+            size="s"
+            required
+            id="delete_function"
+            bind:checked={confirmedDeletion}
+            label="I understand and confirm" />
     </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
