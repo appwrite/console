@@ -17,6 +17,7 @@
     import { tierToPlan, type Tier, plansInfo } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
     let name: string;
     let id: string;
@@ -42,12 +43,7 @@
 
     onMount(() => {
         if (isCloud) {
-            if ($page.url.searchParams.has('type')) {
-                const paramType = $page.url.searchParams.get('type');
-                if (paramType === 'createPro') {
-                    goto(`${base}/create-organization`);
-                }
-            }
+            checkPricingRefAndRedirect($page.url.searchParams);
         }
     });
 
