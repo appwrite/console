@@ -156,9 +156,9 @@
         {#if $user}
             <div class="drop-wrapper" class:is-open={showDropdown} bind:this={droplistElement}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
-                    <AvatarInitials size={40} name={$user.name} />
+                    <AvatarInitials size={40} name={$user.name || $user.email} />
                     <span class="user-profile-info is-only-desktop">
-                        <span class="name" data-private>{$user.name}</span>
+                        <span class="name" data-private>{$user.name || $user.email}</span>
                         {#if $organization}
                             <span class="title" data-private>{$organization.name}</span>
                         {/if}
