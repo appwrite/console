@@ -55,8 +55,7 @@
                 return abbreviateNumber(value);
             case 'storage':
             case 'bandwidth':
-                const humanized = humanFileSize(value);
-                return humanized.value + humanized.unit;
+                return humanFileSize(value).value + humanFileSize(value).unit;
         }
     }
 </script>
