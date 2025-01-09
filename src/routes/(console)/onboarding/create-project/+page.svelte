@@ -39,36 +39,36 @@
     async function createProject() {
         isLoading = true;
 
-        // const org = await sdk.forConsole.billing.createOrganization(
-        //     ID.unique(),
-        //     'Personal Projects',
-        //     BillingPlan.FREE,
-        //     null,
-        //     null
-        // );
-        //
-        // const teamId = org.$id;
+        const org = await sdk.forConsole.billing.createOrganization(
+            ID.unique(),
+            'Personal Projects',
+            BillingPlan.FREE,
+            null,
+            null
+        );
+
+        const teamId = org.$id;
         try {
-            // const project = await sdk.forConsole.projects.create(
-            //     id ?? ID.unique(),
-            //     projectName,
-            //     teamId,
-            //     Region.Default
-            // );
-            // trackEvent(Submit.ProjectCreate, {
-            //     customId: !!id,
-            //     teamId
-            // });
+            const project = await sdk.forConsole.projects.create(
+                id ?? ID.unique(),
+                projectName,
+                teamId,
+                Region.Default
+            );
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id,
+                teamId
+            });
 
             startAnimation = true;
 
-            // setTimeout(() => {
-            //     goto(`${base}/project-${project.$id}`);
-            // }, 3000);
+            setTimeout(() => {
+                goto(`${base}/project-${project.$id}`);
+            }, 3000);
         } catch (e) {
             // error = e.message;
             trackError(e, Submit.ProjectCreate);
-            // disabled = false;
+            isLoading = false;
         }
     }
 </script>
@@ -76,11 +76,6 @@
 <div
     class="page-container u-flex-vertical u-cross-child-center u-cross-center u-margin-block-start-96">
     {#if isLoading}
-        <button
-            style="position: fixed; right: 10px; z-index: 10;"
-            on:click={() => {
-                startAnimation = !startAnimation;
-            }}>toggle</button>
         <Loading {startAnimation} />
     {:else}
         <img
