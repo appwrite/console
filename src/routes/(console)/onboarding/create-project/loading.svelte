@@ -264,7 +264,7 @@
             var(--welcome-to-appwrite-delay);
     }
     .grid {
-        opacity: 1;
+        opacity: 0;
         transition: opacity var(--fade-in-animation-component-duration) var(--animation-type);
         display: grid;
         grid-template-columns: var(--half-cell-dimension) repeat(5, var(--cell-dimension)) var(
