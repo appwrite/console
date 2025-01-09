@@ -128,15 +128,20 @@ export type PlanServices =
     | 'teams'
     | 'users'
     | 'usersAddon'
-    | 'webhooks';
+    | 'webhooks'
+    | 'authPhone';
 
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
+
+    if (serviceId === 'authPhone') {
+        return 10;
+    }
     if (!isCloud) return 0;
     if (!serviceId) return 0;
     const info = get(plansInfo);
     if (!info) return 0;
     plan ??= info.get(tier ?? get(organization)?.billingPlan);
-    return plan?.[serviceId];
+    return plan?.[serviceId] ?? 0;
 }
 
 export const failedInvoice = cachedStore<

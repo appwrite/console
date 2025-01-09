@@ -18,6 +18,8 @@
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     export let data;
 
@@ -363,6 +365,57 @@
                     progressMax={totalGbHours}
                     progressValue={totalGbHours}
                     progressBarData={progressBarStorageDate} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">SMS OTP</Heading>
+        <p class="text">
+            OTPs are billed per SMS message, with rates varying by recipient country. For a detailed
+            cost breakdown, see the <a
+                href="https://appwrite.io/docs/advanced/platform/otp-sms"
+                class="link">pricing page</a
+            >.
+        </p>
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.authPhoneTotal}
+                <div class="u-flex u-main-space-between">
+                    <p>
+                        <span class="heading-level-4"
+                            >{formatNum(data.organizationUsage.authPhoneTotal)}</span>
+                        <span class="body-text-1 u-bold">SMS OTPs</span>
+                    </p>
+                    <p class="u-flex u-gap-8 u-cross-center">
+                        <span class="u-color-text-offline">Estimated cost</span>
+                        <span class="body-text-2">
+                            {formatCurrency(data.organizationUsage.authPhoneEstimate)}
+                            <span
+                                class="icon-info u-color-text-offline"
+                                use:tooltip={{
+                                    content:
+                                        'The first 10 SMS OTP messages are provided at no cost. Pricing may vary as it depends on telecom rates and vendor agreements.'
+                                }} />
+                        </span>
+                    </p>
+                </div>
+
+                {#if project?.length > 0}
+                    <ProjectBreakdown
+                        projects={project}
+                        metric="authPhoneTotal"
+                        estimate="authPhoneEstimate"
+                        {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
