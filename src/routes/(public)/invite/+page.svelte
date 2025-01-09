@@ -61,35 +61,37 @@
                 <Button href={`${base}/register`}>Sign up to Appwrite</Button>
             </div>
         {:else}
-            <p class="text">You have been invited to join an organization on Appwrite</p>
-            <Form onSubmit={acceptInvite}>
-                <FormList>
-                    <InputChoice
-                        required
-                        bind:value={terms}
-                        id="terms"
-                        label="terms"
-                        showLabel={false}>
-                        By accepting the invitation, you agree to the <a
-                            class="link"
-                            href="https://appwrite.io/terms"
-                            target="_blank"
-                            rel="noopener noreferrer">Terms and Conditions</a>
-                        and
-                        <a
-                            class="link"
-                            href="https://appwrite.io/privacy"
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            Privacy Policy</a
-                        >.</InputChoice>
+            <div class="u-flex-vertical u-gap-16">
+                <p class="text">You have been invited to join an organization on Appwrite</p>
+                <Form onSubmit={acceptInvite}>
+                    <FormList>
+                        <InputChoice
+                            required
+                            bind:value={terms}
+                            id="terms"
+                            label="terms"
+                            showLabel={false}>
+                            By accepting the invitation, you agree to the <a
+                                class="link"
+                                href="https://appwrite.io/terms"
+                                target="_blank"
+                                rel="noopener noreferrer">Terms and Conditions</a>
+                            and
+                            <a
+                                class="link"
+                                href="https://appwrite.io/privacy"
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                Privacy Policy</a
+                            >.</InputChoice>
 
-                    <div class="u-flex u-main-end u-gap-12">
-                        <Button secondary href={`${base}/login`}>Cancel</Button>
-                        <Button submit>Accept</Button>
-                    </div>
-                </FormList>
-            </Form>
+                        <div class="u-flex u-main-end u-gap-12">
+                            <Button secondary href={`${base}/login`}>Cancel</Button>
+                            <Button submit disabled={!terms}>Accept</Button>
+                        </div>
+                    </FormList>
+                </Form>
+            </div>
         {/if}
     </svelte:fragment>
 </Unauthenticated>

@@ -17,6 +17,7 @@
     export let options: {
         value: string | boolean | number | null;
         label: string;
+        disabled?: boolean;
     }[];
     export let isMultiple = false;
     export let fullWidth = false;

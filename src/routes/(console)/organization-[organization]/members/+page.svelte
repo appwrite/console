@@ -80,7 +80,6 @@
                             &nbsp;<button
                                 type="button"
                                 on:click={() => (showPopover = !showPopover)}
-                                class="tooltip"
                                 aria-label="input tooltip">
                                 <span
                                     class="icon-info"

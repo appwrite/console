@@ -18,6 +18,7 @@
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
     import { backupFrequencies } from '$lib/helpers/backups';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let showDropdown = [];
     let showDelete = false;
@@ -180,9 +181,12 @@
                             class="policy-item-subtitles u-flex u-gap-6"
                             style="width: fit-content;">
                             {#if shouldUseTooltip}
-                                <span use:tooltip={{ content: policyDescription }}>
-                                    {policyDescriptionShort}
-                                </span>
+                                <Tooltip>
+                                    <span>
+                                        {policyDescriptionShort}
+                                    </span>
+                                    <span slot="tooltip">{policyDescription}</span>
+                                </Tooltip>
                             {:else}
                                 {policyDescription}
                             {/if}

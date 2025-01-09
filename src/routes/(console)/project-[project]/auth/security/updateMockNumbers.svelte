@@ -9,8 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { currentPlan } from '$lib/stores/organization';
     import { isCloud, isSelfHosted } from '$lib/system';
     import MockNumbersLight from './mock-numbers-light.png';
     import MockNumbersDark from './mock-numbers-dark.png';
@@ -19,6 +18,7 @@
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
     import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -27,7 +27,7 @@
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
     let isComponentDisabled: boolean =
-        isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+        isSelfHosted || (isCloud && !$currentPlan.supportsMockNumbers);
     let emptyStateTitle: string = isSelfHosted
         ? 'Available on Appwrite Cloud'
         : 'Upgrade to add mock phone numbers';
@@ -163,12 +163,14 @@
                                 required>
                                 <button
                                     slot="options"
-                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
                                     on:click={() => (number.phone = generateNumber())}
                                     class="options-list-button"
                                     aria-label="regenerate text"
                                     type="button">
-                                    <span class="icon-refresh" aria-hidden="true"></span>
+                                    <Tooltip>
+                                        <span class="icon-refresh" aria-hidden="true"></span>
+                                        <span slot="tooltip">Regenerate</span>
+                                    </Tooltip>
                                 </button>
                             </InputPhone>
                             <InputOTP
@@ -184,12 +186,14 @@
                                 required>
                                 <button
                                     slot="options"
-                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
                                     on:click={() => (number.otp = generateOTP())}
                                     class="options-list-button"
                                     aria-label="regenerate text"
                                     type="button">
-                                    <span class="icon-refresh" aria-hidden="true"></span>
+                                    <Tooltip
+                                        ><span class="icon-refresh" aria-hidden="true"></span><span
+                                            slot="tooltip">Regenerate</span
+                                        ></Tooltip>
                                 </button>
                             </InputOTP>
                             <FormItemPart>
@@ -201,7 +205,10 @@
                                     on:click={() => {
                                         deletePhoneNumber(index);
                                     }}>
-                                    <span class="icon-x" aria-hidden="true" />
+                                    <Tooltip
+                                        ><span class="icon-refresh" aria-hidden="true"></span><span
+                                            slot="tooltip">Regenerate</span
+                                        ></Tooltip>
                                 </Button>
                             </FormItemPart>
                         </FormItem>

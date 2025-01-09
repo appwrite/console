@@ -3,7 +3,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Alert, FloatingActionBar, Id, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputChoice } from '$lib/elements/forms';
@@ -23,7 +22,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
+    import { afterUpdate, onMount } from 'svelte';
     import type { PageData } from './$types';
     import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
@@ -31,6 +30,7 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
     import type { ColumnType } from '$lib/helpers/types';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -44,7 +44,22 @@
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
+        updateMaxWidth();
     });
+
+    afterUpdate(() => updateMaxWidth());
+
+    function updateMaxWidth() {
+        const tableCells = Array.from(document.querySelectorAll('.less-width-truncated'));
+
+        const visibleColumnsCount = $columns.filter((col) => col.show).length;
+        const newMaxWidth = Math.max(50 - (visibleColumnsCount - 1) * 5, 25);
+
+        tableCells.forEach((cell) => {
+            const cellItem = cell as HTMLElement;
+            cellItem.style.maxWidth = `${newMaxWidth}vw`;
+        });
+    }
 
     function formatArray(array: unknown[]) {
         if (array.length === 0) return '[ ]';
@@ -221,15 +236,15 @@
                         {:else}
                             {@const formatted = formatColumn(document[column.id])}
                             <TableCell>
-                                <div
-                                    class="u-width-fit-content"
-                                    use:tooltip={{
-                                        content: formatted.whole,
-                                        disabled: !formatted.truncated
-                                    }}
-                                    data-private>
-                                    {formatted.value}
-                                </div>
+                                <Tooltip disabled={!formatted.truncated}>
+                                    <div class="u-width-fit-content" data-private class:truncated={formatted.whole.length >
+                                        formatted.value.length}
+                                         class:less-width-truncated={$columns.filter((col) => col.show)
+                                        .length > 1}>
+                                        {formatted.value}
+                                    </div>
+                                    <span>{formatted.whole}</span>
+                                </Tooltip>
                             </TableCell>
                         {/if}
                     {/if}
@@ -344,5 +359,17 @@
             padding: 0rem 0.375rem;
             display: inline-block;
         }
+    }
+
+    :global(.truncated-content-table-cell .truncated) {
+        max-width: 50vw;
+        overflow: hidden;
+        white-space: nowrap;
+        display: inline-block;
+        text-overflow: ellipsis;
+    }
+
+    :global(.truncated-content-table-cell:has(.truncated)) {
+        inline-size: 0;
     }
 </style>

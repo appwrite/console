@@ -140,6 +140,7 @@
                         <InputText
                             id="taxId"
                             label="Tax ID"
+                            autofocus
                             placeholder="Tax ID"
                             bind:value={taxId} />
                     </div>

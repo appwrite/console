@@ -7,8 +7,8 @@
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
+    import { showSubNavigation } from '$lib/stores/layout';
 
-    export let isOpen = false;
     export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
@@ -16,14 +16,14 @@
     let y: number;
 
     page.subscribe(({ url }) => {
-        isOpen = url.searchParams.get('openNavbar') === 'true';
+        $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
     });
 
     const toggleMenu = () => {
         y = 0;
-        isOpen = !isOpen;
+        $showSubNavigation = !$showSubNavigation;
         if (browser) {
-            if (isOpen) {
+            if ($showSubNavigation) {
                 document.body.classList.add('u-overflow-hidden');
             } else {
                 document.body.classList.remove('u-overflow-hidden');
@@ -54,7 +54,7 @@
 
 <main
     class:grid-with-side={showSideNavigation}
-    class:is-open={isOpen}
+    class:is-open={$showSubNavigation}
     class:u-hide={$wizard.show || $log.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
     style:--p-side-size={sideSize}>
@@ -68,7 +68,7 @@
                 class="icon-button is-not-desktop"
                 aria-label="Open Menu"
                 on:click={toggleMenu}>
-                <span class:icon-x={isOpen} class:icon-menu={!isOpen} aria-hidden="true" />
+                <span class:icon-x={showSubNavigation} class:icon-menu={!showSubNavigation} aria-hidden="true" />
             </button>
             <slot name="header" />
         </header>

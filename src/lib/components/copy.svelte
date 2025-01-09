@@ -4,11 +4,12 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { copy } from '$lib/helpers/copy';
     import { addNotification } from '$lib/stores/notifications';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let value: string;
     export let event: string = null;
     export let eventContext = 'click_id_tag';
-    export let appendTo: Parameters<typeof tooltip>['1']['appendTo'] = undefined;
+    export let tooltipDisabled = false;
 
     let content = 'Click to copy';
 
@@ -32,18 +33,16 @@
     }
 </script>
 
-<span
-    data-private
-    role="button"
-    tabindex="0"
-    style:cursor="pointer"
-    on:click|preventDefault={handleClick}
-    on:keyup={clickOnEnter}
-    on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
-    use:tooltip={{
-        content,
-        hideOnClick: false,
-        appendTo
-    }}>
-    <slot />
-</span>
+<Tooltip disabled={tooltipDisabled}>
+    <span
+        data-private
+        role="button"
+        tabindex="0"
+        style:cursor="pointer"
+        on:click|preventDefault={handleClick}
+        on:keyup={clickOnEnter}
+        on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}>
+        <slot />
+    </span>
+    <p slot="tooltip">{content}</p>
+</Tooltip>

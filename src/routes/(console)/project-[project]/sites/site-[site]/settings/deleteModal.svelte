@@ -38,7 +38,7 @@
     icon="exclamation"
     state="warning">
     <p data-private>
-        Are you sure you want to delete this function and all associated deployments from your
+        Are you sure you want to delete this site and all associated deployments from your
         project?
     </p>
     <svelte:fragment slot="footer">

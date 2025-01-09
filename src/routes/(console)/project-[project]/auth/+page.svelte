@@ -21,8 +21,7 @@
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
-    import { Badge, Icon, Table, Layout } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Table, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { canWriteUsers } from '$lib/stores/roles';
@@ -39,19 +38,18 @@
     <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
             {#if $canWriteUsers}
-                <div
-                    use:tooltip={{
-                        content: `Upgrade to add more users`,
-                        disabled: !isButtonDisabled
-                    }}>
-                    <Button
-                        on:mousedown={() => ($showCreateUser = true)}
-                        event="create_user"
-                        disabled={isButtonDisabled}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create user</span>
-                    </Button>
-                </div>
+                <Tooltip disabled={!isButtonDisabled}>
+                    <div>
+                        <Button
+                            on:mousedown={() => ($showCreateUser = true)}
+                            event="create_user"
+                            disabled={isButtonDisabled}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Create user</span>
+                        </Button>
+                    </div>
+                    <span slot="tooltip">Upgrade to add more users</span>
+                </Tooltip>
             {/if}
         </SearchQuery>
     </ContainerHeader>

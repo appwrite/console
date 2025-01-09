@@ -8,6 +8,7 @@
     export let installations: Models.InstallationList;
     export let repositoryName: string;
     export let repositoryPrivate = true;
+    export let disableFields = false;
 </script>
 
 <Layout.Stack gap="l">
@@ -15,6 +16,7 @@
         <InputSelect
             id="installation"
             label="Git organization"
+            disabled={disableFields}
             options={installations.installations.map((entry) => {
                 return {
                     label: entry.organization,
@@ -32,9 +34,11 @@
         id="repositoryName"
         label="Repository name"
         placeholder="my-repository"
+        disabled={disableFields}
         bind:value={repositoryName} />
     <InputChoice
         id="repositoryPrivate"
         label="Keep repository private"
+        disabled={disableFields}
         bind:value={repositoryPrivate} />
 </Layout.Stack>

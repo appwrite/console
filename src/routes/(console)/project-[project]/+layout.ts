@@ -7,9 +7,11 @@ import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
 import type { Organization } from '$lib/stores/organization';
 import { defaultRoles, defaultScopes } from '$lib/constants';
+import type { Plan } from '$lib/sdk/billing';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
+    let currentPlan: Plan = null;
 
     try {
         const project = await sdk.forConsole.projects.get(params.project);
@@ -27,6 +29,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         let roles = isCloud ? [] : defaultRoles;
         let scopes = isCloud ? [] : defaultScopes;
         if (isCloud) {
+            currentPlan = await sdk.forConsole.billing.getPlan(project.teamId);
             const res = await sdk.forConsole.billing.getRoles(project.teamId);
             roles = res.roles;
             scopes = res.scopes;
@@ -39,7 +42,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             project,
             organization,
             roles,
-            scopes
+            scopes,
+            currentPlan
         };
     } catch (e) {
         error(e.code, e.message);

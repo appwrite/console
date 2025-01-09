@@ -1,6 +1,6 @@
 <script lang="ts">
     import { tooltip as tooltipAction } from '$lib/actions/tooltip';
-    import { Layout, Selector } from '@appwrite.io/pink-svelte';
+    import { Layout, Selector, Tooltip } from '@appwrite.io/pink-svelte';
     import { Helper } from '.';
 
     export let type: 'checkbox' | 'switchbox' = 'checkbox';
@@ -30,7 +30,7 @@
     }
 </script>
 
-<label class="choice-item" for={id}>
+<div class="choice-item">
     <Layout.Stack direction="row" alignItems="flex-start">
         {#if type === 'switchbox'}
             <Selector.Switch
@@ -62,16 +62,15 @@
                         </span>
                     {/if}
                     {#if tooltip}
-                        <button
-                            type="button"
-                            class="tooltip"
-                            aria-label="variables info"
-                            use:tooltipAction={{ content: tooltip }}>
-                            <span
-                                class="icon-info"
-                                aria-hidden="true"
-                                style="font-size: var(--icon-size-small)" />
-                        </button>
+                        <Tooltip>
+                            <button type="button" class="tooltip" aria-label="variables info">
+                                <span
+                                    class="icon-info"
+                                    aria-hidden="true"
+                                    style="font-size: var(--icon-size-small)" />
+                            </button>
+                            <p slot="tooltip">{tooltip}</p>
+                        </Tooltip>
                     {/if}
                 </div>
             {/if}
@@ -80,7 +79,7 @@
             {/if}
         </div>
     </Layout.Stack>
-</label>
+</div>
 {#if error}
     <Helper type="warning">{error}</Helper>
 {/if}

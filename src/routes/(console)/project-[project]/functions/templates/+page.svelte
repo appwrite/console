@@ -2,7 +2,6 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip.js';
     import {
         Collapsible,
         CollapsibleItem,
@@ -21,6 +20,8 @@
     import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
     import { debounce } from '$lib/helpers/debounce';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let data;
 
@@ -148,7 +149,7 @@
                                             class="is-small"
                                             checked={isChecked(useCase)}
                                             on:change={(e) => applyFilter('useCase', useCase, e)} />
-                                        <span class="u-trim-1">{useCase}</span>
+                                        <span class="u-trim-1">{capitalize(useCase)}</span>
                                     </label>
                                 </li>
                             {/each}
@@ -168,7 +169,8 @@
                                                 .getAll('runtime')
                                                 .includes(runtime)}
                                             on:change={(e) => applyFilter('runtime', runtime, e)} />
-                                        <div class="u-flex u-cross-center u-gap-8">
+                                        <div
+                                            class="u-flex u-cross-center u-gap-8 functions-avatar-holder">
                                             <div class="avatar is-size-x-small">
                                                 <SvgIcon name={icon} iconSize="small" />
                                             </div>
@@ -207,14 +209,16 @@
                         <li>
                             <article class="card u-min-height-100-percent">
                                 <div class="u-flex u-gap-16 u-cross-center u-main-space-between">
-                                    <h2 class="body-text-1 u-bold u-trim-1">
+                                    <h2
+                                        class="body-text-1 u-bold u-trim-1 functions-template-title">
                                         {template.name}
                                     </h2>
                                     <ul class="avatars-group is-with-border">
                                         {#each displayed as runtime}
                                             {@const icon = getIconFromRuntime(runtime.name)}
                                             {#if icon}
-                                                <li class="avatars-group-item">
+                                                <li
+                                                    class="avatars-group-item functions-avatar-holder">
                                                     <div class="avatar is-size-small">
                                                         <img
                                                             style:--p-text-size="20px"
@@ -227,16 +231,16 @@
                                             {/if}
                                         {/each}
                                         {#if hidden.length}
-                                            <li class="avatars-group-item">
-                                                <div
-                                                    class="avatar is-size-small"
-                                                    use:tooltip={{
-                                                        content: hidden
+                                            <li class="avatars-group-item functions-avatar-holder">
+                                                <Tooltip>
+                                                    <div class="avatar is-size-small">
+                                                        +{hidden.length}
+                                                    </div>
+                                                    <span slot="tooltip"
+                                                        >{hidden
                                                             .map((n) => n.name)
-                                                            .join(', ')
-                                                    }}>
-                                                    +{hidden.length}
-                                                </div>
+                                                            .join(', ')}</span>
+                                                </Tooltip>
                                             </li>
                                         {/if}
                                     </ul>
@@ -287,3 +291,18 @@
         </section>
     </div>
 </Container>
+
+<style>
+    :global(.theme-light .functions-avatar-holder .avatar) {
+        background-color: var(--p-avatar-bg-color-default);
+        --p-avatar-bg-color-default: hsl(var(--color-neutral-0));
+    }
+
+    :global(.theme-light .functions-template-title) {
+        color: hsl(var(--color-neutral-70));
+    }
+
+    :global(.theme-dark .functions-template-title) {
+        color: hsl(var(--color-neutral-15));
+    }
+</style>

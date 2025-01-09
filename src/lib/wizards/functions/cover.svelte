@@ -19,7 +19,8 @@
             repositoryBehaviour: 'new',
             repositoryName: template.id,
             repositoryPrivate: true,
-            repositoryId: null
+            repositoryId: null,
+            specification: null
         });
         wizard.start(CreateTemplate);
     }
@@ -40,10 +41,10 @@
     import Repositories from './components/repositories.svelte';
     import CreateManual from './createManual.svelte';
     import CreateGit from './createGit.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import { featuredTemplatesList, starterTemplate } from '$lib/stores/templates';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
@@ -168,22 +169,22 @@
                                 {/each}
 
                                 {#if templates.length < 6}
-                                    <li
-                                        use:tooltip={{
-                                            content: 'More runtimes coming soon'
-                                        }}>
-                                        <Box
-                                            class="u-width-full-line u-flex u-cross-center u-gap-8"
-                                            padding={16}
-                                            radius="small">
-                                            <AvatarGroup
-                                                icons={['dotnet', 'deno']}
-                                                total={4}
-                                                avatarSize="small"
-                                                color="u-color-text-gray"
-                                                bordered />
-                                        </Box>
-                                    </li>
+                                    <Tooltip>
+                                        <li>
+                                            <Box
+                                                class="u-width-full-line u-flex u-cross-center u-gap-8"
+                                                padding={16}
+                                                radius="small">
+                                                <AvatarGroup
+                                                    icons={['dotnet', 'deno']}
+                                                    total={4}
+                                                    avatarSize="small"
+                                                    color="u-color-text-gray"
+                                                    bordered />
+                                            </Box>
+                                        </li>
+                                        <span slot="tooltip">More runtimes coming soon</span>
+                                    </Tooltip>
                                 {/if}
                             {/await}
                         </ul>
@@ -225,7 +226,7 @@
                                 {/each}
                             {:then templatesListWithoutStarter}
                                 {#each templatesListWithoutStarter.templates as template}
-                                    <li class="clickable-list-item">
+                                    <li class="clickable-list-item u-padding-block-8">
                                         <button
                                             type="button"
                                             on:click={() => {
@@ -293,6 +294,22 @@
             hsl(var(--p-card-bg-color)) 68.91%,
             hsl(var(--p-card-bg-color) / 0.5) 92.8%
         );
+    }
+
+    .u-sep-block-start {
+        border-block-start: solid 0.0625rem hsl(var(--color-neutral)) !important;
+    }
+
+    .clickable-list-item:not(:last-child) {
+        border-block-end: solid 0.0625rem hsl(var(--color-neutral)) !important;
+    }
+
+    :global(.theme-light) {
+        --color-neutral: var(--color-neutral-10);
+    }
+
+    :global(.theme-dark) {
+        --color-neutral: var(--color-neutral-85);
     }
 
     .inline-tag {
