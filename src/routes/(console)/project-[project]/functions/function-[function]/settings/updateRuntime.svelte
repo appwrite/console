@@ -17,6 +17,7 @@
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import SpecificationsTooltip from '$lib/wizards/functions/components/specificationsTooltip.svelte';
+    import Alert from '$lib/components/alert.svelte';
 
     const functionId = $page.params.function;
     let runtime: string = null;
@@ -25,12 +26,20 @@
     let options = [];
     let specificationOptions = [];
 
+    let isDeprecated: boolean = null;
+
     onMount(async () => {
         runtime ??= $func.runtime;
         specification ??= $func.specification;
 
         let runtimes = await $runtimesList;
         let allowedSpecifications = (await $specificationsList).specifications;
+
+        isDeprecated = runtimes.runtimes.find((r) => r.$id === runtime)?.deprecated ?? false;
+        if(!isDeprecated) {
+            runtimes.runtimes = runtimes.runtimes.filter(runtime => !runtime.deprecated);
+        }
+
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
@@ -102,6 +111,14 @@
                     {options}
                     required
                     hideRequired />
+                {#if isDeprecated}
+                <Alert type="warning">
+                    <span slot="title">Your runtime is deprecated</span>
+                    <p>
+                        Please upgrade to newer versio of the runtime, because on April 1st 2024, builds for deprecated runtimes will be disabled.
+                    </p>
+                </Alert>
+                {/if}
                 <InputSelect
                     label="CPU and memory"
                     id="size"
