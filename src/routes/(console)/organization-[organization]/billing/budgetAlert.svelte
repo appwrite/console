@@ -100,7 +100,6 @@
                 </Alert>
             {:else}
                 <FormList>
-                    <!-- TODO: confirm copy, design mentions only Pro plan -->
                     <Alert type="info">
                         You can set a maximum of 4 billing alerts per organization.
                     </Alert>
