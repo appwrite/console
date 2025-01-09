@@ -403,7 +403,7 @@
                                 class="icon-info u-color-text-offline"
                                 use:tooltip={{
                                     content:
-                                        'The first 10 SMS OTP messages are provided at no cost. Pricing may vary as it depends on telecom rates and vendor agreements.'
+                                        'The first 10 SMS OTP messages each month are provided at no cost. Pricing may vary as it depends on telecom rates and vendor agreements.'
                                 }} />
                         </span>
                     </p>
