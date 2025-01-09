@@ -10,6 +10,8 @@
     import { showSubNavigation } from '$lib/stores/layout';
 
     export let showSideNavigation = false;
+    export let showHeader = true;
+    export let showFooter = true;
 
     let y: number;
 
@@ -59,19 +61,18 @@
     {#if $activeHeaderAlert?.show}
         <svelte:component this={$activeHeaderAlert.component} />
     {/if}
-    <header class="main-header u-padding-inline-end-0">
-        <button
-            class:u-hide={!showSideNavigation}
-            class="icon-button is-not-desktop"
-            aria-label="Open Menu"
-            on:click={toggleMenu}>
-            <span
-                class:icon-x={$showSubNavigation}
-                class:icon-menu={!$showSubNavigation}
-                aria-hidden="true" />
-        </button>
-        <slot name="header" />
-    </header>
+    {#if showHeader}
+        <header class="main-header u-padding-inline-end-0">
+            <button
+                class:u-hide={!showSideNavigation}
+                class="icon-button is-not-desktop"
+                aria-label="Open Menu"
+                on:click={toggleMenu}>
+                <span class:icon-x={showSubNavigation} class:icon-menu={!showSubNavigation} aria-hidden="true" />
+            </button>
+            <slot name="header" />
+        </header>
+    {/if}
     {#if showSideNavigation}
         <nav class="main-side">
             <slot name="side" />
@@ -83,7 +84,9 @@
         {/if}
 
         <slot />
-        <slot name="footer" />
+        {#if showFooter}
+            <slot name="footer" />
+        {/if}
     </section>
 </main>
 
