@@ -25,8 +25,8 @@
     export let data;
     let showAlert = true;
 
-    const sdkCreateVariable = async (key: string, value: string) => {
-        await sdk.forProject.functions.createVariable($func.$id, key, value);
+    const sdkCreateVariable = async (key: string, value: string, secret: boolean) => {
+        await sdk.forProject.functions.createVariable($func.$id, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 

@@ -151,7 +151,7 @@
                                 noArrow>
                                 <Button
                                     text
-                                    round
+                                    icon
                                     ariaLabel="more options"
                                     on:click={() =>
                                         (showDomainsDropdown[i] = !showDomainsDropdown[i])}>

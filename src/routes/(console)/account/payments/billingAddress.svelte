@@ -106,7 +106,7 @@
                                     placement="bottom-start"
                                     noArrow>
                                     <Button
-                                        round
+                                        icon
                                         text
                                         ariaLabel="More options"
                                         on:click={() => {

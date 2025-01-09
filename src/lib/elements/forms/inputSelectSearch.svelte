@@ -123,7 +123,7 @@
     $: if (value || search) error = null;
 </script>
 
-<li
+<div
     class="u-position-relative form-item"
     class:u-width-full-line={fullWidth}
     class:u-stretch={stretch}>
@@ -235,7 +235,7 @@
     {#if error}
         <Helper class="u-position-relative" type="warning">{error}</Helper>
     {/if}
-</li>
+</div>
 
 <style>
     .form-item :global(.drop) {

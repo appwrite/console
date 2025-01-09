@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: string[] = [];
 </script>
@@ -11,17 +11,16 @@
         <slot />
     </span>
     {#if data?.length}
-        <span
-            class="u-flex u-flex-1 u-trim-1 u-gap-4"
-            use:tooltip={{
-                content: data.map((e) => e ?? 'null').join(' | ')
-            }}>
-            {#each data as item, i}
-                {#if i}
-                    <span class="u-text-color-gray">|</span>
-                {/if}
-                <span class="text" style="white-space: nowrap" data-private>{item}</span>
-            {/each}
-        </span>
+        <Tooltip>
+            <span class="u-flex u-flex-1 u-trim-1 u-gap-4">
+                {#each data as item, i}
+                    {#if i}
+                        <span class="u-text-color-gray">|</span>
+                    {/if}
+                    <span class="text" style="white-space: nowrap" data-private>{item}</span>
+                {/each}
+            </span>
+            <div slot="tooltip">{data.map((e) => e ?? 'null').join(' | ')}</div>
+        </Tooltip>
     {/if}
 </div>

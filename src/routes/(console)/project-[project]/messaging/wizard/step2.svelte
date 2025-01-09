@@ -68,7 +68,7 @@
                     bind:showTopics
                     on:addTargets={addTargets}
                     on:addTopics={addTopics}>
-                    <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
+                    <Button secondary icon on:click={() => (showDropdown = !showDropdown)}>
                         <i class="icon-plus" />
                     </Button>
                 </Actions>

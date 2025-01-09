@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import { invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from './wizard/store';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Step1 from './wizard/flutter/step1.svelte';
     import Step2 from './wizard/flutter/step2.svelte';
     import Step3 from './wizard/flutter/step3.svelte';
@@ -39,7 +39,7 @@
     });
 </script>
 
-<Wizard
+<WizardWithSteps
     title="Add a Flutter platform"
     steps={stepsComponents}
     on:finish={onFinish}

@@ -16,6 +16,7 @@
     import type { PageData } from './$types';
     import { columns } from './store';
     import Cell from '$lib/elements/table/cell.svelte';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
     const projectId = $page.params.project;
@@ -63,19 +64,16 @@
                                 .join(', ')}
 
                             <Cell title={column.title} width={column.width}>
-                                <span
-                                    class="u-trim"
-                                    use:tooltip={{
-                                        placement: 'bottom',
-                                        disabled: !policies || !lastBackup,
-                                        content: `Last backup: ${lastBackup}`
-                                    }}>
-                                    {#if !policies}
-                                        <span class="icon-exclamation" /> No backup policies
-                                    {:else}
-                                        {description}
-                                    {/if}
-                                </span>
+                                <Tooltip placement="bottom" disabled={!policies || !lastBackup}>
+                                    <span class="u-trim">
+                                        {#if !policies}
+                                            <span class="icon-exclamation" /> No backup policies
+                                        {:else}
+                                            {description}
+                                        {/if}
+                                    </span>
+                                    <span slot="tooltip">{`Last backup: ${lastBackup}`}</span>
+                                </Tooltip>
                             </Cell>
                         {:else}
                             <TableCellText width={column.width} title={column.title}>

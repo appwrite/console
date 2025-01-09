@@ -128,7 +128,8 @@ export type PlanServices =
     | 'teams'
     | 'users'
     | 'usersAddon'
-    | 'webhooks';
+    | 'webhooks'
+    | 'sites';
 
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
     if (!isCloud) return 0;

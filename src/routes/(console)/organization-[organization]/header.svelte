@@ -40,6 +40,7 @@
         isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -119,17 +120,17 @@
                                     >FREE</Pill>
                             {/if}
                             {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
-                                <div
-                                    class="u-flex u-cross-center"
-                                    use:tooltip={{
-                                        content: `Your trial ends on ${toLocaleDate(
+                                <Tooltip>
+                                    <div class="u-flex u-cross-center">
+                                        <Pill
+                                            class="eyebrow-heading-3"
+                                            style="--p-tag-content-height:2rem">TRIAL</Pill>
+                                    </div>
+                                    <span slot="tooltip"
+                                        >{`Your trial ends on ${toLocaleDate(
                                             $organization.billingStartDate
-                                        )}. ${$daysLeftInTrial} days remaining.`
-                                    }}>
-                                    <Pill
-                                        class="eyebrow-heading-3"
-                                        style="--p-tag-content-height:2rem">TRIAL</Pill>
-                                </div>
+                                        )}. ${$daysLeftInTrial} days remaining.`}</span>
+                                </Tooltip>
                             {/if}
                         </span>
                         <span
@@ -160,26 +161,25 @@
                     <a href={`${path}/members`} class="is-not-mobile">
                         <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
                     </a>
-                    <div
-                        use:tooltip={{
-                            content:
-                                $organization?.billingPlan === BillingPlan.FREE
-                                    ? `Upgrade to add more members`
-                                    : `You've reached the members limit for the ${
-                                          tierToPlan($organization?.billingPlan)?.name
-                                      } plan`,
-                            disabled: !areMembersLimited
-                        }}>
-                        {#if $isOwner}
-                            <Button
-                                secondary
-                                on:click={() => newMemberModal.set(true)}
-                                disabled={areMembersLimited}>
-                                <span class="icon-plus" aria-hidden="true" />
-                                <span class="text">Invite</span>
-                            </Button>
-                        {/if}
-                    </div>
+                    <Tooltip disabled={!areMembersLimited}>
+                        <div>
+                            {#if $isOwner}
+                                <Button
+                                    secondary
+                                    on:click={() => newMemberModal.set(true)}
+                                    disabled={areMembersLimited}>
+                                    <span class="icon-plus" aria-hidden="true" />
+                                    <span class="text">Invite</span>
+                                </Button>
+                            {/if}
+                        </div>
+                        <span slot="tooltip"
+                            >{$organization?.billingPlan === BillingPlan.FREE
+                                ? `Upgrade to add more members`
+                                : `You've reached the members limit for the ${
+                                      tierToPlan($organization?.billingPlan)?.name
+                                  } plan`}</span>
+                    </Tooltip>
                 </div>
             </div>
         </svelte:fragment>

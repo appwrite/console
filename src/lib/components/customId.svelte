@@ -28,12 +28,10 @@
         Enter a custom {name} ID. Leave blank for a randomly generated one.
     </svelte:fragment>
     <svelte:fragment slot="content">
-        <div class="form">
-            {#if isProject}
-                <InputProjectId bind:value={id} {autofocus} />
-            {:else}
-                <InputId bind:value={id} {autofocus} />
-            {/if}
-        </div>
+        {#if isProject}
+            <InputProjectId bind:value={id} {autofocus} />
+        {:else}
+            <InputId bind:value={id} {autofocus} />
+        {/if}
     </svelte:fragment>
 </InnerModal>

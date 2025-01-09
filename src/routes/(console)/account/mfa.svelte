@@ -72,8 +72,7 @@
                         showLabel={true}
                         label="Manual entry code"
                         labelTooltip="Manually enter the following code into the authenticator app"
-                        value={type.secret}
-                        appendTo={copyParent} />
+                        value={type.secret} />
                 </div>
             {/await}
         {:else}

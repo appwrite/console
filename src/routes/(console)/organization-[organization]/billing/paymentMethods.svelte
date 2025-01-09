@@ -20,9 +20,9 @@
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
     import { user } from '$lib/stores/user';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let showDropdown = false;
     let showDropdownBackup = false;
@@ -104,7 +104,7 @@
                 <CreditCardInfo isBox paymentMethod={defaultPaymentMethod}>
                     <DropList bind:show={showDropdown} placement="bottom-start" noArrow>
                         <Button
-                            round
+                            icon
                             text
                             ariaLabel="More options"
                             on:click={() => {
@@ -155,7 +155,7 @@
                             <DropList bind:show={showDropdown} placement="bottom-start">
                                 <Button
                                     secondary
-                                    round
+                                    icon
                                     on:click={() => {
                                         if (filteredPaymentMethods.length) {
                                             showDropdown = !showDropdown;
@@ -202,7 +202,7 @@
                 <CreditCardInfo isBox paymentMethod={backupPaymentMethod}>
                     <DropList bind:show={showDropdownBackup} placement="bottom-start" noArrow>
                         <Button
-                            round
+                            icon
                             text
                             ariaLabel="More options"
                             on:click={() => {
@@ -253,7 +253,7 @@
                             <DropList bind:show={showDropdownBackup} placement="bottom-start">
                                 <Button
                                     secondary
-                                    round
+                                    icon
                                     on:click={() => {
                                         if (filteredPaymentMethods.length) {
                                             showDropdownBackup = !showDropdownBackup;
@@ -290,13 +290,12 @@
                         </div>
                         <div class="common-section u-flex u-cross-center u-gap-4">
                             <span class="text"> Add a backup payment method </span>
-                            <span
-                                class="icon-info"
-                                style="font-size: var(--icon-size-small)"
-                                use:tooltip={{
-                                    content:
-                                        'When your default payment method fails, a backup method will be used to pay your invoice automatically'
-                                }} />
+                            <Tooltip>
+                                <span class="icon-info" style="font-size: var(--icon-size-small)" />
+                                <span slot="tooltip"
+                                    >When your default payment method fails, a backup method will be
+                                    used to pay your invoice automatically</span>
+                            </Tooltip>
                         </div>
                     </div>
                 </article>

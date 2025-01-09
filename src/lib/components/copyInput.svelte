@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
     import { Label } from '$lib/elements/forms';
     import type { SvelteComponent } from 'svelte';
     import { Copy, Drop } from '.';
@@ -11,7 +10,6 @@
     export let labelTooltip: string = null;
     export let popover: typeof SvelteComponent<unknown> = null;
     export let popoverProps: Record<string, unknown> = {};
-    export let appendTo: Parameters<typeof tooltip>['1']['appendTo'] = undefined;
 
     let show = false;
 </script>
@@ -25,7 +23,6 @@
                     &nbsp;<button
                         type="button"
                         on:click={() => (show = !show)}
-                        class="tooltip"
                         aria-label="input tooltip">
                         <span
                             class="icon-info"
@@ -48,11 +45,9 @@
     <div class="input-text-wrapper" style="--amount-of-buttons:1">
         <input id={label} type="text" {value} readonly />
         <div class="options-list">
-            {#key appendTo}
-                <Copy {value} {appendTo}>
-                    <span class="icon-duplicate" aria-hidden="true" />
-                </Copy>
-            {/key}
+            <Copy {value}>
+                <span class="icon-duplicate" aria-hidden="true" />
+            </Copy>
         </div>
     </div>
 </div>

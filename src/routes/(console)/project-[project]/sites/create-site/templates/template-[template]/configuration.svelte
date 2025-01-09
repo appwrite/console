@@ -1,0 +1,147 @@
+<script lang="ts">
+    import { Collapsible, CollapsibleItem } from '$lib/components';
+    import {
+        Button,
+        InputEmail,
+        InputNumber,
+        InputPassword,
+        InputPhone,
+        InputText,
+        InputURL
+    } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
+    import { Fieldset, Layout, Tag, Popover, Icon } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import type { SvelteComponent } from 'svelte';
+
+    export let variables: Partial<Models.TemplateVariable>[] = [];
+    export let templateVariables: Models.TemplateVariable[] = [];
+
+    let { requiredVariables, optionalVariables } = templateVariables.reduce(
+        (acc, variable) => {
+            if (variable.required) {
+                acc.requiredVariables.push(variable);
+            } else {
+                acc.optionalVariables.push(variable);
+            }
+            return acc;
+        },
+        { requiredVariables: [], optionalVariables: [] }
+    );
+
+    function selectComponent(variableType: string): typeof SvelteComponent<unknown> {
+        switch (variableType) {
+            case 'password':
+                return InputPassword;
+            case 'text':
+                return InputText;
+            case 'url':
+                return InputURL;
+            case 'phone':
+                return InputPhone;
+            case 'email':
+                return InputEmail;
+            case 'number':
+                return InputNumber;
+            default:
+                return InputPassword;
+        }
+    }
+</script>
+
+<Fieldset legend="Configuration">
+    <Layout.Stack gap="l">
+        <Collapsible>
+            {#if requiredVariables?.length}
+                <CollapsibleItem open>
+                    <svelte:fragment slot="title">Required environment variables</svelte:fragment>
+                    <Layout.Stack>
+                        Provide the values for the required environment variables to run this
+                        application.
+
+                        {#each requiredVariables as variable}
+                            <Layout.Stack gap="s" direction="row">
+                                <Layout.Stack gap="s" direction="row">
+                                    <div style="flex-basis:1; width: 100%">
+                                        <InputText
+                                            id={variable.name}
+                                            value={variable.name}
+                                            readonly />
+                                    </div>
+                                    <div style="flex-basis:1;width: 100%">
+                                        <svelte:component
+                                            this={selectComponent(variable.type)}
+                                            id={variable.name}
+                                            placeholder={variable.placeholder ?? 'Enter value'}
+                                            required={variable.required}
+                                            autocomplete={false}
+                                            minlength={variable.type === 'password' ? 0 : null}
+                                            showPasswordButton={variable.type === 'password'}
+                                            bind:value={variables[variable.name].value} />
+                                    </div>
+                                </Layout.Stack>
+                                <Popover placement="bottom-end" let:toggle>
+                                    <Button
+                                        secondary
+                                        icon
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            toggle(e);
+                                        }}>
+                                        <Icon size="s" icon={IconInfo} /></Button>
+                                    <p slot="tooltip">{variable.description}</p>
+                                </Popover>
+                            </Layout.Stack>
+                        {/each}
+                    </Layout.Stack>
+                </CollapsibleItem>
+            {/if}
+            {#if optionalVariables?.length}
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">
+                        Environment variables <Tag size="s">Optional</Tag>
+                    </svelte:fragment>
+                    <Layout.Stack>
+                        Set up environment variables to securely manage keys and settings for your
+                        project.
+
+                        {#each optionalVariables as variable}
+                            <Layout.Stack gap="s" direction="row">
+                                <Layout.Stack gap="s" direction="row">
+                                    <div style="flex-basis:1; width: 100%">
+                                        <InputText
+                                            id={variable.name}
+                                            value={variable.name}
+                                            readonly />
+                                    </div>
+                                    <div style="flex-basis:1;width: 100%">
+                                        <svelte:component
+                                            this={selectComponent(variable.type)}
+                                            id={variable.name}
+                                            placeholder={variable.placeholder ?? 'Enter value'}
+                                            required={variable.required}
+                                            autocomplete={false}
+                                            minlength={variable.type === 'password' ? 0 : null}
+                                            showPasswordButton={variable.type === 'password'}
+                                            bind:value={variables[variable.name].value} />
+                                    </div>
+                                </Layout.Stack>
+                                <Popover placement="bottom-end" let:toggle>
+                                    <Button
+                                        secondary
+                                        icon
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            toggle(e);
+                                        }}>
+                                        <Icon size="s" icon={IconInfo} /></Button>
+                                    <p slot="tooltip">{variable.description}</p>
+                                </Popover>
+                            </Layout.Stack>
+                        {/each}
+                    </Layout.Stack>
+                </CollapsibleItem>
+            {/if}
+        </Collapsible>
+    </Layout.Stack>
+</Fieldset>

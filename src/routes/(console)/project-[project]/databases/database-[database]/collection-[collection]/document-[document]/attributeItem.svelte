@@ -73,7 +73,7 @@
                         <Button
                             noMargin
                             text
-                            round
+                            icon
                             on:click={() => removeArrayItem(attribute.key, index)}>
                             <span class="icon-x" aria-hidden="true" />
                         </Button>
