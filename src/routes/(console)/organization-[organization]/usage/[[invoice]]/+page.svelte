@@ -387,6 +387,7 @@
                 class="link">pricing page</a
             >.
         </p>
+        <p>You will not be charged for SMS OTP for messages before February 10th</p>
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.authPhoneTotal}
                 <div class="u-flex u-main-space-between">
