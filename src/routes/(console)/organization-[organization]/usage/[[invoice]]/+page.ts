@@ -29,7 +29,7 @@ export const load: PageLoad = async ({ params, parent }) => {
                 executionsMBSecondsTotal: null,
                 buildsMBSecondsTotal: null,
                 authPhoneTotal: null,
-                authPhoneEstimate: null,
+                authPhoneEstimate: null
             }
         };
     }

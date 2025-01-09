@@ -132,7 +132,6 @@ export type PlanServices =
     | 'authPhone';
 
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
-
     if (serviceId === 'authPhone') {
         return 10;
     }
