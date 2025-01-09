@@ -24,6 +24,15 @@
     export let metric: Metric;
     export let estimate: Estimate | undefined = undefined;
 
+    function getMetricTitle(metric: Metric): string {
+        switch (metric) {
+            case 'authPhoneTotal':
+                return 'Amount';
+            default:
+                return 'Usage';
+        }
+    }
+
     function getProjectUsageLink(projectId: string): string {
         return `${base}/project-${projectId}/settings/usage`;
     }
@@ -50,6 +59,7 @@
     function format(value: number): string {
         switch (metric) {
             case 'authPhoneTotal':
+                return value.toString();
             case 'executions':
             case 'users':
                 return abbreviateNumber(value);
@@ -61,14 +71,14 @@
 </script>
 
 <Collapsible>
-    <CollapsibleItem open>
+    <CollapsibleItem>
         <svelte:fragment slot="title">Project breakdown</svelte:fragment>
         <TableScroll dense noStyles noMargin style="table-layout: auto">
             <TableHeader>
                 <TableCellHead>Project</TableCellHead>
-                <TableCellHead>Usage</TableCellHead>
+                <TableCellHead>{getMetricTitle(metric)}</TableCellHead>
                 {#if estimate}
-                    <TableCellHead>Estimated Cost</TableCellHead>
+                    <TableCellHead>Estimated cost</TableCellHead>
                 {/if}
                 {#if $canSeeProjects}
                     <TableCellHead />
@@ -81,9 +91,10 @@
                             <TableCell title="Project">
                                 {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                             </TableCell>
-                            <TableCell title="Usage">{format(project.usage)}</TableCell>
+                            <TableCell title={getMetricTitle(metric)}
+                                >{format(project.usage)}</TableCell>
                             {#if project.estimate}
-                                <TableCell title="Estimate"
+                                <TableCell title="Estimated cost"
                                     >{formatCurrency(project.estimate)}</TableCell>
                             {/if}
                         </TableRow>
@@ -92,9 +103,10 @@
                             <TableCell title="Project">
                                 {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                             </TableCell>
-                            <TableCell title="Usage">{format(project.usage)}</TableCell>
+                            <TableCell title={getMetricTitle(metric)}
+                                >{format(project.usage)}</TableCell>
                             {#if project.estimate}
-                                <TableCell title="Estimate"
+                                <TableCell title="Estimated cost"
                                     >{formatCurrency(project.estimate)}</TableCell>
                             {/if}
                             <TableCell right={true}>
