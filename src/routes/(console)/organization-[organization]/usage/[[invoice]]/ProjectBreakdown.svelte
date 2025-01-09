@@ -61,9 +61,9 @@
 </script>
 
 <Collapsible>
-    <CollapsibleItem>
+    <CollapsibleItem open>
         <svelte:fragment slot="title">Project breakdown</svelte:fragment>
-        <TableScroll noMargin style="table-layout: auto">
+        <TableScroll dense noStyles noMargin style="table-layout: auto">
             <TableHeader>
                 <TableCellHead>Project</TableCellHead>
                 <TableCellHead>Usage</TableCellHead>
