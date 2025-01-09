@@ -10,7 +10,7 @@
         TableRowLink,
         TableScroll
     } from '$lib/elements/table';
-    import { abbreviateNumber, formatCurrency } from '$lib/helpers/numbers';
+    import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { base } from '$app/paths';
@@ -59,7 +59,7 @@
     function format(value: number): string {
         switch (metric) {
             case 'authPhoneTotal':
-                return value.toString();
+                return formatNumberWithCommas(value);
             case 'executions':
             case 'users':
                 return abbreviateNumber(value);

@@ -19,7 +19,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
     import { tooltip } from '$lib/actions/tooltip';
-    import { formatCurrency } from '$lib/helpers/numbers';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
 
     export let data;
 
@@ -393,7 +393,7 @@
                 <div class="u-flex u-main-space-between">
                     <p>
                         <span class="heading-level-4"
-                            >{formatNum(data.organizationUsage.authPhoneTotal)}</span>
+                            >{formatNumberWithCommas(data.organizationUsage.authPhoneTotal)}</span>
                         <span class="body-text-1 u-bold">SMS OTPs</span>
                     </p>
                     <p class="u-flex u-gap-8 u-cross-center">

@@ -2,6 +2,7 @@
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, Card, ProgressBarBig } from '$lib/components';
     import {
+        TableRow,
         TableBody,
         TableCell,
         TableCellHead,
@@ -18,6 +19,10 @@
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
     import { base } from '$app/paths';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import Collapsible from '$lib/components/collapsible.svelte';
+    import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
+    import { getCountryName } from '$lib/helpers/diallingCodes.js';
 
     export let data;
 
@@ -367,6 +372,70 @@
                     progressMax={totalGbHours}
                     progressValue={totalGbHours}
                     progressBarData={progressBarStorageDate} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">SMS OTP</Heading>
+
+        <p class="text">
+            Calculated for all SMS OTP sent across your project. Resets at the start of each billing
+            cycle.
+        </p>
+        <svelte:fragment slot="aside">
+            {#if data.usage.authPhoneTotal}
+                <div class="u-flex u-main-space-between">
+                    <p>
+                        <span class="heading-level-4"
+                            >{formatNumberWithCommas(data.usage.authPhoneTotal)}</span>
+                        <span class="body-text-1 u-bold">SMS OTPs</span>
+                    </p>
+                    <p class="u-flex u-gap-8 u-cross-center">
+                        <span class="u-color-text-offline">Estimated cost</span>
+                        <span class="body-text-2">
+                            {formatCurrency(data.usage.authPhoneEstimate)}
+                        </span>
+                    </p>
+                </div>
+                {#if data.usage.authPhoneCountryBreakdown.length > 0}
+                    <Collapsible>
+                        <CollapsibleItem>
+                            <svelte:fragment slot="title">Region breakdown</svelte:fragment>
+                            <Table noMargin noStyles style="table-layout: auto">
+                                <TableHeader>
+                                    <TableCellHead>Region</TableCellHead>
+                                    <TableCellHead>Amount</TableCellHead>
+                                    <TableCellHead>Estimated cost</TableCellHead>
+                                </TableHeader>
+                                <TableBody>
+                                    {#each data.usage.authPhoneCountryBreakdown as phone}
+                                        <TableRow>
+                                            <TableCell title="Region">
+                                                {getCountryName(phone.name)}
+                                            </TableCell>
+                                            <TableCell title="Usage">
+                                                {formatNumberWithCommas(phone.value)}
+                                            </TableCell>
+                                            <TableCell title="Estimated cost">
+                                                {formatCurrency(phone.estimate)}
+                                            </TableCell>
+                                        </TableRow>
+                                    {/each}
+                                </TableBody>
+                            </Table>
+                        </CollapsibleItem>
+                    </Collapsible>
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
