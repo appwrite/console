@@ -6,7 +6,10 @@
 
     export let startAnimation = false;
 
-    const loadingSentences = ['Setting up 20 authentication methods...', 'Doing something else...'];
+    const loadingSentences = [
+        'Setting up 20 authentication methods...',
+        'Preparing messaging providers...'
+    ];
     let currentSentenceIndex = 0;
     let visible = true;
 

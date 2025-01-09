@@ -15,7 +15,7 @@
     import { base } from '$app/paths';
 
     let showCustomId = false;
-    let isLoading = true;
+    let isLoading = false;
     let id: string;
     let startAnimation = false;
     let projectName = '';
