@@ -379,15 +379,15 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h6" size="7">SMS OTP</Heading>
+        <Heading tag="h6" size="7">Phone OTP</Heading>
         <p class="text">
             OTPs are billed per SMS message, with rates varying by recipient country. For a detailed
             cost breakdown, see the <a
-                href="https://appwrite.io/docs/advanced/platform/otp-sms"
+                href="https://appwrite.io/docs/advanced/platform/phone-otp"
                 class="link">pricing page</a
             >.
         </p>
-        <p>You will not be charged for SMS OTP for messages before February 10th</p>
+        <p>You will not be charged for SMS OTP for messages before February 10th.</p>
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.authPhoneTotal}
                 <div class="u-flex u-main-space-between">
