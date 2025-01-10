@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: ^1.4.6
+        specifier: 1.4.6
         version: 1.4.6
       '@appwrite.io/pink':
         specifier: 0.25.0
