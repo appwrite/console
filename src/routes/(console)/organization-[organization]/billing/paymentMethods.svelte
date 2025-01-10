@@ -20,6 +20,7 @@
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
     import { user } from '$lib/stores/user';
 
@@ -249,20 +250,29 @@
                     <div
                         class="u-bold body-text-2 u-flex u-cross-center u-gap-8 u-padding-block-start-8">
                         <DropList bind:show={showDropdownBackup} placement="bottom-start">
-                            <Button
-                                text
-                                noMargin
-                                on:click={() => {
-                                    if (filteredPaymentMethods.length) {
-                                        showDropdownBackup = !showDropdownBackup;
-                                    } else {
-                                        isSelectedBackup = true;
-                                        showPayment = true;
-                                    }
-                                }}>
-                                <i class="icon-plus" />
-                                <span class="text"> Add a backup payment method </span>
-                            </Button>
+                            <div class="u-flex u-gap-8 u-cross-center">
+                                <Button
+                                    text
+                                    noMargin
+                                    on:click={() => {
+                                        if (filteredPaymentMethods.length) {
+                                            showDropdownBackup = !showDropdownBackup;
+                                        } else {
+                                            isSelectedBackup = true;
+                                            showPayment = true;
+                                        }
+                                    }}>
+                                    <span class="icon-plus" />
+                                    <span class="text"> Add a backup payment method </span>
+                                </Button>
+                                <span
+                                    class="icon-info u-cursor-pointer"
+                                    style="font-size: var(--icon-size-small)"
+                                    use:tooltip={{
+                                        content:
+                                            'When your default payment method fails, a backup method will be used to pay your invoice automatically'
+                                    }} />
+                            </div>
                             <svelte:fragment slot="list">
                                 {#if $paymentMethods.total}
                                     {#each filteredPaymentMethods as paymentMethod}
