@@ -25,6 +25,7 @@
 
     async function loadRuntimes() {
         const options = (await $runtimesList).runtimes
+            .filter(runtime => !runtime.deprecated)
             .map((runtime) => ({
                 label: `${runtime.name} - ${runtime.version}`,
                 value: runtime.$id

@@ -12,7 +12,7 @@
     let options = [];
 
     onMount(async () => {
-        options = (await $runtimesList).runtimes.map((runtime) => ({
+        options = (await $runtimesList).runtimes.filter(runtime => !runtime.deprecated).map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
