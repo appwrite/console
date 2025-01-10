@@ -379,22 +379,22 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h6" size="7">SMS OTP</Heading>
+        <Heading tag="h6" size="7">Phone OTP</Heading>
         <p class="text">
             OTPs are billed per SMS message, with rates varying by recipient country. For a detailed
             cost breakdown, see the <a
-                href="https://appwrite.io/docs/advanced/platform/otp-sms"
+                href="https://appwrite.io/docs/advanced/platform/phone-otp"
                 class="link">pricing page</a
             >.
         </p>
-        <p>You will not be charged for SMS OTP for messages before February 10th</p>
+        <p>You will not be charged for Phone OTPs before February 10th.</p>
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.authPhoneTotal}
                 <div class="u-flex u-main-space-between">
                     <p>
                         <span class="heading-level-4"
                             >{formatNumberWithCommas(data.organizationUsage.authPhoneTotal)}</span>
-                        <span class="body-text-1 u-bold">SMS OTPs</span>
+                        <span class="body-text-1 u-bold">OTPs</span>
                     </p>
                     <p class="u-flex u-gap-8 u-cross-center">
                         <span class="u-color-text-offline">Estimated cost</span>
@@ -404,7 +404,7 @@
                                 class="icon-info u-color-text-offline"
                                 use:tooltip={{
                                     content:
-                                        'The first 10 SMS OTP messages each month are provided at no cost. Pricing may vary as it depends on telecom rates and vendor agreements.'
+                                        'The first 10 messages each month are provided at no cost. Pricing may vary as it depends on telecom rates and vendor agreements.'
                                 }} />
                         </span>
                     </p>

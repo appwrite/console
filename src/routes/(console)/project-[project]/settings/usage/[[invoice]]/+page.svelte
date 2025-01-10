@@ -386,19 +386,19 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h6" size="7">SMS OTP</Heading>
-
+        <Heading tag="h6" size="7">Phone OTP</Heading>
         <p class="text">
-            Calculated for all SMS OTP sent across your project. Resets at the start of each billing
-            cycle.
+            Calculated for all Phone OTP sent across your project. Resets at the start of each
+            billing cycle.
         </p>
+        <p>You will not be charged for Phone OTPs before February 10th.</p>
         <svelte:fragment slot="aside">
             {#if data.usage.authPhoneTotal}
                 <div class="u-flex u-main-space-between">
                     <p>
                         <span class="heading-level-4"
                             >{formatNumberWithCommas(data.usage.authPhoneTotal)}</span>
-                        <span class="body-text-1 u-bold">SMS OTPs</span>
+                        <span class="body-text-1 u-bold">OTPs</span>
                     </p>
                     <p class="u-flex u-gap-8 u-cross-center">
                         <span class="u-color-text-offline">Estimated cost</span>
