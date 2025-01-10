@@ -3,7 +3,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { Button, Form, FormList, InputSelectSearch } from '$lib/elements/forms';
     import {
         Table,
@@ -82,16 +82,17 @@
         <Heading tag="h2" size="6">Billing alerts</Heading>
 
         <p class="text">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 Get notified by email when your organization meets a percentage of your budget cap. <b
-                    >Free organizations will receive one notification at 75% resource usage.</b>
+                    >{tierToPlan($organization.billingPlan).name} organizations will receive one notification
+                    at 75% resource usage.</b>
             {:else}
                 Get notified by email when your organization meets or exceeds a percentage of your
                 specified billing alert(s).
             {/if}
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <Alert type="info">
                     <svelte:fragment slot="title"
                         >Billing alerts are a Pro plan feature
@@ -156,7 +157,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                 <Button
                     secondary
                     href={$upgradeURL}

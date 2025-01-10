@@ -194,8 +194,7 @@
                 </article>
             {/if}
         </div>
-        {#if $organization?.billingPlan !== BillingPlan.FREE}
-            <!-- TODO: Add a simple button if a backup payment doesn't exist. -->
+        {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
             <div class="u-flex u-flex-vertical u-gap-8">
                 {#if $organization?.backupPaymentMethodId}
                     <h4 class="u-bold body-text-2">Backup</h4>
