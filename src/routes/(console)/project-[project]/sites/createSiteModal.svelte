@@ -21,32 +21,36 @@
 <Modal title="Create site" bind:show>
     <Layout.Stack direction="row" gap="m" wrap="wrap">
         <div style="flex-grow: 1; min-width: 245px">
-            <LabelCard
-                variant="secondary"
-                padding="xs"
-                radius="s"
-                imageRadius="xxs"
-                src={$app?.themeInUse === 'dark' ? RepoDark : RepoLight}
-                title="Connect a repository"
-                name="connect"
-                bind:group={behaviour}
-                value="repositories">
-                Connect to one of your existing Git repositories
-            </LabelCard>
+            <Layout.Stack direction="column" justifyContent="center">
+                <LabelCard
+                    variant="secondary"
+                    padding="xs"
+                    radius="s"
+                    imageRadius="xxs"
+                    src={$app?.themeInUse === 'dark' ? RepoDark : RepoLight}
+                    title="Connect a repository"
+                    name="connect"
+                    bind:group={behaviour}
+                    value="repositories">
+                    Connect to one of your existing Git repositories
+                </LabelCard>
+            </Layout.Stack>
         </div>
         <div style="flex-grow: 1; min-width: 245px">
-            <LabelCard
-                variant="secondary"
-                padding="xs"
-                radius="s"
-                imageRadius="xxs"
-                src={$app?.themeInUse === 'dark' ? TemplateDark : TemplateLight}
-                title="Clone a template"
-                name="clone"
-                bind:group={behaviour}
-                value="templates">
-                Clone a pre-built template to quickly set up your site
-            </LabelCard>
+            <Layout.Stack direction="column" justifyContent="center">
+                <LabelCard
+                    variant="secondary"
+                    padding="xs"
+                    radius="s"
+                    imageRadius="xxs"
+                    src={$app?.themeInUse === 'dark' ? TemplateDark : TemplateLight}
+                    title="Clone a template"
+                    name="clone"
+                    bind:group={behaviour}
+                    value="templates">
+                    Clone a pre-built template to quickly set up your site
+                </LabelCard>
+            </Layout.Stack>
         </div>
     </Layout.Stack>
     <svelte:fragment slot="footer">
