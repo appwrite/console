@@ -9,8 +9,11 @@
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
     import { currentPlan } from '$lib/stores/organization';
+    import { isCloud } from '$lib/system';
 
     export let show = false;
+
+    export let showHeader = true;
 
     $: hasPremiumSupport = $currentPlan?.premiumSupport ?? false;
 
@@ -46,97 +49,108 @@
             cta: 'Open issue',
             showSupport: false,
             label: 'Open GitHub issue',
-            link: 'https://github.com/appwrite',
+            link: 'https://github.com/appwrite/appwrite/issues/new/choose',
             description: 'Report a bug or pitch a new feature'
         }
     ];
+
+    const showCloudSupport = (index) => {
+        return (index === 0 && isCloud) || index > 0;
+    };
 </script>
 
 <section class="drop-section support-section">
-    <h4 class="heading-level-6">Support</h4>
+    {#if showHeader}
+        <h4 class="heading-level-6">Support</h4>
+    {/if}
 
-    {#each supportOptions as option}
-        <Card
-            isTile
-            class="support-option-card u-flex u-flex-vertical u-gap-12"
-            style="border-radius: var(--border-radius-small, 8px); padding: 0.65rem;">
-            <div class="u-flex u-flex-vertical u-gap-4">
-                <h4 class="body-text-2 u-bold">{option.label}</h4>
+    {#each supportOptions as option, index}
+        {#if showCloudSupport(index)}
+            <Card
+                isTile
+                class="support-option-card u-flex u-flex-vertical u-gap-12"
+                style="border-radius: var(--border-radius-small, 8px); padding: 0.65rem;">
+                <div class="u-flex u-flex-vertical u-gap-4">
+                    <h4 class="body-text-2 u-bold">{option.label}</h4>
 
-                <p class="u-line-height-1-5 u-margin-block-start-8">
-                    {option.description}
-                </p>
-            </div>
+                    <p class="u-line-height-1-5 u-margin-block-start-8">
+                        {option.description}
+                    </p>
+                </div>
 
-            {#if option.showSupport}
-                <div class="u-flex u-gap-12 u-cross-center">
-                    {#if !hasPremiumSupport}
-                        <Button
-                            href={$upgradeURL}
-                            on:click={() => {
-                                trackEvent('click_organization_upgrade', {
-                                    from: 'button',
-                                    source: 'support_menu'
-                                });
-                            }}
-                            ><span class="text">Get Premium support</span>
-                        </Button>
-                    {:else}
-                        <Button
-                            secondary
-                            on:click={() => {
-                                show = false;
-                                $showSupportModal = false;
-                                wizard.start(SupportWizard);
-                            }}>
-                            <span class="text">Contact support</span>
-                        </Button>
-                    {/if}
-
-                    <div class="u-flex u-gap-4 u-cross-center">
-                        {#if isSupportOnline()}
-                            <span
-                                class="icon-check-circle u-color-text-success"
-                                aria-hidden="true" />
+                {#if option.showSupport}
+                    <div class="u-flex u-gap-12 u-cross-center">
+                        {#if !hasPremiumSupport}
+                            <Button
+                                href={$upgradeURL}
+                                on:click={() => {
+                                    trackEvent('click_organization_upgrade', {
+                                        from: 'button',
+                                        source: 'support_menu'
+                                    });
+                                }}>
+                                <span class="text">Get Premium support</span>
+                            </Button>
+                        {:else}
+                            <Button
+                                secondary
+                                class="secondary-button"
+                                on:click={() => {
+                                    show = false;
+                                    $showSupportModal = false;
+                                    wizard.start(SupportWizard);
+                                }}>
+                                <span class="text">Contact support</span>
+                            </Button>
                         {/if}
 
-                        {supportTimings}
+                        <div class="u-flex u-gap-6 u-cross-center">
+                            <span
+                                aria-hidden="true"
+                                class="{isSupportOnline()
+                                    ? 'icon-check-circle u-color-text-success'
+                                    : 'icon-x-circle'} u-padding-block-end-1" />
+
+                            {supportTimings}
+                        </div>
                     </div>
-                </div>
-            {:else}
-                <Button
-                    href={option.link}
-                    external
-                    secondary
-                    class="u-flex u-cross-center u-gap-6"
-                    on:click={() => {
-                        trackEvent('click_organization_upgrade', {
-                            from: 'button',
-                            source: 'support_menu'
-                        });
-                    }}>
-                    <span class={`icon-${option.icon}`} />
-                    <span>{option.cta}</span>
-                </Button>
-            {/if}
-        </Card>
+                {:else}
+                    <Button
+                        href={option.link}
+                        external
+                        secondary
+                        class="secondary-button u-flex u-cross-center u-gap-6"
+                        on:click={() => {
+                            trackEvent('click_organization_upgrade', {
+                                from: 'button',
+                                source: 'support_menu'
+                            });
+                        }}>
+                        <span class={`icon-${option.icon}`} />
+                        <span>{option.cta}</span>
+                    </Button>
+                {/if}
+            </Card>
+        {/if}
     {/each}
 
-    <div class="u-width-full-line">
-        {#key $app.themeInUse}
-            <iframe
-                style="color-scheme: none"
-                title="Appwrite Status"
-                src={`https://status.appwrite.online/badge?theme=${
-                    $app.themeInUse === 'dark' ? 'dark' : 'light'
-                }`}
-                width="250"
-                height="30"
-                frameborder="0"
-                scrolling="no">
-            </iframe>
-        {/key}
-    </div>
+    {#if isCloud}
+        <div class="u-width-full-line">
+            {#key $app.themeInUse}
+                <iframe
+                    style="color-scheme: none"
+                    title="Appwrite Status"
+                    src={`https://status.appwrite.online/badge?theme=${
+                        $app.themeInUse === 'dark' ? 'dark' : 'light'
+                    }`}
+                    width="250"
+                    height="30"
+                    frameborder="0"
+                    scrolling="no">
+                </iframe>
+            {/key}
+        </div>
+    {/if}
 </section>
 
 <style lang="scss">
@@ -152,8 +166,24 @@
         }
     }
 
+    :global(.u-gap-6) {
+        gap: 0.375rem;
+    }
+
+    :global(.theme-dark .support-option-card) {
+        background: #1c1c20 !important;
+    }
+
+    :global(.theme-dark .support-option-card .secondary-button) {
+        background: #131315 !important;
+    }
+
     :global(.theme-light .support-option-card) {
         border: 1px solid var(--color-border-neutral, #ededf0);
         background: var(--color-bgColor-neutral-default, #fafafb);
+    }
+
+    :global(.theme-light .support-option-card .secondary-button) {
+        background: #fff !important;
     }
 </style>
