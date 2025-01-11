@@ -37,7 +37,6 @@
     import { trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import WizardCover from '$lib/layout/wizardCover.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import { featuredTemplatesList, starterTemplate } from '$lib/stores/templates';
@@ -176,7 +175,7 @@
                                 {/each}
 
                                 {#if templates.length < 6}
-                                    <Tooltip inline={false}>
+                                    <Tooltip>
                                         <li>
                                             <Box
                                                 class="u-width-full-line u-flex u-cross-center u-gap-8"
@@ -190,7 +189,7 @@
                                                     bordered />
                                             </Box>
                                         </li>
-                                        <span>More runtimes coming soon</span>
+                                        <span slot="tooltip">More runtimes coming soon</span>
                                     </Tooltip>
                                 {/if}
                             {/await}
