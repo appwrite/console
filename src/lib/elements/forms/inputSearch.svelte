@@ -25,10 +25,9 @@
         }
     });
 
-    const valueChange = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
+    const valueChange = () => {
         clearTimeout(timer);
         timer = setTimeout(() => {
-            value = event.currentTarget.value;
             dispatch('change', value);
         }, debounce);
     };

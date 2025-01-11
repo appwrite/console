@@ -108,9 +108,7 @@
                     : null}
                 bind:value={$templateConfig.specification} />
         {/await}
-    </FormList>
 
-    <FormList class="u-margin-block-start-24">
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>

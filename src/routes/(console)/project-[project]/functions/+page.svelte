@@ -90,7 +90,7 @@
         title="Functions"
         buttonText={$canWriteFunctions ? 'Create function' : ''}
         buttonEvent="create_function"
-        buttonHref={`${base}/project-${project}/functions/create-function`}
+        buttonMethod={openWizard}
         total={data.functions.total} />
 
     {#if data.functions.total}

@@ -237,10 +237,14 @@
                             {@const formatted = formatColumn(document[column.id])}
                             <TableCell>
                                 <Tooltip disabled={!formatted.truncated}>
-                                    <div class="u-width-fit-content" data-private class:truncated={formatted.whole.length >
-                                        formatted.value.length}
-                                         class:less-width-truncated={$columns.filter((col) => col.show)
-                                        .length > 1}>
+                                    <div
+                                        class="u-width-fit-content"
+                                        data-private
+                                        class:truncated={formatted.whole.length >
+                                            formatted.value.length}
+                                        class:less-width-truncated={$columns.filter(
+                                            (col) => col.show
+                                        ).length > 1}>
                                         {formatted.value}
                                     </div>
                                     <span>{formatted.whole}</span>

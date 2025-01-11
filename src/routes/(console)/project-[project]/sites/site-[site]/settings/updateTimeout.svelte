@@ -10,11 +10,10 @@
     import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
+
     let timeout = 0;
-    onMount(async () => {
-        timeout = site.timeout;
-        console.log(timeout);
-    });
+
+    onMount(async () => (timeout = site.timeout));
 
     async function updateTimeout() {
         try {

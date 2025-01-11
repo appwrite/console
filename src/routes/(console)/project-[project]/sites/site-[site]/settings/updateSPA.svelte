@@ -9,21 +9,21 @@
     import { onMount } from 'svelte';
     import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
-    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let site: Models.Site;
-    let spa = false;
+    let siteAdapter = 'static';
     let fallback = '';
 
     onMount(async () => {
-        spa = site?.adapter === 'static';
+        siteAdapter = site?.adapter ?? 'static';
         fallback ??= site.fallbackFile;
-        if (fallback !== undefined) spa = true;
+
+        // what was this check even for?
+        // if (fallback !== undefined) siteAdapter = '';
     });
 
     async function updateSPA() {
         try {
-            console.log(spa);
             await sdk.forProject.sites.update(
                 site.$id,
                 site.name,
@@ -34,7 +34,7 @@
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                spa ? 'static' : 'ssr',
+                siteAdapter,
                 fallback,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
@@ -61,30 +61,32 @@
 <Form onSubmit={updateSPA}>
     <CardGrid>
         <Heading tag="h6" size="7">Single page application</Heading>
+        <p>Provide a fallback file for advanced routing and proper page handling in SPA mode.</p>
 
         <svelte:fragment slot="aside">
             <InputChoice
                 id="spa"
                 type="switchbox"
                 label="Single page application (SPA)"
-                bind:value={spa}>
-                <Layout.Stack>
-                    Provide a fallback file for advanced routing and proper page handling in SPA
-                    mode.
-                    {#if spa}
-                        <InputText
-                            id="fallback"
-                            label="Fallback"
-                            placeholder="Enter fallback"
-                            bind:value={fallback} />
-                    {/if}
-                </Layout.Stack>
-            </InputChoice>
+                on:change={(value) => {
+                    if (value.detail) {
+                        siteAdapter = 'static';
+                    } else {
+                        siteAdapter = 'ssr';
+                    }
+                }} />
+
+            {#if siteAdapter === 'static'}
+                <InputText
+                    id="fallback"
+                    label="Fallback"
+                    placeholder="Enter fallback"
+                    bind:value={fallback} />
+            {/if}
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={spa ? site.adapter === 'static' : site.adapter === 'ssr'} submit
-                >Update</Button>
+            <Button disabled={siteAdapter === site.adapter} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
