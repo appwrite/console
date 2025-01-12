@@ -65,6 +65,28 @@ export type InvoiceList = {
     total: number;
 };
 
+export type Estimation = {
+    amount: number;
+    grossAmount: number;
+    credits: number;
+    discount: number;
+    items: EstimationItem[];
+}
+
+export type EstimationItem = {
+    label: string;
+    value: number;
+}
+
+export type EstimationDeleteOrganization = {
+    amount: number;
+    grossAmount: number;
+    credits: number;
+    discount: number;
+    items: EstimationItem[],
+    unpaidInvoices: Invoice[];
+}
+
 export type Coupon = {
     $id: string;
     code: string;
@@ -396,6 +418,28 @@ export class Billing {
         );
     }
 
+    async estimationCreateOrganization(
+        billingPlan: string,
+        couponId: string = null,
+        invites: Array<string> = [],
+    ): Promise<Estimation> {
+        const path = `/organizations`;
+        const params = {
+            billingPlan,
+            couponId,
+            invites,
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'POST',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async deleteOrganization(organizationId: string): Promise<Organization> {
         const path = `/organizations/${organizationId}`;
         const params = {
@@ -409,6 +453,18 @@ export class Billing {
                 'content-type': 'application/json'
             },
             params
+        );
+    }
+
+    async estimationDeleteOrganization(organizationId: string): Promise<EstimationDeleteOrganization> {
+        const path = `/organizations/${organizationId}/predictions/delete-organization`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            }
         );
     }
 
@@ -475,6 +531,30 @@ export class Billing {
             params
         );
     }
+
+    async estimationUpdatePlan(
+        organizationId: string,
+        billingPlan: string,
+        couponId: string = null,
+        invites: Array<string> = [],
+    ): Promise<Estimation> {
+        const path = `/organizations/${organizationId}/predictions/update-plan`;
+        const params = {
+            billingPlan,
+            couponId,
+            invites,
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async cancelDowngrade(
         organizationId: string
     ): Promise<Organization | OrganizationError> {
