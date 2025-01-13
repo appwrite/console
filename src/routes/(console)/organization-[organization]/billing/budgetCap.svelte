@@ -53,10 +53,8 @@
         <Heading tag="h2" size="6">Budget cap</Heading>
 
         <p class="text">
-            Restrict your resource usage by setting a budget cap. <button
-                on:click={() => ($showUsageRatesModal = true)}
-                type="button"
-                class="link">Learn more about usage rates.</button>
+            Restrict your resource usage by setting a budget cap. Cap usage is reset at the
+            beginning of each billing cycle.
         </p>
         <svelte:fragment slot="aside">
             {#if !$currentPlan.budgeting}
@@ -76,8 +74,12 @@
                 <FormList>
                     <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
                         <svelte:fragment slot="description">
-                            Budget cap limits do not include the base amount of your plan. Cap usage
-                            is reset at the beginning of each billing cycle.
+                            Budget cap limits do not include the base amount of your plan. <button
+                                class="link"
+                                type="button"
+                                on:click={() => ($showUsageRatesModal = true)}
+                                >Learn more about usage rates.
+                            </button>
                         </svelte:fragment>
                     </InputSwitch>
                     {#if capActive}
@@ -102,7 +104,9 @@
                             from: 'button',
                             source: 'billing_budget_cap'
                         });
-                    }}>Upgrade to Pro</Button>
+                    }}
+                    >Upgrade to Pro
+                </Button>
             {:else}
                 <Button disabled={$organization?.billingBudget === budget} submit>Update</Button>
             {/if}
