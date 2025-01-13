@@ -125,7 +125,12 @@
                 <Feedback />
             </svelte:fragment>
         </DropList>
-        <DropList width="25" bind:show={showSupport} scrollable={true}>
+        <DropList
+            class="support-drop-section"
+            bind:show={showSupport}
+            scrollable={true}
+            noArrow
+            placement="bottom-end">
             <Button text on:click={() => (showSupport = !showSupport)}>
                 <span class="text">Support</span>
             </Button>
@@ -262,3 +267,10 @@
         {/if}
     </nav>
 </div>
+
+<style>
+    :global(.support-drop-section) {
+        width: 28.375rem;
+        margin-block-start: 0.15rem;
+    }
+</style>

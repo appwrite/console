@@ -53,7 +53,7 @@
             <InputText
                 label="Subject"
                 id="subject"
-                placeholder="Briefly summarize your issue..."
+                placeholder="What do you need help with?"
                 bind:value={$supportData.subject}
                 required />
 

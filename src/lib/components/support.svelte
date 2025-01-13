@@ -68,12 +68,12 @@
         {#if showCloudSupport(index)}
             <Card
                 isTile
-                class="support-option-card u-flex u-flex-vertical u-gap-12"
+                class="support-option-card u-flex u-flex-vertical u-gap-16"
                 style="border-radius: var(--border-radius-small, 8px); padding: 0.65rem;">
                 <div class="u-flex u-flex-vertical u-gap-4">
                     <h4 class="body-text-2 u-bold">{option.label}</h4>
 
-                    <p class="u-line-height-1-5 u-margin-block-start-8">
+                    <p class="u-line-height-1-5">
                         {option.description}
                     </p>
                 </div>
@@ -156,7 +156,7 @@
 <style lang="scss">
     .support-section {
         gap: 1rem;
-        padding: 20px;
+        padding: 1rem;
         display: flex;
         flex-direction: column;
 
@@ -168,6 +168,10 @@
 
     :global(.u-gap-6) {
         gap: 0.375rem;
+    }
+
+    :global(.support-option-card) {
+        padding: 0.75rem !important;
     }
 
     :global(.theme-dark .support-option-card) {
