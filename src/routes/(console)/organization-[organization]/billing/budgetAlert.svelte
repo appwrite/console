@@ -16,7 +16,7 @@
     } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
 
@@ -82,7 +82,7 @@
         <Heading tag="h2" size="6">Billing alerts</Heading>
 
         <p class="text">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if !$currentPlan.budgeting}
                 Get notified by email when your organization meets a percentage of your budget cap. <b
                     >{tierToPlan($organization.billingPlan).name} organizations will receive one notification
                     at 75% resource usage.</b>
@@ -92,7 +92,7 @@
             {/if}
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if !$currentPlan.budgeting}
                 <Alert type="info">
                     <svelte:fragment slot="title"
                         >Billing alerts are a Pro plan feature
