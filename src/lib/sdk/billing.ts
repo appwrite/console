@@ -364,14 +364,11 @@ export class Billing {
         );
     }
 
-    async validateOrganization(
-        organizationId: string,
-        invites: string[],
-    ): Promise<Organization> {
+    async validateOrganization(organizationId: string, invites: string[]): Promise<Organization> {
         const path = `/organizations/${organizationId}/validate`;
         const params = {
             organizationId,
-            invites,
+            invites
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
