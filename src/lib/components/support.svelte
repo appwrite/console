@@ -175,11 +175,13 @@
     }
 
     :global(.theme-dark .support-option-card) {
-        background: #1c1c20 !important;
+        // todo: get pink2 color vars
+        background: #1c1c20;
     }
 
     :global(.theme-dark .support-option-card .secondary-button) {
-        background: #131315 !important;
+      // todo: get pink2 color vars
+      background: #131315;
     }
 
     :global(.theme-light .support-option-card) {
@@ -188,6 +190,6 @@
     }
 
     :global(.theme-light .support-option-card .secondary-button) {
-        background: #fff !important;
+        background: var(--color-bgColor-neutral-primary, #fff);
     }
 </style>
