@@ -21,18 +21,6 @@
 
     let error: string;
 
-    onMount(() => {
-        if (autofocus) {
-            addInputFocus();
-        }
-    });
-
-    export function addInputFocus() {
-        if (element) {
-            element.focus();
-        }
-    }
-
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
 
@@ -71,6 +59,7 @@
     {label}
     {step}
     {nullable}
+    bind:value
     autofocus={autofocus || undefined}
     helper={error}
     state={error ? 'error' : 'default'}

@@ -13,6 +13,7 @@
     import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
         Button,
@@ -269,9 +270,7 @@
                 bind:billingPlan
                 bind:selfService
                 anyOrgFree={!!anyOrgFree}
-                class={anyOrgFree && billingPlan !== BillingPlan.FREE
-                    ? 'u-margin-block-start-16'
-                    : ''} />
+                class="u-margin-block-16" />
 
             {#if isDowngrade}
                 {#if billingPlan === BillingPlan.FREE}
@@ -297,7 +296,7 @@
             {/if}
             <!-- Show email input if upgrading from free plan -->
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
-                <FormList class="u-margin-block-start-16">
+                <FormList>
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
@@ -307,16 +306,15 @@
                         validityMessage="Invalid email address"
                         id="members" />
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
+                    {#if !couponData?.code}
+                        <Button
+                            text
+                            class="u-margin-block-start-16 align-left"
+                            on:click={() => (showCreditModal = true)}>
+                            <span class="icon-plus"></span> <span class="text">Add credits</span>
+                        </Button>
+                    {/if}
                 </FormList>
-                {#if !couponData?.code}
-                    <Button
-                        text
-                        noMargin
-                        class="u-margin-block-start-16"
-                        on:click={() => (showCreditModal = true)}>
-                        <span class="icon-plus"></span> <span class="text">Add credits</span>
-                    </Button>
-                {/if}
             {/if}
             {#if isDowngrade}
                 <FormList class="u-margin-block-start-24">

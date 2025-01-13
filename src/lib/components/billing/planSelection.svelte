@@ -1,7 +1,7 @@
 <script lang="ts">
     import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { plansInfo, tierFree, tierPro, tierScale, type Tier } from '$lib/stores/billing';
+    import { plansInfo, type Tier, tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { LabelCard } from '..';
 
@@ -26,26 +26,25 @@
                 disabled={anyOrgFree || !selfService}
                 value={BillingPlan.FREE}
                 tooltipShow={anyOrgFree}
+                title={tierFree.name}
                 tooltipText="You are limited to 1 Free organization per account."
                 padding="m">
-                <svelte:fragment slot="custom" let:disabled>
-                    <div
-                        class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
-                        class:u-opacity-50={disabled}>
-                        <h4 class="body-text-2 u-bold">
-                            {tierFree.name}
-                            {#if $organization?.billingPlan === BillingPlan.FREE && !isNewOrg}
-                                <span class="inline-tag">Current plan</span>
-                            {/if}
-                        </h4>
-                        <p class="u-color-text-offline u-small">
-                            {tierFree.description}
-                        </p>
-                        <p>
-                            {formatCurrency(freePlan?.price ?? 0)}
-                        </p>
-                    </div>
-                </svelte:fragment>
+                <div
+                    class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
+                    class:u-opacity-50={anyOrgFree || !selfService}>
+                    <h4 class="body-text-2 u-bold">
+                        {tierFree.name}
+                        {#if $organization?.billingPlan === BillingPlan.FREE && !isNewOrg}
+                            <span class="inline-tag">Current plan</span>
+                        {/if}
+                    </h4>
+                    <p class="u-color-text-offline u-small">
+                        {tierFree.description}
+                    </p>
+                    <p>
+                        {formatCurrency(freePlan?.price ?? 0)}
+                    </p>
+                </div>
             </LabelCard>
         </li>
 
@@ -55,25 +54,23 @@
                 disabled={!selfService}
                 bind:group={billingPlan}
                 value={BillingPlan.PRO}
+                title={tierPro.name}
                 padding="m">
-                <svelte:fragment slot="custom" let:disabled>
-                    <div
-                        class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
-                        class:u-opacity-50={disabled}>
-                        <h4 class="body-text-2 u-bold">
-                            {tierPro.name}
-                            {#if $organization?.billingPlan === BillingPlan.PRO && !isNewOrg}
-                                <span class="inline-tag">Current plan</span>
-                            {/if}
-                        </h4>
-                        <p class="u-color-text-offline u-small">
-                            {tierPro.description}
-                        </p>
-                        <p>
-                            {formatCurrency(proPlan?.price ?? 0)} per member/month + usage
-                        </p>
-                    </div>
-                </svelte:fragment>
+                <div
+                    class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
+                    class:u-opacity-50={!selfService}>
+                    <h4 class="body-text-2 u-bold">
+                        {#if $organization?.billingPlan === BillingPlan.PRO && !isNewOrg}
+                            <span class="inline-tag">Current plan</span>
+                        {/if}
+                    </h4>
+                    <p class="u-color-text-offline u-small">
+                        {tierPro.description}
+                    </p>
+                    <p>
+                        {formatCurrency(proPlan?.price ?? 0)} per member/month + usage
+                    </p>
+                </div>
             </LabelCard>
         </li>
         {#if $organization?.billingPlan === BillingPlan.SCALE}
@@ -82,23 +79,21 @@
                     name="plan"
                     bind:group={billingPlan}
                     value={BillingPlan.SCALE}
-                    padding="m">
-                    <svelte:fragment slot="custom">
-                        <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
-                            <h4 class="body-text-2 u-bold">
-                                {tierScale.name}
-                                {#if $organization?.billingPlan === BillingPlan.SCALE && !isNewOrg}
-                                    <span class="inline-tag">Current plan</span>
-                                {/if}
-                            </h4>
-                            <p class="u-color-text-offline u-small">
-                                {tierScale.description}
-                            </p>
-                            <p>
-                                {formatCurrency(scalePlan?.price ?? 0)} per month + usage
-                            </p>
-                        </div>
-                    </svelte:fragment>
+                    padding="m"
+                    title={tierScale.name}>
+                    <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+                        <h4 class="body-text-2 u-bold">
+                            {#if $organization?.billingPlan === BillingPlan.SCALE && !isNewOrg}
+                                <span class="inline-tag">Current plan</span>
+                            {/if}
+                        </h4>
+                        <p class="u-color-text-offline u-small">
+                            {tierScale.description}
+                        </p>
+                        <p>
+                            {formatCurrency(scalePlan?.price ?? 0)} per month + usage
+                        </p>
+                    </div>
                 </LabelCard>
             </li>
         {/if}

@@ -19,7 +19,6 @@
 
     export let isOpen = false;
 
-
     $: project = $page.params.project;
     $: projectPath = `${base}/project-${project}`;
 

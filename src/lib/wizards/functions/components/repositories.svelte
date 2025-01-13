@@ -9,6 +9,7 @@
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '../store';
     import { createEventDispatcher } from 'svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -92,30 +93,25 @@
             </ul>
         </div>
     {:then installations}
-        <div class="u-flex u-gap-16">
-            <ul class="u-width-full-line">
-                <InputSelect
-                    id="installation"
-                    label="Select installation"
-                    showLabel={false}
-                    options={installations.map((entry) => {
-                        return {
-                            label: entry.organization,
-                            value: entry.$id
-                        };
-                    })}
-                    on:change={() => {
-                        search = '';
-                        installation.set(
-                            installations.find((entry) => entry.$id === selectedInstallation)
-                        );
-                    }}
-                    bind:value={selectedInstallation} />
-            </ul>
-            <ul class="u-width-full-line">
-                <InputSearch placeholder="Search repositories" bind:value={search} />
-            </ul>
-        </div>
+        <Layout.Stack direction="row" alignItems="flex-end">
+            <InputSelect
+                id="installation"
+                label="Select installation"
+                options={installations.map((entry) => {
+                    return {
+                        label: entry.organization,
+                        value: entry.$id
+                    };
+                })}
+                on:change={() => {
+                    search = '';
+                    installation.set(
+                        installations.find((entry) => entry.$id === selectedInstallation)
+                    );
+                }}
+                bind:value={selectedInstallation} />
+            <InputSearch placeholder="Search repositories" bind:value={search} />
+        </Layout.Stack>
     {/await}
     <p class="text u-margin-block-start-16">
         Manage organization configuration in your <a
