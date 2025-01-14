@@ -4,13 +4,15 @@ import type { Tier } from '$lib/stores/billing';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
+import { Query } from '@appwrite.io/console';
 
-export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
+export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
     await parent();
-
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
 
+    const prefs = await sdk.forConsole.account.getPrefs();
+    console.log('params', params.project);
     const { endpoint, project } = sdk.forConsole.client.config;
     const versionPromise = fetch(`${endpoint}/health/version`, {
         headers: {
@@ -31,11 +33,24 @@ export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
         }, new Map<Tier, Plan>());
     }
 
+    let projects = [];
+    const currentOrgId = params.organization ? params.organization : prefs.organization;
+    if (currentOrgId) {
+        const orgProjects = await sdk.forConsole.projects.list([
+            Query.equal('teamId', currentOrgId),
+            Query.limit(100),
+            Query.orderDesc('')
+        ]);
+        projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
+    }
+
     return {
         consoleVariables: variables,
         version: data?.version ?? null,
         plansInfo,
         roles: [],
-        scopes: []
+        scopes: [],
+        projects: projects,
+        currentProjectId: params.project ?? ''
     };
 };

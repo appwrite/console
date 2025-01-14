@@ -8,10 +8,16 @@
     import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
+    import { organization, organizationList } from '$lib/stores/organization';
+    import { Navbar, Sidebar } from '@appwrite.io/pink-svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
+    import { tierToPlan } from '$lib/stores/billing';
 
     export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
+    export let projects: Array<{ name: string; $id: string; isSelected: boolean }> = [];
 
     let y: number;
 
@@ -48,6 +54,28 @@
     const isNarrow = setContext('isNarrow', writable(false));
     const hasSubNavigation = setContext('hasSubNavigation', writable(false));
     $: sideSize = $hasSubNavigation ? ($isNarrow ? '17rem' : '25rem') : '12.5rem';
+
+    $: navbarProps = {
+        logo: {
+            src: 'https://appwrite.io/images/logos/logo.svg',
+            alt: 'Logo Appwrite'
+        },
+
+        avatar: sdk.forConsole.avatars.getInitials($user.name, 80, 80).toString(),
+
+        organizations: $organizationList.teams.map((org) => {
+            return {
+                name: org.name,
+                $id: org.$id,
+                tierName: tierToPlan(org.billingPlan).name,
+                isSelected: $organization.$id === org.$id,
+                projects: projects
+            };
+        })
+    };
+
+    let sideBarIsOpen = true;
+    let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -62,35 +90,80 @@
         <svelte:component this={$activeHeaderAlert.component} />
     {/if}
     {#if showHeader}
-        <header class="main-header u-padding-inline-end-0">
-            <button
-                class:u-hide={!showSideNavigation}
-                class="icon-button is-not-desktop"
-                aria-label="Open Menu"
-                on:click={toggleMenu}>
-                <span class:icon-x={showSubNavigation} class:icon-menu={!showSubNavigation} aria-hidden="true" />
-            </button>
-            <slot name="header" />
-        </header>
+        <Navbar.Appwrite {...navbarProps} bind:sideBarIsOpen />
     {/if}
-    {#if showSideNavigation}
-        <nav class="main-side">
-            <slot name="side" />
-        </nav>
-    {/if}
-    <section class="main-content">
-        {#if $page.data?.header}
-            <svelte:component this={$page.data.header} />
-        {/if}
 
-        <slot />
-        {#if showFooter}
-            <slot name="footer" />
-        {/if}
-    </section>
+    {#if showSideNavigation}
+        <Sidebar.Appwrite
+            project={projects.find((project) => project.isSelected)}
+            avatar={navbarProps.avatar}
+            bind:state />
+    {/if}
+
+    <div class="content" class:icons={state === 'icons'} class:no-sidebar={!showSideNavigation}>
+        <section class="main-content">
+            {#if $page.data?.header}
+                <svelte:component this={$page.data.header} />
+            {/if}
+
+            <slot />
+            {#if showFooter}
+                <slot name="footer" />
+            {/if}
+        </section>
+    </div>
+    <button
+        class:overlay={sideBarIsOpen}
+        on:click={() => {
+            sideBarIsOpen = false;
+        }}></button>
+    <!--        <section class="main-content">-->
+    <!--            {#if $page.data?.header}-->
+    <!--                <svelte:component this={$page.data.header} />-->
+    <!--            {/if}-->
+
+    <!--            <slot />-->
+    <!--            {#if showFooter}-->
+    <!--                <slot name="footer" />-->
+    <!--            {/if}-->
+    <!--        </section>-->
 </main>
 
 <style lang="scss">
+    .content {
+        width: 100%;
+
+        margin-top: 30px;
+
+        @media (min-width: 1024px) {
+            width: 100%;
+
+            padding-left: 190px;
+            transition: all 0.3s ease-in-out;
+
+            &.icons {
+                padding-left: 54px;
+            }
+        }
+    }
+
+    .no-sidebar {
+        padding-left: 0;
+    }
+
+    .overlay {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+        top: 0;
+        background-color: #56565c1a;
+        backdrop-filter: blur(5px);
+
+        @media (min-width: 1024px) {
+            display: none;
+        }
+    }
     main {
         min-height: 100vh;
 
