@@ -125,17 +125,19 @@
                 <Feedback />
             </svelte:fragment>
         </DropList>
-
-        {#if isCloud}
-            <DropList width="18.5" bind:show={showSupport} scrollable={true}>
-                <Button text on:click={() => (showSupport = !showSupport)}>
-                    <span class="text">Support</span>
-                </Button>
-                <svelte:fragment slot="other">
-                    <Support bind:show={showSupport} />
-                </svelte:fragment>
-            </DropList>
-        {/if}
+        <DropList
+            class="support-drop-section"
+            bind:show={showSupport}
+            scrollable={true}
+            noArrow
+            placement="bottom-end">
+            <Button text on:click={() => (showSupport = !showSupport)}>
+                <span class="text">Support</span>
+            </Button>
+            <svelte:fragment slot="other">
+                <Support bind:show={showSupport} />
+            </svelte:fragment>
+        </DropList>
         <Button
             actions={[
                 (node) => {
@@ -265,3 +267,10 @@
         {/if}
     </nav>
 </div>
+
+<style>
+    :global(.support-drop-section) {
+        width: 28.375rem;
+        margin-block-start: 0.15rem;
+    }
+</style>

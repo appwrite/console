@@ -128,6 +128,23 @@ export const localeTimezoneName = () => {
     return dateWithTimezone.split(', ')[1];
 };
 
+/**
+ * This function processes the timezone name using regex to:
+ *
+ * 1. Trim and simplify the text for UI display (e.g., IST, UST, etc.).
+ * 2. Handle cases where `timeZoneName: 'shortGeneric'` returns names like `India Time`,
+ *    which do not fit well in the support modal UI.
+ * 3. Not using `timeZoneName: 'short'`, as it can display `GMT+-` formatted timezones,
+ *    which may not be ideal.
+ *
+ * Refer to:
+ * https://github.com/appwrite/console/pull/1564#discussion_r1913977798
+ */
+export const localeShortTimezoneName = () => {
+    const timezone = localeTimezoneName();
+    return timezone.match(/[A-Z]/g)?.join('') || timezone;
+};
+
 export const isSameDay = (date1: Date, date2: Date) => {
     return (
         date1.getFullYear() === date2.getFullYear() &&
