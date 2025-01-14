@@ -71,6 +71,9 @@ export type Estimation = {
     credits: number;
     discount: number;
     items: EstimationItem[];
+    discounts: EstimationItem[];
+    trialDays: number;
+    trialEndDate: string | undefined;
 }
 
 export type EstimationItem = {
@@ -420,7 +423,7 @@ export class Billing {
         couponId: string = null,
         invites: Array<string> = [],
     ): Promise<Estimation> {
-        const path = `/organizations`;
+        const path = `/organizations/estimations/create-organization`;
         const params = {
             billingPlan,
             couponId,
@@ -428,7 +431,7 @@ export class Billing {
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
-            'POST',
+            'patch',
             uri,
             {
                 'content-type': 'application/json'
@@ -454,7 +457,7 @@ export class Billing {
     }
 
     async estimationDeleteOrganization(organizationId: string): Promise<EstimationDeleteOrganization> {
-        const path = `/organizations/${organizationId}/predictions/delete-organization`;
+        const path = `/organizations/${organizationId}/estimations/delete-organization`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',
@@ -535,7 +538,7 @@ export class Billing {
         couponId: string = null,
         invites: Array<string> = [],
     ): Promise<Estimation> {
-        const path = `/organizations/${organizationId}/predictions/update-plan`;
+        const path = `/organizations/${organizationId}/estimations/update-plan`;
         const params = {
             billingPlan,
             couponId,

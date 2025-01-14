@@ -9,6 +9,7 @@
         PlanComparisonBox,
         SelectPaymentMethod
     } from '$lib/components/billing';
+    import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
@@ -20,6 +21,7 @@
         FormList,
         InputSelect,
         InputTags,
+        InputText,
         InputTextarea,
         Label
     } from '$lib/elements/forms';
@@ -74,6 +76,7 @@
         status: null,
         credits: null
     };
+    let couponId: string;
     let taxId: string;
     let billingBudget: number;
     let showCreditModal = false;
@@ -350,6 +353,9 @@
                     </Button>
                 {/if}
             {/if}
+            <FormList class="u-margin-block-start-16">
+                <InputText id="couponId" bind:value={couponId} />
+            </FormList>
             {#if isDowngrade}
                 <FormList class="u-margin-block-start-24">
                     <InputSelect
@@ -370,13 +376,19 @@
         </Form>
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
-                <EstimatedTotalBox
+                <EstimatedTotal
+                    organizationId={$organization.$id}
+                    {billingPlan}
+                    {collaborators}
+                    {couponId}
+                />
+                <!-- <EstimatedTotalBox
                     {isDowngrade}
                     {billingPlan}
                     {collaborators}
                     bind:couponData
                     bind:billingBudget
-                    currentTier={$organization.billingPlan} />
+                    currentTier={$organization.billingPlan} /> -->
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}

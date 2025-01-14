@@ -9,6 +9,7 @@
         PlanSelection,
         SelectPaymentMethod
     } from '$lib/components/billing';
+    import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
@@ -51,6 +52,7 @@
     let billingPlan: BillingPlan = BillingPlan.FREE;
     let paymentMethodId: string;
     let collaborators: string[] = [];
+    let couponId: string | undefined;
     let couponData: Partial<Coupon> = {
         code: null,
         status: null,
@@ -233,6 +235,11 @@
                         id="members" />
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId
                     ></SelectPaymentMethod>
+                    <InputText
+                        bind:value={couponId}
+                        label="Coupon"
+                        placeholder="Enter coupon code"
+                        id="couponId" />
                 </FormList>
                 {#if !couponData?.code}
                     <Button
@@ -247,6 +254,11 @@
         </Form>
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE}
+                <EstimatedTotal
+                    {billingPlan}
+                    {collaborators}
+                    {couponId}
+                />
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
