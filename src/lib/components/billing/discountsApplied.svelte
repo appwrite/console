@@ -16,6 +16,10 @@
                 </span>
             </p>
         </div>
-        <span class="u-color-text-success">-{formatCurrency(value)}</span>
+        {#if value >= 100}
+            <p class="inline-tag">Credits applied</p>
+        {:else}
+            <span class="u-color-text-success">-{formatCurrency(value)}</span>
+        {/if}
     </span>
 {/if}

@@ -8,6 +8,7 @@
         EstimatedTotalBox,
         SelectPaymentMethod
     } from '$lib/components/billing';
+    import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -285,12 +286,11 @@
                 </section>
             {:else if selectedOrgId}
                 <div class:u-margin-block-start-24={campaign?.template === 'card'}>
-                    <EstimatedTotalBox
-                        fixedCoupon={!!data?.couponData?.code}
+                    <EstimatedTotal
+                        organizationId={selectedOrgId === newOrgId ? null : selectedOrgId}
                         {billingPlan}
                         {collaborators}
-                        bind:couponData
-                        bind:billingBudget>
+                        couponId={couponData.code}>
                         {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
                             <div class="u-margin-block-end-24">
                                 <p class="body-text-1 u-bold">{campaign?.cta}</p>
@@ -303,7 +303,7 @@
                                 </p>
                             </div>
                         {/if}
-                    </EstimatedTotalBox>
+                    </EstimatedTotal>
                 </div>
             {/if}
         </svelte:fragment>
