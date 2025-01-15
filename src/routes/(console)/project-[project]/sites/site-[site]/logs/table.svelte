@@ -1,13 +1,16 @@
 <script lang="ts">
     import { Id } from '$lib/components';
-    import { TableRow } from '$lib/elements/table';
     import { timeFromNow } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
     import { Badge, InlineCode, Layout, Table } from '@appwrite.io/pink-svelte';
+    import Sheet from './sheet.svelte';
 
     export let columns: Column[];
-    export let executions: Models.ExecutionList;
+    export let logs: Models.ExecutionList;
+
+    let openSheet = false;
+    let selectedLog = null;
 </script>
 
 <Table.Root>
@@ -18,38 +21,46 @@
             {/if}
         {/each}
     </svelte:fragment>
-    {#each executions.executions as execution}
-        <TableRow>
+    {#each logs.executions as log}
+        <Table.Button
+            on:click={() => {
+                openSheet = true;
+                selectedLog = log;
+            }}>
             {#each columns as column}
                 {#if column.show}
                     {#if column.id === '$id'}
                         {#key column.id}
                             <Table.Cell>
-                                <Id value={execution.$id}>{execution.$id}</Id>
+                                <Id value={log.$id}>{log.$id}</Id>
                             </Table.Cell>
                         {/key}
                     {:else if column.id === '$createdAt'}
                         <Table.Cell>
-                            {timeFromNow(execution.$createdAt)}
+                            {timeFromNow(log.$createdAt)}
                         </Table.Cell>
                     {:else if column.id === 'responseStatusCode'}
                         <Table.Cell>
-                            {execution.responseStatusCode}
+                            {log.responseStatusCode}
                         </Table.Cell>
                     {:else if column.id === 'requestPath'}
                         <Table.Cell>
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Badge
                                     variant="secondary"
-                                    type={execution.responseStatusCode >= 400 ? 'error' : 'success'}
-                                    content={execution.responseStatusCode.toString()} />
-                                <InlineCode code={execution.requestMethod} />
-                                <InlineCode code={execution.requestPath} />
+                                    type={log.responseStatusCode >= 400 ? 'error' : 'success'}
+                                    content={log.responseStatusCode.toString()} />
+                                <InlineCode code={log.requestMethod} />
+                                <InlineCode code={log.requestPath} />
                             </Layout.Stack>
                         </Table.Cell>
                     {/if}
                 {/if}
             {/each}
-        </TableRow>
+        </Table.Button>
     {/each}
 </Table.Root>
+
+{#if openSheet && selectedLog}
+    <Sheet bind:openSheet bind:selectedLog />
+{/if}
