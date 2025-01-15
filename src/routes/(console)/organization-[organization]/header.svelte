@@ -161,25 +161,18 @@
                     <a href={`${path}/members`} class="is-not-mobile">
                         <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
                     </a>
-                    <Tooltip disabled={!areMembersLimited}>
-                        <div>
-                            {#if $isOwner}
-                                <Button
-                                    secondary
-                                    on:click={() => newMemberModal.set(true)}
-                                    disabled={areMembersLimited}>
-                                    <span class="icon-plus" aria-hidden="true" />
-                                    <span class="text">Invite</span>
-                                </Button>
-                            {/if}
-                        </div>
-                        <span slot="tooltip"
-                            >{$organization?.billingPlan === BillingPlan.FREE
-                                ? `Upgrade to add more members`
-                                : `You've reached the members limit for the ${
-                                      tierToPlan($organization?.billingPlan)?.name
-                                  } plan`}</span>
-                    </Tooltip>
+
+                    <div>
+                        {#if $isOwner}
+                            <Button
+                                secondary
+                                on:click={() => newMemberModal.set(true)}
+                                disabled={areMembersLimited}>
+                                <span class="icon-plus" aria-hidden="true" />
+                                <span class="text">Invite</span>
+                            </Button>
+                        {/if}
+                    </div>
                 </div>
             </div>
         </svelte:fragment>

@@ -74,7 +74,7 @@
         })
     };
 
-    let sideBarIsOpen = true;
+    let sideBarIsOpen = false;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
 </script>
 

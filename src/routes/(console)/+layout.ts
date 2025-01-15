@@ -12,7 +12,7 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
     depends(Dependencies.CONSOLE_VARIABLES);
 
     const prefs = await sdk.forConsole.account.getPrefs();
-    console.log('params', params.project);
+
     const { endpoint, project } = sdk.forConsole.client.config;
     const versionPromise = fetch(`${endpoint}/health/version`, {
         headers: {
@@ -42,6 +42,7 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
             Query.orderDesc('')
         ]);
         projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
+        console.log('projects', projects);
     }
 
     return {
