@@ -1,6 +1,7 @@
 <script lang="ts">
     import { browser } from '$app/environment';
     import { beforeNavigate } from '$app/navigation';
+    import { Navbar } from '$lib/components';
     import { page } from '$app/stores';
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
@@ -9,7 +10,7 @@
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
-    import { Navbar, Sidebar } from '@appwrite.io/pink-svelte';
+    import { Sidebar } from '@appwrite.io/pink-svelte';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { tierToPlan } from '$lib/stores/billing';
@@ -89,7 +90,8 @@
         <svelte:component this={$activeHeaderAlert.component} />
     {/if}
     {#if showHeader}
-        <Navbar.Appwrite {...navbarProps} bind:sideBarIsOpen />
+        <Navbar {...navbarProps} bind:sideBarIsOpen />
+        <!--        <Navbar.Appwrite {...navbarProps} bind:sideBarIsOpen />-->
     {/if}
 
     {#if showSideNavigation}
