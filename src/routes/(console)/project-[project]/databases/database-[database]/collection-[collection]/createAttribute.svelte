@@ -66,13 +66,19 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} onSubmit={submit} icon={$option?.icon}>
+<Modal
+    {error}
+    size="big"
+    bind:show={showCreate}
+    onSubmit={submit}
+    icon={$option?.icon}
+    iconNotMobile={selectedOption === 'Relationship'}>
     <svelte:fragment slot="title">
         {#if selectedOption === 'Relationship'}
             <span class="u-flex u-gap-16 u-cross-center">
                 {selectedOption}
                 <div class="tag eyebrow-heading-3">
-                    <span class="text u-x-small">Beta</span>
+                    <span class="text u-x-small">Experimental</span>
                 </div>
             </span>
         {:else}

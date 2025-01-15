@@ -88,7 +88,11 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        if (anyOrgFree) {
+        if (
+            anyOrgFree ||
+            ($page.url.searchParams.has('type') &&
+                $page.url.searchParams.get('type') === 'createPro')
+        ) {
             billingPlan = BillingPlan.PRO;
         }
         if ($page.url.searchParams.has('type')) {

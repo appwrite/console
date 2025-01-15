@@ -99,28 +99,14 @@
     </div>
 
     <p class="text u-margin-block-start-16">
-        {#if isScaleDowngrade}
-            You'll continue using the {currentOrgPlan.name} plan until your current cycle ends on
-            <span class="u-bold"
-                >{!selectedPlan.trialDays
-                    ? toLocaleDate(billingPayDate.toString())
-                    : toLocaleDate(trialEndDate.toString())}</span
-            >. Starting the next cycle, your plan will switch to {selectedPlan.name}, and you'll be
-            charged
-            <span class="u-bold">{formatCurrency(grossCost)}</span>
-            every 30 days.
-        {:else}
-            You'll pay
-            <span class="u-bold">{formatCurrency(estimatedTotal)}</span>
-            now, with our first billing cycle starting on
-            <span class="u-bold"
-                >{!selectedPlan.trialDays
-                    ? toLocaleDate(billingPayDate.toString())
-                    : toLocaleDate(trialEndDate.toString())}</span
-            >. Once your credits run out, you'll be charged
-            <span class="u-bold">{formatCurrency(selectedPlan.price)}</span> plus usage fees every 30
-            days.
-        {/if}
+        You'll pay <span class="u-bold">{formatCurrency(estimatedTotal)}</span> now, with your first
+        billing cycle starting on
+        <span class="u-bold"
+            >{!currentPlan.trialDays
+                ? toLocaleDate(billingPayDate.toString())
+                : toLocaleDate(trialEndDate.toString())}</span
+        >. Once your credits run out, you'll be charged
+        <span class="u-bold">{formatCurrency(currentPlan.price)}</span> plus usage fees every 30 days.
     </p>
 
     <FormList class="u-margin-block-start-24">

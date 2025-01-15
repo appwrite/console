@@ -224,7 +224,11 @@ export type OrganizationUsage = {
         executions: number;
         bandwidth: number;
         users: number;
+        authPhoneTotal: number;
+        authPhoneEstimate: number;
     }>;
+    authPhoneTotal: number;
+    authPhoneEstimate: number;
 };
 
 export type AggregationList = {
@@ -311,6 +315,7 @@ export type Plan = {
     executions: number;
     realtime: number;
     logs: number;
+    authPhone: number;
     usage: {
         bandwidth: AdditionalResource;
         executions: AdditionalResource;

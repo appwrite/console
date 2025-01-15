@@ -8,6 +8,7 @@
     export let show = false;
     export let size: 'small' | 'big' | 'huge' = null;
     export let icon: string = null;
+    export let iconNotMobile: boolean = false;
     export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;
     export let closable = true;
@@ -39,6 +40,7 @@
                     {#if icon}
                         <div
                             class="avatar is-medium"
+                            class:is-not-mobile={iconNotMobile}
                             class:is-success={state === 'success'}
                             class:is-warning={state === 'warning'}
                             class:is-danger={state === 'error'}

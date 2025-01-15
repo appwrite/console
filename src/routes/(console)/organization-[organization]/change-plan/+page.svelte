@@ -302,9 +302,7 @@
             <SelectPlan
                 bind:billingPlan
                 anyOrgFree={!!anyOrgFree}
-                class={anyOrgFree && billingPlan !== BillingPlan.FREE
-                    ? 'u-margin-block-start-16'
-                    : ''} />
+                class="u-margin-block-16" />
 
             {#if isDowngrade}
                 {#if billingPlan === BillingPlan.FREE}

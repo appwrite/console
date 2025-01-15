@@ -5,14 +5,14 @@
     import { Button, FormList, InputFile } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import WizardStep from '$lib/layout/wizardStep.svelte';
-    import { getServiceLimit, tierToPlan, upgradeURL } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
+    import { tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { organization, currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { bucket } from '../store';
     import { createFile } from './store';
 
     let showCustomId = false;
-    const service = getServiceLimit('fileSize');
+    const service = $currentPlan['fileSize'];
 </script>
 
 <WizardStep>
