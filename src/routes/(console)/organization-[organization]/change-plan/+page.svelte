@@ -4,10 +4,7 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert } from '$lib/components';
-    import {
-        PlanComparisonBox,
-        SelectPaymentMethod
-    } from '$lib/components/billing';
+    import { PlanComparisonBox, SelectPaymentMethod } from '$lib/components/billing';
     import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import SelectPlan from '$lib/components/billing/selectPlan.svelte';
@@ -299,10 +296,7 @@
                     >Your contract is not eligible for manual changes. Please reach out to schedule
                     a call or setup a dialog.</Alert>
             {/if}
-            <SelectPlan
-                bind:billingPlan
-                anyOrgFree={!!anyOrgFree}
-                class="u-margin-block-16" />
+            <SelectPlan bind:billingPlan anyOrgFree={!!anyOrgFree} class="u-margin-block-16" />
 
             {#if isDowngrade}
                 {#if billingPlan === BillingPlan.FREE}
@@ -338,20 +332,13 @@
                         validityMessage="Invalid email address"
                         id="members" />
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
+                    <InputText
+                        bind:value={couponId}
+                        label="Coupon"
+                        placeholder="Enter coupon code"
+                        id="couponId" />
                 </FormList>
-                {#if !couponData?.code}
-                    <Button
-                        text
-                        noMargin
-                        class="u-margin-block-start-16"
-                        on:click={() => (showCreditModal = true)}>
-                        <span class="icon-plus"></span> <span class="text">Add credits</span>
-                    </Button>
-                {/if}
             {/if}
-            <FormList class="u-margin-block-start-16">
-                <InputText id="couponId" bind:value={couponId} />
-            </FormList>
             {#if isDowngrade}
                 <FormList class="u-margin-block-start-24">
                     <InputSelect

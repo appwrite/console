@@ -247,15 +247,6 @@
                         placeholder="Enter coupon code"
                         id="couponId" />
                 </FormList>
-                {#if !couponData?.code}
-                    <Button
-                        text
-                        noMargin
-                        class="u-margin-block-start-16"
-                        on:click={() => (showCreditModal = true)}>
-                        <span class="icon-plus"></span> <span class="text">Add credits</span>
-                    </Button>
-                {/if}
             {/if}
         </Form>
         <svelte:fragment slot="aside">
@@ -265,11 +256,6 @@
                     {collaborators}
                     {couponId}
                 />
-                <EstimatedTotalBox
-                    {billingPlan}
-                    {collaborators}
-                    bind:couponData
-                    bind:billingBudget />
             {:else}
                 <PlanComparisonBox />
             {/if}
