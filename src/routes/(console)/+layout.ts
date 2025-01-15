@@ -42,7 +42,6 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
             Query.orderDesc('')
         ]);
         projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
-        console.log('projects', projects);
     }
 
     return {
