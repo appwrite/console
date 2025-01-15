@@ -1,17 +1,9 @@
 <script lang="ts">
-    import {
-        Navbar,
-        BreadcrumbsConsole,
-        Icon,
-        Button,
-        Layout,
-        Link,
-        Tooltip
-    } from '@appwrite.io/pink-svelte';
+    import { Navbar, Icon, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
     import { IconBell, IconMenuAlt4, IconSearch } from '@appwrite.io/pink-icons-svelte';
-    import { DropList, Support } from '$lib/components';
+    import { DropList, Support, BreadcrumbsConsole } from '$lib/components';
     import { Feedback } from '$lib/components/feedback';
     import { feedback } from '$lib/stores/feedback';
     import { isMac } from '$lib/helpers/platform';
@@ -41,17 +33,20 @@
     export let organizations: $$Props['organizations'];
     export let avatar: $$Props['avatar'];
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
+    export let showSideNavigation: boolean;
 </script>
 
 <Navbar.Base {...$$props}>
     <div slot="left" class="left">
-        <div class="only-mobile-tablet">
-            <button
-                class="sideNavToggle"
-                on:click={() => {
-                    sideBarIsOpen = !sideBarIsOpen;
-                }}><Icon icon={IconMenuAlt4} /></button>
-        </div>
+        {#if showSideNavigation}
+            <div class="only-mobile-tablet">
+                <button
+                    class="sideNavToggle"
+                    on:click={() => {
+                        sideBarIsOpen = !sideBarIsOpen;
+                    }}><Icon icon={IconMenuAlt4} /></button>
+            </div>
+        {/if}
         <img src={logo.src} alt={logo.alt} class="only-desktop" />
         <BreadcrumbsConsole {organizations} />
     </div>

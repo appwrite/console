@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { browser } from '$app/environment';
     import { beforeNavigate } from '$app/navigation';
     import { Navbar } from '$lib/components';
     import { page } from '$app/stores';
@@ -25,18 +24,6 @@
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
     });
-
-    const toggleMenu = () => {
-        y = 0;
-        $showSubNavigation = !$showSubNavigation;
-        if (browser) {
-            if ($showSubNavigation) {
-                document.body.classList.add('u-overflow-hidden');
-            } else {
-                document.body.classList.remove('u-overflow-hidden');
-            }
-        }
-    };
 
     /**
      * Cancel navigation when wizard is open and triggered by popstate
@@ -91,7 +78,7 @@
         <svelte:component this={$activeHeaderAlert.component} />
     {/if}
     {#if showHeader}
-        <Navbar {...navbarProps} bind:sideBarIsOpen />
+        <Navbar {...navbarProps} bind:sideBarIsOpen bind:showSideNavigation />
     {/if}
 
     {#if showSideNavigation}
@@ -121,16 +108,6 @@
         on:click={() => {
             sideBarIsOpen = false;
         }}></button>
-    <!--        <section class="main-content">-->
-    <!--            {#if $page.data?.header}-->
-    <!--                <svelte:component this={$page.data.header} />-->
-    <!--            {/if}-->
-
-    <!--            <slot />-->
-    <!--            {#if showFooter}-->
-    <!--                <slot name="footer" />-->
-    <!--            {/if}-->
-    <!--        </section>-->
 </main>
 
 <style lang="scss">
@@ -177,15 +154,6 @@
         }
     }
 
-    .main-side {
-        z-index: 25;
-    }
-
-    @media (max-width: 550.99px), (min-width: 551px) and (max-width: 1198.99px) {
-        .main-side {
-            top: 4.5rem;
-        }
-    }
     @media (min-width: 1199px) {
         .grid-with-side {
             grid-template-columns: auto 1fr !important;
