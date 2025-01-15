@@ -34,8 +34,8 @@
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Deployment</svelte:fragment>
 
-    <h3>Connect with Git <span class="inline-code">Recommended</span></h3>
-    <FormList gap={16} class="u-margin-block-start-8">
+    <FormList>
+        <h3>Connect with Git <span class="inline-code">Recommended</span></h3>
         <LabelCard
             name="behaviour"
             value="new"
@@ -52,13 +52,11 @@
             <svelte:fragment slot="title">Add to existing repository</svelte:fragment>
             Clone the template to an existing repository in your organization.
         </LabelCard>
-    </FormList>
 
-    <h3 class="u-margin-block-start-24">Quick start</h3>
-    <ul class="u-margin-block-start-8">
+        <h3>Quick start</h3>
         <LabelCard name="behaviour" value="manual" bind:group={$templateConfig.repositoryBehaviour}>
             <svelte:fragment slot="title">Connect later</svelte:fragment>
             Deploy now and continue development via CLI, or connect Git from your function settings.
         </LabelCard>
-    </ul>
+    </FormList>
 </WizardStep>

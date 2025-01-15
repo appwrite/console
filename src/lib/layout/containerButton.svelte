@@ -22,7 +22,7 @@
     export let buttonType: 'primary' | 'secondary' | 'text' = 'primary';
 </script>
 
-<Tooltip {disabled}>
+<Tooltip disabled={!disabled}>
     <Button
         size="s"
         text={buttonType === 'text'}

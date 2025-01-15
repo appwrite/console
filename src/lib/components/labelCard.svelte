@@ -32,7 +32,7 @@
     let slotTitle: HTMLSpanElement;
 </script>
 
-<Tooltip disabled={!tooltipText || !tooltipShow}>
+<Tooltip disabled={!tooltipText || !tooltipShow} inline={false}>
     <div>
         <Card.Selector
             {padding}

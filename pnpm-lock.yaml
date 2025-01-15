@@ -18,11 +18,11 @@ importers:
         specifier: 0.25.0
         version: 0.25.0
       '@appwrite.io/pink-icons-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@247
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@247(svelte@4.2.19)
+        specifier: 1.0.0-next.7
+        version: 1.0.0-next.7(svelte@4.2.19)
       '@appwrite.io/pink-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
+        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246
+        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -53,9 +53,6 @@ importers:
       envfile:
         specifier: ^7.1.0
         version: 7.1.0
-      i:
-        specifier: ^0.3.7
-        version: 0.3.7
       ignore:
         specifier: ^6.0.2
         version: 6.0.2
@@ -221,14 +218,13 @@ packages:
     resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@9193}
     version: 1.2.1
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@247':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@247}
-    version: 1.0.0-next.7
+  '@appwrite.io/pink-icons-svelte@1.0.0-next.7':
+    resolution: {integrity: sha512-Bmff3YGEliIetqc3UyjzJNLg88FIC6UXYwTzGqHm+0QLCRJxwAFpTkfTCLIqMe5PUqGshq6jM9SPyCCSVVS3aw==}
     peerDependencies:
       svelte: ^4.0.0
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@cc21a90b80ca41bd9e1b64fa1194a9a3f356998c':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@cc21a90b80ca41bd9e1b64fa1194a9a3f356998c}
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@fd8846c3c7186379d300f897fe6ee4b7b7c346e2':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@fd8846c3c7186379d300f897fe6ee4b7b7c346e2}
     version: 1.0.0-next.7
     peerDependencies:
       svelte: ^4.0.0
@@ -236,8 +232,8 @@ packages:
   '@appwrite.io/pink-icons@0.25.0':
     resolution: {integrity: sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q==}
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90}
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246}
     version: 1.0.0-next.85
     peerDependencies:
       react-dom: ^18.0.0
@@ -692,11 +688,6 @@ packages:
 
   '@melt-ui/svelte@0.83.0':
     resolution: {integrity: sha512-E7QT+8YSftz+Hdk1W0hNR3f+cnaF2COMWkStn+2u4vk0RO1I9mXRJl+bJD6uhYaH146oxEB+5elu/ABbv6rpsA==}
-    peerDependencies:
-      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.118
-
-  '@melt-ui/svelte@0.86.2':
-    resolution: {integrity: sha512-wRVN603oIt1aXvx2QRmKqVDJgTScSvr/WJLLokkD8c4QzHgn6pfpPtUKmhV6Dvkk+OY89OG/1Irkd6ouA50Ztw==}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.118
 
@@ -1240,26 +1231,20 @@ packages:
     resolution: {integrity: sha512-zIieP1VLWQb3wUjFJlwOAoaaJygJhXeUoGd0e/Ha2RLb2eW2S+4gjf6y6NqyY71tZ74LYVZKg/4prB6FAZSMXQ==}
     engines: {node: '>= 14'}
 
-  '@shikijs/core@1.27.0':
-    resolution: {integrity: sha512-2RkIwaXVWxJQQw8JvqikTVe4gBxS3elH3qF3b7Ews1KdJc+TH9/nsVEftrtPn0bLOkdlMaGj5H2RBHpfWmRIcA==}
+  '@shikijs/core@1.24.0':
+    resolution: {integrity: sha512-6pvdH0KoahMzr6689yh0QJ3rCgF4j1XsXRHNEeEN6M4xJTfQ6QPWrmHzIddotg+xPJUPEPzYzYCKzpYyhTI6Gw==}
 
-  '@shikijs/engine-javascript@1.27.0':
-    resolution: {integrity: sha512-1nzz37go+wb6uR97QSRtU4GEwx99efuucB6QI4R682wmPbti6LeWe5VcMNy8LJJt02GEYcZeJK6Lvq8YXBVNXA==}
+  '@shikijs/engine-javascript@1.24.0':
+    resolution: {integrity: sha512-ZA6sCeSsF3Mnlxxr+4wGEJ9Tto4RHmfIS7ox8KIAbH0MTVUkw3roHPHZN+LlJMOHJJOVupe6tvuAzRpN8qK1vA==}
 
-  '@shikijs/engine-oniguruma@1.27.0':
-    resolution: {integrity: sha512-x1XMJvQuToX2KhESav2cnaTFDEwpJ1bcczaXy8wlRWhPVVAGR/MxlWnJbhHFe+ETerQgdpLZN8l+EgO0rVfEFQ==}
+  '@shikijs/engine-oniguruma@1.24.0':
+    resolution: {integrity: sha512-Eua0qNOL73Y82lGA4GF5P+G2+VXX9XnuUxkiUuwcxQPH4wom+tE39kZpBFXfUuwNYxHSkrSxpB1p4kyRW0moSg==}
 
-  '@shikijs/langs@1.27.0':
-    resolution: {integrity: sha512-6fBE0OL17XGYlNj8IuHfKtTALLk6+CVAXw8Rj2y/K8NP646/hows9+XwzIFcvFo3wZ0fPAcPKQ9pwG6a1FBevw==}
+  '@shikijs/types@1.24.0':
+    resolution: {integrity: sha512-aptbEuq1Pk88DMlCe+FzXNnBZ17LCiLIGWAeCWhoFDzia5Q5Krx3DgnULLiouSdd6+LUM39XwXGppqYE0Ghtug==}
 
-  '@shikijs/themes@1.27.0':
-    resolution: {integrity: sha512-L21LFq8hdsrBUXLh0fxKRURwE1brSlofK3Onutpwk71/EddfPqv60PG+Cg/KawPi8B04Mwp66EWw1shQjcYfBQ==}
-
-  '@shikijs/types@1.27.0':
-    resolution: {integrity: sha512-oOJdIeOnGo+hbM7MH+Ejpksse2ASex4DVHdvBoKyY3+26GEzG9PwM85BeXNGxUZuVxtVKo43sZl0qtJs/K2Zow==}
-
-  '@shikijs/vscode-textmate@10.0.1':
-    resolution: {integrity: sha512-fTIQwLF+Qhuws31iw7Ncl1R3HUDtGwIipiJ9iU+UsDUwMhegFcQKQHd51nZjb7CArq0MvON8rbgCGQYWHUKAdg==}
+  '@shikijs/vscode-textmate@9.3.0':
+    resolution: {integrity: sha512-jn7/7ky30idSkd/O5yDBfAnVt+JJpepofP/POZ1iMOxK59cOfqIgg/Dj0eFsjOTMw+4ycJN0uhZH/Eb0bs/EUA==}
 
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -2287,8 +2272,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hast-util-to-html@9.0.4:
-    resolution: {integrity: sha512-wxQzXtdbhiwGAUKrnQJXlOPmHnEehzphwkK7aluUPQ+lEc1xefC8pblMgpp2w5ldBTEfveRIrADcrhGIWrlTDA==}
+  hast-util-to-html@9.0.3:
+    resolution: {integrity: sha512-M17uBDzMJ9RPCqLMO92gNNUDuBSq10a25SDBI08iCCxmorf4Yy6sYHK57n9WAbRAAaU+DuR4W6GN9K4DFZesYg==}
 
   hast-util-whitespace@3.0.0:
     resolution: {integrity: sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==}
@@ -2321,10 +2306,6 @@ packages:
   human-signals@5.0.0:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
     engines: {node: '>=16.17.0'}
-
-  i@0.3.7:
-    resolution: {integrity: sha512-FYz4wlXgkQwIPqhzC5TdNMLSE5+GS1IIDJZY/1ZiEPCT2S3COUVZeT5OW4BmW4r5LHLQuOosSwsvnroG9GR59Q==}
-    engines: {node: '>=0.4'}
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -2958,8 +2939,8 @@ packages:
     resolution: {integrity: sha512-1FlR+gjXK7X+AsAHso35MnyN5KqGwJRi/31ft6x0M194ht7S+rWAvd7PHss9xSKMzE0asv1pyIHaJYq+BbacAQ==}
     engines: {node: '>=12'}
 
-  oniguruma-to-es@1.0.0:
-    resolution: {integrity: sha512-kihvp0O4lFwf5tZMkfanwQLIZ9ORe9OeOFgZonH0BQeThgwfJiaZFeOfvvJVnJIM9TiVmx0RDD35hUJDR0++rQ==}
+  oniguruma-to-es@0.7.0:
+    resolution: {integrity: sha512-HRaRh09cE0gRS3+wi2zxekB+I5L8C/gN60S+vb11eADHUaB/q4u8wGGOX3GvwvitG8ixaeycZfeoyruKQzUgNg==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -3229,14 +3210,14 @@ packages:
   regenerator-runtime@0.14.1:
     resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
 
-  regex-recursion@5.1.1:
-    resolution: {integrity: sha512-ae7SBCbzVNrIjgSbh7wMznPcQel1DNlDtzensnFxpiNpXt1U2ju/bHugH422r+4LAVS1FpW1YCwilmnNsjum9w==}
+  regex-recursion@4.3.0:
+    resolution: {integrity: sha512-5LcLnizwjcQ2ALfOj95MjcatxyqF5RPySx9yT+PaXu3Gox2vyAtLDjHB8NTJLtMGkvyau6nI3CfpwFCjPUIs/A==}
 
   regex-utilities@2.3.0:
     resolution: {integrity: sha512-8VhliFJAWRaUiVvREIiW2NXXTmHs4vMNnSzuJVhscgmGav3g9VDxLrQndI3dZZVVdp0ZO/5v0xmX516/7M9cng==}
 
-  regex@5.1.1:
-    resolution: {integrity: sha512-dN5I359AVGPnwzJm2jN1k0W9LPZ+ePvoOeVMMfqIMFz53sSwXkxaJoxr50ptnsC771lK95BnTrVSZxq0b9yCGw==}
+  regex@5.0.2:
+    resolution: {integrity: sha512-/pczGbKIQgfTMRV0XjABvc5RzLqQmwqxLHdQao2RTXPk+pmTXB2P0IaUHYdYyk412YLwUIkaeMd5T+RzVgTqnQ==}
 
   regexp.prototype.flags@1.5.3:
     resolution: {integrity: sha512-vqlC04+RQoFalODCbCumG2xIOvapzVMHwsyIGM/SIE8fRhFFsXeH8/QQ+s0T0kDAhKc4k30s73/0ydkHQz6HlQ==}
@@ -3363,8 +3344,8 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shiki@1.27.0:
-    resolution: {integrity: sha512-PdrOqs36vGmftWETJJF6IJAUDS0ERYOYofHCBTHpLTvWLC8E/E6lyh+Xm1lMIZ/sBWT5uJSmri6NNW5ZDglMqQ==}
+  shiki@1.24.0:
+    resolution: {integrity: sha512-qIneep7QRwxRd5oiHb8jaRzH15V/S8F3saCXOdjwRLgozZJr5x2yeBhQtqkO3FSzQDwYEFAYuifg4oHjpDghrg==}
 
   shimmer@1.2.1:
     resolution: {integrity: sha512-sQTKC1Re/rM6XyFM6fIAGHRPVGvyXfgzIDvzoq608vM+jeyVD0Tu1E6Np0Kc2zAIFWIj963V2800iF/9LPieQw==}
@@ -4059,25 +4040,24 @@ snapshots:
 
   '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@9193': {}
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@247(svelte@4.2.19)':
+  '@appwrite.io/pink-icons-svelte@1.0.0-next.7(svelte@4.2.19)':
     dependencies:
       svelte: 4.2.19
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@cc21a90b80ca41bd9e1b64fa1194a9a3f356998c(svelte@4.2.19)':
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@fd8846c3c7186379d300f897fe6ee4b7b7c346e2(svelte@4.2.19)':
     dependencies:
       svelte: 4.2.19
 
   '@appwrite.io/pink-icons@0.25.0': {}
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
     dependencies:
-      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@cc21a90b80ca41bd9e1b64fa1194a9a3f356998c(svelte@4.2.19)
+      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@fd8846c3c7186379d300f897fe6ee4b7b7c346e2(svelte@4.2.19)
       '@floating-ui/dom': 1.6.12
-      '@melt-ui/pp': 0.3.2(@melt-ui/svelte@0.86.2(svelte@4.2.19))(svelte@4.2.19)
-      '@melt-ui/svelte': 0.86.2(svelte@4.2.19)
+      '@melt-ui/svelte': 0.83.0(svelte@4.2.19)
       pretty-bytes: 6.1.1
       react-dom: 18.3.1(react@18.3.1)
-      shiki: 1.27.0
+      shiki: 1.24.0
       svelte: 4.2.19
       svelte-motion: 0.12.2(svelte@4.2.19)
       svelte-sonner: 0.3.28(svelte@4.2.19)
@@ -4594,24 +4574,7 @@ snapshots:
       magic-string: 0.30.14
       svelte: 4.2.19
 
-  '@melt-ui/pp@0.3.2(@melt-ui/svelte@0.86.2(svelte@4.2.19))(svelte@4.2.19)':
-    dependencies:
-      '@melt-ui/svelte': 0.86.2(svelte@4.2.19)
-      estree-walker: 3.0.3
-      magic-string: 0.30.14
-      svelte: 4.2.19
-
   '@melt-ui/svelte@0.83.0(svelte@4.2.19)':
-    dependencies:
-      '@floating-ui/core': 1.6.8
-      '@floating-ui/dom': 1.6.12
-      '@internationalized/date': 3.6.0
-      dequal: 2.0.3
-      focus-trap: 7.6.2
-      nanoid: 5.0.9
-      svelte: 4.2.19
-
-  '@melt-ui/svelte@0.86.2(svelte@4.2.19)':
     dependencies:
       '@floating-ui/core': 1.6.8
       '@floating-ui/dom': 1.6.12
@@ -5242,40 +5205,32 @@ snapshots:
       - encoding
       - supports-color
 
-  '@shikijs/core@1.27.0':
+  '@shikijs/core@1.24.0':
     dependencies:
-      '@shikijs/engine-javascript': 1.27.0
-      '@shikijs/engine-oniguruma': 1.27.0
-      '@shikijs/types': 1.27.0
-      '@shikijs/vscode-textmate': 10.0.1
+      '@shikijs/engine-javascript': 1.24.0
+      '@shikijs/engine-oniguruma': 1.24.0
+      '@shikijs/types': 1.24.0
+      '@shikijs/vscode-textmate': 9.3.0
       '@types/hast': 3.0.4
-      hast-util-to-html: 9.0.4
+      hast-util-to-html: 9.0.3
 
-  '@shikijs/engine-javascript@1.27.0':
+  '@shikijs/engine-javascript@1.24.0':
     dependencies:
-      '@shikijs/types': 1.27.0
-      '@shikijs/vscode-textmate': 10.0.1
-      oniguruma-to-es: 1.0.0
+      '@shikijs/types': 1.24.0
+      '@shikijs/vscode-textmate': 9.3.0
+      oniguruma-to-es: 0.7.0
 
-  '@shikijs/engine-oniguruma@1.27.0':
+  '@shikijs/engine-oniguruma@1.24.0':
     dependencies:
-      '@shikijs/types': 1.27.0
-      '@shikijs/vscode-textmate': 10.0.1
+      '@shikijs/types': 1.24.0
+      '@shikijs/vscode-textmate': 9.3.0
 
-  '@shikijs/langs@1.27.0':
+  '@shikijs/types@1.24.0':
     dependencies:
-      '@shikijs/types': 1.27.0
-
-  '@shikijs/themes@1.27.0':
-    dependencies:
-      '@shikijs/types': 1.27.0
-
-  '@shikijs/types@1.27.0':
-    dependencies:
-      '@shikijs/vscode-textmate': 10.0.1
+      '@shikijs/vscode-textmate': 9.3.0
       '@types/hast': 3.0.4
 
-  '@shikijs/vscode-textmate@10.0.1': {}
+  '@shikijs/vscode-textmate@9.3.0': {}
 
   '@sinclair/typebox@0.27.8': {}
 
@@ -6486,7 +6441,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hast-util-to-html@9.0.4:
+  hast-util-to-html@9.0.3:
     dependencies:
       '@types/hast': 3.0.4
       '@types/unist': 3.0.3
@@ -6532,8 +6487,6 @@ snapshots:
   human-signals@2.1.0: {}
 
   human-signals@5.0.0: {}
-
-  i@0.3.7: {}
 
   iconv-lite@0.6.3:
     dependencies:
@@ -7320,11 +7273,11 @@ snapshots:
     dependencies:
       mimic-fn: 4.0.0
 
-  oniguruma-to-es@1.0.0:
+  oniguruma-to-es@0.7.0:
     dependencies:
       emoji-regex-xs: 1.0.0
-      regex: 5.1.1
-      regex-recursion: 5.1.1
+      regex: 5.0.2
+      regex-recursion: 4.3.0
 
   optionator@0.9.4:
     dependencies:
@@ -7565,14 +7518,13 @@ snapshots:
 
   regenerator-runtime@0.14.1: {}
 
-  regex-recursion@5.1.1:
+  regex-recursion@4.3.0:
     dependencies:
-      regex: 5.1.1
       regex-utilities: 2.3.0
 
   regex-utilities@2.3.0: {}
 
-  regex@5.1.1:
+  regex@5.0.2:
     dependencies:
       regex-utilities: 2.3.0
 
@@ -7719,15 +7671,13 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  shiki@1.27.0:
+  shiki@1.24.0:
     dependencies:
-      '@shikijs/core': 1.27.0
-      '@shikijs/engine-javascript': 1.27.0
-      '@shikijs/engine-oniguruma': 1.27.0
-      '@shikijs/langs': 1.27.0
-      '@shikijs/themes': 1.27.0
-      '@shikijs/types': 1.27.0
-      '@shikijs/vscode-textmate': 10.0.1
+      '@shikijs/core': 1.24.0
+      '@shikijs/engine-javascript': 1.24.0
+      '@shikijs/engine-oniguruma': 1.24.0
+      '@shikijs/types': 1.24.0
+      '@shikijs/vscode-textmate': 9.3.0
       '@types/hast': 3.0.4
 
   shimmer@1.2.1: {}

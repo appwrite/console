@@ -71,7 +71,6 @@
             width: 150,
             format: 'datetime'
         },
-
         {
             id: 'buildTime',
             title: 'Build time',
@@ -96,7 +95,7 @@
         },
         {
             id: 'size',
-            title: 'Size',
+            title: 'Source size',
             type: 'integer',
             show: true,
             width: 140,
