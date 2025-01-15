@@ -23,6 +23,9 @@
         IconUserGroup
     } from '@appwrite.io/pink-icons-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
+    import { feedback } from '$lib/stores/feedback';
+    import { DropList } from '$lib/components/index';
+    import { Feedback } from '$lib/components/feedback';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -40,6 +43,15 @@
     export let avatar: $$Props['avatar'];
     export let progressCard: $$Props['progressCard'];
     export let sideBarIsOpen: boolean;
+
+    function toggleFeedback() {
+        console.log('toggleFeedback!');
+        feedback.toggleFeedback();
+        if ($feedback.notification) {
+            feedback.toggleNotification();
+            feedback.addVisualization();
+        }
+    }
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth' },
@@ -134,8 +146,13 @@
             {:else}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
-                        <Button.Button variant="secondary" size="s"
-                            ><span>Feedback</span></Button.Button>
+                        <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
+                            <Button.Button variant="secondary" size="s" on:click={toggleFeedback}
+                                >Feedback</Button.Button>
+                            <svelte:fragment slot="other">
+                                <Feedback />
+                            </svelte:fragment>
+                        </DropList>
                         <Button.Button variant="secondary" size="s"
                             ><span>Support</span></Button.Button>
                     </Layout.Stack>
@@ -161,8 +178,15 @@
                 <div class="only-mobile">
                     <div class="action-buttons">
                         <Layout.Stack direction="column" gap="s">
-                            <Button.Button variant="secondary" size="s"
-                                ><span>Feedback</span></Button.Button>
+                            <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
+                                <Button.Button
+                                    variant="secondary"
+                                    size="s"
+                                    on:click={toggleFeedback}>Feedback</Button.Button>
+                                <svelte:fragment slot="other">
+                                    <Feedback />
+                                </svelte:fragment>
+                            </DropList>
                             <Button.Button variant="secondary" size="s"
                                 ><span>Support</span></Button.Button>
                         </Layout.Stack>
@@ -240,6 +264,11 @@
         span {
             width: 144px;
             text-align: center;
+        }
+
+        :global(div),
+        :global(button) {
+            width: 100%;
         }
     }
     .avatar {
