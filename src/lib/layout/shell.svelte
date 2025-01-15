@@ -98,11 +98,11 @@
             {/if}
 
             <slot />
-            {#if showFooter}
-                <slot name="footer" />
-            {/if}
         </section>
     </div>
+    {#if showFooter}
+        <slot name="footer" />
+    {/if}
     <button
         class:overlay={sideBarIsOpen}
         on:click={() => {
