@@ -21,8 +21,8 @@ importers:
         specifier: 1.0.0-next.7
         version: 1.0.0-next.7(svelte@4.2.19)
       '@appwrite.io/pink-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
+        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90
+        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -223,8 +223,8 @@ packages:
     peerDependencies:
       svelte: ^4.0.0
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@fd8846c3c7186379d300f897fe6ee4b7b7c346e2':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@fd8846c3c7186379d300f897fe6ee4b7b7c346e2}
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@cc21a90b80ca41bd9e1b64fa1194a9a3f356998c':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@cc21a90b80ca41bd9e1b64fa1194a9a3f356998c}
     version: 1.0.0-next.7
     peerDependencies:
       svelte: ^4.0.0
@@ -232,8 +232,8 @@ packages:
   '@appwrite.io/pink-icons@0.25.0':
     resolution: {integrity: sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q==}
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246}
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90}
     version: 1.0.0-next.85
     peerDependencies:
       react-dom: ^18.0.0
@@ -688,6 +688,11 @@ packages:
 
   '@melt-ui/svelte@0.83.0':
     resolution: {integrity: sha512-E7QT+8YSftz+Hdk1W0hNR3f+cnaF2COMWkStn+2u4vk0RO1I9mXRJl+bJD6uhYaH146oxEB+5elu/ABbv6rpsA==}
+    peerDependencies:
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.118
+
+  '@melt-ui/svelte@0.86.2':
+    resolution: {integrity: sha512-wRVN603oIt1aXvx2QRmKqVDJgTScSvr/WJLLokkD8c4QzHgn6pfpPtUKmhV6Dvkk+OY89OG/1Irkd6ouA50Ztw==}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.118
 
@@ -4044,17 +4049,18 @@ snapshots:
     dependencies:
       svelte: 4.2.19
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@fd8846c3c7186379d300f897fe6ee4b7b7c346e2(svelte@4.2.19)':
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@cc21a90b80ca41bd9e1b64fa1194a9a3f356998c(svelte@4.2.19)':
     dependencies:
       svelte: 4.2.19
 
   '@appwrite.io/pink-icons@0.25.0': {}
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@246(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc21a90(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
     dependencies:
-      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@fd8846c3c7186379d300f897fe6ee4b7b7c346e2(svelte@4.2.19)
+      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@cc21a90b80ca41bd9e1b64fa1194a9a3f356998c(svelte@4.2.19)
       '@floating-ui/dom': 1.6.12
-      '@melt-ui/svelte': 0.83.0(svelte@4.2.19)
+      '@melt-ui/pp': 0.3.2(@melt-ui/svelte@0.86.2(svelte@4.2.19))(svelte@4.2.19)
+      '@melt-ui/svelte': 0.86.2(svelte@4.2.19)
       pretty-bytes: 6.1.1
       react-dom: 18.3.1(react@18.3.1)
       shiki: 1.24.0
@@ -4574,7 +4580,24 @@ snapshots:
       magic-string: 0.30.14
       svelte: 4.2.19
 
+  '@melt-ui/pp@0.3.2(@melt-ui/svelte@0.86.2(svelte@4.2.19))(svelte@4.2.19)':
+    dependencies:
+      '@melt-ui/svelte': 0.86.2(svelte@4.2.19)
+      estree-walker: 3.0.3
+      magic-string: 0.30.14
+      svelte: 4.2.19
+
   '@melt-ui/svelte@0.83.0(svelte@4.2.19)':
+    dependencies:
+      '@floating-ui/core': 1.6.8
+      '@floating-ui/dom': 1.6.12
+      '@internationalized/date': 3.6.0
+      dequal: 2.0.3
+      focus-trap: 7.6.2
+      nanoid: 5.0.9
+      svelte: 4.2.19
+
+  '@melt-ui/svelte@0.86.2(svelte@4.2.19)':
     dependencies:
       '@floating-ui/core': 1.6.8
       '@floating-ui/dom': 1.6.12
