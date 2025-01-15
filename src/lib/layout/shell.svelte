@@ -98,11 +98,15 @@
             {/if}
 
             <slot />
+            {#if showFooter && showSideNavigation}
+                <slot name="footer" />
+            {/if}
         </section>
     </div>
-    {#if showFooter}
+    {#if showFooter && !showSideNavigation}
         <slot name="footer" />
     {/if}
+
     <button
         class:overlay={sideBarIsOpen}
         on:click={() => {
