@@ -10,7 +10,7 @@
     export let logs: Models.ExecutionList;
 
     let openSheet = false;
-    let selectedLog = null;
+    let selectedLogId: string = null;
 </script>
 
 <Table.Root>
@@ -25,7 +25,7 @@
         <Table.Button
             on:click={() => {
                 openSheet = true;
-                selectedLog = log;
+                selectedLogId = log.$id;
             }}>
             {#each columns as column}
                 {#if column.show}
@@ -61,6 +61,4 @@
     {/each}
 </Table.Root>
 
-{#if openSheet && selectedLog}
-    <Sheet bind:openSheet bind:selectedLog />
-{/if}
+<Sheet bind:open={openSheet} bind:selectedLogId logs={logs.executions} />

@@ -12,7 +12,6 @@
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Pill } from '$lib/elements';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { log } from '$lib/stores/logs';
