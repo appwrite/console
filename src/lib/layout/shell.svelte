@@ -1,6 +1,6 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
-    import { Navbar } from '$lib/components';
+    import { Navbar, Sidebar } from '$lib/components';
     import { page } from '$app/stores';
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
@@ -9,7 +9,6 @@
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
-    import { Sidebar } from '@appwrite.io/pink-svelte';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { tierToPlan } from '$lib/stores/billing';
@@ -82,7 +81,7 @@
     {/if}
 
     {#if showSideNavigation}
-        <Sidebar.Appwrite
+        <Sidebar
             project={projects.find((project) => project.isSelected)}
             avatar={navbarProps.avatar}
             bind:state />
