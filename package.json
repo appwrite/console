@@ -23,7 +23,7 @@
         "@appwrite.io/pink": "0.25.0",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "1.0.0-next.7",
-        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@24ba676",
+        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@eabc0b1",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",

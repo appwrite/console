@@ -54,7 +54,6 @@
     const isNarrow = setContext('isNarrow', writable(false));
     const hasSubNavigation = setContext('hasSubNavigation', writable(false));
     $: sideSize = $hasSubNavigation ? ($isNarrow ? '17rem' : '25rem') : '12.5rem';
-
     $: navbarProps = {
         logo: {
             src: 'https://appwrite.io/images/logos/logo.svg',
@@ -68,7 +67,7 @@
                 name: org.name,
                 $id: org.$id,
                 tierName: tierToPlan(org.billingPlan).name,
-                isSelected: $organization.$id === org.$id,
+                isSelected: $organization?.$id === org.$id,
                 projects: projects
             };
         })
