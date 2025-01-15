@@ -9,21 +9,16 @@
         Icon,
         Layout,
         Sheet,
-        Table,
         Tag,
         Typography
     } from '@appwrite.io/pink-svelte';
     import { timeFromNow } from '$lib/helpers/date';
+    import LogsRequest from './(components)/LogsRequest.svelte';
+    import LogsResponse from './(components)/LogsResponse.svelte';
 
     export let open = false;
     export let selectedLogId: string;
     export let logs: Models.Execution[];
-
-    $: if (!open) {
-        selectedLogId = null;
-    }
-
-    $: selectedLog = logs?.find((log) => log.$id === selectedLogId);
 
     function nextLog() {
         const currentIndex = logs.findIndex((log) => log.$id === selectedLogId);
@@ -37,9 +32,14 @@
             selectedLogId = logs[currentIndex - 1].$id;
         }
     }
+    $: if (!open) {
+        selectedLogId = null;
+    }
 
+    $: selectedLog = logs?.find((log) => log.$id === selectedLogId);
     $: isFirstLog = logs.findIndex((log) => log.$id === selectedLogId) === 0;
     $: isLastLog = logs.findIndex((log) => log.$id === selectedLogId) === logs.length - 1;
+    $: console.log(selectedLog);
 </script>
 
 <Sheet bind:open>
@@ -120,22 +120,11 @@
                 </Layout.Stack>
             </Accordion>
             <Accordion title="Request" open>
-                {#if selectedLog.requestHeaders?.length}
-                    <Table.Root>
-                        <svelte:fragment slot="header">
-                            <Table.Header.Cell>Key</Table.Header.Cell>
-                            <Table.Header.Cell>Value</Table.Header.Cell>
-                        </svelte:fragment>
-                        {#each selectedLog.requestHeaders as request}
-                            <Table.Row>
-                                <Table.Cell>{request.name}</Table.Cell>
-                                <Table.Cell>{request.value}</Table.Cell>
-                            </Table.Row>
-                        {/each}
-                    </Table.Root>
-                {/if}
+                <LogsRequest {selectedLog} />
             </Accordion>
-            <Accordion title="Response" open>Logs</Accordion>
+            <Accordion title="Response" open>
+                <LogsResponse {selectedLog} />
+            </Accordion>
         </Layout.Stack>
     {/if}
 </Sheet>
