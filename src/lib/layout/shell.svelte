@@ -76,6 +76,7 @@
 
     let sideBarIsOpen = false;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
+    $: state = sideBarIsOpen ? 'open' : 'closed';
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -91,7 +92,6 @@
     {/if}
     {#if showHeader}
         <Navbar {...navbarProps} bind:sideBarIsOpen />
-        <!--        <Navbar.Appwrite {...navbarProps} bind:sideBarIsOpen />-->
     {/if}
 
     {#if showSideNavigation}
@@ -101,7 +101,10 @@
             bind:state />
     {/if}
 
-    <div class="content" class:icons={state === 'icons'} class:no-sidebar={!showSideNavigation}>
+    <div
+        class="content"
+        class:icons-content={state === 'icons'}
+        class:no-sidebar={!showSideNavigation}>
         <section class="main-content">
             {#if $page.data?.header}
                 <svelte:component this={$page.data.header} />
@@ -142,7 +145,7 @@
             padding-left: 190px;
             transition: all 0.3s ease-in-out;
 
-            &.icons {
+            &.icons-content {
                 padding-left: 54px;
             }
         }
