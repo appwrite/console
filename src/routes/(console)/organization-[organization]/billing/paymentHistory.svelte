@@ -62,8 +62,7 @@
         request();
     }
 </script>
-
-{#if $organization?.billingPlan === BillingPlan.FREE && invoiceList.total > 0}
+{#if $organization?.billingPlan !== BillingPlan.FREE && invoiceList.total > 0}
     <CardGrid>
         <Heading tag="h2" size="6">Payment history</Heading>
 
