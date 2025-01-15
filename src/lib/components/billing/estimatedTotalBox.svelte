@@ -28,12 +28,12 @@
     $: currentOrgPlan = $plansInfo.get(currentTier);
     $: unUsedBalances = isScaleUpgrade
         ? currentOrgPlan.price +
-          (collaborators?.length ?? 0) * (currentOrgPlan?.addons?.member?.price ?? 0)
+          (collaborators?.length ?? 0) * (currentOrgPlan?.addons?.seats?.price ?? 0)
         : isScaleDowngrade
           ? currentOrgPlan.price
           : 0;
 
-    $: extraSeatsCost = (collaborators?.length ?? 0) * (selectedPlan?.addons?.member?.price ?? 0);
+    $: extraSeatsCost = (collaborators?.length ?? 0) * (selectedPlan?.addons?.seats?.price ?? 0);
     $: grossCost = isScaleUpgrade
         ? selectedPlan.price + extraSeatsCost - unUsedBalances
         : selectedPlan.price + extraSeatsCost;
@@ -59,7 +59,7 @@
         <p class="text" class:u-bold={isDowngrade}>
             {formatCurrency(
                 isScaleDowngrade
-                    ? (collaborators?.length ?? 0) * (selectedPlan?.addons?.member?.price ?? 0)
+                    ? (collaborators?.length ?? 0) * (selectedPlan?.addons?.seats?.price ?? 0)
                     : extraSeatsCost
             )}
         </p>
@@ -102,11 +102,11 @@
         You'll pay <span class="u-bold">{formatCurrency(estimatedTotal)}</span> now, with your first
         billing cycle starting on
         <span class="u-bold"
-            >{!currentPlan.trialDays
+            >{!currentOrgPlan.trialDays
                 ? toLocaleDate(billingPayDate.toString())
                 : toLocaleDate(trialEndDate.toString())}</span
         >. Once your credits run out, you'll be charged
-        <span class="u-bold">{formatCurrency(currentPlan.price)}</span> plus usage fees every 30 days.
+        <span class="u-bold">{formatCurrency(currentOrgPlan.price)}</span> plus usage fees every 30 days.
     </p>
 
     <FormList class="u-margin-block-start-24">

@@ -3,12 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        CreditsApplied,
-        EstimatedTotalBox,
-        SelectPaymentMethod
-    } from '$lib/components/billing';
-    import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
+    import { CreditsApplied, EstimatedTotal, SelectPaymentMethod } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';

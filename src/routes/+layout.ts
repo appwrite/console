@@ -6,7 +6,6 @@ import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
-import { isCloud } from '$lib/system';
 import { base } from '$app/paths';
 import type { Account } from '$lib/stores/user';
 import type { AppwriteException } from '@appwrite.io/console';

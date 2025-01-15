@@ -8,7 +8,6 @@
     export let billingPlan: string;
     export let anyOrgFree = false;
     export let isNewOrg = false;
-    export let selfService = true;
     let classes: string = '';
     export { classes as class };
 </script>
