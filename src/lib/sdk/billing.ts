@@ -296,7 +296,9 @@ export type PlanAddon = {
 export type Plan = {
     $id: string;
     name: string;
+    desc: string;
     price: number;
+    order: number;
     bandwidth: number;
     storage: number;
     webhooks: number;
@@ -332,7 +334,7 @@ export type Plan = {
     supportsCredit: boolean;
 };
 
-export type PlansInfo = {
+export type PlanList = {
     plans: Plan[];
     total: number;
 };
@@ -1262,7 +1264,7 @@ export class Billing {
         );
     }
 
-    async getPlansInfo(): Promise<PlansInfo> {
+    async getPlansInfo(): Promise<PlanList> {
         const path = `/console/plans`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);

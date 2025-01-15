@@ -5,13 +5,12 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert } from '$lib/components';
     import {
-        EstimatedTotalBox,
         PlanComparisonBox,
         SelectPaymentMethod
     } from '$lib/components/billing';
     import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
-    import PlanSelection from '$lib/components/billing/planSelection.svelte';
+    import SelectPlan from '$lib/components/billing/selectPlan.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
@@ -274,8 +273,8 @@
         }
     }
 
-    $: isUpgrade = billingPlan > $organization.billingPlan;
-    $: isDowngrade = billingPlan < $organization.billingPlan;
+    $: isUpgrade = $plansInfo.get(billingPlan).order > $currentPlan.order;
+    $: isDowngrade = $plansInfo.get(billingPlan).order < $currentPlan.order;
     $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
@@ -300,9 +299,8 @@
                     >Your contract is not eligible for manual changes. Please reach out to schedule
                     a call or setup a dialog.</Alert>
             {/if}
-            <PlanSelection
+            <SelectPlan
                 bind:billingPlan
-                bind:selfService
                 anyOrgFree={!!anyOrgFree}
                 class={anyOrgFree && billingPlan !== BillingPlan.FREE
                     ? 'u-margin-block-start-16'
@@ -375,20 +373,12 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <EstimatedTotal
                     organizationId={$organization.$id}
                     {billingPlan}
                     {collaborators}
-                    {couponId}
-                />
-                <!-- <EstimatedTotalBox
-                    {isDowngrade}
-                    {billingPlan}
-                    {collaborators}
-                    bind:couponData
-                    bind:billingBudget
-                    currentTier={$organization.billingPlan} /> -->
+                    {couponId} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}

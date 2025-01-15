@@ -6,8 +6,10 @@
     import {
         EstimatedTotalBox,
         PlanComparisonBox,
-        PlanSelection,
-        SelectPaymentMethod
+        SelectPaymentMethod,
+
+        SelectPlan
+
     } from '$lib/components/billing';
     import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
@@ -222,7 +224,7 @@
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
-            <PlanSelection bind:billingPlan {anyOrgFree} isNewOrg />
+            <SelectPlan bind:billingPlan {anyOrgFree} isNewOrg />
             {#if billingPlan !== BillingPlan.FREE}
                 <FormList class="u-margin-block-start-24">
                     <InputTags
