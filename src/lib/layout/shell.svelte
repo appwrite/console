@@ -84,6 +84,7 @@
         <Sidebar
             project={projects.find((project) => project.isSelected)}
             avatar={navbarProps.avatar}
+            bind:sideBarIsOpen
             bind:state />
     {/if}
 

@@ -2,7 +2,7 @@
     import { Navbar, Icon, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
-    import { IconBell, IconMenuAlt4, IconSearch } from '@appwrite.io/pink-icons-svelte';
+    import { IconMenuAlt4, IconSearch } from '@appwrite.io/pink-icons-svelte';
     import { DropList, Support, BreadcrumbsConsole } from '$lib/components';
     import { Feedback } from '$lib/components/feedback';
     import { feedback } from '$lib/stores/feedback';

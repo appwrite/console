@@ -22,6 +22,7 @@
         IconSearch,
         IconUserGroup
     } from '@appwrite.io/pink-icons-svelte';
+    import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -31,12 +32,14 @@
             title: string;
             percentage: number;
         };
+        sideBarIsOpen: boolean;
     };
 
     export let state: $$Props['state'] = 'closed';
     export let project: $$Props['project'];
     export let avatar: $$Props['avatar'];
     export let progressCard: $$Props['progressCard'];
+    export let sideBarIsOpen: boolean;
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth' },
@@ -53,10 +56,14 @@
         <div slot="top">
             <div class="only-mobile top">
                 <div class="icons">
-                    <Link.Button variant="quiet-muted"
-                        ><div class="icon"><Icon icon={IconSearch} /></div></Link.Button>
-                    <Link.Button variant="quiet-muted"
-                        ><div class="icon"><Icon icon={IconBell} /></div></Link.Button>
+                    <Link.Button
+                        variant="quiet-muted"
+                        on:click={() => {
+                            toggleCommandCenter();
+                            state = 'closed';
+                            sideBarIsOpen = false;
+                        }}>
+                        <div class="icon"><Icon icon={IconSearch} /></div></Link.Button>
                 </div>
                 <Link.Button><img src={avatar} alt={'Avatar'} class="avatar" /></Link.Button>
             </div>
@@ -364,5 +371,6 @@
 
     .divider {
         margin-block: var(--space-2, 4px);
+        width: 100%;
     }
 </style>
