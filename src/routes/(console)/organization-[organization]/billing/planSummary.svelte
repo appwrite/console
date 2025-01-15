@@ -5,7 +5,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { CreditList, Invoice, Plan } from '$lib/sdk/billing';
+    import type { Aggregation, CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
@@ -18,17 +18,16 @@
     export let currentPlan: Plan;
     export let creditList: CreditList;
     export let currentInvoice: Invoice | undefined = undefined;
+    export let currentAggregation: Aggregation | undefined = undefined
 
     let showCancel: boolean = false;
 
-    const extraMembers = members.total > 1 ? members.total - 1 : 0;
     const availableCredit = creditList.available;
     const today = new Date();
     const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
-    const extraAddons = currentInvoice ? currentInvoice.usage?.length : 0;
 </script>
 
 {#if $organization}
@@ -64,7 +63,7 @@
                                 <svelte:fragment slot="beforetitle">
                                     <span class="body-text-2"><b>Add-ons</b></span><span
                                         class="inline-tag"
-                                        >{extraMembers ? extraAddons + 1 : extraAddons}</span>
+                                        >{currentAggregation.additionalMembers > 0 ? currentInvoice.usage.length + 1 : currentInvoice.usage.length}</span>
                                     <div class="icon">
                                         <span class="icon-cheveron-down" aria-hidden="true"></span>
                                     </div>
@@ -78,7 +77,7 @@
                                 </svelte:fragment>
 
                                 <ul>
-                                    {#if extraMembers}
+                                    {#if currentAggregation.additionalMembers}
                                         <li class="u-flex-vertical u-gap-4 u-padding-block-8">
                                             <div class="u-flex u-gap-4">
                                                 <h5 class="body-text-2 u-stretch">
@@ -86,15 +85,14 @@
                                                 </h5>
                                                 <div>
                                                     {formatCurrency(
-                                                        extraMembers *
-                                                            (currentPlan?.addons?.seats?.price ?? 0)
+                                                        currentAggregation.additionalMemberAmount
                                                     )}
                                                 </div>
                                             </div>
                                             <div class="u-flex u-gap-4">
                                                 <h5
                                                     class="body-text-2 u-stretch u-color-text-offline">
-                                                    {extraMembers}
+                                                    {currentAggregation.additionalMembers}
                                                 </h5>
                                             </div>
                                         </li>
@@ -102,10 +100,10 @@
                                     {#if currentInvoice?.usage}
                                         {#each currentInvoice.usage as excess, i}
                                             <li
-                                                class="u-flex-vertical u-gap-4 {extraMembers
+                                                class="u-flex-vertical u-gap-4 {currentAggregation.additionalMembers > 0
                                                     ? 'u-padding-block-8'
                                                     : 'u-padding-block-start-8'}"
-                                                class:u-sep-block-start={i > 0 || extraMembers}>
+                                                class:u-sep-block-start={i > 0 || currentAggregation.additionalMembers > 0}>
                                                 {#if ['storage', 'bandwidth'].includes(excess.name)}
                                                     {@const excessValue = humanFileSize(
                                                         excess.value

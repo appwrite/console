@@ -171,10 +171,12 @@ export type Aggregation = {
      * Total amount of the invoice.
      */
     amount: number;
+    additionalMembers: number;
+    
     /**
      * Price for additional members
      */
-    additionalMembers: number;
+    additionalMemberAmount: number;
     /**
      * Total storage usage.
      */
