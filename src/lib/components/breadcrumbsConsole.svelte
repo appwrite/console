@@ -104,10 +104,22 @@
             title: 'Switch project',
             items: !selectedOrg
                 ? []
-                : selectedOrg.projects.map((project) => ({
-                      name: project.name,
-                      href: `/console/project-${project.$id}/overview`
-                  }))
+                : selectedOrg.projects
+                      .map((project, index) => {
+                          if (index < 4) {
+                              return {
+                                  name: project.name,
+                                  href: `/console/project-${project.$id}/overview`
+                              };
+                          } else if (index === 4) {
+                              return {
+                                  name: 'All projects',
+                                  href: `/console/organization-${selectedOrg.$id}`
+                              };
+                          }
+                          return null;
+                      })
+                      .filter((project) => project !== null)
         },
         bottom: {
             items: [
@@ -244,10 +256,22 @@
         {/if}
 
         <div class="menu" use:melt={$menuProjects}>
-            {#each selectedOrg.projects as project}
-                <a href={`/console/project-${project.$id}`} class="item" use:melt={$itemProjects}>
-                    {project.name}
-                </a>
+            {#each selectedOrg.projects as project, index}
+                {#if index < 4}
+                    <a
+                        href={`/console/project-${project.$id}`}
+                        class="item"
+                        use:melt={$itemProjects}>
+                        {project.name}
+                    </a>
+                {:else if index === 4}
+                    <a
+                        href={`/console/organization-${selectedOrg.$id}`}
+                        class="item"
+                        use:melt={$itemProjects}>
+                        All projects
+                    </a>
+                {/if}
             {/each}
             <div class="separator" use:melt={$separatorProjects} />
             <a

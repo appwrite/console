@@ -39,7 +39,7 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
         const orgProjects = await sdk.forConsole.projects.list([
             Query.equal('teamId', currentOrgId),
             Query.limit(100),
-            Query.orderDesc('')
+            Query.orderDesc('$updatedAt')
         ]);
         projects = orgProjects.projects.length > 0 ? orgProjects.projects : [];
     }
