@@ -2,9 +2,10 @@
     import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
     import { onboarding, project } from '../store';
+    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
 </script>
 
-{#if !$onboarding}
+{#if !$onboarding || hasOnboardingDismissed($project.$id)}
     <Cover>
         <svelte:fragment slot="header">
             <CoverTitle>

@@ -9,6 +9,8 @@
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
     import { base } from '$app/paths';
+    import { setHasOnboardingDismissed } from '$lib/helpers/onboarding';
+    import { goto } from '$app/navigation';
 
     export let projectId: string;
 </script>
@@ -18,7 +20,13 @@
         <h1>Welcome, Jacob</h1>
         <span>Follow a few quick steps to get started with Appwrite</span>
     </div>
-    <Button.Button variant="secondary" size="s">Dismiss this page</Button.Button>
+    <Button.Button
+        variant="secondary"
+        size="s"
+        on:click={() => {
+            setHasOnboardingDismissed(projectId);
+            goto(`${base}/project-${projectId}`);
+        }}>Dismiss this page</Button.Button>
 </div>
 <div class="dashboard-content">
     <Step.List>

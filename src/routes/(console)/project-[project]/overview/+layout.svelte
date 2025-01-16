@@ -27,6 +27,7 @@
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
@@ -82,7 +83,7 @@
 </svelte:head>
 
 {#if $project}
-    {#if $onboarding}
+    {#if $onboarding && !hasOnboardingDismissed(projectId)}
         <Onboardnew {projectId} />
     {:else}
         <Container overlapCover>
