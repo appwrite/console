@@ -36,6 +36,7 @@
             percentage: number;
         };
         sideBarIsOpen: boolean;
+        showAccountMenu: boolean;
     };
 
     export let state: $$Props['state'] = 'closed';
@@ -43,9 +44,9 @@
     export let avatar: $$Props['avatar'];
     export let progressCard: $$Props['progressCard'];
     export let sideBarIsOpen: boolean;
+    export let showAccountMenu: boolean;
 
     function toggleFeedback() {
-        console.log('toggleFeedback!');
         feedback.toggleFeedback();
         if ($feedback.notification) {
             feedback.toggleNotification();
@@ -77,7 +78,10 @@
                         }}>
                         <div class="icon"><Icon icon={IconSearch} /></div></Link.Button>
                 </div>
-                <Link.Button><img src={avatar} alt={'Avatar'} class="avatar" /></Link.Button>
+                <Link.Button
+                    on:click={() => {
+                        showAccountMenu = !showAccountMenu;
+                    }}><img src={avatar} alt={'Avatar'} class="avatar" /></Link.Button>
             </div>
         </div>
         <div slot="middle" class:icons={state === 'icons'}>

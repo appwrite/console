@@ -61,6 +61,7 @@
     };
 
     let sideBarIsOpen = false;
+    let showAccountMenu = false;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = sideBarIsOpen ? 'open' : 'closed';
 </script>
@@ -77,7 +78,7 @@
         <svelte:component this={$activeHeaderAlert.component} />
     {/if}
     {#if showHeader}
-        <Navbar {...navbarProps} bind:sideBarIsOpen bind:showSideNavigation />
+        <Navbar {...navbarProps} bind:sideBarIsOpen bind:showSideNavigation bind:showAccountMenu />
     {/if}
 
     {#if showSideNavigation}
@@ -85,6 +86,7 @@
             project={projects.find((project) => project.isSelected)}
             avatar={navbarProps.avatar}
             bind:sideBarIsOpen
+            bind:showAccountMenu
             bind:state />
     {/if}
 
@@ -138,10 +140,11 @@
 
     .overlay {
         position: fixed;
-        width: 100vw;
-        height: 100vh;
+        width: calc(100vw - 200px);
+        height: calc(100vh - 48px);
+        right: 0;
+        top: 48px;
         z-index: 1;
-        top: 0;
         background-color: #56565c1a;
         backdrop-filter: blur(5px);
 

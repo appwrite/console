@@ -7,11 +7,13 @@
         Tooltip,
         Card,
         ActionList,
-        Input
+        Input,
+        BottomSheet
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
     import {
+        IconChevronRight,
         IconLogoutRight,
         IconMenuAlt4,
         IconMode,
@@ -27,8 +29,10 @@
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
+    import { onMount } from 'svelte';
 
     let showSupport = false;
+    let isSmallViewport = false;
 
     type $$Props = BaseNavbarProps & {
         links: Array<{ label: string; href: string }>;
@@ -39,7 +43,41 @@
             tier: string;
             projects: Array<{ name: string; id: string }>;
         }>;
+        showSideNavigation: boolean;
+        showAccountMenu: boolean;
     };
+
+    onMount(() => {
+        if (window) {
+            const mediaQuery = window.matchMedia('(max-width: 768px)');
+            const updateViewport = () => (isSmallViewport = mediaQuery.matches);
+
+            // Initial check
+            updateViewport();
+
+            // Listen for changes
+            mediaQuery.addEventListener('change', updateViewport);
+
+            return () => {
+                // Cleanup listener
+                mediaQuery.removeEventListener('change', updateViewport);
+            };
+        }
+    });
+
+    function updateTheme(theme: 'light' | 'dark' | 'system') {
+        const themeInUse =
+            theme === 'system'
+                ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? 'dark'
+                    : 'light'
+                : theme;
+
+        app.update(() => ({
+            themeInUse: themeInUse,
+            theme: theme === 'system' ? 'auto' : theme
+        }));
+    }
 
     function toggleFeedback() {
         feedback.toggleFeedback();
@@ -54,7 +92,7 @@
     export let avatar: $$Props['avatar'];
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showSideNavigation: boolean;
-    let showAccountMenu = false;
+    export let showAccountMenu = false;
 </script>
 
 <Navbar.Base {...$$props}>
@@ -129,18 +167,7 @@
                                 value={$app.theme === 'auto' ? 'system' : $app.theme}
                                 name="mode"
                                 on:change={(event) => {
-                                    const themeInUse =
-                                        event.detail === 'system'
-                                            ? window.matchMedia('(prefers-color-scheme: dark)')
-                                                  .matches
-                                                ? 'dark'
-                                                : 'light'
-                                            : event.detail;
-
-                                    app.update(() => ({
-                                        themeInUse: themeInUse,
-                                        theme: event.detail === 'system' ? 'auto' : event.detail
-                                    }));
+                                    updateTheme(event.detail);
                                 }}
                                 bind:group={$app.theme}
                                 options={[
@@ -160,6 +187,63 @@
         </div>
     </div>
 </Navbar.Base>
+{#if showAccountMenu && isSmallViewport}
+    <BottomSheet.Menu
+        bind:isOpen={showAccountMenu}
+        menu={{
+            top: {
+                items: [
+                    {
+                        name: 'Account',
+                        leadingIcon: IconUser,
+                        href: `${base}/account`
+                    },
+                    {
+                        name: 'Sign out',
+                        leadingIcon: IconLogoutRight,
+                        onClick: logout
+                    }
+                ]
+            },
+            bottom: {
+                items: [
+                    {
+                        name: 'Theme',
+                        leadingIcon: IconMode,
+                        trailingIcon: IconChevronRight,
+                        subMenu: {
+                            top: {
+                                title: 'Theme',
+                                items: [
+                                    {
+                                        name: 'Light',
+                                        leadingIcon: IconSun,
+                                        onClick: () => {
+                                            updateTheme('light');
+                                        }
+                                    },
+                                    {
+                                        name: 'Dark',
+                                        leadingIcon: IconMoon,
+                                        onClick: () => {
+                                            updateTheme('dark');
+                                        }
+                                    },
+                                    {
+                                        name: 'System',
+                                        leadingIcon: IconMode,
+                                        onClick: () => {
+                                            updateTheme('system');
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        }}></BottomSheet.Menu>
+{/if}
 
 <style lang="scss">
     .left {
