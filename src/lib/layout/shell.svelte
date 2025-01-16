@@ -80,15 +80,12 @@
     {#if showHeader}
         <Navbar {...navbarProps} bind:sideBarIsOpen bind:showSideNavigation bind:showAccountMenu />
     {/if}
-
-    {#if showSideNavigation}
-        <Sidebar
-            project={projects.find((project) => project.isSelected)}
-            avatar={navbarProps.avatar}
-            bind:sideBarIsOpen
-            bind:showAccountMenu
-            bind:state />
-    {/if}
+    <Sidebar
+        project={projects.find((project) => project.isSelected)}
+        avatar={navbarProps.avatar}
+        bind:sideBarIsOpen
+        bind:showAccountMenu
+        bind:state />
 
     <div
         class="content"
@@ -147,6 +144,7 @@
         z-index: 10;
         background-color: #56565c1a;
         backdrop-filter: blur(5px);
+        transition: backdrop-filter 0.5s ease-in-out;
 
         @media (min-width: 1024px) {
             display: none;

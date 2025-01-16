@@ -97,15 +97,13 @@
 
 <Navbar.Base {...$$props}>
     <div slot="left" class="left">
-        {#if showSideNavigation}
-            <div class="only-mobile-tablet">
-                <button
-                    class="sideNavToggle"
-                    on:click={() => {
-                        sideBarIsOpen = !sideBarIsOpen;
-                    }}><Icon icon={IconMenuAlt4} /></button>
-            </div>
-        {/if}
+        <div class="only-mobile-tablet">
+            <button
+                class="sideNavToggle"
+                on:click={() => {
+                    sideBarIsOpen = !sideBarIsOpen;
+                }}><Icon icon={IconMenuAlt4} /></button>
+        </div>
         <img src={logo.src} alt={logo.alt} class="only-desktop" />
         <BreadcrumbsConsole {organizations} />
     </div>
