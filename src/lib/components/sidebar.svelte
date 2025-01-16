@@ -11,7 +11,6 @@
     } from '@appwrite.io/pink-svelte';
 
     import {
-        IconBell,
         IconChartBar,
         IconChatBubble,
         IconCog,
