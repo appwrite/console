@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Button, Step, Link, Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { addPlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
     import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
@@ -9,6 +10,16 @@
     import UsersImgSourceDark from './assets/users-dark.png';
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
+    import PlatformWebImgSource from './assets/platform-web.png';
+    import PlatformWebImgSourceDark from './assets/platform-web-dark.png';
+    import PlatformServerImgSource from './assets/platform-server.png';
+    import PlatformServerImgSourceDark from './assets/platform-server-dark.png';
+    import PlatformIosImgSource from './assets/platform-ios.png';
+    import PlatformIosImgSourceDark from './assets/platform-ios-dark.png';
+    import PlatformAndroidImgSource from './assets/platform-android.png';
+    import PlatformAndroidImgSourceDark from './assets/platform-android-dark.png';
+    import PlatformFlutterImgSource from './assets/platform-flutter.png';
+    import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.png';
     import { base } from '$app/paths';
     import { setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { goto } from '$app/navigation';
@@ -31,145 +42,271 @@
         }}>Dismiss this page</Button.Button>
 </div>
 <div class="dashboard-content">
-    <Step.List>
-        <Step.Item state="previous"
-            ><div>
-                <h2 class="done">Create project</h2>
-            </div></Step.Item>
-        <Step.Item state="previous"
-            ><div>
-                <h2 class="done">Add a platform</h2>
-            </div></Step.Item>
-        <Step.Item state="current"
-            ><div class="build-container">
-                <div class="build-info">
-                    <h2>Build your app</h2>
-                    <span>
-                        Continue building your app by setting up services such as Auth, Databases,
-                        Storage and Functions.</span>
-                </div>
-                <div class="grid">
-                    <div class="onboarding-card">
-                        <img
-                            src={$app.themeInUse == 'dark'
-                                ? DatabaseImgSourceDark
-                                : DatabaseImgSource}
-                            alt="" />
-                        <div class="card-content">
-                            <Link.Anchor
-                                variant="quiet-muted"
-                                style="width: 100%"
-                                href={`${base}/project-${projectId}/databases`}
-                                ><Layout.Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center">
-                                    <h3>Setup your database</h3>
-                                    <Icon icon={IconArrowRight} /></Layout.Stack
-                                ></Link.Anchor>
-                        </div>
+    {#if !hasPlatforms}
+        <Step.List>
+            <Step.Item state="previous"
+                ><div>
+                    <h2 class="done">Create project</h2>
+                </div></Step.Item>
+            <Step.Item state="current"
+                ><div class="build-container">
+                    <div class="build-info">
+                        <h2>Add a platform</h2>
+                        <span>
+                            Start building with your preferred web, mobile, and native frameworks.
+                        </span>
                     </div>
-                    <div class="onboarding-card">
-                        <div class="card-content card-docs">
-                            <h3>Discover our docs</h3>
-                            <div class="card-links">
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    href="https://appwrite.io/docs/references"
-                                    target="_blank"
-                                    ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                        >API references <Icon
-                                            icon={IconArrowRight}
-                                            size="s" /></Layout.Stack
-                                    ></Link.Anchor>
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    href="https://appwrite.io/docs/tutorials"
-                                    target="_blank"
-                                    ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                        >Tutorials <Icon
-                                            icon={IconArrowRight}
-                                            size="s" /></Layout.Stack
-                                    ></Link.Anchor>
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    href="https://appwrite.io/docs/products/storage/quick-start"
-                                    target="_blank"
-                                    ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                        >Storage quick start<Icon
-                                            icon={IconArrowRight}
-                                            size="s" /></Layout.Stack
-                                    ></Link.Anchor>
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    href="https://appwrite.io/docs/products/functions/quick-start"
-                                    target="_blank"
-                                    ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                        >Functions quick start<Icon
-                                            icon={IconArrowRight}
-                                            size="s" /></Layout.Stack
-                                    ></Link.Anchor>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="onboarding-card card-auth">
-                        <div class="card-content">
-                            <h3>Setup auth</h3>
-                            <div class="card-links">
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    href={`${base}/project-${projectId}/auth/settings`}
-                                    ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                        >E-mail and password<Icon
-                                            icon={IconArrowRight}
-                                            size="s" /></Layout.Stack
-                                    ></Link.Anchor>
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    href={`${base}/project-${projectId}/auth/settings`}
-                                    ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                        >OAuth 2<Icon
-                                            icon={IconArrowRight}
-                                            size="s" /></Layout.Stack
-                                    ></Link.Anchor>
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    href={`${base}/project-${projectId}/auth/settings`}
-                                    ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                        >View all methods<Icon
-                                            icon={IconArrowRight}
-                                            size="s" /></Layout.Stack
-                                    ></Link.Anchor>
-                            </div>
-                        </div>
-                        <img
-                            src={$app.themeInUse == 'dark' ? UsersImgSourceDark : UsersImgSource}
-                            alt="" />
-                    </div>
-                    <div class="onboarding-card">
-                        <div class="card-content">
+                    <div class="grid">
+                        <div class="onboarding-card platform-card">
                             <img
                                 src={$app.themeInUse == 'dark'
-                                    ? DiscordImgSourceDark
-                                    : DiscordImgSource}
-                                class="discord"
+                                    ? PlatformWebImgSourceDark
+                                    : PlatformWebImgSource}
                                 alt="" />
-                            <h3>Discord</h3>
-                            <Link.Anchor
-                                variant="quiet-muted"
-                                href="https://appwrite.io/discord"
-                                size="l"
-                                ><Layout.Stack direction="row" alignItems="flex-end" gap="xxs"
-                                    >Join our Discord for support, tips and product updates
-                                    <div style:flex-shrink="0">
-                                        <Icon icon={IconArrowRight} size="s" />
-                                    </div></Layout.Stack
-                                ></Link.Anchor>
+                            <div class="card-content">
+                                <Link.Anchor
+                                    variant="quiet-muted"
+                                    style="width: 100%"
+                                    href={`${base}/project-${projectId}/databases`}
+                                    ><Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Web</h3>
+                                        <Icon icon={IconArrowRight} /></Layout.Stack
+                                    ></Link.Anchor>
+                            </div>
+                        </div>
+                        <div class="onboarding-card platform-card">
+                            <img
+                                src={$app.themeInUse == 'dark'
+                                    ? PlatformServerImgSourceDark
+                                    : PlatformServerImgSource}
+                                alt="" />
+                            <div class="card-content">
+                                <Link.Anchor
+                                    variant="quiet-muted"
+                                    style="width: 100%"
+                                    href={`${base}/project-${projectId}/databases`}
+                                    ><Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Server</h3>
+                                        <Icon icon={IconArrowRight} /></Layout.Stack
+                                    ></Link.Anchor>
+                            </div>
+                        </div>
+                        <div class="onboarding-card platform-card">
+                            <img
+                                src={$app.themeInUse == 'dark'
+                                    ? PlatformIosImgSourceDark
+                                    : PlatformIosImgSource}
+                                alt="" />
+                            <div class="card-content">
+                                <Link.Button
+                                    variant="quiet-muted"
+                                    style="width: 100%"
+                                    on:click={() => addPlatform(3)}
+                                    ><Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Apple</h3>
+                                        <Icon icon={IconArrowRight} /></Layout.Stack
+                                    ></Link.Button>
+                            </div>
+                        </div>
+                        <div class="onboarding-card platform-card">
+                            <img
+                                src={$app.themeInUse == 'dark'
+                                    ? PlatformAndroidImgSourceDark
+                                    : PlatformAndroidImgSource}
+                                alt="" />
+                            <div class="card-content">
+                                <Link.Button
+                                    variant="quiet-muted"
+                                    style="width: 100%"
+                                    on:click={() => addPlatform(2)}
+                                    ><Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Android</h3>
+                                        <Icon icon={IconArrowRight} /></Layout.Stack
+                                    ></Link.Button>
+                            </div>
+                        </div>
+                        <div class="onboarding-card platform-card">
+                            <img
+                                src={$app.themeInUse == 'dark'
+                                    ? PlatformFlutterImgSourceDark
+                                    : PlatformFlutterImgSource}
+                                alt="" />
+                            <div class="card-content">
+                                <Link.Button
+                                    variant="quiet-muted"
+                                    on:click={() => addPlatform(1)}
+                                    style="width: 100%"
+                                    ><Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Flutter</h3>
+                                        <Icon icon={IconArrowRight} /></Layout.Stack
+                                    ></Link.Button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div></Step.Item>
-    </Step.List>
+                </div></Step.Item>
+            <Step.Item state="next"
+                ><div>
+                    <h2 class="done">Build your app</h2>
+                </div></Step.Item>
+        </Step.List>
+    {:else}
+        <Step.List>
+            <Step.Item state="previous"
+                ><div>
+                    <h2 class="done">Create project</h2>
+                </div></Step.Item>
+            <Step.Item state="previous"
+                ><div>
+                    <h2 class="done">Add a platform</h2>
+                </div></Step.Item>
+            <Step.Item state="current"
+                ><div class="build-container">
+                    <div class="build-info">
+                        <h2>Build your app</h2>
+                        <span>
+                            Continue building your app by setting up services such as Auth,
+                            Databases, Storage and Functions.</span>
+                    </div>
+                    <div class="grid">
+                        <div class="onboarding-card build-card">
+                            <img
+                                src={$app.themeInUse == 'dark'
+                                    ? DatabaseImgSourceDark
+                                    : DatabaseImgSource}
+                                alt="" />
+                            <div class="card-content">
+                                <Link.Anchor
+                                    variant="quiet-muted"
+                                    style="width: 100%"
+                                    href={`${base}/project-${projectId}/databases`}
+                                    ><Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Setup your database</h3>
+                                        <Icon icon={IconArrowRight} /></Layout.Stack
+                                    ></Link.Anchor>
+                            </div>
+                        </div>
+                        <div class="onboarding-card build-card">
+                            <div class="card-content card-docs">
+                                <h3>Discover our docs</h3>
+                                <div class="card-links">
+                                    <Link.Anchor
+                                        variant="quiet-muted"
+                                        href="https://appwrite.io/docs/references"
+                                        target="_blank"
+                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
+                                            >API references <Icon
+                                                icon={IconArrowRight}
+                                                size="s" /></Layout.Stack
+                                        ></Link.Anchor>
+                                    <Link.Anchor
+                                        variant="quiet-muted"
+                                        href="https://appwrite.io/docs/tutorials"
+                                        target="_blank"
+                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
+                                            >Tutorials <Icon
+                                                icon={IconArrowRight}
+                                                size="s" /></Layout.Stack
+                                        ></Link.Anchor>
+                                    <Link.Anchor
+                                        variant="quiet-muted"
+                                        href="https://appwrite.io/docs/products/storage/quick-start"
+                                        target="_blank"
+                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
+                                            >Storage quick start<Icon
+                                                icon={IconArrowRight}
+                                                size="s" /></Layout.Stack
+                                        ></Link.Anchor>
+                                    <Link.Anchor
+                                        variant="quiet-muted"
+                                        href="https://appwrite.io/docs/products/functions/quick-start"
+                                        target="_blank"
+                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
+                                            >Functions quick start<Icon
+                                                icon={IconArrowRight}
+                                                size="s" /></Layout.Stack
+                                        ></Link.Anchor>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="onboarding-card card-auth build-card">
+                            <div class="card-content">
+                                <h3>Setup auth</h3>
+                                <div class="card-links">
+                                    <Link.Anchor
+                                        variant="quiet-muted"
+                                        href={`${base}/project-${projectId}/auth/settings`}
+                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
+                                            >E-mail and password<Icon
+                                                icon={IconArrowRight}
+                                                size="s" /></Layout.Stack
+                                        ></Link.Anchor>
+                                    <Link.Anchor
+                                        variant="quiet-muted"
+                                        href={`${base}/project-${projectId}/auth/settings`}
+                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
+                                            >OAuth 2<Icon
+                                                icon={IconArrowRight}
+                                                size="s" /></Layout.Stack
+                                        ></Link.Anchor>
+                                    <Link.Anchor
+                                        variant="quiet-muted"
+                                        href={`${base}/project-${projectId}/auth/settings`}
+                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
+                                            >View all methods<Icon
+                                                icon={IconArrowRight}
+                                                size="s" /></Layout.Stack
+                                        ></Link.Anchor>
+                                </div>
+                            </div>
+                            <img
+                                src={$app.themeInUse == 'dark'
+                                    ? UsersImgSourceDark
+                                    : UsersImgSource}
+                                alt="" />
+                        </div>
+                        <div class="onboarding-card build-card">
+                            <div class="card-content">
+                                <img
+                                    src={$app.themeInUse == 'dark'
+                                        ? DiscordImgSourceDark
+                                        : DiscordImgSource}
+                                    class="discord"
+                                    alt="" />
+                                <h3>Discord</h3>
+                                <Link.Anchor
+                                    variant="quiet-muted"
+                                    href="https://appwrite.io/discord"
+                                    size="l"
+                                    ><Layout.Stack direction="row" alignItems="flex-end" gap="xxs"
+                                        >Join our Discord for support, tips and product updates
+                                        <div style:flex-shrink="0">
+                                            <Icon icon={IconArrowRight} size="s" />
+                                        </div></Layout.Stack
+                                    ></Link.Anchor>
+                            </div>
+                        </div>
+                    </div>
+                </div></Step.Item>
+        </Step.List>
+    {/if}
 </div>
 
 <style lang="scss">
@@ -293,19 +430,35 @@
                     grid-template-columns: repeat(6, 1fr);
                     grid-template-rows: auto auto;
 
-                    .onboarding-card:nth-child(1) {
+                    .build-card:nth-child(1) {
                         grid-column: span 3;
                     }
 
-                    .onboarding-card:nth-child(2) {
+                    .build-card:nth-child(2) {
                         grid-column: span 3;
                     }
 
-                    .onboarding-card:nth-child(3) {
+                    .build-card:nth-child(3) {
                         grid-column: span 4;
                     }
 
-                    .onboarding-card:nth-child(4) {
+                    .build-card:nth-child(4) {
+                        grid-column: span 2;
+                    }
+
+                    .platform-card:nth-child(1) {
+                        grid-column: span 3;
+                    }
+                    .platform-card:nth-child(2) {
+                        grid-column: span 3;
+                    }
+                    .platform-card:nth-child(3) {
+                        grid-column: span 2;
+                    }
+                    .platform-card:nth-child(4) {
+                        grid-column: span 2;
+                    }
+                    .platform-card:nth-child(5) {
                         grid-column: span 2;
                     }
                 }

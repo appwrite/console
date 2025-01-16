@@ -83,7 +83,7 @@
 </svelte:head>
 
 {#if $project}
-    {#if $onboarding && !hasOnboardingDismissed(projectId)}
+    {#if !hasOnboardingDismissed(projectId)}
         <Onboardnew {projectId} hasPlatforms={$project.platforms.length > 0} />
     {:else}
         <Container overlapCover>

@@ -5,7 +5,7 @@
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
 </script>
 
-{#if !$onboarding || hasOnboardingDismissed($project.$id)}
+{#if hasOnboardingDismissed($project.$id)}
     <Cover>
         <svelte:fragment slot="header">
             <CoverTitle>
