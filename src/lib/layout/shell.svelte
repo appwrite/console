@@ -5,7 +5,7 @@
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { setContext } from 'svelte';
+    import { onMount, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -64,6 +64,16 @@
     let showAccountMenu = false;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = sideBarIsOpen ? 'open' : 'closed';
+
+    function handleResize() {
+        sideBarIsOpen = false;
+        showAccountMenu = false;
+    }
+
+    onMount(() => {
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    });
 </script>
 
 <svelte:window bind:scrollY={y} />
