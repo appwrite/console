@@ -141,10 +141,10 @@
     .overlay {
         position: fixed;
         width: calc(100vw - 200px);
-        height: calc(100vh - 48px);
+        height: 100vh;
         right: 0;
-        top: 48px;
-        z-index: 1;
+        top: 0;
+        z-index: 10;
         background-color: #56565c1a;
         backdrop-filter: blur(5px);
 
