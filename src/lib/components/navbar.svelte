@@ -134,7 +134,7 @@
                         </Layout.Stack>
                     </Card.Base>
                 </div>
-                <div
+                <button
                     class="account-backdrop"
                     on:click={() => {
                         showAccountMenu = false;
