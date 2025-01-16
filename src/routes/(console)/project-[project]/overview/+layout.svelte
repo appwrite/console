@@ -84,7 +84,7 @@
 
 {#if $project}
     {#if $onboarding && !hasOnboardingDismissed(projectId)}
-        <Onboardnew {projectId} />
+        <Onboardnew {projectId} hasPlatforms={$project.platforms.length > 0} />
     {:else}
         <Container overlapCover>
             {#if $usage}

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Button, Step, Link, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { app } from '$lib/stores/app';
+    import { user } from '$lib/stores/user';
     import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
@@ -13,11 +14,12 @@
     import { goto } from '$app/navigation';
 
     export let projectId: string;
+    export let hasPlatforms: boolean;
 </script>
 
 <div class="dashboard-header">
     <div>
-        <h1>Welcome, Jacob</h1>
+        <h1>Welcome, {$user.name}</h1>
         <span>Follow a few quick steps to get started with Appwrite</span>
     </div>
     <Button.Button

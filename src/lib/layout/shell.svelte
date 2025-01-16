@@ -13,6 +13,7 @@
     import { user } from '$lib/stores/user';
     import { tierToPlan } from '$lib/stores/billing';
     import { type Models } from '@appwrite.io/console';
+    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
 
     export let showSideNavigation = false;
     export let showHeader = true;
@@ -86,6 +87,11 @@
                 return {
                     title: 'Get started',
                     percentage: 33
+                };
+            } else if (!hasOnboardingDismissed(selectedProject.$id)) {
+                return {
+                    title: 'Get started',
+                    percentage: 100
                 };
             }
         }
