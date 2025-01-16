@@ -26,6 +26,7 @@
     import { isMac } from '$lib/helpers/platform';
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
+    import { app } from '$lib/stores/app';
 
     let showSupport = false;
 
@@ -111,7 +112,7 @@
                 }}><img src={avatar} alt={'Avatar'} class="avatar" /></Link.Button>
             {#if showAccountMenu}
                 <div class="account-container">
-                    <Card.Base padding="xxs">
+                    <Card.Base padding="xxs" shadow={true}>
                         <Layout.Stack gap="xxs">
                             <ActionList.Root>
                                 <ActionList.Item.Anchor
@@ -125,7 +126,23 @@
                                     title="Sign out" />
                             </ActionList.Root>
                             <Input.Select
-                                value="light"
+                                value={$app.theme === 'auto' ? 'system' : $app.theme}
+                                name="mode"
+                                on:change={(event) => {
+                                    const themeInUse =
+                                        event.detail === 'system'
+                                            ? window.matchMedia('(prefers-color-scheme: dark)')
+                                                  .matches
+                                                ? 'dark'
+                                                : 'light'
+                                            : event.detail;
+
+                                    app.update(() => ({
+                                        themeInUse: themeInUse,
+                                        theme: event.detail === 'system' ? 'auto' : event.detail
+                                    }));
+                                }}
+                                bind:group={$app.theme}
                                 options={[
                                     { label: 'Light', value: 'light', leadingIcon: IconSun },
                                     { label: 'Dark', value: 'dark', leadingIcon: IconMoon },
