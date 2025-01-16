@@ -1,12 +1,31 @@
 <script lang="ts">
-    import { Navbar, Icon, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
+    import {
+        Navbar,
+        Icon,
+        Layout,
+        Link,
+        Tooltip,
+        Card,
+        ActionList,
+        Input
+    } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
-    import { IconMenuAlt4, IconSearch } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconLogoutRight,
+        IconMenuAlt4,
+        IconMode,
+        IconMoon,
+        IconSearch,
+        IconSun,
+        IconUser
+    } from '@appwrite.io/pink-icons-svelte';
     import { DropList, Support, BreadcrumbsConsole } from '$lib/components';
     import { Feedback } from '$lib/components/feedback';
     import { feedback } from '$lib/stores/feedback';
     import { isMac } from '$lib/helpers/platform';
+    import { base } from '$app/paths';
+    import { logout } from '$lib/helpers/logout';
 
     let showSupport = false;
 
@@ -34,6 +53,7 @@
     export let avatar: $$Props['avatar'];
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showSideNavigation: boolean;
+    let showAccountMenu = false;
 </script>
 
 <Navbar.Base {...$$props}>
@@ -85,7 +105,41 @@
                         on:click={toggleCommandCenter}><Icon icon={IconSearch} /></Link.Button
                     ><span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
             </div>
-            <Link.Button><img src={avatar} alt={'Avatar'} class="avatar" /></Link.Button>
+            <Link.Button
+                on:click={() => {
+                    showAccountMenu = !showAccountMenu;
+                }}><img src={avatar} alt={'Avatar'} class="avatar" /></Link.Button>
+            {#if showAccountMenu}
+                <div class="account-container">
+                    <Card.Base padding="xxs">
+                        <Layout.Stack gap="xxs">
+                            <ActionList.Root>
+                                <ActionList.Item.Anchor
+                                    icon={IconUser}
+                                    title="Account"
+                                    href={`${base}/account`} />
+
+                                <ActionList.Item.Button
+                                    icon={IconLogoutRight}
+                                    on:click={logout}
+                                    title="Sign out" />
+                            </ActionList.Root>
+                            <Input.Select
+                                value="light"
+                                options={[
+                                    { label: 'Light', value: 'light', leadingIcon: IconSun },
+                                    { label: 'Dark', value: 'dark', leadingIcon: IconMoon },
+                                    { label: 'System', value: 'system', leadingIcon: IconMode }
+                                ]} />
+                        </Layout.Stack>
+                    </Card.Base>
+                </div>
+                <div
+                    class="account-backdrop"
+                    on:click={() => {
+                        showAccountMenu = false;
+                    }} />
+            {/if}
         </div>
     </div>
 </Navbar.Base>
@@ -156,5 +210,23 @@
     }
     :global(.icons div:first-of-type) {
         height: 20px;
+    }
+
+    .account-container {
+        position: absolute;
+        right: var(--space-7);
+        top: var(--base-44);
+        width: 244px;
+        display: flex;
+        z-index: 1;
+    }
+
+    .account-backdrop {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: transparent;
     }
 </style>
