@@ -18,7 +18,7 @@
     import { onboarding, project } from '../store';
     import Bandwidth from './bandwidth.svelte';
     import { createApiKey } from './keys/+page.svelte';
-    import Onboard from './onboard.svelte';
+    import Onboardnew from './onboardnew.svelte';
     import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
@@ -82,10 +82,10 @@
 </svelte:head>
 
 {#if $project}
-    <Container overlapCover>
-        {#if $onboarding}
-            <Onboard {projectId} />
-        {:else}
+    {#if $onboarding}
+        <Onboardnew {projectId} />
+    {:else}
+        <Container overlapCover>
             {#if $usage}
                 {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
                 <section class="common-section">
@@ -234,6 +234,6 @@
                     <slot />
                 </div>
             </section>
-        {/if}
-    </Container>
+        </Container>
+    {/if}
 {/if}

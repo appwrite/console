@@ -79,13 +79,15 @@
     });
 
     $: progressCard = function getProgressCard() {
-        const currentProject = projects.find((project) => project.$id === selectedProject.$id);
+        if (selectedProject) {
+            const currentProject = projects.find((project) => project.$id === selectedProject.$id);
 
-        if (currentProject && currentProject.platforms.length === 0) {
-            return {
-                title: 'Get started',
-                percentage: 33
-            };
+            if (currentProject && currentProject.platforms.length === 0) {
+                return {
+                    title: 'Get started',
+                    percentage: 33
+                };
+            }
         }
 
         return undefined;
@@ -104,7 +106,12 @@
         <svelte:component this={$activeHeaderAlert.component} />
     {/if}
     {#if showHeader}
-        <Navbar {...navbarProps} bind:sideBarIsOpen bind:showSideNavigation bind:showAccountMenu />
+        <Navbar
+            {...navbarProps}
+            bind:sideBarIsOpen
+            bind:showSideNavigation
+            bind:showAccountMenu
+            projects={loadedProjects} />
     {/if}
     <Sidebar
         project={selectedProject}

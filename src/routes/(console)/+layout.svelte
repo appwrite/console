@@ -59,7 +59,7 @@
     export let data;
     $: loadedProjects = data.projects.map((project) => {
         return {
-            name: project.name,
+            name: project?.name,
             $id: project.$id,
             isSelected: data.currentProjectId === project.$id
         };
