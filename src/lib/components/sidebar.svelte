@@ -99,7 +99,12 @@
             {/if}
             {#if project}<Layout.Stack direction="column" gap="s">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
-                        <a href={`/console/project-${project.$id}`} class="link"
+                        <a
+                            href={`/console/project-${project.$id}`}
+                            class="link"
+                            on:click={() => {
+                                sideBarIsOpen = false;
+                            }}
                             ><span class="link-icon"
                                 ><Icon icon={IconChartBar} size="s" />
                             </span><span
@@ -121,6 +126,9 @@
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
                                 class="link"
+                                on:click={() => {
+                                    sideBarIsOpen = false;
+                                }}
                                 ><span class="link-icon"
                                     ><Icon icon={projectOption.icon} size="s" />
                                 </span><span
