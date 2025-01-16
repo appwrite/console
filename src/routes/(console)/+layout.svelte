@@ -333,7 +333,8 @@
         !$page.url.pathname.includes('/console/onboarding')}
     showHeader={!$page.url.pathname.includes('/console/onboarding')}
     showFooter={!$page.url.pathname.includes('/console/onboarding')}
-    bind:projects={loadedProjects}>
+    bind:loadedProjects
+    bind:projects={data.projects}>
     <!--    <Header slot="header" />-->
     <SideNavigation slot="side" />
     <slot />

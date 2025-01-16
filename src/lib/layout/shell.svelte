@@ -12,12 +12,15 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { tierToPlan } from '$lib/stores/billing';
+    import { type Models } from '@appwrite.io/console';
 
     export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
-    export let projects: Array<{ name: string; $id: string; isSelected: boolean }> = [];
+    export let loadedProjects: Array<{ name: string; $id: string; isSelected: boolean }> = [];
+    export let projects: Array<Models.Project> = [];
 
+    $: selectedProject = loadedProjects.find((project) => project.isSelected);
     let y: number;
 
     page.subscribe(({ url }) => {
@@ -55,7 +58,7 @@
                 $id: org.$id,
                 tierName: tierToPlan(org.billingPlan).name,
                 isSelected: $organization?.$id === org.$id,
-                projects: projects
+                projects: loadedProjects
             };
         })
     };
@@ -74,6 +77,19 @@
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     });
+
+    $: progressCard = function getProgressCard() {
+        const currentProject = projects.find((project) => project.$id === selectedProject.$id);
+
+        if (currentProject && currentProject.platforms.length === 0) {
+            return {
+                title: 'Get started',
+                percentage: 33
+            };
+        }
+
+        return undefined;
+    };
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -91,7 +107,8 @@
         <Navbar {...navbarProps} bind:sideBarIsOpen bind:showSideNavigation bind:showAccountMenu />
     {/if}
     <Sidebar
-        project={projects.find((project) => project.isSelected)}
+        project={selectedProject}
+        progressCard={progressCard()}
         avatar={navbarProps.avatar}
         bind:sideBarIsOpen
         bind:showAccountMenu
