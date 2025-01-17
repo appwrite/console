@@ -19,6 +19,8 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import RecordsCard from '../recordsCard.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
 
@@ -33,6 +35,7 @@
                 $page.params.site
             );
             console.log(domainData);
+            invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
             addNotification({
                 type: 'error',
