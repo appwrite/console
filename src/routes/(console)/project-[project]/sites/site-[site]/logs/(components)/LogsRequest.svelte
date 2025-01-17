@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Icon, Layout, Table, Tabs } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Layout, Table, Tabs, Typography } from '@appwrite.io/pink-svelte';
 
     export let selectedLog: Models.Execution;
 
@@ -9,7 +9,7 @@
 </script>
 
 <Layout.Stack>
-    <Tabs.Root>
+    <Tabs.Root variant="secondary">
         <Tabs.Item.Button
             active={requestTab === 'parameters'}
             on:click={() => (requestTab = 'parameters')}>
@@ -28,7 +28,7 @@
         </Tabs.Item.Button>
     </Tabs.Root>
     {#if requestTab === 'parameters'}
-        parameters
+        <Typography.Code>No parameters found.</Typography.Code>
     {:else if requestTab === 'headers'}
         {#if selectedLog.requestHeaders?.length}
             <Table.Root>
@@ -50,9 +50,9 @@
                 </Layout.Stack>
             </p>
         {:else}
-            no headers
+            <Typography.Code>No headers found.</Typography.Code>
         {/if}
     {:else if requestTab === 'body'}
-        body
+        <Typography.Code>No body found.</Typography.Code>
     {/if}
 </Layout.Stack>

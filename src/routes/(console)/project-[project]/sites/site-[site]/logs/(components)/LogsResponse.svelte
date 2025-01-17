@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Icon, Layout, Table, Tabs } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Layout, Table, Tabs, Typography } from '@appwrite.io/pink-svelte';
 
     export let selectedLog: Models.Execution;
 
@@ -9,7 +9,7 @@
 </script>
 
 <Layout.Stack>
-    <Tabs.Root>
+    <Tabs.Root variant="secondary">
         <Tabs.Item.Button active={responseTab === 'logs'} on:click={() => (responseTab = 'logs')}>
             Logs
         </Tabs.Item.Button>
@@ -31,9 +31,17 @@
         </Tabs.Item.Button>
     </Tabs.Root>
     {#if responseTab === 'logs'}
-        logs
+        {#if selectedLog.logs}
+            {selectedLog.logs}
+        {:else}
+            <Typography.Code>No logs found.</Typography.Code>
+        {/if}
     {:else if responseTab === 'errors'}
-        errors
+        {#if selectedLog.errors}
+            {selectedLog.errors}
+        {:else}
+            <Typography.Code>No errors found.</Typography.Code>
+        {/if}
     {:else if responseTab === 'headers'}
         {#if selectedLog.responseHeaders?.length}
             <Table.Root>
@@ -55,9 +63,13 @@
                 </Layout.Stack>
             </p>
         {:else}
-            no headers
+            <Typography.Code>No headers found.</Typography.Code>
         {/if}
     {:else if responseTab === 'body'}
-        {selectedLog.responseBody}
+        {#if selectedLog.responseBody}
+            {selectedLog.responseBody}
+        {:else}
+            <Typography.Code>No parameters found.</Typography.Code>
+        {/if}
     {/if}
 </Layout.Stack>
