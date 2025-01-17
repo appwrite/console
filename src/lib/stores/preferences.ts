@@ -62,7 +62,7 @@ function createPreferences() {
         getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
             return (
                 preferences[sdk.forProject.client.config.project]?.collections?.[collectionId] ??
-                null
+                []
             );
         },
         setLimit: (limit: Preferences['limit']) =>
