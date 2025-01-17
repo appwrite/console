@@ -7,8 +7,6 @@
     import { ActionMenu, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
 
     export let domains: Models.ProxyRuleList;
-
-    $: console.log(domains);
 </script>
 
 <Layout.Stack gap="xxs" direction="row" alignItems="center">
