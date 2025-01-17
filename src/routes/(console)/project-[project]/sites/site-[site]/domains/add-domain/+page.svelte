@@ -9,7 +9,15 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ResourceType, type Models } from '@appwrite.io/console';
-    import { Alert, Badge, Divider, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Alert,
+        Accordion,
+        Badge,
+        Divider,
+        Fieldset,
+        Layout,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import RecordsCard from '../recordsCard.svelte';
 
     const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
@@ -56,6 +64,24 @@
             });
         }
     }
+
+    type DomainTips = {
+        title: string;
+        message: string;
+    };
+
+    const siteDomainTips: DomainTips[] = [
+        {
+            title: 'Why a Top-Level Domain (TLD) matters for your site?',
+            message:
+                'A custom TLD helps create a unique web address, improves brand recognition, and makes your domain more memorable.'
+        },
+        {
+            title: 'What is DNS and why do you need it?',
+            message:
+                "DNS (Domain Name System) translates your domain name into an IP address, directing visitors to your website. It's essential for making your site accessible and ensuring it loads properly for users."
+        }
+    ];
 </script>
 
 <Wizard title="Add domain" href={backPage}>
@@ -102,7 +128,16 @@
     {/if}
 
     <svelte:fragment slot="aside">
-        <Card>tips</Card>
+        <Card>
+            <Layout.Stack direction="column">
+                <!-- TODO: Update the Accordion component to conditionally render a divider, as it currently includes one by default for every instance -->
+                {#each siteDomainTips as tips}
+                    <Accordion title={tips.title}>
+                        {tips.message}
+                    </Accordion>
+                {/each}
+            </Layout.Stack>
+        </Card>
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
