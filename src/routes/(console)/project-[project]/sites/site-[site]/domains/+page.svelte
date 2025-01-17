@@ -6,7 +6,7 @@
     import Link from '$lib/elements/link.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
-    import { consoleVariables } from '$routes/(console)/store.js';
+    import { protocol } from '$routes/(console)/store.js';
     import type { Models } from '@appwrite.io/console';
     import {
         IconDotsHorizontal,
@@ -50,9 +50,7 @@
                     <Layout.Stack direction="row" alignItems="center" gap="xs">
                         <Link
                             external
-                            href={`${
-                                $consoleVariables?._APP_OPTIONS_FORCE_HTTPS ? 'https://' : 'http://'
-                            }${domain.domain}`}
+                            href={`${$protocol}${domain.domain}`}
                             size="s"
                             variant="quiet">
                             {domain.domain}
