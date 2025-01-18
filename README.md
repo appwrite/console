@@ -10,8 +10,8 @@
 
 Appwrite Console has been built with the following frameworks:
 
--   [Svelte](https://svelte.dev/)
--   [Svelte Kit](https://kit.svelte.dev/)
+- [Svelte](https://svelte.dev/)
+- [Svelte Kit](https://kit.svelte.dev/)
 
 ## Developer Experience
 
