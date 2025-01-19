@@ -287,6 +287,7 @@
             {:else if selectedOrgId}
                 <div class:u-margin-block-start-24={campaign?.template === 'card'}>
                     <EstimatedTotal
+                        {billingBudget}
                         organizationId={selectedOrgId === newOrgId ? null : selectedOrgId}
                         {billingPlan}
                         {collaborators}

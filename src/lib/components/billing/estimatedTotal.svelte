@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { FormList, InputChoice, InputNumber } from "$lib/elements/forms";
+
     // import { FormList, InputChoice } from "$lib/elements/forms";
     import { formatCurrency } from "$lib/helpers/numbers";
     import type { Estimation } from "$lib/sdk/billing";
@@ -12,6 +14,9 @@
     export let couponId: string;
     export let fixedCoupon = false;
 
+    export let billingBudget: number;
+
+    let budgetEnabled = false;
     var estimation: Estimation;
 
     let getEstimate = async (billingPlan, collaborators, couponId) => {
@@ -62,18 +67,12 @@
         </p>
     </span>
 
-    <!-- <p class="text u-margin-block-start-16">
-        You'll pay <span class="u-bold">{formatCurrency(estimation.amount)}</span> now, with our first
-        billing cycle starting on
-        <span class="u-bold"
-            >{!currentPlan.trialDays
-                ? toLocaleDate(billingPayDate.toString())
-                : toLocaleDate(trialEndDate.toString())}</span
-        >. Once your credits run out, you'll be charged
-        <span class="u-bold">{formatCurrency(currentPlan.price)}</span> plus usage fees every 30 days.
-    </p> -->
+    <p class="text u-margin-block-start-16">
+        You'll pay <span class="u-bold">{formatCurrency(estimation.amount)}</span> now. Once your credits run out, you'll be charged
+        <span class="u-bold">{formatCurrency(estimation.amount)}</span> every 30 days.
+    </p>
 
-    <!-- <FormList class="u-margin-block-start-24">
+    <FormList class="u-margin-block-start-24">
         <InputChoice
             type="switchbox"
             id="budget"
@@ -92,6 +91,6 @@
                 </div>
             {/if}
         </InputChoice>
-    </FormList> -->
+    </FormList>
 </section>
 {/if}

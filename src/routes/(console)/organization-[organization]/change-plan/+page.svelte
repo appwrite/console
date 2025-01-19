@@ -360,6 +360,7 @@
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <EstimatedTotal
+                    {billingBudget}
                     organizationId={$organization.$id}
                     {billingPlan}
                     {collaborators}

@@ -4,7 +4,6 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
-        EstimatedTotalBox,
         PlanComparisonBox,
         SelectPaymentMethod,
 
@@ -252,6 +251,7 @@
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE}
                 <EstimatedTotal
+                    {billingBudget}
                     {billingPlan}
                     {collaborators}
                     {couponId}
