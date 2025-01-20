@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormItem, FormItemPart, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -66,40 +66,32 @@
                 <ul class="form-list">
                     {#if prefs}
                         {#each prefs as [key, value], index}
-                            <FormItem isMultiple>
-                                <InputText
-                                    id={`key-${index}`}
-                                    isMultiple
-                                    fullWidth
-                                    bind:value={key}
-                                    placeholder="Enter key"
-                                    label="Key"
-                                    required />
+                            <InputText
+                                id={`key-${index}`}
+                                bind:value={key}
+                                placeholder="Enter key"
+                                label="Key"
+                                required />
 
-                                <InputText
-                                    id={`value-${index}`}
-                                    isMultiple
-                                    fullWidth
-                                    bind:value
-                                    placeholder="Enter value"
-                                    label="Value"
-                                    required />
-                                <FormItemPart alignEnd>
-                                    <Button
-                                        text
-                                        disabled={(!key || !value) && index === 0}
-                                        on:click={() => {
-                                            if (index === 0) {
-                                                prefs = [['', '']];
-                                            } else {
-                                                prefs.splice(index, 1);
-                                                prefs = prefs;
-                                            }
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </FormItemPart>
-                            </FormItem>
+                            <InputText
+                                id={`value-${index}`}
+                                bind:value
+                                placeholder="Enter value"
+                                label="Value"
+                                required />
+                            <Button
+                                text
+                                disabled={(!key || !value) && index === 0}
+                                on:click={() => {
+                                    if (index === 0) {
+                                        prefs = [['', '']];
+                                    } else {
+                                        prefs.splice(index, 1);
+                                        prefs = prefs;
+                                    }
+                                }}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </Button>
                         {/each}
                     {/if}
                 </ul>

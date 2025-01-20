@@ -1,13 +1,7 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { FormItem, Helper, Label } from '.';
-    import NullCheckbox from './nullCheckbox.svelte';
-    import TextCounter from './textCounter.svelte';
-    import { clickOnEnter } from '$lib/helpers/a11y';
     import { Input } from '@appwrite.io/pink-svelte';
 
     export let label: string;
-    export let showLabel = true;
     export let id: string;
     export let name: string = id;
     export let value = '';
@@ -18,8 +12,6 @@
     export let readonly = false;
     export let autofocus = false;
     export let maxlength: number = null;
-    export let optionalText: string | undefined = undefined;
-    export let tooltip: string = null;
 
     let error: string;
 

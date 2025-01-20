@@ -61,14 +61,7 @@
     }
 </script>
 
-<Modal
-    title="Disconnect Git repository"
-    bind:show
-    bind:error
-    onSubmit={handleSubmit}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Disconnect Git repository" bind:show bind:error onSubmit={handleSubmit}>
     <p data-private>
         Are you sure you want to disconnect <b>{$func.name}</b>? This will affect future deployments
         to this function.

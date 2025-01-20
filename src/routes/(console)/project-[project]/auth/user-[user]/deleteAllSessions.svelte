@@ -31,13 +31,7 @@
     }
 </script>
 
-<Modal
-    title="Delete all sessions"
-    bind:show={showDeleteAll}
-    onSubmit={deleteAllSessions}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Delete all sessions" bind:show={showDeleteAll} onSubmit={deleteAllSessions}>
     <p data-private>
         Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
     </p>

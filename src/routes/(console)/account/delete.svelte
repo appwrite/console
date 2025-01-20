@@ -27,14 +27,7 @@
     }
 </script>
 
-<Modal
-    title="Delete account"
-    bind:show={showDelete}
-    bind:error
-    onSubmit={deleteAccount}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Delete account" bind:show={showDelete} bind:error onSubmit={deleteAccount}>
     <p>Are you sure you want to delete your account?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

@@ -35,7 +35,7 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
+    <ContainerHeader title="Users" total={data.users.total} let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
             {#if $canWriteUsers}
                 <Tooltip disabled={!isButtonDisabled}>
@@ -53,6 +53,7 @@
             {/if}
         </SearchQuery>
     </ContainerHeader>
+
     {#if data.users.total}
         <Table.Root>
             <svelte:fragment slot="header">

@@ -8,18 +8,13 @@
 
 <div style="display: grid; gap: 1rem; grid-template-columns: 1fr 1fr;">
     <LabelCard
-        name="connect-behaviour"
         value="now"
         bind:group={connectBehaviour}
         disabled={!isVcsEnabled}
         title="Connect to Git repository">
         Clone the template to a new repository or connect it to an existing one.
     </LabelCard>
-    <LabelCard
-        name="connect-behaviour"
-        value="later"
-        bind:group={connectBehaviour}
-        disabled={!isVcsEnabled}>
+    <LabelCard value="later" bind:group={connectBehaviour} disabled={!isVcsEnabled}>
         <svelte:fragment slot="title">Connect later</svelte:fragment>
         Deploy now and continue development via CLI, or connect Git from your site settings.
     </LabelCard>

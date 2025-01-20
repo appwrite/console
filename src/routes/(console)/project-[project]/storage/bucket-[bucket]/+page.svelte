@@ -93,7 +93,7 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={usedStorage}>
+    <ContainerHeader title="Files" serviceId="storage" total={usedStorage}>
         <svelte:fragment let:isButtonDisabled>
             <SearchQuery search={data.search} placeholder="Search by filename">
                 <Tooltip disabled={!isButtonDisabled}>

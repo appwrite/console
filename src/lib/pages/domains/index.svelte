@@ -193,7 +193,7 @@
 {/if}
 
 <Delete bind:showDelete bind:selectedDomain {dependency} />
-<Modal bind:show={showRetry} headerDivider={false} bind:error={retryError} size="big">
+<Modal bind:show={showRetry} bind:error={retryError}>
     <svelte:fragment slot="title">
         Retry {$domain.status === 'unverified' ? 'certificate generation' : 'verification'}
     </svelte:fragment>

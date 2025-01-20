@@ -5,6 +5,7 @@ import { type Models, Query } from '@appwrite.io/console';
 import { timeFromNow } from '$lib/helpers/date';
 import type { PageLoad } from './$types';
 import type { BackupPolicy } from '$lib/sdk/backups';
+import { isSelfHosted } from '$lib/system';
 
 export const load: PageLoad = async ({ url, route, depends }) => {
     depends(Dependencies.DATABASES);
@@ -43,6 +44,8 @@ async function fetchDatabasesAndBackups(limit: number, offset: number) {
 }
 
 async function fetchPolicies(databases: Models.DatabaseList) {
+    if (isSelfHosted) return {};
+
     const databasePolicies: Record<string, BackupPolicy[]> = {};
 
     await Promise.all(
@@ -68,6 +71,8 @@ async function fetchPolicies(databases: Models.DatabaseList) {
 }
 
 async function fetchLastBackups(databases: Models.DatabaseList) {
+    if (isSelfHosted) return {};
+
     const lastBackups: Record<string, string> = {};
 
     await Promise.all(

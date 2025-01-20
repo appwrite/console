@@ -8,7 +8,6 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import RecordsCard from './recordsCard.svelte';
-    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let selectedDomain: Models.ProxyRule;

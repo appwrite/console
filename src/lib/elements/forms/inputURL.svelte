@@ -1,10 +1,7 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { Input } from '@appwrite.io/pink-svelte';
 
     export let label: string;
-    export let optionalText: string | undefined = undefined;
-    export let showLabel = true;
     export let id: string;
     export let name = id;
     export let value = '';

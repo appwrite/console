@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, FormItem, FormList, Helper, InputText } from '$lib/elements/forms';
+    import { Button, FormList, Helper, InputText } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { Modal } from '..';
     import type { Writable } from 'svelte/store';
@@ -37,11 +37,9 @@
         Labels allow you to grant access to users with the specified label.
     </span>
     <FormList>
-        <FormItem>
-            <InputText id="label" label="Label" placeholder="Enter label" bind:value />
-            <Helper type={isError ? 'warning' : 'neutral'}
-                >Only alphanumeric characters are allowed.</Helper>
-        </FormItem>
+        <InputText id="label" label="Label" placeholder="Enter label" bind:value />
+        <Helper type={isError ? 'warning' : 'neutral'}
+            >Only alphanumeric characters are allowed.</Helper>
     </FormList>
 
     <svelte:fragment slot="footer">

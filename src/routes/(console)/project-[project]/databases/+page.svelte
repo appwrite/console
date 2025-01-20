@@ -13,7 +13,6 @@
     import { columns } from './store';
     import Table from './table.svelte';
     import { registerCommands } from '$lib/commandCenter';
-    import { tooltip } from '$lib/actions/tooltip';
     import { canWriteDatabases } from '$lib/stores/roles';
     import { Tooltip } from '@appwrite.io/pink-svelte';
 

@@ -5,7 +5,6 @@
     import HashnodeDark from './hashnode-dark.svg';
     import HashnodeLight from './hashnode-light.svg';
     import Badge from './hackathon-badge.svg';
-    import { tooltip } from '$lib/actions/tooltip';
     import { base } from '$app/paths';
     import { Tooltip } from '@appwrite.io/pink-svelte';
 </script>

@@ -4,15 +4,6 @@
 
 <script lang="ts">
     import { page } from '$app/stores';
-    import {
-        Table,
-        TableHeader,
-        TableBody,
-        TableRowLink,
-        TableCellHead,
-        TableCellText,
-        TableCell
-    } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -28,12 +19,11 @@
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
-    import { tooltip } from '$lib/actions/tooltip';
     import { writable } from 'svelte/store';
     import { readOnly } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { canWriteTeams } from '$lib/stores/roles';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Layout, Table } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -46,7 +36,6 @@
 <Container>
     <ContainerHeader
         title="Teams"
-        isFlex={false}
         total={data.teams.total}
         buttonDisabled={isCloud && $readOnly}
         let:isButtonDisabled>
@@ -69,30 +58,29 @@
     </ContainerHeader>
 
     {#if data.teams.total}
-        <Table>
-            <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead onlyDesktop>Members</TableCellHead>
-                <TableCellHead onlyDesktop>Created</TableCellHead>
-            </TableHeader>
-            <TableBody service="teams" total={data.teams.total}>
-                {#each data.teams.teams as team}
-                    <TableRowLink href={`${base}/project-${project}/auth/teams/team-${team.$id}`}>
-                        <TableCell title="Name">
-                            <div class="u-flex u-gap-12 u-cross-center">
-                                <AvatarInitials size={32} name={team.name} />
-                                <span class="text u-trim">{team.name}</span>
-                            </div>
-                        </TableCell>
-                        <TableCellText onlyDesktop title="Members"
-                            >{team.total} members</TableCellText>
-                        <TableCellText onlyDesktop title="Created">
-                            {toLocaleDateTime(team.$createdAt)}
-                        </TableCellText>
-                    </TableRowLink>
-                {/each}
-            </TableBody>
-        </Table>
+        <Table.Root>
+            <svelte:fragment slot="header">
+                <Table.Header.Cell>Name</Table.Header.Cell>
+                <Table.Header.Cell>Members</Table.Header.Cell>
+                <Table.Header.Cell>Created</Table.Header.Cell>
+            </svelte:fragment>
+            {#each data.teams.teams as team}
+                <Table.Link href={`${base}/project-${project}/auth/teams/team-${team.$id}`}>
+                    <Table.Cell>
+                        <Layout.Stack direction="row" alignItems="center">
+                            <AvatarInitials size={32} name={team.name} />
+                            <span class="u-trim">{team.name}</span>
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell>
+                        {team.total} members
+                    </Table.Cell>
+                    <Table.Cell>
+                        {toLocaleDateTime(team.$createdAt)}
+                    </Table.Cell>
+                </Table.Link>
+            {/each}
+        </Table.Root>
 
         <PaginationWithLimit
             name="Teams"

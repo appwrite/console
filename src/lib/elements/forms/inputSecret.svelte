@@ -2,8 +2,7 @@
     import { Input } from '@appwrite.io/pink-svelte';
 
     export let id: string;
-    export let label: string;
-    export let showLabel = true;
+    export let label: string = '';
     export let value = '';
     export let placeholder = '';
 </script>

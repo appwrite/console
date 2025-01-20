@@ -128,7 +128,7 @@
     }
 </script>
 
-<Modal {title} bind:show onSubmit={submit} on:close={reset} size="big" headerDivider={false}>
+<Modal {title} bind:show onSubmit={submit} on:close={reset} size="big">
     <div class="u-flex u-flex-vertical u-gap-32">
         <slot name="description" />
 

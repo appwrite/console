@@ -19,7 +19,6 @@
     import { goto } from '$app/navigation';
     import { Layout } from '@appwrite.io/pink-svelte';
 
-    export let isFlex = true;
     export let title: string;
     export let titleTag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' = 'h2';
     export let titleSize: '1' | '2' | '3' | '4' | '5' | '6' | '7' = '5';

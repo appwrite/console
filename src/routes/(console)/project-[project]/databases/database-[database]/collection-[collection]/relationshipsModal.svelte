@@ -23,7 +23,7 @@
     }
 </script>
 
-<Modal size="big" bind:show icon="relationship" headerDivider={false}>
+<Modal bind:show>
     <svelte:fragment slot="title">
         <span data-private>
             {selectedRelationship.key}

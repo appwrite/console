@@ -4,7 +4,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { onDestroy } from 'svelte';
-    import { Input, Layout } from '@appwrite.io/pink-svelte';
+    import { Input } from '@appwrite.io/pink-svelte';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
 
     export let search = '';
@@ -13,7 +13,6 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let isWithEndButton = true;
     export let fullWidth = false;
 
     let element: HTMLInputElement;
@@ -60,15 +59,12 @@
     }
 </script>
 
-<Layout.Stack direction="row" justifyContent="space-between">
-    <div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
-        <Input.Text {placeholder} {disabled} {required} type="search" bind:value={search}>
-            <svelte:fragment slot="end">
-                {#if search}
-                    <Input.Action icon={IconX} on:click={() => (search = '')} />
-                {/if}
-            </svelte:fragment>
-        </Input.Text>
-    </div>
-    <slot />
-</Layout.Stack>
+<div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
+    <Input.Text {placeholder} {disabled} {required} type="search" bind:value={search}>
+        <svelte:fragment slot="end">
+            {#if search}
+                <Input.Action icon={IconX} on:click={() => (search = '')} />
+            {/if}
+        </svelte:fragment>
+    </Input.Text>
+</div>

@@ -1,33 +1,20 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
-    import type { FormItemTag } from './formItem.svelte';
-    import type { SvelteComponent } from 'svelte';
 
     export let id: string;
     export let label: string | undefined = undefined;
-    export let ariaLabel = label;
-    export let optionalText: string | undefined = undefined;
-    export let showLabel = true;
     export let value: string | number | boolean | null;
     export let placeholder = '';
     export let required = false;
-    export let hideRequired = false;
     export let disabled = false;
-    export let wrapperTag: FormItemTag = 'li';
     export let options: {
         value: string | boolean | number | null;
         label: string;
         disabled?: boolean;
     }[];
-    export let isMultiple = false;
-    export let fullWidth = false;
-    export let popover: typeof SvelteComponent<unknown> = null;
-    export let popoverProps: Record<string, unknown> = {};
 
     let element: HTMLSelectElement;
     let error: string;
-
-    let show: boolean = false;
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();

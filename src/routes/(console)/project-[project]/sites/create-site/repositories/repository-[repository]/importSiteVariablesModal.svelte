@@ -44,7 +44,7 @@
     }
 </script>
 
-<Modal headerDivider={false} title="Import variables" bind:show onSubmit={handleSubmit} bind:error>
+<Modal title="Import variables" bind:show onSubmit={handleSubmit} bind:error>
     <span slot="description"> Import new environment variables from .env file. </span>
     <InputFile bind:files />
     {#if variables?.length > 0}

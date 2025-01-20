@@ -60,13 +60,7 @@
     }
 </script>
 
-<Modal
-    title="Create manual deployment"
-    {error}
-    size="big"
-    bind:show
-    onSubmit={create}
-    headerDivider={false}>
+<Modal title="Create manual deployment" {error} bind:show onSubmit={create}>
     <p class="text">
         Manually deploy a function by uploading a zip file containing the source code and a relative
         path to the entry point.
@@ -77,7 +71,7 @@
             class="link">Learn more about function deployments</a
         >.
     </p>
-    <FormList gap={16}>
+    <FormList>
         <InputFile
             label="Gzipped code (tar.gz)"
             allowedFileExtensions={['gz', 'tar']}
@@ -103,7 +97,7 @@
                     <svelte:fragment slot="title">Overwrite settings</svelte:fragment>
                     <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
 
-                    <FormList gap={16}>
+                    <FormList>
                         <p class="text">Overwrite your function entrypoint or build commands.</p>
                         <InputText
                             label="Entrypoint"
@@ -113,7 +107,6 @@
                         <InputTextarea
                             label="Commands"
                             placeholder="Enter a build command (e.g. 'npm install')"
-                            tooltip="Enter a single command or chain multiple commands with the && operator"
                             id="build"
                             bind:value={buildCommand} />
                         <InputChoice

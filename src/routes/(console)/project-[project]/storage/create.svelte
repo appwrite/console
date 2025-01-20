@@ -45,7 +45,7 @@
     }
 </script>
 
-<Modal title="Create bucket" {error} onSubmit={create} size="big" bind:show={showCreate}>
+<Modal title="Create bucket" {error} onSubmit={create} bind:show={showCreate}>
     <FormList>
         <InputText
             id="name"
