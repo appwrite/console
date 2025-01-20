@@ -360,12 +360,22 @@
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <EstimatedTotal
+                    {isDowngrade}
                     {billingBudget}
                     organizationId={$organization.$id}
                     {billingPlan}
                     {collaborators}
                     {couponId} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
+                {#if isDowngrade}
+                <EstimatedTotal
+                    {isDowngrade}
+                    {billingBudget}
+                    organizationId={$organization.$id}
+                    {billingPlan}
+                    {collaborators}
+                    {couponId} />
+                {/if}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
         </svelte:fragment>

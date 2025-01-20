@@ -1,9 +1,11 @@
 <script lang="ts">
     import { FormList, InputChoice, InputNumber } from "$lib/elements/forms";
+    import { toLocaleDate } from "$lib/helpers/date";
 
     // import { FormList, InputChoice } from "$lib/elements/forms";
     import { formatCurrency } from "$lib/helpers/numbers";
     import type { Estimation } from "$lib/sdk/billing";
+    import { organization } from "$lib/stores/organization";
     import { sdk } from "$lib/stores/sdk";
     import DiscountsApplied from "./discountsApplied.svelte";
 
@@ -13,6 +15,7 @@
     export let collaborators: string[];
     export let couponId: string;
     export let fixedCoupon = false;
+    export let isDowngrade = false;
 
     export let billingBudget: number;
 
@@ -41,7 +44,18 @@
 
 </script>
 
-{#if estimation}
+{#if isDowngrade}
+<section
+    class="card u-flex u-flex-vertical u-gap-8"
+    style:--p-card-padding="1.5rem"
+    style:--p-card-border-radius="var(--border-radius-small)">
+    <slot />
+    <p class="text u-margin-block-start-16">
+        Your change will take effect once your current billing cycle ends on <span class="u-bold">{toLocaleDate($organization.billingNextInvoiceDate)}</span>.
+    </p>
+</section>
+
+{:else if estimation}
 
 <section
     class="card u-flex u-flex-vertical u-gap-8"

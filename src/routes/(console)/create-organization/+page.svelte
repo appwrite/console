@@ -66,17 +66,7 @@
 
     onMount(async () => {
         if ($page.url.searchParams.has('coupon')) {
-            const coupon = $page.url.searchParams.get('coupon');
-            try {
-                const response = await sdk.forConsole.billing.getCoupon(coupon);
-                couponData = response;
-            } catch (e) {
-                couponData = {
-                    code: null,
-                    status: null,
-                    credits: null
-                };
-            }
+            couponId = $page.url.searchParams.get('coupon');
         }
         if ($page.url.searchParams.has('name')) {
             name = $page.url.searchParams.get('name');
@@ -152,7 +142,7 @@
                     billingPlan,
                     paymentMethodId,
                     null,
-                    couponData?.code,
+                    couponId,
                     collaborators,
                     billingBudget,
                     taxId
