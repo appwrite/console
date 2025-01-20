@@ -88,7 +88,7 @@
                     title: 'Get started',
                     percentage: 33
                 };
-            } else if (!hasOnboardingDismissed(selectedProject.$id)) {
+            } else {
                 return {
                     title: 'Get started',
                     percentage: 100

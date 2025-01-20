@@ -86,20 +86,25 @@
         <div slot="middle" class:icons={state === 'icons'}>
             {#if progressCard}
                 <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
-                    <div class="progress-card">
+                    <a
+                        class="progress-card"
+                        href={`/console/project-${project.$id}/getstarted`}
+                        on:click={() => {
+                            sideBarIsOpen = false;
+                        }}>
                         <ProgressCircle size="s" progress={progressCard.percentage} />
                         <div class="info" class:no-text={state === 'icons'}>
                             <span class="title">{progressCard.title}</span>
                             <span class="description">{progressCard.percentage}% complete</span>
                         </div>
-                    </div>
+                    </a>
                     <span slot="tooltip">Getting started</span>
                 </Tooltip>
             {/if}
             {#if project}<Layout.Stack direction="column" gap="s">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.$id}`}
+                            href={`/console/project-${project.$id}?getStarted=false`}
                             class="link"
                             on:click={() => {
                                 sideBarIsOpen = false;

@@ -15,10 +15,10 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { onMount } from 'svelte';
-    import { onboarding, project } from '../store';
+    import { project } from '../store';
     import Bandwidth from './bandwidth.svelte';
     import { createApiKey } from './keys/+page.svelte';
-    import Onboardnew from './onboardnew.svelte';
+    import Onboard from './onboard.svelte';
     import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
@@ -84,7 +84,7 @@
 
 {#if $project}
     {#if !hasOnboardingDismissed(projectId)}
-        <Onboardnew {projectId} hasPlatforms={$project.platforms.length > 0} />
+        <Onboard {projectId} hasPlatforms={$project.platforms.length > 0} />
     {:else}
         <Container overlapCover>
             {#if $usage}
