@@ -76,7 +76,9 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Web</h3>
-                                    <Icon icon={IconArrowRight} /></Layout.Stack>
+                                    <div class="is-only-desktop">
+                                        <Icon icon={IconArrowRight} />
+                                    </div></Layout.Stack>
                             </div>
                         </button>
                         <button class="onboarding-card platform-card" on:click={createKey}>
@@ -91,7 +93,9 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Server</h3>
-                                    <Icon icon={IconArrowRight} /></Layout.Stack>
+                                    <div class="is-only-desktop">
+                                        <Icon icon={IconArrowRight} />
+                                    </div></Layout.Stack>
                             </div>
                         </button>
                         <button
@@ -108,7 +112,9 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Apple</h3>
-                                    <Icon icon={IconArrowRight} /></Layout.Stack>
+                                    <div class="is-only-desktop">
+                                        <Icon icon={IconArrowRight} />
+                                    </div></Layout.Stack>
                             </div>
                         </button>
                         <button
@@ -125,7 +131,9 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Android</h3>
-                                    <Icon icon={IconArrowRight} /></Layout.Stack>
+                                    <div class="is-only-desktop">
+                                        <Icon icon={IconArrowRight} />
+                                    </div></Layout.Stack>
                             </div>
                         </button>
 
@@ -143,7 +151,9 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Flutter</h3>
-                                    <Icon icon={IconArrowRight} /></Layout.Stack>
+                                    <div class="is-only-desktop">
+                                        <Icon icon={IconArrowRight} />
+                                    </div></Layout.Stack>
                             </div>
                         </button>
                     </div>
