@@ -310,7 +310,7 @@
             display: none;
         }
     }
-    :global(.icons div:first-of-type) {
+    :global(.icons div:first-of-type:not(:has(.progress-card))) {
         height: 20px;
     }
 
