@@ -15,10 +15,12 @@
     import { isCloud } from '$lib/system';
     import Baa from './BAA.svelte';
     import Soc2 from './Soc2.svelte';
+    import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
 
     export let data;
     let name: string;
     let showDelete = false;
+    let showDeleteEstimation = false;
 
     onMount(() => {
         name = $organization.name;
