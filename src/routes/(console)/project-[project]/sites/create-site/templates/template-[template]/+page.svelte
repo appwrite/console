@@ -42,6 +42,7 @@
     let name = data.template.name;
     let id = ID.unique();
     let domain = id;
+    let domainIsValid = true;
     let framework = data?.template?.frameworks[0];
     let branch = 'main';
     let rootDir = './';
@@ -107,54 +108,61 @@
                 message: 'Please select a repository'
             });
             return;
-        }
-        try {
-            const fr = Object.values(Framework).find((f) => f === framework.key);
-            const buildRuntime = Object.values(BuildRuntime).find(
-                (f) => f === framework.buildRuntime
-            );
-            let site = await sdk.forProject.sites.create(
-                id || ID.unique(),
-                name,
-                fr,
-                buildRuntime,
-                undefined,
-                undefined,
-                framework.installCommand,
-                framework.buildCommand,
-                framework.outputDirectory,
-                domain,
-                framework.adapter,
-                selectedInstallationId || undefined,
-                framework.fallbackFile,
-                selectedRepository || undefined,
-                branch || undefined,
-                selectedRepository ? silentMode : undefined,
-                rootDir || undefined,
-                data.template.providerRepositoryId || undefined,
-                data.template.providerOwner || undefined,
-                framework.providerRootDirectory || undefined,
-                data.template.providerVersion || undefined
-            );
-
-            trackEvent(Submit.SiteCreate, {
-                source: 'template'
-            });
-
-            const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                Query.limit(1)
-            ]);
-            const deployment = deployments[0];
-            await goto(
-                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
-            );
-        } catch (e) {
-            console.log(e);
+        } else if (!domainIsValid) {
             addNotification({
                 type: 'error',
-                message: e.message
+                message: 'Please enter a valid domain'
             });
-            trackError(e, Submit.SiteCreate);
+            return;
+        } else {
+            try {
+                const fr = Object.values(Framework).find((f) => f === framework.key);
+                const buildRuntime = Object.values(BuildRuntime).find(
+                    (f) => f === framework.buildRuntime
+                );
+                let site = await sdk.forProject.sites.create(
+                    id || ID.unique(),
+                    name,
+                    fr,
+                    buildRuntime,
+                    undefined,
+                    undefined,
+                    framework.installCommand,
+                    framework.buildCommand,
+                    framework.outputDirectory,
+                    domain,
+                    framework.adapter,
+                    selectedInstallationId || undefined,
+                    framework.fallbackFile,
+                    selectedRepository || undefined,
+                    branch || undefined,
+                    selectedRepository ? silentMode : undefined,
+                    rootDir || undefined,
+                    data.template.providerRepositoryId || undefined,
+                    data.template.providerOwner || undefined,
+                    framework.providerRootDirectory || undefined,
+                    data.template.providerVersion || undefined
+                );
+
+                trackEvent(Submit.SiteCreate, {
+                    source: 'template'
+                });
+
+                const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
+                    Query.limit(1)
+                ]);
+                const deployment = deployments[0];
+                await goto(
+                    `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                );
+            } catch (e) {
+                console.log(e);
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+                trackError(e, Submit.SiteCreate);
+            }
         }
     }
 
@@ -209,7 +217,7 @@
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <Domain bind:domain />
+                    <Domain bind:domain bind:domainIsValid />
                 </Layout.Stack>
             {:else}
                 {@const options = data.template.frameworks.map((framework) => {
@@ -284,7 +292,7 @@
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <Domain bind:domain />
+                    <Domain bind:domain bind:domainIsValid />
                 {/if}
             {/if}
         </Layout.Stack>
@@ -295,8 +303,7 @@
                 <Typography.Text variant="m-500" truncate>
                     {name || data.template.name}
                 </Typography.Text>
-                <!-- TODO: re-enable -->
-                <Button secondary size="s" href={data.template.demoUrl} disabled>View demo</Button>
+                <Button secondary size="s" external href={data.template.demoUrl}>View demo</Button>
             </Layout.Stack>
 
             <Image
