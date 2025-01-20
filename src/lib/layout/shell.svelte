@@ -13,7 +13,7 @@
     import { user } from '$lib/stores/user';
     import { tierToPlan } from '$lib/stores/billing';
     import { type Models } from '@appwrite.io/console';
-    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
+    import { isCloud } from '$lib/system';
 
     export let showSideNavigation = false;
     export let showHeader = true;
@@ -44,6 +44,7 @@
 
     const isNarrow = setContext('isNarrow', writable(false));
     const hasSubNavigation = setContext('hasSubNavigation', writable(false));
+
     $: sideSize = $hasSubNavigation ? ($isNarrow ? '17rem' : '25rem') : '12.5rem';
     $: navbarProps = {
         logo: {
@@ -51,13 +52,13 @@
             alt: 'Logo Appwrite'
         },
 
-        avatar: sdk.forConsole.avatars.getInitials($user.name, 80, 80).toString(),
+        avatar: sdk.forConsole.avatars.getInitials($user?.name, 80, 80).toString(),
 
         organizations: $organizationList.teams.map((org) => {
             return {
                 name: org.name,
                 $id: org.$id,
-                tierName: tierToPlan(org.billingPlan).name,
+                tierName: isCloud ? tierToPlan(org.billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id,
                 projects: loadedProjects
             };
