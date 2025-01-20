@@ -57,7 +57,7 @@ function createPreferences() {
         getCustomCollectionColumns: (
             projectId: string,
             collectionId: string
-        ): Preferences['columns'] => preferences[projectId]?.collections?.[collectionId] ?? null,
+        ): Preferences['columns'] => preferences[projectId]?.collections?.[collectionId] ?? [],
         setLimit: (projectId: string, route: Page['route'], limit: Preferences['limit']) =>
             update((n) => {
                 if (!n[projectId]?.[route.id]) {
