@@ -21,6 +21,7 @@
         InputTextarea,
         Label
     } from '$lib/elements/forms';
+    import { toLocaleDate } from '$lib/helpers/date.js';
     import { formatCurrency } from '$lib/helpers/numbers';
     import {
         WizardSecondaryContainer,
@@ -76,6 +77,7 @@
     let taxId: string;
     let billingBudget: number;
     let showCreditModal = false;
+    let error: string = '';
 
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
@@ -83,6 +85,7 @@
 
     onMount(async () => {
         if ($page.url.searchParams.has('code')) {
+            couponId = $page.url.searchParams.get('code');
             const coupon = $page.url.searchParams.get('code');
             try {
                 const response = await sdk.forConsole.billing.getCoupon(coupon);
@@ -275,7 +278,7 @@
     $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
-    $: isButtonDisabled = $organization.billingPlan === billingPlan;
+    $: isButtonDisabled = $organization.billingPlan === billingPlan || error.length > 0;
 </script>
 
 <svelte:head>
@@ -360,21 +363,26 @@
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <EstimatedTotal
-                    {isDowngrade}
-                    {billingBudget}
+                    bind:error={error}
+                    bind:billingBudget={billingBudget}
                     organizationId={$organization.$id}
                     {billingPlan}
                     {collaborators}
                     {couponId} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 {#if isDowngrade}
-                <EstimatedTotal
-                    {isDowngrade}
-                    {billingBudget}
-                    organizationId={$organization.$id}
-                    {billingPlan}
-                    {collaborators}
-                    {couponId} />
+                    <section
+                        class="card u-flex u-flex-vertical u-gap-8"
+                        style:--p-card-padding="1.5rem"
+                        style:--p-card-border-radius="var(--border-radius-small)">
+                        <slot />
+                        <p class="text u-margin-block-start-16">
+                            Your change will take effect once your current billing cycle ends on <span
+                                class="u-bold"
+                                >{toLocaleDate($organization.billingNextInvoiceDate)}</span
+                            >.
+                        </p>
+                    </section>
                 {/if}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
@@ -386,7 +394,7 @@
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled || !selfService}>
+            disabled={$isSubmitting || isButtonDisabled || !selfService ||!!error.length}>
             Change plan
         </Button>
     </WizardSecondaryFooter>
