@@ -22,7 +22,6 @@
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.png';
     import { base } from '$app/paths';
     import { setHasOnboardingDismissed } from '$lib/helpers/onboarding';
-    import { goto } from '$app/navigation';
 
     export let projectId: string;
     export let hasPlatforms: boolean;
@@ -38,7 +37,7 @@
         size="s"
         on:click={() => {
             setHasOnboardingDismissed(projectId);
-            goto(`${base}/project-${projectId}`);
+            location.reload();
         }}>Dismiss this page</Button.Button>
 </div>
 <div class="dashboard-content">
