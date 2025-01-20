@@ -109,9 +109,6 @@
     class:u-hide={$wizard.show || $log.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
     style:--p-side-size={sideSize}>
-    {#if $activeHeaderAlert?.show}
-        <svelte:component this={$activeHeaderAlert.component} />
-    {/if}
     {#if showHeader}
         <Navbar
             {...navbarProps}
@@ -133,6 +130,9 @@
         class:icons-content={state === 'icons'}
         class:no-sidebar={!showSideNavigation}>
         <section class="main-content">
+            {#if $activeHeaderAlert?.show}
+                <svelte:component this={$activeHeaderAlert.component} />
+            {/if}
             {#if $page.data?.header}
                 <svelte:component this={$page.data.header} />
             {/if}
