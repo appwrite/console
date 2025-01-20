@@ -2,14 +2,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
-    import {
-        CardGrid,
-        Heading,
-        DropListItem,
-        Empty,
-        Output,
-        PaginationInline
-    } from '$lib/components';
+    import { CardGrid, Heading, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -21,11 +14,22 @@
     import CreateVariable from './createVariable.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
     import { base } from '$app/paths';
-    import { Badge, HiddenText, Icon, Layout, Popover, Table } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Badge,
+        HiddenText,
+        Icon,
+        Layout,
+        Popover,
+        Table
+    } from '@appwrite.io/pink-svelte';
     import {
         IconCode,
         IconDotsHorizontal,
+        IconGlobeAlt,
+        IconPencil,
         IconPlus,
+        IconTrash,
         IconUpload
     } from '@appwrite.io/pink-icons-svelte';
     import Link from '$lib/elements/link.svelte';
@@ -291,36 +295,37 @@
                                             <Icon size="s" icon={IconDotsHorizontal} />
                                         </Button>
                                         <svelte:fragment slot="tooltip">
-                                            <Layout.Stack gap="s" alignItems="flex-start">
-                                                <DropListItem
-                                                    icon="pencil"
+                                            <ActionMenu.Root>
+                                                <ActionMenu.Item.Button
+                                                    trailingIcon={IconPencil}
                                                     on:click={() => {
                                                         selectedVar = variable;
                                                         showVariablesDropdown[i] = false;
                                                         showVariablesModal = true;
                                                     }}>
                                                     Edit
-                                                </DropListItem>
+                                                </ActionMenu.Item.Button>
+
                                                 {#if !isGlobal}
-                                                    <DropListItem
-                                                        icon="globe-alt"
+                                                    <ActionMenu.Item.Button
+                                                        trailingIcon={IconGlobeAlt}
                                                         on:click={async () => {
                                                             selectedVar = variable;
                                                             showVariablesDropdown[i] = false;
                                                             showPromoteModal = true;
                                                         }}>
                                                         Promote
-                                                    </DropListItem>
+                                                    </ActionMenu.Item.Button>
                                                 {/if}
-                                                <DropListItem
-                                                    icon="trash"
+                                                <ActionMenu.Item.Button
+                                                    trailingIcon={IconTrash}
                                                     on:click={async () => {
                                                         handleVariableDeleted(variable);
                                                         showVariablesDropdown[i] = false;
                                                     }}>
                                                     Delete
-                                                </DropListItem>
-                                            </Layout.Stack>
+                                                </ActionMenu.Item.Button>
+                                            </ActionMenu.Root>
                                         </svelte:fragment>
                                     </Popover>
                                 </div>
@@ -382,9 +387,3 @@
         {variableList}
         bind:show={showVariablesUpload} />
 {/if}
-
-<style>
-    .padding-start {
-        margin-left: -1rem;
-    }
-</style>
