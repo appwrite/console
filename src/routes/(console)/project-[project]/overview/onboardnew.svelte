@@ -182,26 +182,25 @@
                             Databases, Storage and Functions.</span>
                     </div>
                     <div class="grid">
-                        <div class="onboarding-card build-card">
+                        <a
+                            class="onboarding-card build-card"
+                            href={`${base}/project-${projectId}/databases`}>
                             <img
                                 src={$app.themeInUse == 'dark'
                                     ? DatabaseImgSourceDark
                                     : DatabaseImgSource}
                                 alt="" />
                             <div class="card-content">
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    style="width: 100%"
-                                    href={`${base}/project-${projectId}/databases`}
-                                    ><Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center">
-                                        <h3>Setup your database</h3>
-                                        <Icon icon={IconArrowRight} /></Layout.Stack
-                                    ></Link.Anchor>
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    <h3>Setup your database</h3>
+                                    <div class="is-only-desktop">
+                                        <Icon icon={IconArrowRight} />
+                                    </div></Layout.Stack>
                             </div>
-                        </div>
+                        </a>
                         <div class="onboarding-card build-card">
                             <div class="card-content card-docs">
                                 <h3>Discover our docs</h3>
@@ -296,7 +295,7 @@
                                     size="l"
                                     ><Layout.Stack direction="row" alignItems="flex-end" gap="xxs"
                                         >Join our Discord for support, tips and product updates
-                                        <div style:flex-shrink="0">
+                                        <div style:flex-shrink="0" class="is-only-desktop">
                                             <Icon icon={IconArrowRight} size="s" />
                                         </div></Layout.Stack
                                     ></Link.Anchor>
@@ -381,6 +380,7 @@
         .build-container {
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
             gap: var(--space-6);
 
             @media (min-width: 768px) {
@@ -402,6 +402,10 @@
                     font-weight: 400;
                     line-height: 140%; /* 19.6px */
                     letter-spacing: -0.063px;
+                }
+
+                @media (min-width: 768px) and (max-width: 1400px) {
+                    width: 200px;
                 }
             }
 
@@ -428,9 +432,13 @@
                 @media (min-width: 768px) {
                     grid-template-columns: repeat(6, 1fr);
                     grid-template-rows: auto auto;
+                    max-width: 776px;
 
                     .build-card:nth-child(1) {
                         grid-column: span 3;
+                        img {
+                            max-height: 160px;
+                        }
                     }
 
                     .build-card:nth-child(2) {
@@ -497,7 +505,11 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                height: 100%;
+                min-height: 240px;
+                @media (min-width: 768px) {
+                    height: 100%;
+                    min-height: auto;
+                }
             }
 
             .card-auth {
