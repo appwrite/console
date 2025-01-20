@@ -23,7 +23,7 @@
         "@appwrite.io/pink": "0.25.0",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "1.0.0-next.7",
-        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@dee77ad",
+        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@d4fdbf2",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",
@@ -46,7 +46,7 @@
     },
     "devDependencies": {
         "@melt-ui/pp": "^0.3.2",
-        "@melt-ui/svelte": "^0.83.0",
+        "@melt-ui/svelte": "^0.86.2",
         "@playwright/test": "^1.49.0",
         "@sveltejs/adapter-static": "^3.0.6",
         "@sveltejs/kit": "^2.8.1",
