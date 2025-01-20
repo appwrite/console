@@ -124,7 +124,7 @@
         icon="exclamation"
         state="warning"
         headerDivider={false}>
-        {#if estimation}
+        {#if estimation &&( estimation.unpaidInvoices.length > 0 || estimation.grossAmount > 0)}
             <DeleteOrganizationEstimation {estimation} />
         {:else}
             <p data-private>
