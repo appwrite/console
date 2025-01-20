@@ -22,6 +22,12 @@
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.png';
     import { base } from '$app/paths';
     import { setHasOnboardingDismissed } from '$lib/helpers/onboarding';
+    import Wizard from './keys/wizard.svelte';
+    import { wizard } from '$lib/stores/wizard';
+
+    function createKey() {
+        wizard.start(Wizard);
+    }
 
     export let projectId: string;
     export let hasPlatforms: boolean;
@@ -56,106 +62,90 @@
                         </span>
                     </div>
                     <div class="grid">
-                        <div class="onboarding-card platform-card">
+                        <button
+                            class="onboarding-card platform-card"
+                            on:click={() => addPlatform(0)}>
                             <img
                                 src={$app.themeInUse == 'dark'
                                     ? PlatformWebImgSourceDark
                                     : PlatformWebImgSource}
                                 alt="" />
                             <div class="card-content">
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    style="width: 100%"
-                                    href={`${base}/project-${projectId}/databases`}
-                                    ><Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center">
-                                        <h3>Web</h3>
-                                        <Icon icon={IconArrowRight} /></Layout.Stack
-                                    ></Link.Anchor>
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    <h3>Web</h3>
+                                    <Icon icon={IconArrowRight} /></Layout.Stack>
                             </div>
-                        </div>
-                        <div class="onboarding-card platform-card">
+                        </button>
+                        <button class="onboarding-card platform-card" on:click={createKey}>
                             <img
                                 src={$app.themeInUse == 'dark'
                                     ? PlatformServerImgSourceDark
                                     : PlatformServerImgSource}
                                 alt="" />
                             <div class="card-content">
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    style="width: 100%"
-                                    href={`${base}/project-${projectId}/databases`}
-                                    ><Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center">
-                                        <h3>Server</h3>
-                                        <Icon icon={IconArrowRight} /></Layout.Stack
-                                    ></Link.Anchor>
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    <h3>Server</h3>
+                                    <Icon icon={IconArrowRight} /></Layout.Stack>
                             </div>
-                        </div>
-                        <div class="onboarding-card platform-card">
+                        </button>
+                        <button
+                            class="onboarding-card platform-card"
+                            on:click={() => addPlatform(3)}>
                             <img
                                 src={$app.themeInUse == 'dark'
                                     ? PlatformIosImgSourceDark
                                     : PlatformIosImgSource}
                                 alt="" />
                             <div class="card-content">
-                                <Link.Button
-                                    variant="quiet-muted"
-                                    style="width: 100%"
-                                    on:click={() => addPlatform(3)}
-                                    ><Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center">
-                                        <h3>Apple</h3>
-                                        <Icon icon={IconArrowRight} /></Layout.Stack
-                                    ></Link.Button>
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    <h3>Apple</h3>
+                                    <Icon icon={IconArrowRight} /></Layout.Stack>
                             </div>
-                        </div>
-                        <div class="onboarding-card platform-card">
+                        </button>
+                        <button
+                            class="onboarding-card platform-card"
+                            on:click={() => addPlatform(2)}>
                             <img
                                 src={$app.themeInUse == 'dark'
                                     ? PlatformAndroidImgSourceDark
                                     : PlatformAndroidImgSource}
                                 alt="" />
                             <div class="card-content">
-                                <Link.Button
-                                    variant="quiet-muted"
-                                    style="width: 100%"
-                                    on:click={() => addPlatform(2)}
-                                    ><Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center">
-                                        <h3>Android</h3>
-                                        <Icon icon={IconArrowRight} /></Layout.Stack
-                                    ></Link.Button>
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    <h3>Android</h3>
+                                    <Icon icon={IconArrowRight} /></Layout.Stack>
                             </div>
-                        </div>
-                        <div class="onboarding-card platform-card">
+                        </button>
+
+                        <button
+                            class="onboarding-card platform-card"
+                            on:click={() => addPlatform(1)}>
                             <img
                                 src={$app.themeInUse == 'dark'
                                     ? PlatformFlutterImgSourceDark
                                     : PlatformFlutterImgSource}
                                 alt="" />
                             <div class="card-content">
-                                <Link.Button
-                                    variant="quiet-muted"
-                                    on:click={() => addPlatform(1)}
-                                    style="width: 100%"
-                                    ><Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center">
-                                        <h3>Flutter</h3>
-                                        <Icon icon={IconArrowRight} /></Layout.Stack
-                                    ></Link.Button>
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    <h3>Flutter</h3>
+                                    <Icon icon={IconArrowRight} /></Layout.Stack>
                             </div>
-                        </div>
+                        </button>
                     </div>
                 </div></Step.Item>
             <Step.Item state="next"
@@ -447,18 +437,33 @@
 
                     .platform-card:nth-child(1) {
                         grid-column: span 3;
+                        img {
+                            max-height: 295px;
+                        }
                     }
                     .platform-card:nth-child(2) {
                         grid-column: span 3;
+                        img {
+                            max-height: 295px;
+                        }
                     }
                     .platform-card:nth-child(3) {
                         grid-column: span 2;
+                        img {
+                            max-height: 195px;
+                        }
                     }
                     .platform-card:nth-child(4) {
                         grid-column: span 2;
+                        img {
+                            max-height: 195px;
+                        }
                     }
                     .platform-card:nth-child(5) {
                         grid-column: span 2;
+                        img {
+                            max-height: 195px;
+                        }
                     }
                 }
             }
