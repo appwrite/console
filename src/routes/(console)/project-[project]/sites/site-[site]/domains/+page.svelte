@@ -15,7 +15,15 @@
         IconRefresh,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Empty, Icon, Layout, Popover, Table } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Badge,
+        Empty,
+        Icon,
+        Layout,
+        Popover,
+        Table
+    } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
     import { queries } from '$lib/components/filters';
@@ -27,6 +35,8 @@
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Models.ProxyRule = null;
+
+    $: console.log(data.domains);
 </script>
 
 <Container>
@@ -48,7 +58,8 @@
                 <Table.Header.Cell />
             </svelte:fragment>
             {#each data.domains.rules as domain}
-                <Table.Row>
+                <Table.Link
+                    href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/domain-${domain.$id}`}>
                     <Table.Cell>
                         <Layout.Stack direction="row" alignItems="center" gap="xs">
                             <Link
@@ -59,28 +70,42 @@
                                 {domain.domain}
                                 <Icon icon={IconExternalLink} size="s" />
                             </Link>
+                            {#if domain.status !== 'verified'}
+                                <Badge
+                                    variant="secondary"
+                                    content="Pending verification"
+                                    type="warning" />
+                            {/if}
                         </Layout.Stack>
                     </Table.Cell>
                     <Table.Cell>{toLocaleDateTime(domain.$updatedAt)}</Table.Cell>
                     <Table.Cell>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-start" padding="none">
-                                <Button text icon on:click={toggle}>
+                                <Button
+                                    text
+                                    icon
+                                    on:click={(e) => {
+                                        e.preventDefault();
+                                        toggle(e);
+                                    }}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconRefresh}
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                selectedDomain = domain;
-                                                showRetry = true;
-                                                toggle(e);
-                                            }}>
-                                            Retry
-                                        </ActionMenu.Item.Button>
+                                        {#if domain.status !== 'verified'}
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconRefresh}
+                                                on:click={(e) => {
+                                                    e.preventDefault();
+                                                    selectedDomain = domain;
+                                                    showRetry = true;
+                                                    toggle(e);
+                                                }}>
+                                                Retry
+                                            </ActionMenu.Item.Button>
+                                        {/if}
                                         <ActionMenu.Item.Button
                                             status="danger"
                                             leadingIcon={IconTrash}
@@ -97,7 +122,7 @@
                             </Popover>
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Link>
             {/each}
         </Table.Root>
 
