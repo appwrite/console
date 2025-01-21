@@ -133,9 +133,7 @@
     };
 
     function updateViewport() {
-        if (window) {
-            isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
-        }
+        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
     }
 </script>
 

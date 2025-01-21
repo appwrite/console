@@ -47,23 +47,9 @@
         showAccountMenu: boolean;
     };
 
-    onMount(() => {
-        if (window) {
-            const mediaQuery = window.matchMedia('(max-width: 768px)');
-            const updateViewport = () => (isSmallViewport = mediaQuery.matches);
-
-            // Initial check
-            updateViewport();
-
-            // Listen for changes
-            mediaQuery.addEventListener('change', updateViewport);
-
-            return () => {
-                // Cleanup listener
-                mediaQuery.removeEventListener('change', updateViewport);
-            };
-        }
-    });
+    function updateViewport() {
+        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
+    }
 
     function updateTheme(theme: 'light' | 'dark' | 'system') {
         const themeInUse =
@@ -95,6 +81,7 @@
     export let showAccountMenu = false;
 </script>
 
+<svelte:window on:resize={updateViewport} />
 <Navbar.Base {...$$props}>
     <div slot="left" class="left">
         <div class="only-mobile">
