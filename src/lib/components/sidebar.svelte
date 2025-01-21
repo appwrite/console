@@ -25,6 +25,7 @@
     import { feedback } from '$lib/stores/feedback';
     import { DropList } from '$lib/components/index';
     import { Feedback } from '$lib/components/feedback';
+    import type { ComponentType } from 'svelte';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -36,6 +37,7 @@
         };
         sideBarIsOpen: boolean;
         showAccountMenu: boolean;
+        subNavigation?: ComponentType;
     };
 
     export let state: $$Props['state'] = 'closed';
@@ -44,6 +46,7 @@
     export let progressCard: $$Props['progressCard'];
     export let sideBarIsOpen: boolean;
     export let showAccountMenu: boolean;
+    export let subNavigation = undefined;
 
     function toggleFeedback() {
         feedback.toggleFeedback();
@@ -64,7 +67,7 @@
 </script>
 
 <div class:only-mobile={project === undefined}>
-    <Sidebar.Base {...$$props} bind:state>
+    <Sidebar.Base {...$$props} bind:state resizable={subNavigation !== undefined}>
         <div slot="top">
             <div class="only-mobile top">
                 <div class="icons">

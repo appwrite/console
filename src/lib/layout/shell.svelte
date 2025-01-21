@@ -5,7 +5,7 @@
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { onMount, setContext } from 'svelte';
+    import { type ComponentType, onMount, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -14,6 +14,7 @@
     import { tierToPlan } from '$lib/stores/billing';
     import { type Models } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
+    import SideNavigation from '$lib/layout/navigation.svelte';
 
     export let showSideNavigation = false;
     export let showHeader = true;
@@ -67,8 +68,10 @@
 
     let sideBarIsOpen = false;
     let showAccountMenu = false;
+    let subNavigation: undefined | ComponentType = undefined;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = sideBarIsOpen ? 'open' : 'closed';
+    $: state = subNavigation ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
 
     function handleResize() {
         sideBarIsOpen = false;
@@ -121,10 +124,11 @@
         project={selectedProject}
         progressCard={progressCard()}
         avatar={navbarProps.avatar}
+        bind:subNavigation
         bind:sideBarIsOpen
         bind:showAccountMenu
         bind:state />
-
+    <SideNavigation bind:state bind:subNavigation />
     <div
         class="content"
         class:icons-content={state === 'icons'}

@@ -335,7 +335,6 @@
     bind:loadedProjects
     bind:projects={data.projects}>
     <!--    <Header slot="header" />-->
-    <SideNavigation slot="side" />
     <slot />
     <Footer slot="footer" />
 </Shell>
