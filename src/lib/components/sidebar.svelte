@@ -43,7 +43,7 @@
     export let state: $$Props['state'] = 'closed';
     export let project: $$Props['project'];
     export let avatar: $$Props['avatar'];
-    export let progressCard: $$Props['progressCard'];
+    export let progressCard: $$Props['progressCard'] = undefined;
     export let sideBarIsOpen: boolean;
     export let showAccountMenu: boolean;
     export let subNavigation = undefined;

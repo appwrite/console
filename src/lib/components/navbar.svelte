@@ -29,7 +29,6 @@
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
-    import { onMount } from 'svelte';
 
     let showSupport = false;
     let isSmallViewport = false;
@@ -38,12 +37,11 @@
         links: Array<{ label: string; href: string }>;
         organizations: Array<{
             name: string;
-            id: string;
-            isSelected?: boolean;
-            tier: string;
-            projects: Array<{ name: string; id: string }>;
+            $id: string;
+            isSelected: boolean;
+            tierName: string;
+            projects: Array<{ name: string; $id: string; isSelected: boolean }>;
         }>;
-        showSideNavigation: boolean;
         showAccountMenu: boolean;
     };
 
@@ -77,7 +75,6 @@
     export let organizations: $$Props['organizations'];
     export let avatar: $$Props['avatar'];
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
-    export let showSideNavigation: boolean;
     export let showAccountMenu = false;
 </script>
 
@@ -222,7 +219,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            bottom: undefined
                         }
                     }
                 ]
@@ -279,10 +277,6 @@
         display: none;
     }
 
-    .only-mobile-tablet {
-        display: block;
-    }
-
     @media (min-width: 768px) {
         .only-desktop {
             display: block;
@@ -292,11 +286,6 @@
         }
     }
 
-    @media (min-width: 1024px) {
-        .only-mobile-tablet {
-            display: none;
-        }
-    }
     :global(.icons div:first-of-type:not(:has(.progress-card))) {
         height: 20px;
     }

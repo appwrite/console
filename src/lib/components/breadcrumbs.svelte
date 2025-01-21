@@ -2,7 +2,6 @@
     import { createMenubar, melt } from '@melt-ui/svelte';
     import { Badge, Icon, BottomSheet, type SheetMenu } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronRight, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { onMount } from 'svelte';
 
     type Project = {
         name: string;
@@ -362,7 +361,7 @@
         margin-bottom: 4px;
     }
 
-    .item[data-highlighted] {
+    :global(.item[data-highlighted]) {
         border-radius: var(--border-radius-S, 8px);
         background: var(--color-overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
@@ -392,12 +391,12 @@
         background: var(--color-overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
 
-    .trigger[data-highlighted] {
+    :global(.trigger[data-highlighted]) {
         outline: none;
         background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
     }
 
-    .trigger[data-highlighted]:focus {
+    :global(.trigger[data-highlighted]:focus) {
         outline: none;
         box-shadow: 0 0 0 2px var(--color-bgcolor-neutral-secondary, #f4f4f7);
     }
