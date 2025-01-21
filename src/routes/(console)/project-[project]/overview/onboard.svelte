@@ -150,7 +150,7 @@
                             class="onboarding-card platform-card"
                             on:click={() => addPlatform(1)}>
                             <img
-                                src={$app.themeInUse == 'dark'
+                                src={$app.themeInUse === 'dark'
                                     ? PlatformFlutterImgSourceDark
                                     : PlatformFlutterImgSource}
                                 alt="" />
