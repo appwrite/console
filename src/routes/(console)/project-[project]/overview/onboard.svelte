@@ -39,19 +39,21 @@
         <h1>Welcome, {$user.name}</h1>
         <span>Follow a few quick steps to get started with Appwrite</span>
     </div>
-    {#if !hasOnboardingDismissed(projectId)}
-        <Button.Button
-            variant="secondary"
-            size="s"
-            on:click={() => {
-                setHasOnboardingDismissed(projectId);
-                if (location.href.endsWith('getstarted')) {
-                    goto(`${base}/project-${projectId}`);
-                } else {
-                    location.reload();
-                }
-            }}>Dismiss this page</Button.Button>
-    {/if}
+    <div class="dashboard-header-button">
+        {#if !hasOnboardingDismissed(projectId)}
+            <Button.Button
+                variant="secondary"
+                size="s"
+                on:click={() => {
+                    setHasOnboardingDismissed(projectId);
+                    if (location.href.endsWith('getstarted')) {
+                        goto(`${base}/project-${projectId}`);
+                    } else {
+                        location.reload();
+                    }
+                }}>Dismiss this page</Button.Button>
+        {/if}
+    </div>
 </div>
 <div class="dashboard-content">
     {#if !hasPlatforms}
@@ -325,13 +327,17 @@
         align-items: center;
         justify-content: space-between;
 
-        padding: var(--space-7, 16px);
+        padding: var(--base-36, 36px) var(--space-7, 16px) var(--base-24, 24px) var(--space-7, 16px);
 
         @media (min-width: 768px) {
             padding-inline: 55px;
             padding-block: var(--base-40);
             flex-direction: row;
             gap: 0;
+        }
+
+        &-button {
+            align-self: start;
         }
 
         h1 {
@@ -362,7 +368,7 @@
 
     .dashboard-content {
         background: var(--color-bgcolor-neutral-default, #fafafb);
-        padding: 0 var(--space-7, 16px) var(--space-7, 16px) var(--space-7, 16px);
+        padding: var(--space-7, 16px);
 
         @media (min-width: 768px) {
             padding-inline: 55px;
