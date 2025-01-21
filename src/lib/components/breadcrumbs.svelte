@@ -132,25 +132,14 @@
         }
     };
 
-    onMount(() => {
+    function updateViewport() {
         if (window) {
-            const mediaQuery = window.matchMedia('(max-width: 768px)');
-            const updateViewport = () => (isSmallViewport = mediaQuery.matches);
-
-            // Initial check
-            updateViewport();
-
-            // Listen for changes
-            mediaQuery.addEventListener('change', updateViewport);
-
-            return () => {
-                // Cleanup listener
-                mediaQuery.removeEventListener('change', updateViewport);
-            };
+            isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
         }
-    });
+    }
 </script>
 
+<svelte:window on:resize={updateViewport} />
 <div use:melt={$menubar}>
     {#if !isSmallViewport}
         <span class="breadcrumb-separator">/</span>
