@@ -353,7 +353,7 @@
             max-width: 95px;
         }
 
-        @media (min-width: 390px) {
+        @media (min-width: 400px) {
             max-width: 105px;
         }
 
