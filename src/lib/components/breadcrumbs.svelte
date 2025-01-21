@@ -284,7 +284,7 @@
         flex-direction: column;
         outline: none !important;
         min-width: 220px;
-        border-radius: 12px;
+        border-radius: var(--border-radius-m, 12px);
         border: 1px solid var(--color-border-neutral, #ededf0);
         background: var(--color-bgcolor-neutral-primary, #fff);
         z-index: 20;
