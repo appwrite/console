@@ -74,30 +74,11 @@
     $: state = sideBarIsOpen ? 'open' : 'closed';
     $: state = subNavigation && !isSmallViewport ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
 
-    onMount(() => {
-        if (window) {
-            const mediaQuery = window.matchMedia('(max-width: 768px)');
-            const updateViewport = () => (isSmallViewport = mediaQuery.matches);
-            const handleResize = () => {
-                sideBarIsOpen = false;
-                showAccountMenu = false;
-            };
-
-            // Initial check
-            updateViewport();
-            handleResize();
-
-            // Listen for changes
-            mediaQuery.addEventListener('change', updateViewport);
-            window.addEventListener('resize', handleResize);
-
-            return () => {
-                // Cleanup listener
-                mediaQuery.removeEventListener('change', updateViewport);
-                window.removeEventListener('resize', handleResize);
-            };
-        }
-    });
+    function handleResize() {
+        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
+        sideBarIsOpen = false;
+        showAccountMenu = false;
+    }
 
     $: progressCard = function getProgressCard() {
         if (selectedProject) {
@@ -120,8 +101,7 @@
     };
 </script>
 
-<svelte:window bind:scrollY={y} />
-
+<svelte:window bind:scrollY={y} on:resize={handleResize} />
 <main
     class:grid-with-side={showSideNavigation}
     class:is-open={$showSubNavigation}
@@ -178,7 +158,7 @@
     .content {
         width: 100%;
 
-        margin-top: 30px;
+        margin-block-start: 30px;
 
         @media (min-width: 1024px) {
             width: 100%;
