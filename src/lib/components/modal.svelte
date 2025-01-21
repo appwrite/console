@@ -29,8 +29,10 @@
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Enter') {
             event.preventDefault();
-            formComponent.triggerSubmit();
-            trackEvent('click_submit_form', { from: 'enter' });
+            if (show) {
+                formComponent.triggerSubmit();
+                trackEvent('click_submit_form', { from: 'enter' });
+            }
         }
     }
 
