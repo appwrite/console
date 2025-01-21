@@ -70,17 +70,33 @@
     let showAccountMenu = false;
     let subNavigation: undefined | ComponentType = undefined;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
+    let isSmallViewport = false;
     $: state = sideBarIsOpen ? 'open' : 'closed';
-    $: state = subNavigation ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
-
-    function handleResize() {
-        sideBarIsOpen = false;
-        showAccountMenu = false;
-    }
+    $: state = subNavigation && !isSmallViewport ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
 
     onMount(() => {
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        if (window) {
+            const mediaQuery = window.matchMedia('(max-width: 768px)');
+            const updateViewport = () => (isSmallViewport = mediaQuery.matches);
+            const handleResize = () => {
+                sideBarIsOpen = false;
+                showAccountMenu = false;
+            };
+
+            // Initial check
+            updateViewport();
+            handleResize();
+
+            // Listen for changes
+            mediaQuery.addEventListener('change', updateViewport);
+            window.addEventListener('resize', handleResize);
+
+            return () => {
+                // Cleanup listener
+                mediaQuery.removeEventListener('change', updateViewport);
+                window.removeEventListener('resize', handleResize);
+            };
+        }
     });
 
     $: progressCard = function getProgressCard() {

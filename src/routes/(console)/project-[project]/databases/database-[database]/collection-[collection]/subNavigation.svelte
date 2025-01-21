@@ -16,7 +16,7 @@
     );
 </script>
 
-<Sidebar.Base state="open">
+<Sidebar.Base state="open" resizable={false}>
     <section slot="top" style:width="100%">
         <a
             class="u-flex u-cross-center u-sep-block-end u-padding-block-12 is-not-desktop"

@@ -67,7 +67,7 @@
 </script>
 
 <div class:only-mobile={project === undefined}>
-    <Sidebar.Base {...$$props} bind:state resizable={subNavigation !== undefined}>
+    <Sidebar.Base {...$$props} bind:state resizable={subNavigation === undefined}>
         <div slot="top">
             <div class="only-mobile top">
                 <div class="icons">

@@ -42,10 +42,15 @@
 
 <style>
     .level-2-nav {
-        position: fixed;
-        z-index: 20;
-        left: 200px;
-        transition: left 0.2s ease-in-out;
+        display: none;
+
+        @media (min-width: 768px) {
+            display: block;
+            position: fixed;
+            z-index: 10;
+            left: 200px;
+            transition: left 0.2s ease-in-out;
+        }
     }
     .icons {
         left: 54px;
