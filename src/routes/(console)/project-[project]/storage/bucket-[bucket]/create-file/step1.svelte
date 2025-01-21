@@ -26,7 +26,7 @@
         <Alert type="info">
             <p class="text">
                 The maximum file upload size for this bucket is {parseInt(size.value)}{size.unit}.
-                You can adjust it in your&nbsp;
+                You can adjust it in your
                 <a
                     href={`${base}/project-${projectId}/storage/bucket-${$bucket.$id}/settings`}
                     style:text-decoration="underline">bucket settings</a
