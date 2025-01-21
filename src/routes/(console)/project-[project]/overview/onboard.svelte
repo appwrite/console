@@ -130,7 +130,7 @@
                             class="onboarding-card platform-card"
                             on:click={() => addPlatform(2)}>
                             <img
-                                src={$app.themeInUse == 'dark'
+                                src={$app.themeInUse === 'dark'
                                     ? PlatformAndroidImgSourceDark
                                     : PlatformAndroidImgSource}
                                 alt="" />
