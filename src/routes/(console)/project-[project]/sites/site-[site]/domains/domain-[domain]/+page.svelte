@@ -5,8 +5,6 @@
     import DomainDetails from './domainDetails.svelte';
 
     export let data;
-
-    $: console.log('test');
 </script>
 
 <Container>
