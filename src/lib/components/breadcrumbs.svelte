@@ -315,7 +315,7 @@
         outline: none;
         display: flex;
         align-items: center;
-        cursor: default;
+        cursor: pointer;
 
         margin: 0 4px;
         padding: var(--space-3, 6px) var(--space-4, 8px) var(--space-3, 6px) var(--space-5, 10px);
