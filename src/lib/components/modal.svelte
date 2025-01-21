@@ -4,6 +4,7 @@
     import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
     import { Layout, Modal } from '@appwrite.io/pink-svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     export let icon: string = null;
@@ -29,6 +30,7 @@
         if (event.key === 'Enter') {
             event.preventDefault();
             formComponent.triggerSubmit();
+            trackEvent('click_submit_form', { from: 'enter' });
         }
     }
 
