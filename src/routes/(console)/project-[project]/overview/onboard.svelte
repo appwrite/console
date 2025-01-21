@@ -46,7 +46,7 @@
                 size="s"
                 on:click={() => {
                     setHasOnboardingDismissed(projectId);
-                    if (location.href.endsWith('getstarted')) {
+                    if (location.href.endsWith('get-started')) {
                         goto(`${base}/project-${projectId}`);
                     } else {
                         location.reload();
