@@ -148,7 +148,7 @@
             class="trigger"
             use:melt={$triggerOrganizations}
             aria-label="Open organizations tab">
-            <span class="orgNameProject">{selectedOrg?.name ?? 'Organization'}</span>
+            <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 >{#if selectedOrg?.tierName}<Badge
                         variant="secondary"
@@ -163,7 +163,7 @@
                 organisationBottomSheetOpen = true;
             }}
             aria-label="Open organizations tab">
-            <span class="orgNameProject">{selectedOrg?.name ?? 'Organization'}</span>
+            <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
             <Icon icon={IconChevronDown} size="s" />
@@ -228,7 +228,7 @@
                 class="trigger"
                 use:melt={$triggerProjects}
                 aria-label="Open projects tab">
-                <span class="orgNameProject">{selectedProject.name}</span>
+                <span class="projectName">{selectedProject.name}</span>
                 <Icon icon={IconChevronDown} size="s" />
             </button>
         {:else}
@@ -239,7 +239,7 @@
                     projectsBottomSheetOpen = true;
                 }}
                 aria-label="Open projects tab">
-                <span class="orgNameProject">{selectedProject.name}</span>
+                <span class="projectName">{selectedProject.name}</span>
                 <Icon icon={IconChevronDown} size="s" />
             </button>
         {/if}
@@ -332,7 +332,8 @@
         letter-spacing: -0.063px;
     }
 
-    .orgNameProject {
+    .orgName,
+    .projectName {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
