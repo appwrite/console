@@ -16,10 +16,8 @@
     onSubmit={() => {
         dispatch('promoted');
     }}
-    headerDivider={false}>
-    <svelte:fragment slot="title">
-        {isConflicting ? 'Overwrite global variable' : 'Promote variable'}
-    </svelte:fragment>
+    headerDivider={false}
+    title={isConflicting ? 'Overwrite global variable' : 'Promote variable'}>
     {#if isConflicting}
         <p data-private>
             Promoting this variable will overwrite your global variable with the same name. Are you

@@ -65,6 +65,7 @@
         const variable = event.detail;
         try {
             await sdkCreateVariable(variable.key, variable.value, variable.secret);
+            selectedVar = null;
             showVariablesModal = false;
             addNotification({
                 type: 'success',
@@ -155,7 +156,8 @@
             await Promise.all([
                 invalidate(Dependencies.FUNCTION),
                 invalidate(Dependencies.VARIABLES),
-                invalidate(Dependencies.PROJECT_VARIABLES)
+                invalidate(Dependencies.PROJECT_VARIABLES),
+                invalidate(Dependencies.SITE)
             ]);
 
             addNotification({
@@ -294,14 +296,15 @@
                                             }}>
                                             <Icon size="s" icon={IconDotsHorizontal} />
                                         </Button>
-                                        <svelte:fragment slot="tooltip">
+                                        <svelte:fragment slot="tooltip" let:toggle>
                                             <ActionMenu.Root>
                                                 <ActionMenu.Item.Button
                                                     trailingIcon={IconPencil}
-                                                    on:click={() => {
+                                                    on:click={(e) => {
                                                         selectedVar = variable;
                                                         showVariablesDropdown[i] = false;
                                                         showVariablesModal = true;
+                                                        toggle(e);
                                                     }}>
                                                     Edit
                                                 </ActionMenu.Item.Button>
@@ -309,19 +312,21 @@
                                                 {#if !isGlobal}
                                                     <ActionMenu.Item.Button
                                                         trailingIcon={IconGlobeAlt}
-                                                        on:click={async () => {
+                                                        on:click={async (e) => {
                                                             selectedVar = variable;
                                                             showVariablesDropdown[i] = false;
                                                             showPromoteModal = true;
+                                                            toggle(e);
                                                         }}>
                                                         Promote
                                                     </ActionMenu.Item.Button>
                                                 {/if}
                                                 <ActionMenu.Item.Button
                                                     trailingIcon={IconTrash}
-                                                    on:click={async () => {
+                                                    on:click={async (e) => {
                                                         handleVariableDeleted(variable);
                                                         showVariablesDropdown[i] = false;
+                                                        toggle(e);
                                                     }}>
                                                     Delete
                                                 </ActionMenu.Item.Button>
