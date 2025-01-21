@@ -22,7 +22,7 @@
         IconSun,
         IconUser
     } from '@appwrite.io/pink-icons-svelte';
-    import { DropList, Support, BreadcrumbsConsole } from '$lib/components';
+    import { DropList, Support, Breadcrumbs } from '$lib/components';
     import { Feedback } from '$lib/components/feedback';
     import { feedback } from '$lib/stores/feedback';
     import { isMac } from '$lib/helpers/platform';
@@ -105,7 +105,7 @@
                 }}><Icon icon={IconMenuAlt4} /></button>
         </div>
         <img src={logo.src} alt={logo.alt} class="only-desktop" />
-        <BreadcrumbsConsole {organizations} />
+        <Breadcrumbs {organizations} />
     </div>
     <div slot="right" class="only-desktop">
         <div class="right">
