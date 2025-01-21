@@ -162,10 +162,10 @@
                 <slot name="footer" />
             {/if}
         </section>
+        {#if showFooter && !showSideNavigation}
+            <slot name="footer" />
+        {/if}
     </div>
-    {#if showFooter && !showSideNavigation}
-        <slot name="footer" />
-    {/if}
 
     <button
         class:overlay={sideBarIsOpen}
@@ -194,6 +194,10 @@
 
     .no-sidebar {
         padding-left: 0;
+    }
+
+    .main-content {
+        min-height: calc(100vh - 30px);
     }
 
     .overlay {
