@@ -35,7 +35,7 @@
                 </Layout.Stack>
                 <Layout.Stack gap="xs">
                     <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                        Registar
+                        Registrar
                     </Typography.Text>
                     MISSING BACKEND DATA
                 </Layout.Stack>
