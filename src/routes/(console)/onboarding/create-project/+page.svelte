@@ -71,6 +71,25 @@
             isLoading = false;
         }
     }
+
+    function getRegions() {
+        return regions.regions
+            .filter((region) => region.$id !== 'default')
+            .sort((regionA, regionB) => {
+                if (regionA.disabled && !regionB.disabled) {
+                    return 1;
+                }
+                return regionA.name > regionB.name ? 1 : -1;
+            })
+            .map((region) => {
+                return {
+                    label: region.name,
+                    value: region.$id,
+                    leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
+                    disabled: region.disabled
+                };
+            });
+    }
 </script>
 
 <div
@@ -119,22 +138,7 @@
                         {#if regions}
                             <Input.Select
                                 placeholder="Select a region"
-                                options={regions.regions
-                                    .filter((region) => region.$id !== 'default')
-                                    .sort((regionA, regionB) => {
-                                        if (regionA.disabled && !regionB.disabled) {
-                                            return 1;
-                                        }
-                                        return regionA.name > regionB.name ? 1 : -1;
-                                    })
-                                    .map((region) => {
-                                        return {
-                                            label: region.name,
-                                            value: region.$id,
-                                            leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                                            disabled: region.disabled
-                                        };
-                                    })}
+                                options={getRegions()}
                                 label="Region" />
                         {/if}
                         <div class="u-flex u-main-end">
