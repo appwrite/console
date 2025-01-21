@@ -19,10 +19,18 @@
     export let hideFooter = false;
 
     let alert: HTMLElement;
+    let formComponent: Form;
 
     beforeNavigate(() => {
         show = false;
     });
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            formComponent.triggerSubmit();
+        }
+    }
 
     $: $disableCommands(show);
 
@@ -31,7 +39,9 @@
     }
 </script>
 
-<Form isModal {onSubmit}>
+<svelte:window on:keydown={handleKeydown} />
+
+<Form isModal {onSubmit} bind:this={formComponent}>
     <Modal {title} bind:open={show} {hideFooter}>
         <svelte:fragment slot="description">
             <slot name="description" />
