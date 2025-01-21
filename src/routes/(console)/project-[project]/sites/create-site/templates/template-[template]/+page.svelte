@@ -277,7 +277,7 @@
                     {:else}
                         <Card isDashed isTile>
                             <Empty
-                                title={`Connect Git repository`}
+                                title="Connect Git repository"
                                 description="Create and deploy a Site with a connected git repository.">
                                 <svelte:fragment slot="actions">
                                     <Button secondary href={connectGitHub().toString()} size="s">
