@@ -34,28 +34,17 @@
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Teams"
-        total={data.teams.total}
-        buttonDisabled={isCloud && $readOnly}
-        let:isButtonDisabled>
-        <SearchQuery search={data.search} placeholder="Search by name">
-            {#if $canWriteTeams}
-                <Tooltip disabled={!isButtonDisabled}>
-                    <div>
-                        <Button
-                            on:click={() => ($showCreateTeam = true)}
-                            event="create_team"
-                            disabled={isButtonDisabled}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Create team</span>
-                        </Button>
-                    </div>
-                    <span slot="tooltip">Upgrade to add more teams</span>
-                </Tooltip>
-            {/if}
-        </SearchQuery>
-    </ContainerHeader>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search by name" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Button on:mousedown={() => ($showCreateTeam = true)} event="create_user" size="s">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create team</span>
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
 
     {#if data.teams.total}
         <Table.Root>

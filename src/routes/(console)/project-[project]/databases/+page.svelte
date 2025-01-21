@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Empty, PaginationWithLimit, ViewSelector } from '$lib/components';
+    import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
@@ -14,7 +14,7 @@
     import Table from './table.svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Layout, Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -43,36 +43,27 @@
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Databases"
-        total={data?.databases?.total}
-        on:data={(data) => {
-            isCreationDisabled = data.detail.isButtonDisabled;
-        }}>
-        <svelte:fragment>
-            <div class="u-flex u-gap-16 u-cross-center u-flex-wrap">
-                <ViewSelector
-                    {columns}
-                    view={data.view}
-                    hideColumns={!data.databases.total}
-                    hideView={!data.databases.total} />
-                {#if $canWriteDatabases}
-                    <Tooltip disabled={!isCreationDisabled}>
-                        <div>
-                            <Button
-                                on:click={() => (showCreate = true)}
-                                event="create_database"
-                                disabled={isCreationDisabled}>
-                                <span class="icon-plus" aria-hidden="true" />
-                                <span class="text">Create database</span>
-                            </Button>
-                        </div>
-                        <span slot="tooltip">Upgrade to add more databases</span>
-                    </Tooltip>
-                {/if}
-            </div>
-        </svelte:fragment>
-    </ContainerHeader>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search databases" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <ViewSelector
+                {columns}
+                view={data.view}
+                hideColumns={!data.databases.total}
+                hideView={!data.databases.total} />
+            {#if $canWriteDatabases}
+                <Button
+                    on:click={() => (showCreate = true)}
+                    event="create_database"
+                    disabled={isCreationDisabled}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create database</span>
+                </Button>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
 
     {#if data.databases.total}
         {#if data.view === 'grid'}

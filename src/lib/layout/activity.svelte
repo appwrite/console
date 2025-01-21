@@ -7,13 +7,9 @@
         Trim
     } from '$lib/components';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
-    import { tierToPlan, type PlanServices } from '$lib/stores/billing';
-    import { isCloud } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
-    import { Button } from '$lib/elements/forms';
-    import { BillingPlan } from '$lib/constants';
+    import { type PlanServices } from '$lib/stores/billing';
     import { Layout, Table } from '@appwrite.io/pink-svelte';
 
     export let logs: Models.LogList;

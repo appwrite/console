@@ -47,16 +47,10 @@
         {#each data.domains.rules as domain}
             <Table.Row>
                 <Table.Cell>
-                    <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Link
-                            external
-                            href={`${$protocol}${domain.domain}`}
-                            size="s"
-                            variant="quiet">
-                            {domain.domain}
-                            <Icon icon={IconExternalLink} size="s" />
-                        </Link>
-                    </Layout.Stack>
+                    <Link external href={`${$protocol}${domain.domain}`} size="s" variant="quiet">
+                        {domain.domain}
+                        <Icon icon={IconExternalLink} size="s" />
+                    </Link>
                 </Table.Cell>
                 <Table.Cell>{toLocaleDateTime(domain.$updatedAt)}</Table.Cell>
                 <Table.Cell>

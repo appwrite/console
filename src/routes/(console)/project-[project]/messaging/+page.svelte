@@ -43,6 +43,7 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
     let selected: string[] = [];
@@ -93,49 +94,21 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Messages">
-        {#if $canWriteMessages}
-            <div class="is-only-mobile">
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery
+                search={data.search}
+                placeholder="Search by message ID, description, type, or status" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Filters query={data.query} {columns} />
+            <ViewSelector view={data.view} {columns} hideView allowNoColumns showColsTextMobile />
+            {#if $canWriteMessages}
                 <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
-            </div>
-        {/if}
-    </ContainerHeader>
-    <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16">
-        <SearchQuery
-            fullWidth
-            search={data.search}
-            placeholder="Search by message ID, description, type, or status">
-            <div class="is-not-mobile u-width-full-line">
-                <div class="u-flex u-gap-16 u-main-end">
-                    <Filters query={data.query} {columns} />
-                    <ViewSelector
-                        view={data.view}
-                        {columns}
-                        hideView
-                        allowNoColumns
-                        showColsTextMobile />
-                    {#if $canWriteMessages}
-                        <CreateMessageDropdown
-                            bind:showCreateDropdown={showCreateDropdownDesktop} />
-                    {/if}
-                </div>
-            </div>
-        </SearchQuery>
-        <div class="is-only-mobile u-flex u-gap-16">
-            <div class="u-flex-basis-50-percent">
-                <ViewSelector
-                    view={data.view}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile
-                    fullWidthMobile />
-            </div>
-            <div class="u-flex-basis-50-percent">
-                <Filters query={data.query} {columns} fullWidthMobile />
-            </div>
-        </div>
-    </div>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
+
     {#if data.messages.total}
         <TableScroll>
             <TableHeader>

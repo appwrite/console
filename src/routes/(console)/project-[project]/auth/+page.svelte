@@ -35,24 +35,17 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Users" total={data.users.total} let:isButtonDisabled>
-        <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-            {#if $canWriteUsers}
-                <Tooltip disabled={!isButtonDisabled}>
-                    <div>
-                        <Button
-                            on:mousedown={() => ($showCreateUser = true)}
-                            event="create_user"
-                            disabled={isButtonDisabled}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Create user</span>
-                        </Button>
-                    </div>
-                    <span slot="tooltip">Upgrade to add more users</span>
-                </Tooltip>
-            {/if}
-        </SearchQuery>
-    </ContainerHeader>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Button on:mousedown={() => ($showCreateUser = true)} event="create_user" size="s">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create user</span>
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
 
     {#if data.users.total}
         <Table.Root>

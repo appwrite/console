@@ -13,7 +13,6 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let timer: ReturnType<typeof setTimeout>;
@@ -59,7 +58,7 @@
     }
 </script>
 
-<div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
+<div style:max-width="260px" style:width="100%">
     <Input.Text {placeholder} {disabled} {required} type="search" bind:value={search}>
         <svelte:fragment slot="end">
             {#if search}
