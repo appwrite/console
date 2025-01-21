@@ -84,17 +84,10 @@
         if (selectedProject) {
             const currentProject = projects.find((project) => project.$id === selectedProject.$id);
 
-            if (currentProject && currentProject.platforms.length === 0) {
-                return {
-                    title: 'Get started',
-                    percentage: 33
-                };
-            } else {
-                return {
-                    title: 'Get started',
-                    percentage: 100
-                };
-            }
+            return {
+                title: 'Get started',
+                percentage: currentProject && currentProject.platforms.length ? 33 : 100
+            };
         }
 
         return undefined;
