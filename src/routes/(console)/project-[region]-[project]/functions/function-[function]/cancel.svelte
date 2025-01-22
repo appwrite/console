@@ -24,7 +24,7 @@
             showCancel = false;
             addNotification({
                 type: 'success',
-                message: `Deployment has been deleted`
+                message: `Deployment has been cancelled`
             });
             trackEvent(Submit.DeploymentCancel);
         } catch (error) {

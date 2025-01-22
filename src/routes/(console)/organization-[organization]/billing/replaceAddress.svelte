@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Modal, RadioBoxes } from '$lib/components';
+    import { Alert, Modal, RadioBoxes } from '$lib/components';
     import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
@@ -11,6 +11,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
     import { page } from '$app/stores';
+    import { base } from '$app/paths';
 
     export let show = false;
     let addresses: AddressesList;
@@ -188,10 +189,21 @@
                 </FormList>
             </RadioBoxes>
         </FormList>
+    {:else}
+        <Alert
+            buttons={[
+                {
+                    slot: 'Add address',
+                    href: `${base}/account/payments`
+                }
+            ]}>There are no billing addresses linked to your account.</Alert>
     {/if}
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit disabled={selectedAddress === $organization.billingAddressId}>
+        <Button
+            secondary
+            submit
+            disabled={selectedAddress === $organization.billingAddressId || !addresses?.total}>
             Save
         </Button>
     </svelte:fragment>

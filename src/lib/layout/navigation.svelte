@@ -15,8 +15,7 @@
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import { getContext } from 'svelte';
     import type { Writable } from 'svelte/store';
-
-    export let isOpen = false;
+    import { showSubNavigation } from '$lib/stores/layout';
 
     $: projectPath = `${base}/project-${$page.params.region}-${$page.params.project}`;
 
@@ -43,12 +42,12 @@
     }
 
     function openFeedback() {
-        isOpen = false;
+        $showSubNavigation = false;
         wizard.start(Create);
     }
 
     function openSupport() {
-        isOpen = false;
+        $showSubNavigation = false;
         $showSupportModal = true;
     }
 </script>

@@ -240,7 +240,6 @@
             rank: -1
         }
     ]);
-    let isOpen = false;
     onMount(async () => {
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {
@@ -321,14 +320,13 @@
 <CommandCenter />
 
 <Shell
-    bind:isOpen
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <Header slot="header" />
-    <SideNavigation slot="side" bind:isOpen />
+    <SideNavigation slot="side" />
     <slot />
     <Footer slot="footer" />
 </Shell>

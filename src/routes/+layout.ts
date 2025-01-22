@@ -9,6 +9,8 @@ import { redirectTo } from './store';
 import { base } from '$app/paths';
 import type { Account } from '$lib/stores/user';
 import type { AppwriteException } from '@appwrite.io/console';
+import { isCloud } from '$lib/system';
+import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
 export const ssr = false;
 
@@ -46,6 +48,10 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (!isPublicRoute) {
+        if (isCloud) {
+            checkPricingRefAndRedirect(url.searchParams, true);
+        }
+
         redirect(303, withParams(`${base}/login`, url.searchParams));
     }
 };

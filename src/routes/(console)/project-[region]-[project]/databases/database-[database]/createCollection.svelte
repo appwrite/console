@@ -69,10 +69,10 @@
             </div>
         {:else}
             <CustomId
+                autofocus
                 bind:show={showCustomId}
                 name="Collection"
                 bind:id
-                autofocus={false}
                 fullWidth={true} />
         {/if}
     </FormList>

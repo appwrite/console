@@ -70,6 +70,7 @@
             </div>
         {:else}
             <CustomId
+                autofocus
                 bind:show={showCustomId}
                 name="Function"
                 bind:id={$createFunction.$id}

@@ -62,7 +62,8 @@
                     $template.providerRepositoryId || undefined,
                     $template.providerOwner || undefined,
                     runtimeDetail.providerRootDirectory || undefined,
-                    $template.providerVersion || undefined
+                    $template.providerVersion || undefined,
+                    $templateConfig.specification || undefined
                 );
 
             if ($templateConfig.variables) {
@@ -86,7 +87,8 @@
                 customId: !!response.$id,
                 runtime: response.runtime,
                 deployment_type: $templateConfig.repositoryBehaviour,
-                scopes: $templateConfig.scopes
+                scopes: $templateConfig.scopes,
+                specification: $templateConfig.specification
             });
             resetState();
         } catch (error) {

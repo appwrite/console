@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { InputText, FormList } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
 
     export let showOverview = false;
@@ -49,11 +49,6 @@
                                 value={selectedIndex.orders[i]}
                                 readonly />
                         </div>
-                    </div>
-                    <div class="form-item-part u-cross-child-end">
-                        <Button text disabled>
-                            <span class="icon-x" aria-hidden="true" />
-                        </Button>
                     </div>
                 </li>
             {/each}

@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import {
         Alert,
+        Arrow,
         AvatarGroup,
         CardGrid,
         DropList,
@@ -91,7 +92,7 @@
     <svelte:fragment slot="aside">
         {#if total > 0}
             <div>
-                <div class="u-flex u-flex-vertical-mobile u-main-end">
+                <div class="u-flex u-flex-vertical-mobile u-main-end u-padding-block-end-16">
                     <ul class="buttons-list">
                         <li class="buttons-list-item">
                             <Button secondary on:click={() => (showGitIstall = true)}>
@@ -102,77 +103,81 @@
                     </ul>
                 </div>
 
-                <Table noMargin noStyles>
-                    <TableHeader>
-                        <TableCellHead width={150}>Installation ID</TableCellHead>
-                        <TableCellHead>Repository</TableCellHead>
-                        <TableCellHead>Updated</TableCellHead>
-                        <TableCellHead width={40} />
-                    </TableHeader>
-                    <TableBody>
-                        {#each installations as installation, i}
-                            <TableRow>
-                                <TableCell title="installations">
-                                    <Id value={installation.$id}>{installation.$id}</Id>
-                                </TableCell>
-                                <TableCell title="repository">
-                                    <div class="u-flex u-gap-8 u-cross-center">
-                                        <div class="avatar is-size-small">
-                                            <span
-                                                class={getProviderIcon(installation.provider)}
-                                                style="font-size: var(--icon-size-medium)!important" />
+                <div style="overflow: auto">
+                    <Table noMargin noStyles isAutoLayout>
+                        <TableHeader>
+                            <TableCellHead width={150}>Installation ID</TableCellHead>
+                            <TableCellHead>Repository</TableCellHead>
+                            <TableCellHead>Updated</TableCellHead>
+                            <TableCellHead width={40} />
+                        </TableHeader>
+                        <TableBody>
+                            {#each installations as installation, i}
+                                <TableRow>
+                                    <TableCell title="installations">
+                                        <Id value={installation.$id}>{installation.$id}</Id>
+                                    </TableCell>
+                                    <TableCell title="repository">
+                                        <div class="u-flex u-gap-8 u-cross-center">
+                                            <div class="avatar is-size-small">
+                                                <span
+                                                    class={getProviderIcon(installation.provider)}
+                                                    style="font-size: var(--icon-size-medium)!important" />
+                                            </div>
+                                            <a
+                                                href={getInstallationLink(installation)}
+                                                target="_blank"
+                                                class="u-flex u-gap-4 u-cross-center">
+                                                <span>{installation.organization}</span><span
+                                                    style="font-size: 1rem; color: hsl(var(--color-neutral-70));"
+                                                    class="icon-external-link" /></a>
                                         </div>
-                                        <a
-                                            href={getInstallationLink(installation)}
-                                            target="_blank"
-                                            class="u-flex u-gap-4 u-cross-center">
-                                            <span>{installation.organization}</span><span
-                                                style="font-size: 1rem; color: hsl(var(--color-neutral-70));"
-                                                class="icon-external-link" /></a>
-                                    </div>
-                                </TableCell>
-                                <TableCellText title="updated">
-                                    {dayjs().to(installation.$updatedAt)}
-                                </TableCellText>
+                                    </TableCell>
+                                    <TableCellText title="updated">
+                                        {dayjs().to(installation.$updatedAt)}
+                                    </TableCellText>
 
-                                <TableCell>
-                                    <DropList
-                                        bind:show={showInstallationDropdown[i]}
-                                        placement="bottom-start"
-                                        noArrow>
-                                        <button
-                                            class="button is-text is-only-icon"
-                                            aria-label="more options"
-                                            on:click|preventDefault={() =>
-                                                (showInstallationDropdown[i] =
-                                                    !showInstallationDropdown[i])}>
-                                            <span class="icon-dots-horizontal" aria-hidden="true" />
-                                        </button>
-                                        <svelte:fragment slot="list">
-                                            <DropListLink
-                                                href={configureGitHub()}
-                                                icon="external-link"
-                                                on:click={() => {
-                                                    showInstallationDropdown[i] = false;
-                                                }}>
-                                                Configure
-                                            </DropListLink>
-                                            <DropListItem
-                                                icon="x-circle"
-                                                on:click={async () => {
-                                                    showInstallationDropdown[i] = false;
-                                                    showGitDisconnect = true;
-                                                    selectedInstallation = installation;
-                                                }}>
-                                                Disconnect
-                                            </DropListItem>
-                                        </svelte:fragment>
-                                    </DropList>
-                                </TableCell>
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </Table>
+                                    <TableCell>
+                                        <DropList
+                                            bind:show={showInstallationDropdown[i]}
+                                            placement="bottom-start"
+                                            noArrow>
+                                            <button
+                                                class="button is-text is-only-icon"
+                                                aria-label="more options"
+                                                on:click|preventDefault={() =>
+                                                    (showInstallationDropdown[i] =
+                                                        !showInstallationDropdown[i])}>
+                                                <span
+                                                    class="icon-dots-horizontal"
+                                                    aria-hidden="true" />
+                                            </button>
+                                            <svelte:fragment slot="list">
+                                                <DropListLink
+                                                    href={configureGitHub()}
+                                                    icon="external-link"
+                                                    on:click={() => {
+                                                        showInstallationDropdown[i] = false;
+                                                    }}>
+                                                    Configure
+                                                </DropListLink>
+                                                <DropListItem
+                                                    icon="x-circle"
+                                                    on:click={async () => {
+                                                        showInstallationDropdown[i] = false;
+                                                        showGitDisconnect = true;
+                                                        selectedInstallation = installation;
+                                                    }}>
+                                                    Disconnect
+                                                </DropListItem>
+                                            </svelte:fragment>
+                                        </DropList>
+                                    </TableCell>
+                                </TableRow>
+                            {/each}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
             <div class="u-flex u-main-space-between">
                 <p class="text">Total installations: {total}</p>
@@ -203,8 +208,12 @@
             <article class="card-git card is-border-dashed is-no-shadow">
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                     <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
-                        <AvatarGroup bordered icons={['github', 'gitlab', 'bitBucket', 'azure']} />
-                        <span class="icon-arrow-narrow-down" />
+                        <AvatarGroup
+                            class="git-installation-avatar-group"
+                            bordered
+                            icons={['github', 'gitlab', 'bitBucket', 'azure']} />
+
+                        <Arrow direction="down" />
 
                         <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
                     </div>
@@ -227,3 +236,9 @@
 {#if showGitDisconnect}
     <GitDisconnectModal bind:showGitDisconnect {selectedInstallation} />
 {/if}
+
+<style>
+    :global(.git-installation-avatar-group .icon-gitlab, .icon-bitBucket, .icon-azure) {
+        color: hsl(var(--color-neutral-50));
+    }
+</style>

@@ -12,6 +12,7 @@
     import { page } from '$app/stores';
 
     let retrying = false;
+    export let showTitle = true;
 
     const dispatch = createEventDispatcher();
 
@@ -39,7 +40,10 @@
     }
 </script>
 
-<Trim alternativeTrim><b>{$domain.domain}</b></Trim>
+{#if showTitle}
+    <Trim alternativeTrim><b>{$domain.domain}</b></Trim>
+{/if}
+
 {#if $domain.status === 'created'}
     <Box radius="small">
         <div class="u-flex u-gap-8 u-cross-center">

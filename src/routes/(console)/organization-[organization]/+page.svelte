@@ -32,6 +32,7 @@
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
     export let data;
 
@@ -123,12 +124,7 @@
     onMount(async () => {
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
-            if ($page.url.searchParams.has('type')) {
-                const paramType = $page.url.searchParams.get('type');
-                if (paramType === 'createPro') {
-                    goto(`${base}/create-organization`);
-                }
-            }
+            checkPricingRefAndRedirect($page.url.searchParams);
         }
     });
 
