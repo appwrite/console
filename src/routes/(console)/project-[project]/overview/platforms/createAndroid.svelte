@@ -146,8 +146,8 @@
                 <Fieldset legend="Clone starter">
                     <Layout.Stack gap="l">
                         <Typography.Text variant="m-500">
-                            1. Clone the Android starter kit from GitHub using your terminal or
-                            Android Studio.
+                            1. Clone the starter kit from GitHub using the terminal or Android
+                            Studio.
                         </Typography.Text>
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
@@ -155,27 +155,31 @@
                             <Code lang="bash" lineNumbers code={gitCloneCode} />
                         </div>
 
-                        <Typography.Text variant="m-500">2. Configure the project</Typography.Text>
+                        <Typography.Text variant="m-500"
+                            >2. Open the file <InlineCode
+                                size="s"
+                                code="data/repository/AppwriteRepository.kt" /> and update the configuration
+                            settings.</Typography.Text>
 
-                        <Typography.Text variant="m-400">
-                            Update the configuration in the file
-                            <InlineCode size="s" code="data/repository/AppwriteRepository.kt" />
-                            .
-                        </Typography.Text>
+                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                        <div class="pink2-code-margin-fix">
+                            <Code
+                                lang="kotlin"
+                                lineNumbers
+                                code={`const val APPWRITE_PROJECT_ID = "${projectId}"`} />
+                        </div>
 
-                        <Typography.Text variant="m-500">3. Run the starter kit</Typography.Text>
-                        <Typography.Text variant="m-400">
-                            Launch the starter kit and click the
-                            <InlineCode size="s" code="Send a ping" />
-                            button to test the setup.
-                        </Typography.Text>
+                        <Typography.Text variant="m-500"
+                            >3. Run the app on a connected device or emulator, then click the <InlineCode
+                                size="s"
+                                code="Send a ping" /> button to verify the setup.</Typography.Text>
                     </Layout.Stack>
                 </Fieldset>
             {/if}
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Card padding="l">
+        <Card padding="l" class="responsive-padding">
             <Layout.Stack gap="xxl">
                 <Layout.Stack direction="row" justifyContent="center" gap="none">
                     <OnboardingPlatformCard
@@ -221,5 +225,11 @@
 <style lang="scss">
     :global(.pink2-code-margin-fix pre) {
         margin: revert;
+    }
+
+    :global(.responsive-padding) {
+        @media (max-width: 768px) {
+            padding: 16px;
+        }
     }
 </style>
