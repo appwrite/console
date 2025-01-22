@@ -9,13 +9,14 @@
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { page } from '$app/stores';
 
     onMount(() => {
         domain.set({ $id: '', domain: '' });
 
-        return sdk.forConsole.client.subscribe<Models.ProxyRule>('console', (data) =>
-            domain.set(data.payload)
-        );
+        return sdk
+            .forProject($page.params.region, $page.params.region)
+            .client.subscribe<Models.ProxyRule>('console', (data) => domain.set(data.payload));
     });
 
     async function onFinish() {

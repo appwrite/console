@@ -159,14 +159,19 @@
     };
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe('console', (response) => {
-            // fast path return.
-            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return sdk
+            .forProject($page.params.region, $page.params.project)
+            .client.subscribe(['project', 'console'], (response) => {
+                // fast path return.
+                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-            if (response.events.includes('archives.*') || response.events.includes('policies.*')) {
-                invalidate(Dependencies.BACKUPS);
-            }
-        });
+                if (
+                    response.events.includes('archives.*') ||
+                    response.events.includes('policies.*')
+                ) {
+                    invalidate(Dependencies.BACKUPS);
+                }
+            });
     });
 </script>
 

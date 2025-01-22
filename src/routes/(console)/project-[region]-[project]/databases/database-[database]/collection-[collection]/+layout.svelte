@@ -37,14 +37,16 @@
     let unsubscribe: { (): void };
 
     onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (
-                response.events.includes('databases.*.collections.*.attributes.*') ||
-                response.events.includes('databases.*.collections.*.indexes.*')
-            ) {
-                invalidate(Dependencies.COLLECTION);
-            }
-        });
+        unsubscribe = sdk
+            .forProject($page.params.region, $page.params.project)
+            .client.subscribe(['project', 'console'], (response) => {
+                if (
+                    response.events.includes('databases.*.collections.*.attributes.*') ||
+                    response.events.includes('databases.*.collections.*.indexes.*')
+                ) {
+                    invalidate(Dependencies.COLLECTION);
+                }
+            });
     });
 
     onDestroy(() => {

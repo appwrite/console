@@ -13,28 +13,27 @@
 
     onMount(() => {
         let previousStatus = null;
-        return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            if (previousStatus === message.payload.status) {
-                return;
-            }
-            previousStatus = message.payload.status;
-            if (message.events.includes('functions.*.deployments.*.create')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-
-                return;
-            }
-            if (message.events.includes('functions.*.deployments.*.update')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-                invalidate(Dependencies.FUNCTION);
-
-                return;
-            }
-            if (message.events.includes('functions.*.deployments.*.delete')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-
-                return;
-            }
-        });
+        return sdk
+            .forProject($page.params.region, $page.params.project)
+            .client.subscribe<Models.Deployment>('console', (message) => {
+                if (previousStatus === message.payload.status) {
+                    return;
+                }
+                previousStatus = message.payload.status;
+                if (message.events.includes('functions.*.deployments.*.create')) {
+                    invalidate(Dependencies.DEPLOYMENTS);
+                    return;
+                }
+                if (message.events.includes('functions.*.deployments.*.update')) {
+                    invalidate(Dependencies.DEPLOYMENTS);
+                    invalidate(Dependencies.FUNCTION);
+                    return;
+                }
+                if (message.events.includes('functions.*.deployments.*.delete')) {
+                    invalidate(Dependencies.DEPLOYMENTS);
+                    return;
+                }
+            });
     });
 
     $: $registerCommands([
