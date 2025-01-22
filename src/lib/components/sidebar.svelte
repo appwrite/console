@@ -43,7 +43,7 @@
     export let state: $$Props['state'] = 'closed';
     export let project: $$Props['project'];
     export let avatar: $$Props['avatar'];
-    export let progressCard: $$Props['progressCard'];
+    export let progressCard: $$Props['progressCard'] = undefined;
     export let sideBarIsOpen: boolean;
     export let showAccountMenu: boolean;
     export let subNavigation = undefined;
@@ -91,7 +91,7 @@
                 <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"
-                        href={`/console/project-${project.$id}/getstarted`}
+                        href={`/console/project-${project.$id}/get-started`}
                         on:click={() => {
                             sideBarIsOpen = false;
                         }}>
@@ -370,10 +370,10 @@
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 12px;
+        gap: var(--space-5, 10px);
+        margin-block-end: var(--space-6, 12px);
         align-self: stretch;
-        border-radius: 8px;
+        border-radius: var(--border-radius-s, 8px);
         border: 1px solid var(--color-border-neutral, #ededf0);
         background: var(--color-bgcolor-neutral-default, #fafafb);
         transition: all 0.2s ease-in-out;
@@ -412,7 +412,7 @@
     }
 
     .icons .progress-card {
-        width: 32px;
+        width: var(--base-32, 32px);
         border-color: transparent;
         background: transparent;
     }

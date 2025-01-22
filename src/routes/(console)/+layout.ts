@@ -51,6 +51,7 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
         roles: [],
         scopes: [],
         projects: projects,
-        currentProjectId: params.project ?? ''
+        currentProjectId: params.project ?? '',
+        organizations: await sdk.forConsole.teams.list()
     };
 };

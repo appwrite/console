@@ -22,14 +22,13 @@
         IconSun,
         IconUser
     } from '@appwrite.io/pink-icons-svelte';
-    import { DropList, Support, BreadcrumbsConsole } from '$lib/components';
+    import { DropList, Support, Breadcrumbs } from '$lib/components';
     import { Feedback } from '$lib/components/feedback';
     import { feedback } from '$lib/stores/feedback';
     import { isMac } from '$lib/helpers/platform';
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
-    import { onMount } from 'svelte';
 
     let showSupport = false;
     let isSmallViewport = false;
@@ -38,32 +37,17 @@
         links: Array<{ label: string; href: string }>;
         organizations: Array<{
             name: string;
-            id: string;
-            isSelected?: boolean;
-            tier: string;
-            projects: Array<{ name: string; id: string }>;
+            $id: string;
+            isSelected: boolean;
+            tierName: string;
+            projects: Array<{ name: string; $id: string; isSelected: boolean }>;
         }>;
-        showSideNavigation: boolean;
         showAccountMenu: boolean;
     };
 
-    onMount(() => {
-        if (window) {
-            const mediaQuery = window.matchMedia('(max-width: 768px)');
-            const updateViewport = () => (isSmallViewport = mediaQuery.matches);
-
-            // Initial check
-            updateViewport();
-
-            // Listen for changes
-            mediaQuery.addEventListener('change', updateViewport);
-
-            return () => {
-                // Cleanup listener
-                mediaQuery.removeEventListener('change', updateViewport);
-            };
-        }
-    });
+    function updateViewport() {
+        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
+    }
 
     function updateTheme(theme: 'light' | 'dark' | 'system') {
         const themeInUse =
@@ -91,10 +75,10 @@
     export let organizations: $$Props['organizations'];
     export let avatar: $$Props['avatar'];
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
-    export let showSideNavigation: boolean;
     export let showAccountMenu = false;
 </script>
 
+<svelte:window on:resize={updateViewport} />
 <Navbar.Base {...$$props}>
     <div slot="left" class="left">
         <div class="only-mobile">
@@ -105,7 +89,7 @@
                 }}><Icon icon={IconMenuAlt4} /></button>
         </div>
         <img src={logo.src} alt={logo.alt} class="only-desktop" />
-        <BreadcrumbsConsole {organizations} />
+        <Breadcrumbs {organizations} />
     </div>
     <div slot="right" class="only-desktop">
         <div class="right">
@@ -235,7 +219,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            bottom: undefined
                         }
                     }
                 ]
@@ -292,10 +277,6 @@
         display: none;
     }
 
-    .only-mobile-tablet {
-        display: block;
-    }
-
     @media (min-width: 768px) {
         .only-desktop {
             display: block;
@@ -305,11 +286,6 @@
         }
     }
 
-    @media (min-width: 1024px) {
-        .only-mobile-tablet {
-            display: none;
-        }
-    }
     :global(.icons div:first-of-type:not(:has(.progress-card))) {
         height: 20px;
     }

@@ -103,7 +103,7 @@
 
 <Container overlapCover size="large">
     <Card>
-        <Heading size="4" tag="h2">Create a new organization!</Heading>
+        <Heading size="4" tag="h2">Create a new organization</Heading>
         <Form onSubmit={handleSubmit}>
             <FormList gap={16}>
                 <InputText

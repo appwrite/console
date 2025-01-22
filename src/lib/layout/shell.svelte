@@ -5,7 +5,7 @@
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { type ComponentType, onMount, setContext } from 'svelte';
+    import { type ComponentType, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -74,54 +74,27 @@
     $: state = sideBarIsOpen ? 'open' : 'closed';
     $: state = subNavigation && !isSmallViewport ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
 
-    onMount(() => {
-        if (window) {
-            const mediaQuery = window.matchMedia('(max-width: 768px)');
-            const updateViewport = () => (isSmallViewport = mediaQuery.matches);
-            const handleResize = () => {
-                sideBarIsOpen = false;
-                showAccountMenu = false;
-            };
-
-            // Initial check
-            updateViewport();
-            handleResize();
-
-            // Listen for changes
-            mediaQuery.addEventListener('change', updateViewport);
-            window.addEventListener('resize', handleResize);
-
-            return () => {
-                // Cleanup listener
-                mediaQuery.removeEventListener('change', updateViewport);
-                window.removeEventListener('resize', handleResize);
-            };
-        }
-    });
+    function handleResize() {
+        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
+        sideBarIsOpen = false;
+        showAccountMenu = false;
+    }
 
     $: progressCard = function getProgressCard() {
         if (selectedProject) {
             const currentProject = projects.find((project) => project.$id === selectedProject.$id);
 
-            if (currentProject && currentProject.platforms.length === 0) {
-                return {
-                    title: 'Get started',
-                    percentage: 33
-                };
-            } else {
-                return {
-                    title: 'Get started',
-                    percentage: 100
-                };
-            }
+            return {
+                title: 'Get started',
+                percentage: currentProject && currentProject.platforms.length ? 33 : 100
+            };
         }
 
         return undefined;
     };
 </script>
 
-<svelte:window bind:scrollY={y} />
-
+<svelte:window bind:scrollY={y} on:resize={handleResize} />
 <main
     class:grid-with-side={showSideNavigation}
     class:is-open={$showSubNavigation}
@@ -129,12 +102,7 @@
     class:is-fixed-layout={$activeHeaderAlert?.show}
     style:--p-side-size={sideSize}>
     {#if showHeader}
-        <Navbar
-            {...navbarProps}
-            bind:sideBarIsOpen
-            bind:showSideNavigation
-            bind:showAccountMenu
-            projects={loadedProjects} />
+        <Navbar {...navbarProps} bind:sideBarIsOpen bind:showAccountMenu />
     {/if}
     <Sidebar
         project={selectedProject}
@@ -156,7 +124,6 @@
             {#if $page.data?.header}
                 <svelte:component this={$page.data.header} />
             {/if}
-
             <slot />
             {#if showFooter && showSideNavigation}
                 <slot name="footer" />
@@ -178,7 +145,7 @@
     .content {
         width: 100%;
 
-        margin-top: 30px;
+        margin-block-start: 30px;
 
         @media (min-width: 1024px) {
             width: 100%;

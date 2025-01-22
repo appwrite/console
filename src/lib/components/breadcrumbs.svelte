@@ -2,7 +2,6 @@
     import { createMenubar, melt } from '@melt-ui/svelte';
     import { Badge, Icon, BottomSheet, type SheetMenu } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronRight, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { onMount } from 'svelte';
 
     type Project = {
         name: string;
@@ -132,25 +131,12 @@
         }
     };
 
-    onMount(() => {
-        if (window) {
-            const mediaQuery = window.matchMedia('(max-width: 768px)');
-            const updateViewport = () => (isSmallViewport = mediaQuery.matches);
-
-            // Initial check
-            updateViewport();
-
-            // Listen for changes
-            mediaQuery.addEventListener('change', updateViewport);
-
-            return () => {
-                // Cleanup listener
-                mediaQuery.removeEventListener('change', updateViewport);
-            };
-        }
-    });
+    function updateViewport() {
+        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
+    }
 </script>
 
+<svelte:window on:resize={updateViewport} />
 <div use:melt={$menubar}>
     {#if !isSmallViewport}
         <span class="breadcrumb-separator">/</span>
@@ -159,7 +145,7 @@
             class="trigger"
             use:melt={$triggerOrganizations}
             aria-label="Open organizations tab">
-            <span class="orgNameProject">{selectedOrg?.name ?? 'Organization'}</span>
+            <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 >{#if selectedOrg?.tierName}<Badge
                         variant="secondary"
@@ -174,7 +160,7 @@
                 organisationBottomSheetOpen = true;
             }}
             aria-label="Open organizations tab">
-            <span class="orgNameProject">{selectedOrg?.name ?? 'Organization'}</span>
+            <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
             <Icon icon={IconChevronDown} size="s" />
@@ -239,7 +225,7 @@
                 class="trigger"
                 use:melt={$triggerProjects}
                 aria-label="Open projects tab">
-                <span class="orgNameProject">{selectedProject.name}</span>
+                <span class="projectName">{selectedProject.name}</span>
                 <Icon icon={IconChevronDown} size="s" />
             </button>
         {:else}
@@ -250,7 +236,7 @@
                     projectsBottomSheetOpen = true;
                 }}
                 aria-label="Open projects tab">
-                <span class="orgNameProject">{selectedProject.name}</span>
+                <span class="projectName">{selectedProject.name}</span>
                 <Icon icon={IconChevronDown} size="s" />
             </button>
         {/if}
@@ -295,7 +281,7 @@
         flex-direction: column;
         outline: none !important;
         min-width: 220px;
-        border-radius: 12px;
+        border-radius: var(--border-radius-m, 12px);
         border: 1px solid var(--color-border-neutral, #ededf0);
         background: var(--color-bgcolor-neutral-primary, #fff);
         z-index: 20;
@@ -328,7 +314,7 @@
         outline: none;
         display: flex;
         align-items: center;
-        cursor: default;
+        cursor: pointer;
 
         margin: 0 4px;
         padding: var(--space-3, 6px) var(--space-4, 8px) var(--space-3, 6px) var(--space-5, 10px);
@@ -343,7 +329,8 @@
         letter-spacing: -0.063px;
     }
 
-    .orgNameProject {
+    .orgName,
+    .projectName {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -353,7 +340,7 @@
             max-width: 95px;
         }
 
-        @media (min-width: 390px) {
+        @media (min-width: 400px) {
             max-width: 105px;
         }
 
@@ -374,7 +361,7 @@
         margin-bottom: 4px;
     }
 
-    .item[data-highlighted] {
+    :global(.item[data-highlighted]) {
         border-radius: var(--border-radius-S, 8px);
         background: var(--color-overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
@@ -404,12 +391,12 @@
         background: var(--color-overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
 
-    .trigger[data-highlighted] {
+    :global(.trigger[data-highlighted]) {
         outline: none;
         background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
     }
 
-    .trigger[data-highlighted]:focus {
+    :global(.trigger[data-highlighted]:focus) {
         outline: none;
         box-shadow: 0 0 0 2px var(--color-bgcolor-neutral-secondary, #f4f4f7);
     }
