@@ -3,6 +3,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import WizardExitModal from './wizardExitModal.svelte';
     import { goto } from '$app/navigation';
+    import { wizard } from '$lib/stores/wizard';
 
     type $$Props =
         | {
@@ -13,6 +14,7 @@
               invertColumns?: boolean;
               hideAside?: boolean;
               hideFooter?: boolean;
+              onExit?: () => void;
           }
         | {
               title: string;
@@ -22,6 +24,7 @@
               invertColumns?: boolean;
               hideAside?: boolean;
               hideFooter?: boolean;
+              onExit?: () => void;
           };
 
     export let title: $$Props['title'] = '';
@@ -31,6 +34,7 @@
     export let invertColumns: $$Props['invertColumns'] = false;
     export let hideAside = false;
     export let hideFooter = false;
+    export let onExit: $$Props['onExit'] = undefined;
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
@@ -83,6 +87,11 @@
             trackEvent('wizard_exit', {
                 from: 'prompt'
             });
+
+            wizard.hide();
+            if (onExit) {
+                onExit();
+            }
         }}>
         <slot name="exit">
             Are you sure you want to exit from this process? All data will be deleted. This action

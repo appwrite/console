@@ -1,46 +1,227 @@
 <script lang="ts">
-    import { WizardWithSteps } from '$lib/layout';
+    import { Wizard } from '$lib/layout';
     import { invalidate } from '$app/navigation';
-    import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
-    import Step1 from './wizard/android/step1.svelte';
-    import Step2 from './wizard/android/step2.svelte';
-    import Step3 from './wizard/android/step3.svelte';
-    import Step4 from './wizard/step4.svelte';
+    import {
+        Code,
+        Layout,
+        Icon,
+        Typography,
+        Fieldset,
+        InlineCode,
+        Spinner
+    } from '@appwrite.io/pink-svelte';
+    import { Button, Form, InputText } from '$lib/elements/forms';
+    import { IconAndroid, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
+    import { Card } from '$lib/components';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { onMount } from 'svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { addNotification } from '$lib/stores/notifications';
+    import { fade } from 'svelte/transition';
+    import OnboardingPlatformCard from '$routes/(console)/project-[project]/overview/platforms/components/OnboardingPlatformCard.svelte';
+    import ConnectionLine from '$routes/(console)/project-[project]/overview/platforms/components/ConnectionLine.svelte';
+    import { PlatformType } from '@appwrite.io/console';
+    import { sleep } from '$lib/helpers/promises';
 
-    async function onFinish() {
-        await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
-        createPlatform.reset();
-        wizard.hide();
+    let showExitModal = false;
+    let isPlatformCreated = false;
+    let isCreatingPlatform = false;
+    let connectionSuccessful = false;
+    const projectId = $page.params.project;
+
+    const gitCloneCode =
+        '\ngit clone https://github.com/appwrite/starter-for-android\ncd starter-for-android\n';
+
+    async function createAndroidPlatform() {
+        try {
+            isCreatingPlatform = true;
+            await sleep(1500);
+            // await sdk.forConsole.projects.createPlatform(
+            //     projectId,
+            //     PlatformType.Android,
+            //     $createPlatform.name,
+            //     $createPlatform.key || undefined,
+            //     undefined,
+            //     undefined
+            // );
+
+            isPlatformCreated = true;
+            trackEvent(Submit.PlatformCreate, {
+                type: 'android'
+            });
+            addNotification({
+                type: 'success',
+                message: `Android platform has been created.`
+            });
+        } catch (error) {
+            trackError(error, Submit.PlatformCreate);
+        } finally {
+            isCreatingPlatform = false;
+        }
     }
 
-    const stepsComponents: WizardStepsType = new Map();
-    stepsComponents.set(1, {
-        label: 'Settings',
-        component: Step1
-    });
-    stepsComponents.set(2, {
-        label: 'Install',
-        component: Step2,
-        optional: true
-    });
-    stepsComponents.set(3, {
-        label: 'Import',
-        component: Step3,
-        optional: true
-    });
-    stepsComponents.set(4, {
-        label: 'Build',
-        component: Step4,
-        optional: true
+    async function resetPlatformStore() {
+        await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
+        createPlatform.reset();
+    }
+
+    onMount(() => {
+        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+            if (response.events.includes(`projects.${projectId}.ping`) && isPlatformCreated) {
+                connectionSuccessful = true;
+                unsubscribe();
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        };
     });
 </script>
 
-<WizardWithSteps
-    title="Add an Android platform"
-    steps={stepsComponents}
-    on:finish={onFinish}
-    on:exit={onFinish}
-    finalAction="Go to dashboard" />
+<Wizard title="Add an Android platform" bind:showExitModal confirmExit onExit={resetPlatformStore}>
+    <Form onSubmit={createAndroidPlatform}>
+        <Layout.Stack gap="xxl">
+            <!-- Step One -->
+            {#if !isPlatformCreated}
+                <Fieldset legend="Details">
+                    <Layout.Stack gap="l" alignItems="flex-end">
+                        <Layout.Stack gap="s">
+                            <InputText
+                                id="name"
+                                label="Name"
+                                placeholder="My Android App"
+                                required
+                                bind:value={$createPlatform.name} />
+
+                            <!-- Tooltips on InputText don't work as of now -->
+                            <InputText
+                                id="key"
+                                label="Package Name"
+                                placeholder="com.company.appname"
+                                tooltip="Your package name is generally the applicationId in your app-level build.gradle file."
+                                required
+                                bind:value={$createPlatform.key} />
+                        </Layout.Stack>
+
+                        <Button
+                            fullWidthMobile
+                            size="s"
+                            submit
+                            forceShowLoader
+                            submissionLoader={isCreatingPlatform}
+                            disabled={!$createPlatform.name ||
+                                !$createPlatform.key ||
+                                isCreatingPlatform}
+                            on:click={async () => await createAndroidPlatform()}>
+                            Create platform
+                        </Button>
+                    </Layout.Stack>
+                </Fieldset>
+            {:else}
+                <Layout.Stack gap="xxl">
+                    <Card isTile padding="s" radius="s">
+                        <Layout.Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            gap="xs">
+                            <Layout.Stack direction="row" alignItems="center" gap="s">
+                                <Icon size="m" icon={IconAndroid} />
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--color-fgcolor-neutral-primary">
+                                    {$createPlatform.name} ({$createPlatform.key})
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </Layout.Stack>
+                    </Card>
+                </Layout.Stack>
+            {/if}
+
+            <!-- Step Two -->
+            {#if isPlatformCreated}
+                <Fieldset legend="Clone starter">
+                    <Layout.Stack gap="l">
+                        <Typography.Text variant="m-500">
+                            1. Clone the Android starter kit from GitHub using your terminal or
+                            Android Studio.
+                        </Typography.Text>
+
+                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                        <div class="pink2-code-margin-fix">
+                            <Code lang="bash" lineNumbers code={gitCloneCode} />
+                        </div>
+
+                        <Typography.Text variant="m-500">2. Configure the project</Typography.Text>
+
+                        <Typography.Text variant="m-400">
+                            Update the configuration in the file
+                            <InlineCode size="s" code="data/repository/AppwriteRepository.kt" />
+                            .
+                        </Typography.Text>
+
+                        <Typography.Text variant="m-500">3. Run the starter kit</Typography.Text>
+                        <Typography.Text variant="m-400">
+                            Launch the starter kit and click the
+                            <InlineCode size="s" code="Send a ping" />
+                            button to test the setup.
+                        </Typography.Text>
+                    </Layout.Stack>
+                </Fieldset>
+            {/if}
+        </Layout.Stack>
+    </Form>
+    <svelte:fragment slot="aside">
+        <Card padding="l">
+            <Layout.Stack gap="xxl">
+                <Layout.Stack direction="row" justifyContent="center" gap="none">
+                    <OnboardingPlatformCard
+                        iconSize={2.526}
+                        iconColor="#3ddc84"
+                        icon={IconAndroid} />
+
+                    <ConnectionLine status={connectionSuccessful} />
+
+                    <OnboardingPlatformCard
+                        iconSize={2.526}
+                        iconColor="#FD366E"
+                        icon={IconAppwrite} />
+                </Layout.Stack>
+
+                <Layout.Stack direction="row" justifyContent="center" alignItems="center" gap="l">
+                    {#if !connectionSuccessful}
+                        <Spinner />
+                        <Typography.Text variant="m-400">Waiting for connection...</Typography.Text>
+                    {:else}
+                        <!-- cannot apply fade on components -->
+                        <div in:fade={{ duration: 2500 }}>
+                            <Typography.Title size="m">Congratulations!</Typography.Title>
+                        </div>
+                    {/if}
+                </Layout.Stack>
+            </Layout.Stack>
+        </Card>
+    </svelte:fragment>
+
+    <svelte:fragment slot="footer">
+        <Button
+            size="s"
+            fullWidthMobile
+            secondary
+            disabled={isCreatingPlatform}
+            href={`${base}/project-${projectId}/overview`}>
+            Go to dashboard
+        </Button>
+    </svelte:fragment>
+</Wizard>
+
+<style lang="scss">
+    :global(.pink2-code-margin-fix pre) {
+        margin: revert;
+    }
+</style>
