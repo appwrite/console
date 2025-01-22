@@ -47,14 +47,9 @@
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
     import {
-        IconAnnotation,
         IconArrowRight,
-        IconBookOpen,
-        IconDiscord,
         IconPencil,
         IconPlus,
-        IconQuestionMarkCircle,
-        IconSparkles,
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
 
