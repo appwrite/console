@@ -44,14 +44,7 @@
     }
 </script>
 
-<Modal
-    icon="exclamation"
-    state="warning"
-    onSubmit={reset}
-    size="big"
-    {error}
-    bind:show
-    headerDivider={false}>
+<Modal onSubmit={reset} {error} bind:show>
     <svelte:fragment slot="title">Reset Email Template?</svelte:fragment>
     <p class="text">
         Are you sure you want to reset the email template?

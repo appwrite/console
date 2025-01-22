@@ -4,7 +4,6 @@
     import {
         Button,
         Form,
-        FormItem,
         InputChoice,
         InputEmail,
         InputPassword,
@@ -115,7 +114,6 @@
                     label="Password"
                     placeholder="Your password"
                     required={true}
-                    showPasswordButton={true}
                     bind:value={pass} />
                 <InputText
                     id="Code"
@@ -137,9 +135,7 @@
                         target="_blank"
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
-                <FormItem>
-                    <Button fullWidth submit>Sign up</Button>
-                </FormItem>
+                <Button fullWidth submit>Sign up</Button>
             </FormList>
         </Form>
     </svelte:fragment>

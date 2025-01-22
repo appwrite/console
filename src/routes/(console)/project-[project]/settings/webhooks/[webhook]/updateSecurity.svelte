@@ -79,7 +79,6 @@
                     label="Password"
                     id="password"
                     minlength={0}
-                    showPasswordButton
                     placeholder="Enter password"
                     bind:value={httpPass} />
 

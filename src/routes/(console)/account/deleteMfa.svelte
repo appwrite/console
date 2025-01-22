@@ -38,10 +38,7 @@
     title="Delete authentication method"
     bind:show={showDelete}
     onSubmit={deleteAuthenticator}
-    icon="exclamation"
-    state="warning"
-    bind:error
-    headerDivider={false}>
+    bind:error>
     <p>
         Are you sure you want to delete this authentication method? You will no longer be able to
         use this method to authenticate your account.

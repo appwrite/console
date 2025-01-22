@@ -7,12 +7,8 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
-    export let icon: string = null;
-    export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;
     export let closable = true;
-    export let headerDivider = true;
-    export let open = false;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };

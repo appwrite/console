@@ -26,7 +26,6 @@
     export let isTile = false;
     export let isDashed = false;
     export let isButton = false;
-    export let danger = false;
     export let href: string = null;
     let classes = '';
     export { classes as class };

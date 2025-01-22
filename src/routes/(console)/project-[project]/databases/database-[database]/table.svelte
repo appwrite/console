@@ -127,11 +127,8 @@
 
 <Modal
     title="Delete Collections"
-    icon="exclamation"
-    state="warning"
     bind:show={showDelete}
     onSubmit={handleDelete}
-    headerDivider={false}
     closable={!deleting}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selected.length}</b>

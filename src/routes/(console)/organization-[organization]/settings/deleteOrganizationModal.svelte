@@ -103,14 +103,7 @@
 </script>
 
 <div class="max-height-dialog">
-    <Modal
-        title="Delete organization"
-        onSubmit={deleteOrg}
-        bind:show={showDelete}
-        bind:error
-        icon="exclamation"
-        state="warning"
-        headerDivider={false}>
+    <Modal title="Delete organization" onSubmit={deleteOrg} bind:show={showDelete} bind:error>
         {#if upcomingInvoice}
             <Alert type="warning">
                 <span slot="title">

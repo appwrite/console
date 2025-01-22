@@ -67,7 +67,7 @@
     const title = `Import new ${isGlobal ? 'global' : 'environment'} variables`;
 </script>
 
-<Modal {title} bind:show bind:error headerDivider={false} onSubmit={handleSubmit}>
+<Modal {title} bind:show bind:error onSubmit={handleSubmit}>
     <div class="u-flex u-flex-vertical u-gap-24 u-margin-block-start-8">
         <p>
             {title} from

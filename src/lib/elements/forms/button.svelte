@@ -6,14 +6,12 @@
     import { Button } from '@appwrite.io/pink-svelte';
     import type { ComponentProps } from 'svelte';
 
-    type Props = ComponentProps<Button.Button>;
+    type Props = ComponentProps<Button.Button | Button.Anchor>;
 
     export let submit = false;
     export let secondary = false;
     export let text = false;
-    export let danger = false;
     export let icon = false;
-    export let link = false;
     export let size: Props['size'] = 's';
     export let disabled = false;
     export let external = false;

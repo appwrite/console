@@ -156,7 +156,7 @@
             </svelte:fragment>
         </CardGrid>
 
-        <CardGrid danger>
+        <CardGrid>
             <Heading tag="h6" size="7">Delete file</Heading>
             <p>The file will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">

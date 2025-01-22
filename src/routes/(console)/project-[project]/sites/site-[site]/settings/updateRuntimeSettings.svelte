@@ -73,8 +73,7 @@
                 placeholder="Select runtime"
                 bind:value={buildRuntime}
                 options={buildRuntimeOptions}
-                required
-                hideRequired />
+                required />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

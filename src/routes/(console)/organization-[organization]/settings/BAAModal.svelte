@@ -93,13 +93,7 @@
     }
 </script>
 
-<Modal
-    bind:error
-    bind:show
-    onSubmit={handleSubmit}
-    size="big"
-    title="Request BAA"
-    headerDivider={false}>
+<Modal bind:error bind:show onSubmit={handleSubmit} title="Request BAA">
     <FormList>
         <InputEmail label="Email" placeholder="Enter email" id="email" bind:value={email} />
         <InputSelect

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { tooltip as tooltipAction } from '$lib/actions/tooltip';
     import { Layout, Selector, Tooltip } from '@appwrite.io/pink-svelte';
     import { Helper } from '.';
 
@@ -37,7 +36,6 @@
                 {id}
                 {disabled}
                 {required}
-                bind:value
                 bind:checked={value}
                 on:change
                 on:invalid={handleInvalid} />
@@ -47,7 +45,6 @@
                 {disabled}
                 size="s"
                 {required}
-                bind:value
                 bind:checked={value}
                 on:invalid={handleInvalid}
                 on:change />
