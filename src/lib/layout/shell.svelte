@@ -102,11 +102,7 @@
     class:is-fixed-layout={$activeHeaderAlert?.show}
     style:--p-side-size={sideSize}>
     {#if showHeader}
-        <Navbar
-            {...navbarProps}
-            bind:sideBarIsOpen
-            bind:showAccountMenu
-            projects={loadedProjects} />
+        <Navbar {...navbarProps} bind:sideBarIsOpen bind:showAccountMenu />
     {/if}
     <Sidebar
         project={selectedProject}
