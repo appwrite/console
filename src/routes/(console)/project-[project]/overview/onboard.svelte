@@ -75,7 +75,7 @@
                             class="onboarding-card platform-card"
                             on:click={() => addPlatform(0)}>
                             <img
-                                src={$app.themeInUse == 'dark'
+                                src={$app.themeInUse === 'dark'
                                     ? PlatformWebImgSourceDark
                                     : PlatformWebImgSource}
                                 alt="" />
@@ -92,7 +92,7 @@
                         </button>
                         <button class="onboarding-card platform-card" on:click={createKey}>
                             <img
-                                src={$app.themeInUse == 'dark'
+                                src={$app.themeInUse === 'dark'
                                     ? PlatformServerImgSourceDark
                                     : PlatformServerImgSource}
                                 alt="" />
@@ -111,7 +111,7 @@
                             class="onboarding-card platform-card"
                             on:click={() => addPlatform(3)}>
                             <img
-                                src={$app.themeInUse == 'dark'
+                                src={$app.themeInUse === 'dark'
                                     ? PlatformIosImgSourceDark
                                     : PlatformIosImgSource}
                                 alt="" />
@@ -130,7 +130,7 @@
                             class="onboarding-card platform-card"
                             on:click={() => addPlatform(2)}>
                             <img
-                                src={$app.themeInUse == 'dark'
+                                src={$app.themeInUse === 'dark'
                                     ? PlatformAndroidImgSourceDark
                                     : PlatformAndroidImgSource}
                                 alt="" />
@@ -150,7 +150,7 @@
                             class="onboarding-card platform-card"
                             on:click={() => addPlatform(1)}>
                             <img
-                                src={$app.themeInUse == 'dark'
+                                src={$app.themeInUse === 'dark'
                                     ? PlatformFlutterImgSourceDark
                                     : PlatformFlutterImgSource}
                                 alt="" />
@@ -195,7 +195,7 @@
                             class="onboarding-card build-card"
                             href={`${base}/project-${projectId}/databases`}>
                             <img
-                                src={$app.themeInUse == 'dark'
+                                src={$app.themeInUse === 'dark'
                                     ? DatabaseImgSourceDark
                                     : DatabaseImgSource}
                                 alt="" />
@@ -284,7 +284,7 @@
                                 </div>
                             </div>
                             <img
-                                src={$app.themeInUse == 'dark'
+                                src={$app.themeInUse === 'dark'
                                     ? UsersImgSourceDark
                                     : UsersImgSource}
                                 alt="" />
@@ -292,7 +292,7 @@
                         <div class="onboarding-card build-card">
                             <div class="card-content">
                                 <img
-                                    src={$app.themeInUse == 'dark'
+                                    src={$app.themeInUse === 'dark'
                                         ? DiscordImgSourceDark
                                         : DiscordImgSource}
                                     class="discord"
