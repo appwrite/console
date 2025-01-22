@@ -1,26 +1,28 @@
 <script lang="ts">
     import Card from '$lib/components/card.svelte';
     import { Button, InputText } from '$lib/elements/forms';
+    import { debounce } from '$lib/helpers/debounce';
     import { sdk } from '$lib/stores/sdk';
     import { consoleVariables } from '$routes/(console)/store';
     import { ResourceType } from '@appwrite.io/console';
     import { Fieldset, Layout, Divider, Status, Typography } from '@appwrite.io/pink-svelte';
 
     export let domain: string;
+    export let domainIsValid = true;
     const orginalDomain = domain.split('').join('');
     let showConfig = false;
-    let domainSuccess = true;
 
-    //TODO: debounce this
+    const checkDomain = debounce(async (value: string) => {
+        try {
+            await sdk.forProject.proxy.checkSubdomain(ResourceType.Site, value);
+            domainIsValid = true;
+        } catch {
+            domainIsValid = false;
+        }
+    }, 300);
+
     $: if (domain) {
-        sdk.forProject.proxy
-            .checkSubdomain(ResourceType.Site, domain)
-            .then(() => {
-                domainSuccess = true;
-            })
-            .catch(() => {
-                domainSuccess = false;
-            });
+        checkDomain(domain);
     }
 </script>
 
@@ -36,8 +38,8 @@
                     </svelte:fragment>
                 </InputText>
                 <Status
-                    status={domainSuccess ? 'complete' : 'failed'}
-                    label={domainSuccess ? 'Domain is available' : 'Domain is not available'}>
+                    status={domainIsValid ? 'complete' : 'failed'}
+                    label={domainIsValid ? 'Domain is available' : 'Domain is not available'}>
                 </Status>
             </Layout.Stack>
             <Divider />
@@ -49,7 +51,7 @@
                         showConfig = false;
                     }}>Cancel</Button>
 
-                <Button secondary disabled={!domainSuccess} on:click={() => (showConfig = false)}>
+                <Button secondary disabled={!domainIsValid} on:click={() => (showConfig = false)}>
                     Update
                 </Button>
             </Layout.Stack>
@@ -64,11 +66,9 @@
                     {domain}.{$consoleVariables._APP_DOMAIN_TARGET}
                 </Layout.Stack>
             </Typography.Text>
-            <!-- TODO: reenable -->
             <Button
                 size="s"
                 secondary
-                disabled
                 on:click={() => {
                     showConfig = true;
                 }}>

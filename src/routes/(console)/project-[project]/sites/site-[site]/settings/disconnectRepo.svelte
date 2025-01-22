@@ -5,7 +5,8 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import type { Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
+    import type { BuildRuntime, Framework, Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -14,21 +15,39 @@
 
     const dispatch = createEventDispatcher();
 
-    const handleSubmit = async () => {
+    async function handleSubmit() {
         try {
-            await invalidate(Dependencies.FUNCTION);
+            await sdk.forProject.sites.update(
+                site.$id,
+                site.name,
+                site.framework as Framework,
+                site.enabled || undefined,
+                site.timeout || undefined,
+                site.installCommand || undefined,
+                site.buildCommand || undefined,
+                site.outputDirectory || undefined,
+                (site?.buildRuntime as BuildRuntime) || undefined,
+                site.adapter,
+                site.fallbackFile || undefined,
+                '',
+                '',
+                '',
+                undefined,
+                ''
+            );
+            await invalidate(Dependencies.SITE);
             dispatch('success');
             addNotification({
                 type: 'success',
-                message: `Repository has been disconnected from your function`
+                message: `Repository has been disconnected from your site`
             });
-            trackEvent(Submit.FunctionDisconnectRepo);
+            trackEvent(Submit.SiteDisconnectRepo);
             show = false;
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.FunctionDisconnectRepo);
+            trackError(e, Submit.SiteDisconnectRepo);
         }
-    };
+    }
 
     $: if (!show) {
         error = '';

@@ -23,8 +23,19 @@
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
-    const sdkUpdateVariable = async (variableId: string, key: string, value: string) => {
-        await sdk.forProject.sites.updateVariable($page.params.site, variableId, key, value);
+    const sdkUpdateVariable = async (
+        variableId: string,
+        key: string,
+        value: string,
+        secret: boolean
+    ) => {
+        await sdk.forProject.sites.updateVariable(
+            $page.params.site,
+            variableId,
+            key,
+            value,
+            secret
+        );
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 

@@ -45,7 +45,7 @@
             await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',
-                message: 'Timeout has been updated'
+                message: 'Runtime has been updated'
             });
             trackEvent(Submit.SiteUpdateTimeout);
         } catch (error) {

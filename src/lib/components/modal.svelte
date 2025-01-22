@@ -4,6 +4,7 @@
     import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
     import { Layout, Modal } from '@appwrite.io/pink-svelte';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     export let error: string = null;
@@ -15,10 +16,21 @@
     export let hideFooter = false;
 
     let alert: HTMLElement;
+    let formComponent: Form;
 
     beforeNavigate(() => {
         show = false;
     });
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            if (show) {
+                formComponent.triggerSubmit();
+                trackEvent('click_submit_form', { from: 'enter' });
+            }
+        }
+    }
 
     $: $disableCommands(show);
 
@@ -27,7 +39,9 @@
     }
 </script>
 
-<Form isModal {onSubmit}>
+<svelte:window on:keydown={handleKeydown} />
+
+<Form isModal {onSubmit} bind:this={formComponent}>
     <Modal {title} bind:open={show} {hideFooter}>
         <svelte:fragment slot="description">
             <slot name="description" />

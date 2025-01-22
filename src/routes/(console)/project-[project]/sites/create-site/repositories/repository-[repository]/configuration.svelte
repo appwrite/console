@@ -9,7 +9,8 @@
         Icon,
         Table,
         Badge,
-        HiddenText
+        HiddenText,
+        ActionMenu
     } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
@@ -148,34 +149,32 @@
                                                         <Icon size="s" icon={IconDotsHorizontal} />
                                                     </Button>
                                                     <svelte:fragment slot="tooltip">
-                                                        <Layout.Stack
-                                                            gap="s"
-                                                            alignItems="flex-start">
-                                                            <Button
-                                                                text
+                                                        <ActionMenu.Root>
+                                                            <ActionMenu.Item.Button
+                                                                trailingIcon={IconPencil}
                                                                 on:click={() => {
                                                                     showEditorModal = true;
                                                                 }}>
-                                                                <Icon icon={IconPencil} /> Edit</Button>
+                                                                Edit
+                                                            </ActionMenu.Item.Button>
                                                             {#if !variable?.secret}
-                                                                <Button
-                                                                    text
+                                                                <ActionMenu.Item.Button
+                                                                    trailingIcon={IconEyeOff}
                                                                     on:click={() => {
                                                                         currentVariable = variable;
                                                                         showSecretModal = true;
                                                                     }}>
-                                                                    <Icon icon={IconEyeOff} />
-                                                                    Secret</Button>
+                                                                    Secret
+                                                                </ActionMenu.Item.Button>
                                                             {/if}
-                                                            <Button
-                                                                text
+                                                            <ActionMenu.Item.Button
+                                                                trailingIcon={IconTrash}
                                                                 on:click={() => {
                                                                     showImportModal = true;
                                                                 }}>
-                                                                <Icon icon={IconTrash} />
                                                                 Delete
-                                                            </Button>
-                                                        </Layout.Stack>
+                                                            </ActionMenu.Item.Button>
+                                                        </ActionMenu.Root>
                                                     </svelte:fragment>
                                                 </Popover>
                                             </div>

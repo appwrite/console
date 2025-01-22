@@ -9,7 +9,12 @@
     import { canWriteSites } from '$lib/stores/roles.js';
     import { Icon, Popover, Image, ActionMenu, Layout } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
-    import { IconDotsHorizontal, IconRefresh } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconCog,
+        IconDotsHorizontal,
+        IconGlobeAlt,
+        IconRefresh
+    } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -42,6 +47,8 @@
 
     // TODO: remove
     const TMPSITEROLES = true;
+
+    $: console.log(data.siteList);
 </script>
 
 <Container>
@@ -83,6 +90,16 @@
                                     <ActionMenu.Item.Button leadingIcon={IconRefresh} disabled>
                                         Redeploy
                                     </ActionMenu.Item.Button>
+                                    <ActionMenu.Item.Anchor
+                                        href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/domains`}
+                                        leadingIcon={IconGlobeAlt}>
+                                        Domains
+                                    </ActionMenu.Item.Anchor>
+                                    <ActionMenu.Item.Anchor
+                                        href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/settings`}
+                                        leadingIcon={IconCog}>
+                                        Settings
+                                    </ActionMenu.Item.Anchor>
                                 </ActionMenu.Root>
                             </svelte:fragment>
                         </Popover>
