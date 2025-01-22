@@ -13,6 +13,7 @@
     export let closable = true;
     export let headerDivider = true;
     export let open = false;
+    export let dismissible = true;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
@@ -46,7 +47,7 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <Form isModal {onSubmit} bind:this={formComponent}>
-    <Modal {title} bind:open={show} {hideFooter}>
+    <Modal {title} bind:open={show} {hideFooter} {dismissible}>
         <svelte:fragment slot="description">
             <slot name="description" />
         </svelte:fragment>
