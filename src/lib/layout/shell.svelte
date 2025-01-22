@@ -5,7 +5,7 @@
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { type ComponentType, onMount, setContext } from 'svelte';
+    import { type ComponentType, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -105,7 +105,6 @@
         <Navbar
             {...navbarProps}
             bind:sideBarIsOpen
-            bind:showSideNavigation
             bind:showAccountMenu
             projects={loadedProjects} />
     {/if}
@@ -129,7 +128,6 @@
             {#if $page.data?.header}
                 <svelte:component this={$page.data.header} />
             {/if}
-
             <slot />
             {#if showFooter && showSideNavigation}
                 <slot name="footer" />

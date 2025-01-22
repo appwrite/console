@@ -91,7 +91,7 @@
                 <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"
-                        href={`/console/project-${project.$id}/getstarted`}
+                        href={`/console/project-${project.$id}/get-started`}
                         on:click={() => {
                             sideBarIsOpen = false;
                         }}>
