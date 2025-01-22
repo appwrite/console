@@ -25,13 +25,15 @@
     } from '$lib/stores/roles';
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
-            if (response.events.includes('stats.connections')) {
-                for (const [projectId, value] of Object.entries(response.payload)) {
-                    stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
+        return sdk
+            .forProject($page.params.region, $page.params.project)
+            .client.subscribe(['project', 'console'], (response) => {
+                if (response.events.includes('stats.connections')) {
+                    for (const [projectId, value] of Object.entries(response.payload)) {
+                        stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
+                    }
                 }
-            }
-        });
+            });
     });
 
     $: $registerCommands([

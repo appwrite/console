@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+    import { page } from '$app/stores';
     import { parseIfString } from '$lib/helpers/object';
     import { getProjectId } from '$lib/helpers/project';
     import { sdk } from '$lib/stores/sdk';
@@ -49,13 +50,15 @@
     })();
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe<Models.Migration>(['console'], async (response) => {
-            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
-            if (response.events.includes('migrations.*')) {
-                if (response.payload.source === 'Backup') return;
-                migration = response.payload;
-            }
-        });
+        return sdk
+            .forProject($page.params.region, $page.params.project)
+            .client.subscribe<Models.Migration>(['console'], async (response) => {
+                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+                if (response.events.includes('migrations.*')) {
+                    if (response.payload.source === 'Backup') return;
+                    migration = response.payload;
+                }
+            });
     });
 </script>
 

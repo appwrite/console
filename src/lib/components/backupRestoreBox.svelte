@@ -125,16 +125,18 @@
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
         if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
 
-        return sdk.forConsole.client.subscribe('console', (response) => {
-            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return sdk
+            .forProject($page.params.region, $page.params.project)
+            .client.subscribe('console', (response) => {
+                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-            if (
-                response.events.includes('archives.*') ||
-                response.events.includes('restorations.*')
-            ) {
-                updateOrAddItem(response.payload);
-            }
-        });
+                if (
+                    response.events.includes('archives.*') ||
+                    response.events.includes('restorations.*')
+                ) {
+                    updateOrAddItem(response.payload);
+                }
+            });
     });
 </script>
 

@@ -26,6 +26,7 @@
     import { readOnly } from '$lib/stores/billing';
     import type { Models } from '@appwrite.io/console';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { page } from '$app/stores';
 
     export let data;
     let migration: Models.Migration = null;
@@ -44,12 +45,14 @@
         return 'pending';
     };
 
-    onMount(async () => {
-        sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
-            if (response.events.includes('migrations.*')) {
-                invalidate(Dependencies.MIGRATIONS);
-            }
-        });
+    onMount(() => {
+        return sdk
+            .forProject($page.params.region, $page.params.project)
+            .client.subscribe(['project', 'console'], (response) => {
+                if (response.events.includes('migrations.*')) {
+                    invalidate(Dependencies.MIGRATIONS);
+                }
+            });
     });
 
     $: $registerCommands([

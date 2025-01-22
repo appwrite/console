@@ -22,6 +22,7 @@
     import QuickFilters from './quickFilters.svelte';
     import { Pill } from '$lib/elements';
     import { tags } from '$lib/components/filters/store';
+    import { page } from '$app/stores';
 
     export let data;
 
@@ -146,11 +147,13 @@
     let showMobileFilters = false;
     onMount(() => {
         data?.query ? (showMobileFilters = true) : (showMobileFilters = false);
-        return sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes('functions.*.executions.*')) {
-                invalidate(Dependencies.EXECUTIONS);
-            }
-        });
+        return sdk
+            .forProject($page.params.region, $page.params.project)
+            .client.subscribe('functions.*.executiole', (response) => {
+                if (response.events.includes('functions.*.executions.*')) {
+                    invalidate(Dependencies.EXECUTIONS);
+                }
+            });
     });
 
     function clearAll() {

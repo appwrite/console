@@ -56,9 +56,9 @@
             return;
         }
 
-        const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
-            'console',
-            (message) => {
+        const unsubscribe = sdk
+            .forProject($page.params.region, $page.params.project)
+            .client.subscribe<Models.Deployment>('console', (message) => {
                 if (
                     message.events.includes(
                         `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
@@ -69,8 +69,7 @@
                         invalidate(Dependencies.DEPLOYMENT);
                     }
                 }
-            }
-        );
+            });
 
         return () => {
             unsubscribe();
