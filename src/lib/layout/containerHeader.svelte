@@ -159,7 +159,7 @@
                                     >Excess usage fees will apply</Button
                                 >.
                             </p>
-                        {:else}
+                        {:else if $organization?.billingPlan !== BillingPlan.SCALE}
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
