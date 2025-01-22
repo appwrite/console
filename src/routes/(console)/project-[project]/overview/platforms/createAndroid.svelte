@@ -25,7 +25,6 @@
     import OnboardingPlatformCard from '$routes/(console)/project-[project]/overview/platforms/components/OnboardingPlatformCard.svelte';
     import ConnectionLine from '$routes/(console)/project-[project]/overview/platforms/components/ConnectionLine.svelte';
     import { PlatformType } from '@appwrite.io/console';
-    import { sleep } from '$lib/helpers/promises';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -39,15 +38,14 @@
     async function createAndroidPlatform() {
         try {
             isCreatingPlatform = true;
-            await sleep(1500);
-            // await sdk.forConsole.projects.createPlatform(
-            //     projectId,
-            //     PlatformType.Android,
-            //     $createPlatform.name,
-            //     $createPlatform.key || undefined,
-            //     undefined,
-            //     undefined
-            // );
+            await sdk.forConsole.projects.createPlatform(
+                projectId,
+                PlatformType.Android,
+                $createPlatform.name,
+                $createPlatform.key || undefined,
+                undefined,
+                undefined
+            );
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {
