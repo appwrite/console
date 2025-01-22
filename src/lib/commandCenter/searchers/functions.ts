@@ -7,6 +7,7 @@ import type { Models } from '@appwrite.io/console';
 import { page } from '$app/stores';
 import { showCreateDeployment } from '$routes/(console)/project-[project]/functions/function-[function]/store';
 import { base } from '$app/paths';
+import { IconLightningBolt, IconPlus } from '@appwrite.io/pink-icons-svelte';
 
 const getFunctionCommand = (fn: Models.Function, projectId: string) => {
     return {
@@ -15,7 +16,7 @@ const getFunctionCommand = (fn: Models.Function, projectId: string) => {
             goto(`${base}/project-${projectId}/functions/function-${fn.$id}`);
         },
         group: 'functions',
-        icon: 'lightning-bolt'
+        icon: IconLightningBolt
     } as const;
 };
 
@@ -41,7 +42,7 @@ export const functionsSearcher = (async (query: string) => {
                     showCreateDeployment.set(true);
                 },
                 group: 'functions',
-                icon: 'plus'
+                icon: IconPlus
             },
             {
                 label: 'Go to deployments',

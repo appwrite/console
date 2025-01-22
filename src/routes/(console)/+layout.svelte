@@ -46,6 +46,16 @@
     import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
+    import {
+        IconAnnotation,
+        IconArrowRight,
+        IconBookOpen,
+        IconDiscord,
+        IconPencil,
+        IconQuestionMarkCircle,
+        IconSparkles,
+        IconSwitchHorizontal
+    } from '@appwrite.io/pink-icons-svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -81,7 +91,7 @@
                 addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
-            icon: 'sparkles',
+            icon: IconSparkles,
             disabled: !isAssistantEnabled
         },
         {
@@ -98,7 +108,7 @@
                 window.open('https://appwrite.io/docs', '_blank');
             },
             group: 'help',
-            icon: 'book-open'
+            icon: IconBookOpen
         },
         {
             label: 'Contact support',
@@ -106,7 +116,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: 'question-mark-circle'
+            icon: IconQuestionMarkCircle
         },
         {
             label: 'Send feedback',
@@ -114,7 +124,7 @@
                 feedback.toggleFeedback();
             },
             group: 'help',
-            icon: 'annotation'
+            icon: IconAnnotation
         },
         {
             label: 'Join Discord community',
@@ -122,7 +132,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: 'discord'
+            icon: IconDiscord
         },
         ...(['auto', 'dark', 'light'] as const).map((theme) => {
             return {
@@ -136,7 +146,7 @@
                     });
                 },
                 group: 'misc',
-                icon: 'switch-horizontal',
+                icon: IconSwitchHorizontal,
                 keys: ['t', theme[0]]
             } as const;
         }),
@@ -158,7 +168,7 @@
                     },
                     disabled: !$project?.$id,
                     group: 'security',
-                    icon: 'pencil'
+                    icon: IconPencil
                 }) as const
         ),
         // Settings

@@ -8,6 +8,8 @@
     import { isMac } from '$lib/helpers/platform';
     import { commands, searchers, type Command, isKeyedCommand } from '../commands';
     import Template from './template.svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
 
     let search = '';
 
@@ -53,21 +55,28 @@
     };
 </script>
 
-<Template options={results} bind:search searchPlaceholder="Search for commands or content...">
-    <div slot="option" class="u-flex u-main-space-between content" let:option={command}>
-        <div class="u-flex u-gap-8 u-cross-center">
+<Template options={results} bind:search searchPlaceholder="Search...">
+    <Layout.Stack
+        slot="option"
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        let:option={command}>
+        <Layout.Stack direction="row" alignItems="center" gap="s">
             {#if command.image}
                 <img
                     src={`${base}/icons/${$app.themeInUse}/color/${command.image}.svg`}
                     alt={command.label} />
+            {:else if command.icon}
+                <Icon icon={command.icon} size="s" />
             {:else}
-                <i class="icon-{command.icon ?? 'arrow-sm-right'}" />
+                <Icon icon={IconArrowRight} size="s" />
             {/if}
             <span>
                 {command.label}
             </span>
-        </div>
-        <div class="u-flex u-gap-4 u-cross-center">
+        </Layout.Stack>
+        <Layout.Stack direction="row" justifyContent="flex-end" alignItems="center" gap="s">
             {#if hasCtrl(command)}
                 <kbd class="kbd"> {isMac() ? '⌘' : 'Ctrl'} </kbd>
             {/if}
@@ -85,11 +94,19 @@
                         {key.toUpperCase()}
                     </kbd>
                     {#if hasNext}
-                        <span class="u-margin-inline-4" style:opacity={0.5}>then</span>
+                        <span class="then">then</span>
                     {/if}
                 {/each}
             {/if}
-        </div>
-    </div>
+        </Layout.Stack>
+    </Layout.Stack>
     <svelte:fragment slot="no-options">No commands found</svelte:fragment>
 </Template>
+
+<style>
+    .then {
+        color: var(--color-fgcolor-neutral-tertiary, #97979b);
+        font-size: var(--font-size-s, 14px);
+        font-weight: 400;
+    }
+</style>
