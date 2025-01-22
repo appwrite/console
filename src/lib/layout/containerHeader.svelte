@@ -129,7 +129,7 @@
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
                         <span class="icon-info" />{total}/{limit} created
                     </Pill>
-                {:else}
+                {:else if $organization?.billingPlan !== BillingPlan.SCALE}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
                         <span class="icon-info" />Limits applied
                     </Pill>
@@ -159,7 +159,7 @@
                                     >Excess usage fees will apply</Button
                                 >.
                             </p>
-                        {:else if $organization?.billingPlan !== BillingPlan.SCALE}
+                        {:else}
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
