@@ -28,7 +28,7 @@
         border-radius: 26.944px;
         border: 1.684px solid rgba(255, 255, 255, 0.08);
         background: rgba(255, 255, 255, 0.5);
-        box-shadow: 0px 8.757px 8.757px 0px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 8.757px 8.757px 0 rgba(0, 0, 0, 0.04);
     }
 
     .inner-card {
@@ -41,7 +41,7 @@
         border-radius: 20.208px;
         background: #fff;
         border: 0.54px solid #ededf0;
-        box-shadow: 0px 6.736px 6.736px 0px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 6.736px 6.736px 0 rgba(0, 0, 0, 0.05);
 
         & :global(svg) {
             width: var(--icon-size);
