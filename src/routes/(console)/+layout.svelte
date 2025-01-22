@@ -52,6 +52,7 @@
         IconBookOpen,
         IconDiscord,
         IconPencil,
+        IconPlus,
         IconQuestionMarkCircle,
         IconSparkles,
         IconSwitchHorizontal
@@ -91,7 +92,7 @@
                 addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
-            icon: IconSparkles,
+            icon: IconArrowRight,
             disabled: !isAssistantEnabled
         },
         {
@@ -100,7 +101,8 @@
                 isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true);
             },
             keys: ['c', 'o'],
-            group: 'organizations'
+            group: 'organizations',
+            icon: IconPlus
         },
         {
             label: 'Open documentation',
@@ -108,7 +110,7 @@
                 window.open('https://appwrite.io/docs', '_blank');
             },
             group: 'help',
-            icon: IconBookOpen
+            icon: IconArrowRight
         },
         {
             label: 'Contact support',
@@ -116,7 +118,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: IconQuestionMarkCircle
+            icon: IconArrowRight
         },
         {
             label: 'Send feedback',
@@ -124,7 +126,7 @@
                 feedback.toggleFeedback();
             },
             group: 'help',
-            icon: IconAnnotation
+            icon: IconArrowRight
         },
         {
             label: 'Join Discord community',
@@ -132,7 +134,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: IconDiscord
+            icon: IconArrowRight
         },
         ...(['auto', 'dark', 'light'] as const).map((theme) => {
             return {
