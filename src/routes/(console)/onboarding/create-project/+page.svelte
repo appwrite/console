@@ -109,49 +109,56 @@
             height="22"
             class="u-only-dark"
             alt="Appwrite Logo" />
-        <Card.Base variant="primary"
-            ><Layout.Stack direction="column" gap="xxl">
-                <Typography.Title size="l">Create your project</Typography.Title>
-                <form>
-                    <Layout.Stack direction="column" gap="xl">
-                        <Layout.Stack direction="column" gap="s">
-                            <Input.Text
-                                label="Name"
-                                placeholder="Project name"
-                                bind:value={projectName} />
-                            {#if !showCustomId}
-                                <div>
-                                    <Tag
-                                        size="s"
-                                        on:click={() => {
-                                            showCustomId = true;
-                                        }}><Icon icon={IconPencil} /> Project ID</Tag>
-                                </div>
+        <Card.Base variant="primary" padding="l"
+            ><form>
+                <Layout.Stack direction="column" gap="xxl">
+                    <Typography.Title size="l">Create your project</Typography.Title>
+
+                    <Layout.Stack direction="column" gap="xxl">
+                        <Layout.Stack direction="column" gap="xl">
+                            <Layout.Stack direction="column" gap="s">
+                                <Input.Text
+                                    label="Name"
+                                    placeholder="Project name"
+                                    bind:value={projectName} />
+                                {#if !showCustomId}
+                                    <div>
+                                        <Tag
+                                            size="s"
+                                            on:click={() => {
+                                                showCustomId = true;
+                                            }}><Icon icon={IconPencil} /> Project ID</Tag>
+                                    </div>
+                                {/if}
+                                <CustomId
+                                    bind:show={showCustomId}
+                                    name="Project"
+                                    isProject
+                                    bind:id
+                                    fullWidth={true} />
+                            </Layout.Stack>
+                            {#if regions}
+                                <Layout.Stack gap="xs"
+                                    ><Input.Select
+                                        placeholder="Select a region"
+                                        options={getRegions()}
+                                        label="Region" />
+                                    <Typography.Text
+                                        >Region cannot be changed after creation</Typography.Text>
+                                </Layout.Stack>
                             {/if}
-                            <CustomId
-                                bind:show={showCustomId}
-                                name="Project"
-                                isProject
-                                bind:id
-                                fullWidth={true} />
                         </Layout.Stack>
-                        {#if regions}
-                            <Input.Select
-                                placeholder="Select a region"
-                                options={getRegions()}
-                                label="Region" />
-                        {/if}
-                        <div class="u-flex u-main-end">
-                            <Button.Button
-                                type="button"
-                                variant="primary"
-                                size="m"
-                                on:click={createProject}>
-                                Create</Button.Button>
-                        </div>
                     </Layout.Stack>
-                </form>
-            </Layout.Stack></Card.Base>
+                    <Layout.Stack direction="row" justifyContent="flex-end"
+                        ><Button.Button
+                            type="button"
+                            variant="primary"
+                            size="m"
+                            on:click={createProject}>
+                            Create</Button.Button>
+                    </Layout.Stack>
+                </Layout.Stack>
+            </form></Card.Base>
     {/if}
 </div>
 
