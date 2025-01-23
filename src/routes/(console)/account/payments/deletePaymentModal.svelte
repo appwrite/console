@@ -33,12 +33,7 @@
     }
 </script>
 
-<Modal
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal bind:show={showDelete} onSubmit={handleDelete}>
     <svelte:fragment slot="title">
         {linkedOrgs.length ? 'Unable to delete payment method' : 'Delete payment method'}
     </svelte:fragment>

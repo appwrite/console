@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import type { Address } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -85,23 +85,18 @@
             label="City or suburb"
             placeholder="Enter your city"
             required />
-        <FormItem isMultiple>
-            <InputText
-                isMultiple
-                fullWidth
-                bind:value={selectedAddress.state}
-                id="state"
-                label="State"
-                placeholder="Enter your state"
-                required />
-            <InputText
-                isMultiple
-                fullWidth
-                bind:value={selectedAddress.postalCode}
-                id="zip"
-                label="Postal code"
-                placeholder="Enter postal code" />
-        </FormItem>
+        <InputText
+            fullWidth
+            bind:value={selectedAddress.state}
+            id="state"
+            label="State"
+            placeholder="Enter your state"
+            required />
+        <InputText
+            bind:value={selectedAddress.postalCode}
+            id="zip"
+            label="Postal code"
+            placeholder="Enter postal code" />
     </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

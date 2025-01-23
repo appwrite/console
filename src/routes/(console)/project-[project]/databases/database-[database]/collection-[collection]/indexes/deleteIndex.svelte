@@ -39,13 +39,7 @@
     }
 </script>
 
-<Modal
-    title="Delete index"
-    icon="exclamation"
-    state="warning"
-    onSubmit={handleDelete}
-    bind:show={showDelete}
-    headerDivider={false}>
+<Modal title="Delete index" onSubmit={handleDelete} bind:show={showDelete}>
     <p data-private>
         Are you sure you want to delete <b>'{selectedIndex.key}' from {$collection.name}</b>?
     </p>

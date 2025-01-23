@@ -37,13 +37,7 @@
     }
 </script>
 
-<Modal
-    title="Delete collection"
-    icon="exclamation"
-    state="warning"
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    headerDivider={false}>
+<Modal title="Delete collection" bind:show={showDelete} onSubmit={handleDelete}>
     <p data-private>
         Are you sure you want to delete <b>{$collection.name}</b>?
     </p>

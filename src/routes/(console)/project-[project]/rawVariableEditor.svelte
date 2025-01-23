@@ -115,13 +115,7 @@
         (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
 </script>
 
-<Modal
-    title="Editor"
-    headerDivider={false}
-    bind:show={showEditor}
-    onSubmit={handleSubmit}
-    bind:error
-    size="big">
+<Modal title="Editor" bind:show={showEditor} onSubmit={handleSubmit} bind:error>
     <p>
         Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
         <span class="inline-code">.{tab}</span> file.
@@ -181,7 +175,7 @@
                 <li class="buttons-list-item">
                     <div bind:this={copyParent}>
                         {#key copyParent}
-                            <Copy appendTo={copyParent} value={tab == 'json' ? jsonCode : envCode}>
+                            <Copy value={tab == 'json' ? jsonCode : envCode}>
                                 <button
                                     type="button"
                                     class="button is-small is-text is-only-icon"

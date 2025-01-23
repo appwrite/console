@@ -17,8 +17,6 @@
     import { Tooltip } from '@appwrite.io/pink-svelte';
     import { showSubNavigation } from '$lib/stores/layout';
 
-    export let isOpen = false;
-
     $: project = $page.params.project;
     $: projectPath = `${base}/project-${project}`;
 

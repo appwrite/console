@@ -10,8 +10,6 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let isWithEndButton = true;
-    export let style: string = '';
     export let label: string = '';
 
     const dispatch = createEventDispatcher();

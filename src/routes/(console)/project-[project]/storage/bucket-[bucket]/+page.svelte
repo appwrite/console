@@ -49,7 +49,7 @@
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Layout, Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -93,51 +93,17 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={usedStorage}>
-        <svelte:fragment let:isButtonDisabled>
-            <SearchQuery search={data.search} placeholder="Search by filename">
-                <Tooltip disabled={!isButtonDisabled}>
-                    <div>
-                        <Button
-                            on:click={() => wizard.start(Create)}
-                            event="create_file"
-                            disabled={isButtonDisabled}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Create file</span>
-                        </Button>
-                    </div>
-                    <span slot="tooltip">Upgrade to add more files</span>
-                </Tooltip>
-            </SearchQuery>
-        </svelte:fragment>
-        <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
-            {#if tier === tierToPlan(BillingPlan.FREE).name}
-                <p class="u-bold">The {tier} plan has limits</p>
-                <ul>
-                    <li>{limit}GB total file storage</li>
-                    <li>
-                        {Math.floor(parseInt(maxFileSize.value))}{maxFileSize.unit} file upload size
-                        limit
-                    </li>
-                </ul>
-                <p class="text">
-                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                        >Upgrade</button>
-                    for additional storage resources.
-                </p>
-            {:else}
-                <p class="text">
-                    You are limited to {limit} GB storage on the {tier} plan. After this amount
-                    <button
-                        class="link"
-                        type="button"
-                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
-                        >usage fees will apply</button>
-                    .
-                </p>
-            {/if}
-        </svelte:fragment>
-    </ContainerHeader>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search files" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Button on:mousedown={() => wizard.start(Create)} event="create_file" size="s">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create file</span>
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
 
     {#if data.files.total}
         <Table>

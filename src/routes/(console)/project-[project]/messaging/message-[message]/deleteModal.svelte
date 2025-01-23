@@ -47,13 +47,7 @@
     };
 </script>
 
-<Modal
-    title="Delete message"
-    bind:show
-    onSubmit={deleteMessage}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Delete message" bind:show onSubmit={deleteMessage}>
     <p data-private>
         Are you sure you want to delete
         {#if description}

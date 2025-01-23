@@ -50,6 +50,7 @@
             Add domain
         </Button>
     </Layout.Stack>
+
     {#if data.domains.total}
         <Table.Root>
             <svelte:fragment slot="header">

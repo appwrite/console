@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Alert, Modal } from '$lib/components';
-    import { Button, FormItem, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
+    import { Button, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
@@ -63,13 +63,7 @@
     $: options = createMonthOptions(year);
 </script>
 
-<Modal
-    bind:error
-    onSubmit={handleSubmit}
-    size="big"
-    bind:show
-    title="Update payment method"
-    headerDivider={false}>
+<Modal bind:error onSubmit={handleSubmit} bind:show title="Update payment method">
     {#if selectedPaymentMethod?.expired}
         <Alert type="error">
             <svelte:fragment slot="title">This payment method has expired</svelte:fragment>
@@ -79,26 +73,20 @@
         Updates to this payment method will be applied to any linked organizations.
     {/if}
     <FormList>
-        <FormItem isMultiple style="align-items: start;">
-            <InputSelect
-                isMultiple
-                fullWidth
-                id="month"
-                label="Month"
-                bind:value={month}
-                {options}
-                required
-                placeholder="Enter expiry month" />
-            <InputNumber
-                isMultiple
-                fullWidth
-                id="year"
-                label="Year"
-                bind:value={year}
-                min={currentYear}
-                required
-                placeholder="Enter expiry year" />
-        </FormItem>
+        <InputSelect
+            id="month"
+            label="Month"
+            bind:value={month}
+            {options}
+            required
+            placeholder="Enter expiry month" />
+        <InputNumber
+            id="year"
+            label="Year"
+            bind:value={year}
+            min={currentYear}
+            required
+            placeholder="Enter expiry year" />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>

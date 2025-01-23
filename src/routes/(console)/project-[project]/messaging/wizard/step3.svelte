@@ -127,7 +127,7 @@
     </Helper>
 </WizardStep>
 
-<Modal title="Send message" bind:show={showConfirmation} headerDivider={false} onSubmit={submit}>
+<Modal title="Send message" bind:show={showConfirmation} onSubmit={submit}>
     <p>
         You are about to send a message to an estimated <span class="u-bold">{totalTargets}</span> recipients.
         Would you like to proceed?

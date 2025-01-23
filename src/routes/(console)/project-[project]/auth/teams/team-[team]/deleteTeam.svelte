@@ -28,13 +28,7 @@
     };
 </script>
 
-<Modal
-    title="Delete team"
-    bind:show={showDelete}
-    onSubmit={deleteTeam}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Delete team" bind:show={showDelete} onSubmit={deleteTeam}>
     <p data-private>
         Are you sure you want to delete <b>{team.name}</b>?
     </p>

@@ -94,7 +94,7 @@
                     {/each}
                 </TableList>
                 <div class="u-flex u-margin-block-start-16">
-                    <Button text noMargin on:click={() => (showCreateEvent = true)}>
+                    <Button text on:click={() => (showCreateEvent = true)}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="u-text">Add event</span>
                     </Button>

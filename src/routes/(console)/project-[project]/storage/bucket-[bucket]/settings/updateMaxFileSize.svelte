@@ -2,7 +2,7 @@
     import { Submit } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
-    import { Button, Form, FormItem, InputNumber, InputSelect } from '$lib/elements/forms';
+    import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
     import { readOnly, upgradeURL } from '$lib/stores/billing';
@@ -60,25 +60,15 @@
                     </svelte:fragment>
                 </Alert>
             {/if}
-            <FormItem isMultiple>
-                <InputNumber
-                    isMultiple
-                    fullWidth
-                    id="size"
-                    label="Size"
-                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
-                    placeholder={$bucket.maximumFileSize.toString()}
-                    min={0}
-                    max={isCloud ? maxValue() : Infinity}
-                    bind:value={$value} />
-                <InputSelect
-                    id="bytes"
-                    label="Bytes"
-                    isMultiple
-                    fullWidth
-                    {options}
-                    bind:value={$unit} />
-            </FormItem>
+            <InputNumber
+                id="size"
+                label="Size"
+                disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
+                placeholder={$bucket.maximumFileSize.toString()}
+                min={0}
+                max={isCloud ? maxValue() : Infinity}
+                bind:value={$value} />
+            <InputSelect id="bytes" label="Bytes" {options} bind:value={$unit} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

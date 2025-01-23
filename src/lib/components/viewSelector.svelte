@@ -73,40 +73,37 @@
     }, 0);
 </script>
 
-<div class="grid-header-col-4">
-    {#if !hideColumns && view === View.Table}
-        {#if $columns?.length}
-            <DropList bind:show={showSelectColumns} scrollable wrapperFullWidth={fullWidthMobile}>
-                <Button
-                    size="s"
-                    secondary
-                    on:click={() => (showSelectColumns = !showSelectColumns)}
-                    {fullWidthMobile}>
-                    <span
-                        class="icon-view-boards u-opacity-50"
-                        aria-hidden="true"
-                        aria-label="columns" />
-                    {#if !hideText}
-                        <span class="text {showColsTextMobile ? '' : 'is-only-desktop'}"
-                            >Columns</span>
-                    {/if}
-                    <span class="inline-tag">{selectedColumnsNumber}</span>
-                </Button>
-                <svelte:fragment slot="list">
-                    {#each $columns as column}
-                        <InputChoice
-                            id={column.id}
-                            label={column.title}
-                            bind:value={column.show}
-                            disabled={allowNoColumns
-                                ? false
-                                : selectedColumnsNumber <= 1 && column.show} />
-                    {/each}
-                </svelte:fragment>
-            </DropList>
-        {/if}
+{#if !hideColumns && view === View.Table}
+    {#if $columns?.length}
+        <DropList bind:show={showSelectColumns} scrollable wrapperFullWidth={fullWidthMobile}>
+            <Button
+                size="s"
+                secondary
+                on:click={() => (showSelectColumns = !showSelectColumns)}
+                {fullWidthMobile}>
+                <span
+                    class="icon-view-boards u-opacity-50"
+                    aria-hidden="true"
+                    aria-label="columns" />
+                {#if !hideText}
+                    <span class="text {showColsTextMobile ? '' : 'is-only-desktop'}">Columns</span>
+                {/if}
+                <span class="inline-tag">{selectedColumnsNumber}</span>
+            </Button>
+            <svelte:fragment slot="list">
+                {#each $columns as column}
+                    <InputChoice
+                        id={column.id}
+                        label={column.title}
+                        bind:value={column.show}
+                        disabled={allowNoColumns
+                            ? false
+                            : selectedColumnsNumber <= 1 && column.show} />
+                {/each}
+            </svelte:fragment>
+        </DropList>
     {/if}
-</div>
+{/if}
 
 {#if !hideView}
     <div class="grid-header-col-3 toggle-button">
