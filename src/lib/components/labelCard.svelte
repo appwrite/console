@@ -44,9 +44,11 @@
             {disabled}
             title={title ?? slotTitle?.innerText}
             bind:group>
-            <p>
-                <slot />
-            </p>
+            {#if $$slots.default}
+                <p>
+                    <slot />
+                </p>
+            {/if}
         </Card.Selector>
     </div>
     <span slot="tooltip">{tooltipText}</span>
