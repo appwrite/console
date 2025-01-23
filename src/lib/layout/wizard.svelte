@@ -91,6 +91,9 @@
             wizard.hide();
             if (onExit) {
                 onExit();
+
+                // clear exit
+                onExit = null;
             }
         }}>
         <slot name="exit">
