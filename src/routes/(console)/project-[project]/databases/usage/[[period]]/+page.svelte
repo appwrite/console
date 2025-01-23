@@ -7,6 +7,13 @@
     export let data: PageData;
     $: total = data.databasesTotal;
     $: count = data.databases;
+
+    // types need to be added to console sdk.
+    $: reads = data.databasesReads;
+    $: readsTotal = data.databasesReadsTotal;
+
+    $: writes = data.databasesWrites;
+    $: writesTotal = data.databasesWritesTotal;
 </script>
 
 <Usage
@@ -16,5 +23,23 @@
     {count}
     countMetadata={{
         legend: 'Databases',
+        title: 'Total databases'
+    }} />
+
+<Usage
+    title="Databases reads"
+    total={readsTotal}
+    count={reads}
+    countMetadata={{
+        legend: 'Databases reads',
+        title: 'Total database reads'
+    }} />
+
+<Usage
+    title="Databases writes"
+    total={writesTotal}
+    count={writes}
+    countMetadata={{
+        legend: 'Databases writes',
         title: 'Total databases'
     }} />

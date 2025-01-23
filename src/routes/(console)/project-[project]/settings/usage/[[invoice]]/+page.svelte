@@ -37,6 +37,12 @@
         data.usage.deploymentsStorageTotal +
         data.usage.buildsStorageTotal;
 
+    // types need to be added to console sdk.
+    $: dbReads = data.usage.databasesReads;
+    $: dbReadsTotal = data.usage.databasesReadsTotal;
+    $: dbWrites = data.usage.databasesWrites;
+    $: dbWritesTotal = data.usage.databasesWritesTotal;
+
     const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
 
@@ -181,6 +187,55 @@
                         {
                             name: 'Users',
                             data: [...users.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">Database reads and writes</Heading>
+
+        <p class="text">Total database reads and writes in your project.</p>
+
+        <svelte:fragment slot="aside">
+            {#if dbReads || dbWrites}
+                {@const currentReads = formatNum(dbReadsTotal)}
+                {@const currentWrites = formatNum(dbWritesTotal)}
+
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{currentReads}/{currentWrites}</span>
+                            <span class="body-text-1 u-bold">Reads/Writes</span>
+                        </p>
+                    </div>
+                </div>
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Reads',
+                            data: [...dbReads.map((e) => [e.date, e.value])]
+                        },
+                        {
+                            name: 'Writes',
+                            data: [...dbWrites.map((e) => [e.date, e.value])]
                         }
                     ]} />
             {:else}
