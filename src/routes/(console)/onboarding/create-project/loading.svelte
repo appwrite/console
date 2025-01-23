@@ -1,5 +1,5 @@
 <script>
-    import { Spinner, Typography } from '@appwrite.io/pink-svelte';
+    import { Spinner, Typography, Layout } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { onMount } from 'svelte';
     import { fade } from 'svelte/transition';
@@ -39,14 +39,17 @@
 
 <div class="grid-container" class:start-animation={startAnimation}>
     <div class="static-loader">
-        <Spinner />
-        <Typography.Title size="l">Creating your project</Typography.Title>
+        <Layout.Stack alignItems="center" gap="l">
+            <Spinner />
+            <Typography.Title size="l">Creating your project</Typography.Title>
 
-        <div style="height: 30px">
-            {#if visible}
-                <span id="subtitle" transition:fade>{loadingSentences[currentSentenceIndex]}</span>
-            {/if}
-        </div>
+            <div style="height: 30px">
+                {#if visible}
+                    <span id="subtitle" transition:fade
+                        >{loadingSentences[currentSentenceIndex]}</span>
+                {/if}
+            </div>
+        </Layout.Stack>
     </div>
     <div class="title-container">
         <Typography.Title size="l">Welcome to Appwrite</Typography.Title>
@@ -240,10 +243,6 @@
 
     .static-loader {
         z-index: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
         transition: opacity 0.5s var(--animation-type);
 
         @media (min-width: 768px) {
