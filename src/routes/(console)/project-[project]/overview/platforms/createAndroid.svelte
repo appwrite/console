@@ -25,6 +25,7 @@
     import OnboardingPlatformCard from '$routes/(console)/project-[project]/overview/platforms/components/OnboardingPlatformCard.svelte';
     import ConnectionLine from '$routes/(console)/project-[project]/overview/platforms/components/ConnectionLine.svelte';
     import { PlatformType } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -34,6 +35,12 @@
 
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-android\ncd starter-for-android\n';
+
+    const updateConfigCode = isCloud
+        ? `const val APPWRITE_PROJECT_ID = "${projectId}"`
+        : `const val APPWRITE_PROJECT_ID = "${projectId}"
+const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
+        `;
 
     async function createAndroidPlatform() {
         try {
@@ -51,12 +58,12 @@
             trackEvent(Submit.PlatformCreate, {
                 type: 'android'
             });
-            addNotification({
-                type: 'success',
-                message: `Android platform has been created.`
-            });
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
         } finally {
             isCreatingPlatform = false;
         }
@@ -81,7 +88,7 @@
     });
 </script>
 
-<Wizard title="Add an Android platform" bind:showExitModal confirmExit onExit={resetPlatformStore}>
+<Wizard title="Add Android platform" bind:showExitModal confirmExit onExit={resetPlatformStore}>
     <Form onSubmit={createAndroidPlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
@@ -99,7 +106,7 @@
                             <!-- Tooltips on InputText don't work as of now -->
                             <InputText
                                 id="key"
-                                label="Package Name"
+                                label="Package name"
                                 placeholder="com.company.appname"
                                 tooltip="Your package name is generally the applicationId in your app-level build.gradle file."
                                 required
@@ -163,10 +170,7 @@
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                         <div class="pink2-code-margin-fix">
-                            <Code
-                                lang="kotlin"
-                                lineNumbers
-                                code={`const val APPWRITE_PROJECT_ID = "${projectId}"`} />
+                            <Code lang="kotlin" lineNumbers code={updateConfigCode} />
                         </div>
 
                         <Typography.Text variant="m-500"
@@ -201,8 +205,13 @@
                         <Typography.Text variant="m-400">Waiting for connection...</Typography.Text>
                     {:else}
                         <!-- cannot apply fade on components -->
-                        <div in:fade={{ duration: 2500 }}>
+                        <div
+                            in:fade={{ duration: 2500 }}
+                            class="u-flex u-flex-vertical u-cross-center u-gap-8">
                             <Typography.Title size="m">Congratulations!</Typography.Title>
+
+                            <Typography.Text variant="m-400"
+                                >You connected your app successfully.</Typography.Text>
                         </div>
                     {/if}
                 </Layout.Stack>
