@@ -235,7 +235,8 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
                 <Fieldset legend="Clone starter">
                     <Layout.Stack gap="l">
                         <Typography.Text variant="m-500">
-                            1. Clone the starter kit from GitHub using the terminal, Android Studio or VSCode.
+                            1. Clone the starter kit from GitHub using the terminal, Android Studio
+                            or VSCode.
                         </Typography.Text>
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
@@ -244,8 +245,9 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
                         </div>
 
                         <Typography.Text variant="m-500"
-                        >2. Open the file <InlineCode size="s" code="lib/constants/appwrite.dart" /> and
-                            update the configuration settings.</Typography.Text>
+                            >2. Open the file <InlineCode
+                                size="s"
+                                code="lib/constants/appwrite.dart" /> and update the configuration settings.</Typography.Text>
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                         <div class="pink2-code-margin-fix">
@@ -253,9 +255,9 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
                         </div>
 
                         <Typography.Text variant="m-500"
-                        >3. Run the app on a connected device or simulator, then click the <InlineCode
-                            size="s"
-                            code="Send a ping" /> button to verify the setup.</Typography.Text>
+                            >3. Run the app on a connected device or simulator, then click the <InlineCode
+                                size="s"
+                                code="Send a ping" /> button to verify the setup.</Typography.Text>
                     </Layout.Stack>
                 </Fieldset>
             {/if}
@@ -290,7 +292,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
                             <Typography.Title size="m">Congratulations!</Typography.Title>
 
                             <Typography.Text variant="m-400"
-                            >You connected your app successfully.</Typography.Text>
+                                >You connected your app successfully.</Typography.Text>
                         </div>
                     {/if}
                 </Layout.Stack>
@@ -311,13 +313,13 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
 </Wizard>
 
 <style lang="scss">
-  :global(.pink2-code-margin-fix pre) {
-    margin: revert;
-  }
-
-  :global(.responsive-padding) {
-    @media (max-width: 768px) {
-      padding: 16px;
+    :global(.pink2-code-margin-fix pre) {
+        margin: revert;
     }
-  }
+
+    :global(.responsive-padding) {
+        @media (max-width: 768px) {
+            padding: 16px;
+        }
+    }
 </style>
