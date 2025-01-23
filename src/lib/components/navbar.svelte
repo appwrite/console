@@ -7,8 +7,7 @@
         Tooltip,
         Card,
         ActionList,
-        Input,
-        BottomSheet
+        Input
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
@@ -22,7 +21,7 @@
         IconSun,
         IconUser
     } from '@appwrite.io/pink-icons-svelte';
-    import { DropList, Support, Breadcrumbs } from '$lib/components';
+    import { DropList, Support, Breadcrumbs, BottomSheet } from '$lib/components';
     import { Feedback } from '$lib/components/feedback';
     import { feedback } from '$lib/stores/feedback';
     import { isMac } from '$lib/helpers/platform';
