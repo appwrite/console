@@ -87,11 +87,12 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
 
         return () => {
             unsubscribe();
+            resetPlatformStore();
         };
     });
 </script>
 
-<Wizard title="Add Android platform" bind:showExitModal confirmExit onExit={resetPlatformStore}>
+<Wizard title="Add Android platform" bind:showExitModal confirmExit>
     <Form onSubmit={createAndroidPlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->

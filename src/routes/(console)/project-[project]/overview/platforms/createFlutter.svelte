@@ -154,11 +154,12 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
 
         return () => {
             unsubscribe();
+            resetPlatformStore();
         };
     });
 </script>
 
-<Wizard title="Add Flutter platform" bind:showExitModal confirmExit onExit={resetPlatformStore}>
+<Wizard title="Add Flutter platform" bind:showExitModal confirmExit>
     <Form onSubmit={createFlutterPlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->

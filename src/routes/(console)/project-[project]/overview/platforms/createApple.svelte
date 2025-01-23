@@ -98,11 +98,12 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
 
         return () => {
             unsubscribe();
+            resetPlatformStore();
         };
     });
 </script>
 
-<Wizard title="Add Apple platform" bind:showExitModal confirmExit onExit={resetPlatformStore}>
+<Wizard title="Add Apple platform" bind:showExitModal confirmExit>
     <Form onSubmit={createApplePlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
