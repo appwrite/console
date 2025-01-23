@@ -79,13 +79,6 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        if (
-            anyOrgFree ||
-            ($page.url.searchParams.has('type') &&
-                $page.url.searchParams.get('type') === 'createPro')
-        ) {
-            billingPlan = BillingPlan.PRO;
-        }
     });
 
     async function loadPaymentMethods() {
