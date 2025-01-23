@@ -70,8 +70,8 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     }
 
     async function resetPlatformStore() {
-        await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
         createPlatform.reset();
+        await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
     }
 
     onMount(() => {
@@ -121,8 +121,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             submissionLoader={isCreatingPlatform}
                             disabled={!$createPlatform.name ||
                                 !$createPlatform.key ||
-                                isCreatingPlatform}
-                            on:click={async () => await createAndroidPlatform()}>
+                                isCreatingPlatform}>
                             Create platform
                         </Button>
                     </Layout.Stack>
