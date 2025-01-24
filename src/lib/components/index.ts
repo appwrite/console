@@ -80,3 +80,4 @@ export { default as BottomModalAlert } from './bottomModalAlert.svelte';
 export { default as Navbar } from './navbar.svelte';
 export { default as Breadcrumbs } from './breadcrumbs.svelte';
 export { default as Sidebar } from './sidebar.svelte';
+export { default as BottomSheet } from './bottom-sheet/index';

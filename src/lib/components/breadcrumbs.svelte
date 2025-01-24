@@ -1,7 +1,8 @@
 <script lang="ts">
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { Badge, Icon, BottomSheet, type SheetMenu } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, type SheetMenu } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronRight, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { BottomSheet } from '$lib/components';
 
     type Project = {
         name: string;
