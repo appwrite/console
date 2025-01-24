@@ -7,7 +7,6 @@
     import { goto } from '$app/navigation';
     import { debounce } from '$lib/helpers/debounce.js';
     import { Card, Layout, Accordion, Selector } from '@appwrite.io/pink-svelte';
-    import { templatesList } from '$lib/stores/templates.js';
 
     export let data;
 
@@ -58,19 +57,6 @@
             .getAll('useCase')
             .some((param) => param.toLowerCase() === useCase.toLowerCase());
     };
-
-    $: getErrorMessage = () => {
-        const searchParams = $page.url.searchParams;
-        const paramsArray = Array.from(searchParams.entries());
-
-        if (paramsArray.length === 1) {
-            const [_, value] = paramsArray[0];
-            return `Sorry, we couldn't find "${value}".`;
-        } else if (paramsArray.length > 1) {
-            return `Sorry, we couldn't find any results with the applied filters.`;
-        }
-    };
-    $: console.log(templatesList);
 </script>
 
 <svelte:head>
