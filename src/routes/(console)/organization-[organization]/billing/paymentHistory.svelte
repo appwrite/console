@@ -32,7 +32,7 @@
 
     let showDropdown = [];
     let showFailedError = false;
-    let isLoadingInvoices = true;
+    // let isLoadingInvoices = true;
 
     let offset = 0;
     let invoiceList: InvoiceList = {
@@ -46,7 +46,7 @@
     onMount(request);
 
     async function request() {
-        isLoadingInvoices = true;
+        // isLoadingInvoices = true;
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
@@ -54,7 +54,7 @@
             Query.notEqual('status', 'pending'),
             Query.orderDesc('$createdAt')
         ]);
-        isLoadingInvoices = false;
+        // isLoadingInvoices = false;
     }
 
     function retryPayment(invoice: Invoice) {
@@ -192,10 +192,10 @@
                 <p class="text">Total results: {invoiceList.total}</p>
                 <PaginationInline {limit} bind:offset sum={invoiceList.total} hidePages />
             </div>
-        {:else if isLoadingInvoices}
-            <div class="loader-holder">
-                <div class="loader" />
-            </div>
+            <!--{:else if isLoadingInvoices}-->
+            <!--    <div class="loader-holder">-->
+            <!--        <div class="loader" />-->
+            <!--    </div>-->
         {:else}
             <EmptySearch hidePagination>
                 <p class="text u-text-center">
@@ -207,10 +207,10 @@
     </svelte:fragment>
 </CardGrid>
 
-<style>
-    .loader-holder {
-        height: 100%;
-        align-content: center;
-        justify-items: center;
-    }
-</style>
+<!--<style>-->
+<!--    .loader-holder {-->
+<!--        height: 100%;-->
+<!--        align-content: center;-->
+<!--        justify-items: center;-->
+<!--    }-->
+<!--</style>-->
