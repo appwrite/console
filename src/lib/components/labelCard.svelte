@@ -18,6 +18,8 @@
     //temporarily unefined
     export let title: Props['title'] = undefined;
     export let disabled = false;
+    export let src: string = null;
+    export let alt: string = null;
 
     // TODO: remove after label card migration
     let slotTitle: HTMLSpanElement;
@@ -26,6 +28,8 @@
 <Tooltip disabled={!tooltipText || !tooltipShow} inline={false}>
     <div>
         <Card.Selector
+            {src}
+            {alt}
             {padding}
             {imageRadius}
             {variant}
