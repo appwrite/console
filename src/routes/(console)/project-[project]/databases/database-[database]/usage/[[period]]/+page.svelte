@@ -3,7 +3,6 @@
     import { page } from '$app/stores';
     import { Usage } from '$lib/layout';
     import type { PageData } from './$types';
-    import { onMount } from 'svelte';
 
     export let data: PageData;
 
@@ -16,10 +15,6 @@
 
     $: writes = data.databaseWrites;
     $: writesTotal = data.databaseWritesTotal;
-
-    onMount(() => {
-        console.log([readsTotal, writesTotal]);
-    });
 </script>
 
 <Usage

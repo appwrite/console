@@ -201,7 +201,7 @@
         </p>
         <svelte:fragment slot="aside">
             <!-- types need to be added to console sdk -->
-            {#if data.organizationUsage.databasesReadsTotal || data.organizationUsage.databasesWritesTotal}
+            {#if data.organizationUsage.databasesReads || data.organizationUsage.databasesWrites}
                 <div style:margin-top="-1.5em">
                     <BarChart
                         options={{
@@ -215,7 +215,7 @@
                             {
                                 name: 'Reads',
                                 data: [
-                                    ...data.organizationUsage.databasesReads.map((e) => [
+                                    ...(data.organizationUsage.databasesReads ?? []).map((e) => [
                                         e.date,
                                         e.value
                                     ])
@@ -224,7 +224,7 @@
                             {
                                 name: 'Writes',
                                 data: [
-                                    ...data.organizationUsage.databasesWrites.map((e) => [
+                                    ...(data.organizationUsage.databasesWrites ?? []).map((e) => [
                                         e.date,
                                         e.value
                                     ])
