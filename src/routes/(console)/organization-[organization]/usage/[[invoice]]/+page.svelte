@@ -194,6 +194,65 @@
     </CardGrid>
 
     <CardGrid>
+        <Heading tag="h6" size="7">Databases reads and writes</Heading>
+
+        <p class="text">
+            The total number of database reads and writes across all projects in your organization.
+        </p>
+        <svelte:fragment slot="aside">
+            <!-- types need to be added to console sdk -->
+            {#if data.organizationUsage.databasesReadsTotal || data.organizationUsage.databasesWritesTotal}
+                <div style:margin-top="-1.5em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
+                            }
+                        }}
+                        series={[
+                            {
+                                name: 'Reads',
+                                data: [
+                                    ...data.organizationUsage.databasesReads.map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            },
+                            {
+                                name: 'Writes',
+                                data: [
+                                    ...data.organizationUsage.databasesWrites.map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            }
+                        ]} />
+                </div>
+                {#if project?.length > 0}
+                    <ProjectBreakdown
+                        {data}
+                        projects={project}
+                        databaseOperationMetric={['databasesReads', 'databasesWrites']} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
         <Heading tag="h6" size="7">Executions</Heading>
 
         <p class="text">
@@ -318,6 +377,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
     <CardGrid>
         <Heading tag="h6" size="7">GB hours</Heading>
 
@@ -378,6 +438,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
     <CardGrid>
         <Heading tag="h6" size="7">Phone OTP</Heading>
         <p class="text">
@@ -430,6 +491,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
     <TotalMembers members={data?.organizationMembers} />
 
     <p class="text common-section u-color-text-gray">
