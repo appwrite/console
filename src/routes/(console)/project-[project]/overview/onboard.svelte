@@ -73,7 +73,9 @@
                     <div class="grid">
                         <button
                             class="onboarding-card platform-card"
-                            on:click={() => addPlatform(0)}>
+                            on:click={() => {
+                                // TODO: @ernst web starter > sites websites/starter flow
+                            }}>
                             <img
                                 src={$app.themeInUse === 'dark'
                                     ? PlatformWebImgSourceDark
