@@ -14,7 +14,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart } from '$lib/charts';
+    import { BarChart, Legend } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
@@ -40,8 +40,14 @@
     // types need to be added to console sdk.
     $: dbReads = data.usage.databasesReads;
     $: dbReadsTotal = data.usage.databasesReadsTotal;
+
     $: dbWrites = data.usage.databasesWrites;
     $: dbWritesTotal = data.usage.databasesWritesTotal;
+
+    $: legendData = [
+        { name: 'Reads', value: data.usage.databasesReadsTotal },
+        { name: 'Writes', value: data.usage.databasesWritesTotal }
+    ];
 
     const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
@@ -209,35 +215,28 @@
 
         <svelte:fragment slot="aside">
             {#if dbReads || dbWrites}
-                {@const currentReads = formatNum(dbReadsTotal)}
-                {@const currentWrites = formatNum(dbWritesTotal)}
-
-                <div class="u-flex u-flex-vertical">
-                    <div class="u-flex u-main-space-between">
-                        <p>
-                            <span class="heading-level-4">{currentReads}/{currentWrites}</span>
-                            <span class="body-text-1 u-bold">Reads/Writes</span>
-                        </p>
-                    </div>
-                </div>
-                <BarChart
-                    options={{
-                        yAxis: {
-                            axisLabel: {
-                                formatter: formatNum
+                <div style:margin-top="-1.5em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
                             }
-                        }
-                    }}
-                    series={[
-                        {
-                            name: 'Reads',
-                            data: [...dbReads.map((e) => [e.date, e.value])]
-                        },
-                        {
-                            name: 'Writes',
-                            data: [...dbWrites.map((e) => [e.date, e.value])]
-                        }
-                    ]} />
+                        }}
+                        series={[
+                            {
+                                name: 'Reads',
+                                data: [...dbReads.map((e) => [e.date, e.value])]
+                            },
+                            {
+                                name: 'Writes',
+                                data: [...dbWrites.map((e) => [e.date, e.value])]
+                            }
+                        ]} />
+                </div>
+
+                <Legend {legendData} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

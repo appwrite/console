@@ -10,7 +10,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart } from '$lib/charts';
+    import { BarChart, Legend } from '$lib/charts';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
@@ -29,6 +29,11 @@
     const plan = data?.plan ?? undefined;
 
     $: project = (data.organizationUsage as OrganizationUsage).projects;
+
+    $: legendData = [
+        { name: 'Reads', value: data.organizationUsage.databasesReadsTotal },
+        { name: 'Writes', value: data.organizationUsage.databasesWritesTotal }
+    ];
 </script>
 
 <Container>
@@ -200,7 +205,6 @@
             The total number of database reads and writes across all projects in your organization.
         </p>
         <svelte:fragment slot="aside">
-            <!-- types need to be added to console sdk -->
             {#if data.organizationUsage.databasesReads || data.organizationUsage.databasesWrites}
                 <div style:margin-top="-1.5em">
                     <BarChart
@@ -232,6 +236,9 @@
                             }
                         ]} />
                 </div>
+
+                <Legend {legendData} />
+
                 {#if project?.length > 0}
                     <ProjectBreakdown
                         {data}

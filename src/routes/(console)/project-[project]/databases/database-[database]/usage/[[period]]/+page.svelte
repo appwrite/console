@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Usage } from '$lib/layout';
+    import { Usage, UsageMultiple } from '$lib/layout';
     import type { PageData } from './$types';
 
     export let data: PageData;
@@ -27,20 +27,11 @@
         title: 'Total collections'
     }} />
 
-<Usage
-    title="Databases reads"
-    total={readsTotal}
-    count={reads}
-    countMetadata={{
-        legend: 'Databases reads',
-        title: 'Total database reads'
-    }} />
-
-<Usage
-    title="Databases writes"
-    total={writesTotal}
-    count={writes}
-    countMetadata={{
-        legend: 'Databases writes',
-        title: 'Total databases'
-    }} />
+<UsageMultiple
+    title="Reads and writes"
+    total={[readsTotal, writesTotal]}
+    count={[reads, writes]}
+    legendData={[
+        { name: 'Reads', value: readsTotal },
+        { name: 'Writes', value: writesTotal }
+    ]} />

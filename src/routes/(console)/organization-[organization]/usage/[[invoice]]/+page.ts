@@ -33,7 +33,7 @@ export const load: PageLoad = async ({ params, parent }) => {
                 databasesReads: null,
                 databasesWrites: null,
                 databasesReadsTotal: null,
-                databasesWritesTotal: null,
+                databasesWritesTotal: null
             }
         };
     }
