@@ -21,7 +21,7 @@
         WizardSecondaryFooter
     } from '$lib/layout';
     import type { Coupon, PaymentList } from '$lib/sdk/billing';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { isOrganization, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
         organizationList,
@@ -97,10 +97,6 @@
     async function loadPaymentMethods() {
         methods = await sdk.forConsole.billing.listPaymentMethods();
         paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
-    }
-
-    function isOrganization(org: Organization | OrganizationError): org is Organization {
-        return (org as Organization).$id !== undefined;
     }
 
     async function validate(organizationId: string, invites: string[]) {

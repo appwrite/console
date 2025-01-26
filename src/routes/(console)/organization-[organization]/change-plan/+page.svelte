@@ -30,7 +30,7 @@
         WizardSecondaryFooter
     } from '$lib/layout';
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { isOrganization, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
         currentPlan,
@@ -180,10 +180,6 @@
             });
             trackError(e, Submit.OrganizationDowngrade);
         }
-    }
-
-    function isOrganization(org: Organization | OrganizationError): org is Organization {
-        return (org as Organization).$id !== undefined;
     }
 
     async function validate(organizationId: string, invites: string[]) {

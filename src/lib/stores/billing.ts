@@ -1,7 +1,7 @@
 import { page } from '$app/stores';
 import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
-import { organization, type Organization } from './organization';
+import { organization, type Organization, type OrganizationError } from './organization';
 import type {
     InvoiceList,
     AddressesList,
@@ -484,4 +484,8 @@ export function calculateResourceSurplus(total: number, limit: number, limitUnit
     if (total === undefined || limit === undefined) return 0;
     const realLimit = (limitUnit ? sizeToBytes(limit, limitUnit) : limit) || Infinity;
     return total > realLimit ? total - realLimit : 0;
+}
+
+export function isOrganization(org: Organization | OrganizationError): org is Organization {
+    return (org as Organization).$id !== undefined;
 }
