@@ -117,8 +117,7 @@ export async function confirmPayment(
     orgId: string,
     clientSecret: string,
     paymentMethodId: string,
-    route?: string,
-    returnError: boolean = false
+    route?: string
 ) {
     try {
         const url =
@@ -134,9 +133,6 @@ export async function confirmPayment(
             }
         });
         if (error) {
-            if (returnError) {
-                return error;
-            }
             throw error.message;
         }
     } catch (e) {
