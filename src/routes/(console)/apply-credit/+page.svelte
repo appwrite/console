@@ -288,7 +288,7 @@
                 <div class:u-margin-block-start-24={campaign?.template === 'card'}>
                     <EstimatedTotal
                         {billingBudget}
-                        organizationId={selectedOrgId === newOrgId ? null : selectedOrgId}
+                        organizationId={selectedOrgId === newOrgId ? undefined : selectedOrgId}
                         {billingPlan}
                         {collaborators}
                         couponId={couponData.code}>

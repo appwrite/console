@@ -4,6 +4,7 @@
     import type { Estimation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import Alert from '../alert.svelte';
+    import Card from '../card.svelte';
     import DiscountsApplied from './discountsApplied.svelte';
 
     export let organizationId: string | undefined = undefined;
@@ -11,29 +12,32 @@
     export let collaborators: string[];
     export let couponId: string;
     export let fixedCoupon = false;
-    export let error: string = '';
+    export let error = '';
 
     export let billingBudget: number;
 
     let budgetEnabled = false;
-    var estimation: Estimation;
+    let estimation: Estimation;
 
-    let getEstimate = async (billingPlan, collaborators, couponId) => {
+    async function getEstimate(billingPlan: string, collaborators: string[], couponId: string) {
         try {
             error = '';
             estimation = await sdk.forConsole.billing.estimationCreateOrganization(
                 billingPlan,
-                couponId == '' ? null : couponId,
+                couponId === '' ? null : couponId,
                 collaborators ?? []
             );
         } catch (e) {
-            //
             error = e.message;
-            console.log(e);
         }
-    };
+    }
 
-    let getUpdatePlanEstimate = async (organizationId, billingPlan, collaborators, couponId) => {
+    async function getUpdatePlanEstimate(
+        organizationId: string,
+        billingPlan: string,
+        collaborators: string[],
+        couponId: string | undefined
+    ) {
         try {
             error = '';
             estimation = await sdk.forConsole.billing.estimationUpdatePlan(
@@ -44,11 +48,10 @@
             );
         } catch (e) {
             error = e.message;
-            console.log(e);
         }
-    };
+    }
 
-    $: organizationId && organizationId.length > 0
+    $: organizationId
         ? getUpdatePlanEstimate(organizationId, billingPlan, collaborators, couponId)
         : getEstimate(billingPlan, collaborators, couponId);
 </script>
@@ -60,10 +63,7 @@
         </span>
     </Alert>
 {:else if estimation}
-    <section
-        class="card u-flex u-flex-vertical u-gap-8"
-        style:--p-card-padding="1.5rem"
-        style:--p-card-border-radius="var(--border-radius-small)">
+    <Card>
         <slot />
         {#each estimation.items ?? [] as item}
             <span class="u-flex u-main-space-between">
@@ -85,9 +85,9 @@
         </span>
 
         <p class="text u-margin-block-start-16">
-            You'll pay <span class="u-bold">{formatCurrency(estimation.amount)}</span> now. Once
+            You'll pay <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> now. Once
             your credits run out, you'll be charged
-            <span class="u-bold">{formatCurrency(estimation.amount)}</span> every 30 days.
+            <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> every 30 days.
         </p>
 
         <FormList class="u-margin-block-start-24">
@@ -110,5 +110,5 @@
                 {/if}
             </InputChoice>
         </FormList>
-    </section>
+    </Card>
 {/if}

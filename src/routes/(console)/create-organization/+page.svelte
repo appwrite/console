@@ -142,7 +142,7 @@
                     billingPlan,
                     paymentMethodId,
                     null,
-                    couponId,
+                    couponId && couponId.length > 0 ? couponId : null,
                     collaborators,
                     billingBudget,
                     taxId
