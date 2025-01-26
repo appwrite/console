@@ -34,12 +34,6 @@ export const load: PageLoad = async ({ parent, depends }) => {
     }
     
     const billingInvoiceId = (organization as Organization)?.billingInvoiceId;
-    let billingInvoice = null;
-    try {
-        billingInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, billingInvoiceId)
-    } catch (e) {
-        // ignore error
-    }
 
 
     const [
@@ -47,12 +41,14 @@ export const load: PageLoad = async ({ parent, depends }) => {
         addressList,
         billingAddress,
         creditList,
+        billingInvoice,
         aggregationBillingPlan,
     ] = await Promise.all([
         sdk.forConsole.billing.listPaymentMethods(),
         sdk.forConsole.billing.listAddresses(),
         billingAddressPromise,
         sdk.forConsole.billing.listCredits(organization.$id),
+        sdk.forConsole.billing.getInvoice(organization.$id, billingInvoiceId),
         sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan),
     ]);
 

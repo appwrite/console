@@ -12,7 +12,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { type Models } from '@appwrite.io/console';
-    import CancelDowngradeModel from './cancelDowngradeModel.svelte';
+    import CancelDowngradeModel from './cancelDowngradeModal.svelte';
 
     export let members: Models.MembershipList;
     export let currentPlan: Plan;

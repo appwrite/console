@@ -105,7 +105,7 @@
 
     async function validate(organizationId: string, invites: string[]) {
         try {
-            let org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            const org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
             if (isOrganization(org)) {
                 await preloadData(`${base}/console/organization-${org.$id}`);
                 await goto(`${base}/console/organization-${org.$id}`);
