@@ -100,8 +100,8 @@
         organizationName = '';
     }
 
-    let getEstimate = async () => {
-        if(isCloud) {
+    async function getEstimate() {
+        if (isCloud) {
             try {
                 error = '';
                 estimation = await sdk.forConsole.billing.estimationDeleteOrganization(
@@ -109,10 +109,9 @@
                 );
             } catch (e) {
                 error = e.message;
-                console.log(e);
             }
         }
-    };
+    }
 </script>
 
 <div class="max-height-dialog">
@@ -124,7 +123,7 @@
         icon="exclamation"
         state="warning"
         headerDivider={false}>
-        {#if estimation &&( estimation.unpaidInvoices.length > 0 || estimation.grossAmount > 0)}
+        {#if estimation && (estimation.unpaidInvoices.length > 0 || estimation.grossAmount > 0)}
             <DeleteOrganizationEstimation {estimation} />
         {:else}
             <p data-private>
