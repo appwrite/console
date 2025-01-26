@@ -9,6 +9,7 @@
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import SelectPlan from '$lib/components/billing/selectPlan.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
+    import Card from '$lib/components/card.svelte';
     import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
@@ -363,26 +364,20 @@
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <EstimatedTotal
-                    bind:error={error}
-                    bind:billingBudget={billingBudget}
+                    bind:error
+                    bind:billingBudget
                     organizationId={$organization.$id}
                     {billingPlan}
                     {collaborators}
                     {couponId} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 {#if isDowngrade}
-                    <section
-                        class="card u-flex u-flex-vertical u-gap-8"
-                        style:--p-card-padding="1.5rem"
-                        style:--p-card-border-radius="var(--border-radius-small)">
-                        <slot />
-                        <p class="text u-margin-block-start-16">
-                            Your change will take effect once your current billing cycle ends on <span
-                                class="u-bold"
-                                >{toLocaleDate($organization.billingNextInvoiceDate)}</span
-                            >.
-                        </p>
-                    </section>
+                    <Card>
+                        Your change will take effect once your current billing cycle ends on <span
+                            class="u-bold"
+                            >{toLocaleDate($organization.billingNextInvoiceDate)}</span
+                        >.
+                    </Card>
                 {/if}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
@@ -394,7 +389,7 @@
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled || !selfService ||!!error.length}>
+            disabled={$isSubmitting || isButtonDisabled || !selfService || !!error.length}>
             Change plan
         </Button>
     </WizardSecondaryFooter>
