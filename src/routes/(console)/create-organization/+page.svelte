@@ -63,6 +63,7 @@
 
     let billingBudget: number;
     let showCreditModal = false;
+    let error = '';
 
     onMount(async () => {
         if ($page.url.searchParams.has('coupon')) {
@@ -237,6 +238,7 @@
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE}
                 <EstimatedTotal
+                    bind:error={error}
                     {billingBudget}
                     {billingPlan}
                     {collaborators}
@@ -253,7 +255,7 @@
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting}>
+            disabled={$isSubmitting || error.length > 0}>
             Create organization
         </Button>
     </WizardSecondaryFooter>
