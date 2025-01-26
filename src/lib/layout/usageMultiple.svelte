@@ -34,15 +34,13 @@
     </div>
     <Card>
         {#if count}
-            <div class="u-flex-vertical">
-                <div class="chart-container">
-                    <BarChart
-                        formatted={$page.params.period === '24h' ? 'hours' : 'days'}
-                        series={count.map((c, index) => ({
-                            name: legendData[index].name,
-                            data: accumulateFromEndingTotal(c, total[index])
-                        }))} />
-                </div>
+            <div class="multiple-chart-container u-flex-vertical u-gap-16">
+                <BarChart
+                    formatted={$page.params.period === '24h' ? 'hours' : 'days'}
+                    series={count.map((c, index) => ({
+                        name: legendData[index].name,
+                        data: accumulateFromEndingTotal(c, total[index])
+                    }))} />
 
                 {#if legendData}
                     <Legend {legendData} />
@@ -53,11 +51,12 @@
 </Container>
 
 <style lang="scss">
-    .chart-container {
+    .multiple-chart-container {
         height: 12rem;
     }
 
-    :global(.chart-container .echart) {
+    :global(.multiple-chart-container .echart) {
         margin-top: -1rem;
+        margin-bottom: -1em;
     }
 </style>

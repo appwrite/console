@@ -206,7 +206,7 @@
         </p>
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.databasesReads || data.organizationUsage.databasesWrites}
-                <div style:margin-top="-1.5em">
+                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
                     <BarChart
                         options={{
                             yAxis: {

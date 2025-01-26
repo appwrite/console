@@ -215,7 +215,7 @@
 
         <svelte:fragment slot="aside">
             {#if dbReads || dbWrites}
-                <div style:margin-top="-1.5em">
+                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
                     <BarChart
                         options={{
                             yAxis: {

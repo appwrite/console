@@ -7,6 +7,7 @@
 
 <script lang="ts">
     import { Colors } from '$lib/charts/config';
+    import { Status } from '$lib/components';
 
     export let legendData: LegendData[] = [];
 
@@ -15,9 +16,8 @@
 
 <div class="u-flex u-cross-center u-gap-16">
     {#each legendData as { name, value }, index}
-        <div class="status u-flex u-cross-baseline u-gap-8">
-            <span class="status-icon" style:background-color={colors[index % colors.length]} />
-            <span>{name} ({value})</span>
-        </div>
+        <Status status="none" statusIconStyle="background-color: {colors[index % colors.length]}">
+            {name} ({value})
+        </Status>
     {/each}
 </div>
