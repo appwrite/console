@@ -77,7 +77,7 @@
         <div class="u-sep-block-start" />
         <span class="u-flex u-main-space-between">
             <p class="text">
-                Total due<br />
+                Total due
             </p>
             <p class="text">
                 {formatCurrency(estimation.grossAmount)}
