@@ -24,31 +24,36 @@ export const load: PageLoad = async ({ parent, depends }) => {
             .catch(() => null)
         : null;
 
-    const billingAggregationId = (organization as Organization)?.billingAggregationId;
-
+    /**
+     * Needed to keep this out of Promise.all, as when organization is 
+     * initially created, these might return 404
+     * - can be removed later once that is fixed in back-end
+     */
     let billingAggregation = null;
     try {
-        billingAggregation = await sdk.forConsole.billing.getAggregation(organization.$id, billingAggregationId);
+        billingAggregation = await sdk.forConsole.billing.getAggregation(organization.$id, (organization as Organization)?.billingAggregationId);
     } catch (e) {
         // ignore error
     }
     
-    const billingInvoiceId = (organization as Organization)?.billingInvoiceId;
-
+    let billingInvoice = null;
+    try {
+        billingInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, (organization as Organization)?.billingInvoiceId);
+    } catch (e) {
+        // ignore error
+    }
 
     const [
         paymentMethods,
         addressList,
         billingAddress,
         creditList,
-        billingInvoice,
         aggregationBillingPlan,
     ] = await Promise.all([
         sdk.forConsole.billing.listPaymentMethods(),
         sdk.forConsole.billing.listAddresses(),
         billingAddressPromise,
         sdk.forConsole.billing.listCredits(organization.$id),
-        sdk.forConsole.billing.getInvoice(organization.$id, billingInvoiceId),
         sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan),
     ]);
 
