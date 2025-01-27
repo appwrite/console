@@ -80,13 +80,18 @@
                     <h2 class="done">Create project</h2>
                 </div></Step.Item>
             <Step.Item state="current"
-                ><div class="build-container">
-                    <div class="build-info">
+                ><Layout.Stack
+                    direction={isSmallViewport ? 'column' : 'row'}
+                    gap={isSmallViewport ? 'xl' : 'xxl'}>
+                    <Layout.Stack gap="m">
                         <h2>Add a platform</h2>
-                        <span>
-                            Start building with your preferred web, mobile, and native frameworks.
-                        </span>
-                    </div>
+                        <div class="build-info">
+                            <span>
+                                Start building with your preferred web, mobile, and native
+                                frameworks.
+                            </span>
+                        </div>
+                    </Layout.Stack>
                     <div class="grid">
                         <button
                             class="onboarding-card platform-card"
@@ -183,7 +188,7 @@
                             </div>
                         </button>
                     </div>
-                </div></Step.Item>
+                </Layout.Stack></Step.Item>
             <Step.Item state="next"
                 ><div>
                     <h2 class="done">Build your app</h2>
@@ -375,7 +380,7 @@
 
     .dashboard-content {
         background: var(--color-bgcolor-neutral-default, #fafafb);
-        padding: var(--space-7, 16px);
+        padding: var(--space-10, 32px) var(--space-7, 16px);
 
         @media (min-width: 768px) {
             padding-inline: 55px;
@@ -397,162 +402,147 @@
             color: var(--color-fgcolor-neutral-tertiary, #97979b);
         }
 
-        .build-container {
+        .build-info {
+            span {
+                color: var(--color-fgcolor-neutral-secondary, #56565c);
+
+                /* Desktop/Body M 400 */
+                font-family: var(--font-family-sansserif, Inter);
+                font-size: var(--font-size-S, 14px);
+                font-style: normal;
+                font-weight: 400;
+                line-height: 140%; /* 19.6px */
+                letter-spacing: -0.063px;
+            }
+
+            @media (min-width: 768px) and (max-width: 1400px) {
+                width: 200px;
+            }
+        }
+
+        .onboarding-card {
+            border-radius: 8px;
+            border: 1px solid var(--color-border-neutral, #ededf0);
+            background: var(--color-bgcolor-neutral-primary, #fff);
+
+            h3 {
+                color: var(--color-fgcolor-neutral-secondary, #56565c);
+
+                /* Desktop/Title S */
+                font-family: var(--font-family-brand, 'Aeonik Pro');
+                font-size: var(--font-size-l, 20px);
+                font-style: normal;
+                font-weight: 400;
+                line-height: 130%; /* 26px */
+            }
+        }
+
+        .grid {
+            display: grid;
+            gap: var(--space-7);
+            @media (min-width: 768px) {
+                grid-template-columns: repeat(6, 1fr);
+                grid-template-rows: auto auto;
+                max-width: 776px;
+
+                .build-card:nth-child(1) {
+                    grid-column: span 3;
+                    img {
+                        max-height: 160px;
+                    }
+                }
+
+                .build-card:nth-child(2) {
+                    grid-column: span 3;
+                }
+
+                .build-card:nth-child(3) {
+                    grid-column: span 4;
+                }
+
+                .build-card:nth-child(4) {
+                    grid-column: span 2;
+                }
+
+                .platform-card:nth-child(1) {
+                    grid-column: span 3;
+                    img {
+                        max-height: 295px;
+                    }
+                }
+                .platform-card:nth-child(2) {
+                    grid-column: span 3;
+                    img {
+                        max-height: 295px;
+                    }
+                }
+                .platform-card:nth-child(3) {
+                    grid-column: span 2;
+                    img {
+                        max-height: 195px;
+                    }
+                }
+                .platform-card:nth-child(4) {
+                    grid-column: span 2;
+                    img {
+                        max-height: 195px;
+                    }
+                }
+                .platform-card:nth-child(5) {
+                    grid-column: span 2;
+                    img {
+                        max-height: 195px;
+                    }
+                }
+            }
+        }
+
+        .card-content {
+            padding: 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+
+            h3 {
+                margin-block-end: var(--space-4);
+
+                @media (min-width: 768px) {
+                    margin-block-end: auto;
+                }
+            }
+        }
+
+        .card-docs {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: var(--space-6);
-
+            min-height: 240px;
             @media (min-width: 768px) {
-                flex-direction: row;
-                gap: var(--space-13);
-            }
-
-            .build-info {
-                display: flex;
-                flex-direction: column;
-                gap: var(--space-7);
-                span {
-                    color: var(--color-fgcolor-neutral-secondary, #56565c);
-
-                    /* Desktop/Body M 400 */
-                    font-family: var(--font-family-sansserif, Inter);
-                    font-size: var(--font-size-S, 14px);
-                    font-style: normal;
-                    font-weight: 400;
-                    line-height: 140%; /* 19.6px */
-                    letter-spacing: -0.063px;
-                }
-
-                @media (min-width: 768px) and (max-width: 1400px) {
-                    width: 200px;
-                }
-            }
-
-            .onboarding-card {
-                border-radius: 8px;
-                border: 1px solid var(--color-border-neutral, #ededf0);
-                background: var(--color-bgcolor-neutral-primary, #fff);
-
-                h3 {
-                    color: var(--color-fgcolor-neutral-secondary, #56565c);
-
-                    /* Desktop/Title S */
-                    font-family: var(--font-family-brand, 'Aeonik Pro');
-                    font-size: var(--font-size-l, 20px);
-                    font-style: normal;
-                    font-weight: 400;
-                    line-height: 130%; /* 26px */
-                }
-            }
-
-            .grid {
-                display: grid;
-                gap: var(--space-7);
-                @media (min-width: 768px) {
-                    grid-template-columns: repeat(6, 1fr);
-                    grid-template-rows: auto auto;
-                    max-width: 776px;
-
-                    .build-card:nth-child(1) {
-                        grid-column: span 3;
-                        img {
-                            max-height: 160px;
-                        }
-                    }
-
-                    .build-card:nth-child(2) {
-                        grid-column: span 3;
-                    }
-
-                    .build-card:nth-child(3) {
-                        grid-column: span 4;
-                    }
-
-                    .build-card:nth-child(4) {
-                        grid-column: span 2;
-                    }
-
-                    .platform-card:nth-child(1) {
-                        grid-column: span 3;
-                        img {
-                            max-height: 295px;
-                        }
-                    }
-                    .platform-card:nth-child(2) {
-                        grid-column: span 3;
-                        img {
-                            max-height: 295px;
-                        }
-                    }
-                    .platform-card:nth-child(3) {
-                        grid-column: span 2;
-                        img {
-                            max-height: 195px;
-                        }
-                    }
-                    .platform-card:nth-child(4) {
-                        grid-column: span 2;
-                        img {
-                            max-height: 195px;
-                        }
-                    }
-                    .platform-card:nth-child(5) {
-                        grid-column: span 2;
-                        img {
-                            max-height: 195px;
-                        }
-                    }
-                }
-            }
-
-            .card-content {
-                padding: 24px;
                 height: 100%;
-                display: flex;
-                flex-direction: column;
-
-                h3 {
-                    margin-block-end: var(--space-4);
-
-                    @media (min-width: 768px) {
-                        margin-block-end: auto;
-                    }
-                }
+                min-height: auto;
             }
+        }
 
-            .card-docs {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                min-height: 240px;
-                @media (min-width: 768px) {
-                    height: 100%;
-                    min-height: auto;
-                }
-            }
+        .card-auth {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            overflow: hidden;
 
-            .card-auth {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                overflow: hidden;
-
-                img {
-                    height: 160px;
-                    margin-top: var(--space-7);
-                }
-
-                .card-links {
-                    min-width: 200px;
-                }
+            img {
+                height: 160px;
+                margin-top: var(--space-7);
             }
 
             .card-links {
-                display: flex;
-                flex-direction: column;
-                gap: var(--space-4);
+                min-width: 200px;
             }
+        }
+
+        .card-links {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
         }
     }
     .discord {
