@@ -25,6 +25,7 @@
     import Wizard from './keys/wizard.svelte';
     import { wizard } from '$lib/stores/wizard';
     import { goto } from '$app/navigation';
+    import { onMount } from 'svelte';
 
     function createKey() {
         wizard.start(Wizard);
@@ -32,28 +33,44 @@
 
     export let projectId: string;
     export let hasPlatforms: boolean;
+    let isSmallViewport = false;
+
+    function updateViewport() {
+        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
+    }
+
+    onMount(() => {
+        updateViewport();
+    });
 </script>
 
+<svelte:window on:resize={updateViewport} on:load={updateViewport} />
 <div class="dashboard-header">
-    <div>
-        <h1>Welcome, {$user.name}</h1>
-        <span>Follow a few quick steps to get started with Appwrite</span>
-    </div>
-    <div class="dashboard-header-button">
-        {#if !hasOnboardingDismissed(projectId)}
-            <Button.Button
-                variant="secondary"
-                size="s"
-                on:click={() => {
-                    setHasOnboardingDismissed(projectId);
-                    if (location.href.endsWith('get-started')) {
-                        goto(`${base}/project-${projectId}`);
-                    } else {
-                        location.reload();
-                    }
-                }}>Dismiss this page</Button.Button>
-        {/if}
-    </div>
+    <Layout.Stack
+        direction={isSmallViewport ? 'column' : 'row'}
+        justifyContent="space-between"
+        alignItems={isSmallViewport ? 'flex-start' : 'center'}
+        gap="xl">
+        <Layout.Stack direction="column" gap={isSmallViewport ? 's' : 'xs'}>
+            <h1>Welcome, {$user.name}</h1>
+            <span>Follow a few quick steps to get started with Appwrite</span>
+        </Layout.Stack>
+        <div class="dashboard-header-button">
+            {#if !hasOnboardingDismissed(projectId)}
+                <Button.Button
+                    variant="secondary"
+                    size="s"
+                    on:click={() => {
+                        setHasOnboardingDismissed(projectId);
+                        if (location.href.endsWith('get-started')) {
+                            goto(`${base}/project-${projectId}`);
+                        } else {
+                            location.reload();
+                        }
+                    }}>Dismiss this page</Button.Button>
+            {/if}
+        </div>
+    </Layout.Stack>
 </div>
 <div class="dashboard-content">
     {#if !hasPlatforms}
@@ -321,23 +338,14 @@
         width: 100%;
         border-bottom: 1px solid var(--color-border-neutral, #ededf0);
         background: var(--color-bgcolor-neutral-primary, #fff);
-        gap: var(--space-7, 16px);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-
-        padding: var(--base-36, 36px) var(--space-7, 16px) var(--base-24, 24px) var(--space-7, 16px);
+        padding: var(--base-36, 36px) var(--space-7, 16px) var(--base-28, 28px) var(--space-7, 16px);
+        margin-block-start: var(--space-7, 16px);
 
         @media (min-width: 768px) {
-            padding-inline: 55px;
-            padding-block: var(--base-40);
+            padding: var(--base-48, 48px) var(--base-64, 64px) var(--base-64, 64px)
+                var(--base-48, 48px);
             flex-direction: row;
             gap: 0;
-        }
-
-        &-button {
-            align-self: start;
         }
 
         h1 {
@@ -350,7 +358,6 @@
             font-weight: 400;
             line-height: 140%; /* 44.8px */
             letter-spacing: -0.144px;
-            margin-block: 6px;
         }
 
         span {
