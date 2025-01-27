@@ -237,7 +237,7 @@
         &:hover {
             background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
             .link-icon {
-                color: var(--color-fgcolor-neutral-tertiary);
+                color: var(--color-fgcolor-neutral-weak);
             }
         }
 
@@ -315,7 +315,7 @@
             justify-content: center;
             align-items: center;
 
-            color: var(--color-fgcolor-neutral-tertiary);
+            color: var(--color-fgcolor-neutral-weak);
         }
     }
 
@@ -323,9 +323,14 @@
         height: 20px;
         display: flex;
         @media (min-width: 1024px) {
-            margin-bottom: var(--space-2, 4px);
-            margin-top: var(--space-7, 16px);
+            margin-block-end: var(--space-2, 4px);
+            margin-block-start: var(--space-9, 24px);
         }
+    }
+
+    .icons .products-label-container {
+        margin-block-start: var(--base-32, 32px);
+        margin-block-end: var(--base-8, 8px);
     }
     .products-label {
         font-size: var(--font-size-xs);
