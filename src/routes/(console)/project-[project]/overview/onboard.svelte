@@ -94,7 +94,7 @@
                     </Layout.Stack>
                     <div class="grid">
                         <button
-                            class="onboarding-card platform-card"
+                            class="onboarding-card platform-card top-row"
                             on:click={() => addPlatform(0)}>
                             <img
                                 src={$app.themeInUse == 'dark'
@@ -107,12 +107,13 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Web</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} />
+
+                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
+                                        <Icon icon={IconArrowRight} color="--neutral-250" />
                                     </div></Layout.Stack>
                             </div>
                         </button>
-                        <button class="onboarding-card platform-card" on:click={createKey}>
+                        <button class="onboarding-card platform-card top-row" on:click={createKey}>
                             <img
                                 src={$app.themeInUse == 'dark'
                                     ? PlatformServerImgSourceDark
@@ -124,8 +125,8 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Server</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} />
+                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
+                                        <Icon icon={IconArrowRight} color="--neutral-250" />
                                     </div></Layout.Stack>
                             </div>
                         </button>
@@ -143,8 +144,8 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Apple</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} />
+                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
+                                        <Icon icon={IconArrowRight} color="var(--neutral-250)" />
                                     </div></Layout.Stack>
                             </div>
                         </button>
@@ -162,8 +163,8 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Android</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} />
+                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
+                                        <Icon icon={IconArrowRight} color="var(--neutral-250)" />
                                     </div></Layout.Stack>
                             </div>
                         </button>
@@ -182,8 +183,8 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Flutter</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} />
+                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
+                                        <Icon icon={IconArrowRight} color="var(--neutral-250)" />
                                     </div></Layout.Stack>
                             </div>
                         </button>
@@ -396,6 +397,10 @@
             font-style: normal;
             font-weight: 400;
             line-height: 130%; /* 26px */
+        }
+
+        .top-row img {
+            min-height: 145px;
         }
 
         h2.done {
