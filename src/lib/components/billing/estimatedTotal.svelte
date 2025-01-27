@@ -21,12 +21,12 @@
 
     async function getEstimate(billingPlan: string, collaborators: string[], couponId: string) {
         try {
-            error = '';
             estimation = await sdk.forConsole.billing.estimationCreateOrganization(
                 billingPlan,
                 couponId === '' ? null : couponId,
                 collaborators ?? []
             );
+            error = '';
         } catch (e) {
             error = e.message;
         }
@@ -56,15 +56,15 @@
         : getEstimate(billingPlan, collaborators, couponId);
 </script>
 
-{#if error.length}
-    <Alert type="error" dismissible>
-        <span slot="title">
-            {error}
-        </span>
-    </Alert>
-{:else if estimation}
+{#if estimation || error.length}
     <Card>
-        <slot />
+        {#if error.length}
+        <p class="u-color-text-danger">
+                {error}
+        </p>
+        {/if}
+
+        {#if estimation}
         {#each estimation.items ?? [] as item}
             <span class="u-flex u-main-space-between">
                 <p class="text">{item.label}</p>
@@ -76,19 +76,18 @@
         {/each}
         <div class="u-sep-block-start" />
         <span class="u-flex u-main-space-between">
-            <p class="text">
-                Total due
-            </p>
+            <p class="text">Total due</p>
             <p class="text">
                 {formatCurrency(estimation.grossAmount)}
             </p>
         </span>
 
         <p class="text u-margin-block-start-16">
-            You'll pay <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> now. Once
-            your credits run out, you'll be charged
+            You'll pay <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> now.
+            Once your credits run out, you'll be charged
             <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> every 30 days.
         </p>
+        {/if}
 
         <FormList class="u-margin-block-start-24">
             <InputChoice
