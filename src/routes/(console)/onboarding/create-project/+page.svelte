@@ -117,7 +117,7 @@
                     </div>
 
                     <Layout.Stack direction="column" gap="xxl">
-                        <Layout.Stack direction="column" gap="xl">
+                        <Layout.Stack direction="column" gap="xxl">
                             <Layout.Stack direction="column" gap="s">
                                 <Input.Text
                                     label="Name"
