@@ -199,7 +199,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Databases reads and writes</Heading>
+        <Heading tag="h6" size="7">Database reads and writes</Heading>
 
         <p class="text">
             The total number of database reads and writes across all projects in your organization.

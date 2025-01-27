@@ -5,17 +5,23 @@
     import { Card, Heading, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
     import { page } from '$app/stores';
     import { type Models } from '@appwrite.io/console';
+    import { formatNumberWithCommas } from '$lib/helpers/numbers';
 
     export let title: string;
     export let total: number[];
     export let path: string = null;
     export let count: Models.Metric[][];
     export let legendData: LegendData[];
+    export let showHeader: boolean = true;
+    export let overlapContainerCover = false;
 </script>
 
-<Container>
+<Container overlapCover={overlapContainerCover}>
     <div class="u-flex u-main-space-between common-section">
-        <Heading tag="h2" size="5">{title}</Heading>
+        {#if showHeader}
+            <Heading tag="h2" size="5">{title}</Heading>
+        {/if}
+
         {#if path}
             <SecondaryTabs>
                 <SecondaryTabsItem href={`${path}/24h`} disabled={$page.params.period === '24h'}>
@@ -34,6 +40,12 @@
     </div>
     <Card>
         {#if count}
+            {@const totalCount = total.reduce((a, b) => a + b, 0)}
+
+            <Heading tag="h6" size="6">{formatNumberWithCommas(totalCount)}</Heading>
+            <p>Total {title.toLocaleLowerCase()}</p>
+            <div class="u-margin-block-start-16" />
+
             <div class="multiple-chart-container u-flex-vertical u-gap-16">
                 <BarChart
                     formatted={$page.params.period === '24h' ? 'hours' : 'days'}
