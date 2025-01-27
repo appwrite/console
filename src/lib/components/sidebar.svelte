@@ -426,4 +426,8 @@
         margin-block: var(--space-2, 4px);
         width: 100%;
     }
+
+    .bottom {
+        height: var(--base-32, 32px);
+    }
 </style>
