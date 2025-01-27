@@ -108,7 +108,7 @@
                                     alignItems="center">
                                     <h3>Web</h3>
 
-                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
+                                    <div class="is-only-desktop">
                                         <Icon icon={IconArrowRight} color="--neutral-250" />
                                     </div></Layout.Stack>
                             </div>
@@ -125,7 +125,7 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Server</h3>
-                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
+                                    <div class="is-only-desktop">
                                         <Icon icon={IconArrowRight} color="--neutral-250" />
                                     </div></Layout.Stack>
                             </div>
@@ -144,8 +144,8 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Apple</h3>
-                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
-                                        <Icon icon={IconArrowRight} color="var(--neutral-250)" />
+                                    <div class="is-only-desktop">
+                                        <Icon icon={IconArrowRight} color="--neutral-250" />
                                     </div></Layout.Stack>
                             </div>
                         </button>
@@ -163,8 +163,8 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Android</h3>
-                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
-                                        <Icon icon={IconArrowRight} color="var(--neutral-250)" />
+                                    <div class="is-only-desktop">
+                                        <Icon icon={IconArrowRight} color="--neutral-250" />
                                     </div></Layout.Stack>
                             </div>
                         </button>
@@ -183,8 +183,8 @@
                                     justifyContent="space-between"
                                     alignItems="center">
                                     <h3>Flutter</h3>
-                                    <div class="is-only-desktop" style="color: var(--neutral-250);">
-                                        <Icon icon={IconArrowRight} color="var(--neutral-250)" />
+                                    <div class="is-only-desktop">
+                                        <Icon icon={IconArrowRight} color="--neutral-250" />
                                     </div></Layout.Stack>
                             </div>
                         </button>
@@ -206,13 +206,17 @@
                     <h2 class="done">Add a platform</h2>
                 </div></Step.Item>
             <Step.Item state="current"
-                ><div class="build-container">
-                    <div class="build-info">
+                ><Layout.Stack
+                    direction={isSmallViewport ? 'column' : 'row'}
+                    gap={isSmallViewport ? 'xl' : 'xxl'}>
+                    <Layout.Stack gap="m">
                         <h2>Build your app</h2>
-                        <span>
-                            Continue building your app by setting up services such as Auth,
-                            Databases, Storage and Functions.</span>
-                    </div>
+                        <div class="build-info">
+                            <span>
+                                Continue building your app by setting up services such as Auth,
+                                Databases, Storage and Functions.</span>
+                        </div>
+                    </Layout.Stack>
                     <div class="grid">
                         <a
                             class="onboarding-card build-card"
@@ -229,14 +233,14 @@
                                     alignItems="center">
                                     <h3>Setup your database</h3>
                                     <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} />
+                                        <Icon icon={IconArrowRight} color="--neutral-250" />
                                     </div></Layout.Stack>
                             </div>
                         </a>
                         <div class="onboarding-card build-card">
                             <div class="card-content card-docs">
                                 <h3>Discover our docs</h3>
-                                <div class="card-links">
+                                <Layout.Stack direction="column" gap="s">
                                     <Link.Anchor
                                         variant="quiet-muted"
                                         href="https://appwrite.io/docs/references"
@@ -244,6 +248,7 @@
                                         ><Layout.Stack direction="row" alignItems="center" gap="xxs"
                                             >API references <Icon
                                                 icon={IconArrowRight}
+                                                color="--neutral-250"
                                                 size="s" /></Layout.Stack
                                         ></Link.Anchor>
                                     <Link.Anchor
@@ -253,6 +258,7 @@
                                         ><Layout.Stack direction="row" alignItems="center" gap="xxs"
                                             >Tutorials <Icon
                                                 icon={IconArrowRight}
+                                                color="--neutral-250"
                                                 size="s" /></Layout.Stack
                                         ></Link.Anchor>
                                     <Link.Anchor
@@ -262,6 +268,7 @@
                                         ><Layout.Stack direction="row" alignItems="center" gap="xxs"
                                             >Storage quick start<Icon
                                                 icon={IconArrowRight}
+                                                color="--neutral-250"
                                                 size="s" /></Layout.Stack
                                         ></Link.Anchor>
                                     <Link.Anchor
@@ -271,9 +278,10 @@
                                         ><Layout.Stack direction="row" alignItems="center" gap="xxs"
                                             >Functions quick start<Icon
                                                 icon={IconArrowRight}
+                                                color="--neutral-250"
                                                 size="s" /></Layout.Stack
                                         ></Link.Anchor>
-                                </div>
+                                </Layout.Stack>
                             </div>
                         </div>
                         <div class="onboarding-card card-auth build-card">
@@ -285,6 +293,7 @@
                                         href={`${base}/project-${projectId}/auth/settings`}
                                         ><Layout.Stack direction="row" alignItems="center" gap="xxs"
                                             >E-mail and password<Icon
+                                                color="--neutral-250"
                                                 icon={IconArrowRight}
                                                 size="s" /></Layout.Stack
                                         ></Link.Anchor>
@@ -293,6 +302,7 @@
                                         href={`${base}/project-${projectId}/auth/settings`}
                                         ><Layout.Stack direction="row" alignItems="center" gap="xxs"
                                             >OAuth 2<Icon
+                                                color="--neutral-250"
                                                 icon={IconArrowRight}
                                                 size="s" /></Layout.Stack
                                         ></Link.Anchor>
@@ -301,6 +311,7 @@
                                         href={`${base}/project-${projectId}/auth/settings`}
                                         ><Layout.Stack direction="row" alignItems="center" gap="xxs"
                                             >View all methods<Icon
+                                                color="--neutral-250"
                                                 icon={IconArrowRight}
                                                 size="s" /></Layout.Stack
                                         ></Link.Anchor>
@@ -326,15 +337,19 @@
                                     href="https://appwrite.io/discord"
                                     size="l"
                                     ><Layout.Stack direction="row" alignItems="flex-end" gap="xxs"
-                                        >Join our Discord for support, tips and product updates
+                                        ><span
+                                            >Join our Discord for support, tips and product updates</span>
                                         <div style:flex-shrink="0" class="is-only-desktop">
-                                            <Icon icon={IconArrowRight} size="s" />
+                                            <Icon
+                                                icon={IconArrowRight}
+                                                size="s"
+                                                color="--neutral-250" />
                                         </div></Layout.Stack
                                     ></Link.Anchor>
                             </div>
                         </div>
                     </div>
-                </div></Step.Item>
+                </Layout.Stack></Step.Item>
         </Step.List>
     {/if}
 </div>
@@ -431,7 +446,7 @@
             background: var(--color-bgcolor-neutral-primary, #fff);
 
             h3 {
-                color: var(--color-fgcolor-neutral-secondary, #56565c);
+                color: var(--color-fgcolor-neutral-primary, #2d2d31);
 
                 /* Desktop/Title S */
                 font-family: var(--font-family-brand, 'Aeonik Pro');
@@ -510,10 +525,6 @@
 
             h3 {
                 margin-block-end: var(--space-4);
-
-                @media (min-width: 768px) {
-                    margin-block-end: auto;
-                }
             }
         }
 
@@ -534,13 +545,17 @@
             justify-content: space-between;
             overflow: hidden;
 
+            .card-content {
+                padding-inline-end: 0;
+            }
+
             img {
                 height: 160px;
-                margin-top: var(--space-7);
+                align-self: flex-end;
             }
 
             .card-links {
-                min-width: 200px;
+                min-width: 160px;
             }
         }
 
