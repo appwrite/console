@@ -1,15 +1,20 @@
 <script lang="ts">
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { Empty, PaginationWithLimit } from '$lib/components';
+    import { Empty, PaginationWithLimit, SearchQuery } from '$lib/components';
     import { Container, ContainerHeader } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
     // import { templatesList } from '$lib/stores/templates';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { canWriteSites } from '$lib/stores/roles.js';
-    import { Icon, Popover, Image, ActionMenu } from '@appwrite.io/pink-svelte';
+    import { Icon, Popover, Image, ActionMenu, Layout } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
-    import { IconDotsHorizontal, IconRefresh } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconCog,
+        IconDotsHorizontal,
+        IconGlobeAlt,
+        IconRefresh
+    } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -42,15 +47,22 @@
 
     // TODO: remove
     const TMPSITEROLES = true;
+
+    $: console.log(data.siteList);
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Sites"
-        buttonText={TMPSITEROLES ? 'Create site' : ''}
-        buttonEvent="create_site"
-        buttonMethod={() => (show = true)}
-        total={data.siteList.total} />
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search sites" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Button on:mousedown={() => (show = true)} event="create_site" size="s">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create site</span>
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
     {#if data.siteList.total}
         <section class="sites-grid">
             {#each data.siteList.sites as site}
@@ -78,6 +90,16 @@
                                     <ActionMenu.Item.Button leadingIcon={IconRefresh} disabled>
                                         Redeploy
                                     </ActionMenu.Item.Button>
+                                    <ActionMenu.Item.Anchor
+                                        href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/domains`}
+                                        leadingIcon={IconGlobeAlt}>
+                                        Domains
+                                    </ActionMenu.Item.Anchor>
+                                    <ActionMenu.Item.Anchor
+                                        href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/settings`}
+                                        leadingIcon={IconCog}>
+                                        Settings
+                                    </ActionMenu.Item.Anchor>
                                 </ActionMenu.Root>
                             </svelte:fragment>
                         </Popover>

@@ -1,10 +1,7 @@
 <script lang="ts">
-    import { SvelteComponent } from 'svelte';
     import { Input } from '@appwrite.io/pink-svelte';
 
-    export let label: string;
-    export let optionalText: string | undefined = undefined;
-    export let showLabel = true;
+    export let label: string = null;
     export let id: string;
     export let value = '';
     export let placeholder = '';
@@ -15,10 +12,6 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
-    export let tooltip: string = null;
-    export let popover: typeof SvelteComponent<unknown> = null;
-    export let popoverProps: Record<string, unknown> = {};
-    export let fullWidth = false;
 
     let error: string;
 
@@ -47,6 +40,7 @@
     {placeholder}
     {disabled}
     {required}
+    {readonly}
     {label}
     {nullable}
     on:input

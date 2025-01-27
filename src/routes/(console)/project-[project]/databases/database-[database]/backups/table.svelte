@@ -11,7 +11,6 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { tooltip } from '$lib/actions/tooltip';
     import RestoreModal from './restoreModal.svelte';
     import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
@@ -275,10 +274,7 @@
 
 <Modal
     title="Delete {selectedBackups.length ? 'backups' : 'backup'}"
-    icon="exclamation"
-    state="warning"
     bind:show={showDelete}
-    headerDivider={false}
     onSubmit={deleteBackups}>
     <p class="text" data-private>
         Are you sure you want to delete
@@ -296,7 +292,7 @@
     </svelte:fragment>
 </Modal>
 
-<Modal headerDivider={true} title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
+<Modal title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
     <Card
         isTile
         class="restore-modal-inner-card u-width-full-line"
@@ -324,7 +320,7 @@
             {#each restoreOptions as restoreOption}
                 <div class="u-width-full-line">
                     <LabelCard
-                        padding="small"
+                        padding="s"
                         name="restore"
                         value={restoreOption.id}
                         bind:group={selectedRestoreOption}>
@@ -352,7 +348,6 @@
                     bind:value={newDatabaseInfo.name}
                     autofocus
                     required />
-
                 {#if !showCustomId}
                     <div>
                         <Pill button on:click={() => (showCustomId = !showCustomId)}
@@ -375,7 +370,7 @@
             <div class="input-check-box-friction">
                 <InputCheckbox
                     required
-                    size="small"
+                    size="s"
                     id="delete_policy"
                     bind:checked={confirmSameDbRestore}>
                     <svelte:fragment slot="description">

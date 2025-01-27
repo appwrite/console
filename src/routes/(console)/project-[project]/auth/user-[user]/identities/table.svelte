@@ -141,14 +141,7 @@
     </div>
 </FloatingActionBar>
 
-<Modal
-    title="Delete identity"
-    icon="exclamation"
-    state="warning"
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    headerDivider={false}
-    closable={!deleting}>
+<Modal title="Delete identity" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'identities' : 'identity'}?

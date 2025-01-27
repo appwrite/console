@@ -101,14 +101,7 @@
 </script>
 
 <div class="max-height-dialog">
-    <Modal
-        title="Delete database"
-        icon="exclamation"
-        size="big"
-        state="warning"
-        bind:show={showDelete}
-        onSubmit={handleDelete}
-        headerDivider={false}>
+    <Modal title="Delete database" bind:show={showDelete} onSubmit={handleDelete}>
         {#await listCollections()}
             <div class="u-flex u-main-center">
                 <div class="loader" />
@@ -184,7 +177,6 @@
                 <div class="input-check-box-friction">
                     <InputCheckbox
                         required
-                        size="small"
                         id="delete_policy"
                         bind:checked={confirmedDeletion}
                         label="I understand and confirm" />

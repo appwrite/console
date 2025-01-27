@@ -1,7 +1,7 @@
 <script lang="ts">
     import { last } from '$lib/helpers/array';
     import { onMount, SvelteComponent } from 'svelte';
-    import { FormItem, Helper, Label } from '.';
+    import { Helper, Label } from '.';
     import { Drop } from '$lib/components';
 
     export let id: string;
@@ -86,72 +86,67 @@
     }
 </script>
 
-<FormItem>
-    <input
-        class="u-hide"
-        bind:this={hiddenEl}
-        value={tags.join(',')}
-        {required}
-        on:invalid={handleInvalid} />
-    <Label {required} {tooltip} hide={!showLabel} for={id}>
-        {label}{#if popover}
-            <Drop isPopover bind:show display="inline-block">
-                &nbsp;<button
-                    type="button"
-                    on:click={() => (show = !show)}
-                    aria-label="input tooltip">
-                    <span
-                        class="icon-info"
-                        aria-hidden="true"
-                        style="font-size: var(--icon-size-small)" />
-                </button>
-                <svelte:fragment slot="list">
-                    <div
-                        class="dropped card u-max-width-250"
-                        style:--card-border-radius="var(--border-radius-small)"
-                        style:--p-card-padding=".75rem"
-                        style:box-shadow="var(--shadow-large)">
-                        <svelte:component this={popover} {...popoverProps} />
-                    </div>
-                </svelte:fragment>
-            </Drop>
-        {/if}
-    </Label>
-
-    <div class="input-text-wrapper">
-        <div class="tags-input">
-            <div class="tags">
-                <ul class="tags-list">
-                    {#each tags as tag}
-                        <li class="tags-item">
-                            <div class="input-tag">
-                                <span class="tag-text">{tag}</span>
-                                <button
-                                    type="button"
-                                    class="input-tag-delete-button"
-                                    aria-label={`delete ${tag} tag`}
-                                    on:click={() => removeValue(tag)}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </button>
-                            </div>
-                        </li>
-                    {/each}
-                </ul>
-            </div>
-            <input
-                {id}
-                {placeholder}
-                {disabled}
-                {readonly}
-                type="text"
-                class="tags-input-text"
-                bind:value
-                bind:this={element}
-                on:keydown={handleInput}
-                on:blur={addValue} />
-        </div>
-    </div>
-    {#if error}
-        <Helper type="warning">{error}</Helper>
+<input
+    class="u-hide"
+    bind:this={hiddenEl}
+    value={tags.join(',')}
+    {required}
+    on:invalid={handleInvalid} />
+<Label {required} {tooltip} hide={!showLabel} for={id}>
+    {label}{#if popover}
+        <Drop isPopover bind:show display="inline-block">
+            &nbsp;<button type="button" on:click={() => (show = !show)} aria-label="input tooltip">
+                <span
+                    class="icon-info"
+                    aria-hidden="true"
+                    style="font-size: var(--icon-size-small)" />
+            </button>
+            <svelte:fragment slot="list">
+                <div
+                    class="dropped card u-max-width-250"
+                    style:--card-border-radius="var(--border-radius-small)"
+                    style:--p-card-padding=".75rem"
+                    style:box-shadow="var(--shadow-large)">
+                    <svelte:component this={popover} {...popoverProps} />
+                </div>
+            </svelte:fragment>
+        </Drop>
     {/if}
-</FormItem>
+</Label>
+
+<div class="input-text-wrapper">
+    <div class="tags-input">
+        <div class="tags">
+            <ul class="tags-list">
+                {#each tags as tag}
+                    <li class="tags-item">
+                        <div class="input-tag">
+                            <span class="tag-text">{tag}</span>
+                            <button
+                                type="button"
+                                class="input-tag-delete-button"
+                                aria-label={`delete ${tag} tag`}
+                                on:click={() => removeValue(tag)}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </li>
+                {/each}
+            </ul>
+        </div>
+        <input
+            {id}
+            {placeholder}
+            {disabled}
+            {readonly}
+            type="text"
+            class="tags-input-text"
+            bind:value
+            bind:this={element}
+            on:keydown={handleInput}
+            on:blur={addValue} />
+    </div>
+</div>
+{#if error}
+    <Helper type="warning">{error}</Helper>
+{/if}

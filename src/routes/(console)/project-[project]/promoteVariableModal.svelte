@@ -15,8 +15,7 @@
     bind:show={showPromote}
     onSubmit={() => {
         dispatch('promoted');
-    }}
-    headerDivider={false}>
+    }}>
     <svelte:fragment slot="title">
         {isConflicting ? 'Overwrite global variable' : 'Promote variable'}
     </svelte:fragment>

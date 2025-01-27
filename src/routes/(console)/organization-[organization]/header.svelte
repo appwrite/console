@@ -2,7 +2,6 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip';
     import {
         AvatarGroup,
         DropList,

@@ -41,7 +41,7 @@
         </Alert>
     {/if}
 
-    <FormList class="u-margin-block-start-24">
+    <FormList>
         <div class="u-width-full-line u-overflow-hidden">
             <InputFile
                 required

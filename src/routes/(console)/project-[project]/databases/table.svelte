@@ -1,7 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Id } from '$lib/components';
     import {
         TableBody,

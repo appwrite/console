@@ -32,13 +32,7 @@
     }
 </script>
 
-<Modal
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}
-    bind:error>
+<Modal bind:show={showDelete} onSubmit={handleDelete} bind:error>
     <svelte:fragment slot="title">
         {linkedOrgs.length ? 'Unable to delete billing address' : 'Delete billing address'}
     </svelte:fragment>

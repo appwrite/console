@@ -4,7 +4,14 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { Empty, GridItem1, CardContainer, PaginationWithLimit, Id } from '$lib/components';
+    import {
+        Empty,
+        GridItem1,
+        CardContainer,
+        PaginationWithLimit,
+        Id,
+        SearchQuery
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import Create from './create.svelte';
     import { Container, ContainerHeader } from '$lib/layout';
@@ -14,7 +21,8 @@
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import { canWriteBuckets } from '$lib/stores/roles';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Button } from '$lib/elements/forms';
 
     export let data: PageData;
 
@@ -27,12 +35,23 @@
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Buckets"
-        total={data.buckets.total}
-        buttonText={$canWriteBuckets ? 'Create bucket' : null}
-        buttonEvent="create_bucket"
-        buttonMethod={() => ($showCreateBucket = true)} />
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search buckets" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            {#if $canWriteBuckets}
+                <Button
+                    on:mousedown={() => ($showCreateBucket = true)}
+                    event="create_bucket"
+                    size="s">
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create bucket</span>
+                </Button>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
+
     {#if data.buckets.total}
         <CardContainer
             showEmpty={$canWriteBuckets}

@@ -32,13 +32,7 @@
     }
 </script>
 
-<Modal
-    title="Delete domain"
-    bind:show
-    onSubmit={deleteDomain}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Delete domain" bind:show onSubmit={deleteDomain}>
     {#if selectedDomain}
         <p data-private>
             Are you sure you want to delete <b>{selectedDomain.domain}</b>? You will no longer be

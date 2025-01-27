@@ -36,6 +36,11 @@
         }
         close();
     }
+
+    $: if (!showCreate) {
+        console.log('test');
+        selectedVar = null;
+    }
 </script>
 
 <Modal

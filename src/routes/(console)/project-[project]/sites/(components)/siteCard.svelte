@@ -11,7 +11,7 @@
     import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
-    import { consoleVariables } from '$routes/(console)/store';
+    import { protocol } from '$routes/(console)/store';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList = { total: 0, rules: [] };
@@ -56,8 +56,9 @@
                     {/if}
                 </Layout.Stack>
                 {#if siteUrl}
-                    <Button icon text on:click={() => (show = true)}
-                        ><Icon icon={IconQrcode} /></Button>
+                    <Button icon text on:click={() => (show = true)}>
+                        <Icon icon={IconQrcode} />
+                    </Button>
                 {/if}
             </Layout.Stack>
             {#if proxyRuleList?.total}
@@ -72,12 +73,7 @@
                     <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
                         Domains
                     </Typography.Text>
-                    <Link
-                        external
-                        href={`${
-                            $consoleVariables?._APP_OPTIONS_FORCE_HTTPS ? 'https://' : 'http://'
-                        }${deployment.domain}`}
-                        variant="muted">
+                    <Link external href={`${$protocol}${deployment.domain}`} variant="muted">
                         <Layout.Stack gap="xxs" direction="row" alignItems="center">
                             <Trim alternativeTrim>
                                 {deployment.domain}

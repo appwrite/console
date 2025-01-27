@@ -5,7 +5,6 @@
 
     export let single = false;
     export let isCard = true;
-    export let noMedia = false;
     export let target: string = null;
     export let href: string = null;
     export let marginTop = false;

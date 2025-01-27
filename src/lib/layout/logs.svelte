@@ -18,7 +18,6 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { BillingPlan } from '$lib/constants';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let selectedRequest = 'parameters';
@@ -347,7 +346,7 @@
                                             Logs are retained in rolling {hoursToDays(limit)} intervals
                                             with the {tier} plan.
                                             {#if $organization.billingPlan === BillingPlan.FREE}
-                                                <Button link href={$upgradeURL}>Upgrade</Button> to increase
+                                                <Button href={$upgradeURL}>Upgrade</Button> to increase
                                                 your log retention for a longer period.
                                             {/if}
                                         </Alert>

@@ -231,7 +231,6 @@
 
 <Modal
     title="Create backup policy"
-    size="big"
     onSubmit={createPolicies}
     bind:show={$showCreatePolicy}
     bind:error={policyCreateError}>

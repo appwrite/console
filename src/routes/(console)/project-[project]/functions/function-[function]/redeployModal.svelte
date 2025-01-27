@@ -37,13 +37,7 @@
     }
 </script>
 
-<Modal
-    title="Redeploy function"
-    size="big"
-    bind:show
-    bind:error
-    onSubmit={redeploy}
-    headerDivider={false}>
+<Modal title="Redeploy function" bind:show bind:error onSubmit={redeploy}>
     <p class="text">
         Are you sure you want to redeploy <b>{$func.name}</b>? Redeploying may affect your
         production code.
