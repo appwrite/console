@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Card, LabelCard, Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Card, Modal } from '$lib/components';
     import { Image, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -12,11 +11,6 @@
     import { Link } from '$lib/elements';
 
     export let show = false;
-    let behaviour: 'repositories' | 'templates';
-
-    $: if (!show) {
-        behaviour = null;
-    }
 </script>
 
 <Modal title="Create site" bind:show hideFooter>
@@ -26,7 +20,7 @@
                 variant="secondary"
                 padding="xs"
                 radius="s"
-                href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
+                href={`${base}/project-${$page.params.project}/sites/create-site/templates`}>
                 <Image
                     alt="repositories"
                     radius="xxs"
@@ -42,7 +36,7 @@
                 variant="secondary"
                 padding="xs"
                 radius="s"
-                href={`${base}/project-${$page.params.project}/sites/create-site/templates`}>
+                href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
                 <Image
                     alt="repositories"
                     radius="xxs"

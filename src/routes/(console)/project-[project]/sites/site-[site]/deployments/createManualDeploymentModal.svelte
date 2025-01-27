@@ -3,18 +3,13 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import { processFileList } from '$lib/helpers/files';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { createTarGzip } from 'nanotar';
-    import { defaultIgnore } from './store';
-    import ignore from 'ignore';
-    interface FileData {
-        path: string;
-        buffer: ArrayBuffer;
-    }
 
     export let show = false;
     export let site: Models.Site;
@@ -55,44 +50,6 @@
         console.log(uploadFile);
         const tock = performance.now();
         console.log('Time taken to process files:', tock - tick);
-    }
-
-    async function processFileList(files: FileList): Promise<FileData[]> {
-        const fileArray = Array.from(files);
-        const ignorer = ignore();
-
-        // Check for .gitignore file
-        const gitignoreFile = fileArray.find(
-            (file) => file.webkitRelativePath.endsWith('.gitignore') || file.name === '.gitignore'
-        );
-
-        if (gitignoreFile) {
-            const gitignoreContent = await gitignoreFile.text();
-            ignorer.add(gitignoreContent);
-        } else {
-            ignorer.add(defaultIgnore);
-        }
-
-        // Filter files using ignorer
-        const filteredFiles = fileArray.filter((file) => {
-            const path = file.webkitRelativePath || file.name;
-            return !ignorer.ignores(path);
-        });
-        const filePromises = filteredFiles.map(async (file) => {
-            try {
-                const buffer = await file.arrayBuffer();
-                return {
-                    path: file?.webkitRelativePath || file.name,
-                    buffer: buffer
-                };
-            } catch (e) {
-                console.error(error);
-                console.log(file);
-                error = e;
-            }
-        });
-
-        return Promise.all(filePromises);
     }
 
     async function createDeployment() {

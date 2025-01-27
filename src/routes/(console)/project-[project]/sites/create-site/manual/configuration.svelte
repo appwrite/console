@@ -21,8 +21,8 @@
         IconEyeOff,
         IconPencil
     } from '@appwrite.io/pink-icons-svelte';
-    import SecretVariableModal from '../../secretVariableModal.svelte';
-    import ImportSiteVariablesModal from '../../importSiteVariablesModal.svelte';
+    import SecretVariableModal from '../secretVariableModal.svelte';
+    import ImportSiteVariablesModal from '../importSiteVariablesModal.svelte';
     import type { Models } from '@appwrite.io/console';
 
     export let frameworks: Models.Framework[];
@@ -103,9 +103,6 @@
             </Accordion>
 
             <Accordion title="Environment variables" badge="Optional" hideDivider>
-                <svelte:fragment slot="title">
-                    Environment variables <Badge content="Optional" variant="secondary" />
-                </svelte:fragment>
                 <Layout.Stack gap="l">
                     <Layout.Stack gap="xl">
                         Set up environment variables to securely manage keys and settings for your
