@@ -68,7 +68,7 @@
     }
 
     :global(.multiple-chart-container .echart) {
-        margin-top: -1rem;
+        margin-top: -1em;
         margin-bottom: -1em;
     }
 </style>

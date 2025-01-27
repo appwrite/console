@@ -36,6 +36,5 @@
 
     .text {
         line-height: 140%;
-        letter-spacing: -0.063px;
     }
 </style>

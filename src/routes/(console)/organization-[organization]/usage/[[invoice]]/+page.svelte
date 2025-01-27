@@ -138,7 +138,7 @@
                         <span
                             class="icon-chart-square-bar text-large"
                             aria-hidden="true"
-                            style="font-size: 32px;" />
+                            style:font-size="32px" />
                         <p class="u-bold">No data to show</p>
                     </div>
                 </Card>

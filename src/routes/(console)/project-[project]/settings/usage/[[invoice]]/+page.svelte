@@ -37,12 +37,8 @@
         data.usage.deploymentsStorageTotal +
         data.usage.buildsStorageTotal;
 
-    // types need to be added to console sdk.
     $: dbReads = data.usage.databasesReads;
-    $: dbReadsTotal = data.usage.databasesReadsTotal;
-
     $: dbWrites = data.usage.databasesWrites;
-    $: dbWritesTotal = data.usage.databasesWritesTotal;
 
     $: legendData = [
         { name: 'Reads', value: data.usage.databasesReadsTotal },

@@ -8,7 +8,6 @@
     $: total = data.databasesTotal;
     $: count = data.databases;
 
-    // types need to be added to console sdk.
     $: reads = data.databasesReads;
     $: readsTotal = data.databasesReadsTotal;
 
