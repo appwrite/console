@@ -6,8 +6,10 @@
     import DeploymentsOverview from './deploymentsOverview.svelte';
     import { Button } from '$lib/elements/forms';
     import { protocol } from '$routes/(console)/store';
+    import InstantRollbackDomain from './instantRollbackDomain.svelte';
 
     export let data;
+    let showRollback = false;
 
     $: console.log(data.site);
     $: console.log(data.deployment);
@@ -20,7 +22,8 @@
         <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
             <svelte:fragment slot="footer">
                 <Button external href={`${$protocol}${data.deployment.domain}`}>Visit</Button>
-                <Button secondary disabled={data.hasProdReadyDeployments}>Instant rollback</Button>
+                <!-- TODO: disable when disabled={data.hasProdReadyDeployments} -->
+                <Button secondary on:click={() => (showRollback = true)}>Instant rollback</Button>
             </svelte:fragment>
         </SiteCard>
 
@@ -38,3 +41,10 @@
         </Layout.Stack>
     </Layout.Stack>
 </Container>
+
+{#if showRollback}
+    <InstantRollbackDomain
+        bind:show={showRollback}
+        deployment={data.deployment}
+        proxyRuleList={data.proxyRuleList} />
+{/if}
