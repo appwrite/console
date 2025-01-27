@@ -8,7 +8,7 @@
     import { getCommandCenterCtx } from '../commandCenter.svelte';
 
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
-    import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
+    import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
 
     /* eslint no-undef: "off" */
@@ -297,9 +297,15 @@
                                 <slot name="option" option={castOption(item)}>
                                     <div class="u-flex u-gap-8 u-cross-center">
                                         {#if item.icon}
-                                            <Icon icon={item.icon} size="s" />
+                                            <Icon
+                                                icon={item.icon}
+                                                size="s"
+                                                color="--color-fgcolor-neutral-tertiary" />
                                         {:else}
-                                            <Icon icon={IconArrowRight} size="s" />
+                                            <Icon
+                                                icon={IconArrowSmRight}
+                                                size="s"
+                                                color="--color-fgcolor-neutral-tertiary" />
                                         {/if}
                                         <span>
                                             {item.label}

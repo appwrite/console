@@ -47,9 +47,13 @@
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
     import {
-        IconArrowRight,
+        IconAnnotation,
+        IconBookOpen,
+        IconDiscord,
         IconPencil,
         IconPlus,
+        IconQuestionMarkCircle,
+        IconSparkles,
         IconSwitchHorizontal
     } from '@appwrite.io/pink-icons-svelte';
 
@@ -87,7 +91,7 @@
                 addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
-            icon: IconArrowRight,
+            icon: IconSparkles,
             disabled: !isAssistantEnabled
         },
         {
@@ -105,7 +109,7 @@
                 window.open('https://appwrite.io/docs', '_blank');
             },
             group: 'help',
-            icon: IconArrowRight
+            icon: IconBookOpen
         },
         {
             label: 'Contact support',
@@ -113,7 +117,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: IconArrowRight
+            icon: IconQuestionMarkCircle
         },
         {
             label: 'Send feedback',
@@ -121,7 +125,7 @@
                 feedback.toggleFeedback();
             },
             group: 'help',
-            icon: IconArrowRight
+            icon: IconAnnotation
         },
         {
             label: 'Join Discord community',
@@ -129,7 +133,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: IconArrowRight
+            icon: IconDiscord
         },
         ...(['auto', 'dark', 'light'] as const).map((theme) => {
             return {

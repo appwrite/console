@@ -9,7 +9,7 @@
     import { commands, searchers, type Command, isKeyedCommand } from '../commands';
     import Template from './template.svelte';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
-    import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
+    import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
 
     let search = '';
 
@@ -68,9 +68,9 @@
                     src={`${base}/icons/${$app.themeInUse}/color/${command.image}.svg`}
                     alt={command.label} />
             {:else if command.icon}
-                <Icon icon={command.icon} size="s" />
+                <Icon icon={command.icon} size="s" color="--color-fgcolor-neutral-tertiary" />
             {:else}
-                <Icon icon={IconArrowRight} size="s" />
+                <Icon icon={IconArrowSmRight} size="s" color="--color-fgcolor-neutral-tertiary" />
             {/if}
             <span>
                 {command.label}
