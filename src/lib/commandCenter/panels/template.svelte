@@ -9,7 +9,7 @@
 
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Keyboard, Layout } from '@appwrite.io/pink-svelte';
 
     /* eslint no-undef: "off" */
     type Option = $$Generic<Omit<Command, 'group'> & { group?: string }>;
@@ -330,13 +330,13 @@
         <slot name="footer">
             <Layout.Stack direction="row" justifyContent="space-between"
                 ><Layout.Stack direction="row" alignItems="center" gap="xxs">
-                    <kbd class="kbd">Enter</kbd> <span>to select</span></Layout.Stack>
+                    <Keyboard key="Enter" autoWidth={true} /> <span>to select</span></Layout.Stack>
                 <Layout.Stack
                     direction="row"
                     justifyContent="flex-end"
                     alignItems="center"
                     gap="xxs">
-                    <kbd class="kbd">Esc</kbd>
+                    <Keyboard key="Esc" autoWidth={true} />
                     <span>to {$subPanels.length > 1 ? 'go back' : 'close'}</span></Layout.Stack>
             </Layout.Stack>
         </slot>

@@ -10,6 +10,7 @@
     import { project } from '../store';
     import { showCreateUser } from './+page.svelte';
     import { showCreateTeam } from './teams/+page.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: $registerCommands([
         {
@@ -22,7 +23,7 @@
             },
             keys: $page.url.pathname.endsWith('auth') ? ['c'] : ['c', 'u'],
             group: 'users',
-            icon: 'plus',
+            icon: IconPlus,
             rank: $page.url.pathname.endsWith('auth') ? 10 : 0,
             disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteUsers
         },
@@ -37,7 +38,7 @@
             keys: $page.url.pathname.endsWith('teams') ? ['c'] : ['c', 't'],
 
             group: 'teams',
-            icon: 'plus',
+            icon: IconPlus,
             rank: $page.url.pathname.endsWith('teams') ? 10 : 0,
             disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteTeams
         },

@@ -27,6 +27,7 @@
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
@@ -56,13 +57,13 @@
             callback() {
                 addSubPanel(PlatformsPanel);
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'integrations',
             disabled: !$canWriteProjects
         },
         {
             label: 'Create API Key',
-            icon: 'plus',
+            icon: IconPlus,
             callback() {
                 createApiKey();
             },

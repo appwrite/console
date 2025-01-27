@@ -8,7 +8,7 @@
     import { isMac } from '$lib/helpers/platform';
     import { commands, searchers, type Command, isKeyedCommand } from '../commands';
     import Template from './template.svelte';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Keyboard, Layout } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
 
     let search = '';
@@ -78,21 +78,19 @@
         </Layout.Stack>
         <Layout.Stack direction="row" justifyContent="flex-end" alignItems="center" gap="s">
             {#if hasCtrl(command)}
-                <kbd class="kbd"> {isMac() ? '⌘' : 'Ctrl'} </kbd>
+                <Keyboard autoWidth={!isMac()} key={isMac() ? '⌘' : 'Ctrl'} />
             {/if}
             {#if hasShift(command)}
-                <kbd class="kbd"> {isMac() ? '⇧' : 'Shift'} </kbd>
+                <Keyboard autoWidth={!isMac()} key={isMac() ? '⇧' : 'Shift'} />
             {/if}
             {#if hasAlt(command)}
-                <kbd class="kbd"> {isMac() ? '⌥' : 'Alt'} </kbd>
+                <Keyboard autoWidth={!isMac()} key={isMac() ? '⌥' : 'Alt'} />
             {/if}
             {#if isKeyedCommand(command)}
                 {#each command.keys as key, i}
                     {@const hasNext = command.keys.length - 1 !== i}
 
-                    <kbd class="kbd">
-                        {key.toUpperCase()}
-                    </kbd>
+                    <Keyboard key={key.toUpperCase()} />
                     {#if hasNext}
                         <span class="then">then</span>
                     {/if}
