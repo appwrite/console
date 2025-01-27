@@ -1,9 +1,9 @@
 <script lang="ts">
     import { CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Tag } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let name: string;
     export let id: string;
@@ -12,6 +12,7 @@
     export let options: {
         value: string;
         label: string;
+        leadingIcon?: ComponentType;
     }[] = [];
 
     let showCustomId = false;
@@ -31,10 +32,10 @@
                 <CustomId bind:id bind:show={showCustomId} name="Site" fullWidth />
             {:else}
                 <div>
-                    <Pill button on:click={() => (showCustomId = !showCustomId)}>
+                    <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
                         <span class="icon-pencil" aria-hidden="true" />
                         <span class="text">Site ID </span>
-                    </Pill>
+                    </Tag>
                 </div>
             {/if}
         </Layout.Stack>

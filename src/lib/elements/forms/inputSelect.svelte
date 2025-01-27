@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let id: string;
     export let label: string | undefined = undefined;
@@ -11,6 +12,7 @@
         value: string | boolean | number | null;
         label: string;
         disabled?: boolean;
+        leadingIcon?: ComponentType;
     }[];
 
     let element: HTMLSelectElement;

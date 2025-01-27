@@ -1,16 +1,10 @@
 <script lang="ts">
     import { Card } from '$lib/components';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import {
-        IconGithub,
-        IconReact,
-        IconSvelte,
-        IconNuxt,
-        IconVue,
-        IconGitBranch
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import { consoleVariables } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
+    import { getFrameworkIcon } from './store';
 
     export let framework: Partial<Models.Framework>;
     export let repositoryName: string;
@@ -18,21 +12,6 @@
     export let rootDir: string;
     export let domain: string = '';
     export let showAfter = true;
-
-    function getIcon(fr: string) {
-        switch (true) {
-            case fr.toLocaleLowerCase().includes('sveltekit'):
-                return IconSvelte;
-            case fr.toLocaleLowerCase().includes('nuxt'):
-                return IconNuxt;
-            case fr.toLocaleLowerCase().includes('vue'):
-                return IconVue;
-            case fr.toLocaleLowerCase().includes('react'):
-                return IconReact;
-            default:
-                return undefined;
-        }
-    }
 </script>
 
 <Card padding="xs">
@@ -40,7 +19,7 @@
         <slot />
         <Layout.Stack gap="l">
             {#if framework?.name}
-                {@const frameworkIcon = getIcon(framework.key)}
+                {@const frameworkIcon = getFrameworkIcon(framework.key)}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Framework</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">

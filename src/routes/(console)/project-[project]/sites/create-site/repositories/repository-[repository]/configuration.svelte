@@ -24,6 +24,7 @@
     import SecretVariableModal from '../../secretVariableModal.svelte';
     import ImportSiteVariablesModal from '../../importSiteVariablesModal.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { getFrameworkIcon } from '../../store';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -59,7 +60,8 @@
             bind:value={frameworkId}
             options={frameworks.map((framework) => ({
                 value: framework.key,
-                label: framework.name
+                label: framework.name,
+                leadingIcon: getFrameworkIcon(framework.key)
             }))}
             on:change={() => {
                 selectedFramework = frameworks.find((framework) => framework.key === frameworkId);
