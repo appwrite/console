@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Remarkable } from 'remarkable';
     import Template from './template.svelte';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Keyboard, Layout } from '@appwrite.io/pink-svelte';
 
     const markdownInstance = new Remarkable();
 
@@ -260,13 +260,13 @@
 
             <Layout.Stack direction="row" justifyContent="space-between" gap="xxl"
                 ><Layout.Stack direction="row" alignItems="center" gap="xxs">
-                    <kbd class="kbd">Enter</kbd> <span>to search</span></Layout.Stack>
+                    <Keyboard key="Enter" autoWidth={true} /> <span>to search</span></Layout.Stack>
                 <Layout.Stack
                     direction="row"
                     justifyContent="flex-end"
                     alignItems="center"
                     gap="xxs">
-                    <kbd class="kbd">Esc</kbd>
+                    <Keyboard key="Esc" autoWidth={true} />
                     <span>to {$subPanels.length === 1 ? 'close' : 'go back'}</span></Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
