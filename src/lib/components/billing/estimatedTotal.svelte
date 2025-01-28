@@ -57,7 +57,7 @@
 </script>
 
 {#if estimation || error.length}
-    <Card>
+    <Card class="u-flex u-flex-vertical u-gap-8">
         {#if error.length}
         <p class="u-color-text-danger">
                 {error}
@@ -85,7 +85,7 @@
         <p class="text u-margin-block-start-16">
             You'll pay <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> now.
             Once your credits run out, you'll be charged
-            <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> every 30 days.
+            <span class="u-bold">{formatCurrency(estimation.amount)}</span> every 30 days.
         </p>
         {/if}
 

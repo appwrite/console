@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
     import { formatCurrency } from '$lib/helpers/numbers';
 
     export let label: string;
@@ -11,7 +10,7 @@
         <div class="u-flex u-cross-center u-gap-4">
             <p class="text">
                 <span class="icon-tag u-color-text-success" aria-hidden="true" />
-                <span use:tooltip={{ content: label }}>
+                <span>
                     {label}
                 </span>
             </p>
