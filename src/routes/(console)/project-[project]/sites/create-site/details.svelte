@@ -16,6 +16,8 @@
     }[] = [];
 
     let showCustomId = false;
+
+    $: console.log(options);
 </script>
 
 <Fieldset legend="Details">

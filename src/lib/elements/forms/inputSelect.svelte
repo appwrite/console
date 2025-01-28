@@ -13,6 +13,7 @@
         label: string;
         disabled?: boolean;
         leadingIcon?: ComponentType;
+        leadingHtml?: string;
     }[];
 
     let element: HTMLSelectElement;
