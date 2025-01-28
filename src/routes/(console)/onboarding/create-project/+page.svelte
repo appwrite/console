@@ -95,9 +95,9 @@
 <svelte:head>
     <title>Create project - Appwrite</title>
 </svelte:head>
-
 <div
-    class="page-container u-flex-vertical u-cross-child-center u-cross-center u-margin-block-start-96">
+    class="page-container u-flex-vertical u-cross-child-center u-cross-center"
+    class:u-margin-block-start-96={!isLoading}>
     {#if isLoading}
         <Loading {startAnimation} />
     {:else}
@@ -176,7 +176,6 @@
     .page-container {
         width: calc(100% - 2rem);
         margin: 0 1rem;
-        min-height: 100vh;
         gap: 4.5rem;
         background: var(--color-bgcolor-neutral-default, #19191c);
 

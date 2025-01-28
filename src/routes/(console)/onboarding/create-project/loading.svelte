@@ -12,16 +12,29 @@
     ];
     let currentSentenceIndex = 0;
     let visible = true;
+    let removeShadow = false;
+    let removeShadowTimeout;
 
     function handleResize() {
         startAnimation = false;
+        removeShadow = false;
         setTimeout(() => {
             startAnimation = true;
+            handleRemoveShadow();
         }, 1500);
     }
 
+    function handleRemoveShadow() {
+        removeShadowTimeout = setTimeout(() => {
+            removeShadow = true;
+        }, 2000); // wait for transition animation to be started
+    }
+
+    $: if (startAnimation) {
+        handleRemoveShadow();
+    }
+
     onMount(() => {
-        window.addEventListener('resize', handleResize);
         const interval = setInterval(() => {
             visible = false;
             currentSentenceIndex = (currentSentenceIndex + 1) % loadingSentences.length;
@@ -32,11 +45,12 @@
 
         return () => {
             clearInterval(interval);
-            window.removeEventListener('resize', handleResize);
+            clearTimeout(removeShadowTimeout);
         };
     });
 </script>
 
+<svelte:window on:resize={handleResize} />
 <div class="grid-container" class:start-animation={startAnimation}>
     <div class="static-loader">
         <Layout.Stack alignItems="center" gap="l">
@@ -54,7 +68,7 @@
     <div class="title-container">
         <Typography.Title size="l">Welcome to Appwrite</Typography.Title>
     </div>
-    <div class="grid">
+    <div class="grid" class:remove-shadow={removeShadow}>
         <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 1; " />
         <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 2; " />
         <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 3; " />
@@ -321,7 +335,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        filter: grayscale(100%);
+        filter: grayscale(100%) brightness(150%) contrast(90%);
         transition: all var(--icon-colorize-animation-duration) var(--animation-type)
             var(--show-icon-color-delay);
 
@@ -343,8 +357,8 @@
 
     @keyframes grayscale-animation {
         100% {
-            -webkit-filter: grayscale(0%);
-            filter: grayscale(0%);
+            -webkit-filter: grayscale(0%) brightness(100%) contrast(100%);
+            filter: grayscale(0%) brightness(100%) contrast(100%);
         }
     }
 
@@ -448,6 +462,11 @@
     .start-animation .icon8 {
         transform: translateY(var(--negative-cell-dimension))
             translateX(var(--negative-double-cell-dimension));
+    }
+
+    .remove-shadow :not(.icon8) .icon-container {
+        transition: box-shadow var(--icon-move-to-center-animation-duration) var(--animation-type);
+        box-shadow: 0 12.973px 12.973px 0 rgba(0, 0, 0, 0);
     }
 
     .icon1 {
