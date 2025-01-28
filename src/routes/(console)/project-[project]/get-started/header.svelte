@@ -7,7 +7,6 @@
     import { base } from '$app/paths';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
-    import { user } from '$lib/stores/user';
 
     let isSmallViewport = false;
 
@@ -24,9 +23,9 @@
 {#if hasOnboardingDismissed($project.$id)}
     <Cover>
         <svelte:fragment slot="header">
-            <Typography.Title color="--color-fgcolor-neutral-primary" size="xl">
+            <CoverTitle>
                 {$project?.name}
-            </Typography.Title>
+            </CoverTitle>
             <Id value={$project.$id}>{$project.$id}</Id>
         </svelte:fragment>
     </Cover>
@@ -40,7 +39,7 @@
                 gap="xl">
                 <Layout.Stack direction="column" gap={isSmallViewport ? 's' : 'xs'}>
                     <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
-                        >Welcome, {$user.name}</Typography.Title>
+                        >Welcome, hoi</Typography.Title>
                     <Typography.Text size="m" color="--color-fgcolor-neutral-secondary"
                         >Follow a few quick steps to get started with Appwrite</Typography.Text>
                 </Layout.Stack>
