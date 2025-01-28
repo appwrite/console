@@ -237,7 +237,7 @@
         &:hover {
             background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
             .link-icon {
-                color: var(--color-fgcolor-neutral-weak);
+                color: var(--color-fgcolor-neutral-tertiary);
             }
         }
 
@@ -253,7 +253,9 @@
 
         &:active {
             background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
-
+            .link-text {
+                color: var(--color-fgcolor-neutral-primary);
+            }
             .link-icon {
                 color: var(--color-fgcolor-neutral-primary);
             }
