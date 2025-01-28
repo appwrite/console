@@ -29,7 +29,7 @@
     import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
-    import { getFrameworkIcon } from '../../store';
+    import { getFrameworkIcon } from '../../../store';
 
     export let data;
 

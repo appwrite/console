@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
 
     import type { PageData } from './$types';
@@ -14,7 +14,7 @@
     import Table from './table.svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
-    import { Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 

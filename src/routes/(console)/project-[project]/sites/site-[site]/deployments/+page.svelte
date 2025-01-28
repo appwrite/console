@@ -14,7 +14,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import Table from './table.svelte';
     import QuickFilters from './quickFilters.svelte';
-    import RedeployModal from './redeployModal.svelte';
+    import RedeployModal from '../../redeployModal.svelte';
     import CreateGitDeploymentModal from './createGitDeploymentModal.svelte';
     import UsageCard from './usageCard.svelte';
     import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
@@ -237,7 +237,10 @@
     </Layout.Stack>
 </Container>
 {#if selectedDeployment}
-    <RedeployModal {selectedDeployment} bind:show={showRedeploy} site={data.site} />
+    <RedeployModal
+        selectedDeploymentId={selectedDeployment.$id}
+        bind:show={showRedeploy}
+        site={data.site} />
 {/if}
 
 {#if showConnectRepo}

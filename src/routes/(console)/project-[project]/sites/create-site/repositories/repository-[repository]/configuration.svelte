@@ -24,7 +24,7 @@
     import SecretVariableModal from '../../secretVariableModal.svelte';
     import ImportSiteVariablesModal from '../../importSiteVariablesModal.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { getFrameworkIcon } from '../../store';
+    import { getFrameworkIcon } from '../../../store';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
