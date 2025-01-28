@@ -6,7 +6,7 @@
     export let show = false;
 </script>
 
-<Modal title="Secret variable" size="big" bind:show>
+<Modal title="Secret variable" bind:show>
     <Layout.Stack gap="l">
         <p>
             Secret variables are hidden from both the UI and API. Once a variable is marked as

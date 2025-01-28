@@ -7,14 +7,20 @@ export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.SITES_DOMAINS);
     const { site, proxyRuleList } = await parent();
 
-    const [deployment, deploymentList] = await Promise.all([
+    const [deployment, deploymentList, prodReadyDeployments] = await Promise.all([
         sdk.forProject.sites.getDeployment(params.site, site.deploymentId),
-        sdk.forProject.sites.listDeployments(params.site, [Query.limit(5), Query.orderDesc('')])
+        sdk.forProject.sites.listDeployments(params.site, [Query.limit(5), Query.orderDesc('')]),
+        sdk.forProject.sites.listDeployments(params.site, [
+            Query.limit(1)
+            // Query.equal('status', 'ready')
+            // Query.equal('live', true)
+        ])
     ]);
     return {
         site,
         deployment,
         deploymentList,
-        proxyRuleList
+        proxyRuleList,
+        hasProdReadyDeployments: prodReadyDeployments?.deployments?.length > 0
     };
 };

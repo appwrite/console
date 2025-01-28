@@ -29,6 +29,7 @@
     import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
+    import { getFrameworkIcon } from '../../store';
 
     export let data;
 
@@ -223,7 +224,8 @@
                 {@const options = data.template.frameworks.map((framework) => {
                     return {
                         value: framework.name,
-                        label: framework.name
+                        label: framework.name,
+                        leadingIcon: getFrameworkIcon(framework.key)
                     };
                 })}
                 <Layout.Stack gap="xxl">
