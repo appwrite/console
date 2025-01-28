@@ -21,7 +21,6 @@ export const columns = writable<Column[]>([
 ]);
 
 export function getFrameworkIcon(framework: string) {
-    console.log(framework);
     switch (true) {
         case framework.toLocaleLowerCase().includes('sveltekit'):
             return IconSvelte;

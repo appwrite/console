@@ -12,6 +12,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { ActionMenu, Card, Icon, Popover } from '@appwrite.io/pink-svelte';
     import RedeployModal from './redeployModal.svelte';
+    import { getFrameworkIcon } from './store';
 
     export let siteList: Models.SiteList;
 
@@ -29,7 +30,11 @@
                 description={`Updated ${timeFromNow(site.$updatedAt)}`}
                 src={site.preview ??
                     `https://placehold.co/600x400/111/bbb?text=Screenshot+coming+soon&font=inter`}
-                alt={site.name}>
+                alt={site.name}
+                avatar>
+                <svelte:fragment slot="avatar">
+                    <Icon icon={getFrameworkIcon(site.framework)} />
+                </svelte:fragment>
                 <Popover placement="bottom-end" let:toggle>
                     <Button
                         text
