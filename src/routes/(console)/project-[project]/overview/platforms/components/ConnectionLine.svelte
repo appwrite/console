@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconCheck } from '@appwrite.io/pink-icons-svelte';
+
     export let status: boolean = false;
 </script>
 
@@ -14,7 +17,8 @@
         style={`opacity: ${status ? 1 : 0.15}; transition: opacity 2.5s;`}
         data-status={status}>
         {#if status}
-            <span class="icon-check" style="color: #fd366e;"></span>
+            <!-- todo: xs missing atm, need to test -->
+            <Icon icon={IconCheck} size="s" color="#fd366e" />
         {/if}
     </div>
 
@@ -27,8 +31,8 @@
 
 <style>
     .connection-line {
-        width: 100%;
         display: flex;
+        width: 6.125rem;
         align-items: center;
     }
 
@@ -71,9 +75,5 @@
         justify-content: center;
         border: 1.8px solid hsla(343, 98%, 60%, 0.32);
         background-color: hsla(343, 98%, 60%, 0.08);
-    }
-
-    .icon-check {
-        color: #fd366e;
     }
 </style>

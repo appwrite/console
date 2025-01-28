@@ -22,9 +22,10 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
-    import OnboardingPlatformCard from '$routes/(console)/project-[project]/overview/platforms/components/OnboardingPlatformCard.svelte';
-    import ConnectionLine from '$routes/(console)/project-[project]/overview/platforms/components/ConnectionLine.svelte';
+    import ConnectionLine from './components/ConnectionLine.svelte';
+    import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
 
     let showExitModal = false;
     let isPlatformCreated = false;
@@ -34,6 +35,12 @@
 
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-android\ncd starter-for-android\n';
+
+    const updateConfigCode = isCloud
+        ? `const val APPWRITE_PROJECT_ID = "${projectId}"`
+        : `const val APPWRITE_PROJECT_ID = "${projectId}"
+const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
+        `;
 
     async function createAndroidPlatform() {
         try {
@@ -51,19 +58,22 @@
             trackEvent(Submit.PlatformCreate, {
                 type: 'android'
             });
-            addNotification({
-                type: 'success',
-                message: `Android platform has been created.`
-            });
+            await Promise.all([
+                invalidate(Dependencies.PROJECT),
+                invalidate(Dependencies.PLATFORMS)
+            ]);
         } catch (error) {
             trackError(error, Submit.PlatformCreate);
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
         } finally {
             isCreatingPlatform = false;
         }
     }
 
     async function resetPlatformStore() {
-        await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
         createPlatform.reset();
     }
 
@@ -77,11 +87,12 @@
 
         return () => {
             unsubscribe();
+            resetPlatformStore();
         };
     });
 </script>
 
-<Wizard title="Add an Android platform" bind:showExitModal confirmExit onExit={resetPlatformStore}>
+<Wizard title="Add Android platform" bind:showExitModal confirmExit>
     <Form onSubmit={createAndroidPlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
@@ -99,7 +110,7 @@
                             <!-- Tooltips on InputText don't work as of now -->
                             <InputText
                                 id="key"
-                                label="Package Name"
+                                label="Package name"
                                 placeholder="com.company.appname"
                                 tooltip="Your package name is generally the applicationId in your app-level build.gradle file."
                                 required
@@ -114,8 +125,7 @@
                             submissionLoader={isCreatingPlatform}
                             disabled={!$createPlatform.name ||
                                 !$createPlatform.key ||
-                                isCreatingPlatform}
-                            on:click={async () => await createAndroidPlatform()}>
+                                isCreatingPlatform}>
                             Create platform
                         </Button>
                     </Layout.Stack>
@@ -146,8 +156,8 @@
                 <Fieldset legend="Clone starter">
                     <Layout.Stack gap="l">
                         <Typography.Text variant="m-500">
-                            1. Clone the Android starter kit from GitHub using your terminal or
-                            Android Studio.
+                            1. Clone the starter kit from GitHub using the terminal or Android
+                            Studio.
                         </Typography.Text>
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
@@ -155,27 +165,28 @@
                             <Code lang="bash" lineNumbers code={gitCloneCode} />
                         </div>
 
-                        <Typography.Text variant="m-500">2. Configure the project</Typography.Text>
+                        <Typography.Text variant="m-500"
+                            >2. Open the file <InlineCode
+                                size="s"
+                                code="data/repository/AppwriteRepository.kt" /> and update the configuration
+                            settings.</Typography.Text>
 
-                        <Typography.Text variant="m-400">
-                            Update the configuration in the file
-                            <InlineCode size="s" code="data/repository/AppwriteRepository.kt" />
-                            .
-                        </Typography.Text>
+                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                        <div class="pink2-code-margin-fix">
+                            <Code lang="kotlin" lineNumbers code={updateConfigCode} />
+                        </div>
 
-                        <Typography.Text variant="m-500">3. Run the starter kit</Typography.Text>
-                        <Typography.Text variant="m-400">
-                            Launch the starter kit and click the
-                            <InlineCode size="s" code="Send a ping" />
-                            button to test the setup.
-                        </Typography.Text>
+                        <Typography.Text variant="m-500"
+                            >3. Run the app on a connected device or emulator, then click the <InlineCode
+                                size="s"
+                                code="Send a ping" /> button to verify the setup.</Typography.Text>
                     </Layout.Stack>
                 </Fieldset>
             {/if}
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Card padding="l">
+        <Card padding="l" class="responsive-padding">
             <Layout.Stack gap="xxl">
                 <Layout.Stack direction="row" justifyContent="center" gap="none">
                     <OnboardingPlatformCard
@@ -197,8 +208,13 @@
                         <Typography.Text variant="m-400">Waiting for connection...</Typography.Text>
                     {:else}
                         <!-- cannot apply fade on components -->
-                        <div in:fade={{ duration: 2500 }}>
+                        <div
+                            in:fade={{ duration: 2500 }}
+                            class="u-flex u-flex-vertical u-cross-center u-gap-8">
                             <Typography.Title size="m">Congratulations!</Typography.Title>
+
+                            <Typography.Text variant="m-400"
+                                >You connected your app successfully.</Typography.Text>
                         </div>
                     {/if}
                 </Layout.Stack>
@@ -221,5 +237,11 @@
 <style lang="scss">
     :global(.pink2-code-margin-fix pre) {
         margin: revert;
+    }
+
+    :global(.responsive-padding) {
+        @media (max-width: 768px) {
+            padding: 16px;
+        }
     }
 </style>

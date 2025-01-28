@@ -5,7 +5,6 @@
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
-    import CreateWeb from './createWeb.svelte';
     import CreateReactNative from './createReactNative.svelte';
     import { versions } from './wizard/store';
 
@@ -23,7 +22,6 @@
     }
 
     const platforms = {
-        [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
         [Platform.Apple]: CreateApple,
@@ -56,7 +54,6 @@
         'flutter-macos' = 'macOS',
         'flutter-windows' = 'Windows',
         'flutter-web' = 'Web',
-        'web' = 'Web',
         'react-native-android' = 'Android',
         'react-native-ios' = 'iOS'
     }
@@ -73,8 +70,6 @@
             return 'color/apple';
         } else if (platform.includes('android')) {
             return 'color/android';
-        } else if (platform.includes('web')) {
-            return 'grayscale/code';
         } else {
             return 'unknown';
         }
@@ -95,7 +90,6 @@
             </Button>
         {/if}
         <svelte:fragment slot="list">
-            <DropListItem on:click={() => addPlatform(Platform.Web)}>Web app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Android)}>Android app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple app</DropListItem>
@@ -169,9 +163,6 @@
                             </Button>
                         {/if}
                         <svelte:fragment slot="list">
-                            <DropListItem on:click={() => addPlatform(Platform.Web)}>
-                                Web
-                            </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
                                 Flutter
                             </DropListItem>
@@ -180,6 +171,9 @@
                             </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Apple)}>
                                 Apple
+                            </DropListItem>
+                            <DropListItem on:click={() => addPlatform(Platform.ReactNative)}>
+                                React Native
                             </DropListItem>
                         </svelte:fragment>
                     </DropList>
