@@ -96,97 +96,107 @@
                         <button
                             class="onboarding-card platform-card top-row"
                             on:click={() => addPlatform(0)}>
-                            <img
-                                src={$app.themeInUse == 'dark'
-                                    ? PlatformWebImgSourceDark
-                                    : PlatformWebImgSource}
-                                alt="" />
-                            <div class="card-content">
-                                <Layout.Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center">
-                                    <h3>Web</h3>
+                            <Layout.Stack direction="column" justifyContent="space-between">
+                                <img
+                                    src={$app.themeInUse == 'dark'
+                                        ? PlatformWebImgSourceDark
+                                        : PlatformWebImgSource}
+                                    alt="" />
+                                <div class="card-content">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="flex-end">
+                                        <h3>Web</h3>
 
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} color="--neutral-250" />
-                                    </div></Layout.Stack>
-                            </div>
+                                        <div class="is-only-desktop">
+                                            <Icon icon={IconArrowRight} color="--neutral-250" />
+                                        </div></Layout.Stack>
+                                </div>
+                            </Layout.Stack>
                         </button>
                         <button class="onboarding-card platform-card top-row" on:click={createKey}>
-                            <img
-                                src={$app.themeInUse == 'dark'
-                                    ? PlatformServerImgSourceDark
-                                    : PlatformServerImgSource}
-                                alt="" />
-                            <div class="card-content">
-                                <Layout.Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center">
-                                    <h3>Server</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} color="--neutral-250" />
-                                    </div></Layout.Stack>
-                            </div>
+                            <Layout.Stack direction="column" justifyContent="space-between">
+                                <img
+                                    src={$app.themeInUse == 'dark'
+                                        ? PlatformServerImgSourceDark
+                                        : PlatformServerImgSource}
+                                    alt="" />
+                                <div class="card-content">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Server</h3>
+                                        <div class="is-only-desktop">
+                                            <Icon icon={IconArrowRight} color="--neutral-250" />
+                                        </div></Layout.Stack>
+                                </div>
+                            </Layout.Stack>
                         </button>
                         <button
                             class="onboarding-card platform-card"
                             on:click={() => addPlatform(3)}>
-                            <img
-                                src={$app.themeInUse == 'dark'
-                                    ? PlatformIosImgSourceDark
-                                    : PlatformIosImgSource}
-                                alt="" />
-                            <div class="card-content">
-                                <Layout.Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center">
-                                    <h3>Apple</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} color="--neutral-250" />
-                                    </div></Layout.Stack>
-                            </div>
+                            <Layout.Stack direction="column" justifyContent="space-between">
+                                <img
+                                    src={$app.themeInUse == 'dark'
+                                        ? PlatformIosImgSourceDark
+                                        : PlatformIosImgSource}
+                                    alt="" />
+                                <div class="card-content">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Apple</h3>
+                                        <div class="is-only-desktop">
+                                            <Icon icon={IconArrowRight} color="--neutral-250" />
+                                        </div></Layout.Stack>
+                                </div>
+                            </Layout.Stack>
                         </button>
                         <button
                             class="onboarding-card platform-card"
                             on:click={() => addPlatform(2)}>
-                            <img
-                                src={$app.themeInUse === 'dark'
-                                    ? PlatformAndroidImgSourceDark
-                                    : PlatformAndroidImgSource}
-                                alt="" />
-                            <div class="card-content">
-                                <Layout.Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center">
-                                    <h3>Android</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} color="--neutral-250" />
-                                    </div></Layout.Stack>
-                            </div>
+                            <Layout.Stack direction="column" justifyContent="space-between">
+                                <img
+                                    src={$app.themeInUse === 'dark'
+                                        ? PlatformAndroidImgSourceDark
+                                        : PlatformAndroidImgSource}
+                                    alt="" />
+                                <div class="card-content">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Android</h3>
+                                        <div class="is-only-desktop">
+                                            <Icon icon={IconArrowRight} color="--neutral-250" />
+                                        </div></Layout.Stack>
+                                </div>
+                            </Layout.Stack>
                         </button>
 
                         <button
                             class="onboarding-card platform-card"
                             on:click={() => addPlatform(1)}>
-                            <img
-                                src={$app.themeInUse === 'dark'
-                                    ? PlatformFlutterImgSourceDark
-                                    : PlatformFlutterImgSource}
-                                alt="" />
-                            <div class="card-content">
-                                <Layout.Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center">
-                                    <h3>Flutter</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} color="--neutral-250" />
-                                    </div></Layout.Stack>
-                            </div>
+                            <Layout.Stack direction="column" justifyContent="space-between">
+                                <img
+                                    src={$app.themeInUse === 'dark'
+                                        ? PlatformFlutterImgSourceDark
+                                        : PlatformFlutterImgSource}
+                                    alt="" />
+                                <div class="card-content">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Flutter</h3>
+                                        <div class="is-only-desktop">
+                                            <Icon icon={IconArrowRight} color="--neutral-250" />
+                                        </div></Layout.Stack>
+                                </div>
+                            </Layout.Stack>
                         </button>
                     </div>
                 </Layout.Stack></Step.Item>
@@ -522,10 +532,6 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-
-            h3 {
-                margin-block-end: var(--space-4);
-            }
         }
 
         .card-docs {
