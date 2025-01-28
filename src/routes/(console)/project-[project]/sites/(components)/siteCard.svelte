@@ -52,7 +52,9 @@
                                     color="--color-fgcolor-neutral-tertiary">
                                     Deployed
                                 </Typography.Text>
-                                <DeploymentCreatedBy {deployment} />
+                                <Typography.Text variant="m-400">
+                                    <DeploymentCreatedBy {deployment} />
+                                </Typography.Text>
                             </Layout.Stack>
                         {/if}
                     </Layout.Stack>
@@ -110,7 +112,9 @@
                     <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
                         Source
                     </Typography.Text>
-                    <DeploymentSource {deployment} />
+                    <Typography.Text variant="m-400">
+                        <DeploymentSource {deployment} />
+                    </Typography.Text>
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
