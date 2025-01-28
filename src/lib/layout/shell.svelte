@@ -86,7 +86,7 @@
 
             return {
                 title: 'Get started',
-                percentage: currentProject && currentProject.platforms.length ? 33 : 100
+                percentage: currentProject && currentProject.platforms.length ? 100 : 33
             };
         }
 
