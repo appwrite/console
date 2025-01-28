@@ -1,7 +1,7 @@
 <script lang="ts">
     import { FormList, InputChoice, InputNumber } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Estimation } from '$lib/sdk/billing';
+    import type { Coupon, Estimation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import Alert from '../alert.svelte';
     import Card from '../card.svelte';
@@ -13,6 +13,7 @@
     export let couponId: string;
     export let fixedCoupon = false;
     export let error = '';
+    export let couponData: Partial<Coupon>;
 
     export let billingBudget: number;
 
@@ -21,12 +22,13 @@
 
     async function getEstimate(billingPlan: string, collaborators: string[], couponId: string) {
         try {
+            error = '';
             estimation = await sdk.forConsole.billing.estimationCreateOrganization(
                 billingPlan,
                 couponId === '' ? null : couponId,
                 collaborators ?? []
             );
-            error = '';
+            error = estimation.error ?? '';
         } catch (e) {
             error = e.message;
         }
@@ -46,6 +48,7 @@
                 couponId && couponId.length > 0 ? couponId : null,
                 collaborators ?? []
             );
+            error = estimation.error ?? '';
         } catch (e) {
             error = e.message;
         }
@@ -59,34 +62,34 @@
 {#if estimation || error.length}
     <Card class="u-flex u-flex-vertical u-gap-8">
         {#if error.length}
-        <p class="u-color-text-danger">
+            <Alert type="error">
                 {error}
-        </p>
+            </Alert>
         {/if}
 
         {#if estimation}
-        {#each estimation.items ?? [] as item}
+            {#each estimation.items ?? [] as item}
+                <span class="u-flex u-main-space-between">
+                    <p class="text">{item.label}</p>
+                    <p class="text">{formatCurrency(item.value)}</p>
+                </span>
+            {/each}
+            {#each estimation.discounts ?? [] as item}
+                <DiscountsApplied bind:couponData {...item} />
+            {/each}
+            <div class="u-sep-block-start" />
             <span class="u-flex u-main-space-between">
-                <p class="text">{item.label}</p>
-                <p class="text">{formatCurrency(item.value)}</p>
+                <p class="text">Total due</p>
+                <p class="text">
+                    {formatCurrency(estimation.grossAmount)}
+                </p>
             </span>
-        {/each}
-        {#each estimation.discounts ?? [] as item}
-            <DiscountsApplied {...item} />
-        {/each}
-        <div class="u-sep-block-start" />
-        <span class="u-flex u-main-space-between">
-            <p class="text">Total due</p>
-            <p class="text">
-                {formatCurrency(estimation.grossAmount)}
-            </p>
-        </span>
 
-        <p class="text u-margin-block-start-16">
-            You'll pay <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> now.
-            Once your credits run out, you'll be charged
-            <span class="u-bold">{formatCurrency(estimation.amount)}</span> every 30 days.
-        </p>
+            <p class="text u-margin-block-start-16">
+                You'll pay <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> now.
+                Once your credits run out, you'll be charged
+                <span class="u-bold">{formatCurrency(estimation.amount)}</span> every 30 days.
+            </p>
         {/if}
 
         <FormList class="u-margin-block-start-24">

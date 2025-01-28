@@ -36,7 +36,6 @@
         currentPlan,
         organization,
         organizationList,
-        type OrganizationError,
         type Organization
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -321,7 +320,7 @@
                 {/if}
             {/if}
             <!-- Show email input if upgrading from free plan -->
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
                         bind:tags={collaborators}
@@ -332,12 +331,16 @@
                         validityMessage="Invalid email address"
                         id="members" />
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
-                    <InputText
-                        bind:value={couponId}
-                        label="Coupon"
-                        placeholder="Enter coupon code"
-                        id="couponId" />
                 </FormList>
+                {#if !couponData?.code}
+                    <Button
+                        text
+                        noMargin
+                        class="u-margin-block-start-16"
+                        on:click={() => (showCreditModal = true)}>
+                        <span class="icon-plus"></span> <span class="text">Add credits</span>
+                    </Button>
+                {/if}
             {/if}
             {#if isDowngrade && billingPlan === BillingPlan.FREE}
                 <FormList class="u-margin-block-start-24">
@@ -362,10 +365,11 @@
                 <EstimatedTotal
                     bind:error
                     bind:billingBudget
+                    bind:couponData
                     organizationId={$organization.$id}
+                    couponId={couponData.code}
                     {billingPlan}
-                    {collaborators}
-                    {couponId} />
+                    {collaborators} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 {#if isDowngrade}
                     <Card>

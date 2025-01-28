@@ -74,6 +74,7 @@ export type Estimation = {
     discounts: EstimationItem[];
     trialDays: number;
     trialEndDate: string | undefined;
+    error: string | undefined;
 }
 
 export type EstimationItem = {
@@ -902,7 +903,7 @@ export class Billing {
     }
 
     async getCoupon(couponId: string): Promise<Coupon> {
-        const path = `/console/coupons/${couponId}`;
+        const path = `/account/coupons/${couponId}`;
         const params = {
             couponId
         };
