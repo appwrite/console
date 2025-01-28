@@ -1,6 +1,12 @@
 <script lang="ts">
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
+    import {
+        Empty,
+        EmptySearch,
+        PaginationWithLimit,
+        SearchQuery,
+        ViewSelector
+    } from '$lib/components';
     import { Container } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -70,6 +76,8 @@
             limit={data.limit}
             offset={data.offset}
             total={data.siteList.total} />
+    {:else if data.search}
+        <EmptySearch target="sites" />
     {:else}
         <Empty
             single

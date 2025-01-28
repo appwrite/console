@@ -15,7 +15,7 @@
 
     async function redeploy() {
         try {
-            await sdk.forProject.sites.updateDeploymentBuild(site.$id, selectedDeploymentId);
+            await sdk.forProject.sites.createBuild(site.$id, selectedDeploymentId);
             addNotification({
                 type: 'success',
                 message: `Redeploying ${site.name}`
