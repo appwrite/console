@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Card } from '$lib/components';
+    import { Card, SvgIcon } from '$lib/components';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import { consoleVariables } from '$routes/(console)/store';
@@ -24,7 +24,7 @@
                     <Typography.Caption variant="400">Framework</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
                         {#if frameworkIcon}
-                            <Icon size="s" icon={frameworkIcon}></Icon>
+                            <SvgIcon name={frameworkIcon} />
                         {/if}
                         <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
                             {framework.name}

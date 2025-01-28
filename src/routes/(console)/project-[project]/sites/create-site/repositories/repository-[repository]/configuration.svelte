@@ -25,6 +25,7 @@
     import ImportSiteVariablesModal from '../../importSiteVariablesModal.svelte';
     import type { Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '../../../store';
+    import { iconPath } from '$lib/stores/app';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -61,7 +62,7 @@
             options={frameworks.map((framework) => ({
                 value: framework.key,
                 label: framework.name,
-                leadingIcon: getFrameworkIcon(framework.key)
+                leadingHtml: `<img src='${$iconPath(getFrameworkIcon(framework.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
             }))}
             on:change={() => {
                 selectedFramework = frameworks.find((framework) => framework.key === frameworkId);

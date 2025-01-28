@@ -13,6 +13,7 @@
     import { ActionMenu, Card, Icon, Popover } from '@appwrite.io/pink-svelte';
     import RedeployModal from './redeployModal.svelte';
     import { getFrameworkIcon } from './store';
+    import { SvgIcon } from '$lib/components';
 
     export let siteList: Models.SiteList;
 
@@ -33,7 +34,7 @@
                 alt={site.name}
                 avatar>
                 <svelte:fragment slot="avatar">
-                    <Icon icon={getFrameworkIcon(site.framework)} />
+                    <SvgIcon name={getFrameworkIcon(site.framework)} />
                 </svelte:fragment>
                 <Popover placement="bottom-end" let:toggle>
                     <Button
