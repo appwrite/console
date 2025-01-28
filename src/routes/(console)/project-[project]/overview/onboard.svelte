@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { Button, Step, Link, Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Step, Link, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { addPlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
-    import { user } from '$lib/stores/user';
     import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
@@ -21,10 +20,8 @@
     import PlatformFlutterImgSource from './assets/platform-flutter.png';
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.png';
     import { base } from '$app/paths';
-    import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
     import Wizard from './keys/wizard.svelte';
     import { wizard } from '$lib/stores/wizard';
-    import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
 
     function createKey() {
@@ -72,7 +69,7 @@
                                 on:click={() => addPlatform(0)}>
                                 <Layout.Stack direction="column" justifyContent="space-between">
                                     <img
-                                        src={$app.themeInUse == 'dark'
+                                        src={$app.themeInUse === 'dark'
                                             ? PlatformWebImgSourceDark
                                             : PlatformWebImgSource}
                                         alt="" />
@@ -94,7 +91,7 @@
                                 on:click={createKey}>
                                 <Layout.Stack direction="column" justifyContent="space-between">
                                     <img
-                                        src={$app.themeInUse == 'dark'
+                                        src={$app.themeInUse === 'dark'
                                             ? PlatformServerImgSourceDark
                                             : PlatformServerImgSource}
                                         alt="" />
@@ -115,7 +112,7 @@
                                 on:click={() => addPlatform(3)}>
                                 <Layout.Stack direction="column" justifyContent="space-between">
                                     <img
-                                        src={$app.themeInUse == 'dark'
+                                        src={$app.themeInUse === 'dark'
                                             ? PlatformIosImgSourceDark
                                             : PlatformIosImgSource}
                                         alt="" />
@@ -209,7 +206,7 @@
                                 href={`${base}/project-${projectId}/databases`}>
                                 <Layout.Stack direction="column" justifyContent="space-between">
                                     <img
-                                        src={$app.themeInUse == 'dark'
+                                        src={$app.themeInUse === 'dark'
                                             ? DatabaseImgSourceDark
                                             : DatabaseImgSource}
                                         alt="" />
@@ -280,7 +277,7 @@
                                     </Layout.Stack>
                                 </div>
                                 <img
-                                    src={$app.themeInUse == 'dark'
+                                    src={$app.themeInUse === 'dark'
                                         ? UsersImgSourceDark
                                         : UsersImgSource}
                                     alt="" />
@@ -289,7 +286,7 @@
                                 <div class="card-content">
                                     <Layout.Stack direction="column" justifyContent="space-between">
                                         <img
-                                            src={$app.themeInUse == 'dark'
+                                            src={$app.themeInUse === 'dark'
                                                 ? DiscordImgSourceDark
                                                 : DiscordImgSource}
                                             class="discord"
