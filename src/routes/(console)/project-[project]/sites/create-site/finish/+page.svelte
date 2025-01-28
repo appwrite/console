@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import Card from '$lib/components/card.svelte';
     import { Wizard } from '$lib/layout';
-    import { Layout, Typography, Icon, Lights } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Icon, Lights, Step } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import Check from './(components)/check.svelte';
     import type { PageData } from './$types';
@@ -36,7 +36,7 @@
     href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
     <!-- Creating a new stack -->
     <div style:position="relative" style="z-index: 1;">
-        <Layout.Stack gap="l">
+        <Layout.Stack gap="xxl">
             <Layout.Stack gap="xxl">
                 <Layout.Stack gap="l" direction="column" alignItems="center">
                     <Check />
@@ -50,80 +50,90 @@
                 <SiteCard deployment={data.deployment} />
             </Layout.Stack>
 
-            {#if !data.deployment.providerCommitHash}
-                <Layout.Stack direction="row">
-                    {#if !data.site.installationId && !data.site.providerRepositoryId}
-                        <Card
-                            isTile
-                            radius="s"
-                            isButton
-                            on:click={() => (showConnectRepositry = true)}>
-                            <Layout.Stack gap="s">
-                                <Layout.Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center">
-                                    <Typography.Title size="s"
-                                        >Connect to repository</Typography.Title>
-                                    <Icon icon={IconArrowSmRight} />
+            <Step.List>
+                <Step.Item state="current" shortLine={true}>
+                    {#if !data.deployment.providerCommitHash}
+                        <Layout.Stack direction="row">
+                            {#if !data.site.installationId && !data.site.providerRepositoryId}
+                                <Card
+                                    isTile
+                                    radius="s"
+                                    isButton
+                                    on:click={() => (showConnectRepositry = true)}>
+                                    <Layout.Stack gap="s">
+                                        <Layout.Stack
+                                            direction="row"
+                                            justifyContent="space-between"
+                                            alignItems="center">
+                                            <Typography.Title size="s"
+                                                >Connect to repository</Typography.Title>
+                                            <Icon icon={IconArrowSmRight} />
+                                        </Layout.Stack>
+                                        <Typography.Text variant="m-400">
+                                            Connect to a new repository or an existing one.
+                                        </Typography.Text>
+                                    </Layout.Stack>
+                                </Card>
+                            {/if}
+                            <Card
+                                isTile
+                                radius="s"
+                                href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}/domains`}>
+                                <Layout.Stack gap="s">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <Typography.Title size="s">Add domain</Typography.Title>
+                                        <Icon icon={IconArrowSmRight} />
+                                    </Layout.Stack>
+                                    <Typography.Text variant="m-400">
+                                        Connect to an existing domain or purchase a new one.
+                                    </Typography.Text>
                                 </Layout.Stack>
-                                <Typography.Text variant="m-400">
-                                    Connect to a new repository or an existing one.
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </Card>
+                            </Card>
+                            <Card
+                                isTile
+                                radius="s"
+                                isButton
+                                on:click={() => (showInviteCollaborator = true)}>
+                                <Layout.Stack gap="s">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <Typography.Title size="s"
+                                            >Add collaborators</Typography.Title>
+                                        <Icon icon={IconArrowSmRight} />
+                                    </Layout.Stack>
+                                    <Typography.Text variant="m-400">
+                                        Share your progress and start collaborating with your team.
+                                    </Typography.Text>
+                                </Layout.Stack>
+                            </Card>
+                            <Card
+                                isTile
+                                radius="s"
+                                isButton
+                                on:click={() => (showOpenOnMobile = true)}>
+                                <Layout.Stack gap="s">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <Typography.Title size="s">Open on mobile</Typography.Title>
+                                        <Icon icon={IconArrowSmRight} />
+                                    </Layout.Stack>
+                                    <Typography.Text variant="m-400">
+                                        Open the preview of your site on any mobile or tablet
+                                        device.
+                                    </Typography.Text>
+                                </Layout.Stack>
+                            </Card>
+                        </Layout.Stack>
                     {/if}
-                    <Card
-                        isTile
-                        radius="s"
-                        href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}/domains`}>
-                        <Layout.Stack gap="s">
-                            <Layout.Stack
-                                direction="row"
-                                justifyContent="space-between"
-                                alignItems="center">
-                                <Typography.Title size="s">Add domain</Typography.Title>
-                                <Icon icon={IconArrowSmRight} />
-                            </Layout.Stack>
-                            <Typography.Text variant="m-400">
-                                Connect to an existing domain or purchase a new one.
-                            </Typography.Text>
-                        </Layout.Stack>
-                    </Card>
-                    <Card
-                        isTile
-                        radius="s"
-                        isButton
-                        on:click={() => (showInviteCollaborator = true)}>
-                        <Layout.Stack gap="s">
-                            <Layout.Stack
-                                direction="row"
-                                justifyContent="space-between"
-                                alignItems="center">
-                                <Typography.Title size="s">Add collaborators</Typography.Title>
-                                <Icon icon={IconArrowSmRight} />
-                            </Layout.Stack>
-                            <Typography.Text variant="m-400">
-                                Share your progress and start collaborating with your team.
-                            </Typography.Text>
-                        </Layout.Stack>
-                    </Card>
-                    <Card isTile radius="s" isButton on:click={() => (showOpenOnMobile = true)}>
-                        <Layout.Stack gap="s">
-                            <Layout.Stack
-                                direction="row"
-                                justifyContent="space-between"
-                                alignItems="center">
-                                <Typography.Title size="s">Open on mobile</Typography.Title>
-                                <Icon icon={IconArrowSmRight} />
-                            </Layout.Stack>
-                            <Typography.Text variant="m-400">
-                                Open the preview of your site on any mobile or tablet device.
-                            </Typography.Text>
-                        </Layout.Stack>
-                    </Card>
-                </Layout.Stack>
-            {/if}
+                </Step.Item>
+            </Step.List>
         </Layout.Stack>
     </div>
 
