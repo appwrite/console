@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Icon, Table } from '@appwrite.io/pink-svelte';
+    import { Table } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
     import type { Models } from '@appwrite.io/console';
 
@@ -25,7 +25,6 @@
                 {#if column.show}
                     {#if column.id === 'name'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
-                            <Icon
                             {site.name}
                         </Table.Cell>
                     {:else if column.id === '$updatedAt'}
