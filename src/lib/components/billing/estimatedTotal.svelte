@@ -69,10 +69,12 @@
 
         {#if estimation}
             {#each estimation.items ?? [] as item}
+                {#if item.value > 0}
                 <span class="u-flex u-main-space-between">
                     <p class="text">{item.label}</p>
                     <p class="text">{formatCurrency(item.value)}</p>
                 </span>
+                {/if}
             {/each}
             {#each estimation.discounts ?? [] as item}
                 <DiscountsApplied bind:couponData {...item} />
