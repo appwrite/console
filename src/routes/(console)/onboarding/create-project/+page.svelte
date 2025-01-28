@@ -41,7 +41,7 @@
 
         const org = await sdk.forConsole.billing.createOrganization(
             ID.unique(),
-            'Personal Projects',
+            'Personal projects',
             BillingPlan.FREE,
             null,
             null
