@@ -31,13 +31,7 @@
     };
 </script>
 
-<Modal
-    title="Delete function"
-    bind:show={showDelete}
-    onSubmit={handleSubmit}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Delete function" bind:show={showDelete} onSubmit={handleSubmit}>
     <p data-private>
         Are you sure you want to delete this function and all associated deployments from your
         project?

@@ -1,12 +1,12 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { PaginationWithLimit } from '$lib/components/index.js';
+    import { EmptySearch, PaginationWithLimit } from '$lib/components/index.js';
     import { Button, InputSearch } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
-    import { consoleVariables } from '$routes/(console)/store.js';
+    import { protocol } from '$routes/(console)/store.js';
     import type { Models } from '@appwrite.io/console';
     import {
         IconDotsHorizontal,
@@ -15,9 +15,19 @@
         IconRefresh,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Icon, Layout, Popover, Table } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Badge,
+        Empty,
+        Icon,
+        Layout,
+        Popover,
+        Table
+    } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
+    import { queries } from '$lib/components/filters';
+    import Card from '$lib/components/card.svelte';
 
     export let data;
 
@@ -25,6 +35,8 @@
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Models.ProxyRule = null;
+
+    $: console.log(data.domains);
 </script>
 
 <Container>
@@ -38,73 +50,123 @@
             Add domain
         </Button>
     </Layout.Stack>
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Domain</Table.Header.Cell>
-            <Table.Header.Cell>Updated</Table.Header.Cell>
-            <Table.Header.Cell />
-        </svelte:fragment>
-        {#each data.domains.rules as domain}
-            <Table.Row>
-                <Table.Cell>
-                    <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Link
-                            external
-                            href={`${
-                                $consoleVariables?._APP_OPTIONS_FORCE_HTTPS ? 'https://' : 'http://'
-                            }${domain.domain}`}
-                            size="s"
-                            variant="quiet">
-                            {domain.domain}
-                            <Icon icon={IconExternalLink} size="s" />
-                        </Link>
-                    </Layout.Stack>
-                </Table.Cell>
-                <Table.Cell>{toLocaleDateTime(domain.$updatedAt)}</Table.Cell>
-                <Table.Cell>
-                    <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Popover let:toggle placement="bottom-start" padding="none">
-                            <Button text icon on:click={toggle}>
-                                <Icon icon={IconDotsHorizontal} size="s" />
-                            </Button>
 
-                            <svelte:fragment slot="tooltip" let:toggle>
-                                <ActionMenu.Root>
-                                    <ActionMenu.Item.Button
-                                        leadingIcon={IconRefresh}
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            selectedDomain = domain;
-                                            showRetry = true;
-                                            toggle(e);
-                                        }}>
-                                        Retry
-                                    </ActionMenu.Item.Button>
-                                    <ActionMenu.Item.Button
-                                        status="danger"
-                                        leadingIcon={IconTrash}
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            selectedDomain = domain;
-                                            showDelete = true;
-                                            toggle(e);
-                                        }}>
-                                        Delete
-                                    </ActionMenu.Item.Button>
-                                </ActionMenu.Root>
-                            </svelte:fragment>
-                        </Popover>
-                    </Layout.Stack>
-                </Table.Cell>
-            </Table.Row>
-        {/each}
-    </Table.Root>
+    {#if data.domains.total}
+        <Table.Root>
+            <svelte:fragment slot="header">
+                <Table.Header.Cell>Domain</Table.Header.Cell>
+                <Table.Header.Cell>Updated</Table.Header.Cell>
+                <Table.Header.Cell />
+            </svelte:fragment>
+            {#each data.domains.rules as domain}
+                <Table.Link
+                    href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/domain-${domain.$id}`}>
+                    <Table.Cell>
+                        <Layout.Stack direction="row" alignItems="center" gap="xs">
+                            <Link
+                                external
+                                href={`${$protocol}${domain.domain}`}
+                                size="s"
+                                variant="quiet">
+                                {domain.domain}
+                                <Icon icon={IconExternalLink} size="s" />
+                            </Link>
+                            {#if domain.status !== 'verified'}
+                                <Badge
+                                    variant="secondary"
+                                    content="Pending verification"
+                                    type="warning" />
+                            {/if}
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell>{toLocaleDateTime(domain.$updatedAt)}</Table.Cell>
+                    <Table.Cell>
+                        <Layout.Stack direction="row" justifyContent="flex-end">
+                            <Popover let:toggle placement="bottom-start" padding="none">
+                                <Button
+                                    text
+                                    icon
+                                    on:click={(e) => {
+                                        e.preventDefault();
+                                        toggle(e);
+                                    }}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
 
-    <PaginationWithLimit
-        name="Domains"
-        limit={data.limit}
-        offset={data.offset}
-        total={data.domains.total} />
+                                <svelte:fragment slot="tooltip" let:toggle>
+                                    <ActionMenu.Root>
+                                        {#if domain.status !== 'verified'}
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconRefresh}
+                                                on:click={(e) => {
+                                                    e.preventDefault();
+                                                    selectedDomain = domain;
+                                                    showRetry = true;
+                                                    toggle(e);
+                                                }}>
+                                                Retry
+                                            </ActionMenu.Item.Button>
+                                        {/if}
+                                        <ActionMenu.Item.Button
+                                            status="danger"
+                                            leadingIcon={IconTrash}
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                selectedDomain = domain;
+                                                showDelete = true;
+                                                toggle(e);
+                                            }}>
+                                            Delete
+                                        </ActionMenu.Item.Button>
+                                    </ActionMenu.Root>
+                                </svelte:fragment>
+                            </Popover>
+                        </Layout.Stack>
+                    </Table.Cell>
+                </Table.Link>
+            {/each}
+        </Table.Root>
+
+        <PaginationWithLimit
+            name="Domains"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.domains.total} />
+    {:else if data?.query}
+        <EmptySearch hidePages bind:search>
+            <svelte:fragment slot="actions">
+                <Button
+                    secondary
+                    on:click={() => {
+                        queries.clearAll();
+                        queries.apply();
+                    }}>Clear filters</Button>
+            </svelte:fragment>
+        </EmptySearch>
+    {:else}
+        <Card isDashed isTile>
+            <Empty
+                title="Add your first domain"
+                description="Need a hand? Learn more in our documentation.">
+                <svelte:fragment slot="actions">
+                    <Button
+                        external
+                        href="#/"
+                        text
+                        event="empty_documentation"
+                        size="s"
+                        ariaLabel="add domain">Documentation</Button>
+
+                    <Button
+                        secondary
+                        href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}
+                        size="s">
+                        Add domain
+                    </Button>
+                </svelte:fragment>
+            </Empty>
+        </Card>
+    {/if}
 </Container>
 
 {#if showDelete}

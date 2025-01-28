@@ -98,7 +98,7 @@
     }
 </script>
 
-<Modal {title} bind:show onSubmit={submit} on:close={reset} headerDivider={false} size="big">
+<Modal {title} bind:show onSubmit={submit} on:close={reset} size="big">
     <div class="u-flex u-flex-vertical u-gap-32">
         <p class="text">
             Select existing topics you want to send this message to its targets. The message will be

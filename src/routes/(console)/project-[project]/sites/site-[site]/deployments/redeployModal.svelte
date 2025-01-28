@@ -32,7 +32,7 @@
     }
 </script>
 
-<Modal title="Redeploy site" bind:show bind:error onSubmit={redeploy} headerDivider={false}>
+<Modal title="Redeploy site" bind:show bind:error onSubmit={redeploy}>
     <p class="text">
         Are you sure you want to redeploy <b>{site.name}</b>? Redeploying may affect your production
         code.

@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { iconPath } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
     import { DirectoryPicker } from '@appwrite.io/pink-svelte';

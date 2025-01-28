@@ -38,10 +38,7 @@
     title="Delete authentication method"
     bind:show={showDelete}
     onSubmit={deleteProvider}
-    icon="exclamation"
-    state="warning"
-    bind:error
-    headerDivider={false}>
+    bind:error>
     <p>Are you sure you want to delete this authentication?</p>
     <p class="text u-bold">This action is irreversible.</p>
     <svelte:fragment slot="footer">

@@ -41,7 +41,7 @@
 
         const org = await sdk.forConsole.billing.createOrganization(
             ID.unique(),
-            'Personal Projects',
+            'Personal projects',
             BillingPlan.FREE,
             null,
             null
@@ -92,8 +92,12 @@
     }
 </script>
 
+<svelte:head>
+    <title>Create project - Appwrite</title>
+</svelte:head>
 <div
-    class="page-container u-flex-vertical u-cross-child-center u-cross-center u-margin-block-start-96">
+    class="page-container u-flex-vertical u-cross-child-center u-cross-center"
+    class:u-margin-block-start-96={!isLoading}>
     {#if isLoading}
         <Loading {startAnimation} />
     {:else}
@@ -109,49 +113,58 @@
             height="22"
             class="u-only-dark"
             alt="Appwrite Logo" />
-        <Card.Base variant="primary"
-            ><Layout.Stack direction="column" gap="xxl">
-                <Typography.Title size="l">Create your project</Typography.Title>
-                <form>
-                    <Layout.Stack direction="column" gap="xl">
-                        <Layout.Stack direction="column" gap="s">
-                            <Input.Text
-                                label="Name"
-                                placeholder="Project name"
-                                bind:value={projectName} />
-                            {#if !showCustomId}
-                                <div>
-                                    <Tag
-                                        size="s"
-                                        on:click={() => {
-                                            showCustomId = true;
-                                        }}><Icon icon={IconPencil} /> Project ID</Tag>
-                                </div>
+        <Card.Base variant="primary" padding="l"
+            ><form>
+                <Layout.Stack direction="column" gap="xxl">
+                    <div style:margin-top="20px">
+                        <Typography.Title size="l">Create your project</Typography.Title>
+                    </div>
+
+                    <Layout.Stack direction="column" gap="xxl">
+                        <Layout.Stack direction="column" gap="xxl">
+                            <Layout.Stack direction="column" gap="s">
+                                <Input.Text
+                                    label="Name"
+                                    placeholder="Project name"
+                                    bind:value={projectName} />
+                                {#if !showCustomId}
+                                    <div>
+                                        <Tag
+                                            size="s"
+                                            on:click={() => {
+                                                showCustomId = true;
+                                            }}><Icon icon={IconPencil} /> Project ID</Tag>
+                                    </div>
+                                {/if}
+                                <CustomId
+                                    bind:show={showCustomId}
+                                    name="Project"
+                                    isProject
+                                    bind:id
+                                    fullWidth={true} />
+                            </Layout.Stack>
+                            {#if regions}
+                                <Layout.Stack gap="xs"
+                                    ><Input.Select
+                                        placeholder="Select a region"
+                                        options={getRegions()}
+                                        label="Region" />
+                                    <Typography.Text
+                                        >Region cannot be changed after creation</Typography.Text>
+                                </Layout.Stack>
                             {/if}
-                            <CustomId
-                                bind:show={showCustomId}
-                                name="Project"
-                                isProject
-                                bind:id
-                                fullWidth={true} />
                         </Layout.Stack>
-                        {#if regions}
-                            <Input.Select
-                                placeholder="Select a region"
-                                options={getRegions()}
-                                label="Region" />
-                        {/if}
-                        <div class="u-flex u-main-end">
-                            <Button.Button
-                                type="button"
-                                variant="primary"
-                                size="m"
-                                on:click={createProject}>
-                                Create</Button.Button>
-                        </div>
                     </Layout.Stack>
-                </form>
-            </Layout.Stack></Card.Base>
+                    <Layout.Stack direction="row" justifyContent="flex-end"
+                        ><Button.Button
+                            type="button"
+                            variant="primary"
+                            size="m"
+                            on:click={createProject}>
+                            Create</Button.Button>
+                    </Layout.Stack>
+                </Layout.Stack>
+            </form></Card.Base>
     {/if}
 </div>
 
@@ -163,7 +176,6 @@
     .page-container {
         width: calc(100% - 2rem);
         margin: 0 1rem;
-        min-height: 100vh;
         gap: 4.5rem;
         background: var(--color-bgcolor-neutral-default, #19191c);
 

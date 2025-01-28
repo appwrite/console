@@ -1,8 +1,7 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
 
-    export let label: string;
-    export let showLabel = true;
+    export let label: string = null;
     export let id: string;
     export let name = id;
     export let value: string = null;

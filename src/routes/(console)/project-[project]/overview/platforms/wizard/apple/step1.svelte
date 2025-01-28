@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Pill } from '$lib/elements';
-    import { FormItem, FormList, InputText } from '$lib/elements/forms';
+    import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
@@ -38,36 +38,34 @@
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Apple registration</svelte:fragment>
 
-    <FormList isCommonSection>
-        <FormItem>
-            <p>Choose an Apple platform</p>
-            <div class="u-flex u-gap-16 u-margin-block-start-8">
-                <Pill
-                    button
-                    on:click={() => (platform = PlatformType.Appleios)}
-                    selected={platform === PlatformType.Appleios}>
-                    iOS
-                </Pill>
-                <Pill
-                    button
-                    on:click={() => (platform = PlatformType.Applemacos)}
-                    selected={platform === PlatformType.Applemacos}>
-                    macOS
-                </Pill>
-                <Pill
-                    button
-                    on:click={() => (platform = PlatformType.Applewatchos)}
-                    selected={platform === PlatformType.Applewatchos}>
-                    watchOS
-                </Pill>
-                <Pill
-                    button
-                    on:click={() => (platform = PlatformType.Appletvos)}
-                    selected={platform === PlatformType.Appletvos}>
-                    tvOS
-                </Pill>
-            </div>
-        </FormItem>
+    <FormList>
+        <p>Choose an Apple platform</p>
+        <div class="u-flex u-gap-16 u-margin-block-start-8">
+            <Pill
+                button
+                on:click={() => (platform = PlatformType.Appleios)}
+                selected={platform === PlatformType.Appleios}>
+                iOS
+            </Pill>
+            <Pill
+                button
+                on:click={() => (platform = PlatformType.Applemacos)}
+                selected={platform === PlatformType.Applemacos}>
+                macOS
+            </Pill>
+            <Pill
+                button
+                on:click={() => (platform = PlatformType.Applewatchos)}
+                selected={platform === PlatformType.Applewatchos}>
+                watchOS
+            </Pill>
+            <Pill
+                button
+                on:click={() => (platform = PlatformType.Appletvos)}
+                selected={platform === PlatformType.Appletvos}>
+                tvOS
+            </Pill>
+        </div>
         <InputText
             id="name"
             label="Name"

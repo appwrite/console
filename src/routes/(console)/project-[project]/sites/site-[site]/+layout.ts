@@ -12,7 +12,8 @@ export const load = async ({ depends, params }) => {
             sdk.forProject.sites.get(params.site),
             sdk.forProject.proxy.listRules([
                 Query.equal('resourceType', 'site'),
-                Query.equal('resourceId', params.site)
+                Query.equal('resourceId', params.site),
+                Query.orderDesc('')
             ])
         ]);
 

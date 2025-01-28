@@ -63,16 +63,14 @@
         {#if $organization.billingPlan === BillingPlan.SCALE}
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
-                per resource listed below. <Button
-                    on:click={() => ($showUsageRatesModal = true)}
-                    link>Learn more about plan usage limits.</Button>
+                per resource listed below. <Button on:click={() => ($showUsageRatesModal = true)}
+                    >Learn more about plan usage limits.</Button>
             </p>
         {:else if $organization.billingPlan === BillingPlan.PRO}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
-                per resource listed below. <Button
-                    on:click={() => ($showUsageRatesModal = true)}
-                    link>Learn more about plan usage limits.</Button>
+                per resource listed below. <Button on:click={() => ($showUsageRatesModal = true)}
+                    >Learn more about plan usage limits.</Button>
             </p>
         {:else if $organization.billingPlan === BillingPlan.FREE}
             <p class="text">

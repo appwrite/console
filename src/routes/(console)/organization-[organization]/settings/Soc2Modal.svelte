@@ -95,13 +95,7 @@
     }
 </script>
 
-<Modal
-    bind:error
-    bind:show
-    onSubmit={handleSubmit}
-    size="big"
-    headerDivider={false}
-    title="Request SOC-2">
+<Modal bind:error bind:show onSubmit={handleSubmit} title="Request SOC-2">
     <FormList>
         <InputEmail label="Email" placeholder="Enter email" id="email" bind:value={email} />
         <InputSelect

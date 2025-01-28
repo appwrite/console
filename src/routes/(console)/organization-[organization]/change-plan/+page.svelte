@@ -13,7 +13,6 @@
     import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
-    import { Layout } from '@appwrite.io/pink-svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
         Button,
@@ -259,7 +258,7 @@
             <Label class="label u-margin-block-start-16">Select plan</Label>
             <p class="text">
                 For more details on our plans, visit our
-                <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
+                <Button href="https://appwrite.io/pricing" external>pricing page</Button>.
             </p>
             {#if !selfService}
                 <Alert class="u-position-relative u-margin-block-start-16" type="info"
@@ -317,7 +316,7 @@
                 </FormList>
             {/if}
             {#if isDowngrade}
-                <FormList class="u-margin-block-start-24">
+                <FormList>
                     <InputSelect
                         id="reason"
                         label="Reason for plan change"

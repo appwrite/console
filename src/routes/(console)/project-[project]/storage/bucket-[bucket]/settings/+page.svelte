@@ -65,7 +65,6 @@
     import {
         Button,
         Form,
-        FormItem,
         FormList,
         InputChoice,
         InputSelect,
@@ -340,29 +339,22 @@
                 </p>
                 <svelte:fragment slot="aside">
                     <FormList>
-                        <FormItem>
-                            <InputChoice
-                                label="Encryption"
-                                id="encryption"
-                                type="switchbox"
-                                bind:value={encryption}>
-                                This parameter allows you to configure whether or not the files
-                                inside the bucket will be encrypted. We don't encrypt files bigger
-                                than 20MB.
-                            </InputChoice>
-                        </FormItem>
-
-                        <FormItem>
-                            <InputChoice
-                                label="Antivirus"
-                                id="antivirus"
-                                type="switchbox"
-                                bind:value={antivirus}>
-                                This parameter allows you to configure whether or not the files
-                                inside the bucket should be scanned by the Appwrite Antivirus
-                                scanner.
-                            </InputChoice>
-                        </FormItem>
+                        <InputChoice
+                            label="Encryption"
+                            id="encryption"
+                            type="switchbox"
+                            bind:value={encryption}>
+                            This parameter allows you to configure whether or not the files inside
+                            the bucket will be encrypted. We don't encrypt files bigger than 20MB.
+                        </InputChoice>
+                        <InputChoice
+                            label="Antivirus"
+                            id="antivirus"
+                            type="switchbox"
+                            bind:value={antivirus}>
+                            This parameter allows you to configure whether or not the files inside
+                            the bucket should be scanned by the Appwrite Antivirus scanner.
+                        </InputChoice>
                     </FormList>
                 </svelte:fragment>
 
@@ -444,7 +436,7 @@
             </CardGrid>
         </Form>
 
-        <CardGrid danger>
+        <CardGrid>
             <Heading tag="h6" size="7">Delete bucket</Heading>
             <p class="text">
                 The bucket will be permanently deleted, including all the files within it. This

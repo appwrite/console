@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Alert, Modal, RadioBoxes } from '$lib/components';
-    import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
@@ -103,13 +103,7 @@
     }
 </script>
 
-<Modal
-    bind:show
-    bind:error
-    onSubmit={handleSubmit}
-    size="big"
-    headerDivider={false}
-    title="Replace billing address">
+<Modal bind:show bind:error onSubmit={handleSubmit} title="Replace billing address">
     <p class="text">Replace the existing billing address for your organization.</p>
     {#if addresses?.total}
         <FormList>
@@ -141,7 +135,7 @@
                 <svelte:fragment slot="new">
                     <span style="padding-inline:0.25rem">Add a new billing address</span>
                 </svelte:fragment>
-                <FormList gap={16} class="u-margin-block-start-24">
+                <FormList>
                     <InputSelect
                         bind:value={country}
                         {options}
@@ -166,23 +160,17 @@
                         label="City or suburb"
                         placeholder="Enter your city"
                         required />
-                    <FormItem isMultiple>
-                        <InputText
-                            isMultiple
-                            fullWidth
-                            bind:value={state}
-                            id="state"
-                            label="State"
-                            placeholder="Enter your state"
-                            required />
-                        <InputText
-                            isMultiple
-                            fullWidth
-                            bind:value={postalCode}
-                            id="zip"
-                            label="Postal code"
-                            placeholder="Enter postal code" />
-                    </FormItem>
+                    <InputText
+                        bind:value={state}
+                        id="state"
+                        label="State"
+                        placeholder="Enter your state"
+                        required />
+                    <InputText
+                        bind:value={postalCode}
+                        id="zip"
+                        label="Postal code"
+                        placeholder="Enter postal code" />
                 </FormList>
             </RadioBoxes>
         </FormList>

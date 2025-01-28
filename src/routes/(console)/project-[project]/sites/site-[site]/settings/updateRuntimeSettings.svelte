@@ -45,7 +45,7 @@
             await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',
-                message: 'Timeout has been updated'
+                message: 'Runtime has been updated'
             });
             trackEvent(Submit.SiteUpdateTimeout);
         } catch (error) {
@@ -73,8 +73,7 @@
                 placeholder="Select runtime"
                 bind:value={buildRuntime}
                 options={buildRuntimeOptions}
-                required
-                hideRequired />
+                required />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

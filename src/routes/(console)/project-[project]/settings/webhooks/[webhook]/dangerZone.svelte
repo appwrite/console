@@ -8,7 +8,7 @@
     let showDelete = false;
 </script>
 
-<CardGrid danger>
+<CardGrid>
     <div>
         <Heading tag="h2" size="7">Delete webhook</Heading>
     </div>

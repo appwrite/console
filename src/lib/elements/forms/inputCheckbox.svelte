@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Selector } from '@appwrite.io/pink-svelte';
     import { Helper } from '.';
-    import type { FormItemTag } from './formItem.svelte';
 
     interface $$Props extends Partial<HTMLLabelElement> {
         id: string;
@@ -11,7 +10,6 @@
         disabled?: boolean;
         element?: HTMLInputElement | undefined;
         indeterminate?: boolean;
-        wrapperTag?: FormItemTag;
         size?: 's' | 'm';
     }
 
@@ -21,7 +19,6 @@
     export let required = false;
     export let disabled = false;
     export let element: HTMLInputElement | undefined = undefined;
-    export let wrapperTag: FormItemTag = 'li';
     export let size: $$Props['size'] = 's';
     let error: string;
 

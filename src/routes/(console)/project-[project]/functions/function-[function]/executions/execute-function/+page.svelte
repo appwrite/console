@@ -11,8 +11,6 @@
     import {
         Button,
         Form,
-        FormItem,
-        FormItemPart,
         FormList,
         Helper,
         InputDate,
@@ -176,21 +174,19 @@
                         id="body"
                         bind:value={body} />
                 {:else}
-                    <FormItem isMultiple stackOnMobile style="gap: 1rem">
-                        <InputSelect
-                            required
-                            id="method"
-                            label="Method"
-                            options={methodOptions}
-                            bind:value={method} />
-                        <InputText
-                            label="Path"
-                            id="path"
-                            fullWidth
-                            placeholder="/"
-                            bind:value={path}
-                            required />
-                    </FormItem>
+                    <InputSelect
+                        required
+                        id="method"
+                        label="Method"
+                        options={methodOptions}
+                        bind:value={method} />
+                    <InputText
+                        label="Path"
+                        id="path"
+                        fullWidth
+                        placeholder="/"
+                        bind:value={path}
+                        required />
                     <div>
                         <h3>
                             <span class="body-text-2 u-bold">Headers</span>
@@ -207,42 +203,36 @@
                         <FormList class="u-gap-8 u-margin-block-start-8">
                             {#if headers}
                                 {#each headers as [name, value], index}
-                                    <FormItem isMultiple style="gap: 1rem">
-                                        <InputSelectSearch
-                                            fullWidth
-                                            label="Key"
-                                            placeholder="Select key"
-                                            interactiveOutput
-                                            hideEmpty
-                                            options={filteredKeyList}
-                                            id={`key-${index}`}
-                                            bind:value={name}
-                                            bind:search={name}>
-                                        </InputSelectSearch>
-                                        <InputText
-                                            isMultiple
-                                            fullWidth
-                                            label="Value"
-                                            placeholder="Enter value"
-                                            id={`value-${index}`}
-                                            bind:value />
-                                        <FormItemPart alignEnd>
-                                            <Button
-                                                text
-                                                noMargin
-                                                disabled={(!name || !value) && index === 0}
-                                                on:click={() => {
-                                                    if (index === 0) {
-                                                        headers = [['', '']];
-                                                    } else {
-                                                        headers.splice(index, 1);
-                                                        headers = headers;
-                                                    }
-                                                }}>
-                                                <span class="icon-x" aria-hidden="true" />
-                                            </Button>
-                                        </FormItemPart>
-                                    </FormItem>
+                                    <InputSelectSearch
+                                        fullWidth
+                                        label="Key"
+                                        placeholder="Select key"
+                                        interactiveOutput
+                                        hideEmpty
+                                        options={filteredKeyList}
+                                        id={`key-${index}`}
+                                        bind:value={name}
+                                        bind:search={name}>
+                                    </InputSelectSearch>
+                                    <InputText
+                                        label="Value"
+                                        placeholder="Enter value"
+                                        id={`value-${index}`}
+                                        bind:value />
+                                    <Button
+                                        text
+                                        noMargin
+                                        disabled={(!name || !value) && index === 0}
+                                        on:click={() => {
+                                            if (index === 0) {
+                                                headers = [['', '']];
+                                            } else {
+                                                headers.splice(index, 1);
+                                                headers = headers;
+                                            }
+                                        }}>
+                                        <span class="icon-x" aria-hidden="true" />
+                                    </Button>
                                 {/each}
                             {/if}
                         </FormList>
@@ -285,24 +275,18 @@
                                 }
                             ]} />
                         {#if isScheduled}
-                            <FormItem isMultiple tag="div" class="u-margin-block-start-16">
-                                <InputDate
-                                    id="date"
-                                    label="Date"
-                                    required={true}
-                                    min={minDate}
-                                    bind:value={date}
-                                    isMultiple
-                                    fullWidth />
-                                <InputTime
-                                    id="time"
-                                    label="Time"
-                                    required={true}
-                                    min={minTime}
-                                    bind:value={time}
-                                    isMultiple
-                                    fullWidth />
-                            </FormItem>
+                            <InputDate
+                                id="date"
+                                label="Date"
+                                required={true}
+                                min={minDate}
+                                bind:value={date} />
+                            <InputTime
+                                id="time"
+                                label="Time"
+                                required={true}
+                                min={minTime}
+                                bind:value={time} />
                         {/if}
                         <Helper type="neutral">
                             {isScheduled

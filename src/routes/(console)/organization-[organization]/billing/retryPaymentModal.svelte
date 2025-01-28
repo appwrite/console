@@ -118,7 +118,6 @@
     state="warning"
     onSubmit={handleSubmit}
     size="big"
-    headerDivider={false}
     title="Retry payment">
     <!-- TODO: format currency -->
     <p class="text">
@@ -129,7 +128,6 @@
 
     <Button
         external
-        link
         href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}>
         View invoice
     </Button>

@@ -107,10 +107,10 @@
         </div>
     {/if} -->
     {#if data?.logs?.total}
-        <Table columns={$columns} executions={data.logs} />
+        <Table columns={$columns} logs={data.logs} />
 
         <PaginationWithLimit
-            name="Executions"
+            name="Logs"
             limit={data.limit}
             offset={data.offset}
             total={data.logs.total} />

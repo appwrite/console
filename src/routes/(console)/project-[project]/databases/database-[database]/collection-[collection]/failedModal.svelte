@@ -8,7 +8,7 @@
     export let header: string;
 </script>
 
-<Modal {title} headerDivider={false} bind:show size="big">
+<Modal {title} bind:show>
     <div class="box u-flex-vertical u-gap-24">
         <p class="u-inline-flex u-cross-center u-gap-8">
             <span

@@ -33,13 +33,7 @@
     }
 </script>
 
-<Modal
-    title="Delete webhook"
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Delete webhook" bind:show={showDelete} onSubmit={handleDelete}>
     <p data-private>
         Are you sure you want to delete <b>{$webhook.name}</b> from '{$project.name}'?
     </p>

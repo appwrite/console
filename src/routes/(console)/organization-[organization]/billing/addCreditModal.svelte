@@ -36,7 +36,7 @@
     }
 </script>
 
-<Modal bind:show title="Add credits" headerDivider={false} onSubmit={redeem} size="big" bind:error>
+<Modal bind:show title="Add credits" onSubmit={redeem} bind:error>
     Apply Appwrite credits to your organization.
 
     <FormList>

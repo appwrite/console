@@ -55,12 +55,7 @@
 </script>
 
 {#if disabled}
-    <Modal
-        bind:show={showDelete}
-        icon="exclamation"
-        state="warning"
-        headerDivider={false}
-        title="Unable to delete payment method">
+    <Modal bind:show={showDelete} title="Unable to delete payment method">
         <p data-private>
             The {isBackup ? 'backup' : 'default'} payment method cannot be removed as
             <b>{$organization?.name}</b>
@@ -76,9 +71,6 @@
         bind:show={showDelete}
         bind:error
         onSubmit={isBackup ? removeBackuptMethod : removeDefaultMethod}
-        icon="exclamation"
-        state="warning"
-        headerDivider={false}
         title="Remove payment method">
         <p data-private>
             Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?

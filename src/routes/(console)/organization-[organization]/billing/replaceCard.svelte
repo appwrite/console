@@ -103,13 +103,7 @@
     }
 </script>
 
-<FakeModal
-    bind:show
-    bind:error
-    onSubmit={handleSubmit}
-    size="big"
-    headerDivider={false}
-    title="Replace payment method">
+<FakeModal bind:show bind:error onSubmit={handleSubmit} size="big" title="Replace payment method">
     <p class="text">Replace the existing payment method for your organization.</p>
 
     <PaymentBoxes

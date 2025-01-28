@@ -1,7 +1,14 @@
 <script lang="ts">
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { Badge, Icon, BottomSheet, type SheetMenu } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown, IconChevronRight, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Badge, Icon, type SheetMenu, ActionMenu } from '@appwrite.io/pink-svelte';
+    import {
+        IconChevronDown,
+        IconChevronRight,
+        IconPlus,
+        IconPlusSm
+    } from '@appwrite.io/pink-icons-svelte';
+    import { BottomSheet } from '$lib/components';
+    import { onMount } from 'svelte';
 
     type Project = {
         name: string;
@@ -82,58 +89,87 @@
               top: {
                   items: [
                       {
-                          name: 'Organization settings',
-                          href: `/console/organization-${selectedOrg?.$id}/settings`
+                          name: 'Organization overview',
+                          href: `/console/organization-${selectedOrg?.$id}`
                       }
                   ]
               },
-              bottom: {
-                  items: [
-                      {
-                          name: 'Switch organization',
-                          trailingIcon: IconChevronRight,
-                          subMenu: switchOrganization
-                      }
-                  ]
-              }
+              bottom:
+                  organizations.length > 1
+                      ? {
+                            items: [
+                                {
+                                    name: 'Switch organization',
+                                    trailingIcon: IconChevronRight,
+                                    subMenu: switchOrganization
+                                }
+                            ]
+                        }
+                      : {
+                            items: [
+                                {
+                                    name: 'Create organization',
+                                    leadingIcon: IconPlus,
+                                    href: `/console/create-organization`
+                                }
+                            ]
+                        }
           };
     let projectsBottomSheet: SheetMenu;
     $: projectsBottomSheet = {
-        top: {
-            title: 'Switch project',
-            items: !selectedOrg
-                ? []
-                : selectedOrg.projects
-                      .map((project, index) => {
-                          if (index < 4) {
-                              return {
-                                  name: project.name,
-                                  href: `/console/project-${project.$id}/overview`
-                              };
-                          } else if (index === 4) {
-                              return {
-                                  name: 'All projects',
-                                  href: `/console/organization-${selectedOrg.$id}`
-                              };
+        top:
+            selectedOrg.projects.length > 1
+                ? {
+                      title: 'Switch project',
+                      items: !selectedOrg
+                          ? []
+                          : selectedOrg.projects
+                                .map((project, index) => {
+                                    if (index < 4) {
+                                        return {
+                                            name: project.name,
+                                            href: `/console/project-${project.$id}/overview`
+                                        };
+                                    } else if (index === 4) {
+                                        return {
+                                            name: 'All projects',
+                                            href: `/console/organization-${selectedOrg.$id}`
+                                        };
+                                    }
+                                    return null;
+                                })
+                                .filter((project) => project !== null)
+                  }
+                : {
+                      items: [
+                          {
+                              name: 'Create project',
+                              trailingIcon: IconPlus,
+                              href: `/console/organization-${selectedOrg?.$id}?create-project`
                           }
-                          return null;
-                      })
-                      .filter((project) => project !== null)
-        },
-        bottom: {
-            items: [
-                {
-                    name: 'Create project',
-                    trailingIcon: IconPlus,
-                    href: `/console/organization-${selectedOrg?.$id}?create-project`
-                }
-            ]
-        }
+                      ]
+                  },
+        bottom:
+            selectedOrg.projects.length > 1
+                ? {
+                      items: [
+                          {
+                              name: 'Create project',
+                              trailingIcon: IconPlus,
+                              href: `/console/organization-${selectedOrg?.$id}?create-project`
+                          }
+                      ]
+                  }
+                : undefined
     };
 
     function updateViewport() {
         isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
     }
+
+    onMount(() => {
+        updateViewport();
+    });
 </script>
 
 <svelte:window on:resize={updateViewport} />
@@ -169,51 +205,70 @@
 
     <div class="menu" use:melt={$menuOrganizations}>
         {#if selectedOrg}
-            <a
-                href={`/console/organization-${selectedOrg?.$id}/settings`}
-                class="item"
-                use:melt={$itemOrganizations}>
-                Organization settings
-            </a>
-            <div class="separator" use:melt={$separatorOrganizations} />
-            <div class="item switch-org" use:melt={$subTriggerOrganizations}>
-                Switch organization
-                <div class="rightSlot"><Icon icon={IconChevronRight} size="s" /></div>
+            <div use:melt={$itemOrganizations}>
+                <ActionMenu.Root>
+                    <ActionMenu.Item.Anchor href={`/console/organization-${selectedOrg?.$id}`}
+                        >Organization overview</ActionMenu.Item.Anchor
+                    ></ActionMenu.Root>
             </div>
-            <div class="menu subMenu" use:melt={$subMenuOrganizations}>
-                <div use:melt={$radioGroupOrganizations}>
-                    {#each organizations as organization}
-                        <a
-                            href={`/console/organization-${organization?.$id}`}
-                            class="item"
-                            use:melt={$itemOrganizations}>
-                            {organization.name}
-                        </a>
-                    {/each}
-                    <div class="separator" use:melt={$separatorOrganizations} />
-                    <a
-                        class="item"
-                        href="/console/create-organization"
-                        use:melt={$itemOrganizations}>
-                        <div class="leftSlot"><Icon icon={IconPlus} size="s" /></div>
-                        Create organization
-                    </a>
+            {#if organizations.length > 1}
+                <div class="separator" use:melt={$separatorOrganizations} />
+
+                <div use:melt={$subTriggerOrganizations}>
+                    <ActionMenu.Root>
+                        <ActionMenu.Item.Button trailingIcon={IconChevronRight}
+                            >Switch organization</ActionMenu.Item.Button>
+                    </ActionMenu.Root>
                 </div>
-            </div>
+                <div class="menu subMenu" use:melt={$subMenuOrganizations}>
+                    <div use:melt={$radioGroupOrganizations}>
+                        {#each organizations as organization}
+                            <div use:melt={$itemOrganizations}>
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Anchor
+                                        href={`/console/organization-${organization?.$id}`}
+                                        >{organization.name}</ActionMenu.Item.Anchor>
+                                </ActionMenu.Root>
+                            </div>
+                        {/each}
+                        <div class="separator" use:melt={$separatorOrganizations} />
+                        <div use:melt={$itemOrganizations}>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Anchor
+                                    href="/console/create-organization"
+                                    leadingIcon={IconPlusSm}
+                                    title="">Create organization</ActionMenu.Item.Anchor
+                                ></ActionMenu.Root>
+                        </div>
+                    </div>
+                </div>
+            {:else}
+                <div class="separator" use:melt={$separatorOrganizations} />
+                <div use:melt={$itemOrganizations}>
+                    <ActionMenu.Root>
+                        <ActionMenu.Item.Anchor
+                            href="/console/create-organization"
+                            leadingIcon={IconPlusSm}>Create organization</ActionMenu.Item.Anchor
+                        ></ActionMenu.Root>
+                </div>
+            {/if}
         {:else}
             {#each organizations as organization}
-                <a
-                    href={`/console/organization-${organization?.$id}`}
-                    class="item"
-                    use:melt={$itemOrganizations}>
-                    {organization.name}
-                </a>
+                <div use:melt={$itemOrganizations}>
+                    <ActionMenu.Root>
+                        <ActionMenu.Item.Anchor href={`/console/organization-${organization?.$id}`}
+                            >{organization.name}</ActionMenu.Item.Anchor
+                        ></ActionMenu.Root>
+                </div>
             {/each}
             <div class="separator" use:melt={$separatorOrganizations} />
-            <a class="item" href="/console/create-organization" use:melt={$itemOrganizations}>
-                <div class="leftSlot"><Icon icon={IconPlus} size="s" /></div>
-                Create organization
-            </a>
+            <div use:melt={$itemOrganizations}>
+                <ActionMenu.Root>
+                    <ActionMenu.Item.Anchor
+                        href="/console/create-organization"
+                        leadingIcon={IconPlusSm}>Create organization</ActionMenu.Item.Anchor
+                    ></ActionMenu.Root>
+            </div>
         {/if}
     </div>
 
@@ -242,31 +297,35 @@
         {/if}
 
         <div class="menu" use:melt={$menuProjects}>
-            {#each selectedOrg.projects as project, index}
-                {#if index < 4}
-                    <a
-                        href={`/console/project-${project.$id}`}
-                        class="item"
-                        use:melt={$itemProjects}>
-                        {project.name}
-                    </a>
-                {:else if index === 4}
-                    <a
-                        href={`/console/organization-${selectedOrg.$id}`}
-                        class="item"
-                        use:melt={$itemProjects}>
-                        All projects
-                    </a>
-                {/if}
-            {/each}
-            <div class="separator" use:melt={$separatorProjects} />
-            <a
-                class="item"
-                use:melt={$itemProjects}
-                href={`/console/organization-${selectedOrg?.$id}?create-project`}>
-                <div class="leftSlot"><Icon icon={IconPlus} size="s" /></div>
-                Create project
-            </a>
+            {#if selectedOrg.projects.length > 1}
+                {#each selectedOrg.projects as project, index}
+                    {#if index < 4}
+                        <div use:melt={$itemProjects}>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Anchor href={`/console/project-${project.$id}`}
+                                    >{project.name}</ActionMenu.Item.Anchor
+                                ></ActionMenu.Root>
+                        </div>
+                    {:else if index === 4}
+                        <div use:melt={$itemProjects}>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Anchor
+                                    href={`/console/organization-${selectedOrg.$id}`}
+                                    >All projects</ActionMenu.Item.Anchor
+                                ></ActionMenu.Root>
+                        </div>
+                    {/if}
+                {/each}
+                <div class="separator" use:melt={$separatorProjects} />
+            {/if}
+            <div use:melt={$itemProjects}>
+                <ActionMenu.Root>
+                    <ActionMenu.Item.Anchor
+                        leadingIcon={IconPlusSm}
+                        href={`/console/organization-${selectedOrg?.$id}?create-project`}
+                        >Create project</ActionMenu.Item.Anchor
+                    ></ActionMenu.Root>
+            </div>
         </div>
     {/if}
 </div>

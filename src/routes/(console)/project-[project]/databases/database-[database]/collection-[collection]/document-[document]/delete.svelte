@@ -60,13 +60,7 @@
     ) as Models.AttributeRelationship[];
 </script>
 
-<Modal
-    title="Delete document"
-    icon="exclamation"
-    state="warning"
-    onSubmit={handleDelete}
-    bind:show={showDelete}
-    headerDivider={false}>
+<Modal title="Delete document" onSubmit={handleDelete} bind:show={showDelete}>
     <p data-private>
         Are you sure you want to delete <b
             >the document from <span data-private>{$collection.name}</span></b

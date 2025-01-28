@@ -13,14 +13,7 @@
     }
 </script>
 
-<Modal
-    title="Exit Process"
-    bind:show
-    onSubmit={handleSubmit}
-    icon="exclamation"
-    state="warning"
-    size="small"
-    headerDivider={false}>
+<Modal title="Exit Process" bind:show onSubmit={handleSubmit}>
     <p class="text">
         <slot />
     </p>

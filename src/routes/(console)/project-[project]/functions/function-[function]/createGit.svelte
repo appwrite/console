@@ -8,7 +8,7 @@
     export let show = false;
 </script>
 
-<Modal title="Create Git deployment" size="big" bind:show headerDivider={false}>
+<Modal title="Create Git deployment" bind:show>
     {#if $func.installationId && $func.providerRepositoryId}
         <p class="text">
             Deploy your function from the Git provider of your choice by following the steps below.
