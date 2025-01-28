@@ -83,20 +83,23 @@
               top: {
                   items: [
                       {
-                          name: 'Organization settings',
-                          href: `/console/organization-${selectedOrg?.$id}/settings`
+                          name: 'Organization overview',
+                          href: `/console/organization-${selectedOrg?.$id}`
                       }
                   ]
               },
-              bottom: {
-                  items: [
-                      {
-                          name: 'Switch organization',
-                          trailingIcon: IconChevronRight,
-                          subMenu: switchOrganization
-                      }
-                  ]
-              }
+              bottom:
+                  organizations.length > 1
+                      ? {
+                            items: [
+                                {
+                                    name: 'Switch organization',
+                                    trailingIcon: IconChevronRight,
+                                    subMenu: switchOrganization
+                                }
+                            ]
+                        }
+                      : undefined
           };
     let projectsBottomSheet: SheetMenu;
     $: projectsBottomSheet = {
@@ -171,36 +174,39 @@
     <div class="menu" use:melt={$menuOrganizations}>
         {#if selectedOrg}
             <a
-                href={`/console/organization-${selectedOrg?.$id}/settings`}
+                href={`/console/organization-${selectedOrg?.$id}`}
                 class="item"
                 use:melt={$itemOrganizations}>
-                Organization settings
+                Organization overview
             </a>
-            <div class="separator" use:melt={$separatorOrganizations} />
-            <div class="item switch-org" use:melt={$subTriggerOrganizations}>
-                Switch organization
-                <div class="rightSlot"><Icon icon={IconChevronRight} size="s" /></div>
-            </div>
-            <div class="menu subMenu" use:melt={$subMenuOrganizations}>
-                <div use:melt={$radioGroupOrganizations}>
-                    {#each organizations as organization}
-                        <a
-                            href={`/console/organization-${organization?.$id}`}
-                            class="item"
-                            use:melt={$itemOrganizations}>
-                            {organization.name}
-                        </a>
-                    {/each}
-                    <div class="separator" use:melt={$separatorOrganizations} />
-                    <a
-                        class="item"
-                        href="/console/create-organization"
-                        use:melt={$itemOrganizations}>
-                        <div class="leftSlot"><Icon icon={IconPlus} size="s" /></div>
-                        Create organization
-                    </a>
+            {#if organizations.length > 1}
+                <div class="separator" use:melt={$separatorOrganizations} />
+
+                <div class="item switch-org" use:melt={$subTriggerOrganizations}>
+                    Switch organization
+                    <div class="rightSlot"><Icon icon={IconChevronRight} size="s" /></div>
                 </div>
-            </div>
+                <div class="menu subMenu" use:melt={$subMenuOrganizations}>
+                    <div use:melt={$radioGroupOrganizations}>
+                        {#each organizations as organization}
+                            <a
+                                href={`/console/organization-${organization?.$id}`}
+                                class="item"
+                                use:melt={$itemOrganizations}>
+                                {organization.name}
+                            </a>
+                        {/each}
+                        <div class="separator" use:melt={$separatorOrganizations} />
+                        <a
+                            class="item"
+                            href="/console/create-organization"
+                            use:melt={$itemOrganizations}>
+                            <div class="leftSlot"><Icon icon={IconPlus} size="s" /></div>
+                            Create organization
+                        </a>
+                    </div>
+                </div>
+            {/if}
         {:else}
             {#each organizations as organization}
                 <a
