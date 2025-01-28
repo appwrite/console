@@ -9,13 +9,13 @@
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedDeployment: Models.Deployment = null;
+    export let selectedDeploymentId: string;
     export let site: Models.Site;
     let error: string;
 
     async function redeploy() {
         try {
-            await sdk.forProject.sites.createBuild(site.$id, selectedDeployment.$id);
+            await sdk.forProject.sites.updateDeploymentBuild(site.$id, selectedDeploymentId);
             addNotification({
                 type: 'success',
                 message: `Redeploying ${site.name}`
