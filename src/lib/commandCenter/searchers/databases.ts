@@ -1,5 +1,4 @@
 import { goto } from '$app/navigation';
-import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
@@ -20,7 +19,9 @@ export const dbSearcher = (async (query: string) => {
                     group: 'databases',
                     label: db.name,
                     callback: () => {
-                        goto(`${base}/project-${get(project).$id}/databases/database-${db.$id}`);
+                        goto(
+                            `${base}/project-${$page.params.region}-${$page.params.project}/databases/database-${db.$id}`
+                        );
                     },
                     icon: 'database'
                 }) as const

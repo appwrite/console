@@ -1,5 +1,4 @@
 import { goto } from '$app/navigation';
-import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
@@ -14,7 +13,6 @@ const getIcon = (provider: string) => {
 
 export const providersSearcher = (async (query: string) => {
     const $page = get(page);
-    const projectId = get(project).$id;
     const { providers } = await sdk
         .forProject($page.params.region, $page.params.project)
         .messaging.listProviders([], query || undefined);
@@ -28,7 +26,7 @@ export const providersSearcher = (async (query: string) => {
                     label: provider.name,
                     callback: () => {
                         goto(
-                            `${base}/project-${projectId}/messaging/providers/provider-${provider.$id}`
+                            `${base}/project-${$page.params.region}-${$page.params.project}/messaging/providers/provider-${provider.$id}`
                         );
                     },
                     image: getIcon(provider.provider)

@@ -9,11 +9,11 @@ import { FilesPanel } from '../panels';
 import { base } from '$app/paths';
 import { page } from '$app/stores';
 
-const getBucketCommand = (bucket: Models.Bucket, projectId: string) => {
+const getBucketCommand = (bucket: Models.Bucket, region: string, projectId: string) => {
     return {
         label: `${bucket.name}`,
         callback() {
-            goto(`${base}/project-${projectId}/storage/bucket-${bucket.$id}`);
+            goto(`${base}/project-${region}-${projectId}/storage/bucket-${bucket.$id}`);
         },
         group: 'buckets',
         icon: 'folder'
@@ -23,6 +23,7 @@ const getBucketCommand = (bucket: Models.Bucket, projectId: string) => {
 export const bucketSearcher = (async (query: string) => {
     const $page = get(page);
     const $project = get(project);
+    const region = $page.params.region;
     const { buckets } = await sdk
         .forProject($page.params.region, $page.params.project)
         .storage.listBuckets([Query.orderDesc('$createdAt')]);
@@ -32,7 +33,7 @@ export const bucketSearcher = (async (query: string) => {
     if (filtered.length === 1) {
         const bucket = filtered[0];
         return [
-            getBucketCommand(bucket, $project.$id),
+            getBucketCommand(bucket, region, $project.$id),
             {
                 label: 'Find files',
                 async callback() {
@@ -84,5 +85,5 @@ export const bucketSearcher = (async (query: string) => {
         ];
     }
 
-    return filtered.map((bucket) => getBucketCommand(bucket, $project.$id));
+    return filtered.map((bucket) => getBucketCommand(bucket, $project.region, $project.$id));
 }) satisfies Searcher;

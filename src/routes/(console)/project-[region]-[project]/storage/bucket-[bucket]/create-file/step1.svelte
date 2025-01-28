@@ -14,7 +14,6 @@
     let showCustomId = false;
     let fileError: string = null;
     const service = $currentPlan['fileSize'];
-    const projectId = $page.params.project;
 </script>
 
 <WizardStep>
@@ -28,7 +27,7 @@
                 The maximum file upload size for this bucket is {parseInt(size.value)}{size.unit}.
                 You can adjust it in your
                 <a
-                    href={`${base}/project-${projectId}/storage/bucket-${$bucket.$id}/settings`}
+                    href={`${base}/project-${$page.params.region}-${$page.params.project}/storage/bucket-${$bucket.$id}/settings`}
                     style:text-decoration="underline">bucket settings</a
                 >.
             </p>
