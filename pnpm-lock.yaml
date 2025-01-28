@@ -8,15 +8,15 @@ dependencies:
   '@appwrite.io/console':
     specifier: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@70f1b0c
     version: '@pkg.pr.new/appwrite/appwrite/@appwrite.io/console@70f1b0c'
-  '@appwrite.io/pink':
-    specifier: 0.25.0
-    version: 0.25.0
   '@appwrite.io/pink-icons':
     specifier: 0.25.0
     version: 0.25.0
   '@appwrite.io/pink-icons-svelte':
     specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@192
     version: '@pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@192(svelte@4.2.19)'
+  '@appwrite.io/pink-legacy':
+    specifier: ^1.0.0
+    version: 1.0.0
   '@appwrite.io/pink-svelte':
     specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@192
     version: '@pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@192(react-dom@18.3.1)(svelte@4.2.19)'
@@ -247,11 +247,14 @@ packages:
     resolution: {integrity: sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q==}
     dev: false
 
-  /@appwrite.io/pink@0.25.0:
-    resolution: {integrity: sha512-9z4G/iAhjvVpM7tkNqzGqrokst4hvNt3Fkf2jD4W6n8j//EJbQ3mJ0I+5dye5Sry0a33wUanq5DSztqFNYq5zw==}
+  /@appwrite.io/pink-icons@1.0.0:
+    resolution: {integrity: sha512-+zpksP07MvOYwhx9AZDFW0pxXQNC2juKwyOQVRAwAOkN1ACSQKPlyytkI1u2ci6CQPWjJe20CzbvBBuRNXOKjA==}
+    dev: false
+
+  /@appwrite.io/pink-legacy@1.0.0:
+    resolution: {integrity: sha512-EZk/wX8oDhIsCXf2A0oQjdNOaHvh5MnWbLQI4pAiGrdy5qQGPoU19AK6iVX6z3QoOq7geoEu0zVwAowBy5hZbQ==}
     dependencies:
-      '@appwrite.io/pink-icons': 0.25.0
-      normalize.css: 8.0.1
+      '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
     dev: false
 
@@ -5415,10 +5418,6 @@ packages:
   /normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
-
-  /normalize.css@8.0.1:
-    resolution: {integrity: sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==}
-    dev: false
 
   /npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
