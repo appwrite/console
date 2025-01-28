@@ -18,6 +18,7 @@
     import DeleteAllSessions from '../deleteAllSessions.svelte';
     import DeleteSessions from '../deleteSession.svelte';
     import type { PageData } from './$types';
+    import { Card, Empty, Layout } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -33,14 +34,12 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Sessions">
-        {#if data.sessions.total}
+    {#if data.sessions.total}
+        <Layout.Stack alignItems="flex-end">
             <Button secondary on:click={() => (showDeleteAll = true)}>
                 <span class="text">Delete All</span>
             </Button>
-        {/if}
-    </ContainerHeader>
-    {#if data.sessions.total}
+        </Layout.Stack>
         <TableScroll>
             <TableHeader>
                 <TableCellHead width={140}>Browser and device</TableCellHead>
@@ -101,17 +100,21 @@
             </TableBody>
         </TableScroll>
     {:else}
-        <EmptySearch>
-            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
-                <p class="text u-line-height-1-5">No sessions available</p>
-                <Button
-                    external
-                    secondary
-                    href="https://appwrite.io/docs/products/auth/email-password">
-                    Documentation
-                </Button>
-            </div>
-        </EmptySearch>
+        <Card.Base padding="none">
+            <Empty
+                title="No sessions available"
+                description="Need a hand? Learn more in our documentation."
+                type="secondary">
+                <svelte:fragment slot="actions">
+                    <Button
+                        external
+                        secondary
+                        href="https://appwrite.io/docs/products/auth/email-password">
+                        Documentation
+                    </Button>
+                </svelte:fragment>
+            </Empty>
+        </Card.Base>
     {/if}
 </Container>
 
