@@ -231,101 +231,77 @@
                         <a
                             class="onboarding-card build-card"
                             href={`${base}/project-${projectId}/databases`}>
-                            <img
-                                src={$app.themeInUse == 'dark'
-                                    ? DatabaseImgSourceDark
-                                    : DatabaseImgSource}
-                                alt="" />
-                            <div class="card-content">
-                                <Layout.Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="center">
-                                    <h3>Setup your database</h3>
-                                    <div class="is-only-desktop">
-                                        <Icon icon={IconArrowRight} color="--neutral-250" />
-                                    </div></Layout.Stack>
-                            </div>
+                            <Layout.Stack direction="column" justifyContent="space-between">
+                                <img
+                                    src={$app.themeInUse == 'dark'
+                                        ? DatabaseImgSourceDark
+                                        : DatabaseImgSource}
+                                    alt="" />
+                                <div class="card-content">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center">
+                                        <h3>Setup your database</h3>
+                                        <span class="is-only-desktop">
+                                            <Icon icon={IconArrowRight} color="--neutral-250" />
+                                        </span></Layout.Stack>
+                                </div>
+                            </Layout.Stack>
                         </a>
                         <div class="onboarding-card build-card">
                             <div class="card-content card-docs">
-                                <h3>Discover our docs</h3>
-                                <Layout.Stack direction="column" gap="s">
-                                    <Link.Anchor
-                                        variant="quiet-muted"
-                                        href="https://appwrite.io/docs/references"
-                                        target="_blank"
-                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                            >API references <Icon
-                                                icon={IconArrowRight}
-                                                color="--neutral-250"
-                                                size="s" /></Layout.Stack
-                                        ></Link.Anchor>
-                                    <Link.Anchor
-                                        variant="quiet-muted"
-                                        href="https://appwrite.io/docs/tutorials"
-                                        target="_blank"
-                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                            >Tutorials <Icon
-                                                icon={IconArrowRight}
-                                                color="--neutral-250"
-                                                size="s" /></Layout.Stack
-                                        ></Link.Anchor>
-                                    <Link.Anchor
-                                        variant="quiet-muted"
-                                        href="https://appwrite.io/docs/products/storage/quick-start"
-                                        target="_blank"
-                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                            >Storage quick start<Icon
-                                                icon={IconArrowRight}
-                                                color="--neutral-250"
-                                                size="s" /></Layout.Stack
-                                        ></Link.Anchor>
-                                    <Link.Anchor
-                                        variant="quiet-muted"
-                                        href="https://appwrite.io/docs/products/functions/quick-start"
-                                        target="_blank"
-                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                            >Functions quick start<Icon
-                                                icon={IconArrowRight}
-                                                color="--neutral-250"
-                                                size="s" /></Layout.Stack
-                                        ></Link.Anchor>
+                                <Layout.Stack direction="column" justifyContent="space-between">
+                                    <h3>Discover our docs</h3>
+                                    <Layout.Stack
+                                        direction="column"
+                                        gap="s"
+                                        justifyContent="flex-end">
+                                        <Link.Anchor
+                                            variant="quiet-muted"
+                                            href="https://appwrite.io/docs/references"
+                                            target="_blank">API references</Link.Anchor>
+                                        <Link.Anchor
+                                            variant="quiet-muted"
+                                            href="https://appwrite.io/docs/tutorials"
+                                            target="_blank">Tutorials</Link.Anchor>
+                                        <Link.Anchor
+                                            variant="quiet-muted"
+                                            href="https://appwrite.io/docs/products/storage/quick-start"
+                                            target="_blank"
+                                            >Storage quick start
+                                        </Link.Anchor>
+                                        <Link.Anchor
+                                            variant="quiet-muted"
+                                            href="https://appwrite.io/docs/products/functions/quick-start"
+                                            target="_blank">Functions quick start</Link.Anchor>
+                                    </Layout.Stack>
                                 </Layout.Stack>
                             </div>
                         </div>
                         <div class="onboarding-card card-auth build-card">
                             <div class="card-content">
-                                <h3>Setup auth</h3>
-                                <div class="card-links">
-                                    <Link.Anchor
-                                        variant="quiet-muted"
-                                        href={`${base}/project-${projectId}/auth/settings`}
-                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                            >E-mail and password<Icon
-                                                color="--neutral-250"
-                                                icon={IconArrowRight}
-                                                size="s" /></Layout.Stack
-                                        ></Link.Anchor>
-                                    <Link.Anchor
-                                        variant="quiet-muted"
-                                        href={`${base}/project-${projectId}/auth/settings`}
-                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                            >OAuth 2<Icon
-                                                color="--neutral-250"
-                                                icon={IconArrowRight}
-                                                size="s" /></Layout.Stack
-                                        ></Link.Anchor>
-                                    <Link.Anchor
-                                        variant="quiet-muted"
-                                        href={`${base}/project-${projectId}/auth/settings`}
-                                        ><Layout.Stack direction="row" alignItems="center" gap="xxs"
-                                            >View all methods<Icon
-                                                color="--neutral-250"
-                                                icon={IconArrowRight}
-                                                size="s" /></Layout.Stack
-                                        ></Link.Anchor>
-                                </div>
+                                <Layout.Stack direction="column" justifyContent="space-between">
+                                    <h3>Setup auth</h3>
+                                    <Layout.Stack
+                                        direction="column"
+                                        gap="s"
+                                        justifyContent="flex-end">
+                                        <Link.Anchor
+                                            variant="quiet-muted"
+                                            href={`${base}/project-${projectId}/auth/settings`}
+                                            >E-mail and password
+                                        </Link.Anchor>
+                                        <Link.Anchor
+                                            variant="quiet-muted"
+                                            href={`${base}/project-${projectId}/auth/settings`}
+                                            >OAuth 2</Link.Anchor>
+                                        <Link.Anchor
+                                            variant="quiet-muted"
+                                            href={`${base}/project-${projectId}/auth/settings`}
+                                            >View all methods</Link.Anchor>
+                                    </Layout.Stack>
+                                </Layout.Stack>
                             </div>
                             <img
                                 src={$app.themeInUse == 'dark'
@@ -335,27 +311,33 @@
                         </div>
                         <div class="onboarding-card build-card">
                             <div class="card-content">
-                                <img
-                                    src={$app.themeInUse == 'dark'
-                                        ? DiscordImgSourceDark
-                                        : DiscordImgSource}
-                                    class="discord"
-                                    alt="" />
-                                <h3>Discord</h3>
-                                <Link.Anchor
-                                    variant="quiet-muted"
-                                    href="https://appwrite.io/discord"
-                                    size="l"
-                                    ><Layout.Stack direction="row" alignItems="flex-end" gap="xxs"
-                                        ><span
-                                            >Join our Discord for support, tips and product updates</span>
-                                        <div style:flex-shrink="0" class="is-only-desktop">
-                                            <Icon
-                                                icon={IconArrowRight}
-                                                size="s"
-                                                color="--neutral-250" />
-                                        </div></Layout.Stack
-                                    ></Link.Anchor>
+                                <Layout.Stack direction="column" justifyContent="space-between">
+                                    <img
+                                        src={$app.themeInUse == 'dark'
+                                            ? DiscordImgSourceDark
+                                            : DiscordImgSource}
+                                        class="discord"
+                                        alt="" />
+                                    <h3>Discord</h3>
+                                    <Link.Anchor
+                                        variant="quiet-muted"
+                                        href="https://appwrite.io/discord"
+                                        size="l"
+                                        ><Layout.Stack
+                                            direction="row"
+                                            alignItems="flex-end"
+                                            gap="xxs"
+                                            ><span
+                                                >Join our Discord for support, tips and product
+                                                updates</span>
+                                            <span class="is-only-desktop">
+                                                <Icon
+                                                    icon={IconArrowRight}
+                                                    size="s"
+                                                    color="--neutral-250" />
+                                            </span></Layout.Stack
+                                        ></Link.Anchor>
+                                </Layout.Stack>
                             </div>
                         </div>
                     </div>
@@ -534,10 +516,11 @@
             flex-direction: column;
         }
 
+        :global(.build-card div) {
+            height: 100%;
+        }
+
         .card-docs {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
             min-height: 240px;
             @media (min-width: 768px) {
                 height: 100%;
