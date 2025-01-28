@@ -1,12 +1,6 @@
 import type { Column } from '$lib/helpers/types';
 import { Framework, type Models } from '@appwrite.io/console';
-import {
-    IconAngular,
-    IconNuxt,
-    IconReact,
-    IconSvelte,
-    IconVue
-} from '@appwrite.io/pink-icons-svelte';
+
 import { writable } from 'svelte/store';
 
 export function getEnumFromModel(model: Models.Framework): Framework {
@@ -23,19 +17,21 @@ export const columns = writable<Column[]>([
 export function getFrameworkIcon(framework: string) {
     switch (true) {
         case framework.toLocaleLowerCase().includes('sveltekit'):
-            return IconSvelte;
+            return 'svelte';
         case framework.toLocaleLowerCase().includes('nuxt'):
-            return IconNuxt;
+            return 'nuxt';
         case framework.toLocaleLowerCase().includes('vue'):
-            return IconVue;
+            return 'vue';
         case framework.toLocaleLowerCase().includes('react'):
-            return IconReact;
+            return 'react';
         case framework.toLocaleLowerCase().includes('angular'):
-            return IconAngular;
+            return 'angular';
         case framework.toLocaleLowerCase().includes('svelte'):
-            return IconSvelte;
+            return 'svelte';
         case framework.toLocaleLowerCase().includes('next'):
-            return IconReact; //TODO: add next icon
+            return 'nextjs';
+        case framework.toLocaleLowerCase().includes('astro'):
+            return 'astro';
 
         default:
             return undefined;
