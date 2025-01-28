@@ -313,7 +313,7 @@
                         <b
                             >you will be charged {formatCurrency(
                                 extraMembers *
-                                    ($plansInfo?.get(billingPlan)?.usage?.member?.price ?? 0)
+                                    ($plansInfo?.get(billingPlan)?.addons?.seats?.price ?? 0)
                             )} monthly for {extraMembers} team members.</b> This will be reflected in
                         your next invoice.
                     </Alert>
