@@ -3,6 +3,7 @@
     import { Badge, Icon, type SheetMenu } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronRight, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
+    import { onMount } from 'svelte';
 
     type Project = {
         name: string;
@@ -103,41 +104,59 @@
           };
     let projectsBottomSheet: SheetMenu;
     $: projectsBottomSheet = {
-        top: {
-            title: 'Switch project',
-            items: !selectedOrg
-                ? []
-                : selectedOrg.projects
-                      .map((project, index) => {
-                          if (index < 4) {
-                              return {
-                                  name: project.name,
-                                  href: `/console/project-${project.$id}/overview`
-                              };
-                          } else if (index === 4) {
-                              return {
-                                  name: 'All projects',
-                                  href: `/console/organization-${selectedOrg.$id}`
-                              };
+        top:
+            selectedOrg.projects.length > 1
+                ? {
+                      title: 'Switch project',
+                      items: !selectedOrg
+                          ? []
+                          : selectedOrg.projects
+                                .map((project, index) => {
+                                    if (index < 4) {
+                                        return {
+                                            name: project.name,
+                                            href: `/console/project-${project.$id}/overview`
+                                        };
+                                    } else if (index === 4) {
+                                        return {
+                                            name: 'All projects',
+                                            href: `/console/organization-${selectedOrg.$id}`
+                                        };
+                                    }
+                                    return null;
+                                })
+                                .filter((project) => project !== null)
+                  }
+                : {
+                      items: [
+                          {
+                              name: 'Create project',
+                              trailingIcon: IconPlus,
+                              href: `/console/organization-${selectedOrg?.$id}?create-project`
                           }
-                          return null;
-                      })
-                      .filter((project) => project !== null)
-        },
-        bottom: {
-            items: [
-                {
-                    name: 'Create project',
-                    trailingIcon: IconPlus,
-                    href: `/console/organization-${selectedOrg?.$id}?create-project`
-                }
-            ]
-        }
+                      ]
+                  },
+        bottom:
+            selectedOrg.projects.length > 1
+                ? {
+                      items: [
+                          {
+                              name: 'Create project',
+                              trailingIcon: IconPlus,
+                              href: `/console/organization-${selectedOrg?.$id}?create-project`
+                          }
+                      ]
+                  }
+                : undefined
     };
 
     function updateViewport() {
         isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
     }
+
+    onMount(() => {
+        updateViewport();
+    });
 </script>
 
 <svelte:window on:resize={updateViewport} />
@@ -249,24 +268,26 @@
         {/if}
 
         <div class="menu" use:melt={$menuProjects}>
-            {#each selectedOrg.projects as project, index}
-                {#if index < 4}
-                    <a
-                        href={`/console/project-${project.$id}`}
-                        class="item"
-                        use:melt={$itemProjects}>
-                        {project.name}
-                    </a>
-                {:else if index === 4}
-                    <a
-                        href={`/console/organization-${selectedOrg.$id}`}
-                        class="item"
-                        use:melt={$itemProjects}>
-                        All projects
-                    </a>
-                {/if}
-            {/each}
-            <div class="separator" use:melt={$separatorProjects} />
+            {#if selectedOrg.projects.length > 1}
+                {#each selectedOrg.projects as project, index}
+                    {#if index < 4}
+                        <a
+                            href={`/console/project-${project.$id}`}
+                            class="item"
+                            use:melt={$itemProjects}>
+                            {project.name}
+                        </a>
+                    {:else if index === 4}
+                        <a
+                            href={`/console/organization-${selectedOrg.$id}`}
+                            class="item"
+                            use:melt={$itemProjects}>
+                            All projects
+                        </a>
+                    {/if}
+                {/each}
+                <div class="separator" use:melt={$separatorProjects} />
+            {/if}
             <a
                 class="item"
                 use:melt={$itemProjects}
