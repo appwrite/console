@@ -20,12 +20,13 @@
     let id: string;
     let startAnimation = false;
     let projectName = '';
+    export let data: { regions: RegionList | null };
 
-    let regions: RegionList;
-    onMount(async () => {
+    onMount(() => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
-            regions.regions.forEach((region) => fetch(getFlagUrl(region.flag));
+            if (data.regions) {
+                data.regions.regions.forEach((region) => fetch(getFlagUrl(region.flag)));
+            }
         }
     });
 
@@ -86,7 +87,10 @@
     }
 
     function getRegions() {
-        return regions.regions
+        if (!data.regions) {
+            return;
+        }
+        return data.regions.regions
             .filter((region) => region.$id !== 'default')
             .sort((regionA, regionB) => {
                 if (regionA.disabled && !regionB.disabled) {
@@ -139,6 +143,7 @@
                                 <Input.Text
                                     label="Name"
                                     placeholder="Project name"
+                                    required
                                     bind:value={projectName} />
                                 {#if !showCustomId}
                                     <div>
@@ -156,7 +161,7 @@
                                     bind:id
                                     fullWidth={true} />
                             </Layout.Stack>
-                            {#if regions}
+                            {#if data.regions}
                                 <Layout.Stack gap="xs"
                                     ><Input.Select
                                         placeholder="Select a region"
