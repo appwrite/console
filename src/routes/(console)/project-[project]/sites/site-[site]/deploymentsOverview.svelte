@@ -19,6 +19,7 @@
     import { IconDotsHorizontal, IconGlobeAlt, IconRefresh } from '@appwrite.io/pink-icons-svelte';
     import RedeployModal from '../redeployModal.svelte';
     import PromoteModal from '../promoteModal.svelte';
+    import { Card } from '$lib/components';
 
     export let site: Models.Site;
     export let activeDeployment: Models.Deployment;
@@ -125,7 +126,9 @@
         {/if}
     </Layout.Stack>
 {:else}
-    hi
+    <Card>
+        <Typography.Text>No deployments exist</Typography.Text>
+    </Card>
 {/if}
 
 {#if selectedDeployment && showRedeploy}

@@ -5,7 +5,7 @@
     import OpenOnMobileModal from '../(components)/openOnMobileModal.svelte';
     import { timeFromNow } from '$lib/helpers/date';
     import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
-    import { protocol } from '$routes/(console)/store';
+    import { consoleVariables, protocol } from '$routes/(console)/store';
     import { type Models } from '@appwrite.io/console';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -15,6 +15,12 @@
 
     let showDomainQR = false;
     let selectedDomainURL: string;
+
+    $: hasCustomDomain = proxyRuleList?.total
+        ? proxyRuleList.rules.some((rule) =>
+              rule.domain.includes($consoleVariables._APP_DOMAIN_TARGET)
+          )
+        : false;
 </script>
 
 <Layout.Stack>
