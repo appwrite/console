@@ -30,9 +30,9 @@
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     let showSupport = false;
-    let isSmallViewport = false;
 
     type $$Props = BaseNavbarProps & {
         links: Array<{ label: string; href: string }>;
@@ -45,11 +45,6 @@
         }>;
         showAccountMenu: boolean;
     };
-
-    function updateViewport() {
-        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
-    }
-
     function updateTheme(theme: 'light' | 'dark' | 'system') {
         const themeInUse =
             theme === 'system'
@@ -79,7 +74,6 @@
     export let showAccountMenu = false;
 </script>
 
-<svelte:window on:resize={updateViewport} />
 <Navbar.Base {...$$props}>
     <div slot="left" class="left">
         <div class="only-mobile">
@@ -170,7 +164,7 @@
         </div>
     </div>
 </Navbar.Base>
-{#if showAccountMenu && isSmallViewport}
+{#if showAccountMenu && $isSmallViewport}
     <BottomSheet.Menu
         bind:isOpen={showAccountMenu}
         menu={{

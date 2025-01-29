@@ -23,6 +23,7 @@
     import Wizard from './keys/wizard.svelte';
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     function createKey() {
         wizard.start(Wizard);
@@ -30,18 +31,8 @@
 
     export let projectId: string;
     export let hasPlatforms: boolean;
-    let isSmallViewport = false;
-
-    function updateViewport() {
-        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
-    }
-
-    onMount(() => {
-        updateViewport();
-    });
 </script>
 
-<svelte:window on:resize={updateViewport} on:load={updateViewport} />
 <div style:container-type="inline-size">
     <div class="console-container">
         <div class="dashboard-content">
@@ -53,8 +44,8 @@
                         </div></Step.Item>
                     <Step.Item state="current"
                         ><Layout.Stack
-                            direction={isSmallViewport ? 'column' : 'row'}
-                            gap={isSmallViewport ? 'xl' : 'xxl'}>
+                            direction={$isSmallViewport ? 'column' : 'row'}
+                            gap={$isSmallViewport ? 'xl' : 'xxl'}>
                             <Layout.Stack gap="m">
                                 <h2>Add a platform</h2>
                                 <div class="build-info">

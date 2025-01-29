@@ -9,6 +9,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
     import { onMount } from 'svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     type Project = {
         name: string;
@@ -60,7 +61,6 @@
     $: selectedOrg = organizations.find((organization) => organization.isSelected);
     $: selectedProject = selectedOrg?.projects.find((project) => project.isSelected);
 
-    let isSmallViewport = false;
     let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
 
@@ -162,19 +162,10 @@
                   }
                 : undefined
     };
-
-    function updateViewport() {
-        isSmallViewport = window.matchMedia('(max-width: 768px)').matches;
-    }
-
-    onMount(() => {
-        updateViewport();
-    });
 </script>
 
-<svelte:window on:resize={updateViewport} />
 <div use:melt={$menubar}>
-    {#if !isSmallViewport}
+    {#if !$isSmallViewport}
         <span class="breadcrumb-separator">/</span>
         <button
             type="button"
@@ -365,29 +356,6 @@
         margin-block: -4px;
     }
 
-    .item {
-        position: relative;
-        user-select: none;
-        border-radius: 0.125rem;
-        z-index: 20;
-        outline: none;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-
-        margin: 0 4px;
-        padding: var(--space-3, 6px) var(--space-4, 8px) var(--space-3, 6px) var(--space-5, 10px);
-        color: var(--color-fgcolor-neutral-secondary, #56565c);
-
-        /* Desktop/Body M 400 */
-        font-family: var(--font-family-sansserif, Inter);
-        font-size: var(--font-size-S, 14px);
-        font-style: normal;
-        font-weight: 400;
-        line-height: 140%; /* 19.6px */
-        letter-spacing: -0.063px;
-    }
-
     .orgName,
     .projectName {
         white-space: nowrap;
@@ -471,18 +439,6 @@
         margin: 5px 0;
         height: 1px;
         background-color: var(--color-border-neutral);
-    }
-
-    .rightSlot {
-        margin-left: auto;
-        padding-left: 1.25rem;
-        display: flex;
-    }
-    .leftSlot {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: var(--space-4, 8px);
     }
     .breadcrumb-separator {
         color: var(--color-fgcolor-neutral-tertiary, #97979b);
