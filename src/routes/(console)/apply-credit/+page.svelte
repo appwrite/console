@@ -291,7 +291,7 @@
                         organizationId={selectedOrgId === newOrgId ? undefined : selectedOrgId}
                         {billingPlan}
                         {collaborators}
-                        couponId={couponData.code}>
+                        {couponData}>
                         {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
                             <div class="u-margin-block-end-24">
                                 <p class="body-text-1 u-bold">{campaign?.cta}</p>

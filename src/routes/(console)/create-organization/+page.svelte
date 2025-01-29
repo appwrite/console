@@ -56,11 +56,20 @@
 
     let billingBudget: number;
     let showCreditModal = false;
-    let error = '';
 
     onMount(async () => {
         if ($page.url.searchParams.has('coupon')) {
-            couponId = $page.url.searchParams.get('coupon');
+            const coupon = $page.url.searchParams.get('coupon');
+            try {
+                const response = await sdk.forConsole.billing.getCoupon(coupon);
+                couponData = response;
+            } catch (e) {
+                couponData = {
+                    code: null,
+                    status: null,
+                    credits: null
+                };
+            }
         }
         if ($page.url.searchParams.has('name')) {
             name = $page.url.searchParams.get('name');
@@ -132,7 +141,7 @@
                     billingPlan,
                     paymentMethodId,
                     null,
-                    couponId && couponId.length > 0 ? couponId : null,
+                    couponData.code ? couponData.code : null,
                     collaborators,
                     billingBudget,
                     taxId
@@ -234,12 +243,7 @@
         </Form>
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE}
-                <EstimatedTotal
-                    bind:error
-                    {billingBudget}
-                    {billingPlan}
-                    {collaborators}
-                    {couponData} />
+                <EstimatedTotal {billingBudget} {billingPlan} {collaborators} {couponData} />
             {:else}
                 <PlanComparisonBox />
             {/if}
@@ -251,7 +255,7 @@
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || error.length > 0}>
+            disabled={$isSubmitting}>
             Create organization
         </Button>
     </WizardSecondaryFooter>

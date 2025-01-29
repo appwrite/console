@@ -4,7 +4,6 @@
     import type { Coupon, Estimation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { AppwriteException } from '@appwrite.io/console';
-    import Alert from '../alert.svelte';
     import Card from '../card.svelte';
     import DiscountsApplied from './discountsApplied.svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -13,7 +12,6 @@
     export let billingPlan: string;
     export let collaborators: string[];
     export let fixedCoupon = false;
-    export let error = '';
     export let couponData: Partial<Coupon>;
 
     export let billingBudget: number;
@@ -94,14 +92,9 @@
         : getEstimate(billingPlan, collaborators, couponData?.code);
 </script>
 
-{#if estimation || error.length}
+{#if estimation}
     <Card class="u-flex u-flex-vertical u-gap-8">
-        {#if error.length}
-            <Alert type="error">
-                {error}
-            </Alert>
-        {/if}
-
+        <slot />
         {#if estimation}
             {#each estimation.items ?? [] as item}
                 {#if item.value > 0}
