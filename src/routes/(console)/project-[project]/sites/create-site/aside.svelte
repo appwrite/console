@@ -24,7 +24,7 @@
                     <Typography.Caption variant="400">Framework</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
                         {#if frameworkIcon}
-                            <SvgIcon name={frameworkIcon} />
+                            <SvgIcon iconSize="small" size={20} name={frameworkIcon} />
                         {/if}
                         <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
                             {framework.name}

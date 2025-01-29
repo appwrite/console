@@ -9,7 +9,7 @@
     import { Wizard } from '$lib/layout';
     import { installation, repository } from '$lib/stores/vcs.js';
     import type { Models } from '@appwrite.io/console';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
     let hasInstallations = !!data?.installations?.total;
@@ -26,12 +26,15 @@
 </script>
 
 <Wizard title="Create site" href={`${base}/project-${$page.params.project}/sites/`}>
-    <Repositories
-        bind:hasInstallations
-        bind:selectedRepository
-        product="sites"
-        action="button"
-        on:connect={onConnect} />
+    <Fieldset legend="Git repository">
+        <Repositories
+            bind:hasInstallations
+            bind:selectedRepository
+            product="sites"
+            action="button"
+            on:connect={onConnect} />
+    </Fieldset>
+
     <svelte:fragment slot="aside">
         <Card>
             <Layout.Stack gap="m">

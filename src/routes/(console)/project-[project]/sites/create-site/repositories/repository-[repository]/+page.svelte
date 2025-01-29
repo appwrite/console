@@ -137,9 +137,9 @@
             <Details bind:name bind:id />
 
             {#await loadBranches()}
-                <div class="u-flex u-gap-8 u-cross-center u-main-center">
+                <Layout.Stack justifyContent="center" alignItems="center">
                     <div class="loader u-margin-32" />
-                </div>
+                </Layout.Stack>
             {:then branches}
                 {@const options =
                     branches

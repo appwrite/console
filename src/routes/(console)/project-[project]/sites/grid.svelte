@@ -34,7 +34,7 @@
                 alt={site.name}
                 avatar>
                 <svelte:fragment slot="avatar">
-                    <SvgIcon name={getFrameworkIcon(site.framework)} />
+                    <SvgIcon name={getFrameworkIcon(site.framework)} iconSize="small" />
                 </svelte:fragment>
                 <Popover placement="bottom-end" let:toggle>
                     <Button

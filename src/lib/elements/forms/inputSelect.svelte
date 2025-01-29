@@ -15,6 +15,7 @@
         leadingIcon?: ComponentType;
         leadingHtml?: string;
     }[];
+    export let isSearchable = false;
 
     let element: HTMLSelectElement;
     let error: string;
@@ -50,6 +51,7 @@
     {options}
     {placeholder}
     {disabled}
+    {isSearchable}
     helper={error}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}

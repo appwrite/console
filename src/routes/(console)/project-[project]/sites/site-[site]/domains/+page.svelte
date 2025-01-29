@@ -37,6 +37,12 @@
     let selectedDomain: Models.ProxyRule = null;
 
     $: console.log(data.domains);
+
+    // TODO: replace status once backend is fixed
+    // created - Verification Failed
+    // verified - Verification OK , Certificate OK
+    // verifying - Verifiacitok OK
+    // unverified - Verificaiton OK , Certificate Failed
 </script>
 
 <Container>
@@ -69,7 +75,12 @@
                                 {domain.domain}
                                 <Icon icon={IconExternalLink} size="s" />
                             </Link>
-                            {#if domain.status !== 'verified'}
+                            {#if domain.status === 'created'}
+                                <Badge
+                                    variant="secondary"
+                                    content="Verification failed"
+                                    type="error" />
+                            {:else if domain.status === 'veryfing'}
                                 <Badge
                                     variant="secondary"
                                     content="Pending verification"

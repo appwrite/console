@@ -5,7 +5,7 @@ import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queries, queryParamToMap } from '$lib/components/filters';
 
 export const load = async ({ params, depends, url, route, parent }) => {
-    const data = await parent();
+    const { site } = await parent();
     depends(Dependencies.DEPLOYMENTS);
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
@@ -29,10 +29,11 @@ export const load = async ({ params, depends, url, route, parent }) => {
         offset,
         limit,
         query,
-        activeDeployment: data.site.deploymentId
-            ? await sdk.forProject.sites.getDeployment(params.site, data.site.deploymentId)
-            : null,
         deploymentList,
+        activeDeployment:
+            site.deploymentId && deploymentList?.total
+                ? await sdk.forProject.sites.getDeployment(params.site, site.deploymentId)
+                : null,
         installations
     };
 };
