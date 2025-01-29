@@ -8,36 +8,35 @@
         : '';
 </script>
 
-<div class="console-container" {style}>
-    <Layout.Stack gap="xl">
-        <slot />
-    </Layout.Stack>
+<div style:container-type="inline-size">
+    <div class="console-container" {style}>
+        <Layout.Stack gap="xl">
+            <slot />
+        </Layout.Stack>
+    </div>
 </div>
-
-<!--1728px (and wider): container size is 1200px-->
-<!--1440px: container size is 1144px-->
-<!--1280px: container size is 1000px-->
-<!--1024px (no side navigation): 944px-->
-<!--360px (no side navigation): 328px-->
 
 <style>
     :global(.console-container) {
-        margin: 1.25rem auto;
+        margin: 1.25rem 1rem;
 
-        @media (min-width: 360px) {
-            width: 328px;
+        @container (min-width: 360px) {
+            margin-inline: 2.5rem;
         }
-        @media (min-width: 1024px) {
-            width: 944px;
+        @container (min-width: 1024px) {
+            margin: 1.25rem auto;
+            max-width: 944px;
         }
-        @media (min-width: 1280px) {
-            width: 1000px;
+        @container (min-width: 1280px) {
+            max-width: 1000px;
         }
-        @media (min-width: 1440px) {
-            width: 1144px;
+
+        @container (min-width: 1440px) {
+            max-width: 1144px;
         }
-        @media (min-width: 1728px) {
-            width: 1200px;
+
+        @container (min-width: 1728px) {
+            max-width: 1200px;
         }
     }
 </style>

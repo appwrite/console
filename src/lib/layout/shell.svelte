@@ -117,7 +117,10 @@
         class="content"
         class:icons-content={state === 'icons'}
         class:no-sidebar={!showSideNavigation}>
-        <section class="main-content">
+        <section
+            class="main-content"
+            style:margin-left={!showSideNavigation ? 0 : '10px'}
+            data-test={showSideNavigation}>
             {#if $activeHeaderAlert?.show}
                 <svelte:component this={$activeHeaderAlert.component} />
             {/if}
