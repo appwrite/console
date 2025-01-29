@@ -156,37 +156,39 @@
                         </Layout.Stack>
                     </Filters>
                 </Layout.Stack>
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
-                <Popover let:toggle>
-                    <Button size="s" on:click={toggle}>Create deployment</Button>
-                    <svelte:fragment slot="tooltip">
-                        <ActionMenu.Root>
-                            <ActionMenu.Item.Button
-                                badge="Recommended"
-                                on:click={() => {
-                                    if (!hasInstallation) {
-                                        showConnectRepo = true;
-                                    } else {
-                                        showCreateDeployment = true;
-                                    }
-                                }}>
-                                Git
-                            </ActionMenu.Item.Button>
-                            <ActionMenu.Item.Button
-                                on:click={() => {
-                                    showConnectCLI = true;
-                                }}>
-                                CLI
-                            </ActionMenu.Item.Button>
-                            <ActionMenu.Item.Button
-                                on:click={() => {
-                                    showConnectManual = true;
-                                }}>
-                                Manual
-                            </ActionMenu.Item.Button>
-                        </ActionMenu.Root>
-                    </svelte:fragment>
-                </Popover>
+                <Layout.Stack direction="row" inline>
+                    <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
+                    <Popover let:toggle>
+                        <Button size="s" on:click={toggle}>Create deployment</Button>
+                        <svelte:fragment slot="tooltip">
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Button
+                                    badge="Recommended"
+                                    on:click={() => {
+                                        if (!hasInstallation) {
+                                            showConnectRepo = true;
+                                        } else {
+                                            showCreateDeployment = true;
+                                        }
+                                    }}>
+                                    Git
+                                </ActionMenu.Item.Button>
+                                <ActionMenu.Item.Button
+                                    on:click={() => {
+                                        showConnectCLI = true;
+                                    }}>
+                                    CLI
+                                </ActionMenu.Item.Button>
+                                <ActionMenu.Item.Button
+                                    on:click={() => {
+                                        showConnectManual = true;
+                                    }}>
+                                    Manual
+                                </ActionMenu.Item.Button>
+                            </ActionMenu.Root>
+                        </svelte:fragment>
+                    </Popover>
+                </Layout.Stack>
             </Layout.Stack>
             <div class="is-only-mobile">
                 <Layout.Stack justifyContent="space-between" direction="row">
