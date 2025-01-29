@@ -23,6 +23,7 @@
     const endpoint = getApiEndpoint();
 
     export let invoices: Invoice[];
+    export let showActions = true;
 
     function retryPayment(invoice: Invoice) {
         $selectedInvoice = invoice;
@@ -35,7 +36,9 @@
         <TableCellHead width={100}>Due Date</TableCellHead>
         <TableCellHead width={80}>Status</TableCellHead>
         <TableCellHead width={100}>Amount Due</TableCellHead>
-        <TableCellHead width={40} />
+        {#if showActions}
+            <TableCellHead width={40} />
+        {/if}
     </TableHeader>
     <TableBody>
         {#each invoices as invoice, i}
@@ -84,53 +87,55 @@
                 <TableCellText title="due">
                     {formatCurrency(invoice.grossAmount)}
                 </TableCellText>
-                <TableCell showOverflow right>
-                    <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>
-                        <Button
-                            round
-                            text
-                            noMargin
-                            ariaLabel="More options"
-                            on:click={() => {
-                                showDropdown[i] = !showDropdown[i];
-                            }}>
-                            <span class="icon-dots-horizontal" aria-hidden="true" />
-                        </Button>
-                        <svelte:fragment slot="list">
-                            <DropListLink
-                                icon="external-link"
-                                external
-                                href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
-                                on:click={() => (showDropdown[i] = !showDropdown[i])}
-                                event="view_invoice">
-                                View invoice
-                            </DropListLink>
-                            <DropListLink
-                                icon="download"
-                                href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
+                {#if showActions}
+                    <TableCell showOverflow right>
+                        <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>
+                            <Button
+                                round
+                                text
+                                noMargin
+                                ariaLabel="More options"
                                 on:click={() => {
                                     showDropdown[i] = !showDropdown[i];
-                                }}
-                                event="download_invoice">
-                                Download PDF
-                            </DropListLink>
-                            {#if status === 'overdue' || status === 'failed'}
-                                <DropListItem
-                                    icon="refresh"
+                                }}>
+                                <span class="icon-dots-horizontal" aria-hidden="true" />
+                            </Button>
+                            <svelte:fragment slot="list">
+                                <DropListLink
+                                    icon="external-link"
+                                    external
+                                    href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
+                                    on:click={() => (showDropdown[i] = !showDropdown[i])}
+                                    event="view_invoice">
+                                    View invoice
+                                </DropListLink>
+                                <DropListLink
+                                    icon="download"
+                                    href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
                                     on:click={() => {
-                                        retryPayment(invoice);
                                         showDropdown[i] = !showDropdown[i];
-                                        trackEvent(`click_retry_payment`, {
-                                            from: 'button',
-                                            source: 'billing_invoice_menu'
-                                        });
-                                    }}>
-                                    Retry payment
-                                </DropListItem>
-                            {/if}
-                        </svelte:fragment>
-                    </DropList>
-                </TableCell>
+                                    }}
+                                    event="download_invoice">
+                                    Download PDF
+                                </DropListLink>
+                                {#if status === 'overdue' || status === 'failed'}
+                                    <DropListItem
+                                        icon="refresh"
+                                        on:click={() => {
+                                            retryPayment(invoice);
+                                            showDropdown[i] = !showDropdown[i];
+                                            trackEvent(`click_retry_payment`, {
+                                                from: 'button',
+                                                source: 'billing_invoice_menu'
+                                            });
+                                        }}>
+                                        Retry payment
+                                    </DropListItem>
+                                {/if}
+                            </svelte:fragment>
+                        </DropList>
+                    </TableCell>
+                {/if}
             </TableRow>
         {/each}
     </TableBody>

@@ -22,6 +22,7 @@
     } from '$lib/elements/table';
     import { onMount } from 'svelte';
     import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
+    import { billingURL } from '$lib/stores/billing';
 
     export let showDelete = false;
     export let invoices: InvoiceList;
@@ -215,12 +216,17 @@
 
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button
-                secondary
-                submit
-                disabled={!error && (!organizationName || organizationName !== $organization.name)}>
-                Delete
-            </Button>
+            {#if estimation && estimation.unpaidInvoices.length > 0}
+                <Button href={$billingURL} secondary>View invoices</Button>
+            {:else}
+                <Button
+                    secondary
+                    submit
+                    disabled={!error &&
+                        (!organizationName || organizationName !== $organization.name)}>
+                    Delete
+                </Button>
+            {/if}
         </svelte:fragment>
     </Modal>
 </div>

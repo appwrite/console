@@ -469,6 +469,10 @@ export const upgradeURL = derived(
     page,
     ($page) => `${base}/organization-${$page.data?.organization?.$id}/change-plan`
 );
+export const billingURL = derived(
+    page,
+    ($page) => `${base}/organization-${$page.data?.organization?.$id}/billing`
+);
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
