@@ -39,36 +39,45 @@
     async function createProject() {
         isLoading = true;
 
-        const org = await sdk.forConsole.billing.createOrganization(
-            ID.unique(),
-            'Personal projects',
-            BillingPlan.FREE,
-            null,
-            null
-        );
-
-        const teamId = org.$id;
+        let org;
         try {
-            const project = await sdk.forConsole.projects.create(
-                id ?? ID.unique(),
-                projectName,
-                teamId,
-                Region.Default
+            org = await sdk.forConsole.billing.createOrganization(
+                ID.unique(),
+                'Personal projects',
+                BillingPlan.FREE,
+                null,
+                null
             );
-            trackEvent(Submit.ProjectCreate, {
-                customId: !!id,
-                teamId
-            });
-
-            startAnimation = true;
-
-            setTimeout(() => {
-                goto(`${base}/project-${project.$id}`);
-            }, 3000);
         } catch (e) {
-            // error = e.message;
-            trackError(e, Submit.ProjectCreate);
             isLoading = false;
+            trackError(e, Submit.OrganizationCreate);
+            throw new Error(e.message);
+        }
+
+        if (org) {
+            const teamId = org.$id;
+            try {
+                const project = await sdk.forConsole.projects.create(
+                    id ?? ID.unique(),
+                    projectName,
+                    teamId,
+                    Region.Default
+                );
+                trackEvent(Submit.ProjectCreate, {
+                    customId: !!id,
+                    teamId
+                });
+
+                startAnimation = true;
+
+                setTimeout(() => {
+                    goto(`${base}/project-${project.$id}`);
+                }, 3000);
+            } catch (e) {
+                trackError(e, Submit.ProjectCreate);
+                isLoading = false;
+                throw new Error(e.message);
+            }
         }
     }
 
