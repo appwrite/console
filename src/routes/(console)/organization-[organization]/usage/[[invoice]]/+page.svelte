@@ -10,7 +10,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart } from '$lib/charts';
+    import { BarChart, Legend } from '$lib/charts';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
@@ -29,6 +29,11 @@
     const plan = data?.plan ?? undefined;
 
     $: project = (data.organizationUsage as OrganizationUsage).projects;
+
+    $: legendData = [
+        { name: 'Reads', value: data.organizationUsage.databasesReadsTotal },
+        { name: 'Writes', value: data.organizationUsage.databasesWritesTotal }
+    ];
 </script>
 
 <Container>
@@ -133,7 +138,7 @@
                         <span
                             class="icon-chart-square-bar text-large"
                             aria-hidden="true"
-                            style="font-size: 32px;" />
+                            style:font-size="32px" />
                         <p class="u-bold">No data to show</p>
                     </div>
                 </Card>
@@ -178,6 +183,67 @@
                 </div>
                 {#if project?.length > 0}
                     <ProjectBreakdown projects={project} metric="users" {data} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <Heading tag="h6" size="7">Database reads and writes</Heading>
+
+        <p class="text">
+            The total number of database reads and writes across all projects in your organization.
+        </p>
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.databasesReads || data.organizationUsage.databasesWrites}
+                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
+                            }
+                        }}
+                        series={[
+                            {
+                                name: 'Reads',
+                                data: [
+                                    ...(data.organizationUsage.databasesReads ?? []).map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            },
+                            {
+                                name: 'Writes',
+                                data: [
+                                    ...(data.organizationUsage.databasesWrites ?? []).map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            }
+                        ]} />
+                </div>
+
+                <Legend {legendData} />
+
+                {#if project?.length > 0}
+                    <ProjectBreakdown
+                        {data}
+                        projects={project}
+                        databaseOperationMetric={['databasesReads', 'databasesWrites']} />
                 {/if}
             {:else}
                 <Card isDashed>
@@ -318,6 +384,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
     <CardGrid>
         <Heading tag="h6" size="7">GB hours</Heading>
 
@@ -378,6 +445,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
     <CardGrid>
         <Heading tag="h6" size="7">Phone OTP</Heading>
         <p class="text">
@@ -430,6 +498,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
     <TotalMembers members={data?.organizationMembers} />
 
     <p class="text common-section u-color-text-gray">

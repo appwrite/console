@@ -14,7 +14,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart } from '$lib/charts';
+    import { BarChart, Legend } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
@@ -36,6 +36,14 @@
         data.usage.filesStorageTotal +
         data.usage.deploymentsStorageTotal +
         data.usage.buildsStorageTotal;
+
+    $: dbReads = data.usage.databasesReads;
+    $: dbWrites = data.usage.databasesWrites;
+
+    $: legendData = [
+        { name: 'Reads', value: data.usage.databasesReadsTotal },
+        { name: 'Writes', value: data.usage.databasesWritesTotal }
+    ];
 
     const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
@@ -183,6 +191,48 @@
                             data: [...users.map((e) => [e.date, e.value])]
                         }
                     ]} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">Database reads and writes</Heading>
+
+        <p class="text">Total database reads and writes in your project.</p>
+
+        <svelte:fragment slot="aside">
+            {#if dbReads || dbWrites}
+                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
+                            }
+                        }}
+                        series={[
+                            {
+                                name: 'Reads',
+                                data: [...dbReads.map((e) => [e.date, e.value])]
+                            },
+                            {
+                                name: 'Writes',
+                                data: [...dbWrites.map((e) => [e.date, e.value])]
+                            }
+                        ]} />
+                </div>
+
+                <Legend {legendData} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
