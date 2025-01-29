@@ -10,7 +10,7 @@
 {#if menu.title}
     <span class="menu-title">{menu.title}</span>
 {/if}
-<ActionMenu.Root noPadding={true}>
+<ActionMenu.Root>
     {#each menu.items as menuItem}
         {#if menuItem.href}
             <ActionMenu.Item.Anchor
