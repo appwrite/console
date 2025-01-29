@@ -18,7 +18,6 @@
         FormList,
         InputSelect,
         InputTags,
-        InputText,
         InputTextarea,
         Label
     } from '$lib/elements/forms';
@@ -274,7 +273,7 @@
     $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
-    $: isButtonDisabled = $organization.billingPlan === billingPlan || error.length > 0;
+    $: isButtonDisabled = $organization.billingPlan === billingPlan;
 </script>
 
 <svelte:head>
@@ -389,7 +388,7 @@
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled || !selfService || !!error.length}>
+            disabled={$isSubmitting || isButtonDisabled || !selfService}>
             Change plan
         </Button>
     </WizardSecondaryFooter>
