@@ -12,6 +12,7 @@
     export let show = false;
     export let selectedDomain: Models.ProxyRule;
 
+    let error = null;
     async function retryDomain() {
         try {
             await sdk.forProject.proxy.updateRuleVerification(selectedDomain.$id);
@@ -22,17 +23,18 @@
                 message: `${selectedDomain.domain} has been deleted`
             });
             trackEvent(Submit.DomainDelete);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.DomainDelete);
+        } catch (e) {
+            error = e;
+            trackError(e, Submit.DomainDelete);
         }
+    }
+
+    $: if (!show) {
+        error = null;
     }
 </script>
 
-<Modal title="Retry verification" bind:show onSubmit={retryDomain}>
+<Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
     {#if selectedDomain}
         <RecordsCard domain={selectedDomain} />
     {/if}
