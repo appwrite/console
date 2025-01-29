@@ -39,7 +39,7 @@
         isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -104,7 +104,8 @@
             <Heading tag="h1" size="4" class="u-flex u-cross-center u-gap-8">
                 <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
                     <span class="u-trim">
-                        {$organization.name}
+                        <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
+                            >{$organization.name}</Typography.Title>
                     </span>
                     {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                         <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem">
