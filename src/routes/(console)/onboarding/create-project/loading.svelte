@@ -238,13 +238,6 @@
         --border-radius-container: 17px;
         --border-radius-content: 12px;
 
-        @media (min-width: 768px) {
-            --cell-dimension: 120px;
-            --icon-width: 48px;
-            --border-radius-container: 32px;
-            --border-radius-content: 22px;
-        }
-
         --half-cell-dimension: calc(var(--cell-dimension) * 0.5);
         --double-cell-dimension: calc(var(--cell-dimension) * 2);
         --triple-cell-dimension: calc(var(--cell-dimension) * 3);
@@ -253,6 +246,13 @@
         --negative-double-cell-dimension: calc(var(--cell-dimension) * -2);
         --negative-triple-cell-dimension: calc(var(--cell-dimension) * -3);
         --negative-quadriple-cell-dimension: calc(var(--cell-dimension) * -4);
+
+        @media (min-width: 768px) {
+            --cell-dimension: 120px;
+            --icon-width: 48px;
+            --border-radius-container: 32px;
+            --border-radius-content: 22px;
+        }
     }
 
     .static-loader {

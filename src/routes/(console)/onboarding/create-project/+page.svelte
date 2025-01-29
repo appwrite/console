@@ -187,7 +187,8 @@
 </div>
 
 <style lang="scss">
-    @import '@appwrite.io/pink-legacy/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+
     :global(body) {
         background: var(--color-bgcolor-neutral-default, #19191c);
     }
@@ -197,7 +198,7 @@
         gap: 4.5rem;
         background: var(--color-bgcolor-neutral-default, #19191c);
 
-        @media #{$break2open} {
+        @media #{devices.$break2open} {
             width: 700px;
         }
     }
