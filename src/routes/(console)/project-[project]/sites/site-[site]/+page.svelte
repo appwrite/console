@@ -35,6 +35,7 @@
             </div>
             <div style:flex="2">
                 <DeploymentsOverview
+                    site={data.site}
                     activeDeployment={data.deployment}
                     deploymentList={data.deploymentList} />
             </div>

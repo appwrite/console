@@ -1,6 +1,14 @@
 <script lang="ts">
-    import { Badge, Layout, Status, Table, Typography } from '@appwrite.io/pink-svelte';
-    import OpenOnMobileModal from '../(components)/openOnMobileModal.svelte';
+    import {
+        ActionMenu,
+        Badge,
+        Icon,
+        Layout,
+        Popover,
+        Status,
+        Table,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -8,12 +16,17 @@
     import DeploymentCreatedBy from '../(components)/deploymentCreatedBy.svelte';
     import DeploymentSource from '../(components)/deploymentSource.svelte';
     import Id from '$lib/components/id.svelte';
+    import { IconDotsHorizontal, IconGlobeAlt, IconRefresh } from '@appwrite.io/pink-icons-svelte';
+    import RedeployModal from '../redeployModal.svelte';
+    import PromoteModal from '../promoteModal.svelte';
 
+    export let site: Models.Site;
     export let activeDeployment: Models.Deployment;
     export let deploymentList: Models.DeploymentList = undefined;
 
-    let showDomainQR = false;
-    let selectedDomainURL: string;
+    let showPromote = false;
+    let showRedeploy = false;
+    let selectedDeployment: Models.Deployment = null;
 </script>
 
 <Layout.Stack>
@@ -37,6 +50,7 @@
                 <Table.Header.Cell>Status</Table.Header.Cell>
                 <Table.Header.Cell>Source</Table.Header.Cell>
                 <Table.Header.Cell>Updated</Table.Header.Cell>
+                <Table.Header.Cell />
             </svelte:fragment>
             {#each deploymentList?.deployments as deployment}
                 <Table.Link
@@ -65,12 +79,56 @@
                     <Table.Cell>
                         <DeploymentCreatedBy {deployment} />
                     </Table.Cell>
+                    <Table.Cell>
+                        <Popover placement="bottom-end" let:toggle>
+                            <Button
+                                text
+                                icon
+                                size="s"
+                                on:click={(e) => {
+                                    e.preventDefault();
+                                    toggle(e);
+                                }}>
+                                <Icon size="s" icon={IconDotsHorizontal} /></Button>
+                            <svelte:fragment slot="tooltip" let:toggle>
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconRefresh}
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedDeployment = deployment;
+                                            showRedeploy = true;
+                                            toggle(e);
+                                        }}>
+                                        Redeploy
+                                    </ActionMenu.Item.Button>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconGlobeAlt}
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedDeployment = deployment;
+                                            showPromote = true;
+                                            toggle(e);
+                                        }}>
+                                        Promote
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </svelte:fragment>
+                        </Popover>
+                    </Table.Cell>
                 </Table.Link>
             {/each}
         </Table.Root>
     {/if}
 </Layout.Stack>
 
-{#if showDomainQR && selectedDomainURL}
-    <OpenOnMobileModal bind:show={showDomainQR} siteURL={selectedDomainURL} />
+{#if selectedDeployment && showRedeploy}
+    <RedeployModal {site} selectedDeploymentId={selectedDeployment.$id} bind:show={showRedeploy} />
+{/if}
+
+{#if selectedDeployment && showPromote}
+    <PromoteModal
+        siteId={site.$id}
+        selectedDeploymentId={selectedDeployment.$id}
+        bind:show={showPromote} />
 {/if}
