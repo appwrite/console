@@ -21,11 +21,9 @@
         IconEyeOff,
         IconPencil
     } from '@appwrite.io/pink-icons-svelte';
-    import SecretVariableModal from '../../secretVariableModal.svelte';
-    import ImportSiteVariablesModal from '../../importSiteVariablesModal.svelte';
+    import SecretVariableModal from '../secretVariableModal.svelte';
+    import ImportSiteVariablesModal from '../importSiteVariablesModal.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { getFrameworkIcon } from '../../../store';
-    import { iconPath } from '$lib/stores/app';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -61,8 +59,7 @@
             bind:value={frameworkId}
             options={frameworks.map((framework) => ({
                 value: framework.key,
-                label: framework.name,
-                leadingHtml: `<img src='${$iconPath(getFrameworkIcon(framework.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+                label: framework.name
             }))}
             on:change={() => {
                 selectedFramework = frameworks.find((framework) => framework.key === frameworkId);
@@ -106,9 +103,6 @@
             </Accordion>
 
             <Accordion title="Environment variables" badge="Optional" hideDivider>
-                <svelte:fragment slot="title">
-                    Environment variables <Badge content="Optional" variant="secondary" />
-                </svelte:fragment>
                 <Layout.Stack gap="l">
                     <Layout.Stack gap="xl">
                         Set up environment variables to securely manage keys and settings for your

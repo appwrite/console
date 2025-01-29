@@ -13,11 +13,11 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forProject.functions.updateDeploymentBuild(
+            await sdk.forProject.sites.updateDeploymentBuild(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );
-            await invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.SITE);
             showCancel = false;
             addNotification({
                 type: 'success',

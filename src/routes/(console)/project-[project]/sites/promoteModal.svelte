@@ -6,40 +6,38 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedDeployment: Models.Deployment = null;
-    export let site: Models.Site;
+    export let selectedDeploymentId: string;
+    export let siteId: string;
     let error: string;
 
-    async function redeploy() {
+    async function promote() {
         try {
-            await sdk.forProject.sites.createBuild(site.$id, selectedDeployment.$id);
+            await sdk.forProject.sites.updateDeploymentBuild(siteId, selectedDeploymentId);
             addNotification({
                 type: 'success',
-                message: `Redeploying ${site.name}`
+                message: `Deployment has been promoted`
             });
-            trackEvent(Submit.SiteRedeploy);
+            trackEvent(Submit.SitePromoteDeployment);
 
             invalidate(Dependencies.SITE);
             invalidate(Dependencies.DEPLOYMENTS);
             show = false;
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.SiteRedeploy);
+            trackError(e, Submit.SitePromoteDeployment);
         }
     }
 </script>
 
-<Modal title="Redeploy site" bind:show bind:error onSubmit={redeploy}>
+<Modal title="Promote deployment" bind:show bind:error onSubmit={promote}>
     <p class="text">
-        Are you sure you want to redeploy <b>{site.name}</b>? Redeploying may affect your production
-        code.
+        Are you sure you want to promote this deployment? This might affect your production code.
     </p>
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Redeploy</Button>
+        <Button submit>Promote</Button>
     </svelte:fragment>
 </Modal>

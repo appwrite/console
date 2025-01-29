@@ -122,7 +122,7 @@
 </Modal>
 
 <style lang="scss">
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     .card {
         position: fixed;

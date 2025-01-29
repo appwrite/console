@@ -342,6 +342,7 @@
 </div>
 
 <style lang="scss">
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
     .dashboard-content {
         background: var(--color-bgcolor-neutral-default, #fafafb);
 

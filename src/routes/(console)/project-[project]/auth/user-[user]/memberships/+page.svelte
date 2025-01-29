@@ -9,7 +9,7 @@
     import type { PageData } from './$types';
     import { trackEvent } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Table, Layout } from '@appwrite.io/pink-svelte';
+    import { Table, Layout, Empty, Card } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -59,17 +59,21 @@
             {/each}
         </Table.Root>
     {:else}
-        <EmptySearch>
-            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
-                <p class="text u-line-height-1-5">No memberships available</p>
-                <Button
-                    external
-                    secondary
-                    href="https://appwrite.io/docs/products/auth/teams#create-membership">
-                    Documentation
-                </Button>
-            </div>
-        </EmptySearch>
+        <Card.Base padding="none">
+            <Empty
+                title="No memberships available"
+                description="Need a hand? Learn more in our documentation."
+                type="secondary">
+                <svelte:fragment slot="actions">
+                    <Button
+                        external
+                        secondary
+                        href="https://appwrite.io/docs/products/auth/teams#create-membership">
+                        Documentation
+                    </Button>
+                </svelte:fragment>
+            </Empty>
+        </Card.Base>
     {/if}
 </Container>
 

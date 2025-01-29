@@ -13,6 +13,7 @@
     import type { Models } from '@appwrite.io/console';
     import { project } from '../../store';
     import { base } from '$app/paths';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     const projectId = $page.params.project;
     let showProvider = false;
@@ -49,17 +50,15 @@
             <Heading tag="h2" size="7">Auth methods</Heading>
             <p>Enable the authentication methods you wish to use.</p>
             <svelte:fragment slot="aside">
-                <form class="form">
-                    <ul class="form-list is-multiple">
-                        {#each $authMethods.list as box}
-                            <InputSwitch
-                                label={box.label}
-                                id={box.method}
-                                bind:value={box.value}
-                                on:change={() => authUpdate(box)} />
-                        {/each}
-                    </ul>
-                </form>
+                <Layout.Stack gap="l" direction="row" wrap="wrap">
+                    {#each $authMethods.list as box}
+                        <InputSwitch
+                            label={box.label}
+                            id={box.method}
+                            bind:value={box.value}
+                            on:change={() => authUpdate(box)} />
+                    {/each}
+                </Layout.Stack>
             </svelte:fragment>
         </CardGrid>
         <section class="common-section">

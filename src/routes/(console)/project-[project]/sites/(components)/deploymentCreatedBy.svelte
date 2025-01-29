@@ -7,14 +7,16 @@
     export let deployment: Models.Deployment;
 </script>
 
-{#if deployment.providerCommitAuthor}
-    <span title={deployment.$updatedAt}>
-        {capitalize(timeFromNow(deployment.$updatedAt))}
-    </span>
-    ago by <Link href={deployment.providerCommitAuthorUrl} external
-        >{deployment.providerCommitAuthor}</Link>
-{:else}
-    <span title={deployment.$updatedAt}>
-        {capitalize(timeFromNow(deployment.$updatedAt))}
-    </span>
-{/if}
+<p>
+    {#if deployment.providerCommitAuthor}
+        <span title={deployment.$updatedAt}>
+            {capitalize(timeFromNow(deployment.$updatedAt))}
+        </span>
+        by <Link href={deployment.providerCommitAuthorUrl} external
+            >{deployment.providerCommitAuthor}</Link>
+    {:else}
+        <span title={deployment.$updatedAt}>
+            {capitalize(timeFromNow(deployment.$updatedAt))}
+        </span>
+    {/if}
+</p>
