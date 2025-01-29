@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { Button, InputChoice } from '$lib/elements/forms';
-    import { DropList } from '.';
+    import { Button, InputCheckbox, InputChoice } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import type { Writable } from 'svelte/store';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
     import { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Layout, Popover, Tooltip } from '@appwrite.io/pink-svelte';
 
     export let columns: Writable<Column[]>;
     export let view: View;
@@ -75,12 +74,8 @@
 
 {#if !hideColumns && view === View.Table}
     {#if $columns?.length}
-        <DropList bind:show={showSelectColumns} scrollable wrapperFullWidth={fullWidthMobile}>
-            <Button
-                size="s"
-                secondary
-                on:click={() => (showSelectColumns = !showSelectColumns)}
-                {fullWidthMobile}>
+        <Popover let:toggle>
+            <Button size="s" secondary on:click={toggle} {fullWidthMobile}>
                 <span
                     class="icon-view-boards u-opacity-50"
                     aria-hidden="true"
@@ -90,18 +85,22 @@
                 {/if}
                 <span class="inline-tag">{selectedColumnsNumber}</span>
             </Button>
-            <svelte:fragment slot="list">
-                {#each $columns as column}
-                    <InputChoice
-                        id={column.id}
-                        label={column.title}
-                        bind:value={column.show}
-                        disabled={allowNoColumns
-                            ? false
-                            : selectedColumnsNumber <= 1 && column.show} />
-                {/each}
+            <svelte:fragment slot="tooltip">
+                <ActionMenu.Root>
+                    <Layout.Stack>
+                        {#each $columns as column}
+                            <InputCheckbox
+                                id={column.id}
+                                label={column.title}
+                                bind:checked={column.show}
+                                disabled={allowNoColumns
+                                    ? false
+                                    : selectedColumnsNumber <= 1 && column.show} />
+                        {/each}
+                    </Layout.Stack>
+                </ActionMenu.Root>
             </svelte:fragment>
-        </DropList>
+        </Popover>
     {/if}
 {/if}
 
