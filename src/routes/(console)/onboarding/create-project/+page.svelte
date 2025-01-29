@@ -26,8 +26,12 @@
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
             regions.regions.forEach((region) => {
-                const img = new Image();
-                img.src = getFlagUrl(region.flag);
+                fetch(getFlagUrl(region.flag)).then((response) => {
+                    if (!response.ok) {
+                        return;
+                    }
+                    return response.blob();
+                });
             });
         }
     });
