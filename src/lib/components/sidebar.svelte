@@ -430,7 +430,9 @@
     }
 
     .bottom {
-        height: var(--base-32, 32px);
+        @media (min-width: 1024px) {
+            height: var(--base-32, 32px);
+        }
     }
     :global(button.collapse) {
         transform: translateX(-10px);
