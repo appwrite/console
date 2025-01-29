@@ -7,7 +7,8 @@
         Divider,
         Link,
         Button,
-        Layout
+        Layout,
+        Avatar
     } from '@appwrite.io/pink-svelte';
 
     import {
@@ -83,7 +84,7 @@
                 <Link.Button
                     on:click={() => {
                         showAccountMenu = !showAccountMenu;
-                    }}><img src={avatar} alt={'Avatar'} class="avatar" /></Link.Button>
+                    }}><Avatar size="s" src={avatar} /></Link.Button>
             </div>
         </div>
         <div slot="middle" class:icons={state === 'icons'}>
@@ -292,12 +293,6 @@
             width: 100%;
         }
     }
-    .avatar {
-        width: 32px;
-        aspect-ratio: 1 /1;
-        border-radius: var(--border-radius-circle, 99999px);
-    }
-
     .top {
         display: flex;
         width: 199px;
