@@ -7,7 +7,8 @@
         Tooltip,
         Card,
         ActionList,
-        Input
+        Input,
+        Button
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
@@ -94,8 +95,8 @@
         <div class="right">
             <Layout.Stack gap="l" direction="row">
                 <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
-                    <Link.Button variant="quiet" size="m" on:click={toggleFeedback}
-                        >Feedback</Link.Button>
+                    <Button.Button type="button" variant="compact" on:click={toggleFeedback}
+                        >Feedback</Button.Button>
                     <svelte:fragment slot="other">
                         <Feedback />
                     </svelte:fragment>
@@ -106,11 +107,11 @@
                     scrollable={true}
                     noArrow
                     placement="bottom-end">
-                    <Link.Button
-                        variant="quiet"
-                        size="m"
+                    <Button.Button
+                        variant="compact"
+                        type="button"
                         on:click={() => (showSupport = !showSupport)}>
-                        Support</Link.Button>
+                        Support</Button.Button>
 
                     <svelte:fragment slot="other">
                         <Support bind:show={showSupport} />
