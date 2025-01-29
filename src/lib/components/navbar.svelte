@@ -270,7 +270,7 @@
 
     @media (min-width: 768px) {
         .only-desktop {
-            display: block;
+            display: flex;
         }
         .only-mobile {
             display: none;
