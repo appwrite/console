@@ -28,7 +28,7 @@
         : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
     const plan = data?.plan ?? undefined;
 
-    $: project = (data.organizationUsage as OrganizationUsage).projects;
+    $: projects = (data.organizationUsage as OrganizationUsage).projects;
 
     $: legendData = [
         { name: 'Reads', value: data.organizationUsage.databasesReadsTotal },
@@ -129,8 +129,8 @@
                             }
                         ]} />
                 </div>
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="bandwidth" {data} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="bandwidth" {data} />
                 {/if}
             {:else}
                 <Card isDashed>
@@ -181,8 +181,8 @@
                             }
                         ]} />
                 </div>
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="users" {data} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="users" {data} />
                 {/if}
             {:else}
                 <Card isDashed>
@@ -239,10 +239,10 @@
 
                 <Legend {legendData} />
 
-                {#if project?.length > 0}
+                {#if projects?.length > 0}
                     <ProjectBreakdown
                         {data}
-                        projects={project}
+                        {projects}
                         databaseOperationMetric={['databasesReads', 'databasesWrites']} />
                 {/if}
             {:else}
@@ -298,9 +298,10 @@
                             }
                         ]} />
                 </div>
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="executions" {data} />
-                {/if}
+                {#if projects?.length > 0}<ProjectBreakdown
+                        {projects}
+                        metric="executions"
+                        {data} />{/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -368,9 +369,10 @@
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
                     progressBarData={progressBarStorageDate} />
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="storage" {data} />
-                {/if}
+                {#if projects?.length > 0}<ProjectBreakdown
+                        {projects}
+                        metric="storage"
+                        {data} />{/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -478,9 +480,9 @@
                     </p>
                 </div>
 
-                {#if project?.length > 0}
+                {#if projects?.length > 0}
                     <ProjectBreakdown
-                        projects={project}
+                        {projects}
                         metric="authPhoneTotal"
                         estimate="authPhoneEstimate"
                         {data} />

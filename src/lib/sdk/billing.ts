@@ -198,6 +198,8 @@ export type OrganizationUsage = {
         storage: number;
         executions: number;
         bandwidth: number;
+        databasesReads: number;
+        databasesWrites: number;
         users: number;
         authPhoneTotal: number;
         authPhoneEstimate: number;
