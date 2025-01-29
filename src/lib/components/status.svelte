@@ -9,7 +9,7 @@
         | 'building'
         | 'none';
 
-    export let statusIconStyle: string;
+    export let statusIconStyle: string | undefined = undefined;
 </script>
 
 <div
