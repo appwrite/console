@@ -1,6 +1,6 @@
 <script lang="ts">
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon } from '$lib/sdk/billing'
+    import type { Coupon } from '$lib/sdk/billing';
 
     export let label: string;
     export let value: number;

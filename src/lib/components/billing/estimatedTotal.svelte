@@ -12,7 +12,6 @@
     export let organizationId: string | undefined = undefined;
     export let billingPlan: string;
     export let collaborators: string[];
-    export let couponId: string;
     export let fixedCoupon = false;
     export let error = '';
     export let couponData: Partial<Coupon>;
@@ -22,7 +21,11 @@
     let budgetEnabled = false;
     let estimation: Estimation;
 
-    async function getEstimate(billingPlan: string, collaborators: string[], couponId: string) {
+    async function getEstimate(
+        billingPlan: string,
+        collaborators: string[],
+        couponId: string | undefined
+    ) {
         try {
             estimation = await sdk.forConsole.billing.estimationCreateOrganization(
                 billingPlan,
@@ -65,6 +68,19 @@
                 collaborators ?? []
             );
         } catch (e) {
+            if (e instanceof AppwriteException) {
+                if (
+                    e.type === 'coupon_not_found' ||
+                    e.type === 'coupon_already_used' ||
+                    e.type === 'billing_credits_unsupported'
+                ) {
+                    couponData = {
+                        code: null,
+                        status: null,
+                        credits: null
+                    };
+                }
+            }
             addNotification({
                 type: 'error',
                 isHtml: false,
@@ -74,8 +90,8 @@
     }
 
     $: organizationId
-        ? getUpdatePlanEstimate(organizationId, billingPlan, collaborators, couponId)
-        : getEstimate(billingPlan, collaborators, couponId);
+        ? getUpdatePlanEstimate(organizationId, billingPlan, collaborators, couponData?.code)
+        : getEstimate(billingPlan, collaborators, couponData?.code);
 </script>
 
 {#if estimation || error.length}

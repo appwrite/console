@@ -18,7 +18,7 @@
     export let currentPlan: Plan;
     export let creditList: CreditList;
     export let currentInvoice: Invoice | undefined = undefined;
-    export let currentAggregation: Aggregation | undefined = undefined
+    export let currentAggregation: Aggregation | undefined = undefined;
 
     let showCancel: boolean = false;
 
@@ -46,8 +46,7 @@
                 <Collapsible>
                     <div class="u-flex-vertical u-gap-8">
                         <div class="u-flex">
-                            <span class="body-text-2">
-                                {tierToPlan($organization?.billingPlan)?.name} plan</span>
+                            <span class="body-text-2"> {currentPlan.name} plan</span>
                             <div class="body-text-2 u-margin-inline-start-auto">
                                 {isTrial ||
                                 $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
@@ -63,7 +62,9 @@
                                 <svelte:fragment slot="beforetitle">
                                     <span class="body-text-2"><b>Add-ons</b></span><span
                                         class="inline-tag"
-                                        >{currentAggregation.additionalMembers > 0 ? currentInvoice.usage.length + 1 : currentInvoice.usage.length}</span>
+                                        >{currentAggregation.additionalMembers > 0
+                                            ? currentInvoice.usage.length + 1
+                                            : currentInvoice.usage.length}</span>
                                     <div class="icon">
                                         <span class="icon-cheveron-down" aria-hidden="true"></span>
                                     </div>
@@ -100,10 +101,12 @@
                                     {#if currentInvoice?.usage}
                                         {#each currentInvoice.usage as excess, i}
                                             <li
-                                                class="u-flex-vertical u-gap-4 {currentAggregation.additionalMembers > 0
+                                                class="u-flex-vertical u-gap-4 {currentAggregation.additionalMembers >
+                                                0
                                                     ? 'u-padding-block-8'
                                                     : 'u-padding-block-start-8'}"
-                                                class:u-sep-block-start={i > 0 || currentAggregation.additionalMembers > 0}>
+                                                class:u-sep-block-start={i > 0 ||
+                                                    currentAggregation.additionalMembers > 0}>
                                                 {#if ['storage', 'bandwidth'].includes(excess.name)}
                                                     {@const excessValue = humanFileSize(
                                                         excess.value

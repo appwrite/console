@@ -19,7 +19,7 @@
                 <LabelCard
                     name="plan"
                     bind:group={billingPlan}
-                    disabled={ (plan.$id === BillingPlan.FREE && anyOrgFree) || !plan.selfService}
+                    disabled={(plan.$id === BillingPlan.FREE && anyOrgFree) || !plan.selfService}
                     value={plan.$id}
                     tooltipShow={plan.$id === BillingPlan.FREE && anyOrgFree}
                     tooltipText={plan.$id === BillingPlan.FREE

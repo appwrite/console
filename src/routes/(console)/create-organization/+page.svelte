@@ -47,7 +47,6 @@
     let billingPlan: BillingPlan = BillingPlan.FREE;
     let paymentMethodId: string;
     let collaborators: string[] = [];
-    let couponId: string | undefined;
     let couponData: Partial<Coupon> = {
         code: null,
         status: null,
@@ -240,7 +239,6 @@
                     {billingBudget}
                     {billingPlan}
                     {collaborators}
-                    {couponId}
                     {couponData} />
             {:else}
                 <PlanComparisonBox />
