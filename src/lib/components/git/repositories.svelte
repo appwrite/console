@@ -8,7 +8,7 @@
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
     import { createEventDispatcher } from 'svelte';
-    import { Layout, Table, Typography, Icon, Avatar } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Typography, Icon, Avatar, Skeleton } from '@appwrite.io/pink-svelte';
     import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
     import ConnectGit from './connectGit.svelte';
     import SvgIcon from '../svgIcon.svelte';
@@ -75,7 +75,6 @@
     async function detectFramework(repo) {
         console.log(repo);
         // TODO add code once backend is implemented
-        // const { framework } = await sdk.forProject.functions.detectFramework(repo.id);
         return '';
     }
 </script>
@@ -120,9 +119,22 @@
         </Layout.Stack>
         {#if selectedInstallation}
             {#await loadRepositories(selectedInstallation, search)}
-                <Layout.Stack justifyContent="center" alignContent="center" alignItems="center">
-                    <div class="loader u-margin-32" />
-                </Layout.Stack>
+                <Table.Root>
+                    {#each Array(4) as _}
+                        <Table.Row>
+                            <Table.Cell>
+                                <Layout.Stack direction="row" alignItems="center">
+                                    <Skeleton variant="circle" width={24} />
+
+                                    <Layout.Stack gap="s" direction="row" alignItems="center">
+                                        <Skeleton variant="line" width={200} height={20} />
+                                    </Layout.Stack>
+                                    <Skeleton variant="line" width={76} height={32} />
+                                </Layout.Stack>
+                            </Table.Cell>
+                        </Table.Row>
+                    {/each}
+                </Table.Root>
             {:then response}
                 {#if response?.length}
                     <Table.Root>
