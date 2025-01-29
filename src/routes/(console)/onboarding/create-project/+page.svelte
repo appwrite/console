@@ -25,14 +25,7 @@
     onMount(async () => {
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
-            regions.regions.forEach((region) => {
-                fetch(getFlagUrl(region.flag)).then((response) => {
-                    if (!response.ok) {
-                        return;
-                    }
-                    return response.blob();
-                });
-            });
+            regions.regions.forEach((region) => fetch(getFlagUrl(region.flag));
         }
     });
 
