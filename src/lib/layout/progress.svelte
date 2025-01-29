@@ -111,7 +111,7 @@
         left: 0;
         height: 2px;
         transition: width 0.2s ease-in-out;
-        z-index: 5;
+        z-index: 15;
         background: hsl(var(--color-primary-200));
     }
 

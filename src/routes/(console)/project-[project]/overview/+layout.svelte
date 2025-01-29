@@ -15,7 +15,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { onMount } from 'svelte';
-    import { onboarding, project } from '../store';
+    import { project } from '../store';
     import Bandwidth from './bandwidth.svelte';
     import { createApiKey } from './keys/+page.svelte';
     import Onboard from './onboard.svelte';
@@ -27,6 +27,7 @@
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
@@ -82,10 +83,10 @@
 </svelte:head>
 
 {#if $project}
-    <Container overlapCover>
-        {#if $onboarding}
-            <Onboard {projectId} />
-        {:else}
+    {#if !hasOnboardingDismissed(projectId)}
+        <Onboard {projectId} hasPlatforms={$project.platforms.length > 0} />
+    {:else}
+        <Container overlapCover>
             {#if $usage}
                 {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
                 <section class="common-section">
@@ -234,6 +235,6 @@
                     <slot />
                 </div>
             </section>
-        {/if}
-    </Container>
+        </Container>
+    {/if}
 {/if}

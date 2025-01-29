@@ -19,9 +19,9 @@
         "e2e:ui": "playwright test tests/e2e --ui"
     },
     "dependencies": {
-        "@appwrite.io/console": "https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@70f1b0c",
+        "@appwrite.io/console": "https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@9193",
         "@appwrite.io/pink-icons": "0.25.0",
-        "@appwrite.io/pink-icons-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@4a07c16",
+        "@appwrite.io/pink-icons-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@7484609",
         "@appwrite.io/pink-legacy": "^1.0.0",
         "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@464cb37",
         "@popperjs/core": "^2.11.8",
@@ -46,7 +46,7 @@
     },
     "devDependencies": {
         "@melt-ui/pp": "^0.3.2",
-        "@melt-ui/svelte": "^0.83.0",
+        "@melt-ui/svelte": "^0.86.2",
         "@playwright/test": "^1.49.0",
         "@sveltejs/adapter-static": "^3.0.6",
         "@sveltejs/kit": "^2.8.1",

@@ -39,7 +39,7 @@
         isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -101,84 +101,51 @@
 {#if $organization?.$id}
     <Cover>
         <svelte:fragment slot="header">
-            <DropList bind:show={showDropdown} placement="bottom-end" noArrow scrollable>
-                <button
-                    class="button is-text u-padding-inline-0 u-max-width-100-percent"
-                    on:click={() => (showDropdown = !showDropdown)}>
-                    <Heading tag="h1" size="4" class="u-flex u-cross-center u-gap-8">
-                        <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
-                            <span class="u-trim">
-                                {$organization.name}
-                            </span>
-                            {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                                <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem">
-                                    <span class="icon-github" aria-hidden="true" />EDUCATION
-                                </Pill>
-                            {:else if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+            <Heading tag="h1" size="4" class="u-flex u-cross-center u-gap-8">
+                <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
+                    <span class="u-trim">
+                        <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
+                            >{$organization.name}</Typography.Title>
+                    </span>
+                    {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                        <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem">
+                            <span class="icon-github" aria-hidden="true" />EDUCATION
+                        </Pill>
+                    {:else if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+                        <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem"
+                            >FREE</Pill>
+                    {/if}
+                    {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
+                        <Tooltip>
+                            <div class="u-flex u-cross-center">
                                 <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem"
-                                    >FREE</Pill>
-                            {/if}
-                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
-                                <Tooltip>
-                                    <div class="u-flex u-cross-center">
-                                        <Pill
-                                            class="eyebrow-heading-3"
-                                            style="--p-tag-content-height:2rem">TRIAL</Pill>
-                                    </div>
-                                    <span slot="tooltip"
-                                        >{`Your trial ends on ${toLocaleDate(
-                                            $organization.billingStartDate
-                                        )}. ${$daysLeftInTrial} days remaining.`}</span>
-                                </Tooltip>
-                            {/if}
-                        </span>
-                        <span
-                            class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}
-                            aria-hidden="true" />
-                    </Heading>
-                </button>
-                <div data-sveltekit-preload-data="false" slot="list">
-                    {#each $organizationList.teams as org}
-                        <DropListLink
-                            href={`${base}/organization-${org.$id}`}
-                            on:click={() => (showDropdown = false)}>
-                            {org.name}
-                        </DropListLink>
-                    {/each}
-                </div>
-                <svelte:fragment slot="other">
-                    <section class="drop-section">
-                        <ul class="drop-list">
-                            <DropListItem icon="plus" on:click={createOrg}>
-                                New Organization
-                            </DropListItem>
-                        </ul>
-                    </section></svelte:fragment>
-            </DropList>
+                                    >TRIAL</Pill>
+                            </div>
+                            <span slot="tooltip"
+                                >{`Your trial ends on ${toLocaleDate(
+                                    $organization.billingStartDate
+                                )}. ${$daysLeftInTrial} days remaining.`}</span>
+                        </Tooltip>
+                    {/if}
+                </span>
+            </Heading>
             <div class="u-margin-inline-start-auto">
                 <div class="u-flex u-gap-16 u-cross-center">
                     <a href={`${path}/members`} class="is-not-mobile">
                         <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
                     </a>
-                    <Tooltip disabled={!areMembersLimited}>
-                        <div>
-                            {#if $isOwner}
-                                <Button
-                                    secondary
-                                    on:click={() => newMemberModal.set(true)}
-                                    disabled={areMembersLimited}>
-                                    <span class="icon-plus" aria-hidden="true" />
-                                    <span class="text">Invite</span>
-                                </Button>
-                            {/if}
-                        </div>
-                        <span slot="tooltip"
-                            >{$organization?.billingPlan === BillingPlan.FREE
-                                ? `Upgrade to add more members`
-                                : `You've reached the members limit for the ${
-                                      tierToPlan($organization?.billingPlan)?.name
-                                  } plan`}</span>
-                    </Tooltip>
+
+                    <div>
+                        {#if $isOwner}
+                            <Button
+                                secondary
+                                on:click={() => newMemberModal.set(true)}
+                                disabled={areMembersLimited}>
+                                <span class="icon-plus" aria-hidden="true" />
+                                <span class="text">Invite</span>
+                            </Button>
+                        {/if}
+                    </div>
                 </div>
             </div>
         </svelte:fragment>

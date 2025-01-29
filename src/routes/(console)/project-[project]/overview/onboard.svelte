@@ -1,245 +1,500 @@
 <script lang="ts">
-    import { addPlatform, Platform } from './platforms/+page.svelte';
-    import OnboardDark1Desktop from './onboard-1-dark-desktop.svg';
-    import OnboardDark1Mobile from './onboard-1-dark-mobile.svg';
-    import OnboardLight1Desktop from './onboard-1-light-desktop.svg';
-    import OnboardLight1Mobile from './onboard-1-light-mobile.svg';
-    import OnboardDark2Desktop from './onboard-2-dark-desktop.svg';
-    import OnboardDark2Mobile from './onboard-2-dark-mobile.svg';
-    import OnboardLight2Desktop from './onboard-2-light-desktop.svg';
-    import OnboardLight2Mobile from './onboard-2-light-mobile.svg';
+    import { Step, Link, Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { addPlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
-    import { wizard } from '$lib/stores/wizard';
-    import Wizard from './keys/wizard.svelte';
-    import { canWriteKeys, canWritePlatforms } from '$lib/stores/roles';
+    import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
+    import DatabaseImgSource from './assets/database.png';
+    import DatabaseImgSourceDark from './assets/database-dark.png';
+    import UsersImgSource from './assets/users.png';
+    import UsersImgSourceDark from './assets/users-dark.png';
+    import DiscordImgSource from './assets/discord.png';
+    import DiscordImgSourceDark from './assets/discord-dark.png';
+    import PlatformWebImgSource from './assets/platform-web.png';
+    import PlatformWebImgSourceDark from './assets/platform-web-dark.png';
+    import PlatformServerImgSource from './assets/platform-server.png';
+    import PlatformServerImgSourceDark from './assets/platform-server-dark.png';
+    import PlatformIosImgSource from './assets/platform-ios.png';
+    import PlatformIosImgSourceDark from './assets/platform-ios-dark.png';
+    import PlatformAndroidImgSource from './assets/platform-android.png';
+    import PlatformAndroidImgSourceDark from './assets/platform-android-dark.png';
+    import PlatformFlutterImgSource from './assets/platform-flutter.png';
+    import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.png';
     import { base } from '$app/paths';
-
-    export let projectId: string;
-
-    const platforms = [
-        {
-            title: 'Web',
-            icon: 'grayscale/code',
-            platform: Platform.Web
-        },
-        {
-            title: 'Flutter',
-            icon: 'color/flutter',
-            platform: Platform.Flutter
-        },
-        {
-            title: 'Apple',
-            icon: 'color/apple',
-            platform: Platform.Apple
-        },
-        {
-            title: 'Android',
-            icon: 'color/android',
-            platform: Platform.Android
-        },
-        {
-            title: 'React Native',
-            icon: 'color/react',
-            platform: Platform.ReactNative
-        }
-    ];
+    import Wizard from './keys/wizard.svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import { onMount } from 'svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     function createKey() {
         wizard.start(Wizard);
     }
 
-    $: onBoardImage1Mobile = $app.themeInUse === 'dark' ? OnboardDark1Mobile : OnboardLight1Mobile;
-    $: onBoardImage1Desktop =
-        $app.themeInUse === 'dark' ? OnboardDark1Desktop : OnboardLight1Desktop;
-    $: onBoardImage2Mobile = $app.themeInUse === 'dark' ? OnboardDark2Mobile : OnboardLight2Mobile;
-    $: onBoardImage2Desktop =
-        $app.themeInUse === 'dark' ? OnboardDark2Desktop : OnboardLight2Desktop;
+    export let projectId: string;
+    export let hasPlatforms: boolean;
 </script>
 
-{#if $canWriteKeys || $canWritePlatforms}
-    <div class="card">
-        <header class="card-header common-section grid-1-2">
-            <div class="grid-1-2-col-1">
-                <h2 class="heading-level-5">Getting started</h2>
-                <p class="u-line-height-1-5 u-margin-block-start-12">
-                    Here are some next steps to start building
-                </p>
-            </div>
-        </header>
-
-        {#if $canWritePlatforms}
-            <section class="common-section card-separator grid-1-2">
-                <div class="grid-1-2-col-1">
-                    <h3 class="heading-level-7">Add a platform</h3>
-                    <p class="u-line-height-1-5 u-margin-block-start-16">
-                        Our SDKs make it possible to easily integrate with any platform.
-                    </p>
-                </div>
-                <div class="grid-1-2-col-2">
-                    <ul class="grid-box">
-                        {#each platforms as platform}
-                            <li class="grid-box-item">
-                                <button
-                                    type="button"
-                                    class="card u-width-full-line"
-                                    on:click={() => addPlatform(platform.platform)}>
-                                    <span class="u-flex u-cross-center u-gap-16">
-                                        <div class="avatar is-medium" aria-hidden="true">
-                                            <img
-                                                src={`${base}/icons/${$app.themeInUse}/${platform.icon}.svg`}
-                                                alt="technology" />
-                                        </div>
-                                        <span class="text">{platform.title}</span>
-                                        <span
-                                            class="icon-plus u-margin-inline-start-auto"
-                                            style="font-size: var(--icon-size-large);"
-                                            aria-hidden="true" />
+<div style:container-type="inline-size">
+    <div class="console-container">
+        <div class="dashboard-content">
+            {#if !hasPlatforms}
+                <Step.List>
+                    <Step.Item state="previous"
+                        ><div>
+                            <h2 class="done">Create project</h2>
+                        </div></Step.Item>
+                    <Step.Item state="current"
+                        ><Layout.Stack
+                            direction={$isSmallViewport ? 'column' : 'row'}
+                            gap={$isSmallViewport ? 'xl' : 'xxl'}>
+                            <Layout.Stack gap="m">
+                                <h2>Add a platform</h2>
+                                <div class="build-info">
+                                    <span>
+                                        Start building with your preferred web, mobile, and native
+                                        frameworks.
                                     </span>
+                                </div>
+                            </Layout.Stack>
+                            <div class="grid">
+                                <button
+                                    class="onboarding-card platform-card top-row"
+                                    on:click={() => addPlatform(0)}>
+                                    <Layout.Stack direction="column" justifyContent="space-between">
+                                        <img
+                                            src={$app.themeInUse === 'dark'
+                                                ? PlatformWebImgSourceDark
+                                                : PlatformWebImgSource}
+                                            alt="" />
+                                        <div class="card-content">
+                                            <Layout.Stack
+                                                direction="row"
+                                                justifyContent="space-between"
+                                                alignItems="flex-end">
+                                                <h3>Web</h3>
+
+                                                <div class="is-only-desktop">
+                                                    <Icon
+                                                        icon={IconArrowRight}
+                                                        color="--neutral-250" />
+                                                </div></Layout.Stack>
+                                        </div>
+                                    </Layout.Stack>
                                 </button>
-                            </li>
-                        {/each}
-                    </ul>
-                </div>
-            </section>
-            <div class="separator-with-text">
-                <span class="text">OR</span>
-            </div>
-        {/if}
-
-        {#if $canWriteKeys}
-            <section class="common-section grid-1-2">
-                <div class="grid-1-2-col-1">
-                    <h3 class="heading-level-7">Integrate with your server</h3>
-                    <p class="u-line-height-1-5 u-margin-block-start-16">
-                        Appwrite is designed to adapt to your existing backend. Integrate Appwrite
-                        with your backend code base using Server SDKs or Webhooks.
-                    </p>
-                </div>
-                <div class="grid-1-2-col-2">
-                    <ul class="grid-box">
-                        <li class="grid-box-item">
-                            <button
-                                type="button"
-                                class="card u-width-full-line"
-                                on:click={createKey}>
-                                <span class="u-flex u-cross-center u-gap-16">
-                                    <div class="avatar is-medium" aria-hidden="true">
+                                <button
+                                    class="onboarding-card platform-card top-row"
+                                    on:click={createKey}>
+                                    <Layout.Stack direction="column" justifyContent="space-between">
                                         <img
-                                            src={`${base}/icons/${$app.themeInUse}/grayscale/code.svg`}
-                                            alt="technology" />
-                                    </div>
-                                    <span class="text">API key</span>
-                                    <span
-                                        class="icon-plus u-margin-inline-start-auto"
-                                        style="font-size: var(--icon-size-large);"
-                                        aria-hidden="true" />
-                                </span>
-                            </button>
-                        </li>
-                        <li class="grid-box-item">
-                            <a
-                                href={`${base}/project-${projectId}/settings/webhooks`}
-                                style="line-height: 1.5;"
-                                class="card u-width-full-line">
-                                <span class="u-flex u-cross-center u-gap-16">
-                                    <div class="avatar is-medium" aria-hidden="true">
+                                            src={$app.themeInUse === 'dark'
+                                                ? PlatformServerImgSourceDark
+                                                : PlatformServerImgSource}
+                                            alt="" />
+                                        <div class="card-content">
+                                            <Layout.Stack
+                                                direction="row"
+                                                justifyContent="space-between"
+                                                alignItems="center">
+                                                <h3>Server</h3>
+                                                <div class="is-only-desktop">
+                                                    <Icon
+                                                        icon={IconArrowRight}
+                                                        color="--neutral-250" />
+                                                </div></Layout.Stack>
+                                        </div>
+                                    </Layout.Stack>
+                                </button>
+                                <button
+                                    class="onboarding-card platform-card"
+                                    on:click={() => addPlatform(3)}>
+                                    <Layout.Stack direction="column" justifyContent="space-between">
                                         <img
-                                            src={`${base}/icons/${$app.themeInUse}/grayscale/code.svg`}
-                                            alt="technology" />
-                                    </div>
-                                    <span class="text">Webhook</span>
-                                    <span
-                                        class="icon-plus u-margin-inline-start-auto"
-                                        style="font-size: var(--icon-size-large);"
-                                        aria-hidden="true" />
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </section>
-        {/if}
-    </div>
-{/if}
+                                            src={$app.themeInUse === 'dark'
+                                                ? PlatformIosImgSourceDark
+                                                : PlatformIosImgSource}
+                                            alt="" />
+                                        <div class="card-content">
+                                            <Layout.Stack
+                                                direction="row"
+                                                justifyContent="space-between"
+                                                alignItems="center">
+                                                <h3>Apple</h3>
+                                                <div class="is-only-desktop">
+                                                    <Icon
+                                                        icon={IconArrowRight}
+                                                        color="--neutral-250" />
+                                                </div></Layout.Stack>
+                                        </div>
+                                    </Layout.Stack>
+                                </button>
+                                <button
+                                    class="onboarding-card platform-card"
+                                    on:click={() => addPlatform(2)}>
+                                    <Layout.Stack direction="column" justifyContent="space-between">
+                                        <img
+                                            src={$app.themeInUse === 'dark'
+                                                ? PlatformAndroidImgSourceDark
+                                                : PlatformAndroidImgSource}
+                                            alt="" />
+                                        <div class="card-content">
+                                            <Layout.Stack
+                                                direction="row"
+                                                justifyContent="space-between"
+                                                alignItems="center">
+                                                <h3>Android</h3>
+                                                <div class="is-only-desktop">
+                                                    <Icon
+                                                        icon={IconArrowRight}
+                                                        color="--neutral-250" />
+                                                </div></Layout.Stack>
+                                        </div>
+                                    </Layout.Stack>
+                                </button>
 
-<article class="u-grid u-width-full-line common-section onboard-cover">
-    <img src={onBoardImage1Mobile} class="is-only-mobile u-width-full-line" alt="statistics" />
-    <img src={onBoardImage1Desktop} class="is-not-mobile u-width-full-line" alt="statistics" />
-    <div class="u-height-100-percent u-width-full-line u-padding-block-start-20">
-        <div class="u-flex u-flex-vertical u-height-100-percent u-cross-center u-padding-inline-24">
-            <div class="avatar">
-                <i class="icon-lock-closed" />
-            </div>
-            <div class="common-section u-text-center">
-                <h5 class="heading-level-5">Add a platform to view data about your project</h5>
-            </div>
+                                <button
+                                    class="onboarding-card platform-card"
+                                    on:click={() => addPlatform(1)}>
+                                    <Layout.Stack direction="column" justifyContent="space-between">
+                                        <img
+                                            src={$app.themeInUse === 'dark'
+                                                ? PlatformFlutterImgSourceDark
+                                                : PlatformFlutterImgSource}
+                                            alt="" />
+                                        <div class="card-content">
+                                            <Layout.Stack
+                                                direction="row"
+                                                justifyContent="space-between"
+                                                alignItems="center">
+                                                <h3>Flutter</h3>
+                                                <div class="is-only-desktop">
+                                                    <Icon
+                                                        icon={IconArrowRight}
+                                                        color="--neutral-250" />
+                                                </div></Layout.Stack>
+                                        </div>
+                                    </Layout.Stack>
+                                </button>
+                            </div>
+                        </Layout.Stack></Step.Item>
+                    <Step.Item state="next"
+                        ><div>
+                            <h2 class="done">Build your app</h2>
+                        </div></Step.Item>
+                </Step.List>
+            {:else}
+                <Step.List>
+                    <Step.Item state="previous"
+                        ><div>
+                            <h2 class="done">Create project</h2>
+                        </div></Step.Item>
+                    <Step.Item state="previous"
+                        ><div>
+                            <h2 class="done">Add a platform</h2>
+                        </div></Step.Item>
+                    <Step.Item state="current"
+                        ><Layout.Stack
+                            direction={isSmallViewport ? 'column' : 'row'}
+                            gap={isSmallViewport ? 'xl' : 'xxl'}>
+                            <Layout.Stack gap="m">
+                                <h2>Build your app</h2>
+                                <div class="build-info">
+                                    <span>
+                                        Continue building your app by setting up services such as
+                                        Auth, Databases, Storage and Functions.</span>
+                                </div>
+                            </Layout.Stack>
+                            <div class="grid">
+                                <a
+                                    class="onboarding-card build-card"
+                                    href={`${base}/project-${projectId}/databases`}>
+                                    <Layout.Stack direction="column" justifyContent="space-between">
+                                        <img
+                                            src={$app.themeInUse === 'dark'
+                                                ? DatabaseImgSourceDark
+                                                : DatabaseImgSource}
+                                            alt="" />
+                                        <div class="card-content">
+                                            <Layout.Stack
+                                                direction="row"
+                                                justifyContent="space-between"
+                                                alignItems="center">
+                                                <h3>Setup your database</h3>
+                                                <span class="is-only-desktop">
+                                                    <Icon
+                                                        icon={IconArrowRight}
+                                                        color="--neutral-250" />
+                                                </span></Layout.Stack>
+                                        </div>
+                                    </Layout.Stack>
+                                </a>
+                                <div class="onboarding-card build-card">
+                                    <div class="card-content card-docs">
+                                        <Layout.Stack
+                                            direction="column"
+                                            justifyContent="space-between">
+                                            <h3>Discover our docs</h3>
+                                            <Layout.Stack
+                                                direction="column"
+                                                gap="s"
+                                                justifyContent="flex-end">
+                                                <Link.Anchor
+                                                    variant="quiet-muted"
+                                                    href="https://appwrite.io/docs/references"
+                                                    target="_blank">API references</Link.Anchor>
+                                                <Link.Anchor
+                                                    variant="quiet-muted"
+                                                    href="https://appwrite.io/docs/tutorials"
+                                                    target="_blank">Tutorials</Link.Anchor>
+                                                <Link.Anchor
+                                                    variant="quiet-muted"
+                                                    href="https://appwrite.io/docs/products/storage/quick-start"
+                                                    target="_blank"
+                                                    >Storage quick start
+                                                </Link.Anchor>
+                                                <Link.Anchor
+                                                    variant="quiet-muted"
+                                                    href="https://appwrite.io/docs/products/functions/quick-start"
+                                                    target="_blank"
+                                                    >Functions quick start</Link.Anchor>
+                                            </Layout.Stack>
+                                        </Layout.Stack>
+                                    </div>
+                                </div>
+                                <div class="onboarding-card card-auth build-card">
+                                    <div class="card-content">
+                                        <Layout.Stack
+                                            direction="column"
+                                            justifyContent="space-between">
+                                            <h3>Setup auth</h3>
+                                            <Layout.Stack
+                                                direction="column"
+                                                gap="s"
+                                                justifyContent="flex-end">
+                                                <Link.Anchor
+                                                    variant="quiet-muted"
+                                                    href={`${base}/project-${projectId}/auth/settings`}
+                                                    >E-mail and password
+                                                </Link.Anchor>
+                                                <Link.Anchor
+                                                    variant="quiet-muted"
+                                                    href={`${base}/project-${projectId}/auth/settings`}
+                                                    >OAuth 2</Link.Anchor>
+                                                <Link.Anchor
+                                                    variant="quiet-muted"
+                                                    href={`${base}/project-${projectId}/auth/settings`}
+                                                    >View all methods</Link.Anchor>
+                                            </Layout.Stack>
+                                        </Layout.Stack>
+                                    </div>
+                                    <img
+                                        src={$app.themeInUse === 'dark'
+                                            ? UsersImgSourceDark
+                                            : UsersImgSource}
+                                        alt="" />
+                                </div>
+                                <div class="onboarding-card build-card">
+                                    <div class="card-content">
+                                        <Layout.Stack
+                                            direction="column"
+                                            justifyContent="space-between">
+                                            <img
+                                                src={$app.themeInUse === 'dark'
+                                                    ? DiscordImgSourceDark
+                                                    : DiscordImgSource}
+                                                class="discord"
+                                                alt="" />
+                                            <h3>Discord</h3>
+                                            <Link.Anchor
+                                                variant="quiet-muted"
+                                                href="https://appwrite.io/discord"
+                                                size="l"
+                                                ><Layout.Stack
+                                                    direction="row"
+                                                    alignItems="flex-end"
+                                                    gap="xxs"
+                                                    ><span
+                                                        >Join our Discord for support, tips and
+                                                        product updates</span>
+                                                    <span class="is-only-desktop">
+                                                        <Icon
+                                                            icon={IconArrowRight}
+                                                            size="s"
+                                                            color="--neutral-250" />
+                                                    </span></Layout.Stack
+                                                ></Link.Anchor>
+                                        </Layout.Stack>
+                                    </div>
+                                </div>
+                            </div>
+                        </Layout.Stack></Step.Item>
+                </Step.List>
+            {/if}
         </div>
     </div>
-</article>
-
-<img
-    src={onBoardImage2Mobile}
-    class="common-section is-only-mobile u-width-full-line"
-    alt="statistics" />
-<img
-    src={onBoardImage2Desktop}
-    class="common-section is-not-mobile u-width-full-line"
-    alt="statistics" />
+</div>
 
 <style lang="scss">
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+    .dashboard-content {
+        h2 {
+            color: var(--color-fgcolor-neutral-primary, #2d2d31);
 
-    .card {
-        :global(.theme-dark) & {
-            background: #19191c !important;
-        }
-    }
-
-    :global(.theme-dark .card-header) {
-        background: unset !important;
-    }
-
-    .card-header {
-        min-block-size: 4.5625rem !important;
-    }
-
-    .card-separator {
-        border-block-start: unset !important;
-    }
-
-    .grid-box-item .card {
-        padding: 1rem !important;
-    }
-
-    article .heading-level-5 {
-        margin-inline: 4rem;
-    }
-
-    @media #{devices.$break2open} {
-        .card-header {
-            background-image: var(--url);
-            background-repeat: no-repeat;
-            background-position: top right;
-        }
-    }
-    .onboard-cover img {
-        max-inline-size: none;
-        max-block-size: none;
-    }
-    .onboard-cover {
-        position: relative;
-    }
-    .onboard-cover > div {
-        background-color: transparent;
-        z-index: 1;
-        position: absolute;
-
-        @media #{devices.$break1} {
-            margin-block-start: 15%;
+            /* Desktop/Title S */
+            font-family: var(--font-family-brand, 'Aeonik Pro');
+            font-size: var(--font-size-L, 20px);
+            font-style: normal;
+            font-weight: 400;
+            line-height: 130%; /* 26px */
         }
 
-        @media #{devices.$break2open} {
-            margin-block-start: 2rem;
+        .top-row img {
+            min-height: 145px;
         }
+
+        h2.done {
+            color: var(--color-fgcolor-neutral-tertiary, #97979b);
+        }
+
+        .build-info {
+            span {
+                color: var(--color-fgcolor-neutral-secondary, #56565c);
+
+                /* Desktop/Body M 400 */
+                font-family: var(--font-family-sansserif, Inter);
+                font-size: var(--font-size-S, 14px);
+                font-style: normal;
+                font-weight: 400;
+                line-height: 140%; /* 19.6px */
+                letter-spacing: -0.063px;
+            }
+
+            @media (min-width: 768px) and (max-width: 1400px) {
+                width: 200px;
+            }
+        }
+
+        .onboarding-card {
+            border-radius: 8px;
+            border: 1px solid var(--color-border-neutral, #ededf0);
+            background: var(--color-bgcolor-neutral-primary, #fff);
+
+            h3 {
+                color: var(--color-fgcolor-neutral-primary, #2d2d31);
+
+                /* Desktop/Title S */
+                font-family: var(--font-family-brand, 'Aeonik Pro');
+                font-size: var(--font-size-l, 20px);
+                font-style: normal;
+                font-weight: 400;
+                line-height: 130%; /* 26px */
+            }
+        }
+
+        .grid {
+            display: grid;
+            gap: var(--space-7);
+            @media (min-width: 768px) {
+                grid-template-columns: repeat(6, 1fr);
+                grid-template-rows: auto auto;
+                max-width: 776px;
+
+                .build-card:nth-child(1) {
+                    grid-column: span 3;
+                    img {
+                        max-height: 160px;
+                    }
+                }
+
+                .build-card:nth-child(2) {
+                    grid-column: span 3;
+                }
+
+                .build-card:nth-child(3) {
+                    grid-column: span 4;
+                }
+
+                .build-card:nth-child(4) {
+                    grid-column: span 2;
+                }
+
+                .platform-card:nth-child(1) {
+                    grid-column: span 3;
+                    img {
+                        max-height: 295px;
+                    }
+                }
+                .platform-card:nth-child(2) {
+                    grid-column: span 3;
+                    img {
+                        max-height: 295px;
+                    }
+                }
+                .platform-card:nth-child(3) {
+                    grid-column: span 2;
+                    img {
+                        max-height: 195px;
+                    }
+                }
+                .platform-card:nth-child(4) {
+                    grid-column: span 2;
+                    img {
+                        max-height: 195px;
+                    }
+                }
+                .platform-card:nth-child(5) {
+                    grid-column: span 2;
+                    img {
+                        max-height: 195px;
+                    }
+                }
+            }
+        }
+
+        .card-content {
+            padding: 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        :global(.build-card div) {
+            height: 100%;
+        }
+
+        .card-docs {
+            min-height: 240px;
+            @media (min-width: 768px) {
+                height: 100%;
+                min-height: auto;
+            }
+        }
+
+        .card-auth {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            overflow: hidden;
+
+            .card-content {
+                padding-inline-end: 0;
+            }
+
+            img {
+                height: 160px;
+                align-self: flex-end;
+            }
+
+            .card-links {
+                min-width: 160px;
+            }
+        }
+
+        .card-links {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+    }
+    .discord {
+        width: 24px;
     }
 </style>
