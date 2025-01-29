@@ -13,6 +13,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
+    import { addNotification } from '$lib/stores/notifications';
 
     let showCustomId = false;
     let isLoading = false;
@@ -51,7 +52,10 @@
         } catch (e) {
             isLoading = false;
             trackError(e, Submit.OrganizationCreate);
-            throw new Error(e.message);
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
         }
 
         if (org) {
@@ -76,7 +80,10 @@
             } catch (e) {
                 trackError(e, Submit.ProjectCreate);
                 isLoading = false;
-                throw new Error(e.message);
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
             }
         }
     }
