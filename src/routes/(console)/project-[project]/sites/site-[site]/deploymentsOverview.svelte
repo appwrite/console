@@ -27,6 +27,8 @@
     let showPromote = false;
     let showRedeploy = false;
     let selectedDeployment: Models.Deployment = null;
+
+    $: console.log(deploymentList);
 </script>
 
 <Layout.Stack>

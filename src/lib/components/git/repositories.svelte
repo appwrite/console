@@ -1,6 +1,5 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { EmptySearch } from '$lib/components';
     import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
@@ -12,7 +11,8 @@
     import { Layout, Table, Typography, Icon, Avatar } from '@appwrite.io/pink-svelte';
     import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
     import ConnectGit from './connectGit.svelte';
-    import Link from '$lib/elements/link.svelte';
+    import SvgIcon from '../svgIcon.svelte';
+    import { getFrameworkIcon } from '$routes/(console)/project-[project]/sites/store';
 
     const dispatch = createEventDispatcher();
 
@@ -71,6 +71,13 @@
 
         return $repositories.repositories.slice(0, 4);
     }
+
+    async function detectFramework(repo) {
+        console.log(repo);
+        // TODO add code once backend is implemented
+        // const { framework } = await sdk.forProject.functions.detectFramework(repo.id);
+        return '';
+    }
 </script>
 
 {#if hasInstallations}
@@ -110,11 +117,6 @@
                     <InputSearch placeholder="Search repositories" bind:value={search} />
                 </Layout.Stack>
             {/await}
-            <p>
-                Manage organization configuration in your <Link
-                    href={`${base}/project-${$page.params.project}/settings`}>project settings</Link
-                >.
-            </p>
         </Layout.Stack>
         {#if selectedInstallation}
             {#await loadRepositories(selectedInstallation, search)}
@@ -138,7 +140,16 @@
                                                 value={repo.id} />
                                         {/if}
                                         {#if product === 'sites'}
-                                            <Avatar size="xs" alt={repo.name} />
+                                            {#await detectFramework(repo)}
+                                                <Avatar size="xs" alt={repo.name} empty />
+                                            {:then framework}
+                                                <Avatar
+                                                    size="xs"
+                                                    alt={repo.name}
+                                                    empty={!framework}>
+                                                    <SvgIcon name={getFrameworkIcon(framework)} />
+                                                </Avatar>
+                                            {/await}
                                         {:else}
                                             <Avatar
                                                 size="xs"

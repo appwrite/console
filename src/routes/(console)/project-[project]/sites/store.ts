@@ -36,6 +36,6 @@ export function getFrameworkIcon(framework: string) {
             return 'remix';
 
         default:
-            return undefined;
+            return framework.toLocaleLowerCase();
     }
 }
