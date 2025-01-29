@@ -3,9 +3,11 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon, Estimation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
+    import { AppwriteException } from '@appwrite.io/console';
     import Alert from '../alert.svelte';
     import Card from '../card.svelte';
     import DiscountsApplied from './discountsApplied.svelte';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let organizationId: string | undefined = undefined;
     export let billingPlan: string;
@@ -22,15 +24,30 @@
 
     async function getEstimate(billingPlan: string, collaborators: string[], couponId: string) {
         try {
-            error = '';
             estimation = await sdk.forConsole.billing.estimationCreateOrganization(
                 billingPlan,
                 couponId === '' ? null : couponId,
                 collaborators ?? []
             );
-            error = estimation.error ?? '';
         } catch (e) {
-            error = e.message;
+            if (e instanceof AppwriteException) {
+                if (
+                    e.type === 'coupon_not_found' ||
+                    e.type === 'coupon_already_used' ||
+                    e.type === 'billing_credits_unsupported'
+                ) {
+                    couponData = {
+                        code: null,
+                        status: null,
+                        credits: null
+                    };
+                }
+            }
+            addNotification({
+                type: 'error',
+                isHtml: false,
+                message: e.message
+            });
         }
     }
 
@@ -41,16 +58,18 @@
         couponId: string | undefined
     ) {
         try {
-            error = '';
             estimation = await sdk.forConsole.billing.estimationUpdatePlan(
                 organizationId,
                 billingPlan,
                 couponId && couponId.length > 0 ? couponId : null,
                 collaborators ?? []
             );
-            error = estimation.error ?? '';
         } catch (e) {
-            error = e.message;
+            addNotification({
+                type: 'error',
+                isHtml: false,
+                message: e.message
+            });
         }
     }
 
@@ -70,10 +89,10 @@
         {#if estimation}
             {#each estimation.items ?? [] as item}
                 {#if item.value > 0}
-                <span class="u-flex u-main-space-between">
-                    <p class="text">{item.label}</p>
-                    <p class="text">{formatCurrency(item.value)}</p>
-                </span>
+                    <span class="u-flex u-main-space-between">
+                        <p class="text">{item.label}</p>
+                        <p class="text">{formatCurrency(item.value)}</p>
+                    </span>
                 {/if}
             {/each}
             {#each estimation.discounts ?? [] as item}

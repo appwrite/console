@@ -3,13 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        PlanComparisonBox,
-        SelectPaymentMethod,
-
-        SelectPlan
-
-    } from '$lib/components/billing';
+    import { PlanComparisonBox, SelectPaymentMethod, SelectPlan } from '$lib/components/billing';
     import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
@@ -227,23 +221,27 @@
                         id="members" />
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId
                     ></SelectPaymentMethod>
-                    <InputText
-                        bind:value={couponId}
-                        label="Coupon"
-                        placeholder="Enter coupon code"
-                        id="couponId" />
                 </FormList>
+                {#if !couponData?.code}
+                    <Button
+                        text
+                        noMargin
+                        class="u-margin-block-start-16"
+                        on:click={() => (showCreditModal = true)}>
+                        <span class="icon-plus"></span> <span class="text">Add credits</span>
+                    </Button>
+                {/if}
             {/if}
         </Form>
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE}
                 <EstimatedTotal
-                    bind:error={error}
+                    bind:error
                     {billingBudget}
                     {billingPlan}
                     {collaborators}
                     {couponId}
-                />
+                    {couponData} />
             {:else}
                 <PlanComparisonBox />
             {/if}

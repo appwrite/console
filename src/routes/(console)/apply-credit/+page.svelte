@@ -326,7 +326,7 @@
             {#if selectedOrgId === newOrgId}
                 Create Organization
             {:else}
-                Apply Credits
+                Apply credits
             {/if}
         </Button>
     </WizardSecondaryFooter>
