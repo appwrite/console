@@ -32,6 +32,8 @@ export function getFrameworkIcon(framework: string) {
             return 'nextjs';
         case framework.toLocaleLowerCase().includes('astro'):
             return 'astro';
+        case framework.toLocaleLowerCase().includes('remix'):
+            return 'remix';
 
         default:
             return undefined;
