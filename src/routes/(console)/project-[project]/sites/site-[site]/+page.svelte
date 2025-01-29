@@ -19,13 +19,16 @@
 
 <Container>
     <Layout.Stack gap="xxl">
-        <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
-            <svelte:fragment slot="footer">
-                <Button external href={`${$protocol}${data.deployment.domain}`}>Visit</Button>
-                <!-- TODO: disable when disabled={data.hasProdReadyDeployments} -->
-                <Button secondary on:click={() => (showRollback = true)}>Instant rollback</Button>
-            </svelte:fragment>
-        </SiteCard>
+        {#if data.deployment}
+            <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
+                <svelte:fragment slot="footer">
+                    <Button external href={`${$protocol}${data.deployment.domain}`}>Visit</Button>
+                    <!-- TODO: disable when disabled={data.hasProdReadyDeployments} -->
+                    <Button secondary on:click={() => (showRollback = true)}
+                        >Instant rollback</Button>
+                </svelte:fragment>
+            </SiteCard>
+        {/if}
 
         <Divider />
 
