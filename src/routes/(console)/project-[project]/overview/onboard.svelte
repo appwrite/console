@@ -22,7 +22,6 @@
     import { base } from '$app/paths';
     import Wizard from './keys/wizard.svelte';
     import { wizard } from '$lib/stores/wizard';
-    import { onMount } from 'svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
 
     function createKey() {
@@ -192,8 +191,8 @@
                         </div></Step.Item>
                     <Step.Item state="current"
                         ><Layout.Stack
-                            direction={isSmallViewport ? 'column' : 'row'}
-                            gap={isSmallViewport ? 'xl' : 'xxl'}>
+                            direction={$isSmallViewport ? 'column' : 'row'}
+                            gap={$isSmallViewport ? 'xl' : 'xxl'}>
                             <Layout.Stack gap="m">
                                 <h2>Build your app</h2>
                                 <div class="build-info">

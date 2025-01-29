@@ -8,7 +8,6 @@
         IconPlusSm
     } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
-    import { onMount } from 'svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
 
     type Project = {
@@ -118,12 +117,12 @@
     let projectsBottomSheet: SheetMenu;
     $: projectsBottomSheet = {
         top:
-            selectedOrg.projects.length > 1
+            selectedOrg?.projects.length > 1
                 ? {
                       title: 'Switch project',
                       items: !selectedOrg
                           ? []
-                          : selectedOrg.projects
+                          : selectedOrg?.projects
                                 .map((project, index) => {
                                     if (index < 4) {
                                         return {
@@ -133,7 +132,7 @@
                                     } else if (index === 4) {
                                         return {
                                             name: 'All projects',
-                                            href: `/console/organization-${selectedOrg.$id}`
+                                            href: `/console/organization-${selectedOrg?.$id}`
                                         };
                                     }
                                     return null;
@@ -150,7 +149,7 @@
                       ]
                   },
         bottom:
-            selectedOrg.projects.length > 1
+            selectedOrg?.projects.length > 1
                 ? {
                       items: [
                           {
@@ -265,7 +264,7 @@
 
     {#if selectedOrg && selectedProject}
         <span class="breadcrumb-separator">/</span>
-        {#if !isSmallViewport}
+        {#if !$isSmallViewport}
             <button
                 type="button"
                 class="trigger"
@@ -278,9 +277,7 @@
             <button
                 type="button"
                 class="trigger"
-                on:click={() => {
-                    projectsBottomSheetOpen = true;
-                }}
+                on:click={() => (projectsBottomSheetOpen = true)}
                 aria-label="Open projects tab">
                 <span class="projectName">{selectedProject.name}</span>
                 <Icon icon={IconChevronDown} size="s" />

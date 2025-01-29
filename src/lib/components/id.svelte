@@ -5,7 +5,6 @@
 
     export let value: string;
     export let event: string = null;
-    export let centered = true;
 
     function truncateText(node: HTMLElement) {
         const MAX_TRIES = 100;

@@ -15,6 +15,7 @@
     import { loading } from '$routes/store';
     import { Root } from '@appwrite.io/pink-svelte';
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
+    import { updateViewport } from '$lib/stores/viewport';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
@@ -104,6 +105,8 @@
         }
     }
 </script>
+
+<svelte:window on:resize={updateViewport} />
 
 <Root theme={resolveTheme($app.themeInUse)}>
     <Notifications />
