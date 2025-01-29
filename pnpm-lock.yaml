@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@appwrite.io/console':
     specifier: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@9193
-    version: '@pkg.pr.new/appwrite/appwrite/@appwrite.io/console@9193'
+    version: '@pkg.pr.new/appwrite/appwrite/@appwrite.io/console/9193'
   '@appwrite.io/pink-icons':
     specifier: 0.25.0
     version: 0.25.0
@@ -7293,7 +7293,7 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false
 
-  '@pkg.pr.new/appwrite/appwrite/@appwrite.io/console@9193':
+  '@pkg.pr.new/appwrite/appwrite/@appwrite.io/console/9193':
     resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@9193}
     name: '@appwrite.io/console'
     version: 1.2.1

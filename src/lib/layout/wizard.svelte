@@ -39,6 +39,7 @@
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
             event.preventDefault();
+
             if (confirmExit) {
                 showExitModal = true;
             } else {

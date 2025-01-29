@@ -43,7 +43,7 @@
         metrics: Models.Metric[],
         endingTotal: number
     ): Array<[string, number]> {
-        return metrics.reduceRight(
+        return (metrics ?? []).reduceRight(
             (acc, curr) => {
                 acc.data.unshift([curr.date, acc.total]);
                 acc.total -= curr.value;

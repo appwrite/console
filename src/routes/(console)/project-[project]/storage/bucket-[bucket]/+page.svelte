@@ -50,6 +50,7 @@
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
     import { Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { onMount } from 'svelte';
 
     export let data;
 
@@ -90,7 +91,30 @@
     $: maxFileSize = isCloud
         ? humanFileSize(sizeToBytes(getServiceLimit('fileSize'), 'MB', 1000))
         : null;
+
+    let isUploading = false;
+
+    const beforeunload = (event: BeforeUnloadEvent) => {
+        // legacy browser **may** support showing a custom message.
+        const message = 'An upload is in progress. Are you sure you want to leave?';
+
+        if (isUploading) {
+            event.preventDefault();
+            event.returnValue = message;
+            return message;
+        }
+    };
+
+    onMount(() => {
+        return uploader.subscribe(() => {
+            isUploading = $uploader.files.some(
+                (file) => !file.completed && file.progress < 100 && !file.failed
+            );
+        });
+    });
 </script>
+
+<svelte:window on:beforeunload={beforeunload} />
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">

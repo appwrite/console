@@ -7,12 +7,15 @@
     export let noContent = false;
     export let isInfo = false;
     export let gap = 16;
+
+    export let style = null;
+    export let wrapperStyle = null;
 </script>
 
 <li class="collapsible-item" class:is-info={isInfo}>
     {#if noContent}
-        <div class="collapsible-wrapper">
-            <div class={`collapsible-button u-gap-${gap}`} style="padding: 0">
+        <div class="collapsible-wrapper" style={wrapperStyle}>
+            <div class={`collapsible-button u-gap-${gap}`} {style}>
                 <slot />
             </div>
         </div>
@@ -59,7 +62,7 @@
     // TODO: remove once pink is updated
     .collapsible-item:not(.is-info) {
         .collapsible-wrapper {
-            padding-left: 0.5rem;
+            padding: 0;
         }
         .collapsible-wrapper.is-disabled {
             cursor: not-allowed;

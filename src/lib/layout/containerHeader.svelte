@@ -124,7 +124,7 @@
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
                         <span class="icon-info" />{total}/{limit} created
                     </Pill>
-                {:else}
+                {:else if $organization?.billingPlan !== BillingPlan.SCALE}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
                         <span class="icon-info" />Limits applied
                     </Pill>

@@ -277,7 +277,7 @@
                         tier={BillingPlan.FREE}
                         class="u-margin-block-start-24"
                         members={data?.members?.total ?? 0} />
-                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE}
+                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
                     {@const extraMembers = collaborators?.length ?? 0}
                     <Alert type="error" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
@@ -315,7 +315,7 @@
                     {/if}
                 </FormList>
             {/if}
-            {#if isDowngrade}
+            {#if isDowngrade && billingPlan === BillingPlan.FREE}
                 <FormList>
                     <InputSelect
                         id="reason"

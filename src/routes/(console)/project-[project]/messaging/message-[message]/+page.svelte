@@ -33,7 +33,10 @@
         <PushMessage message={$message} />
     {/if}
     <UpdateTopics message={$message} selectedTopicsById={data.topicsById} />
-    <UpdateTargets message={$message} selectedTargetsById={data.targetsById} />
+    <UpdateTargets
+        message={$message}
+        selectedTargetsById={data.targetsById}
+        selectedRecipients={data.messageRecipients} />
     {#if $message.status !== 'processing'}
         <Delete message={$message} />
     {/if}
