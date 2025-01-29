@@ -8,7 +8,8 @@
         Card,
         ActionList,
         Input,
-        Button
+        Button,
+        Avatar
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
@@ -129,7 +130,7 @@
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
-                }}><img src={avatar} alt={'Avatar'} class="avatar" /></Link.Button>
+                }}><Avatar size="s" src={avatar} /></Link.Button>
             {#if showAccountMenu}
                 <div class="account-container">
                     <Card.Base padding="xxs" shadow={true}>
@@ -246,17 +247,10 @@
             display: flex;
             gap: var(--space-5, 10px);
         }
-
-        img {
-            max-inline-size: none;
-            max-block-size: none;
-        }
     }
 
-    .avatar {
-        width: 32px;
-        aspect-ratio: 1 /1;
-        border-radius: var(--border-radius-circle, 99999px);
+    :global(.right button) {
+        flex-shrink: 0;
     }
 
     .sideNavToggle {
