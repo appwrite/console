@@ -3,11 +3,17 @@ import { writable } from 'svelte/store';
 const isSmallViewport = writable(false);
 
 function updateViewport() {
-    isSmallViewport.set(window.matchMedia('(max-width: 768px)').matches);
+    if (typeof window !== 'undefined') {
+        isSmallViewport.set(
+            typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false
+        );
+    }
 }
 
 // Initialize on import
 updateViewport();
-window.addEventListener('resize', updateViewport);
+if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateViewport);
+}
 
 export { isSmallViewport };
