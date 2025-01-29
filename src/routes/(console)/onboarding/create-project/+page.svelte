@@ -185,7 +185,7 @@
 </div>
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @import '@appwrite.io/pink-legacy/src/abstract/variables/_devices.scss';
     :global(body) {
         background: var(--color-bgcolor-neutral-default, #19191c);
     }
