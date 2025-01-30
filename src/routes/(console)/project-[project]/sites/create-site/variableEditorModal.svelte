@@ -121,7 +121,7 @@
     submitOnEnter={false}>
     <p slot="description">Add, edit, or delete environment variables using a raw editor.</p>
     <Layout.Stack gap="s">
-        <Tabs.Root>
+        <Tabs.Root stretch>
             <Tabs.Item.Button on:click={() => (tab = 'env')} active={tab === 'env'}>
                 ENV
             </Tabs.Item.Button>
