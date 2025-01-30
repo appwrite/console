@@ -15,6 +15,7 @@
     };
     export let title = '';
     export let hideFooter = false;
+    export let submitOnEnter = true;
 
     let alert: HTMLElement;
     let formComponent: Form;
@@ -24,7 +25,7 @@
     });
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && submitOnEnter) {
             event.preventDefault();
             if (show) {
                 formComponent.triggerSubmit();
