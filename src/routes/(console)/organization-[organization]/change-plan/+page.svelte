@@ -362,11 +362,9 @@
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <EstimatedTotal
-                    bind:error
                     bind:billingBudget
                     bind:couponData
                     organizationId={$organization.$id}
-                    couponId={couponData.code}
                     {billingPlan}
                     {collaborators} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}

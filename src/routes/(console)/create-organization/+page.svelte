@@ -243,7 +243,7 @@
         </Form>
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE}
-                <EstimatedTotal {billingBudget} {billingPlan} {collaborators} {couponData} />
+                <EstimatedTotal bind:billingBudget {billingPlan} {collaborators} bind:couponData />
             {:else}
                 <PlanComparisonBox />
             {/if}
