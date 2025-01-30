@@ -26,6 +26,7 @@
     import type { Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '../../../store';
     import { iconPath } from '$lib/stores/app';
+    import VariableEditorModal from '../../variableEditorModal.svelte';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -212,13 +213,7 @@
 </Fieldset>
 
 {#if showEditorModal}
-    <!-- <RawVariableEditor
-        {isGlobal}
-        {sdkCreateVariable}
-        {sdkUpdateVariable}
-        {sdkDeleteVariable}
-        {variableList}
-        bind:showEditor={showEditorModal} /> -->
+    <VariableEditorModal bind:variables bind:showEditor={showEditorModal} />
 {/if}
 
 {#if showSecretModal}
