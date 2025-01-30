@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputChoice, InputSelect, InputText } from '$lib/elements/forms';
+    import { InputCheckbox, InputSelect, InputText } from '$lib/elements/forms';
     import { installation } from '$lib/stores/vcs';
     import type { Models } from '@appwrite.io/console';
     import { Layout } from '@appwrite.io/pink-svelte';
@@ -36,9 +36,9 @@
         placeholder="my-repository"
         disabled={disableFields}
         bind:value={repositoryName} />
-    <InputChoice
+    <InputCheckbox
         id="repositoryPrivate"
         label="Keep repository private"
         disabled={disableFields}
-        bind:value={repositoryPrivate} />
+        bind:checked={repositoryPrivate} />
 </Layout.Stack>
