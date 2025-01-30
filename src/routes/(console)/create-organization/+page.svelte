@@ -147,7 +147,7 @@
                     taxId
                 );
 
-                if (!isOrganization(org) && org.status == 402) {
+                if (!isOrganization(org) && org.status === 402) {
                     let clientSecret = org.clientSecret;
                     let params = new URLSearchParams();
                     params.append('type', 'payment_confirmed');
