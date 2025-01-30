@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { Id } from '$lib/components';
     import { Cover } from '$lib/layout';
     import { project } from '../store';
@@ -10,7 +11,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
 </script>
 
-{#if hasOnboardingDismissed($project.$id)}
+{#if hasOnboardingDismissed($project.$id) && !$page.url.pathname.includes('get-started')}
     <Cover>
         <svelte:fragment slot="header">
             <Typography.Title color="--color-fgcolor-neutral-primary" size="xl">
