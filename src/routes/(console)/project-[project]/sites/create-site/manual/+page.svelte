@@ -98,7 +98,22 @@
                 undefined
             );
 
-            trackEvent(Submit.SiteCreate, {});
+            trackEvent(Submit.SiteCreate, {
+                source: 'manual',
+                framework: framework.key
+            });
+
+            //Add variables
+            await Promise.all(
+                Object.keys(variables).map(async (key) => {
+                    await sdk.forProject.sites.createVariable(
+                        site.$id,
+                        key,
+                        variables[key].value,
+                        variables[key].secret
+                    );
+                })
+            );
 
             const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
                 Query.limit(1)
