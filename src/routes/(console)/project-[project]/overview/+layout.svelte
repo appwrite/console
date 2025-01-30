@@ -11,10 +11,10 @@
     import { page } from '$app/stores';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { PlatformsPanel } from '$lib/commandCenter/panels';
-    import { Heading, Tab } from '$lib/components';
+    import { Heading, Tab, Tabs } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
-    import { onMount } from 'svelte';
+    import { onMount, setContext, SvelteComponent } from 'svelte';
     import { project } from '../store';
     import Bandwidth from './bandwidth.svelte';
     import { createApiKey } from './keys/+page.svelte';
@@ -28,6 +28,8 @@
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
+    import { Layout } from '@appwrite.io/pink-svelte';
+    import { writable, type Writable } from 'svelte/store';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
@@ -35,6 +37,8 @@
 
     onMount(handle);
     afterNavigate(handle);
+
+    const action = setContext<Writable<typeof SvelteComponent>>('overview-action', writable(null));
 
     async function handle() {
         const promise = changePeriod(period);
@@ -206,20 +210,10 @@
                 </section>
             {/if}
 
-            <section class="common-section u-margin-block-start-100">
+            <Layout.Stack gap="xl">
                 <Heading tag="h2" size="5" id="integrations">Integrations</Heading>
-                <div class="tabs u-margin-block-start-24 u-sep-block-end">
-                    <button
-                        class="tabs-button-scroll is-start u-hide"
-                        aria-label="Show items in start side">
-                        <span class="icon-cheveron-left" aria-hidden="true" />
-                    </button>
-                    <button
-                        class="tabs-button-scroll is-end u-hide"
-                        aria-label="Show items in end side">
-                        <span class="icon-cheveron-right" aria-hidden="true" />
-                    </button>
-                    <ul class="tabs-list" role="tablist" data-sveltekit-noscroll>
+                <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
+                    <Tabs>
                         <Tab
                             href={`${path}/platforms`}
                             selected={$page.url.pathname === `${path}/platforms`}
@@ -228,13 +222,13 @@
                             href={`${path}/keys`}
                             selected={$page.url.pathname === `${path}/keys`}
                             event="keys">API keys</Tab>
-                    </ul>
-                </div>
-
-                <div class="u-margin-block-start-40">
-                    <slot />
-                </div>
-            </section>
+                    </Tabs>
+                    {#if $action}
+                        <svelte:component this={$action} />
+                    {/if}
+                </Layout.Stack>
+                <slot />
+            </Layout.Stack>
         </Container>
     {/if}
 {/if}

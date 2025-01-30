@@ -8,23 +8,27 @@
         : '';
 </script>
 
-<div style:container-type="inline-size">
+<div style:container-type="inline-size" class:overlap-cover={overlapCover}>
     <div class="console-container" {style}>
-        <Layout.Stack gap="xl">
+        <Layout.Stack gap="l">
             <slot />
         </Layout.Stack>
     </div>
 </div>
 
 <style>
+    .overlap-cover {
+        margin-block-start: -3.5rem;
+    }
     :global(.console-container) {
-        margin: 1.25rem 1rem;
+        margin-block: var(--base-32);
+        margin-inline: 1rem;
 
         @container (min-width: 360px) {
             margin-inline: 2.5rem;
         }
         @container (min-width: 1024px) {
-            margin: 1.25rem auto;
+            margin-inline: auto;
             max-width: 944px;
         }
         @container (min-width: 1280px) {

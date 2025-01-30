@@ -33,7 +33,7 @@
 
 <svelte:window on:resize={throttle(onScroll, 25)} />
 
-<div style="margin-block-start: auto; ">
+<div>
     {#if showLeft}
         <button
             class="tabs-button-scroll is-start"
@@ -50,7 +50,7 @@
             <span class="icon-cheveron-right" aria-hidden="true" />
         </button>
     {/if}
-    <div class=" scroll-shadow-horizontal" bind:this={tabsList} on:scroll={throttle(onScroll, 25)}>
+    <div class="scroll-shadow-horizontal" bind:this={tabsList} on:scroll={throttle(onScroll, 25)}>
         <Tabs.Root>
             <slot />
         </Tabs.Root>
