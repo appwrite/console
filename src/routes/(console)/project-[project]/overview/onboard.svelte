@@ -344,9 +344,13 @@
             margin-top: calc(-1 * var(--base-16, 16px));
             margin-left: calc(-1 * var(--base-16, 16px));
             width: calc(100% + var(--base-32, 32px));
-            height: 187px;
+            height: 160px;
             background-size: cover;
             background-position: center;
+
+            @media (min-width: 1200px) {
+                height: 187px;
+            }
         }
 
         .web-image-light {
