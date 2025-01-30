@@ -1,12 +1,14 @@
 <script lang="ts">
-    import { Button, InputCheckbox, InputChoice } from '$lib/elements/forms';
+    import { Button, InputCheckbox } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import type { Writable } from 'svelte/store';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
     import { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
-    import { ActionMenu, Layout, Popover, Tooltip } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Layout, Popover, ToggleButton } from '@appwrite.io/pink-svelte';
+    import { IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
+    import { goto } from '$app/navigation';
 
     export let columns: Writable<Column[]>;
     export let view: View;
@@ -17,8 +19,6 @@
     export let showColsTextMobile = false;
     export let fullWidthMobile = false;
     export let hideText = false;
-
-    let showSelectColumns = false;
 
     onMount(async () => {
         if (isCustomCollection) {
@@ -64,6 +64,13 @@
         preferences.setView(view);
     }
 
+    function onViewChange(event: CustomEvent<View>) {
+        updateViewPreferences(event.detail);
+        goto(getViewLink(event.detail), {
+            replaceState: true
+        });
+    }
+
     $: selectedColumnsNumber = $columns.reduce((acc, column) => {
         if (column.show) {
             acc++;
@@ -105,38 +112,20 @@
 {/if}
 
 {#if !hideView}
-    <div class="grid-header-col-3 toggle-button">
-        <ul class="toggle-button-list">
-            {#key $page.url}
-                <li class="toggle-button-item">
-                    <Tooltip>
-                        <a
-                            href={getViewLink(View.Table)}
-                            on:click={() => updateViewPreferences(View.Table)}
-                            class="toggle-button-element"
-                            aria-label="List View"
-                            type="button"
-                            class:is-selected={view === View.Table}>
-                            <span class="icon-view-list" aria-hidden="true" />
-                        </a>
-                        <span slot="tooltip">List View</span>
-                    </Tooltip>
-                </li>
-                <li class="toggle-button-item">
-                    <Tooltip>
-                        <a
-                            href={getViewLink(View.Grid)}
-                            on:click={() => updateViewPreferences(View.Grid)}
-                            class="toggle-button-element"
-                            aria-label="Grid View"
-                            type="button"
-                            class:is-selected={view === View.Grid}>
-                            <span class="icon-view-grid" aria-hidden="true" />
-                        </a>
-                        <span slot="tooltip">Grid View</span>
-                    </Tooltip>
-                </li>
-            {/key}
-        </ul>
-    </div>
+    <ToggleButton
+        --color-bgcolor-neutral-default="var(--color-bgcolor-neutral-primary)"
+        on:change={onViewChange}
+        active={view}
+        buttons={[
+            {
+                id: 'table',
+                label: 'table view',
+                icon: IconViewList
+            },
+            {
+                id: 'grid',
+                label: 'grid view',
+                icon: IconViewGrid
+            }
+        ]} />
 {/if}
