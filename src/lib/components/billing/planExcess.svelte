@@ -17,7 +17,7 @@
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { formatNum } from '$lib/helpers/string';
     import { onMount } from 'svelte';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
+    import type { Aggregation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlan } from '$lib/constants';
     import { tooltip } from '$lib/actions/tooltip';
@@ -33,16 +33,15 @@
         executions?: number;
         members?: number;
     } = null;
-    let usage: OrganizationUsage = null;
+    let aggregation: Aggregation = null;
     let showExcess = false;
 
     onMount(async () => {
-        usage = await sdk.forConsole.billing.listUsage(
+        aggregation = await sdk.forConsole.billing.getAggregation(
             $organization.$id,
-            $organization.billingCurrentInvoiceDate,
-            new Date().toISOString()
+            $organization.billingAggregationId
         );
-        excess = calculateExcess(usage, plan, members);
+        excess = calculateExcess(aggregation, plan);
         showExcess = Object.values(excess).some((value) => value > 0);
     });
 </script>
@@ -50,14 +49,12 @@
 {#if showExcess}
     <Alert type="error" {...$$restProps}>
         <svelte:fragment slot="title">
-            Your {tierToPlan($organization.billingPlan).name} plan subscription will end on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}
+            Your organization will switch to {tierToPlan(BillingPlan.FREE).name} plan. You will continue
+            to have access to {tierToPlan($organization.billingPlan).name} plan features until your billing
+            period ends on {toLocaleDate($organization.billingNextInvoiceDate)}
         </svelte:fragment>
-        Following payment of your final invoice, your organization will switch to the {tierToPlan(
-            BillingPlan.FREE
-        ).name} plan. {#if excess?.members > 0}All team members except the owner will be removed on
-            that date.{/if} Service disruptions may occur unless resource usage is reduced.
+        {#if excess?.members > 0}All team members except the owner will be removed on that date.{/if}
+        Service disruptions may occur unless resource usage is reduced.
         <!-- Any executions, bandwidth, or messaging usage will be reset at that time. -->
         <svelte:fragment slot="buttons">
             <Button
@@ -83,7 +80,8 @@
             {#if excess?.members}
                 <TableRow>
                     <TableCellText title="members">Organization members</TableCellText>
-                    <TableCellText title="limit">{plan.members} members</TableCellText>
+                    <TableCellText title="limit"
+                        >{plan.addons.seats.limit || 0} members</TableCellText>
                     <TableCell title="excess">
                         <p class="u-color-text-danger u-flex u-cross-center u-gap-4">
                             <span class="icon-arrow-up" />

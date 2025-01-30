@@ -370,8 +370,13 @@
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 {#if isDowngrade}
                     <Card>
-                        Your change will take effect once your current billing cycle ends on <span
-                            class="u-bold"
+                        Your organization will switch to <span class="u-bold"
+                            >{tierToPlan(billingPlan).name} plan</span
+                        >. You will continue to have access to
+                        <span class="u-bold"
+                            >{tierToPlan($organization.billingPlan).name} plan</span>
+                        features until your billing period ends on
+                        <span class="u-bold"
                             >{toLocaleDate($organization.billingNextInvoiceDate)}</span
                         >.
                     </Card>

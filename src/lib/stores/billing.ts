@@ -10,7 +10,8 @@ import type {
     PlansMap,
     PaymentMethodData,
     OrganizationUsage,
-    Plan
+    Plan,
+    Aggregation
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
@@ -476,14 +477,12 @@ export const billingURL = derived(
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(usage: OrganizationUsage, plan: Plan, members: number) {
-    const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
+export function calculateExcess(addon: Aggregation, plan: Plan) {
     return {
-        bandwidth: calculateResourceSurplus(totBandwidth, plan.bandwidth),
-        storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
-        users: calculateResourceSurplus(usage?.usersTotal, plan.users),
-        executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
-        members: calculateResourceSurplus(members - 1, plan.addons.seats.limit || 0)
+        bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
+        storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),
+        executions: calculateResourceSurplus(addon.usageExecutions, plan.executions, 'GB'),
+        members: addon.additionalMembers
     };
 }
 
