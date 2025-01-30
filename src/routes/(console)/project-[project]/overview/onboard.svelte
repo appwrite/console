@@ -61,16 +61,10 @@
                             </div>
                             <Layout.Stack gap="l">
                                 <Layout.Stack gap="l" direction="row">
-                                    <Card.Button on:click={() => addPlatform(0)}
+                                    <Card.Button on:click={() => addPlatform(0)} padding="s"
                                         ><Layout.Stack gap="xl"
-                                            ><div
-                                                class="card-top-image"
-                                                style:background-image={`url('${
-                                                    $app.themeInUse === 'dark'
-                                                        ? PlatformWebImgSourceDark
-                                                        : PlatformWebImgSource
-                                                }')`}>
-                                            </div>
+                                            ><div class="card-top-image web-image-light"></div>
+                                            <div class="card-top-image web-image-dark"></div>
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
@@ -81,16 +75,10 @@
                                                 </div>
                                             </Layout.Stack>
                                         </Layout.Stack></Card.Button>
-                                    <Card.Button on:click={createKey}
+                                    <Card.Button on:click={createKey} padding="s"
                                         ><Layout.Stack gap="xl"
-                                            ><div
-                                                class="card-top-image"
-                                                style:background-image={`url('${
-                                                    $app.themeInUse === 'dark'
-                                                        ? PlatformServerImgSourceDark
-                                                        : PlatformServerImgSource
-                                                }')`}>
-                                            </div>
+                                            ><div class="card-top-image server-image-light"></div>
+                                            <div class="card-top-image server-image-dark"></div>
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
@@ -103,7 +91,7 @@
                                         </Layout.Stack></Card.Button>
                                 </Layout.Stack>
                                 <Layout.Stack gap="l" direction="row">
-                                    <Card.Button on:click={() => addPlatform(3)}>
+                                    <Card.Button on:click={() => addPlatform(3)} padding="s">
                                         <Layout.Stack gap="xxl">
                                             <img
                                                 class="platform-image"
@@ -121,7 +109,7 @@
                                                 </div></Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
-                                    <Card.Button on:click={() => addPlatform(2)}>
+                                    <Card.Button on:click={() => addPlatform(2)} padding="s">
                                         <Layout.Stack gap="xxl">
                                             <img
                                                 class="platform-image"
@@ -140,7 +128,7 @@
                                                 </div></Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
-                                    <Card.Button on:click={() => addPlatform(1)}>
+                                    <Card.Button on:click={() => addPlatform(1)} padding="s">
                                         <Layout.Stack gap="xxl">
                                             <img
                                                 class="platform-image"
@@ -201,7 +189,7 @@
                                 <Layout.Stack
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
-                                    <Card.Button on:click={() => addPlatform(0)}
+                                    <Card.Button on:click={() => addPlatform(0)} padding="s"
                                         ><Layout.Stack gap="xl"
                                             ><div
                                                 class="card-top-image database-card-image"
@@ -222,7 +210,7 @@
                                                 </div>
                                             </Layout.Stack>
                                         </Layout.Stack></Card.Button>
-                                    <Card.Base
+                                    <Card.Base padding="s"
                                         ><div class="full-height-card">
                                             <Layout.Stack gap="xl" justifyContent="space-between">
                                                 <Typography.Title size="s"
@@ -258,7 +246,7 @@
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
                                     <div class="double-width-card">
-                                        <Card.Base
+                                        <Card.Base padding="s"
                                             ><div class="full-height-card">
                                                 <Layout.Stack direction="row">
                                                     <Layout.Stack
@@ -296,7 +284,7 @@
                                             </div></Card.Base>
                                     </div>
 
-                                    <Card.Link href="https://appwrite.io/discord">
+                                    <Card.Link href="https://appwrite.io/discord" padding="s">
                                         <div class="full-height-card">
                                             <Layout.Stack gap="xs" justifyContent="space-between">
                                                 <Layout.Stack direction="column" gap="xxxs">
@@ -336,16 +324,44 @@
 
 <style lang="scss">
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+
+    :global(.theme-light) {
+        .web-image-dark,
+        .server-image-dark {
+            display: none;
+        }
+    }
+
+    :global(.theme-dark) {
+        .web-image-light,
+        .server-image-light {
+            display: none;
+        }
+    }
+
     .dashboard-content {
         .card-top-image {
-            margin-top: calc(-1 * var(--base-24, 24px));
-            margin-left: calc(-1 * var(--base-24, 24px));
-            width: calc(100% + var(--base-48, 48px));
+            margin-top: calc(-1 * var(--base-16, 16px));
+            margin-left: calc(-1 * var(--base-16, 16px));
+            width: calc(100% + var(--base-32, 32px));
             height: 187px;
             background-size: cover;
             background-position: center;
         }
 
+        .web-image-light {
+            background-image: url('./assets/platform-web.png');
+        }
+        .web-image-dark {
+            background-image: url('./assets/platform-web-dark.png');
+        }
+
+        .server-image-light {
+            background-image: url('./assets/platform-server.png');
+        }
+        .server-image-dark {
+            background-image: url('./assets/platform-server-dark.png');
+        }
         .database-card-image {
             background-size: cover;
             background-position: bottom;
@@ -364,8 +380,8 @@
         .auth-image {
             width: 100%;
             height: 200px;
-            margin-right: calc(-1 * var(--base-24, 24px));
-            margin-bottom: calc(-1 * var(--base-24, 24px));
+            margin-right: calc(-1 * var(--base-16, 16px));
+            margin-bottom: calc(-1 * var(--base-16, 16px));
             align-self: flex-end;
             background-size: cover;
             background-position: left bottom;
