@@ -9,7 +9,6 @@ import type {
     PaymentList,
     PlansMap,
     PaymentMethodData,
-    OrganizationUsage,
     Plan,
     Aggregation
 } from '$lib/sdk/billing';
@@ -29,7 +28,6 @@ import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentM
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import { trackEvent } from '$lib/actions/analytics';
 import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
-import { last } from '$lib/helpers/array';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
 import { user } from './user';
 import { browser } from '$app/environment';
