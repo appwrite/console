@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Icon, Layout, Table, Tabs, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Layout, Logs, Table, Tabs, Typography } from '@appwrite.io/pink-svelte';
 
     export let selectedLog: Models.Execution;
 
@@ -32,13 +32,13 @@
     </Tabs.Root>
     {#if responseTab === 'logs'}
         {#if selectedLog.logs}
-            {selectedLog.logs}
+            <Logs logs={selectedLog.logs} />
         {:else}
             <Typography.Code>No logs found.</Typography.Code>
         {/if}
     {:else if responseTab === 'errors'}
         {#if selectedLog.errors}
-            {selectedLog.errors}
+            <Logs logs={selectedLog.errors} />
         {:else}
             <Typography.Code>No errors found.</Typography.Code>
         {/if}
@@ -67,7 +67,7 @@
         {/if}
     {:else if responseTab === 'body'}
         {#if selectedLog.responseBody}
-            {selectedLog.responseBody}
+            <Logs logs={selectedLog.responseBody} />
         {:else}
             <Typography.Code>No parameters found.</Typography.Code>
         {/if}
