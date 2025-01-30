@@ -1,6 +1,5 @@
 export function hasOnboardingDismissed(projectId: string) {
-    const val = localStorage.getItem(`onboardingDismissed-${projectId}`) === 'true';
-    return val;
+    return localStorage.getItem(`onboardingDismissed-${projectId}`) === 'true';
 }
 
 export function setHasOnboardingDismissed(projectId: string) {
