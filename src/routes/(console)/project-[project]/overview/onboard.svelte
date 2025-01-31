@@ -1,24 +1,24 @@
 <script lang="ts">
-    import { Step, Link, Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Step, Link, Icon, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
     import { addPlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
     import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
-    import UsersImgSource from './assets/users.png';
-    import UsersImgSourceDark from './assets/users-dark.png';
+    import UsersImgSource from './assets/users.svg';
+    import UsersImgSourceDark from './assets/users-dark.svg';
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
     import PlatformWebImgSource from './assets/platform-web.png';
     import PlatformWebImgSourceDark from './assets/platform-web-dark.png';
     import PlatformServerImgSource from './assets/platform-server.png';
     import PlatformServerImgSourceDark from './assets/platform-server-dark.png';
-    import PlatformIosImgSource from './assets/platform-ios.png';
-    import PlatformIosImgSourceDark from './assets/platform-ios-dark.png';
-    import PlatformAndroidImgSource from './assets/platform-android.png';
-    import PlatformAndroidImgSourceDark from './assets/platform-android-dark.png';
-    import PlatformFlutterImgSource from './assets/platform-flutter.png';
-    import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.png';
+    import PlatformIosImgSource from './assets/platform-ios.svg';
+    import PlatformIosImgSourceDark from './assets/platform-ios-dark.svg';
+    import PlatformAndroidImgSource from './assets/platform-android.svg';
+    import PlatformAndroidImgSourceDark from './assets/platform-android-dark.svg';
+    import PlatformFlutterImgSource from './assets/platform-flutter.svg';
+    import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.svg';
     import { base } from '$app/paths';
     import Wizard from './keys/wizard.svelte';
     import { wizard } from '$lib/stores/wizard';
@@ -39,291 +39,282 @@
                 <Step.List>
                     <Step.Item state="previous"
                         ><div>
-                            <h2 class="done">Create project</h2>
+                            <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
+                                >Create project</Typography.Title>
                         </div></Step.Item>
-                    <Step.Item state="current"
-                        ><Layout.Stack
+                    <Step.Item state="current">
+                        <Layout.Stack
                             direction={$isSmallViewport ? 'column' : 'row'}
                             gap={$isSmallViewport ? 'xl' : 'xxl'}>
-                            <Layout.Stack gap="m">
-                                <h2>Add a platform</h2>
-                                <div class="build-info">
-                                    <span>
-                                        Start building with your preferred web, mobile, and native
-                                        frameworks.
-                                    </span>
-                                </div>
-                            </Layout.Stack>
-                            <div class="grid">
-                                <button
-                                    class="onboarding-card platform-card top-row"
-                                    on:click={() => addPlatform(0)}>
-                                    <Layout.Stack direction="column" justifyContent="space-between">
-                                        <img
-                                            src={$app.themeInUse === 'dark'
-                                                ? PlatformWebImgSourceDark
-                                                : PlatformWebImgSource}
-                                            alt="" />
-                                        <div class="card-content">
-                                            <Layout.Stack
-                                                direction="row"
-                                                justifyContent="space-between"
-                                                alignItems="flex-end">
-                                                <h3>Web</h3>
-
-                                                <div class="is-only-desktop">
-                                                    <Icon
-                                                        icon={IconArrowRight}
-                                                        color="--neutral-250" />
-                                                </div></Layout.Stack>
-                                        </div>
-                                    </Layout.Stack>
-                                </button>
-                                <button
-                                    class="onboarding-card platform-card top-row"
-                                    on:click={createKey}>
-                                    <Layout.Stack direction="column" justifyContent="space-between">
-                                        <img
-                                            src={$app.themeInUse === 'dark'
-                                                ? PlatformServerImgSourceDark
-                                                : PlatformServerImgSource}
-                                            alt="" />
-                                        <div class="card-content">
-                                            <Layout.Stack
-                                                direction="row"
-                                                justifyContent="space-between"
-                                                alignItems="center">
-                                                <h3>Server</h3>
-                                                <div class="is-only-desktop">
-                                                    <Icon
-                                                        icon={IconArrowRight}
-                                                        color="--neutral-250" />
-                                                </div></Layout.Stack>
-                                        </div>
-                                    </Layout.Stack>
-                                </button>
-                                <button
-                                    class="onboarding-card platform-card"
-                                    on:click={() => addPlatform(3)}>
-                                    <Layout.Stack direction="column" justifyContent="space-between">
-                                        <img
-                                            src={$app.themeInUse === 'dark'
-                                                ? PlatformIosImgSourceDark
-                                                : PlatformIosImgSource}
-                                            alt="" />
-                                        <div class="card-content">
-                                            <Layout.Stack
-                                                direction="row"
-                                                justifyContent="space-between"
-                                                alignItems="center">
-                                                <h3>Apple</h3>
-                                                <div class="is-only-desktop">
-                                                    <Icon
-                                                        icon={IconArrowRight}
-                                                        color="--neutral-250" />
-                                                </div></Layout.Stack>
-                                        </div>
-                                    </Layout.Stack>
-                                </button>
-                                <button
-                                    class="onboarding-card platform-card"
-                                    on:click={() => addPlatform(2)}>
-                                    <Layout.Stack direction="column" justifyContent="space-between">
-                                        <img
-                                            src={$app.themeInUse === 'dark'
-                                                ? PlatformAndroidImgSourceDark
-                                                : PlatformAndroidImgSource}
-                                            alt="" />
-                                        <div class="card-content">
-                                            <Layout.Stack
-                                                direction="row"
-                                                justifyContent="space-between"
-                                                alignItems="center">
-                                                <h3>Android</h3>
-                                                <div class="is-only-desktop">
-                                                    <Icon
-                                                        icon={IconArrowRight}
-                                                        color="--neutral-250" />
-                                                </div></Layout.Stack>
-                                        </div>
-                                    </Layout.Stack>
-                                </button>
-
-                                <button
-                                    class="onboarding-card platform-card"
-                                    on:click={() => addPlatform(1)}>
-                                    <Layout.Stack direction="column" justifyContent="space-between">
-                                        <img
-                                            src={$app.themeInUse === 'dark'
-                                                ? PlatformFlutterImgSourceDark
-                                                : PlatformFlutterImgSource}
-                                            alt="" />
-                                        <div class="card-content">
-                                            <Layout.Stack
-                                                direction="row"
-                                                justifyContent="space-between"
-                                                alignItems="center">
-                                                <h3>Flutter</h3>
-                                                <div class="is-only-desktop">
-                                                    <Icon
-                                                        icon={IconArrowRight}
-                                                        color="--neutral-250" />
-                                                </div></Layout.Stack>
-                                        </div>
-                                    </Layout.Stack>
-                                </button>
+                            <div class="step-info">
+                                <Layout.Stack gap="m">
+                                    <Typography.Title
+                                        color="--color-fgcolor-neutral-primary"
+                                        size="s">Add a platform</Typography.Title>
+                                    <div class="build-info">
+                                        <span>
+                                            Start building with your preferred web, mobile, and
+                                            native frameworks.
+                                        </span>
+                                    </div>
+                                </Layout.Stack>
                             </div>
+                            <Layout.Stack gap="l">
+                                <Layout.Stack gap="l" direction="row">
+                                    <Card.Button on:click={() => addPlatform(0)} padding="s"
+                                        ><Layout.Stack gap="xl"
+                                            ><div class="card-top-image web-image-light"></div>
+                                            <div class="card-top-image web-image-dark"></div>
+                                            <Layout.Stack
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between">
+                                                <Typography.Title size="s">Web</Typography.Title>
+                                                <div class="arrow-icon">
+                                                    <Icon icon={IconArrowRight} size="s" />
+                                                </div>
+                                            </Layout.Stack>
+                                        </Layout.Stack></Card.Button>
+                                    <Card.Button on:click={createKey} padding="s"
+                                        ><Layout.Stack gap="xl"
+                                            ><div class="card-top-image server-image-light"></div>
+                                            <div class="card-top-image server-image-dark"></div>
+                                            <Layout.Stack
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between">
+                                                <Typography.Title size="s">Server</Typography.Title>
+                                                <div class="arrow-icon">
+                                                    <Icon icon={IconArrowRight} size="s" />
+                                                </div>
+                                            </Layout.Stack>
+                                        </Layout.Stack></Card.Button>
+                                </Layout.Stack>
+                                <Layout.Stack gap="l" direction="row">
+                                    <Card.Button on:click={() => addPlatform(3)} padding="s">
+                                        <Layout.Stack gap="xxl">
+                                            <img
+                                                class="platform-image"
+                                                src={$app.themeInUse === 'dark'
+                                                    ? PlatformIosImgSourceDark
+                                                    : PlatformIosImgSource}
+                                                alt="" />
+                                            <Layout.Stack
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between">
+                                                <Typography.Title size="s">Apple</Typography.Title>
+                                                <div class="arrow-icon">
+                                                    <Icon icon={IconArrowRight} size="s" />
+                                                </div></Layout.Stack>
+                                        </Layout.Stack>
+                                    </Card.Button>
+                                    <Card.Button on:click={() => addPlatform(2)} padding="s">
+                                        <Layout.Stack gap="xxl">
+                                            <img
+                                                class="platform-image"
+                                                src={$app.themeInUse === 'dark'
+                                                    ? PlatformAndroidImgSourceDark
+                                                    : PlatformAndroidImgSource}
+                                                alt="" />
+                                            <Layout.Stack
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between">
+                                                <Typography.Title size="s"
+                                                    >Android</Typography.Title>
+                                                <div class="arrow-icon">
+                                                    <Icon icon={IconArrowRight} size="s" />
+                                                </div></Layout.Stack>
+                                        </Layout.Stack>
+                                    </Card.Button>
+                                    <Card.Button on:click={() => addPlatform(1)} padding="s">
+                                        <Layout.Stack gap="xxl">
+                                            <img
+                                                class="platform-image"
+                                                src={$app.themeInUse === 'dark'
+                                                    ? PlatformFlutterImgSourceDark
+                                                    : PlatformFlutterImgSource}
+                                                alt="" />
+                                            <Layout.Stack
+                                                direction="row"
+                                                alignItems="center"
+                                                justifyContent="space-between">
+                                                <Typography.Title size="s"
+                                                    >Flutter</Typography.Title>
+                                                <div class="arrow-icon">
+                                                    <Icon icon={IconArrowRight} size="s" />
+                                                </div></Layout.Stack>
+                                        </Layout.Stack>
+                                    </Card.Button>
+                                </Layout.Stack>
+                            </Layout.Stack>
                         </Layout.Stack></Step.Item>
                     <Step.Item state="next"
                         ><div>
-                            <h2 class="done">Build your app</h2>
+                            <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
+                                >Build your app</Typography.Title>
                         </div></Step.Item>
                 </Step.List>
             {:else}
                 <Step.List>
                     <Step.Item state="previous"
                         ><div>
-                            <h2 class="done">Create project</h2>
+                            <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
+                                >Create project</Typography.Title>
                         </div></Step.Item>
                     <Step.Item state="previous"
                         ><div>
-                            <h2 class="done">Add a platform</h2>
+                            <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
+                                >Add a platform</Typography.Title>
                         </div></Step.Item>
-                    <Step.Item state="current"
-                        ><Layout.Stack
+                    <Step.Item state="current">
+                        <Layout.Stack
                             direction={$isSmallViewport ? 'column' : 'row'}
                             gap={$isSmallViewport ? 'xl' : 'xxl'}>
-                            <Layout.Stack gap="m">
-                                <h2>Build your app</h2>
-                                <div class="build-info">
-                                    <span>
-                                        Continue building your app by setting up services such as
-                                        Auth, Databases, Storage and Functions.</span>
-                                </div>
-                            </Layout.Stack>
-                            <div class="grid">
-                                <a
-                                    class="onboarding-card build-card"
-                                    href={`${base}/project-${projectId}/databases`}>
-                                    <Layout.Stack direction="column" justifyContent="space-between">
-                                        <img
-                                            src={$app.themeInUse === 'dark'
-                                                ? DatabaseImgSourceDark
-                                                : DatabaseImgSource}
-                                            alt="" />
-                                        <div class="card-content">
+                            <div class="step-info">
+                                <Layout.Stack gap="m">
+                                    <Typography.Title
+                                        color="--color-fgcolor-neutral-primary"
+                                        size="s">Build your app</Typography.Title>
+                                    <div class="build-info">
+                                        <span>
+                                            Continue building your app by setting up services such
+                                            as Auth, Databases, Storage and Functions.
+                                        </span>
+                                    </div>
+                                </Layout.Stack>
+                            </div>
+                            <Layout.Stack gap="l">
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
+                                    <Card.Button on:click={() => addPlatform(0)} padding="s"
+                                        ><Layout.Stack gap="xl"
+                                            ><div
+                                                class="card-top-image database-card-image"
+                                                style:background-image={`url('${
+                                                    $app.themeInUse === 'dark'
+                                                        ? DatabaseImgSourceDark
+                                                        : DatabaseImgSource
+                                                }')`}>
+                                            </div>
                                             <Layout.Stack
                                                 direction="row"
-                                                justifyContent="space-between"
-                                                alignItems="center">
-                                                <h3>Setup your database</h3>
-                                                <span class="is-only-desktop">
-                                                    <Icon
-                                                        icon={IconArrowRight}
-                                                        color="--neutral-250" />
-                                                </span></Layout.Stack>
-                                        </div>
-                                    </Layout.Stack>
-                                </a>
-                                <div class="onboarding-card build-card">
-                                    <div class="card-content card-docs">
-                                        <Layout.Stack
-                                            direction="column"
-                                            justifyContent="space-between">
-                                            <h3>Discover our docs</h3>
-                                            <Layout.Stack
-                                                direction="column"
-                                                gap="s"
-                                                justifyContent="flex-end">
-                                                <Link.Anchor
-                                                    variant="quiet-muted"
-                                                    href="https://appwrite.io/docs/references"
-                                                    target="_blank">API references</Link.Anchor>
-                                                <Link.Anchor
-                                                    variant="quiet-muted"
-                                                    href="https://appwrite.io/docs/tutorials"
-                                                    target="_blank">Tutorials</Link.Anchor>
-                                                <Link.Anchor
-                                                    variant="quiet-muted"
-                                                    href="https://appwrite.io/docs/products/storage/quick-start"
-                                                    target="_blank"
-                                                    >Storage quick start
-                                                </Link.Anchor>
-                                                <Link.Anchor
-                                                    variant="quiet-muted"
-                                                    href="https://appwrite.io/docs/products/functions/quick-start"
-                                                    target="_blank"
-                                                    >Functions quick start</Link.Anchor>
+                                                alignItems="center"
+                                                justifyContent="space-between">
+                                                <Typography.Title size="s"
+                                                    >Set up your database</Typography.Title>
+                                                <div class="arrow-icon">
+                                                    <Icon icon={IconArrowRight} size="s" />
+                                                </div>
                                             </Layout.Stack>
-                                        </Layout.Stack>
-                                    </div>
-                                </div>
-                                <div class="onboarding-card card-auth build-card">
-                                    <div class="card-content">
-                                        <Layout.Stack
-                                            direction="column"
-                                            justifyContent="space-between">
-                                            <h3>Setup auth</h3>
-                                            <Layout.Stack
-                                                direction="column"
-                                                gap="s"
-                                                justifyContent="flex-end">
-                                                <Link.Anchor
-                                                    variant="quiet-muted"
-                                                    href={`${base}/project-${projectId}/auth/settings`}
-                                                    >E-mail and password
-                                                </Link.Anchor>
-                                                <Link.Anchor
-                                                    variant="quiet-muted"
-                                                    href={`${base}/project-${projectId}/auth/settings`}
-                                                    >OAuth 2</Link.Anchor>
-                                                <Link.Anchor
-                                                    variant="quiet-muted"
-                                                    href={`${base}/project-${projectId}/auth/settings`}
-                                                    >View all methods</Link.Anchor>
+                                        </Layout.Stack></Card.Button>
+                                    <Card.Base padding="s"
+                                        ><div class="full-height-card">
+                                            <Layout.Stack gap="xl" justifyContent="space-between">
+                                                <Typography.Title size="s"
+                                                    >Discover our docs</Typography.Title>
+                                                <Layout.Stack
+                                                    direction="column"
+                                                    gap="s"
+                                                    justifyContent="flex-end">
+                                                    <Link.Anchor
+                                                        variant="quiet-muted"
+                                                        href="https://appwrite.io/docs/references"
+                                                        target="_blank">API references</Link.Anchor>
+                                                    <Link.Anchor
+                                                        variant="quiet-muted"
+                                                        href="https://appwrite.io/docs/tutorials"
+                                                        target="_blank">Tutorials</Link.Anchor>
+                                                    <Link.Anchor
+                                                        variant="quiet-muted"
+                                                        href="https://appwrite.io/docs/products/storage/quick-start"
+                                                        target="_blank"
+                                                        >Storage quick start
+                                                    </Link.Anchor>
+                                                    <Link.Anchor
+                                                        variant="quiet-muted"
+                                                        href="https://appwrite.io/docs/products/functions/quick-start"
+                                                        target="_blank"
+                                                        >Functions quick start</Link.Anchor>
+                                                </Layout.Stack>
                                             </Layout.Stack>
-                                        </Layout.Stack>
+                                        </div></Card.Base>
+                                </Layout.Stack>
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
+                                    <div class="double-width-card">
+                                        <Card.Base padding="s"
+                                            ><div class="full-height-card">
+                                                <Layout.Stack direction="row">
+                                                    <Layout.Stack
+                                                        gap="xl"
+                                                        justifyContent="space-between">
+                                                        <Typography.Title size="s"
+                                                            >Set up Auth</Typography.Title>
+                                                        <Layout.Stack
+                                                            direction="column"
+                                                            gap="s"
+                                                            justifyContent="flex-end">
+                                                            <Link.Anchor
+                                                                variant="quiet-muted"
+                                                                href={`${base}/project-${projectId}/auth/settings`}
+                                                                >E-mail and password
+                                                            </Link.Anchor>
+                                                            <Link.Anchor
+                                                                variant="quiet-muted"
+                                                                href={`${base}/project-${projectId}/auth/settings`}
+                                                                >OAuth 2</Link.Anchor>
+                                                            <Link.Anchor
+                                                                variant="quiet-muted"
+                                                                href={`${base}/project-${projectId}/auth/settings`}
+                                                                >View all methods</Link.Anchor>
+                                                        </Layout.Stack>
+                                                    </Layout.Stack>
+                                                    <div
+                                                        class="auth-image"
+                                                        style:background-image={`url('${
+                                                            $app.themeInUse === 'dark'
+                                                                ? UsersImgSourceDark
+                                                                : UsersImgSource
+                                                        }')`} />
+                                                </Layout.Stack>
+                                            </div></Card.Base>
                                     </div>
-                                    <img
-                                        src={$app.themeInUse === 'dark'
-                                            ? UsersImgSourceDark
-                                            : UsersImgSource}
-                                        alt="" />
-                                </div>
-                                <div class="onboarding-card build-card">
-                                    <div class="card-content">
-                                        <Layout.Stack
-                                            direction="column"
-                                            justifyContent="space-between">
-                                            <img
-                                                src={$app.themeInUse === 'dark'
-                                                    ? DiscordImgSourceDark
-                                                    : DiscordImgSource}
-                                                class="discord"
-                                                alt="" />
-                                            <h3>Discord</h3>
-                                            <Link.Anchor
-                                                variant="quiet-muted"
-                                                href="https://appwrite.io/discord"
-                                                size="l"
-                                                ><Layout.Stack
+
+                                    <Card.Link href="https://appwrite.io/discord" padding="s">
+                                        <div class="full-height-card">
+                                            <Layout.Stack gap="xs" justifyContent="space-between">
+                                                <Layout.Stack direction="column" gap="xxxs">
+                                                    <img
+                                                        src={$app.themeInUse === 'dark'
+                                                            ? DiscordImgSourceDark
+                                                            : DiscordImgSource}
+                                                        class="discord"
+                                                        alt="" />
+                                                    <Typography.Title size="s"
+                                                        >Discord</Typography.Title>
+                                                </Layout.Stack>
+                                                <Layout.Stack
                                                     direction="row"
                                                     alignItems="flex-end"
-                                                    gap="xxs"
-                                                    ><span
-                                                        >Join our Discord for support, tips and
-                                                        product updates</span>
-                                                    <span class="is-only-desktop">
-                                                        <Icon
-                                                            icon={IconArrowRight}
-                                                            size="s"
-                                                            color="--neutral-250" />
-                                                    </span></Layout.Stack
-                                                ></Link.Anchor>
-                                        </Layout.Stack>
-                                    </div>
-                                </div>
-                            </div>
+                                                    justifyContent="space-between">
+                                                    <Typography.Text
+                                                        size="m"
+                                                        color="--color-fgcolor-neutral-secondary">
+                                                        Join our Discord for support, tips and
+                                                        product updatese</Typography.Text>
+                                                    <div class="arrow-icon arrow-icon-discord">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                </Layout.Stack>
+                                            </Layout.Stack>
+                                        </div>
+                                    </Card.Link>
+                                </Layout.Stack>
+                            </Layout.Stack>
                         </Layout.Stack></Step.Item>
                 </Step.List>
             {/if}
@@ -333,164 +324,109 @@
 
 <style lang="scss">
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+
+    :global(.theme-light) {
+        .web-image-dark,
+        .server-image-dark {
+            display: none;
+        }
+    }
+
+    :global(.theme-dark) {
+        .web-image-light,
+        .server-image-light {
+            display: none;
+        }
+    }
+
     .dashboard-content {
-        h2 {
-            color: var(--color-fgcolor-neutral-primary, #2d2d31);
+        .card-top-image {
+            margin-top: calc(-1 * var(--base-16, 16px));
+            margin-left: calc(-1 * var(--base-16, 16px));
+            width: calc(100% + var(--base-32, 32px));
+            height: 160px;
+            background-size: cover;
+            background-position: center;
 
-            /* Desktop/Title S */
-            font-family: var(--font-family-brand, 'Aeonik Pro');
-            font-size: var(--font-size-L, 20px);
-            font-style: normal;
-            font-weight: 400;
-            line-height: 130%; /* 26px */
-        }
-
-        .top-row img {
-            min-height: 145px;
-        }
-
-        h2.done {
-            color: var(--color-fgcolor-neutral-tertiary, #97979b);
-        }
-
-        .build-info {
-            span {
-                color: var(--color-fgcolor-neutral-secondary, #56565c);
-
-                /* Desktop/Body M 400 */
-                font-family: var(--font-family-sansserif, Inter);
-                font-size: var(--font-size-S, 14px);
-                font-style: normal;
-                font-weight: 400;
-                line-height: 140%; /* 19.6px */
-                letter-spacing: -0.063px;
-            }
-
-            @media (min-width: 768px) and (max-width: 1400px) {
-                width: 200px;
+            @media (min-width: 1200px) {
+                height: 187px;
             }
         }
 
-        .onboarding-card {
-            border-radius: 8px;
-            border: 1px solid var(--color-border-neutral, #ededf0);
-            background: var(--color-bgcolor-neutral-primary, #fff);
-
-            h3 {
-                color: var(--color-fgcolor-neutral-primary, #2d2d31);
-
-                /* Desktop/Title S */
-                font-family: var(--font-family-brand, 'Aeonik Pro');
-                font-size: var(--font-size-l, 20px);
-                font-style: normal;
-                font-weight: 400;
-                line-height: 130%; /* 26px */
-            }
+        .web-image-light {
+            background-image: url('./assets/platform-web.png');
+        }
+        .web-image-dark {
+            background-image: url('./assets/platform-web-dark.png');
         }
 
-        .grid {
-            display: grid;
-            gap: var(--space-7);
+        .server-image-light {
+            background-image: url('./assets/platform-server.png');
+        }
+        .server-image-dark {
+            background-image: url('./assets/platform-server-dark.png');
+        }
+        .database-card-image {
+            background-size: cover;
+            background-position: bottom;
+            background-repeat: no-repeat;
+
             @media (min-width: 768px) {
-                grid-template-columns: repeat(6, 1fr);
-                grid-template-rows: auto auto;
-                max-width: 776px;
-
-                .build-card:nth-child(1) {
-                    grid-column: span 3;
-                    img {
-                        max-height: 160px;
-                    }
-                }
-
-                .build-card:nth-child(2) {
-                    grid-column: span 3;
-                }
-
-                .build-card:nth-child(3) {
-                    grid-column: span 4;
-                }
-
-                .build-card:nth-child(4) {
-                    grid-column: span 2;
-                }
-
-                .platform-card:nth-child(1) {
-                    grid-column: span 3;
-                    img {
-                        max-height: 295px;
-                    }
-                }
-                .platform-card:nth-child(2) {
-                    grid-column: span 3;
-                    img {
-                        max-height: 295px;
-                    }
-                }
-                .platform-card:nth-child(3) {
-                    grid-column: span 2;
-                    img {
-                        max-height: 195px;
-                    }
-                }
-                .platform-card:nth-child(4) {
-                    grid-column: span 2;
-                    img {
-                        max-height: 195px;
-                    }
-                }
-                .platform-card:nth-child(5) {
-                    grid-column: span 2;
-                    img {
-                        max-height: 195px;
-                    }
-                }
+                background-size: contain;
+                background-position: top;
+                background-repeat: no-repeat;
             }
         }
-
-        .card-content {
-            padding: 24px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        :global(.build-card div) {
+        .full-height-card {
             height: 100%;
         }
 
-        .card-docs {
-            min-height: 240px;
+        .auth-image {
+            width: 100%;
+            height: 200px;
+            margin-right: calc(-1 * var(--base-16, 16px));
+            margin-bottom: calc(-1 * var(--base-16, 16px));
+            align-self: flex-end;
+            background-size: cover;
+            background-position: left bottom;
+            background-repeat: no-repeat;
+        }
+        :global(.full-height-card div) {
+            height: 100%;
+        }
+
+        .double-width-card {
             @media (min-width: 768px) {
-                height: 100%;
-                min-height: auto;
+                width: 250%;
             }
         }
 
-        .card-auth {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            overflow: hidden;
-
-            .card-content {
-                padding-inline-end: 0;
-            }
-
-            img {
-                height: 160px;
-                align-self: flex-end;
-            }
-
-            .card-links {
-                min-width: 160px;
+        .arrow-icon {
+            color: var(--color-border-neutral-strong);
+            display: none;
+            @media (min-width: 768px) {
+                display: flex;
             }
         }
+        .arrow-icon-discord {
+            align-items: flex-end;
+        }
 
-        .card-links {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-4);
+        .platform-image {
+            width: 56px;
+            margin-left: calc(-1 * var(--base-4, 4px));
+        }
+
+        .step-info {
+            @media (min-width: 768px) {
+                max-width: 100px;
+            }
+            @media (min-width: 1024px) {
+                max-width: 200px;
+            }
+            @media (min-width: 1400px) {
+                max-width: 300px;
+            }
         }
     }
     .discord {

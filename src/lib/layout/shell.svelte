@@ -16,6 +16,7 @@
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
 
     export let showSideNavigation = false;
     export let showHeader = true;
@@ -80,7 +81,7 @@
     }
 
     $: progressCard = function getProgressCard() {
-        if (selectedProject) {
+        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id)) {
             const currentProject = projects.find((project) => project.$id === selectedProject.$id);
 
             return {
