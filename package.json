@@ -21,9 +21,9 @@
     "dependencies": {
         "@appwrite.io/console": "https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@9193",
         "@appwrite.io/pink-icons": "0.25.0",
-        "@appwrite.io/pink-icons-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@cc346f7d",
+        "@appwrite.io/pink-icons-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@07edee17",
         "@appwrite.io/pink-legacy": "^1.0.0",
-        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@cc346f7d",
+        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@07edee17",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",

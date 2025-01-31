@@ -26,7 +26,7 @@
                 <Table.Header.Cell>Name</Table.Header.Cell>
                 <Table.Header.Cell>Roles</Table.Header.Cell>
                 <Table.Header.Cell>Joined</Table.Header.Cell>
-                <Table.Header.Cell />
+                <Table.Header.Cell width="40px" />
             </svelte:fragment>
             {#each data.memberships.memberships as membership}
                 <Table.Link

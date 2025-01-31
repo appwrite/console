@@ -15,15 +15,13 @@
     import Create from '../createTeam.svelte';
     import { goto } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { writable } from 'svelte/store';
-    import { readOnly } from '$lib/stores/billing';
-    import { isCloud } from '$lib/system';
     import { canWriteTeams } from '$lib/stores/roles';
-    import { Tooltip, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Layout, Table } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
