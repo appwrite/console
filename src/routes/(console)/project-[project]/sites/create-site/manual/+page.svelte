@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button, Form, Label } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -98,7 +98,22 @@
                 undefined
             );
 
-            trackEvent(Submit.SiteCreate, {});
+            trackEvent(Submit.SiteCreate, {
+                source: 'manual',
+                framework: framework.key
+            });
+
+            //Add variables
+            await Promise.all(
+                Object.keys(variables).map(async (key) => {
+                    await sdk.forProject.sites.createVariable(
+                        site.$id,
+                        key,
+                        variables[key].value,
+                        variables[key].secret
+                    );
+                })
+            );
 
             const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
                 Query.limit(1)
@@ -129,26 +144,29 @@
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
-            <Upload.Dropzone folder bind:files on:change={handleChange}>
-                <Layout.Stack alignItems="center" gap="s">
-                    <Layout.Stack
-                        alignItems="center"
-                        justifyContent="center"
-                        direction="row"
-                        gap="s">
-                        <Typography.Text variant="l-500">
-                            Drag and drop files here or click to upload
-                        </Typography.Text>
-                        <Tooltip>
-                            <Icon icon={IconInfo} size="s" />
-                            <svelte:fragment slot="tooltip">
-                                Only PNG, JPEG, PDF files allowed
-                            </svelte:fragment>
-                        </Tooltip>
+            <Layout.Stack gap="xxs">
+                <Label>Files or folder</Label>
+                <Upload.Dropzone folder bind:files on:change={handleChange}>
+                    <Layout.Stack alignItems="center" gap="s">
+                        <Layout.Stack
+                            alignItems="center"
+                            justifyContent="center"
+                            direction="row"
+                            gap="s">
+                            <Typography.Text variant="l-500">
+                                Drag and drop files here or click to upload
+                            </Typography.Text>
+                            <Tooltip>
+                                <Icon icon={IconInfo} size="s" />
+                                <svelte:fragment slot="tooltip">
+                                    Only PNG, JPEG, PDF files allowed
+                                </svelte:fragment>
+                            </Tooltip>
+                        </Layout.Stack>
+                        <Typography.Caption variant="400">Max file size: 10MB</Typography.Caption>
                     </Layout.Stack>
-                    <Typography.Caption variant="400">Max file size: 10MB</Typography.Caption>
-                </Layout.Stack>
-            </Upload.Dropzone>
+                </Upload.Dropzone>
+            </Layout.Stack>
             <Details bind:name bind:id />
 
             <Configuration

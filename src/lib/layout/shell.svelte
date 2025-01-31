@@ -145,7 +145,7 @@
     .content {
         width: 100%;
 
-        margin-block-start: 30px;
+        margin-block-start: 48px;
 
         @media (min-width: 1024px) {
             width: 100%;

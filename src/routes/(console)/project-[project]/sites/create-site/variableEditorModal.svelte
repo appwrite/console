@@ -4,31 +4,20 @@
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import type { Models } from '@appwrite.io/console';
     import { parse } from 'envfile';
     import { Icon, Layout, Tabs } from '@appwrite.io/pink-svelte';
-    import { InputTextarea } from '$lib/elements/forms';
     import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import { InputTextarea } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
 
-    export let isGlobal: boolean;
     export let showEditor = false;
-    export let variableList: Models.VariableList;
-
-    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
-    export let sdkUpdateVariable: (
-        variableId: string,
-        key: string,
-        value: string
-    ) => Promise<unknown>;
-    export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
+    export let variables: Partial<Models.Variable>[];
 
     let error = '';
-    let envCode = variableList.variables
-        .map((variable) => `${variable.key}=${variable.value}`)
-        .join('\n');
+    let envCode = variables.map((variable) => `${variable.key}=${variable.value}`).join('\n');
     let jsonCode = JSON.stringify(
         JSON.parse(
-            `{${variableList.variables
+            `{${variables
                 .map((variable) => `"${variable.key}":"${variable.value.split('"').join('\\"')}"`)
                 .join(',')}}`
         ),
@@ -56,25 +45,22 @@
                 }
             }
 
-            await Promise.all(
-                variableList.variables.map(async (variable) => {
-                    const newValue = vars[variable.key] ?? null;
+            variables.map((variable) => {
+                const newValue = vars[variable.key] ?? null;
 
-                    if (newValue === null) {
-                        await sdkDeleteVariable(variable.$id);
-                    } else if (newValue !== variable.value) {
-                        await sdkUpdateVariable(variable.$id, variable.key, newValue);
-                    }
+                if (newValue === null) {
+                    variables = variables.filter((v) => v.key !== variable.key);
+                } else if (newValue !== variable.value) {
+                    variable.value = newValue;
+                    variables = [...variables];
+                }
+                delete vars[variable.key];
+            });
 
-                    delete vars[variable.key];
-                })
-            );
-
-            await Promise.all(
-                Object.keys(vars).map(async (key) => {
-                    await sdkCreateVariable(key, vars[key]);
-                })
-            );
+            Object.keys(vars).map(async (key) => {
+                const value = vars[key];
+                variables.push({ key, value });
+            });
 
             showEditor = false;
 
@@ -133,10 +119,7 @@
     onSubmit={handleSubmit}
     bind:error
     submitOnEnter={false}>
-    <p slot="description">
-        Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
-        <span class="inline-code">.{tab}</span> file.
-    </p>
+    <p slot="description">Add, edit, or delete environment variables using a raw editor.</p>
     <Layout.Stack gap="s">
         <Tabs.Root stretch>
             <Tabs.Item.Button on:click={() => (tab = 'env')} active={tab === 'env'}>
@@ -180,10 +163,3 @@
         <Button submit disabled={isButtonDisabled}>Save</Button>
     </svelte:fragment>
 </Modal>
-
-<style lang="scss">
-    .editor-border {
-        border: solid 0.0625rem hsl(var(--color-border));
-        border-radius: var(--border-radius-small);
-    }
-</style>

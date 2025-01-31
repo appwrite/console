@@ -70,8 +70,9 @@
                                 color="--color-fgcolor-neutral-tertiary">
                                 Method
                             </Typography.Text>
-                            <Typography.Text variant="m-400"
-                                >{selectedLog.requestMethod}</Typography.Text>
+                            <Typography.Text variant="m-400">
+                                {selectedLog.requestMethod}
+                            </Typography.Text>
                         </Layout.Stack>
                         <Layout.Stack gap="xs" inline>
                             <Typography.Text

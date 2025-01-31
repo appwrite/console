@@ -10,7 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { Badge, Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Card, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import ansicolor from 'ansicolor';
     import { onMount } from 'svelte';
 
@@ -129,9 +129,7 @@
             </Layout.Stack>
         </div>
     </Layout.Stack>
-    <pre>
-        <code>{formatLogs(buildLogs)}</code>
-    </pre>
+    <Logs logs={formatLogs(buildLogs)} />
     <!-- <div>
                         <Code lang="text" code={buildLogs.replace(/\\n/g, '\n')} />
                     </div> -->
@@ -141,13 +139,3 @@
         {/if}
     </Layout.Stack>
 </Layout.Stack>
-
-<style>
-    /* TODO: move to pink */
-    pre {
-        max-height: 600px;
-        overflow-y: scroll;
-        display: flex;
-        flex-direction: column-reverse;
-    }
-</style>

@@ -59,7 +59,13 @@
 </script>
 
 <div style:max-width="360px" style:width="100%">
-    <Input.Text {placeholder} {disabled} {required} type="search" bind:value={search}>
+    <Input.Text
+        {placeholder}
+        {disabled}
+        {required}
+        type="search"
+        bind:value={search}
+        --color-bgcolor-neutral-default="var(--color-bgcolor-neutral-primary)">
         <svelte:fragment slot="start">
             <Icon icon={IconSearch} />
         </svelte:fragment>

@@ -6,6 +6,7 @@
     import { Button, Form, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import { project } from '../../store';
 
     let maxSessions = $project?.authSessionsLimit;
@@ -33,13 +34,13 @@
 <Form onSubmit={updateSessionsLimit}>
     <CardGrid>
         <Heading tag="h2" size="7" id="sessions-limit">Sessions limit</Heading>
-        <p>Maximum number of active sessions allowed per user.</p>
-        <svelte:fragment slot="aside">
-            <ul>
-                <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
-            </ul>
-        </svelte:fragment>
+        <Typography.Text>
+            <p>Maximum number of active sessions allowed per user.</p>
+        </Typography.Text>
 
+        <svelte:fragment slot="aside">
+            <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
+        </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button disabled={maxSessions === $project?.authSessionsLimit} submit>Update</Button>
         </svelte:fragment>

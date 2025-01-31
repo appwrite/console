@@ -7,6 +7,7 @@
     import { FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Selector, Typography } from '@appwrite.io/pink-svelte';
     import { project } from '../../store';
 
     let authMembershipsUserName = $project?.authMembershipsUserName ?? true;
@@ -40,27 +41,28 @@
 <Form onSubmit={updateMembershipsPrivacy}>
     <CardGrid>
         <Heading tag="h2" size="7" id="personal-data">Memberships privacy</Heading>
-        <p>
+        <Typography.Text>
             Set privacy preferences to manage which details team members can view about one another.
-        </p>
+        </Typography.Text>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputChoice
-                    bind:value={authMembershipsUserName}
-                    id="membershipsUserName"
-                    label="Name">
-                    Display team members' names to other team members
-                </InputChoice>
-                <InputChoice
-                    bind:value={authMembershipsUserEmail}
-                    id="membershipsUserEmail"
-                    label="Email">
-                    Allow team members to view each other's email addresses
-                </InputChoice>
-                <InputChoice bind:value={authMembershipsMfa} id="membershipsMfa" label="MFA status">
-                    Show if team members have multi-factor authentication enabled
-                </InputChoice>
-            </FormList>
+            <Selector.Checkbox
+                id="membershipsUserName"
+                label="Name"
+                size="s"
+                description="Display team members' names to other team members"
+                bind:checked={authMembershipsUserName} />
+            <Selector.Checkbox
+                id="membershipsUserEmail"
+                label="Email"
+                size="s"
+                description="Allow team members to view each other's email addresses"
+                bind:checked={authMembershipsUserEmail} />
+            <Selector.Checkbox
+                id="membershipsMfa"
+                label="MFA status"
+                size="s"
+                description="Show if team members have multi-factor authentication enabled"
+                bind:checked={authMembershipsMfa} />
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button

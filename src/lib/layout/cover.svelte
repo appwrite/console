@@ -8,7 +8,7 @@
 
 <div class="top-cover-console">
     <div class="cover-container" {style}>
-        <div class="u-flex u-cross-center u-gap-16 u-margin-block-start-20 u-flex-wrap">
+        <div class="u-flex u-cross-center u-gap-16 u-flex-wrap">
             <slot name="header" />
         </div>
         <slot />
@@ -18,13 +18,19 @@
 <style>
     .top-cover-console {
         container-type: inline-size;
-        padding-block-start: var(--base-48, 48px);
-        padding-block-end: var(--base-64, 64px);
+        padding-block-start: var(--base-32);
+        padding-block-end: var(--base-16);
+        block-size: 152px;
         border-bottom: 1px solid var(--color-border-neutral, #2d2d31);
         background: var(--color-bgcolor-neutral-primary, #1d1d21);
     }
     .cover-container {
+        position: relative;
         margin: 0 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        block-size: 100%;
 
         @container (min-width: 360px) {
             margin-inline: 2.5rem;

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
 
-    export let label: string;
+    export let label = '';
     export let id: string;
     export let name: string = id;
     export let value = '';
@@ -12,6 +12,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let maxlength: number = null;
+    export let rows = 3;
 
     let error: string;
 
@@ -39,6 +40,7 @@
     {maxlength}
     {label}
     {nullable}
+    {rows}
     autofocus={autofocus || undefined}
     helper={error}
     state={error ? 'error' : 'default'}
