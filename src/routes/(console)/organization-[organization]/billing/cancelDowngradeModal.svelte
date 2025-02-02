@@ -40,12 +40,12 @@
         <p>
             Your organization is set to change to <strong>
                 {tierToPlan($organization?.billingPlanDowngrade).name}</strong>
-            plan on <strong> {toLocaleDate($organization.billingNextInvoiceDate)}</strong>.
+            plan on <strong> {toLocaleDate($organization.billingNextInvoiceDate)}</strong>. Are you
+            sure you want to cancel this change and keep your current plan?
         </p>
-        <p>Are you sure you want to cancel the change?</p>
         <svelte:fragment slot="footer">
-            <Button text on:click={() => (showCancel = false)}>No</Button>
-            <Button secondary submit>Yes</Button>
+            <Button text on:click={() => (showCancel = false)}>Keep change</Button>
+            <Button secondary submit>Cancel change</Button>
         </svelte:fragment>
     </Modal>
 </div>
