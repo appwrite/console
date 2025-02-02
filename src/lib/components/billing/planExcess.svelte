@@ -49,12 +49,17 @@
 {#if showExcess}
     <Alert type="error" {...$$restProps}>
         <svelte:fragment slot="title">
-            Your organization will switch to {tierToPlan(BillingPlan.FREE).name} plan. You will continue
-            to have access to {tierToPlan($organization.billingPlan).name} plan features until your billing
-            period ends on {toLocaleDate($organization.billingNextInvoiceDate)}
+            Your organization will switch to {tierToPlan(BillingPlan.FREE).name} plan on {toLocaleDate(
+                $organization.billingNextInvoiceDate
+            )}.
         </svelte:fragment>
-        {#if excess?.members > 0}All team members except the owner will be removed on that date.{/if}
-        Service disruptions may occur unless resource usage is reduced.
+        You will retain access to {tierToPlan($organization.billingPlan).name} plan features until your
+        billing period ends. After that,
+        {#if excess?.members > 0}<span class="u-bold"
+                >all team members except the owner will be removed</span>
+        {:else}
+            your organization will be limited to Free plan resources{/if}, and service disruptions
+        may occur if usage exceeds plan limits.
         <!-- Any executions, bandwidth, or messaging usage will be reset at that time. -->
         <svelte:fragment slot="buttons">
             <Button

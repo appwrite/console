@@ -76,7 +76,6 @@
     let taxId: string;
     let billingBudget: number;
     let showCreditModal = false;
-    let error: string = '';
 
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
@@ -368,19 +367,6 @@
                     {billingPlan}
                     {collaborators} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
-                {#if isDowngrade}
-                    <Card>
-                        Your organization will switch to <span class="u-bold"
-                            >{tierToPlan(billingPlan).name} plan</span
-                        >. You will continue to have access to
-                        <span class="u-bold"
-                            >{tierToPlan($organization.billingPlan).name} plan</span>
-                        features until your billing period ends on
-                        <span class="u-bold"
-                            >{toLocaleDate($organization.billingNextInvoiceDate)}</span
-                        >.
-                    </Card>
-                {/if}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
         </svelte:fragment>
