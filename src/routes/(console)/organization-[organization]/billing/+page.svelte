@@ -110,10 +110,9 @@
     {/if}
     {#if $organization?.billingPlanDowngrade}
         <Alert type="info" class="common-section">
-            Your organization has changed to  {tierToPlan($organization?.billingPlanDowngrade)
-                .name} plan. You will continue to have access to {tierToPlan($organization?.billingPlan)} plan features until your billing period ends on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}.
+            Your organization has changed to {tierToPlan($organization?.billingPlanDowngrade).name} plan.
+            You will continue to have access to {tierToPlan($organization?.billingPlan).name} plan features
+            until your billing period ends on {toLocaleDate($organization.billingNextInvoiceDate)}.
         </Alert>
     {/if}
     <div class="common-section">
