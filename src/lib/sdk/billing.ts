@@ -211,9 +211,13 @@ export type Aggregation = {
 export type OrganizationUsage = {
     bandwidth: Array<Models.Metric>;
     executions: Array<Models.Metric>;
+    databasesReads: Array<Models.Metric>;
+    databasesWrites: Array<Models.Metric>;
     executionsTotal: number;
     filesStorageTotal: number;
     buildsStorageTotal: number;
+    databasesReadsTotal: number;
+    databasesWritesTotal: number;
     deploymentsStorageTotal: number;
     executionsMBSecondsTotal: number;
     buildsMBSecondsTotal: number;
@@ -226,6 +230,8 @@ export type OrganizationUsage = {
         storage: number;
         executions: number;
         bandwidth: number;
+        databasesReads: number;
+        databasesWrites: number;
         users: number;
         authPhoneTotal: number;
         authPhoneEstimate: number;

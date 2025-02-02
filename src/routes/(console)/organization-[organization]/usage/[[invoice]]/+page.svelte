@@ -10,7 +10,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart } from '$lib/charts';
+    import { BarChart, Legend } from '$lib/charts';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
@@ -28,7 +28,12 @@
         : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
     const plan = data?.plan ?? undefined;
 
-    $: project = (data.organizationUsage as OrganizationUsage).projects;
+    $: projects = (data.organizationUsage as OrganizationUsage).projects;
+
+    $: legendData = [
+        { name: 'Reads', value: data.organizationUsage.databasesReadsTotal },
+        { name: 'Writes', value: data.organizationUsage.databasesWritesTotal }
+    ];
 </script>
 
 <Container>
@@ -124,8 +129,8 @@
                             }
                         ]} />
                 </div>
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="bandwidth" {data} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="bandwidth" {data} />
                 {/if}
             {:else}
                 <Card isDashed>
@@ -133,7 +138,7 @@
                         <span
                             class="icon-chart-square-bar text-large"
                             aria-hidden="true"
-                            style="font-size: 32px;" />
+                            style:font-size="32px" />
                         <p class="u-bold">No data to show</p>
                     </div>
                 </Card>
@@ -176,8 +181,69 @@
                             }
                         ]} />
                 </div>
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="users" {data} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="users" {data} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <Heading tag="h6" size="7">Database reads and writes</Heading>
+
+        <p class="text">
+            The total number of database reads and writes across all projects in your organization.
+        </p>
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.databasesReads || data.organizationUsage.databasesWrites}
+                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
+                            }
+                        }}
+                        series={[
+                            {
+                                name: 'Reads',
+                                data: [
+                                    ...(data.organizationUsage.databasesReads ?? []).map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            },
+                            {
+                                name: 'Writes',
+                                data: [
+                                    ...(data.organizationUsage.databasesWrites ?? []).map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            }
+                        ]} />
+                </div>
+
+                <Legend {legendData} />
+
+                {#if projects?.length > 0}
+                    <ProjectBreakdown
+                        {data}
+                        {projects}
+                        databaseOperationMetric={['databasesReads', 'databasesWrites']} />
                 {/if}
             {:else}
                 <Card isDashed>
@@ -232,9 +298,10 @@
                             }
                         ]} />
                 </div>
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="executions" {data} />
-                {/if}
+                {#if projects?.length > 0}<ProjectBreakdown
+                        {projects}
+                        metric="executions"
+                        {data} />{/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -302,9 +369,10 @@
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
                     progressBarData={progressBarStorageDate} />
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="storage" {data} />
-                {/if}
+                {#if projects?.length > 0}<ProjectBreakdown
+                        {projects}
+                        metric="storage"
+                        {data} />{/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -318,6 +386,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
     <CardGrid>
         <Heading tag="h6" size="7">GB hours</Heading>
 
@@ -378,6 +447,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
     <CardGrid>
         <Heading tag="h6" size="7">Phone OTP</Heading>
         <p class="text">
@@ -410,9 +480,9 @@
                     </p>
                 </div>
 
-                {#if project?.length > 0}
+                {#if projects?.length > 0}
                     <ProjectBreakdown
-                        projects={project}
+                        {projects}
                         metric="authPhoneTotal"
                         estimate="authPhoneEstimate"
                         {data} />
@@ -430,6 +500,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
     <TotalMembers members={data?.organizationMembers} />
 
     <p class="text common-section u-color-text-gray">

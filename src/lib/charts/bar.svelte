@@ -13,7 +13,6 @@
     {formatted}
     series={series.map((s) => {
         s.type = 'bar';
-        s.stack = 'total';
         s.barMaxWidth = 6;
         s.itemStyle = {
             borderRadius: [10, 10, 0, 0]
