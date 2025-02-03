@@ -160,6 +160,13 @@
         }
     }
 
+    :global(main:has(.level-2-nav)) {
+        .content {
+            width: calc(100% - 200px);
+            margin-left: 200px;
+        }
+    }
+
     .has-transition {
         @media (min-width: 1024px) {
             transition: all 0.3s ease-in-out;
