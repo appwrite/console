@@ -33,6 +33,7 @@ export const feedbackOptions: FeedbackOption[] = [
     },
     {
         type: 'nps',
+        desc: 'How likely are you to recommend Appwrite to a friend or colleague?',
         component: FeedbackNps
     }
 ];

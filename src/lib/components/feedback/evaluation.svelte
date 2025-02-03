@@ -5,11 +5,8 @@
 </script>
 
 <fieldset class="u-margin-block-start-8 u-min-width-0">
-    <legend class="label is-required u-margin-0 u-line-height-1-5 u-bold">
-        <slot />
-    </legend>
     <ol
-        class="u-flex u-main-space-between u-margin-block-start-24 u-overflow-x-auto u-gap-6"
+        class="u-flex u-main-space-between u-overflow-x-auto u-gap-6"
         style="padding-block: 0.13rem">
         {#each Array(11) as _, i}
             <li>

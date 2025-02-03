@@ -1,15 +1,11 @@
 <script lang="ts">
     import Evaluation from './evaluation.svelte';
     import { feedbackData } from '$lib/stores/feedback';
-    import { Typography } from '@appwrite.io/pink-svelte';
     import { FormList, InputTextarea } from '$lib/elements/forms';
 </script>
 
 <FormList>
-    <Evaluation bind:value={$feedbackData.value}>
-        <Typography.Text variant="m-400" size="m"
-            >How likely are you to recommend Appwrite to a friend or colleague?</Typography.Text>
-    </Evaluation>
+    <Evaluation bind:value={$feedbackData.value} />
     {#if $feedbackData.value !== null}
         <!-- TODO: @itznotabug, helper is a plain string atm, cannot add html/anchor for Discord link -->
         <InputTextarea

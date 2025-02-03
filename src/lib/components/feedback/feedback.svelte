@@ -42,10 +42,7 @@
     }
 </script>
 
-<section
-    class="u-flex u-flex-vertical u-gap-24"
-    class:drop-section={!isMobile}
-    class:u-padding-24={!isMobile}>
+<section class="u-flex u-flex-vertical u-gap-24" class:drop-section={!isMobile}>
     <header class="u-flex u-flex-vertical u-gap-4">
         {#if !isMobile}
             <Typography.Title size="s">Feedback</Typography.Title>
@@ -66,3 +63,13 @@
         </div>
     </Form>
 </section>
+
+<style lang="scss">
+    .drop-section {
+        padding: 1rem;
+
+        @media (max-width: 768px) {
+            padding: 0;
+        }
+    }
+</style>

@@ -15,7 +15,8 @@
     import { loading } from '$routes/store';
     import { Root } from '@appwrite.io/pink-svelte';
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
-    import { updateViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
+    import { feedback } from '$lib/stores/feedback';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
@@ -78,6 +79,13 @@
         }
 
         loading.set(false);
+
+        isSmallViewport.subscribe(() => {
+            // reset the feedback form if the viewport changed else it requires dual click.
+            if ($feedback.show) {
+                feedback.toggleFeedback();
+            }
+        });
     });
 
     afterNavigate((navigation) => {
