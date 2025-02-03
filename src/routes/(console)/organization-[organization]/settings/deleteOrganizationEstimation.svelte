@@ -8,10 +8,8 @@
 {#if estimation}
     {#if estimation.unpaidInvoices?.length > 0}
         <Alert type="warning">
-            <span slot="title">
                 This organization has unresolved invoices that must be settled before it can be
                 deleted. Please review and resolve these invoices to proceed.
-            </span>
         </Alert>
 
         <InvoicesTable invoices={estimation.unpaidInvoices} showActions={false} />
