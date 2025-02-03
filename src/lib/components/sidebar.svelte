@@ -81,7 +81,7 @@
     <Sidebar.Base {...$$props} bind:state resizable={true}>
         <div slot="top">
             <div class="only-mobile-tablet top">
-                <div class="icons">
+                <div class="icons search-icon">
                     <Link.Button
                         variant="quiet-muted"
                         on:click={() => {
@@ -291,6 +291,10 @@
 
     .icons .link {
         gap: 0;
+    }
+
+    .search-icon {
+        display: flex;
     }
 
     .link-text {
