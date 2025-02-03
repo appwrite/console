@@ -433,7 +433,8 @@
     }
 
     .divider {
-        margin-block: var(--space-2, 4px);
+        margin-block-start: var(--space-2, 4px);
+        margin-block-end: var(--space-6, 12px);
         width: 100%;
     }
 
