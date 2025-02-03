@@ -28,6 +28,7 @@
     import { feedback } from '$lib/stores/feedback';
     import { DropList } from '$lib/components/index';
     import { Feedback } from '$lib/components/feedback';
+    import { type ComponentType } from 'svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
 
@@ -41,6 +42,7 @@
         };
         sideBarIsOpen: boolean;
         showAccountMenu: boolean;
+        subNavigation?: ComponentType;
     };
 
     export let state: $$Props['state'] = 'icons';
@@ -49,6 +51,7 @@
     export let progressCard: $$Props['progressCard'] = undefined;
     export let sideBarIsOpen: boolean;
     export let showAccountMenu: boolean;
+    export let subNavigation = undefined;
 
     function toggleFeedback() {
         feedback.toggleFeedback();
