@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { fade } from 'svelte/transition';
     import {
         Icon,
         Sidebar,
@@ -8,7 +9,8 @@
         Link,
         Button,
         Layout,
-        Avatar
+        Avatar,
+        Typography
     } from '@appwrite.io/pink-svelte';
 
     import {
@@ -96,11 +98,17 @@
                         on:click={() => {
                             sideBarIsOpen = false;
                         }}>
-                        <ProgressCircle size="s" progress={progressCard.percentage} />
-                        <div class="info" class:no-text={state === 'icons'}>
-                            <span class="title">{progressCard.title}</span>
-                            <span class="description">{progressCard.percentage}% complete</span>
+                        <div class="progressCircle">
+                            <ProgressCircle size="s" progress={progressCard.percentage} />
                         </div>
+                        {#if state !== 'icons'}
+                            <div class="info" in:fade={{ delay: 200, duration: 200 }}>
+                                <Typography.Text variant="m-600"
+                                    >{progressCard.title}</Typography.Text>
+                                <Typography.Text
+                                    >{progressCard.percentage}% complete</Typography.Text>
+                            </div>
+                        {/if}
                     </a>
                     <span slot="tooltip">Getting started</span>
                 </Tooltip>
@@ -366,11 +374,9 @@
 
     .progress-card {
         height: 60px;
+        width: 178px;
+        padding: var(--base-8, 8px);
         display: flex;
-        padding: 8px;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
         gap: var(--space-5, 10px);
         margin-block-end: var(--space-6, 12px);
         align-self: stretch;
@@ -378,37 +384,21 @@
         border: 1px solid var(--color-border-neutral, #ededf0);
         background: var(--color-bgcolor-neutral-default, #fafafb);
         transition: all 0.2s ease-in-out;
-
         .info {
+            position: absolute;
             display: flex;
             flex-direction: column;
             max-height: 40px;
             overflow: hidden;
+            opacity: 1;
+            transition: opacity 0.2s ease-in-out 0.2s;
+            margin-left: var(--base-36, 36px);
         }
 
-        .no-text {
-            display: none;
-        }
-
-        .title {
-            color: var(--color-fgcolor-neutral-secondary, #56565c);
-
-            font-size: var(--font-size-s, 14px);
-            font-style: normal;
-            font-weight: 600;
-            line-height: 140%; /* 19.6px */
-            letter-spacing: -0.063px;
-        }
-
-        .description {
-            color: var(--color-fgcolor-neutral-secondary, #56565c);
-
-            /* Desktop/Body M 400 */
-            font-size: var(--font-size-s, 14px);
-            font-style: normal;
-            font-weight: 400;
-            line-height: 140%; /* 19.6px */
-            letter-spacing: -0.063px;
+        .progressCircle {
+            display: flex;
+            height: 100%;
+            align-items: center;
         }
     }
 
@@ -416,6 +406,7 @@
         width: var(--base-32, 32px);
         border-color: transparent;
         background: transparent;
+        padding-left: var(--base-4, 4px);
     }
 
     .divider {
