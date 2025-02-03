@@ -78,7 +78,7 @@
 <div class:only-mobile={project === undefined}>
     <Sidebar.Base {...$$props} bind:state resizable={subNavigation === undefined}>
         <div slot="top">
-            <div class="only-mobile top">
+            <div class="only-mobile-tablet top">
                 <div class="icons">
                     <Link.Button
                         variant="quiet-muted"
