@@ -26,9 +26,11 @@
 
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
     let y: number;
+    let showContentTransition = true;
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
+        showContentTransition = !url.pathname.includes('organization');
     });
 
     /**
@@ -115,6 +117,7 @@
     <SideNavigation bind:state bind:subNavigation />
     <div
         class="content"
+        class:has-transition={showContentTransition}
         class:icons-content={state === 'icons'}
         class:no-sidebar={!showSideNavigation}>
         <section class="main-content" data-test={showSideNavigation}>
@@ -149,13 +152,17 @@
 
         @media (min-width: 1024px) {
             width: 100%;
-
             padding-left: 190px;
-            transition: all 0.3s ease-in-out;
 
             &.icons-content {
                 padding-left: 54px;
             }
+        }
+    }
+
+    .has-transition {
+        @media (min-width: 1024px) {
+            transition: all 0.3s ease-in-out;
         }
     }
 
