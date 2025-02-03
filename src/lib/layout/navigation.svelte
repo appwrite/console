@@ -1,13 +1,10 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { slide } from '$lib/helpers/transition';
     import { getContext } from 'svelte';
     import type { Writable } from 'svelte/store';
 
     export let state: 'closed' | 'open' | 'icons' = 'open';
     export let subNavigation;
-
-    $: project = $page.params.project;
 
     $: subNavigation = $page.data.subNavigation;
     // We need to have this second variable, because we only want narrow
@@ -44,14 +41,20 @@
     .level-2-nav {
         display: none;
 
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
             display: block;
             position: fixed;
             z-index: 10;
             left: 200px;
             transition: left 0.2s ease-in-out;
+            margin-left: -5px;
         }
     }
+
+    :global(.level-2-nav nav) {
+        padding-left: 15px;
+    }
+
     .icons {
         left: 54px;
     }

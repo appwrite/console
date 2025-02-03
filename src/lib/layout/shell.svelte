@@ -75,7 +75,7 @@
     let subNavigation: undefined | ComponentType = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = sideBarIsOpen ? 'open' : 'closed';
-    $: state = subNavigation && !$isSmallViewport ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
+    $: state = !$isSmallViewport ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
 
     function handleResize() {
         sideBarIsOpen = false;
@@ -160,13 +160,6 @@
         }
     }
 
-    :global(main:has(.level-2-nav)) {
-        .content {
-            width: calc(100% - 200px);
-            margin-left: 200px;
-        }
-    }
-
     .has-transition {
         @media (min-width: 1024px) {
             transition: all 0.3s ease-in-out;
@@ -179,6 +172,14 @@
 
     .main-content {
         min-height: calc(100vh - 30px);
+    }
+
+    :global(main:has(.level-2-nav)) {
+        .main-content {
+            @media (min-width: 1024px) {
+                padding-left: 200px;
+            }
+        }
     }
 
     .overlay {
