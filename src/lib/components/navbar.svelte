@@ -6,7 +6,7 @@
         Link,
         Tooltip,
         Card,
-        ActionList,
+        ActionMenu,
         Input,
         Button,
         Avatar
@@ -78,7 +78,7 @@
 
 <Navbar.Base {...$$props}>
     <div slot="left" class="left">
-        <div class="only-mobile">
+        <div class="only-mobile-tablet">
             <button
                 class="sideNavToggle"
                 on:click={() => {
@@ -142,17 +142,20 @@
                 <div class="account-container">
                     <Card.Base padding="xxs" shadow={true}>
                         <Layout.Stack gap="xxs">
-                            <ActionList.Root>
-                                <ActionList.Item.Anchor
-                                    icon={IconUser}
-                                    title="Account"
-                                    href={`${base}/account`} />
+                            <ActionMenu.Root>
+                                <Layout.Stack gap="xxs">
+                                    <ActionMenu.Item.Anchor
+                                        leadingIcon={IconUser}
+                                        size="l"
+                                        href={`${base}/account`}>
+                                        Account</ActionMenu.Item.Anchor>
 
-                                <ActionList.Item.Button
-                                    icon={IconLogoutRight}
-                                    on:click={logout}
-                                    title="Sign out" />
-                            </ActionList.Root>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconLogoutRight}
+                                        size="l"
+                                        on:click={logout}>Sign out</ActionMenu.Item.Button>
+                                </Layout.Stack>
+                            </ActionMenu.Root>
                             <Input.Select
                                 value={$app.theme === 'auto' ? 'system' : $app.theme}
                                 name="mode"
@@ -279,11 +282,16 @@
     }
 
     @media (min-width: 768px) {
-        .only-desktop {
-            display: flex;
-        }
         .only-mobile {
             display: none;
+        }
+    }
+    @media (min-width: 1024px) {
+        .only-mobile-tablet {
+            display: none;
+        }
+        .only-desktop {
+            display: flex;
         }
     }
 
