@@ -52,7 +52,7 @@
     }
 
     :global(.level-2-nav nav) {
-        padding-left: 15px;
+        padding-left: 15px !important;
     }
 
     .icons {
