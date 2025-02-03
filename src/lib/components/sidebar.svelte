@@ -370,7 +370,8 @@
     }
 
     @media (min-width: 1024px) {
-        .only-mobile {
+        .only-mobile,
+        .only-mobile-tablet {
             display: none;
         }
         .only-desktop {
