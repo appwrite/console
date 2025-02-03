@@ -28,7 +28,8 @@
     import { feedback } from '$lib/stores/feedback';
     import { DropList } from '$lib/components/index';
     import { Feedback } from '$lib/components/feedback';
-    import type { ComponentType } from 'svelte';
+    import { type ComponentType, onMount } from 'svelte';
+    import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -43,7 +44,7 @@
         subNavigation?: ComponentType;
     };
 
-    export let state: $$Props['state'] = 'closed';
+    export let state: $$Props['state'] = 'icons';
     export let project: $$Props['project'];
     export let avatar: $$Props['avatar'];
     export let progressCard: $$Props['progressCard'] = undefined;
@@ -59,6 +60,12 @@
         }
     }
 
+    onMount(() => {
+        state = getSidebarState();
+    });
+
+    $: updateSidebarState(state);
+
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth' },
         { name: 'Databases', icon: IconDatabase, slug: 'databases' },
@@ -72,6 +79,7 @@
 <div class:only-mobile={project === undefined}>
     <Sidebar.Base {...$$props} bind:state resizable={subNavigation === undefined}>
         <div slot="top">
+            {state}
             <div class="only-mobile top">
                 <div class="icons">
                     <Link.Button
