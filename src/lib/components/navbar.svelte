@@ -77,7 +77,7 @@
 
 <Navbar.Base {...$$props}>
     <div slot="left" class="left">
-        <div class="only-mobile">
+        <div class="only-mobile-tablet">
             <button
                 class="sideNavToggle"
                 on:click={() => {
@@ -273,6 +273,11 @@
             display: flex;
         }
         .only-mobile {
+            display: none;
+        }
+    }
+    @media (min-width: 1024px) {
+        .only-mobile-tablet {
             display: none;
         }
     }
