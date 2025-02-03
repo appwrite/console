@@ -30,6 +30,7 @@
     import { Feedback } from '$lib/components/feedback';
     import { type ComponentType, onMount } from 'svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -61,7 +62,7 @@
     }
 
     onMount(() => {
-        state = getSidebarState();
+        state = isSmallViewport ? 'closed' : getSidebarState();
     });
 
     $: updateSidebarState(state);
