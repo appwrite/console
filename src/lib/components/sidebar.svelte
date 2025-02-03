@@ -1,5 +1,6 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
+    import { page } from '$app/stores';
     import {
         Icon,
         Sidebar,
@@ -62,6 +63,7 @@
     }
 
     $: state = $isTabletViewport ? 'closed' : getSidebarState();
+    $: pathname = $page.url.pathname;
 
     $: updateSidebarState(state);
 
@@ -148,6 +150,7 @@
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
                                 class="link"
+                                class:active={pathname.includes(projectOption.slug)}
                                 on:click={() => {
                                     sideBarIsOpen = false;
                                 }}
@@ -274,6 +277,15 @@
             .link-icon {
                 color: var(--color-fgcolor-neutral-primary);
             }
+        }
+    }
+    .active {
+        background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
+        .link-text {
+            color: var(--color-fgcolor-neutral-primary);
+        }
+        .link-icon {
+            color: var(--color-fgcolor-neutral-primary);
         }
     }
 
