@@ -365,7 +365,6 @@
     }
 
     .progress-card {
-        width: 170px;
         height: 60px;
         display: flex;
         padding: 8px;
