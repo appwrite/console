@@ -92,10 +92,6 @@
 
         return undefined;
     };
-
-    $: {
-        console.log($isSidebarOpen);
-    }
 </script>
 
 <svelte:window bind:scrollY={y} on:resize={handleResize} />

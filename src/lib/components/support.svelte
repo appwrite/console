@@ -156,6 +156,7 @@
 <style lang="scss">
     .support-section {
         gap: 1rem;
+        width: 100%;
         padding: 1rem;
         display: flex;
         flex-direction: column;
@@ -176,12 +177,12 @@
 
     :global(.theme-dark .support-option-card) {
         /* override required due to the card's background color */
-        background: var(--color-bgColor-neutral-default, #19191c) !important;
+        background: var(--color-bgcolor-neutral-default, #19191c) !important;
     }
 
     :global(.theme-light .support-option-card) {
         border: 1px solid var(--color-border-neutral, #ededf0);
         /* override required due to the card's background color */
-        background: var(--color-bgColor-neutral-default, #fafafb) !important;
+        background: var(--color-bgcolor-neutral-default, #fafafb) !important;
     }
 </style>
