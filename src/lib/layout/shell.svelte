@@ -74,8 +74,8 @@
     let showAccountMenu = false;
     let subNavigation: undefined | ComponentType = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
-    $: state = $sideBarIsOpen ? 'open' : 'closed';
-    $: state = !$isTabletViewport ? 'icons' : $sideBarIsOpen ? 'open' : 'closed';
+    $: state = $isSidebarOpen ? 'open' : 'closed';
+    $: state = !$isTabletViewport ? 'icons' : $isSidebarOpen ? 'open' : 'closed';
 
     function handleResize() {
         $isSidebarOpen = false;
