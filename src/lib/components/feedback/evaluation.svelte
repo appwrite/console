@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Tag } from '@appwrite.io/pink-svelte';
+
     export let value: number = null;
 </script>
 
@@ -7,21 +9,17 @@
         <slot />
     </legend>
     <ol
-        class="u-flex u-main-space-between u-margin-block-start-16 u-overflow-x-auto"
+        class="u-flex u-main-space-between u-margin-block-start-24 u-overflow-x-auto u-gap-6"
         style="padding-block: 0.13rem">
         {#each Array(11) as _, i}
             <li>
-                <input
-                    on:click={() => (value = i)}
-                    type="radio"
-                    name="recommend"
-                    class="radio-button"
-                    data-text={i}
-                    checked={value === i} />
+                <Tag size="m" selected={value === i} on:click={() => (value = i)}>
+                    {i}
+                </Tag>
             </li>
         {/each}
     </ol>
-    <div class="u-flex u-main-space-between u-margin-block-start-8">
+    <div class="u-flex u-main-space-between u-margin-block-start-8 u-margin-block-end-24">
         <span class:u-color-text-gray={value === null}>Not at all likely</span>
         <span class:u-color-text-gray={value === null}>Extremely likely</span>
     </div>

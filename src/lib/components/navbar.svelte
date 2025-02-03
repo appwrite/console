@@ -95,8 +95,8 @@
     <div slot="right" class="only-desktop">
         <div class="right">
             <Layout.Stack gap="l" direction="row">
-                <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
-                    <Button.Button type="button" variant="compact" on:click={toggleFeedback}
+                <DropList show={$feedback.show} class="extended-width">
+                    <Button.Button type="button" variant="compact" on:click={() => toggleFeedback()}
                         >Feedback
                     </Button.Button>
                     <svelte:fragment slot="other">
