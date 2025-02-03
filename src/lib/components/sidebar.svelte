@@ -65,8 +65,6 @@
     $: state = $isTabletViewport ? 'closed' : getSidebarState();
     $: pathname = $page.url.pathname;
 
-    $: updateSidebarState(state);
-
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth' },
         { name: 'Databases', icon: IconDatabase, slug: 'databases' },
@@ -78,7 +76,13 @@
 </script>
 
 <div class:only-mobile={project === undefined}>
-    <Sidebar.Base {...$$props} bind:state resizable={true}>
+    <Sidebar.Base
+        {...$$props}
+        bind:state
+        resizable={true}
+        onResize={(sidebarState) => {
+            updateSidebarState(sidebarState);
+        }}>
         <div slot="top">
             <div class="only-mobile-tablet top">
                 <div class="icons search-icon">
