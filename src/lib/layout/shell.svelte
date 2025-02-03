@@ -16,6 +16,8 @@
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
+    import { isSidebarOpen } from '$lib/stores/sidebar';
 
     export let showSideNavigation = false;
     export let showHeader = true;
@@ -67,20 +69,19 @@
         })
     };
 
-    let sideBarIsOpen = false;
     let showAccountMenu = false;
     let subNavigation: undefined | ComponentType = undefined;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
-    $: state = sideBarIsOpen ? 'open' : 'closed';
-    $: state = subNavigation && !$isSmallViewport ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
+    $: state = $isSidebarOpen ? 'open' : 'closed';
+    $: state = subNavigation && !$isSmallViewport ? 'icons' : $isSidebarOpen ? 'open' : 'closed';
 
     function handleResize() {
-        sideBarIsOpen = false;
+        $isSidebarOpen = false;
         showAccountMenu = false;
     }
 
     $: progressCard = function getProgressCard() {
-        if (selectedProject) {
+        if (selectedProject && !hasOnboardingDismissed(selectedProject.$id)) {
             const currentProject = projects.find((project) => project.$id === selectedProject.$id);
 
             return {
@@ -101,14 +102,14 @@
     class:is-fixed-layout={$activeHeaderAlert?.show}
     style:--p-side-size={sideSize}>
     {#if showHeader}
-        <Navbar {...navbarProps} bind:sideBarIsOpen bind:showAccountMenu />
+        <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
     <Sidebar
         project={selectedProject}
         progressCard={progressCard()}
         avatar={navbarProps.avatar}
         bind:subNavigation
-        bind:sideBarIsOpen
+        bind:sideBarIsOpen={$isSidebarOpen}
         bind:showAccountMenu
         bind:state />
     <SideNavigation bind:state bind:subNavigation />
@@ -134,9 +135,9 @@
     </div>
 
     <button
-        class:overlay={sideBarIsOpen}
+        class:overlay={$isSidebarOpen}
         on:click={() => {
-            sideBarIsOpen = false;
+            $isSidebarOpen = false;
         }}></button>
 </main>
 

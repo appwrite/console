@@ -156,13 +156,14 @@
 <style lang="scss">
     .support-section {
         gap: 1rem;
+        width: 100%;
         padding: 1rem;
         display: flex;
         flex-direction: column;
 
         @media (max-width: 768px) {
+            padding: 0;
             gap: 1.25rem;
-            padding: 0.5rem;
         }
     }
 
@@ -175,19 +176,13 @@
     }
 
     :global(.theme-dark .support-option-card) {
-        background: var(--color-bgColor-neutral-default, #19191c);
-    }
-
-    :global(.theme-dark .support-option-card .secondary-button) {
-        background: var(--color-bgColor-neutral-primary, #131315);
+        /* override required due to the card's background color */
+        background: var(--color-bgcolor-neutral-default, #19191c) !important;
     }
 
     :global(.theme-light .support-option-card) {
         border: 1px solid var(--color-border-neutral, #ededf0);
-        background: var(--color-bgColor-neutral-default, #fafafb);
-    }
-
-    :global(.theme-light .support-option-card .secondary-button) {
-        background: var(--color-bgColor-neutral-primary, #fff);
+        /* override required due to the card's background color */
+        background: var(--color-bgcolor-neutral-default, #fafafb) !important;
     }
 </style>

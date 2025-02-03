@@ -126,11 +126,12 @@
             </svelte:fragment>
         </DropList>
         <DropList
-            class="support-drop-section"
             bind:show={showSupport}
             scrollable={true}
             noArrow
-            placement="bottom-end">
+            width="28.25"
+            placement="bottom-end"
+            on:blur={() => (showSupport = !showSupport)}>
             <Button text on:click={() => (showSupport = !showSupport)}>
                 <span class="text">Support</span>
             </Button>
