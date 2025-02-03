@@ -28,9 +28,9 @@
     import { feedback } from '$lib/stores/feedback';
     import { DropList } from '$lib/components/index';
     import { Feedback } from '$lib/components/feedback';
-    import { type ComponentType, onMount } from 'svelte';
+    import { type ComponentType } from 'svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
-    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
