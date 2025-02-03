@@ -447,7 +447,7 @@
 
     .progress-card {
         height: 60px;
-        width: 178px;
+        width: 168px;
         padding: var(--base-8, 8px);
         display: flex;
         gap: var(--space-5, 10px);
@@ -457,6 +457,10 @@
         border: 1px solid var(--color-border-neutral, #ededf0);
         background: var(--color-bgcolor-neutral-default, #fafafb);
         transition: all 0.2s ease-in-out;
+
+        @media (min-width: 1024px) {
+            width: 178px;
+        }
         .info {
             position: absolute;
             display: flex;
