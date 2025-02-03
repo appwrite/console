@@ -23,6 +23,8 @@
         block-size: 152px;
         border-bottom: 1px solid var(--color-border-neutral, #2d2d31);
         background: var(--color-bgcolor-neutral-primary, #1d1d21);
+        margin-left: -190px;
+        padding-left: 190px;
     }
     .cover-container {
         position: relative;
