@@ -236,8 +236,20 @@
                                     <MobileFeedbackModal />
                                 </svelte:fragment>
                             </DropList>
-                            <Button.Button variant="secondary" size="s"
-                                ><span>Support</span></Button.Button>
+
+                            <DropList show={$showSupportModal} scrollable>
+                                <Button.Button
+                                    variant="secondary"
+                                    size="s"
+                                    on:click={() => ($showSupportModal = true)}>
+                                    <span>Support</span>
+
+                                    <svelte:fragment slot="other">
+                                        <MobileSupportModal bind:show={$showSupportModal}
+                                        ></MobileSupportModal>
+                                    </svelte:fragment>
+                                </Button.Button>
+                            </DropList>
                         </Layout.Stack>
                     </div>
                 </div>
