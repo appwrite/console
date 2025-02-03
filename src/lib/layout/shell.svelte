@@ -72,7 +72,7 @@
 
     let sideBarIsOpen = false;
     let showAccountMenu = false;
-    let subNavigation: undefined | ComponentType = undefined;
+    let subNavigation: undefined | ComponentType = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = sideBarIsOpen ? 'open' : 'closed';
     $: state = subNavigation && !$isSmallViewport ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
