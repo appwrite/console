@@ -17,6 +17,7 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
+    import { isSidebarOpen } from '$lib/stores/sidebar';
 
     export let showSideNavigation = false;
     export let showHeader = true;
@@ -70,15 +71,14 @@
         })
     };
 
-    let sideBarIsOpen = false;
     let showAccountMenu = false;
     let subNavigation: undefined | ComponentType = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
-    $: state = sideBarIsOpen ? 'open' : 'closed';
-    $: state = !$isTabletViewport ? 'icons' : sideBarIsOpen ? 'open' : 'closed';
+    $: state = $sideBarIsOpen ? 'open' : 'closed';
+    $: state = !$isTabletViewport ? 'icons' : $sideBarIsOpen ? 'open' : 'closed';
 
     function handleResize() {
-        sideBarIsOpen = false;
+        $isSidebarOpen = false;
         showAccountMenu = false;
     }
 
@@ -104,14 +104,14 @@
     class:is-fixed-layout={$activeHeaderAlert?.show}
     style:--p-side-size={sideSize}>
     {#if showHeader}
-        <Navbar {...navbarProps} bind:sideBarIsOpen bind:showAccountMenu />
+        <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
     {/if}
     <Sidebar
         project={selectedProject}
         progressCard={progressCard()}
         avatar={navbarProps.avatar}
         bind:subNavigation
-        bind:sideBarIsOpen
+        bind:sideBarIsOpen={$isSidebarOpen}
         bind:showAccountMenu
         bind:state />
     <SideNavigation bind:state bind:subNavigation />
@@ -138,9 +138,9 @@
     </div>
 
     <button
-        class:overlay={sideBarIsOpen}
+        class:overlay={$isSidebarOpen}
         on:click={() => {
-            sideBarIsOpen = false;
+            $isSidebarOpen = false;
         }}></button>
 </main>
 
