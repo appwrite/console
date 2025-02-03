@@ -27,6 +27,8 @@
     import { DropList } from '$lib/components/index';
     import { Feedback } from '$lib/components/feedback';
     import type { ComponentType } from 'svelte';
+    import { showSupportModal } from '$routes/(console)/wizard/support/store';
+    import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -79,12 +81,17 @@
                             state = 'closed';
                             sideBarIsOpen = false;
                         }}>
-                        <div class="icon"><Icon icon={IconSearch} /></div></Link.Button>
+                        <div class="icon">
+                            <Icon icon={IconSearch} />
+                        </div>
+                    </Link.Button>
                 </div>
                 <Link.Button
                     on:click={() => {
                         showAccountMenu = !showAccountMenu;
-                    }}><Avatar size="s" src={avatar} /></Link.Button>
+                    }}>
+                    <Avatar size="s" src={avatar} />
+                </Link.Button>
             </div>
         </div>
         <div slot="middle" class:icons={state === 'icons'}>
@@ -105,7 +112,8 @@
                     <span slot="tooltip">Getting started</span>
                 </Tooltip>
             {/if}
-            {#if project}<Layout.Stack direction="column" gap="s">
+            {#if project}
+                <Layout.Stack direction="column" gap="s">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
                         <a
                             href={`/console/project-${project.$id}?getStarted=false`}
@@ -122,7 +130,9 @@
                             ></a>
                         <span slot="tooltip">Overview</span>
                     </Tooltip>
-                    <div class="only-mobile divider"><Divider /></div>
+                    <div class="only-mobile divider">
+                        <Divider />
+                    </div>
                     <div class="products-label-container">
                         <span class="products-label" class:hidden={state === 'icons'}
                             >Products</span>
@@ -168,13 +178,26 @@
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
                             <Button.Button variant="secondary" size="s" on:click={toggleFeedback}
-                                >Feedback</Button.Button>
+                                >Feedback
+                            </Button.Button>
                             <svelte:fragment slot="other">
                                 <Feedback />
                             </svelte:fragment>
                         </DropList>
-                        <Button.Button variant="secondary" size="s"
-                            ><span>Support</span></Button.Button>
+
+                        <DropList show={$showSupportModal} scrollable>
+                            <Button.Button
+                                variant="secondary"
+                                size="s"
+                                on:click={() => ($showSupportModal = true)}>
+                                <span>Support</span>
+
+                                <svelte:fragment slot="other">
+                                    <MobileSupportModal bind:show={$showSupportModal}
+                                    ></MobileSupportModal>
+                                </svelte:fragment>
+                            </Button.Button>
+                        </DropList>
                     </Layout.Stack>
                 </div>
             {/if}
@@ -202,7 +225,9 @@
                                 <Button.Button
                                     variant="secondary"
                                     size="s"
-                                    on:click={toggleFeedback}>Feedback</Button.Button>
+                                    on:click={toggleFeedback}
+                                    >Feedback
+                                </Button.Button>
                                 <svelte:fragment slot="other">
                                     <Feedback />
                                 </svelte:fragment>
@@ -237,6 +262,7 @@
 
         &:hover {
             background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
+
             .link-icon {
                 color: var(--color-fgcolor-neutral-tertiary);
             }
@@ -254,9 +280,11 @@
 
         &:active {
             background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
+
             .link-text {
                 color: var(--color-fgcolor-neutral-primary);
             }
+
             .link-icon {
                 color: var(--color-fgcolor-neutral-primary);
             }
@@ -274,6 +302,7 @@
         opacity: 1;
         visibility: visible;
         color: var(--color-fgcolor-neutral-secondary, #56565c);
+
         &.no-text {
             visibility: hidden;
             opacity: 0;
@@ -283,6 +312,7 @@
 
     .action-buttons {
         margin-top: var(--gap-s);
+
         span {
             width: 144px;
             text-align: center;
@@ -293,6 +323,7 @@
             width: 100%;
         }
     }
+
     .top {
         display: flex;
         width: 199px;
@@ -329,10 +360,12 @@
         margin-block-start: var(--base-32, 32px);
         margin-block-end: var(--base-8, 8px);
     }
+
     .products-label {
         font-size: var(--font-size-xs);
         color: var(--color-fgcolor-neutral-tertiary);
     }
+
     .products-label-indicator {
         border-bottom: 1px solid var(--color-border-neutral);
         height: 1px;
@@ -345,6 +378,7 @@
     .only-desktop {
         display: none;
     }
+
     .only-mobile {
         display: flex;
     }
@@ -429,6 +463,7 @@
             height: var(--base-32, 32px);
         }
     }
+
     :global(button.collapse) {
         transform: translateX(-10px);
     }

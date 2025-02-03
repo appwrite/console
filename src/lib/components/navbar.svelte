@@ -46,6 +46,7 @@
         }>;
         showAccountMenu: boolean;
     };
+
     function updateTheme(theme: 'light' | 'dark' | 'system') {
         const themeInUse =
             theme === 'system'
@@ -82,7 +83,9 @@
                 class="sideNavToggle"
                 on:click={() => {
                     sideBarIsOpen = !sideBarIsOpen;
-                }}><Icon icon={IconMenuAlt4} /></button>
+                }}>
+                <Icon icon={IconMenuAlt4} />
+            </button>
         </div>
         <a href={`${base}/organization-${$organization.$id}`} class="only-desktop">
             <img src={logo.src} alt={logo.alt} />
@@ -94,22 +97,25 @@
             <Layout.Stack gap="l" direction="row">
                 <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
                     <Button.Button type="button" variant="compact" on:click={toggleFeedback}
-                        >Feedback</Button.Button>
+                        >Feedback
+                    </Button.Button>
                     <svelte:fragment slot="other">
                         <Feedback />
                     </svelte:fragment>
                 </DropList>
                 <DropList
-                    class="support-drop-section"
-                    bind:show={showSupport}
-                    scrollable={true}
                     noArrow
-                    placement="bottom-end">
+                    scrollable
+                    width="28.25"
+                    placement="bottom-end"
+                    class="extended-width"
+                    bind:show={showSupport}>
                     <Button.Button
                         variant="compact"
                         type="button"
                         on:click={() => (showSupport = !showSupport)}>
-                        Support</Button.Button>
+                        Support
+                    </Button.Button>
 
                     <svelte:fragment slot="other">
                         <Support bind:show={showSupport} />
@@ -117,17 +123,21 @@
                 </DropList>
             </Layout.Stack>
             <div class="icons">
-                <Tooltip inline={false}
-                    ><Link.Button
+                <Tooltip inline={false}>
+                    <Link.Button
                         variant="quiet-muted"
                         aria-label="Toggle Command Center"
-                        on:click={toggleCommandCenter}><Icon icon={IconSearch} /></Link.Button
-                    ><span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
+                        on:click={toggleCommandCenter}>
+                        <Icon icon={IconSearch} />
+                    </Link.Button>
+                    <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
             </div>
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
-                }}><Avatar size="s" src={avatar} /></Link.Button>
+                }}>
+                <Avatar size="s" src={avatar} />
+            </Link.Button>
             {#if showAccountMenu}
                 <div class="account-container">
                     <Card.Base padding="xxs" shadow={true}>
@@ -297,5 +307,13 @@
         width: 100vw;
         height: 100vh;
         background-color: transparent;
+    }
+
+    /* The default drop list has a max-inline width of 280px, which squeezes the support modal. */
+    :global(.extended-width) {
+        max-inline-size: none;
+
+        /* `desltop` is not a typo—it comes from the `pink2/legacy` module! */
+        inline-size: var(--p-drop-width-size-desltop);
     }
 </style>
