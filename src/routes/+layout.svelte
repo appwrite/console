@@ -27,6 +27,7 @@
     }
 
     onMount(async () => {
+        updateViewport();
         // handle sources
         if (isCloud) {
             const urlParams = $page.url.searchParams;
@@ -106,7 +107,7 @@
     }
 </script>
 
-<svelte:window on:resize={updateViewport} />
+<svelte:window on:resize={updateViewport} on:load={updateViewport} />
 
 <Root theme={resolveTheme($app.themeInUse)}>
     <Notifications />

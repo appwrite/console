@@ -77,6 +77,8 @@
 <style lang="scss">
     .main-footer {
         margin-block-start: auto;
+        background-color: hsl(var(--p-body-bg-color));
+        z-index: 1;
     }
 
     .main-footer-start .inline-links-item {
