@@ -81,10 +81,8 @@
     <Sidebar.Base
         {...$$props}
         bind:state
-        resizable={true}
-        onResize={(sidebarState) => {
-            updateSidebarState(sidebarState);
-        }}>
+        on:resize={(event) => updateSidebarState(event.detail)}
+        resizable>
         <div slot="top">
             <div class="only-mobile-tablet top">
                 <div class="icons search-icon">
