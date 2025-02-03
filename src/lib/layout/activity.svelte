@@ -1,30 +1,17 @@
 <script lang="ts">
-    import {
-        AvatarInitials,
-        EmptySearch,
-        Heading,
-        PaginationWithLimit,
-        Trim
-    } from '$lib/components';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { AvatarInitials, PaginationWithLimit, Trim } from '$lib/components';
+    import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
-    import { type PlanServices } from '$lib/stores/billing';
-    import { Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Card, Empty } from '@appwrite.io/pink-svelte';
+    import Button from '$lib/elements/forms/button.svelte';
 
     export let logs: Models.LogList;
     export let offset = 0;
     export let limit = 0;
-
-    export let service: PlanServices = null;
 </script>
 
 <Container>
-    {#if service}
-        <ContainerHeader title="Activity" />
-    {:else}
-        <Heading tag="h2" size="5">Activity</Heading>
-    {/if}
     {#if logs.total}
         <Table.Root>
             <svelte:fragment slot="header">
@@ -76,15 +63,17 @@
 
         <PaginationWithLimit name="Logs" {limit} {offset} total={logs.total} />
     {:else}
-        <EmptySearch>
-            <div class="u-flex u-flex-vertical u-cross-center">
-                <div class="u-text-center">
-                    <p class="text u-line-height-1-5">
-                        You have no activity. Once your users start interacting with your app you'll
-                        see their activity here.
-                    </p>
-                </div>
-            </div>
-        </EmptySearch>
+        <Card.Base padding="none">
+            <Empty
+                title="No activities available"
+                description="Need a hand? Learn more in our documentation."
+                type="secondary">
+                <svelte:fragment slot="actions">
+                    <Button external secondary href="https://appwrite.io/docs">
+                        Documentation
+                    </Button>
+                </svelte:fragment>
+            </Empty>
+        </Card.Base>
     {/if}
 </Container>

@@ -62,8 +62,7 @@
             ...slideTrans,
             css: (t, u) => `
             ${slideTrans.css(t, u)};
-            opacity: ${t};
-			`
+            opacity: ${t};`
         };
     };
 </script>

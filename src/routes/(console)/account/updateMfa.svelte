@@ -190,7 +190,6 @@
                                 <Button
                                     text
                                     class="is-only-mobile"
-                                    noMargin
                                     on:click={() => (showDelete = true)}>Delete</Button>
                             {:else}
                                 <Button secondary on:click={() => (showSetup = true)}>Add</Button>
@@ -288,7 +287,6 @@
                                     <Button
                                         class="method-button is-only-mobile"
                                         text
-                                        noMargin
                                         on:click={() => (showRegenerateRecoveryCodes = true)}
                                         >Regenerate</Button>
                                 {:else}

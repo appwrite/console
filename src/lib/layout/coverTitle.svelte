@@ -6,13 +6,13 @@
     export let href: string = null;
 </script>
 
-<div>
-    {#if href}
-        <span style:position="absolute" style:left="-2.75rem">
-            <Button.Anchor size="s" icon variant="text" {href} aria-label="page back">
-                <Icon icon={IconChevronLeft} />
-            </Button.Anchor>
-        </span>
-    {/if}
-    <Typography.Title color="--color-fgcolor-neutral-primary" size={$isSmallViewport ? 'm' : 'l'}><slot /></Typography.Title>
-</div>
+{#if href}
+    <span style:position="absolute" style:left="-2.75rem">
+        <Button.Anchor size="s" icon variant="text" {href} aria-label="page back">
+            <Icon icon={IconChevronLeft} />
+        </Button.Anchor>
+    </span>
+{/if}
+<Typography.Title color="--color-fgcolor-neutral-primary" size={$isSmallViewport ? 'm' : 'l'}>
+    <slot />
+</Typography.Title>

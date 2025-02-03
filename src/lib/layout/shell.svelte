@@ -138,6 +138,7 @@
     </div>
 
     <button
+        type="button"
         class:overlay={$isSidebarOpen}
         on:click={() => {
             $isSidebarOpen = false;

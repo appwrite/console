@@ -5,7 +5,7 @@
     const maximum = 0.994;
     const settleTime = 700;
     const intervalTime = 700;
-    const displayThresholdMs = 150;
+    const displayThresholdMs = 2000;
     const stepSizes = [0, 0.005, 0.01, 0.02];
 
     let running: boolean = false;

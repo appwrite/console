@@ -31,7 +31,6 @@
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { organization } from '$lib/stores/organization';
 
     let showSupport = false;
 
@@ -87,7 +86,7 @@
                 <Icon icon={IconMenuAlt4} />
             </button>
         </div>
-        <a href={`${base}/organization-${$organization.$id}`} class="only-desktop">
+        <a href={base} class="only-desktop">
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />

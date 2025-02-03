@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Layout } from '@appwrite.io/pink-svelte';
+
     export let size: 'small' | 'medium' | 'large' | 'xl' = null;
 
     $: style = size
@@ -8,9 +10,9 @@
 
 <div class="top-cover-console">
     <div class="cover-container" {style}>
-        <div class="u-flex u-cross-center u-gap-16 u-flex-wrap">
+        <Layout.Stack direction="row" alignItems="baseline">
             <slot name="header" />
-        </div>
+        </Layout.Stack>
         <slot />
     </div>
 </div>
