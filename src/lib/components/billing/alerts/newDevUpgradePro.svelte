@@ -11,13 +11,13 @@
     let show = true;
 
     function handleClose() {
-        // show = false;
-        // const now = new Date().getTime();
-        // localStorage.setItem($activeHeaderAlert.id, now.toString());
-        // trackEvent('close_upgrade_banner', {
-        //     source: 'cloud_credits_banner',
-        //     campaign: 'WelcomeManual'
-        // });
+        show = false;
+        const now = new Date().getTime();
+        localStorage.setItem($activeHeaderAlert.id, now.toString());
+        trackEvent('close_upgrade_banner', {
+            source: 'cloud_credits_banner',
+            campaign: 'WelcomeManual'
+        });
     }
 </script>
 
