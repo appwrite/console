@@ -245,7 +245,7 @@
                                     variant="secondary"
                                     size="s"
                                     on:click={toggleFeedback}
-                                    >Feedback
+                                    ><span>Feedback</span>
                                 </Button.Button>
                                 <svelte:fragment slot="other">
                                     <Feedback />
@@ -457,7 +457,7 @@
         transition: all 0.2s ease-in-out;
 
         @media (min-width: 1024px) {
-            width: 178px;
+            width: 166px;
         }
         .info {
             position: absolute;
