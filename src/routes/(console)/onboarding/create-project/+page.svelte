@@ -9,9 +9,9 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Flag, ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import { tierToPlan } from '$lib/stores/billing';
@@ -41,13 +41,15 @@
 
         let org;
         try {
-            org = await sdk.forConsole.billing.createOrganization(
-                ID.unique(),
-                'Personal projects',
-                BillingPlan.FREE,
-                null,
-                null
-            );
+            org = isCloud
+                ? await sdk.forConsole.billing.createOrganization(
+                      ID.unique(),
+                      'Personal projects',
+                      BillingPlan.FREE,
+                      null,
+                      null
+                  )
+                : await sdk.forConsole.teams.create(ID.unique(), 'Personal projects');
         } catch (e) {
             isLoading = false;
             trackError(e, Submit.OrganizationCreate);
@@ -83,7 +85,8 @@
                     teamId: teamId
                 });
 
-                setTimeout(() => {
+                setTimeout(async () => {
+                    await invalidate(Dependencies.ACCOUNT);
                     goto(`${base}/project-${project.$id}`);
                 }, 3000);
             } catch (e) {
