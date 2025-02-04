@@ -16,12 +16,12 @@
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { Badge, Icon, Table, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Table, Layout } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { canWriteUsers } from '$lib/stores/roles';

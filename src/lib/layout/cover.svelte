@@ -10,7 +10,7 @@
 
 <div class="top-cover-console">
     <div class="cover-container" {style}>
-        <Layout.Stack direction="row" alignItems="baseline">
+        <Layout.Stack direction="row" alignItems="center">
             <slot name="header" />
         </Layout.Stack>
         <slot />
