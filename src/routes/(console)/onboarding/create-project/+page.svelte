@@ -17,7 +17,7 @@
     import { tierToPlan } from '$lib/stores/billing';
 
     let showCustomId = false;
-    let isLoading = false;
+    let isLoading = true;
     let id: string;
     let startAnimation = false;
     let projectName = '';
@@ -130,6 +130,10 @@
     class="page-container u-flex-vertical u-cross-child-center u-cross-center"
     class:u-margin-block-start-96={!isLoading}>
     {#if isLoading}
+        <button
+            on:click={() => {
+                startAnimation = !startAnimation;
+            }}>Toggle animation</button>
         <Loading {startAnimation} />
     {:else}
         <img
