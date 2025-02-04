@@ -455,14 +455,18 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
     const isDismissed = !!localStorage.getItem('newDevUpgradePro');
     if (isDismissed) return;
-    if (now - accountCreated < 1000 * 60 * 60 * 24 * 37) {
-        headerAlert.add({
-            id: 'newDevUpgradePro',
-            component: newDevUpgradePro,
-            show: true,
-            importance: 1
-        });
+    // check if coupon already applied
+    try {
+        await sdk.forConsole.billing.getCoupon('appw50');
+    } catch (e) {
+        return;
     }
+    headerAlert.add({
+        id: 'newDevUpgradePro',
+        component: newDevUpgradePro,
+        show: true,
+        importance: 1
+    });
 }
 export const upgradeURL = derived(
     page,
