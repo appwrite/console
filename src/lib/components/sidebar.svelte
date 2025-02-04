@@ -94,7 +94,7 @@
                             sideBarIsOpen = false;
                         }}>
                         <div class="icon">
-                            <Icon icon={IconSearch} />
+                            <Icon icon={IconSearch} color="--color-fgcolor-neutral-tertiary" />
                         </div>
                     </Link.Button>
                 </div>
