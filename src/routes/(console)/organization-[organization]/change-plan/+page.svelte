@@ -301,19 +301,22 @@
                         tier={BillingPlan.FREE}
                         class="u-margin-block-start-24"
                         members={data?.members?.total ?? 0} />
-                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
+                {:else}
                     {@const extraMembers = collaborators?.length ?? 0}
                     <Alert type="error" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
-                            Your monthly payments will be adjusted for the Pro plan
+                            Your organization will switch to {tierToPlan(billingPlan).name} plan on {toLocaleDate(
+                                $organization.billingNextInvoiceDate
+                            )}.
                         </svelte:fragment>
-                        After switching plans,
-                        <b
-                            >you will be charged {formatCurrency(
-                                extraMembers *
-                                    ($plansInfo?.get(billingPlan)?.addons?.seats?.price ?? 0)
-                            )} monthly for {extraMembers} team members.</b> This will be reflected in
-                        your next invoice.
+                        You will retain access to {tierToPlan($organization.billingPlan).name} plan features
+                        until your billing period ends. {#if extraMembers > 0}After that,
+                            <b
+                                >you will be charged {formatCurrency(
+                                    extraMembers *
+                                        ($plansInfo?.get(billingPlan)?.addons?.seats?.price ?? 0)
+                                )} per month for {extraMembers} team members.</b
+                            >{/if}
                     </Alert>
                 {/if}
             {/if}

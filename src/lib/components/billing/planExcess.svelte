@@ -46,32 +46,25 @@
     });
 </script>
 
-{#if showExcess}
-    <Alert type="error" {...$$restProps}>
-        <svelte:fragment slot="title">
-            Your organization will switch to {tierToPlan(BillingPlan.FREE).name} plan on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}.
-        </svelte:fragment>
+<Alert type="warning" {...$$restProps}>
+    <svelte:fragment slot="title">
+        Your organization will switch to {tierToPlan(BillingPlan.FREE).name} plan on {toLocaleDate(
+            $organization.billingNextInvoiceDate
+        )}.
+    </svelte:fragment>
+    {#if !showExcess}
+        You will retain access to your {tierToPlan($organization.billingPlan).name} plan features until
+        your billing period ends.
+    {:else}
         You will retain access to {tierToPlan($organization.billingPlan).name} plan features until your
         billing period ends. After that,
         {#if excess?.members > 0}<span class="u-bold"
                 >all team members except the owner will be removed</span>
-        {:else}
-            your organization will be limited to Free plan resources{/if}, and service disruptions
-        may occur if usage exceeds plan limits.
-        <!-- Any executions, bandwidth, or messaging usage will be reset at that time. -->
-        <svelte:fragment slot="buttons">
-            <Button
-                text
-                external
-                href="https://appwrite.io/docs/advanced/platform/free#reaching-resource-limits">
-                Learn more
-            </Button>
-        </svelte:fragment>
-    </Alert>
-
-    <TableScroll noMargin dense class="u-margin-block-start-16">
+        {/if}, and service disruptions may occur if usage exceeds Free plan limits.
+    {/if}
+</Alert>
+{#if showExcess}
+    <TableScroll dense class="u-margin-block-start-16">
         <TableHeader>
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Free limit</TableCellHead>
