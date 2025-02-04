@@ -14,6 +14,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
+    import { tierToPlan } from '$lib/stores/billing';
 
     let showCustomId = false;
     let isLoading = false;
@@ -56,6 +57,12 @@
             });
         }
 
+        trackEvent(Submit.OrganizationCreate, {
+            plan: tierToPlan(BillingPlan.FREE)?.name,
+            budget_cap_enabled: false,
+            members_invited: 0
+        });
+
         if (org) {
             const teamId = org.$id;
             try {
@@ -71,6 +78,10 @@
                 });
 
                 startAnimation = true;
+
+                trackEvent(Submit.ProjectCreate, {
+                    teamId: teamId
+                });
 
                 setTimeout(() => {
                     goto(`${base}/project-${project.$id}`);
