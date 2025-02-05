@@ -60,7 +60,9 @@
                                 </Layout.Stack>
                             </div>
                             <Layout.Stack gap="l">
-                                <Layout.Stack gap="l" direction="row">
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
                                     <Card.Button on:click={() => addPlatform(0)} padding="s"
                                         ><Layout.Stack gap="xl"
                                             ><div class="card-top-image web-image-light"></div>
@@ -90,7 +92,9 @@
                                             </Layout.Stack>
                                         </Layout.Stack></Card.Button>
                                 </Layout.Stack>
-                                <Layout.Stack gap="l" direction="row">
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
                                     <Card.Button on:click={() => addPlatform(3)} padding="s">
                                         <Layout.Stack gap="xxl">
                                             <img
