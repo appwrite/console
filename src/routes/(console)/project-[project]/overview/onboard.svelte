@@ -9,10 +9,6 @@
     import UsersImgSourceDark from './assets/users-dark.svg';
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
-    import PlatformWebImgSource from './assets/platform-web.png';
-    import PlatformWebImgSourceDark from './assets/platform-web-dark.png';
-    import PlatformServerImgSource from './assets/platform-server.png';
-    import PlatformServerImgSourceDark from './assets/platform-server-dark.png';
     import PlatformIosImgSource from './assets/platform-ios.svg';
     import PlatformIosImgSourceDark from './assets/platform-ios-dark.svg';
     import PlatformAndroidImgSource from './assets/platform-android.svg';
