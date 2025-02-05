@@ -162,9 +162,7 @@
                 type: 'success',
                 isHtml: true,
                 message: `
-                        <b>${$organization.name}</b> will change to ${
-                            tierToPlan(billingPlan).name
-                        } plan at the end of the current billing cycle.`
+                        <b>${$organization.name}</b> plan has been successfully updated.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
