@@ -416,6 +416,10 @@
         width: 18px;
         align-self: center;
         margin-inline: 8px;
+        @media (min-width: 1024px) {
+            margin-block-end: var(--space-2, 4px);
+            margin-block-start: var(--space-9, 24px);
+        }
     }
 
     .hidden,
