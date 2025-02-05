@@ -21,7 +21,7 @@
         </svelte:fragment>
     </Cover>
 {:else}
-    <Cover autoSize={true}>
+    <Cover blocksize="auto">
         <svelte:fragment slot="header">
             <Layout.Stack
                 direction={$isSmallViewport ? 'column' : 'row'}
