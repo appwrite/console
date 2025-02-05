@@ -118,9 +118,11 @@
                         </div>
                         {#if state !== 'icons'}
                             <div class="info" in:fade={{ delay: 200, duration: 200 }}>
-                                <Typography.Text variant="m-600"
-                                    >{progressCard.title}</Typography.Text>
                                 <Typography.Text
+                                    variant="m-500"
+                                    color="--color-fgcolor-neutral-secondary"
+                                    >{progressCard.title}</Typography.Text>
+                                <Typography.Text color="--color-fgcolor-neutral-secondary"
                                     >{progressCard.percentage}% complete</Typography.Text>
                             </div>
                         {/if}
