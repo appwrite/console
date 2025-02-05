@@ -351,6 +351,7 @@
             height: 160px;
             background-size: cover;
             background-position: center;
+            border-radius: var(--border-radius-m) var(--border-radius-m) 0 0;
 
             @media (min-width: 1200px) {
                 height: 187px;
