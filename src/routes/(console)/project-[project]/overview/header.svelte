@@ -53,3 +53,9 @@
         </svelte:fragment>
     </Cover>
 {/if}
+
+<style>
+    :global(.top-cover-console) {
+        block-size: auto !important;
+    }
+</style>
