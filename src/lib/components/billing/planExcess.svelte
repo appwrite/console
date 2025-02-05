@@ -54,12 +54,13 @@
     </svelte:fragment>
     {#if !showExcess}
         You will retain access to your {tierToPlan($organization.billingPlan).name} plan features until
-        your billing period ends.
+        your billing period ends. After that, your organization will be limited to Free plan resources,
+        and service disruptions may occur if usage exceeds plan limits.
     {:else}
         You will retain access to {tierToPlan($organization.billingPlan).name} plan features until your
         billing period ends. After that,
-        {#if excess?.members > 0}<span class="u-bold"
-                >all team members except the owner will be removed</span>
+        {#if excess?.members > 0}<span class="u-bold">
+                all team members except the owner will be removed</span>
         {/if}, and service disruptions may occur if usage exceeds Free plan limits.
     {/if}
 </Alert>
