@@ -174,7 +174,7 @@
     }
 
     .main-content {
-        min-height: calc(100vh - 30px);
+        min-height: calc(100vh - 48px);
     }
 
     :global(main:has(.level-2-nav)) {

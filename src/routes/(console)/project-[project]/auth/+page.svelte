@@ -16,14 +16,14 @@
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { Badge, Icon, Table, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Table, Layout } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
-    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import { IconDuplicate, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { canWriteUsers } from '$lib/stores/roles';
 
     export let data: PageData;
@@ -41,7 +41,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button on:mousedown={() => ($showCreateUser = true)} event="create_user" size="s">
-                <span class="icon-plus" aria-hidden="true" />
+                <Icon size="s" icon={IconPlus} slot="start" />
                 <span class="text">Create user</span>
             </Button>
         </Layout.Stack>
@@ -104,7 +104,7 @@
                     </Table.Cell>
                     <Table.Cell>
                         <Copy value={user.$id} event="user">
-                            <Tag size="s">
+                            <Tag size="xs">
                                 <Icon size="s" icon={IconDuplicate} />
                                 User ID
                             </Tag>
