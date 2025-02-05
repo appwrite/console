@@ -303,7 +303,7 @@
                         members={data?.members?.total ?? 0} />
                 {:else}
                     {@const extraMembers = collaborators?.length ?? 0}
-                    <Alert type="error" class="u-margin-block-start-24">
+                    <Alert type="warning" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
                             Your organization will switch to {tierToPlan(billingPlan).name} plan on {toLocaleDate(
                                 $organization.billingNextInvoiceDate
