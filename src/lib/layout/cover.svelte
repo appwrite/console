@@ -2,13 +2,14 @@
     import { Layout } from '@appwrite.io/pink-svelte';
 
     export let size: 'small' | 'medium' | 'large' | 'xl' = null;
+    export let autoSize = false;
 
     $: style = size
         ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`
         : '';
 </script>
 
-<div class="top-cover-console">
+<div class="top-cover-console" class:autoSize>
     <div class="cover-container" {style}>
         <Layout.Stack direction="row" alignItems="center">
             <slot name="header" />
@@ -27,6 +28,9 @@
         background: var(--color-bgcolor-neutral-primary, #1d1d21);
         margin-left: -190px;
         padding-left: 190px;
+    }
+    .autoSize {
+        block-size: auto;
     }
     .cover-container {
         position: relative;

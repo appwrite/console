@@ -21,7 +21,7 @@
         </svelte:fragment>
     </Cover>
 {:else}
-    <Cover>
+    <Cover autoSize={true}>
         <svelte:fragment slot="header">
             <Layout.Stack
                 direction={$isSmallViewport ? 'column' : 'row'}
@@ -53,11 +53,3 @@
         </svelte:fragment>
     </Cover>
 {/if}
-
-<style>
-    :global(.top-cover-console:has(.dashboard-header-button)) {
-        @media (max-width: 1024px) {
-            block-size: auto !important;
-        }
-    }
-</style>
