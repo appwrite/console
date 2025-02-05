@@ -56,6 +56,6 @@
     }
 
     .icons {
-        left: 54px;
+        left: 71px;
     }
 </style>
