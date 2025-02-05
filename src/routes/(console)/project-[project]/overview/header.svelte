@@ -11,7 +11,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
 </script>
 
-{#if hasOnboardingDismissed($project.$id) && !$page.url.pathname.includes('get-started')}
+{#if !$page.url.pathname.includes('get-started')}
     <Cover>
         <svelte:fragment slot="header">
             <Typography.Title color="--color-fgcolor-neutral-primary" size="xl">
@@ -21,7 +21,7 @@
         </svelte:fragment>
     </Cover>
 {:else}
-    <Cover blocksize="auto">
+    <Cover blocksize={$isSmallViewport ? 'auto' : '152px'}>
         <svelte:fragment slot="header">
             <Layout.Stack
                 direction={$isSmallViewport ? 'column' : 'row'}

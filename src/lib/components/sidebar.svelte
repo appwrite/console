@@ -134,7 +134,7 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.$id}?getStarted=false`}
+                            href={`/console/project-${project.$id}`}
                             class="link"
                             on:click={() => {
                                 sideBarIsOpen = false;
