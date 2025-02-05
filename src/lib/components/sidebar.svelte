@@ -282,6 +282,7 @@
     .link {
         display: flex;
         height: 32px;
+        width: 32px;
         padding: var(--space-4, 8px);
         align-items: center;
         gap: var(--gap-s, 8px);
