@@ -123,12 +123,12 @@
             </Layout.Stack>
             <div class="icons">
                 <Tooltip inline={false}>
-                    <Link.Button
-                        variant="quiet-muted"
+                    <Button.Button
+                        variant="text"
                         aria-label="Toggle Command Center"
                         on:click={toggleCommandCenter}>
                         <Icon icon={IconSearch} />
-                    </Link.Button>
+                    </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
             </div>
             <Link.Button
@@ -249,7 +249,6 @@
 
     .right {
         display: flex;
-        align-items: center;
         gap: var(--space-9, 24px);
 
         .icons {

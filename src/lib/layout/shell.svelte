@@ -31,7 +31,9 @@
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
-        showContentTransition = !url.pathname.includes('organization');
+        setTimeout(() => {
+            showContentTransition = !url.pathname.includes('organization');
+        }, 1000);
     });
 
     /**

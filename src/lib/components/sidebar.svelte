@@ -77,7 +77,7 @@
     ];
 </script>
 
-<div class:only-mobile={project === undefined}>
+<div class:only-mobile-tablet={project === undefined}>
     <Sidebar.Base
         {...$$props}
         bind:state
@@ -86,17 +86,15 @@
         <div slot="top">
             <div class="only-mobile-tablet top">
                 <div class="icons search-icon">
-                    <Link.Button
-                        variant="quiet-muted"
+                    <Button.Button
+                        variant="text"
                         on:click={() => {
                             toggleCommandCenter();
                             state = 'closed';
                             sideBarIsOpen = false;
                         }}>
-                        <div class="icon">
-                            <Icon icon={IconSearch} />
-                        </div>
-                    </Link.Button>
+                        <Icon icon={IconSearch} color="--color-fgcolor-neutral-tertiary" />
+                    </Button.Button>
                 </div>
                 <Link.Button
                     on:click={() => {
@@ -197,7 +195,7 @@
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
                             <Button.Button variant="secondary" size="s" on:click={toggleFeedback}
-                                >Feedback
+                                ><span>Feedback</span>
                             </Button.Button>
                             <svelte:fragment slot="other">
                                 <Feedback />
@@ -245,7 +243,7 @@
                                     variant="secondary"
                                     size="s"
                                     on:click={toggleFeedback}
-                                    >Feedback
+                                    ><span>Feedback</span>
                                 </Button.Button>
                                 <svelte:fragment slot="other">
                                     <Feedback />
@@ -457,7 +455,7 @@
         transition: all 0.2s ease-in-out;
 
         @media (min-width: 1024px) {
-            width: 178px;
+            width: 166px;
         }
         .info {
             position: absolute;
