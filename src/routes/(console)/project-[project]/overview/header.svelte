@@ -55,7 +55,9 @@
 {/if}
 
 <style>
-    :global(.top-cover-console) {
-        block-size: auto !important;
+    :global(.top-cover-console:has(.dashboard-header-button)) {
+        @media (max-width: 1024px) {
+            block-size: auto !important;
+        }
     }
 </style>
