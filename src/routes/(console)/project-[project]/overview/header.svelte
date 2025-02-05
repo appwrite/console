@@ -39,8 +39,8 @@
                         <Button.Button
                             variant="secondary"
                             size="s"
-                            on:click={() => {
-                                setHasOnboardingDismissed($project.$id);
+                            on:click={async () => {
+                                await setHasOnboardingDismissed($project.$id);
                                 if (location.href.endsWith('get-started')) {
                                     goto(`${base}/project-${$project.$id}`);
                                 } else {
