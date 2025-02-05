@@ -272,6 +272,11 @@
         </div>
     </Sidebar.Base>
 </div>
+{#if subNavigation}
+    <div class="sub-navigation" class:icons={state === 'icons'}>
+        <svelte:component this={subNavigation} />
+    </div>
+{/if}
 
 <style lang="scss">
     .link {
@@ -502,5 +507,22 @@
 
     :global(button.collapse) {
         transform: translateX(-10px);
+    }
+
+    .sub-navigation {
+        width: 400px;
+        height: calc(100vh - 48px);
+        display: flex;
+        justify-content: flex-end;
+        background-color: var(--color-bgcolor-neutral-primary, #fff);
+        z-index: 14;
+        position: fixed;
+        top: 48px;
+        transition: width 0.2s linear;
+
+        &.icons {
+            width: 266px;
+            transition: width 0.3s linear;
+        }
     }
 </style>
