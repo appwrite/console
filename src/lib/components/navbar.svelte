@@ -30,7 +30,7 @@
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     let showSupport = false;
 
@@ -179,7 +179,7 @@
         </div>
     </div>
 </Navbar.Base>
-{#if showAccountMenu && $isSmallViewport}
+{#if showAccountMenu && $isTabletViewport}
     <BottomSheet.Menu
         bind:isOpen={showAccountMenu}
         menu={{

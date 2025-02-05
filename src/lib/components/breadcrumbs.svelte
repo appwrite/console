@@ -196,7 +196,8 @@
                 organisationBottomSheetOpen = true;
             }}
             aria-label="Open organizations tab">
-            <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
+            <span class="orgName" class:noProjects={!selectedProject}
+                >{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
             <Icon icon={IconChevronDown} size="s" />
@@ -384,12 +385,8 @@
         }
     }
 
-    .item:first-of-type {
-        margin-top: 4px;
-    }
-    .item:last-of-type,
-    .switch-org {
-        margin-bottom: 4px;
+    .noProjects {
+        max-width: 150px;
     }
 
     :global(.item[data-highlighted]) {

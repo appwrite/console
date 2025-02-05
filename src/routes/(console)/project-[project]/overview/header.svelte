@@ -21,7 +21,7 @@
         </svelte:fragment>
     </Cover>
 {:else}
-    <Cover>
+    <Cover blocksize="auto">
         <svelte:fragment slot="header">
             <Layout.Stack
                 direction={$isSmallViewport ? 'column' : 'row'}
@@ -39,8 +39,8 @@
                         <Button.Button
                             variant="secondary"
                             size="s"
-                            on:click={() => {
-                                setHasOnboardingDismissed($project.$id);
+                            on:click={async () => {
+                                await setHasOnboardingDismissed($project.$id);
                                 if (location.href.endsWith('get-started')) {
                                     goto(`${base}/project-${$project.$id}`);
                                 } else {

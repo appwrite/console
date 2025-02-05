@@ -177,7 +177,7 @@
         min-height: calc(100vh - 48px);
     }
 
-    :global(main:has(.level-2-nav)) {
+    :global(main:has(.sub-navigation)) {
         .main-content {
             @media (min-width: 1024px) {
                 padding-left: 200px;

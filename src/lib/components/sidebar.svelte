@@ -118,9 +118,11 @@
                         </div>
                         {#if state !== 'icons'}
                             <div class="info" in:fade={{ delay: 200, duration: 200 }}>
-                                <Typography.Text variant="m-600"
-                                    >{progressCard.title}</Typography.Text>
                                 <Typography.Text
+                                    variant="m-500"
+                                    color="--color-fgcolor-neutral-secondary"
+                                    >{progressCard.title}</Typography.Text>
+                                <Typography.Text color="--color-fgcolor-neutral-secondary"
                                     >{progressCard.percentage}% complete</Typography.Text>
                             </div>
                         {/if}
@@ -270,6 +272,11 @@
         </div>
     </Sidebar.Base>
 </div>
+{#if subNavigation}
+    <div class="sub-navigation" class:icons={state === 'icons'}>
+        <svelte:component this={subNavigation} />
+    </div>
+{/if}
 
 <style lang="scss">
     .link {
@@ -414,6 +421,10 @@
         width: 18px;
         align-self: center;
         margin-inline: 8px;
+        @media (min-width: 1024px) {
+            margin-block-end: var(--space-2, 4px);
+            margin-block-start: var(--space-9, 24px);
+        }
     }
 
     .hidden,
@@ -496,5 +507,22 @@
 
     :global(button.collapse) {
         transform: translateX(-10px);
+    }
+
+    .sub-navigation {
+        width: 400px;
+        height: calc(100vh - 48px);
+        display: flex;
+        justify-content: flex-end;
+        background-color: var(--color-bgcolor-neutral-primary, #fff);
+        z-index: 14;
+        position: fixed;
+        top: 48px;
+        transition: width 0.2s linear;
+
+        &.icons {
+            width: 266px;
+            transition: width 0.3s linear;
+        }
     }
 </style>

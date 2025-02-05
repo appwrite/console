@@ -9,10 +9,6 @@
     import UsersImgSourceDark from './assets/users-dark.svg';
     import DiscordImgSource from './assets/discord.png';
     import DiscordImgSourceDark from './assets/discord-dark.png';
-    import PlatformWebImgSource from './assets/platform-web.png';
-    import PlatformWebImgSourceDark from './assets/platform-web-dark.png';
-    import PlatformServerImgSource from './assets/platform-server.png';
-    import PlatformServerImgSourceDark from './assets/platform-server-dark.png';
     import PlatformIosImgSource from './assets/platform-ios.svg';
     import PlatformIosImgSourceDark from './assets/platform-ios-dark.svg';
     import PlatformAndroidImgSource from './assets/platform-android.svg';
@@ -60,7 +56,9 @@
                                 </Layout.Stack>
                             </div>
                             <Layout.Stack gap="l">
-                                <Layout.Stack gap="l" direction="row">
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
                                     <Card.Button on:click={() => addPlatform(0)} padding="s"
                                         ><Layout.Stack gap="xl"
                                             ><div class="card-top-image web-image-light"></div>
@@ -90,7 +88,9 @@
                                             </Layout.Stack>
                                         </Layout.Stack></Card.Button>
                                 </Layout.Stack>
-                                <Layout.Stack gap="l" direction="row">
+                                <Layout.Stack
+                                    gap="l"
+                                    direction={$isSmallViewport ? 'column' : 'row'}>
                                     <Card.Button on:click={() => addPlatform(3)} padding="s">
                                         <Layout.Stack gap="xxl">
                                             <img
@@ -347,6 +347,7 @@
             height: 160px;
             background-size: cover;
             background-position: center;
+            border-radius: var(--border-radius-m) var(--border-radius-m) 0 0;
 
             @media (min-width: 1200px) {
                 height: 187px;
