@@ -295,7 +295,7 @@
                                 on:mouseleave={getOptionBlurHandler()}
                                 on:focus={getOptionFocusHandler(item)}>
                                 <slot name="option" option={castOption(item)}>
-                                    <div class="u-flex u-gap-8 u-cross-center">
+                                    <Layout.Stack direction="column" gap="s">
                                         {#if item.icon}
                                             <Icon
                                                 icon={item.icon}
@@ -310,7 +310,7 @@
                                         <span>
                                             {item.label}
                                         </span>
-                                    </div>
+                                    </Layout.Stack>
                                 </slot>
                             </button>
                         </li>
