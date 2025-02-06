@@ -14,7 +14,8 @@
 
     const checkDomain = debounce(async (value: string) => {
         try {
-            await sdk.forProject.proxy.checkSubdomain(ResourceType.Site, value);
+            // TODO: @Meldiron Fix in future, blocked by issue PLA-2254 
+            // await sdk.forProject.proxy.checkSubdomain(ResourceType.Site, value);
             domainIsValid = true;
         } catch {
             domainIsValid = false;
