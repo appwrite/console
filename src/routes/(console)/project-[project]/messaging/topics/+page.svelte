@@ -21,8 +21,9 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteTopics } from '$lib/stores/roles';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -59,8 +60,8 @@
             <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
             {#if $canWriteTopics}
                 <Button on:click={() => ($showCreate = true)} event="create_topic">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create topic</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create topic
                 </Button>
             {/if}
         </Layout.Stack>

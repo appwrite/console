@@ -35,7 +35,7 @@
             <svelte:fragment slot="image">
                 {#if $user.email || $user.phone}
                     {#if $user.name}
-                        <AvatarInitials size={48} name={$user.name} />
+                        <AvatarInitials size="l" name={$user.name} />
                     {:else}
                         <div class="avatar">
                             <span class="icon-minus-sm" aria-hidden="true" />

@@ -17,7 +17,8 @@
     import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { newMemberModal, organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
 
     export let members: Models.MembershipList;
 
@@ -38,7 +39,8 @@
                         <span class="body-text-1 u-bold">Members</span>
                     </p>
                     <Button secondary on:click={() => newMemberModal.set(true)}>
-                        <span class="icon-plus"></span> <span class="text">Invite</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Invite
                     </Button>
                 </div>
                 <p class="body-text-2">
@@ -64,7 +66,7 @@
                             <TableRow>
                                 <TableCell title="name">
                                     <div class="u-flex u-gap-12 u-cross-center">
-                                        <AvatarInitials size={32} name={member.userName} />
+                                        <AvatarInitials size="s" name={member.userName} />
                                         <span class="text u-trim">
                                             {member.userName ? member.userName : member.userEmail}
                                         </span>

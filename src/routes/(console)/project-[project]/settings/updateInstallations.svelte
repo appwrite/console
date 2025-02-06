@@ -31,6 +31,8 @@
     import dayjs from 'dayjs';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let total: number;
     export let limit: number;
@@ -94,8 +96,8 @@
                     <ul class="buttons-list">
                         <li class="buttons-list-item">
                             <Button secondary on:click={() => (showGitIstall = true)}>
-                                <span class="icon-plus" />
-                                <span class="text">Add installation</span>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Add installation
                             </Button>
                         </li>
                     </ul>

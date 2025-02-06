@@ -20,6 +20,8 @@
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
+    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     let show = false;
     let showEdit = false;
@@ -112,7 +114,7 @@
                                         on:click={() => {
                                             showDropdown[i] = !showDropdown[i];
                                         }}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                                        <Icon icon={IconDotsHorizontal} size="s" />
                                     </Button>
                                     <svelte:fragment slot="list">
                                         <DropListItem
@@ -142,9 +144,9 @@
                 </TableBody>
             </Table>
 
-            <Button text noMargin on:click={() => (show = true)}>
-                <span class="icon-plus" />
-                <span class="text">Add a billing address</span>
+            <Button text on:click={() => (show = true)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add a billing address
             </Button>
         {:else}
             <Empty on:click={() => (show = true)}>

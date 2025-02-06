@@ -229,7 +229,7 @@
 
     <div class="footer" slot="footer">
         <div class="u-flex u-cross-center u-gap-4">
-            <AvatarInitials size={32} name={$user.name} />
+            <AvatarInitials size="s" name={$user.name} />
             <form
                 class="input-text-wrapper u-width-full-line"
                 style="--amount-of-buttons: 1;"

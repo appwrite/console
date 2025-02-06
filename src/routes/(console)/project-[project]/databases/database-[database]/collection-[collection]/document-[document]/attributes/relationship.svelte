@@ -9,6 +9,8 @@
     import { onMount } from 'svelte';
     import { doc } from '../store';
     import { isRelationshipToMany } from './store';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let id: string;
     export let label: string;
@@ -109,8 +111,8 @@
                     on:click={() => {
                         showInput = true;
                     }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add item</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add item
                 </Button>
             {/if}
         </div>
@@ -242,8 +244,8 @@
                 on:click={() => {
                     showInput = true;
                 }}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add item</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add item
             </Button>
         {/if}
     </div>

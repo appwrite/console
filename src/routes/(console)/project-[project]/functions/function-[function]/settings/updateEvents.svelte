@@ -21,6 +21,8 @@
     import DropListItem from '$lib/components/dropListItem.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     const functionId = $page.params.function;
     const eventSet: Writable<Set<string>> = writable(new Set($func.events));
@@ -141,9 +143,9 @@
                 </TableList>
 
                 <div class="u-flex u-margin-block-start-16">
-                    <Button text noMargin on:click={() => (showEvents = true)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="u-text">Add event</span>
+                    <Button text on:click={() => (showEvents = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add event
                     </Button>
                 </div>
             {:else}

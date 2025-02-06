@@ -31,7 +31,8 @@
         isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -131,8 +132,8 @@
                                 size="s"
                                 on:click={() => newMemberModal.set(true)}
                                 disabled={areMembersLimited}>
-                                <span class="icon-plus" aria-hidden="true" />
-                                <span class="text">Invite</span>
+                                <Icon icon={IconPlus} size="s" slot="start" />
+                                Invite
                             </Button>
                         {/if}
                     </div>

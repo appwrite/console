@@ -152,10 +152,10 @@
                             {#if currentReview?.image}
                                 <Avatar
                                     src={getImage(currentReview?.image)}
-                                    name={currentReview.name}
-                                    size={40} />
+                                    alt={currentReview.name}
+                                    size="m" />
                             {:else}
-                                <AvatarInitials size={40} name={currentReview.name} />
+                                <AvatarInitials size="m" name={currentReview.name} />
                             {/if}
                             <div>
                                 <p class="body-text-2 u-bold">{currentReview.name}</p>

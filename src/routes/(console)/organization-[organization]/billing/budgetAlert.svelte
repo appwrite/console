@@ -19,6 +19,8 @@
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let search: string;
     let selectedAlert: number;
@@ -145,7 +147,7 @@
                                             ariaLabel="remove alert"
                                             on:click={() =>
                                                 (alerts = alerts.filter((a) => a !== alert))}>
-                                            <span class="icon-x" aria-hidden="true" />
+                                            <Icon icon={IconPlus} size="s" />
                                         </Button>
                                     </TableCell>
                                 </TableRow>

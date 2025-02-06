@@ -13,12 +13,13 @@
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import { canWriteBuckets } from '$lib/stores/roles';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { columns } from './store';
     import Grid from './grid.svelte';
     import Table from './table.svelte';
     import ViewSelector from '$lib/components/viewSelector.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -46,8 +47,8 @@
                     on:mousedown={() => ($showCreateBucket = true)}
                     event="create_bucket"
                     size="s">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create bucket</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create bucket
                 </Button>
             {/if}
         </Layout.Stack>

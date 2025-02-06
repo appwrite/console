@@ -25,6 +25,8 @@
     import DeletePaymentModal from './deletePaymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     export let showPayment = false;
     let showDropdown = [];
@@ -106,7 +108,7 @@
                                                 on:click={() => {
                                                     showDropdown[i] = !showDropdown[i];
                                                 }}>
-                                                <span class="icon-dots-horizontal" />
+                                                <Icon icon={IconDotsHorizontal} size="s" />
                                             </Button>
                                             <svelte:fragment slot="list">
                                                 <DropListItem
@@ -138,9 +140,9 @@
                     {/each}
                 </TableBody>
             </Table>
-            <Button text noMargin on:click={() => (showPayment = true)}>
-                <span class="icon-plus" />
-                <span class="text">Add a payment method</span>
+            <Button text on:click={() => (showPayment = true)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add a payment method
             </Button>
         {:else}
             <Empty on:click={() => (showPayment = true)}>

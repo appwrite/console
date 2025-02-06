@@ -18,7 +18,7 @@
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="image">
-                <AvatarInitials size={48} name={$user.name} />
+                <AvatarInitials size="l" name={$user.name} />
             </svelte:fragment>
             <svelte:fragment slot="title">
                 <span class="u-bold u-trim-1" data-private>{$user.name}</span>

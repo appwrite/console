@@ -19,7 +19,7 @@
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="image">
-                <AvatarInitials size={48} name={$team.name} />
+                <AvatarInitials size="l" name={$team.name} />
             </svelte:fragment>
             <svelte:fragment slot="title">
                 <h6 class="u-bold u-trim-1">{$team.name}</h6>

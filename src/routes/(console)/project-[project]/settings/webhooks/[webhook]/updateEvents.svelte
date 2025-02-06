@@ -12,6 +12,8 @@
     import { onMount } from 'svelte';
     import { writable, type Writable } from 'svelte/store';
     import { webhook } from './store';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     const projectId = $page.params.project;
     const eventSet: Writable<Set<string>> = writable(new Set());
@@ -95,8 +97,8 @@
                 </TableList>
                 <div class="u-flex u-margin-block-start-16">
                     <Button text on:click={() => (showCreateEvent = true)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="u-text">Add event</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add event
                     </Button>
                 </div>
             {:else}

@@ -27,6 +27,8 @@
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { base } from '$app/paths';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
     let showAdd = false;
@@ -91,8 +93,8 @@
             <Heading tag="h2" size="5">Subscribers</Heading>
             <div class="is-only-mobile">
                 <Button on:click={() => (showAdd = true)} event="create_subscriber">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add subscriber</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add subscriber
                 </Button>
             </div>
         </div>
@@ -109,8 +111,8 @@
                     allowNoColumns
                     showColsTextMobile />
                 <Button on:click={() => (showAdd = true)} event="create_subscriber">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add subscriber</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add subscriber
                 </Button>
             </div>
         </SearchQuery>

@@ -8,6 +8,8 @@
     import { Providers } from '../provider.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { MessagingProviderType } from '@appwrite.io/console';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let showCreateDropdown = false;
 </script>
@@ -15,8 +17,8 @@
 <DropList bind:show={showCreateDropdown} scrollable placement="bottom-end">
     <slot>
         <Button on:click={() => (showCreateDropdown = !showCreateDropdown)} event="create_provider">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create provider</span>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create provider
         </Button>
     </slot>
     <svelte:fragment slot="list">
