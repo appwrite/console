@@ -32,7 +32,13 @@
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconAzure,
+        IconBitBucket,
+        IconGithub,
+        IconGitlab,
+        IconPlus
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let total: number;
     export let limit: number;
@@ -208,13 +214,8 @@
             <article class="card-git card is-border-dashed is-no-shadow">
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                     <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
-                        <AvatarGroup
-                            class="git-installation-avatar-group"
-                            bordered
-                            icons={['github', 'gitlab', 'bitBucket', 'azure']} />
-
+                        <AvatarGroup icons={[IconGithub, IconGitlab, IconBitBucket, IconAzure]} />
                         <Arrow direction="down" />
-
                         <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
                     </div>
                     <Button

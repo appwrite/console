@@ -122,7 +122,7 @@
             <div class="u-margin-inline-start-auto">
                 <div class="u-flex u-gap-16 u-cross-center">
                     <a href={`${path}/members`} class="is-not-mobile">
-                        <AvatarGroup size={32} {avatars} total={$members?.total ?? 0} />
+                        <AvatarGroup size="s" {avatars} total={$members?.total ?? 0} />
                     </a>
 
                     <div>

@@ -98,7 +98,7 @@
                     {#await avatarList}
                         <span class="avatar is-color-empty" />
                     {:then avatars}
-                        <AvatarGroup size={40} {avatars} />
+                        <AvatarGroup {avatars} />
                     {/await}
                 </GridItem1>
             {/each}

@@ -45,6 +45,7 @@
     import { consoleVariables } from '$routes/(console)/store';
     import { featuredTemplatesList, starterTemplate } from '$lib/stores/templates';
     import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconDeno, IconDotnet } from '@appwrite.io/pink-icons-svelte';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
@@ -176,11 +177,9 @@
                                                 padding={16}
                                                 radius="small">
                                                 <AvatarGroup
-                                                    icons={['dotnet', 'deno']}
+                                                    icons={[IconDotnet, IconDeno]}
                                                     total={4}
-                                                    avatarSize="small"
-                                                    color="u-color-text-gray"
-                                                    bordered />
+                                                    size="s" />
                                             </Box>
                                         </li>
                                         <span slot="tooltip">More runtimes coming soon</span>

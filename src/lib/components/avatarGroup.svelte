@@ -23,7 +23,7 @@
     {/each}
 
     {#if total > 2}
-        <Avatar>
+        <Avatar {size}>
             +{total - 2}
         </Avatar>
     {/if}
