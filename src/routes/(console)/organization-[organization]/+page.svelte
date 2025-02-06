@@ -33,6 +33,7 @@
     import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -94,7 +95,7 @@
             keys: ['c'],
             disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects,
             group: 'projects',
-            icon: 'plus'
+            icon: IconPlus
         }
     ]);
 

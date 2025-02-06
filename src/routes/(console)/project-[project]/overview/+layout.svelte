@@ -30,6 +30,7 @@
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { writable, type Writable } from 'svelte/store';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
@@ -61,13 +62,13 @@
             callback() {
                 addSubPanel(PlatformsPanel);
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'integrations',
             disabled: !$canWriteProjects
         },
         {
             label: 'Create API Key',
-            icon: 'plus',
+            icon: IconPlus,
             callback() {
                 createApiKey();
             },

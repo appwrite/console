@@ -7,6 +7,7 @@
     import { canWriteBuckets } from '$lib/stores/roles';
     import { project } from '../store';
     import { showCreateBucket } from './+page.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: $registerCommands([
         {
@@ -18,7 +19,7 @@
                 $showCreateBucket = true;
             },
             keys: $page.url.pathname.endsWith('storage') ? ['c'] : ['c', 'b'],
-            icon: 'plus',
+            icon: IconPlus,
             group: 'buckets',
             disabled: !$canWriteBuckets
         },
