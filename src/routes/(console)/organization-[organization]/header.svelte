@@ -2,27 +2,15 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { AvatarGroup, Heading, Tab, Tabs } from '$lib/components';
+    import { AvatarGroup, Tab, Tabs } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import {
-        daysLeftInTrial,
-        getServiceLimit,
-        plansInfo,
-        readOnly,
-        tierToPlan
-    } from '$lib/stores/billing';
-    import {
-        members,
-        newMemberModal,
-        newOrgModal,
-        organization,
-        organizationList
-    } from '$lib/stores/organization';
+    import { daysLeftInTrial, getServiceLimit, plansInfo, readOnly } from '$lib/stores/billing';
+    import { members, newMemberModal, newOrgModal, organization } from '$lib/stores/organization';
     import {
         canSeeBilling,
         canSeeProjects,
@@ -32,7 +20,7 @@
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip, Typography, Layout } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -120,24 +108,24 @@
                 {/if}
             </span>
             <div class="u-margin-inline-start-auto">
-                <div class="u-flex u-gap-16 u-cross-center">
-                    <a href={`${path}/members`} class="is-not-mobile">
-                        <AvatarGroup size="s" {avatars} total={$members?.total ?? 0} />
-                    </a>
+                <Layout.Stack direction="row" alignItems="center" gap="xl">
+                    {#if $members.total > 1}
+                        <a href={`${path}/members`} class="is-not-mobile">
+                            <AvatarGroup size="xs" {avatars} total={$members?.total ?? 0} />
+                        </a>
+                    {/if}
 
-                    <div>
-                        {#if $isOwner}
-                            <Button
-                                secondary
-                                size="s"
-                                on:click={() => newMemberModal.set(true)}
-                                disabled={areMembersLimited}>
-                                <Icon icon={IconPlus} size="s" slot="start" />
-                                Invite
-                            </Button>
-                        {/if}
-                    </div>
-                </div>
+                    {#if $isOwner}
+                        <Button
+                            secondary
+                            size="s"
+                            on:click={() => newMemberModal.set(true)}
+                            disabled={areMembersLimited}>
+                            <Icon icon={IconPlus} size="s" slot="start" />
+                            Invite
+                        </Button>
+                    {/if}
+                </Layout.Stack>
             </div>
         </svelte:fragment>
         <Tabs>

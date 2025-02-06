@@ -51,8 +51,8 @@
 
 <Form onSubmit={updateMfa}>
     <CardGrid>
-        <Heading tag="h6" size="7">Multi-factor authentication</Heading>
-        <p class="text">MFA allows users to enhance the security of their accounts in your app.</p>
+        <svelte:fragment slot="title">Multi-factor Authentication</svelte:fragment>
+        MFA allows users to enhance the security of their accounts in your app.
         <svelte:fragment slot="aside">
             <FormList>
                 <InputChoice

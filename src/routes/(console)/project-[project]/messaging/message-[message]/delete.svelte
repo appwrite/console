@@ -11,12 +11,10 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Delete message</Heading>
-    <p>
-        The message will be permanently deleted{message.status === 'scheduled'
-            ? ', and its delivery will be canceled'
-            : ''}. This action is irreversible.
-    </p>
+    <svelte:fragment slot="title">Delete Message</svelte:fragment>
+    The message will be permanently deleted{message.status === 'scheduled'
+        ? ', and its delivery will be canceled'
+        : ''}. This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

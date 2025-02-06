@@ -54,8 +54,8 @@
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">Preferences</Heading>
-        <p>Add custom user preferences to share them across devices and sessions.</p>
+        <svelte:fragment slot="title">Preferences</svelte:fragment>
+        Add custom user preferences to share them across devices and sessions.
         <svelte:fragment slot="aside">
             {#if prefs}
                 {#each prefs as [key, value], index}

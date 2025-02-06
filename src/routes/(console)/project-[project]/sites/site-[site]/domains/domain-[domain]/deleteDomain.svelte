@@ -1,6 +1,5 @@
 <script lang="ts">
     import { BoxAvatar, CardGrid } from '$lib/components';
-    import Heading from '$lib/components/heading.svelte';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
@@ -11,8 +10,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Delete domain</Heading>
-    <p>Deleting this domain will remove the domain from all associated projects.</p>
+    <svelte:fragment slot="title">Delete Domain</svelte:fragment>
+    Deleting this domain will remove the domain from all associated projects.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

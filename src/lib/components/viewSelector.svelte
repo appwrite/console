@@ -1,12 +1,19 @@
 <script lang="ts">
-    import { Button, InputCheckbox } from '$lib/elements/forms';
+    import { InputCheckbox } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import type { Writable } from 'svelte/store';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
     import { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
-    import { ActionMenu, Icon, Layout, Popover, ToggleButton } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Icon,
+        Layout,
+        Popover,
+        ToggleButton,
+        Button
+    } from '@appwrite.io/pink-svelte';
     import { IconViewBoards, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
     import { goto } from '$app/navigation';
 
@@ -16,9 +23,7 @@
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
-    export let showColsTextMobile = false;
     export let fullWidthMobile = false;
-    export let hideText = false;
 
     onMount(async () => {
         if (isCustomCollection) {
@@ -82,17 +87,13 @@
 {#if !hideColumns && view === View.Table}
     {#if $columns?.length}
         <Popover let:toggle>
-            <Button
+            <Button.Button
                 size="s"
-                secondary
+                variant="secondary"
                 badge={selectedColumnsNumber.toString()}
-                on:click={toggle}
-                {fullWidthMobile}>
+                on:click={toggle}>
                 <Icon slot="start" icon={IconViewBoards} />
-                {#if !hideText}
-                    <span class="text {showColsTextMobile ? '' : 'is-only-desktop'}">Columns</span>
-                {/if}
-            </Button>
+            </Button.Button>
             <svelte:fragment slot="tooltip">
                 <ActionMenu.Root>
                     <Layout.Stack>

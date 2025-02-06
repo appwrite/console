@@ -82,17 +82,15 @@
 
 <Form onSubmit={updateMockNumbers}>
     <CardGrid hideFooter={isComponentDisabled}>
-        <Heading tag="h6" size="7" id="variables">Mock phone numbers</Heading>
-        <p>
-            Generate <b>fictional</b> numbers to simulate phone verification when testing demo
-            accounts for submitting your application to the App Store or Google Play.
-            <a
-                href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
-                target="_blank"
-                class="u-underline"
-                rel="noopener noreferrer">
-                Learn more</a>
-        </p>
+        <svelte:fragment slot="title">Mock Phone Numbers</svelte:fragment>
+        Generate <b>fictional</b> numbers to simulate phone verification when testing demo accounts
+        for submitting your application to the App Store or Google Play.
+        <a
+            href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
+            target="_blank"
+            class="u-underline"
+            rel="noopener noreferrer">
+            Learn more</a>
         <svelte:fragment slot="aside">
             {#if isComponentDisabled}
                 <EmptyCardImageCloud source="email_signature_card" noAspectRatio>

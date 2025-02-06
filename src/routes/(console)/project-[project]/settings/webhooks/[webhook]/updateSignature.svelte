@@ -8,14 +8,13 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Signature key</Heading>
-    <p>
-        Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your webhooks. <a
-            href="https://appwrite.io/docs/advanced/platform/webhooks#verification"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">Learn more about webhook validation.</a>
-    </p>
+    <svelte:fragment slot="title">Signature Key</svelte:fragment>
+    Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your webhooks.
+    <a
+        href="https://appwrite.io/docs/advanced/platform/webhooks#verification"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link">Learn more about webhook validation.</a>
     <svelte:fragment slot="aside">
         <div>
             <p>Key</p>

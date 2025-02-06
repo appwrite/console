@@ -81,11 +81,9 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Services</Heading>
-    <p class="text">
-        Choose services you wish to enable or disable for the client API. When disabled, the
-        services are not accessible to client SDKs but remain accessible to server SDKs.
-    </p>
+    <svelte:fragment slot="title">Services</svelte:fragment>
+    Choose services you wish to enable or disable for the client API. When disabled, the services are
+    not accessible to client SDKs but remain accessible to server SDKs.
     <svelte:fragment slot="aside">
         <Layout.Stack>
             <Layout.Stack direction="row" justifyContent="flex-end">

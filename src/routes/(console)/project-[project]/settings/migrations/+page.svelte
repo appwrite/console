@@ -134,16 +134,15 @@
 
 <Container>
     <CardGrid>
-        <Heading tag="h3" size="7">Import project data</Heading>
-        <p class="text">
-            Import data from another platform or from a different Appwrite instance. <a
-                class="link"
-                href="https://appwrite.io/docs/advanced/migrations"
-                target="_blank"
-                rel="noopener noreferrer">
-                Learn about which platforms are supported</a
-            >.
-        </p>
+        <svelte:fragment slot="title">Import Project Data</svelte:fragment>
+        Import data from another platform or from a different Appwrite instance.
+        <a
+            class="link"
+            href="https://appwrite.io/docs/advanced/migrations"
+            target="_blank"
+            rel="noopener noreferrer">
+            Learn about which platforms are supported</a
+        >.
         <svelte:fragment slot="aside">
             {#if data.migrations.length}
                 <div class="u-flex">
@@ -230,15 +229,14 @@
     </CardGrid>
     {#if isSelfHosted}
         <CardGrid>
-            <Heading tag="h3" size="7">Deploy to Cloud</Heading>
-            <p class="text">
-                Export data from your project to Appwrite Cloud. <a
-                    class="link"
-                    href="https://appwrite.io/docs/advanced/migrations/self-hosted"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Learn more in our documentation.</a>
-            </p>
+            <svelte:fragment slot="title">Deploy To Cloud</svelte:fragment>
+            Export data from your project to Appwrite Cloud.
+            <a
+                class="link"
+                href="https://appwrite.io/docs/advanced/migrations/self-hosted"
+                target="_blank"
+                rel="noopener noreferrer">
+                Learn more in our documentation.</a>
             <svelte:fragment slot="aside">
                 <div class="import-box">
                     <div class="u-flex u-cross-center u-gap-8">
@@ -258,15 +256,14 @@
         </CardGrid>
     {:else}
         <CardGrid>
-            <Heading tag="h3" size="7">Export to self-hosted instance</Heading>
-            <p class="text">
-                Export data from your project to a self-hosted instance. <a
-                    class="link"
-                    href="https://appwrite.io/docs/advanced/migrations/self-hosted"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Learn more in our documentation.</a>
-            </p>
+            <svelte:fragment slot="title">Export To Self-hosted Instance</svelte:fragment>
+            Export data from your project to a self-hosted instance.
+            <a
+                class="link"
+                href="https://appwrite.io/docs/advanced/migrations/self-hosted"
+                target="_blank"
+                rel="noopener noreferrer">
+                Learn more in our documentation.</a>
             <svelte:fragment slot="aside">
                 <div class="import-box">
                     <div class="u-flex u-cross-center u-gap-8">

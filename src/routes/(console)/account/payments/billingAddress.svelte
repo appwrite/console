@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, DropList, DropListItem, Empty, Heading } from '$lib/components';
+    import { CardGrid, DropList, DropListItem, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -40,12 +40,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Billing Address</Heading>
-
-    <p class="text">
-        View or update your billing address. This address will be included in your invoices from
-        Appwrite.
-    </p>
+    <svelte:fragment slot="title">Billing Address</svelte:fragment>
+    View or update your billing address. This address will be included in your invoices from Appwrite.
     <svelte:fragment slot="aside">
         {#if $addressList.total && countryList?.total}
             <Table noMargin noStyles transparent>

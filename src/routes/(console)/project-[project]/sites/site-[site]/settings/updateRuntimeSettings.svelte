@@ -60,12 +60,9 @@
 
 <Form onSubmit={updateRuntime}>
     <CardGrid>
-        <Heading tag="h6" size="7">Runtime settings</Heading>
-        <p class="text">
-            Select the runtime for building and serving your site. Version changes apply on redeploy
-            and can be updated here.
-        </p>
-
+        <svelte:fragment slot="title">Runtime Settings</svelte:fragment>
+        Select the runtime for building and serving your site. Version changes apply on redeploy and
+        can be updated here.
         <svelte:fragment slot="aside">
             <InputSelect
                 label="Build runtime"

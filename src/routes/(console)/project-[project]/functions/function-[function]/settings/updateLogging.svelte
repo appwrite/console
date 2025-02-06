@@ -67,11 +67,8 @@
 
 <Form onSubmit={updateLogging}>
     <CardGrid>
-        <Heading tag="h6" size="7">Execution logs</Heading>
-        <p>
-            Enable or disable execution logs. We recommend disabling them for better performance in
-            production.
-        </p>
+        <svelte:fragment slot="title">Execution Logs</svelte:fragment>
+        Enable or disable execution logs. We recommend disabling them for better performance in production.
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch label="Logs" id="logging" bind:value={functionLogging}>

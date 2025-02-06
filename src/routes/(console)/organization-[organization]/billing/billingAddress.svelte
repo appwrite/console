@@ -51,12 +51,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Billing address</Heading>
-
-    <p class="text">
-        View or update your billing address. This address will be included in your invoices from
-        Appwrite.
-    </p>
+    <svelte:fragment slot="title">Billing address</svelte:fragment>
+    View or update your billing address. This address will be included in your invoices from Appwrite.
     <svelte:fragment slot="aside">
         {#if $organization?.billingAddressId && billingAddress}
             <div class="box">

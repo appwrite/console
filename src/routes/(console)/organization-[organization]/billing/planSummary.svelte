@@ -31,12 +31,9 @@
 
 {#if $organization}
     <CardGrid>
-        <Heading tag="h2" size="6">Payment estimates</Heading>
-
-        <p class="text">
-            A breakdown of your estimated upcoming payment for the current billing period. Totals
-            displayed exclude accumulated credits and applicable taxes.
-        </p>
+        <svelte:fragment slot="title">Payment Estimates</svelte:fragment>
+        A breakdown of your estimated upcoming payment for the current billing period. Totals displayed
+        exclude accumulated credits and applicable taxes.
         <svelte:fragment slot="aside">
             <p class="text u-bold">
                 Billing period: {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(

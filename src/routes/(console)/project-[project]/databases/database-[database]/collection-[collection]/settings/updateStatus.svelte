@@ -46,8 +46,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">{$collection.name}</Heading>
-
+    <svelte:fragment slot="title">{$collection.name}</svelte:fragment>
     <svelte:fragment slot="aside">
         <ul>
             <InputSwitch

@@ -1,12 +1,5 @@
 <script lang="ts">
-    import {
-        CardGrid,
-        CreditCardInfo,
-        DropList,
-        DropListItem,
-        Empty,
-        Heading
-    } from '$lib/components';
+    import { CardGrid, CreditCardInfo, DropList, DropListItem, Empty } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -45,12 +38,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Payment Methods</Heading>
-
-    <p class="text">
-        View or update your payment methods. These can be applied to any organizations you have
-        created.
-    </p>
+    <svelte:fragment slot="title">Payment Methods</svelte:fragment>
+    View or update your payment methods. These can be applied to any organizations you have created.
     <svelte:fragment slot="aside">
         {#if $paymentMethods?.total && filteredMethods?.length > 0}
             <Table noMargin noStyles transparent>

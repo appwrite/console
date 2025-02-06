@@ -68,12 +68,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Payment history</Heading>
-
-    <p class="text">
-        Transaction history for this organization. Download invoices for more details about your
-        payments.
-    </p>
+    <svelte:fragment slot="title">Payment History</svelte:fragment>
+    Transaction history for this organization. Download invoices for more details about your payments.
     <svelte:fragment slot="aside">
         {#if invoiceList.total > 0}
             <TableScroll noMargin transparent noStyles>

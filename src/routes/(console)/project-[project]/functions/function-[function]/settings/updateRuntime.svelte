@@ -90,8 +90,7 @@
 
 <Form onSubmit={updateRuntime}>
     <CardGrid>
-        <Heading tag="h6" size="7">Runtime</Heading>
-
+        <svelte:fragment slot="title">Runtime</svelte:fragment>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSelect

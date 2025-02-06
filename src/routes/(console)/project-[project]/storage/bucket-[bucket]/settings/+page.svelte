@@ -224,8 +224,7 @@
     {#if $bucket}
         <Form onSubmit={toggleBucket}>
             <CardGrid>
-                <Heading tag="h2" size="7">{$bucket.name}</Heading>
-
+                <svelte:fragment slot="title">{$bucket.name}</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <div>
                         <FormList>
@@ -252,7 +251,7 @@
 
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
+                <svelte:fragment slot="title">Name</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputText
@@ -278,16 +277,15 @@
 
         <Form onSubmit={updatePermissions}>
             <CardGrid hideOverflow>
-                <Heading tag="h6" size="7" id="permissions">Permissions</Heading>
-                <p class="text">
-                    Choose who can access your buckets and files. For more information, visit our <a
-                        href="https://appwrite.io/docs/advanced/platform/permissions"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="link">
-                        Permissions guide
-                    </a>.
-                </p>
+                <svelte:fragment slot="title">Permissions</svelte:fragment>
+                Choose who can access your buckets and files. For more information, visit our
+                <a
+                    href="https://appwrite.io/docs/advanced/platform/permissions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link">
+                    Permissions guide
+                </a>.
                 <svelte:fragment slot="aside">
                     {#if bucketPermissions}
                         <Permissions bind:permissions={bucketPermissions} withCreate />
@@ -301,7 +299,7 @@
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7" id="file-security">File security</Heading>
+                <svelte:fragment slot="title">File Security</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
@@ -332,11 +330,9 @@
 
         <Form onSubmit={updateSecurity}>
             <CardGrid>
-                <Heading tag="h2" size="7">Security settings</Heading>
-                <p class="text">
-                    Enable or disable security services for the bucket including <b>Ecryption</b>
-                    and <b>Antivirus scanning.</b>
-                </p>
+                <svelte:fragment slot="title">Security Settings</svelte:fragment>
+                Enable or disable security services for the bucket including <b>Ecryption</b>
+                and <b>Antivirus scanning.</b>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputChoice
@@ -371,11 +367,9 @@
 
         <Form onSubmit={updateCompression}>
             <CardGrid>
-                <Heading tag="h2" size="6">Compression</Heading>
-                <p class="text">
-                    Choose an algorithm for compression. For files larger than 20MB, compression
-                    will be skipped even if it's enabled.
-                </p>
+                <svelte:fragment slot="title">Compression</svelte:fragment>
+                Choose an algorithm for compression. For files larger than 20MB, compression will be
+                skipped even if it's enabled.
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSelect
@@ -396,11 +390,9 @@
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid hideOverflow>
-                <Heading tag="h6" size="7" id="extensions">Allowed file extensions</Heading>
-                <p class="text">
-                    Allowed file extensions. A maximum of 100 file extensions can be added. Leave
-                    blank to allow all file types.
-                </p>
+                <svelte:fragment slot="title">Allowed File Extension</svelte:fragment>
+                Allowed file extensions. A maximum of 100 file extensions can be added. Leave blank to
+                allow all file types.
                 <svelte:fragment slot="aside">
                     <ul class="common-section">
                         <InputTags
@@ -437,11 +429,9 @@
         </Form>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Delete bucket</Heading>
-            <p class="text">
-                The bucket will be permanently deleted, including all the files within it. This
-                action is irreversible.
-            </p>
+            <svelte:fragment slot="title">Delete Bucket</svelte:fragment>
+            The bucket will be permanently deleted, including all the files within it. This action is
+            irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="title">

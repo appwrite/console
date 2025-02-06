@@ -60,9 +60,8 @@
 
 <Form onSubmit={updateSPA}>
     <CardGrid>
-        <Heading tag="h6" size="7">Single page application</Heading>
-        <p>Provide a fallback file for advanced routing and proper page handling in SPA mode.</p>
-
+        <svelte:fragment slot="title">Single Page Application</svelte:fragment>
+        Provide a fallback file for advanced routing and proper page handling in SPA mode.
         <svelte:fragment slot="aside">
             <InputChoice
                 id="spa"

@@ -95,9 +95,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6" id="paymentMethod">Payment methods</Heading>
-
-    <p class="text">View or update your organization payment methods here.</p>
+    <svelte:fragment slot="title">Payment Methods</svelte:fragment>
+    View or update your organization payment methods here.
     <svelte:fragment slot="aside">
         <div class="u-flex u-flex-vertical u-gap-8">
             {#if $organization?.paymentMethodId}

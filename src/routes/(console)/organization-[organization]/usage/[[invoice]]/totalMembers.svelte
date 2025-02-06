@@ -27,9 +27,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Members</Heading>
-
-    <p class="text">The number of members in your organization.</p>
+    <svelte:fragment slot="title">Members</svelte:fragment>
+    The number of members in your organization.
     <svelte:fragment slot="aside">
         {#if $organization.billingPlan !== BillingPlan.FREE}
             <div class="u-flex u-flex-vertical">

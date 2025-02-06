@@ -85,9 +85,7 @@
 <Container>
     {@const accessedAt = $key.accessedAt ? toLocaleDate($key.accessedAt) : 'never'}
     <CardGrid>
-        <div data-private>
-            <Heading tag="h6" size="7">{$key.name}</Heading>
-        </div>
+        <svelte:fragment slot="title">{$key.name}</svelte:fragment>
         <svelte:fragment slot="aside">
             <p>
                 Last accessed: {accessedAt}<br />
@@ -97,7 +95,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">API key secret</Heading>
+        <svelte:fragment slot="title">API Key Secret</svelte:fragment>
         <svelte:fragment slot="aside">
             <Secret copyEvent="key" bind:value={secret} />
         </svelte:fragment>
@@ -105,8 +103,8 @@
 
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
-            <p class="text">Choose any name that will help you distinguish between API keys.</p>
+            <svelte:fragment slot="title">Name</svelte:fragment>
+            Choose any name that will help you distinguish between API keys.
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputText
@@ -125,11 +123,9 @@
     </Form>
     <Form onSubmit={updateScopes}>
         <CardGrid>
-            <Heading tag="h6" size="7">Scopes</Heading>
-            <p class="text">
-                You can choose which permission scope to grant your application. It is a best
-                practice to allow only the permissions you need to meet your project goals.
-            </p>
+            <svelte:fragment slot="title">Scopes</svelte:fragment>
+            You can choose which permission scope to grant your application. It is a best practice to
+            allow only the permissions you need to meet your project goals.
             <svelte:fragment slot="aside">
                 {#if scopes !== null}
                     <Scopes bind:scopes />
@@ -148,11 +144,9 @@
 
     <UpdateExpirationDate />
 
-    <CardGrid danger>
-        <div>
-            <Heading tag="h6" size="7">Delete API key</Heading>
-        </div>
-        <p>The API key will be permanently deleted. This action is irreversible.</p>
+    <CardGrid>
+        <svelte:fragment slot="title">Delete API Key</svelte:fragment>
+        The API key will be permanently deleted. This action is irreversible.
         <svelte:fragment slot="aside">
             <Box>
                 <div class="u-flex u-gap-16">

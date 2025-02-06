@@ -80,12 +80,9 @@
     </div>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Bandwidth</Heading>
-
-        <p class="text">
-            Calculated for all bandwidth used across all projects in your organization. Resets at
-            the start of each billing cycle.
-        </p>
+        <svelte:fragment slot="title">Bandwidth</svelte:fragment>
+        Calculated for all bandwidth used across all projects in your organization. Resets at the start
+        of each billing cycle.
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.bandwidth}
@@ -147,9 +144,8 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Users</Heading>
-
-        <p class="text">The total number of users across all projects in your organization.</p>
+        <svelte:fragment slot="title">Users</svelte:fragment>
+        The total number of users across all projects in your organization.
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.users}
                 {@const current = data.organizationUsage.usersTotal}
@@ -199,11 +195,8 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Database reads and writes</Heading>
-
-        <p class="text">
-            The total number of database reads and writes across all projects in your organization.
-        </p>
+        <svelte:fragment slot="title">Database reads and writes</svelte:fragment>
+        The total number of database reads and writes across all projects in your organization.
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.databasesReads || data.organizationUsage.databasesWrites}
                 <div style:margin-top="-1.5em" style:margin-bottom="-1em">
@@ -260,11 +253,8 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Executions</Heading>
-
-        <p class="text">
-            Calculated for all functions that are executed in all projects in your organization.
-        </p>
+        <svelte:fragment slot="title">Executions</svelte:fragment>
+        Calculated for all functions that are executed in all projects in your organization.
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.executionsTotal}
@@ -317,11 +307,8 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Storage</Heading>
-
-        <p class="text">
-            Calculated for all your files, deployments, builds, databases and backups.
-        </p>
+        <svelte:fragment slot="title">Storage</svelte:fragment>
+        Calculated for all your files, deployments, builds, databases and backups.
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.storageTotal}
@@ -388,12 +375,9 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">GB hours</Heading>
-
-        <p class="text">
-            GB hours represent the memory usage (in gigabytes) of your function executions and
-            builds, multiplied by the total execution time (in hours).
-        </p>
+        <svelte:fragment slot="title">GB hours</svelte:fragment>
+        GB hours represent the memory usage (in gigabytes) of your function executions and builds, multiplied
+        by the total execution time (in hours).
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.storageTotal}
@@ -449,15 +433,12 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Phone OTP</Heading>
-        <p class="text">
-            OTPs are billed per SMS message, with rates varying by recipient country. For a detailed
-            cost breakdown, see the <a
-                href="https://appwrite.io/docs/advanced/platform/phone-otp"
-                class="link">pricing page</a
-            >.
-        </p>
-        <p>You will not be charged for Phone OTPs before February 10th.</p>
+        <svelte:fragment slot="title">Phone OTP</svelte:fragment>
+        OTPs are billed per SMS message, with rates varying by recipient country. For a detailed cost
+        breakdown, see the
+        <a href="https://appwrite.io/docs/advanced/platform/phone-otp" class="link">pricing page</a
+        >.<br />
+        You will not be charged for Phone OTPs before February 10th.
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.authPhoneTotal}
                 <div class="u-flex u-main-space-between">

@@ -53,7 +53,7 @@
             <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
             <Button on:mousedown={() => ($showCreateUser = true)} event="create_user" size="s">
                 <Icon size="s" icon={IconPlus} slot="start" />
                 <span class="text">Create user</span>
@@ -124,12 +124,12 @@
                                             type={success ? 'success' : undefined}
                                             content={user.emailVerification &&
                                             user.phoneVerification
-                                                ? 'verified'
+                                                ? 'Verified'
                                                 : user.emailVerification
-                                                  ? 'verified email'
+                                                  ? 'Verified email'
                                                   : user.phoneVerification
-                                                    ? 'verified phone'
-                                                    : 'unverified'} />
+                                                    ? 'Verified phone'
+                                                    : 'Unverified'} />
                                     {:else}
                                         <Badge
                                             size="xs"

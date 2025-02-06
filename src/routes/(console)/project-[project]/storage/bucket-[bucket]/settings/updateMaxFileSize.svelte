@@ -37,8 +37,8 @@
 
 <Form onSubmit={updateMaxSize}>
     <CardGrid>
-        <Heading tag="h2" size="7">Maximum file size</Heading>
-        <p class="text">Set the maximum file size allowed in the bucket.</p>
+        <svelte:fragment slot="title">Maximum File Size</svelte:fragment>
+        Set the maximum file size allowed in the bucket.
         <svelte:fragment slot="aside">
             {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}

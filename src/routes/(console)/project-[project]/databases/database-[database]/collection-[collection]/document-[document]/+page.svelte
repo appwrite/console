@@ -57,7 +57,7 @@
 
 <Container>
     <CardGrid>
-        <Heading tag="h2" size="7">Metadata</Heading>
+        <svelte:fragment slot="title">Metadata</svelte:fragment>
         <svelte:fragment slot="aside">
             <div>
                 <p>Created: {toLocaleDateTime($doc.$createdAt)}</p>
@@ -66,19 +66,16 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h6" size="7">Permissions</Heading>
-        <p>
-            A user requires appropriate permissions at either the <b>collection level</b> or
-            <b>document level</b> to access a document. If no permissions are configured, no user
-            can access the document
-            <a
-                href="https://appwrite.io/docs/products/databases/permissions"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">Learn more about database permissions</a
-            >.
-        </p>
-
+        <svelte:fragment slot="title">Permissions</svelte:fragment>
+        A user requires appropriate permissions at either the <b>collection level</b> or
+        <b>document level</b> to access a document. If no permissions are configured, no user can
+        access the document
+        <a
+            href="https://appwrite.io/docs/products/databases/permissions"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">Learn more about database permissions</a
+        >.
         <svelte:fragment slot="aside">
             {#if $collection.documentSecurity}
                 {#if showPermissionAlert}
@@ -115,12 +112,9 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid danger>
-        <Heading tag="h6" size="7">Delete document</Heading>
-        <p>
-            The document will be permanently deleted, including all the data within it. This action
-            is irreversible.
-        </p>
+    <CardGrid>
+        <svelte:fragment slot="title">Delete Document</svelte:fragment>
+        The document will be permanently deleted, including all the data within it. This action is irreversible.
         <svelte:fragment slot="aside">
             <BoxAvatar>
                 <svelte:fragment slot="title">

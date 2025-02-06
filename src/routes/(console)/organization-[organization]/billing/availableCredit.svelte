@@ -91,11 +91,10 @@
 </script>
 
 <CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
-    <Heading tag="h2" size="6">
+    <svelte:fragment slot="title">
         {$organization?.billingPlan === BillingPlan.FREE ? 'Credits' : 'Available credit'}
-    </Heading>
-
-    <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
+    </svelte:fragment>
+    Appwrite credit will automatically be applied to your next invoice.
     <svelte:fragment slot="aside">
         {#if $organization?.billingPlan === BillingPlan.FREE}
             <Alert type="info">

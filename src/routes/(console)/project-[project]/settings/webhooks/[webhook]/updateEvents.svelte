@@ -69,10 +69,8 @@
 
 <Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Events</Heading>
-        <p class="text">
-            Set the events that will trigger your webhook. Maximum 100 events allowed.
-        </p>
+        <svelte:fragment slot="title">Events</svelte:fragment>
+        Set the events that will trigger your webhook. Maximum 100 events allowed.
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
                 <TableList>

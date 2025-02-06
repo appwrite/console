@@ -58,11 +58,9 @@
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">Preferences</Heading>
-        <p>
-            You can update your team's preferences by storing shared information on the teams's
-            objects so they can easily be shared across members.
-        </p>
+        <svelte:fragment slot="title">Preferences</svelte:fragment>
+        You can update your team's preferences by storing shared information on the teams's objects so
+        they can easily be shared across members.
         <svelte:fragment slot="aside">
             {#if prefs}
                 {#each prefs as [key, value], index}

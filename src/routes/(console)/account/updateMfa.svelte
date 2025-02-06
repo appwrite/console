@@ -136,7 +136,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Multi-factor authentication</Heading>
+    <svelte:fragment slot="title">Multi-factor authentication</svelte:fragment>
 
     <svelte:fragment slot="aside">
         <div class="u-flex u-flex-vertical u-gap-32">

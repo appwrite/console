@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -33,10 +33,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Identities</Heading>
-    <p class="text">
-        Identities are your connected GitHub accounts. You can sign in using these accounts.
-    </p>
+    <svelte:fragment slot="title">Identities</svelte:fragment>
+    Identities are your connected GitHub accounts. You can sign in using these accounts.
 
     <svelte:fragment slot="aside">
         {#if $identities.length === 0}

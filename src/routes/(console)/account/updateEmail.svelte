@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputPassword, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -37,8 +37,7 @@
 
 <Form onSubmit={updateEmail}>
     <CardGrid>
-        <Heading tag="h2" size="7">Email</Heading>
-
+        <svelte:fragment slot="title">Email</svelte:fragment>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText id="email" label="Email" placeholder="Enter email" bind:value={email} />

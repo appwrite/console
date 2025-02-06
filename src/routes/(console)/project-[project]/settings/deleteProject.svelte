@@ -43,13 +43,9 @@
 </script>
 
 <CardGrid>
-    <div>
-        <Heading tag="h6" size="7">Delete project</Heading>
-    </div>
-    <p>
-        The project will be permanently deleted, including all the metadata, resources and stats
-        within it. This action is irreversible.
-    </p>
+    <svelte:fragment slot="title">Delete Project</svelte:fragment>
+    The project will be permanently deleted, including all the metadata, resources and stats within it.
+    This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

@@ -71,8 +71,7 @@
 
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
-
+                <svelte:fragment slot="title">Name</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <ul>
                         <InputText
@@ -96,15 +95,10 @@
             </CardGrid>
         </Form>
 
-        <CardGrid danger>
-            <div>
-                <Heading tag="h6" size="7">Delete database</Heading>
-            </div>
-
-            <p>
-                The database will be permanently deleted, including all collections within it. This
-                action is irreversible.
-            </p>
+        <CardGrid>
+            <svelte:fragment slot="title">Delete Database</svelte:fragment>
+            The database will be permanently deleted, including all collections within it. This action
+            is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="title">

@@ -2,7 +2,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
-    import { CardGrid, Heading, Empty, Output, PaginationInline } from '$lib/components';
+    import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -192,22 +192,16 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7" id="variables">
-        {isGlobal ? 'Global variables' : 'Environment variables'}
-    </Heading>
+    <svelte:fragment slot="title"
+        >{isGlobal ? 'Global variables' : 'Environment variables'}</svelte:fragment>
     {#if isGlobal}
-        <p>
-            Set the environment variables or secret keys that will be passed to all functions and
-            sites within your project.
-        </p>
+        Set the environment variables or secret keys that will be passed to all functions and sites
+        within your project.
     {:else}
-        <p>
-            Set the environment variables or secret keys that will be passed to your {product}.
-            Global variables can be found in <Link
-                href={`${base}/project-${$project.$id}/settings#variables`}>
-                project settings</Link
-            >.
-        </p>
+        Set the environment variables or secret keys that will be passed to your {product}. Global
+        variables can be found in <Link href={`${base}/project-${$project.$id}/settings#variables`}>
+            project settings</Link
+        >.
     {/if}
     <svelte:fragment slot="aside">
         <Layout.Stack justifyContent="space-between" direction="row">

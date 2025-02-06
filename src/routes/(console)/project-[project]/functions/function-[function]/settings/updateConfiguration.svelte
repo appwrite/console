@@ -168,16 +168,13 @@
 
 <Form onSubmit={updateConfiguration}>
     <CardGrid>
-        <Heading tag="h6" size="7">Configuration</Heading>
-        <p class="text">
-            Connect a Git repository for automatic deployments, or set install and build commands
-            for your function.
-        </p>
+        <svelte:fragment slot="title">Configuration</svelte:fragment>
+        Connect a Git repository for automatic deployments, or set install and build commands for your
+        function.
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText
                     required
-                    hideRequired
                     label="Entrypoint"
                     id="Entrypoint"
                     placeholder="Enter an entrypoint (e.g. 'index.js')"

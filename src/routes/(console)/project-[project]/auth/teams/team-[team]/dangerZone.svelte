@@ -7,15 +7,10 @@
     let showDelete = false;
 </script>
 
-<CardGrid danger>
-    <div>
-        <Heading tag="h6" size="7">Delete team</Heading>
-    </div>
-
-    <p>
-        The team will be permanently deleted, including all data associated with this team. This
-        action is irreversible.
-    </p>
+<CardGrid>
+    <svelte:fragment slot="title">Delete Team</svelte:fragment>
+    The team will be permanently deleted, including all data associated with this team. This action is
+    irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="image">

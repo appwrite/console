@@ -90,11 +90,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Git configuration</Heading>
-    <p class="text">
-        Add a Git installation to your project. You can connect a repository in your function
-        settings.
-    </p>
+    <svelte:fragment slot="title">Git Configuration</svelte:fragment>
+    Add a Git installation to your project. You can connect a repository in your function settings.
     <svelte:fragment slot="aside">
         {#if total > 0}
             <div>

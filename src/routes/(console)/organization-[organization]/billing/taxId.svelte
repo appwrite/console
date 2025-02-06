@@ -36,7 +36,7 @@
 
 <Form onSubmit={updateTaxId}>
     <CardGrid>
-        <Heading tag="h2" size="6">Tax ID</Heading>
+        <svelte:fragment slot="title">Tax ID</svelte:fragment>
         Add a tax identification number to your organization.
         <svelte:fragment slot="aside">
             <FormList>

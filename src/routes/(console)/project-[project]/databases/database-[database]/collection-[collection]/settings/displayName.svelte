@@ -57,12 +57,10 @@
 
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
-        <Heading tag="h6" size="7" id="display-name">Display name</Heading>
-        <p class="text">
-            Select string attributes as display names for your documents. The selected names will be
-            used as short forms to identify documents in the Appwrite console, like when creating
-            database relationships. You can specify up to 5 names.
-        </p>
+        <svelte:fragment slot="title">Display Name</svelte:fragment>
+        Select string attributes as display names for your documents. The selected names will be used
+        as short forms to identify documents in the Appwrite console, like when creating database relationships.
+        You can specify up to 5 names.
 
         <svelte:fragment slot="aside">
             <div class="u-flex u-flex-vertical u-gap-4">

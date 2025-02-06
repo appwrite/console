@@ -40,10 +40,8 @@
 
 <Form onSubmit={updateMembershipsPrivacy}>
     <CardGrid>
-        <Heading tag="h2" size="7" id="personal-data">Memberships privacy</Heading>
-        <Typography.Text>
-            Set privacy preferences to manage which details team members can view about one another.
-        </Typography.Text>
+        <svelte:fragment slot="title">Memberships Privacy</svelte:fragment>
+        Set privacy preferences to manage which details team members can view about one another.
         <svelte:fragment slot="aside">
             <Selector.Checkbox
                 id="membershipsUserName"

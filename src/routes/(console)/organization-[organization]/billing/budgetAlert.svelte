@@ -81,18 +81,15 @@
 
 <Form onSubmit={updateBudget}>
     <CardGrid>
-        <Heading tag="h2" size="6">Billing alerts</Heading>
-
-        <p class="text">
-            {#if !$currentPlan.budgeting}
-                Get notified by email when your organization meets a percentage of your budget cap. <b
-                    >{tierToPlan($organization.billingPlan).name} organizations will receive one notification
-                    at 75% resource usage.</b>
-            {:else}
-                Get notified by email when your organization meets or exceeds a percentage of your
-                specified billing alert(s).
-            {/if}
-        </p>
+        <svelte:fragment slot="title">Billing alerts</svelte:fragment>
+        {#if !$currentPlan.budgeting}
+            Get notified by email when your organization meets a percentage of your budget cap. <b
+                >{tierToPlan($organization.billingPlan).name} organizations will receive one notification
+                at 75% resource usage.</b>
+        {:else}
+            Get notified by email when your organization meets or exceeds a percentage of your
+            specified billing alert(s).
+        {/if}
         <svelte:fragment slot="aside">
             {#if !$currentPlan.budgeting}
                 <Alert type="info">

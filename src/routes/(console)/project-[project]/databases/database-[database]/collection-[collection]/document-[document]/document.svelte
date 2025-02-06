@@ -79,8 +79,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Data</Heading>
-    <p>Update document data based on the attributes created earlier.</p>
+    <svelte:fragment slot="title">Data</svelte:fragment>
+    Update document data based on the attributes created earlier.
     <svelte:fragment slot="aside">
         <AttributeForm attributes={$collection.attributes} bind:formValues={$work} gap="16" />
     </svelte:fragment>

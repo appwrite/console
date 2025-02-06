@@ -8,12 +8,10 @@
     let showDelete = false;
 </script>
 
-<CardGrid danger>
-    <Heading tag="h6" size="7">Delete collection</Heading>
-    <p>
-        The collection will be permanently deleted, including all the documents within it. This
-        action is irreversible.
-    </p>
+<CardGrid>
+    <svelte:fragment slot="title">Delete Collection</svelte:fragment>
+    The collection will be permanently deleted, including all the documents within it. This action is
+    irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">
