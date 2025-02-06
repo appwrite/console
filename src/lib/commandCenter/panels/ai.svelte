@@ -231,7 +231,7 @@
     <Layout.Stack slot="footer">
         <Layout.Stack gap="l">
             <Layout.Stack direction="row" gap="s">
-                <AvatarInitials size={32} name={$user.name} />
+                <AvatarInitials size="s" name={$user.name} />
                 <form
                     class="input-text-wrapper u-width-full-line"
                     style="--amount-of-buttons: 1;"
@@ -257,9 +257,8 @@
                     </div>
                 </form>
             </Layout.Stack>
-
-            <Layout.Stack direction="row" justifyContent="space-between" gap="xxl"
-                ><Layout.Stack direction="row" alignItems="center" gap="xxs">
+            <Layout.Stack direction="row" justifyContent="space-between" gap="xxl">
+                <Layout.Stack direction="row" alignItems="center" gap="xxs">
                     <Keyboard key="Enter" autoWidth={true} /> <span>to search</span></Layout.Stack>
                 <Layout.Stack
                     direction="row"

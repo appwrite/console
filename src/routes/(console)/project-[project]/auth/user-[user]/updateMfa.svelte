@@ -20,6 +20,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let showDelete = false;
     let userMfa: boolean = null;
@@ -81,9 +83,9 @@
                         </TableRow>
                     </TableBody>
                 </Table>
-                <Button disabled text noMargin>
-                    <span class="icon-plus" />
-                    <span class="text">Add authentication factor</span>
+                <Button disabled text>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add authentication factor
                 </Button>
             {:else}
                 <EmptySearch hidePagination hidePages>

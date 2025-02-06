@@ -7,6 +7,8 @@
     import { Alert, Card, CreditCardBrandImage } from '..';
     import PaymentModal from './paymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let methods: PaymentList;
     export let value: string;
@@ -91,8 +93,8 @@
         </span>
         <svelte:fragment slot="listEnd">
             <Button text on:click={() => (showPaymentModal = true)}>
-                <span class="icon-plus"></span>
-                <span class="text">Add new payment method</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add new payment method
             </Button>
         </svelte:fragment>
     </InputSelectSearch>
@@ -116,7 +118,8 @@
                     <span class="text">No saved payment methods</span>
                 </p>
                 <Button secondary on:click={() => (showPaymentModal = true)}>
-                    <span class="icon-plus"></span> <span class="text">Add</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add
                 </Button>
             </div>
         </Card>

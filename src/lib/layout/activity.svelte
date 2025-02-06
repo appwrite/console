@@ -27,10 +27,10 @@
                         <Layout.Stack direction="row" alignItems="center">
                             {#if log.userEmail}
                                 {#if log.userName}
-                                    <AvatarInitials size={32} name={log.userName} />
+                                    <AvatarInitials size="xs" name={log.userName} />
                                     <Trim>{log.userName}</Trim>
                                 {:else}
-                                    <AvatarInitials size={32} name={log.userEmail} />
+                                    <AvatarInitials size="xs" name={log.userEmail} />
                                     <Trim>{log.userEmail}</Trim>
                                 {/if}
                             {:else}

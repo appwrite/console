@@ -8,7 +8,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -99,8 +100,8 @@
                         prefs = prefs;
                     }
                 }}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add preference</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add preference
             </Button>
         </svelte:fragment>
 

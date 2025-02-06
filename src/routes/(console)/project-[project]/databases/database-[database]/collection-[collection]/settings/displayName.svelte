@@ -10,6 +10,8 @@
     import { attributes } from '../store';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/stores';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     const collectionId = $page.params.collection;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
@@ -121,7 +123,6 @@
                     {/if}
                 </ul>
                 <Button
-                    noMargin
                     text
                     disabled={addAttributeDisabled}
                     on:click={() => {
@@ -129,8 +130,8 @@
                         search = null;
                         names = names;
                     }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add attribute</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add attribute
                 </Button>
             </div>
         </svelte:fragment>

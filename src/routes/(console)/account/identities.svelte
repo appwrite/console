@@ -10,7 +10,8 @@
     import { Dependencies } from '$lib/constants';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import EmptySearch from '$lib/components/emptySearch.svelte';
-    import { Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { IconTrash } from '@appwrite.io/pink-icons-svelte';
 
     async function deleteIdentity(id: string) {
         try {
@@ -80,8 +81,9 @@
                             <Button
                                 text
                                 class="is-only-icon"
-                                on:click={() => deleteIdentity(identity.$id)}
-                                ><span class="icon-trash" aria-hidden="true" /></Button>
+                                on:click={() => deleteIdentity(identity.$id)}>
+                                <Icon icon={IconTrash} size="s" />
+                            </Button>
                         </Table.Cell>
                     </Table.Row>
                 {/each}

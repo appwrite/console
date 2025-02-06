@@ -6,8 +6,8 @@
     import { onMount } from 'svelte';
     import { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
-    import { ActionMenu, Layout, Popover, ToggleButton } from '@appwrite.io/pink-svelte';
-    import { IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
+    import { ActionMenu, Icon, Layout, Popover, ToggleButton } from '@appwrite.io/pink-svelte';
+    import { IconViewBoards, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
     import { goto } from '$app/navigation';
 
     export let columns: Writable<Column[]>;
@@ -82,15 +82,16 @@
 {#if !hideColumns && view === View.Table}
     {#if $columns?.length}
         <Popover let:toggle>
-            <Button size="s" secondary on:click={toggle} {fullWidthMobile}>
-                <span
-                    class="icon-view-boards u-opacity-50"
-                    aria-hidden="true"
-                    aria-label="columns" />
+            <Button
+                size="s"
+                secondary
+                badge={selectedColumnsNumber.toString()}
+                on:click={toggle}
+                {fullWidthMobile}>
+                <Icon slot="start" icon={IconViewBoards} />
                 {#if !hideText}
                     <span class="text {showColsTextMobile ? '' : 'is-only-desktop'}">Columns</span>
                 {/if}
-                <span class="inline-tag">{selectedColumnsNumber}</span>
             </Button>
             <svelte:fragment slot="tooltip">
                 <ActionMenu.Root>

@@ -22,6 +22,8 @@
     import type { Option } from '../attributes/store';
     import FailedModal from '../failedModal.svelte';
     import { canWriteCollections } from '$lib/stores/roles';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -44,8 +46,8 @@
                 event="create_index"
                 disabled={!$collection?.attributes?.length}
                 on:click={() => (showCreateIndex = true)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create index</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create index
             </Button>
         {/if}
     </div>

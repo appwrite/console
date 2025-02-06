@@ -26,6 +26,8 @@
     import { Button, Form } from '$lib/elements/forms';
     import UserTargetsModal from '../userTargetsModal.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     export let message: Models.Message & { data: Record<string, unknown> };
     export let selectedTargetsById: Record<string, Models.Target>;
@@ -176,12 +178,11 @@
                     {#if isDraft}
                         <Button
                             text
-                            noMargin
                             on:click={() => {
                                 showTargets = true;
                             }}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add
                         </Button>
                     {/if}
                 </div>

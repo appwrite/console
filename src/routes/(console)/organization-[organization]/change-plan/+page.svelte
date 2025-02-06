@@ -41,6 +41,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
@@ -310,7 +312,8 @@
                             text
                             class="u-margin-block-start-16 align-left"
                             on:click={() => (showCreditModal = true)}>
-                            <span class="icon-plus"></span> <span class="text">Add credits</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add credits
                         </Button>
                     {/if}
                 </FormList>

@@ -8,6 +8,8 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { hideNotification } from '$lib/helpers/notifications';
     import { backupsBannerId, showPolicyAlert } from '$lib/stores/database';
+    import { IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     function handleClose() {
         showPolicyAlert.set(false);
@@ -38,7 +40,7 @@
                 </Button>
 
                 <Button text on:click={handleClose} event="backup_banner_close">
-                    <span class="icon-x" aria-hidden="true"></span>
+                    <Icon icon={IconX} slot="start" size="s" />
                 </Button>
             </div>
         </svelte:fragment>

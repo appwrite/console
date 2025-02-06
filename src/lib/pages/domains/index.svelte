@@ -12,7 +12,8 @@
     import Retry from './wizard/retry.svelte';
     import { Pill } from '$lib/elements';
     import { canWriteRules } from '$lib/stores/roles';
-    import { Layout, Table, Link } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Link, Icon } from '@appwrite.io/pink-svelte';
+    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let rules: Models.ProxyRuleList;
     export let type: ResourceType;
@@ -46,7 +47,8 @@
 {#if $canWriteRules}
     <Layout.Stack alignItems="flex-end">
         <Button on:click={openWizard}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create domain</span>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create domain
         </Button>
     </Layout.Stack>
 {/if}
@@ -137,7 +139,7 @@
                                 ariaLabel="more options"
                                 on:click={() =>
                                     (showDomainsDropdown[index] = !showDomainsDropdown[index])}>
-                                <span class="icon-dots-horizontal" aria-hidden="true" />
+                                <Icon icon={IconDotsHorizontal} size="s" />
                             </Button>
                             <svelte:fragment slot="list">
                                 {#if domain.status !== 'verified'}

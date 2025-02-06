@@ -16,6 +16,8 @@
     import { View } from '$lib/helpers/load';
     import Create from './create.svelte';
     import { Pill } from '$lib/elements';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
     let showAdd = false;
@@ -46,8 +48,8 @@
             <!-- TODO: Remove u-hide to add creating a target -->
             <div class="is-only-mobile u-hide">
                 <Button on:click={() => (showAdd = true)} event="create_user_target">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add target</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add target
                 </Button>
             </div>
             <!-- TODO: Remove when searching is added -->
@@ -62,8 +64,8 @@
                         showColsTextMobile />
                     <div class="u-hide">
                         <Button on:click={() => (showAdd = true)} event="create_user_target">
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add target</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add target
                         </Button>
                     </div>
                 </div>

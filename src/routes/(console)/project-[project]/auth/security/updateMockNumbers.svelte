@@ -17,7 +17,8 @@
     import { app } from '$lib/stores/app';
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -217,8 +218,8 @@
                                 otp: generateOTP()
                             })}
                         disabled={numbers.length >= 10}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Add number</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add number
                     </Button>
                 {/if}
             {:else}

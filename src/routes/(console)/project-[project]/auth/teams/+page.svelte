@@ -21,7 +21,8 @@
     import type { PageData } from './$types';
     import { writable } from 'svelte/store';
     import { canWriteTeams } from '$lib/stores/roles';
-    import { Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -38,8 +39,8 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button on:mousedown={() => ($showCreateTeam = true)} event="create_user" size="s">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create team</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create team
             </Button>
         </Layout.Stack>
     </Layout.Stack>
@@ -55,7 +56,7 @@
                 <Table.Link href={`${base}/project-${project}/auth/teams/team-${team.$id}`}>
                     <Table.Cell>
                         <Layout.Stack direction="row" alignItems="center">
-                            <AvatarInitials size={32} name={team.name} />
+                            <AvatarInitials size="xs" name={team.name} />
                             <span class="u-trim">{team.name}</span>
                         </Layout.Stack>
                     </Table.Cell>

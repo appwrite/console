@@ -9,7 +9,13 @@
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '../store';
     import { createEventDispatcher } from 'svelte';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import {
+        IconAzure,
+        IconBitBucket,
+        IconGithub,
+        IconGitlab
+    } from '@appwrite.io/pink-icons-svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -204,20 +210,20 @@
 {:else}
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
         <Button href={connectGitHub().toString()} fullWidth secondary>
-            <span class="icon-github" aria-hidden="true" />
-            <span class="text">GitHub</span>
+            <Icon icon={IconGithub} slot="start" size="s" />
+            GitHub
         </Button>
         <Button disabled fullWidth secondary>
-            <span class="icon-gitlab" aria-hidden="true" />
-            <span class="text">GitLab (coming soon)</span>
+            <Icon icon={IconGitlab} slot="start" size="s" />
+            GitLab (coming soon)
         </Button>
         <Button disabled fullWidth secondary>
-            <span class="icon-bitBucket" aria-hidden="true" />
-            <span class="text">BitBucket (coming soon)</span>
+            <Icon icon={IconBitBucket} slot="start" size="s" />
+            BitBucket (coming soon)
         </Button>
         <Button disabled fullWidth secondary>
-            <span class="icon-azure" aria-hidden="true" />
-            <span class="text">Azure (coming soon)</span>
+            <Icon icon={IconAzure} slot="start" size="s" />
+            Azure (coming soon)
         </Button>
     </div>
 {/if}

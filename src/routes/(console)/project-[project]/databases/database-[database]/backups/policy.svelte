@@ -16,7 +16,8 @@
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
     import { backupFrequencies } from '$lib/helpers/backups';
     import { trackEvent } from '$lib/actions/analytics';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let showDropdown = [];
     let showDelete = false;
@@ -263,8 +264,8 @@
                             event="create_policy"
                             class="small-radius-border-button"
                             on:click={() => (showCreatePolicy = true)}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Create policy</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create policy
                         </Button>
                     </div>
                 </div>
