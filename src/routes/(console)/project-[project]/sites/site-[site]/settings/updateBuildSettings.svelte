@@ -81,7 +81,7 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <svelte:fragment slot="title">Build Settings</svelte:fragment>
+        <svelte:fragment slot="title">Build settings</svelte:fragment>
         Default build settings are configured based on your framework, ensuring optimal performance.
         Adjust the settings here if needed.
         <svelte:fragment slot="aside">

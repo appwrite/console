@@ -90,7 +90,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Git Configuration</svelte:fragment>
+    <svelte:fragment slot="title">Git configuration</svelte:fragment>
     Add a Git installation to your project. You can connect a repository in your function settings.
     <svelte:fragment slot="aside">
         {#if total > 0}

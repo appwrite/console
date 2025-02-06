@@ -10,7 +10,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete Domain</svelte:fragment>
+    <svelte:fragment slot="title">Delete domain</svelte:fragment>
     Deleting this domain will remove the domain from all associated projects.
     <svelte:fragment slot="aside">
         <BoxAvatar>

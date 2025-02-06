@@ -23,7 +23,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete User</svelte:fragment>
+    <svelte:fragment slot="title">Delete user</svelte:fragment>
     The user will be permanently deleted, including all data associated with this user. This action is
     irreversible.
     <svelte:fragment slot="aside">

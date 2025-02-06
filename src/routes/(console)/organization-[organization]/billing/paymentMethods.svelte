@@ -95,7 +95,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Payment Methods</svelte:fragment>
+    <svelte:fragment slot="title">Payment methods</svelte:fragment>
     View or update your organization payment methods here.
     <svelte:fragment slot="aside">
         <div class="u-flex u-flex-vertical u-gap-8">

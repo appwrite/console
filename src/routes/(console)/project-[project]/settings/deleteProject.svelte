@@ -43,7 +43,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete Project</svelte:fragment>
+    <svelte:fragment slot="title">Delete project</svelte:fragment>
     The project will be permanently deleted, including all the metadata, resources and stats within it.
     This action is irreversible.
     <svelte:fragment slot="aside">

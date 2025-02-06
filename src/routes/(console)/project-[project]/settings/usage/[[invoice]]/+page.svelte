@@ -198,7 +198,7 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <svelte:fragment slot="title">Database Reads And Writes</svelte:fragment>
+        <svelte:fragment slot="title">Database reads and writes</svelte:fragment>
         Total database reads and writes in your project.
         <svelte:fragment slot="aside">
             {#if dbReads || dbWrites}
@@ -361,7 +361,7 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <svelte:fragment slot="title">GB Hours</svelte:fragment>
+        <svelte:fragment slot="title">GB hours</svelte:fragment>
         GB hours represent the memory usage (in gigabytes) of your function executions and builds, multiplied
         by the total execution time (in hours).
         <svelte:fragment slot="aside">

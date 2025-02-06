@@ -38,7 +38,7 @@
 
 <Form onSubmit={updatePasswordHistoryLimit}>
     <CardGrid>
-        <svelte:fragment slot="title">Password History</svelte:fragment>
+        <svelte:fragment slot="title">Password history</svelte:fragment>
         <svelte:fragment slot="aside">
             <InputSwitch
                 bind:value={passwordHistoryEnabled}

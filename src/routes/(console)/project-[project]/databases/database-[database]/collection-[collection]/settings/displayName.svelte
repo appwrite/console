@@ -57,7 +57,7 @@
 
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
-        <svelte:fragment slot="title">Display Name</svelte:fragment>
+        <svelte:fragment slot="title">Display name</svelte:fragment>
         Select string attributes as display names for your documents. The selected names will be used
         as short forms to identify documents in the Appwrite console, like when creating database relationships.
         You can specify up to 5 names.

@@ -47,7 +47,7 @@
 {#if $authMethods && $project}
     <Container>
         <CardGrid>
-            <svelte:fragment slot="title">Auth Methods</svelte:fragment>
+            <svelte:fragment slot="title">Auth methods</svelte:fragment>
             Enable the authentication methods you wish to use.
             <svelte:fragment slot="aside">
                 <Layout.Stack gap="l" direction="row" wrap="wrap">

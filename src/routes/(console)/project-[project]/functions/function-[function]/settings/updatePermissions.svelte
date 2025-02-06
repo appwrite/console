@@ -71,7 +71,7 @@
 
 <Form onSubmit={updatePermissions}>
     <CardGrid>
-        <svelte:fragment slot="title">Execute Access</svelte:fragment>
+        <svelte:fragment slot="title">Execute access</svelte:fragment>
         Choose who can execute this function using the client API. Learn more about
         <a
             href="https://appwrite.io/docs/advanced/platform/permissions"

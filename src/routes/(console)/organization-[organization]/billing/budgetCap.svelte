@@ -50,7 +50,7 @@
 
 <Form onSubmit={updateBudget}>
     <CardGrid>
-        <svelte:fragment slot="title">Budget Cap</svelte:fragment>
+        <svelte:fragment slot="title">Budget cap</svelte:fragment>
         Restrict your resource usage by setting a budget cap. Cap usage is reset at the beginning of
         each billing cycle.
         <svelte:fragment slot="aside">

@@ -31,7 +31,7 @@
 
 {#if $organization}
     <CardGrid>
-        <svelte:fragment slot="title">Payment Estimates</svelte:fragment>
+        <svelte:fragment slot="title">Payment estimates</svelte:fragment>
         A breakdown of your estimated upcoming payment for the current billing period. Totals displayed
         exclude accumulated credits and applicable taxes.
         <svelte:fragment slot="aside">

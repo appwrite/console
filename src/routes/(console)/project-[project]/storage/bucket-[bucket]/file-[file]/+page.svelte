@@ -155,7 +155,7 @@
         </CardGrid>
 
         <CardGrid>
-            <svelte:fragment slot="title">Delete File</svelte:fragment>
+            <svelte:fragment slot="title">Delete file</svelte:fragment>
             The file will be permanently deleted. This action is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>

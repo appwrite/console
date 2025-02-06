@@ -149,7 +149,7 @@
 </svelte:head>
 
 <WizardSecondaryContainer href={previousPage}>
-    <svelte:fragment slot="title">Execute Function</svelte:fragment>
+    <svelte:fragment slot="title">Execute function</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>

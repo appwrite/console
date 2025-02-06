@@ -45,7 +45,7 @@
 
 <Form onSubmit={updateExpire}>
     <CardGrid>
-        <svelte:fragment slot="title">Expiration Date</svelte:fragment>
+        <svelte:fragment slot="title">Expiration date</svelte:fragment>
         Set a date after which your API key will expire.
         <svelte:fragment slot="aside">
             {#if isExpired}

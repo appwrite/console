@@ -46,7 +46,7 @@
 
 <Form onSubmit={updateHostname}>
     <CardGrid>
-        <svelte:fragment slot="title">Package Name</svelte:fragment>
+        <svelte:fragment slot="title">Package name</svelte:fragment>
         Your package name is generally the applicationId in your app-level build.gradle file.
         <svelte:fragment slot="aside">
             <FormList>

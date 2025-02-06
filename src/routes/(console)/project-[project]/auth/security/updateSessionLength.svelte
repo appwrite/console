@@ -34,7 +34,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Session Length</svelte:fragment>
+    <svelte:fragment slot="title">Session length</svelte:fragment>
     If you reduce the limit, users who are currently logged in will be logged out of the application.
     <svelte:fragment slot="aside">
         <Layout.Stack direction="row">

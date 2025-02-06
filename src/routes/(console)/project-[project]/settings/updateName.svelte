@@ -41,7 +41,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">API Credentials</svelte:fragment>
+    <svelte:fragment slot="title">API credentials</svelte:fragment>
     Access Appwrite services using this project's API Endpoint and Project ID.
     <svelte:fragment slot="aside">
         <CopyInput label="Project ID" value={$project.$id} />

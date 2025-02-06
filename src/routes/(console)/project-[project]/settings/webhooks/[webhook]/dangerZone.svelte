@@ -9,7 +9,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete Webhooks</svelte:fragment>
+    <svelte:fragment slot="title">Delete webhooks</svelte:fragment>
     The webhook will be permanently deleted. This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>

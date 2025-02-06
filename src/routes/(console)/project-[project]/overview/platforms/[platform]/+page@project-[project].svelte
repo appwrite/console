@@ -93,7 +93,7 @@
     <svelte:component this={types[$platform.type]} />
 
     <CardGrid>
-        <svelte:fragment slot="title">Delete Platform</svelte:fragment>
+        <svelte:fragment slot="title">Delete platform</svelte:fragment>
         The Platform will be permanently deleted. This action is irreversible.
         <svelte:fragment slot="aside">
             <Box>

@@ -7,7 +7,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">SSL Certificates</svelte:fragment>
+    <svelte:fragment slot="title">SSL certificates</svelte:fragment>
     SSL certificates secure your site with HTTPS, protecting data and boosting trust. Appwrite renews
     your SSL certificates automatically.
     <svelte:fragment slot="aside">

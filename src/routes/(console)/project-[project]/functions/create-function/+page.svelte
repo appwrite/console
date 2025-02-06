@@ -67,7 +67,7 @@
 </script>
 
 <WizardCover bind:previousPage>
-    <svelte:fragment slot="title">Create Function</svelte:fragment>
+    <svelte:fragment slot="title">Create function</svelte:fragment>
     <div class="wizard-container container">
         <div class="git-container u-position-relative">
             <div class="grid-1-1 u-gap-24">

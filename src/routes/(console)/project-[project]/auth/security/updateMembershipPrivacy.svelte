@@ -40,7 +40,7 @@
 
 <Form onSubmit={updateMembershipsPrivacy}>
     <CardGrid>
-        <svelte:fragment slot="title">Memberships Privacy</svelte:fragment>
+        <svelte:fragment slot="title">Memberships privacy</svelte:fragment>
         Set privacy preferences to manage which details team members can view about one another.
         <svelte:fragment slot="aside">
             <Selector.Checkbox

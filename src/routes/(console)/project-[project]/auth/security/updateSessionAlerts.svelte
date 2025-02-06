@@ -32,7 +32,7 @@
 
 <Form onSubmit={updateSessionAlerts}>
     <CardGrid>
-        <svelte:fragment slot="title">Session Alerts</svelte:fragment>
+        <svelte:fragment slot="title">Session alerts</svelte:fragment>
         <svelte:fragment slot="aside">
             <InputSwitch
                 bind:value={authSessionAlerts}

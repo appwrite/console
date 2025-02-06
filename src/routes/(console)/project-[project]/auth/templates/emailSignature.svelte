@@ -11,7 +11,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Email Signature</svelte:fragment>
+    <svelte:fragment slot="title">Email signature</svelte:fragment>
     Enable or disable Appwrite branding in your email template signature.
 
     <svelte:fragment slot="aside">

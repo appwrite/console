@@ -134,7 +134,7 @@
 
 <Container>
     <CardGrid>
-        <svelte:fragment slot="title">Import Project Data</svelte:fragment>
+        <svelte:fragment slot="title">Import project data</svelte:fragment>
         Import data from another platform or from a different Appwrite instance.
         <a
             class="link"
@@ -229,7 +229,7 @@
     </CardGrid>
     {#if isSelfHosted}
         <CardGrid>
-            <svelte:fragment slot="title">Deploy To Cloud</svelte:fragment>
+            <svelte:fragment slot="title">Deploy to Cloud</svelte:fragment>
             Export data from your project to Appwrite Cloud.
             <a
                 class="link"
@@ -256,7 +256,7 @@
         </CardGrid>
     {:else}
         <CardGrid>
-            <svelte:fragment slot="title">Export To Self-hosted Instance</svelte:fragment>
+            <svelte:fragment slot="title">Export to self-hosted instance</svelte:fragment>
             Export data from your project to a self-hosted instance.
             <a
                 class="link"

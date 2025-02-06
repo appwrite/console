@@ -137,7 +137,7 @@
 
     {#if !data.activeDeployment}
         <CardGrid>
-            <svelte:fragment slot="title">Delete Deployment</svelte:fragment>
+            <svelte:fragment slot="title">Delete deployment</svelte:fragment>
             The deployment will be permanently deleted, including all data associated with it. This action
             is irreversible.
             <svelte:fragment slot="aside">

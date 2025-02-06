@@ -55,7 +55,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Users Limit</svelte:fragment>
+    <svelte:fragment slot="title">Users limit</svelte:fragment>
     Limit new users from signing up for your project, regardless of authentication method. You can still
     create users and team memberships from your Appwrite console.
     <svelte:fragment slot="aside">

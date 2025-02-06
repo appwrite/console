@@ -10,7 +10,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete Function</svelte:fragment>
+    <svelte:fragment slot="title">Delete function</svelte:fragment>
     The function will be permanently deleted, including all deployments associated with it. This action
     is irreversible.
     <svelte:fragment slot="aside">

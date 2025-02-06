@@ -113,7 +113,7 @@
     </CardGrid>
 
     <CardGrid>
-        <svelte:fragment slot="title">Delete Document</svelte:fragment>
+        <svelte:fragment slot="title">Delete document</svelte:fragment>
         The document will be permanently deleted, including all the data within it. This action is irreversible.
         <svelte:fragment slot="aside">
             <BoxAvatar>

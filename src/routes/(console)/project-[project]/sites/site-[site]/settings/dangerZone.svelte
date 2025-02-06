@@ -11,7 +11,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete Site</svelte:fragment>
+    <svelte:fragment slot="title">Delete site</svelte:fragment>
     The site will be permanently deleted, including all deployments associated with it. This action is
     irreversible.
     <svelte:fragment slot="aside">

@@ -22,7 +22,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete Provider</svelte:fragment>
+    <svelte:fragment slot="title">Delete provider</svelte:fragment>
     The provider's instance will be permanently deleted. This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>

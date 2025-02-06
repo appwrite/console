@@ -67,7 +67,7 @@
 
 <Form onSubmit={updateLogging}>
     <CardGrid>
-        <svelte:fragment slot="title">Execution Logs</svelte:fragment>
+        <svelte:fragment slot="title">Execution logs</svelte:fragment>
         Enable or disable execution logs. We recommend disabling them for better performance in production.
         <svelte:fragment slot="aside">
             <FormList>

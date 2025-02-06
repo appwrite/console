@@ -93,8 +93,8 @@
         <svelte:fragment slot="aside">
             {#if !$currentPlan.budgeting}
                 <Alert type="info">
-                    <svelte:fragment slot="title"
-                        >Billing alerts are a Pro plan feature
+                    <svelte:fragment slot="title">
+                        Billing alerts are a Pro plan feature
                     </svelte:fragment>
                     Upgrade to a Pro plan to manage when you receive billing alerts for your organization.
                 </Alert>

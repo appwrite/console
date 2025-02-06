@@ -124,7 +124,7 @@
 <Container>
     <Form onSubmit={updateSmtp}>
         <CardGrid>
-            <svelte:fragment slot="title">SMTP Server</svelte:fragment>
+            <svelte:fragment slot="title">SMTP server</svelte:fragment>
             You can customize the email service by providing your own SMTP server. View your email templates
             <a href={`${base}/project-${$project.$id}/auth/templates`} class="link">here</a>
             <svelte:fragment slot="aside">

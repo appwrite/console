@@ -82,7 +82,7 @@
 
 <Form onSubmit={updateMockNumbers}>
     <CardGrid hideFooter={isComponentDisabled}>
-        <svelte:fragment slot="title">Mock Phone Numbers</svelte:fragment>
+        <svelte:fragment slot="title">Mock phone numbers</svelte:fragment>
         Generate <b>fictional</b> numbers to simulate phone verification when testing demo accounts
         for submitting your application to the App Store or Google Play.
         <a

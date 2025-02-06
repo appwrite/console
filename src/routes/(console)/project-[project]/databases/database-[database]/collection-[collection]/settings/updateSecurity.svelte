@@ -45,7 +45,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Document Security</svelte:fragment>
+    <svelte:fragment slot="title">Document security</svelte:fragment>
     <svelte:fragment slot="aside">
         <FormList>
             <InputSwitch

@@ -299,7 +299,7 @@
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <svelte:fragment slot="title">File Security</svelte:fragment>
+                <svelte:fragment slot="title">File security</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
@@ -330,7 +330,7 @@
 
         <Form onSubmit={updateSecurity}>
             <CardGrid>
-                <svelte:fragment slot="title">Security Settings</svelte:fragment>
+                <svelte:fragment slot="title">Security settings</svelte:fragment>
                 Enable or disable security services for the bucket including <b>Ecryption</b>
                 and <b>Antivirus scanning.</b>
                 <svelte:fragment slot="aside">
@@ -390,7 +390,7 @@
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid hideOverflow>
-                <svelte:fragment slot="title">Allowed File Extension</svelte:fragment>
+                <svelte:fragment slot="title">Allowed file extension</svelte:fragment>
                 Allowed file extensions. A maximum of 100 file extensions can be added. Leave blank to
                 allow all file types.
                 <svelte:fragment slot="aside">
@@ -429,7 +429,7 @@
         </Form>
 
         <CardGrid>
-            <svelte:fragment slot="title">Delete Bucket</svelte:fragment>
+            <svelte:fragment slot="title">Delete bucket</svelte:fragment>
             The bucket will be permanently deleted, including all the files within it. This action is
             irreversible.
             <svelte:fragment slot="aside">

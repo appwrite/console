@@ -95,7 +95,7 @@
     </CardGrid>
 
     <CardGrid>
-        <svelte:fragment slot="title">API Key Secret</svelte:fragment>
+        <svelte:fragment slot="title">API key secret</svelte:fragment>
         <svelte:fragment slot="aside">
             <Secret copyEvent="key" bind:value={secret} />
         </svelte:fragment>
@@ -145,7 +145,7 @@
     <UpdateExpirationDate />
 
     <CardGrid>
-        <svelte:fragment slot="title">Delete API Key</svelte:fragment>
+        <svelte:fragment slot="title">Delete API key</svelte:fragment>
         The API key will be permanently deleted. This action is irreversible.
         <svelte:fragment slot="aside">
             <Box>

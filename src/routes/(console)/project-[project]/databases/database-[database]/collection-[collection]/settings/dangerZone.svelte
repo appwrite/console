@@ -9,7 +9,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete Collection</svelte:fragment>
+    <svelte:fragment slot="title">Delete collection</svelte:fragment>
     The collection will be permanently deleted, including all the documents within it. This action is
     irreversible.
     <svelte:fragment slot="aside">

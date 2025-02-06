@@ -96,7 +96,7 @@
         </Form>
 
         <CardGrid>
-            <svelte:fragment slot="title">Delete Database</svelte:fragment>
+            <svelte:fragment slot="title">Delete database</svelte:fragment>
             The database will be permanently deleted, including all collections within it. This action
             is irreversible.
             <svelte:fragment slot="aside">

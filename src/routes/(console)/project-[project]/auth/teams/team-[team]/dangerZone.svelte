@@ -8,7 +8,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete Team</svelte:fragment>
+    <svelte:fragment slot="title">Delete team</svelte:fragment>
     The team will be permanently deleted, including all data associated with this team. This action is
     irreversible.
     <svelte:fragment slot="aside">

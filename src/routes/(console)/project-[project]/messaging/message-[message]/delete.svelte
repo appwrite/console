@@ -11,7 +11,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete Message</svelte:fragment>
+    <svelte:fragment slot="title">Delete message</svelte:fragment>
     The message will be permanently deleted{message.status === 'scheduled'
         ? ', and its delivery will be canceled'
         : ''}. This action is irreversible.
