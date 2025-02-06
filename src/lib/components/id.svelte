@@ -1,9 +1,10 @@
 <script lang="ts">
+    import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { Copy } from '.';
+    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
 
     export let value: string;
     export let event: string = null;
-    export let centered = true;
 
     function truncateText(node: HTMLElement) {
         const MAX_TRIES = 100;
@@ -47,24 +48,15 @@
     }
 </script>
 
-<Copy {value} {event} appendTo="parent">
-    <div
-        class="interactive-text-output is-buttons-on-top"
-        class:u-text-center={centered}
-        style:min-inline-size="0"
-        style:display="inline-flex">
+<Copy {value} {event}>
+    <Tag size="xs" variant="code">
+        <Icon icon={IconDuplicate} size="s" />
         <span
             style:white-space="nowrap"
-            class="text u-line-height-1-5"
             style:overflow="hidden"
             style:word-break="break-all"
             use:truncateText>
             <slot />
         </span>
-        <div class="interactive-text-output-buttons">
-            <button class="interactive-text-output-button is-hidden" aria-label="copy text">
-                <span class="icon-duplicate" aria-hidden="true" />
-            </button>
-        </div>
-    </div>
+    </Tag>
 </Copy>

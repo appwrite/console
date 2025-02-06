@@ -3,8 +3,9 @@
     import { page } from '$app/stores';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
-    import { Cover, CoverTitle } from '$lib/layout';
+    import { Cover } from '$lib/layout';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     const projectId = $page.params.project;
     const path = `${base}/project-${projectId}/auth`;
@@ -51,7 +52,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Auth</CoverTitle>
+        <Typography.Title color="--color-fgcolor-neutral-primary" size="xl">Auth</Typography.Title>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}

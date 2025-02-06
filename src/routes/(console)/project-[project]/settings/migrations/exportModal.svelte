@@ -106,7 +106,7 @@
 </script>
 
 <Modal title="Export to self-hosted instance" bind:show {onSubmit}>
-    <FormList gap={24}>
+    <FormList>
         <Alert isStandalone>
             <svelte:fragment slot="title">API key creation</svelte:fragment>
             By initiating the transfer, an API key will be automatically generated in the background,

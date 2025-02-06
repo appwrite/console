@@ -20,6 +20,7 @@
     onDestroy(() => {
         $supportData = {
             message: null,
+            subject: null,
             category: 'general',
             file: null
         };
@@ -39,8 +40,8 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                subject: 'support',
                 email: $user.email,
+                subject: $supportData.subject,
                 firstName: $user?.name || 'Unknown',
                 message: $supportData.message,
                 tags: ['cloud'],
@@ -75,6 +76,7 @@
     function resetData() {
         $supportData = {
             message: null,
+            subject: null,
             category: 'general',
             file: null,
             project: null

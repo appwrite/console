@@ -129,7 +129,8 @@ export type PlanServices =
     | 'users'
     | 'usersAddon'
     | 'webhooks'
-    | 'sites';
+    | 'sites'
+    | 'authPhone';
 
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
     if (!isCloud) return 0;
@@ -137,7 +138,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     const info = get(plansInfo);
     if (!info) return 0;
     plan ??= info.get(tier ?? get(organization)?.billingPlan);
-    return plan?.[serviceId];
+    return plan?.[serviceId] ?? 0;
 }
 
 export const failedInvoice = cachedStore<
@@ -175,7 +176,7 @@ export type TierData = {
 
 export const tierFree: TierData = {
     name: 'Free',
-    description: 'For personal hobby projects of small scale and students.'
+    description: 'A great fit for passion projects and small applications.'
 };
 
 export const tierGitHubEducation: TierData = {
@@ -185,11 +186,13 @@ export const tierGitHubEducation: TierData = {
 
 export const tierPro: TierData = {
     name: 'Pro',
-    description: 'For pro developers and production projects that need the ability to scale.'
+    description:
+        'For production applications that need powerful functionality and resources to scale.'
 };
 export const tierScale: TierData = {
     name: 'Scale',
-    description: 'For scaling teams and agencies that need dedicated support.'
+    description:
+        'For teams that handle more complex and large projects and need more control and support.'
 };
 
 export const tierCustom: TierData = {

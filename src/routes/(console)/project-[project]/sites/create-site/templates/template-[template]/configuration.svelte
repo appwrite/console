@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Collapsible, CollapsibleItem } from '$lib/components';
     import {
         Button,
         InputEmail,
@@ -10,7 +9,7 @@
         InputURL
     } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { Fieldset, Layout, Tag, Popover, Icon } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Popover, Icon, Accordion } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import type { SvelteComponent } from 'svelte';
 
@@ -51,10 +50,9 @@
 
 <Fieldset legend="Configuration">
     <Layout.Stack gap="l">
-        <Collapsible>
+        <Layout.Stack>
             {#if requiredVariables?.length}
-                <CollapsibleItem open>
-                    <svelte:fragment slot="title">Required environment variables</svelte:fragment>
+                <Accordion title="Required environment variables" open>
                     <Layout.Stack>
                         Provide the values for the required environment variables to run this
                         application.
@@ -94,13 +92,10 @@
                             </Layout.Stack>
                         {/each}
                     </Layout.Stack>
-                </CollapsibleItem>
+                </Accordion>
             {/if}
             {#if optionalVariables?.length}
-                <CollapsibleItem>
-                    <svelte:fragment slot="title">
-                        Environment variables <Tag size="s">Optional</Tag>
-                    </svelte:fragment>
+                <Accordion title="Environment variables" badge="Optional">
                     <Layout.Stack>
                         Set up environment variables to securely manage keys and settings for your
                         project.
@@ -140,8 +135,8 @@
                             </Layout.Stack>
                         {/each}
                     </Layout.Stack>
-                </CollapsibleItem>
+                </Accordion>
             {/if}
-        </Collapsible>
+        </Layout.Stack>
     </Layout.Stack>
 </Fieldset>

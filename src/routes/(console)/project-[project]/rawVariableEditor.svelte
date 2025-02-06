@@ -1,13 +1,14 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { SecondaryTabs, SecondaryTabsItem } from '$lib/components';
     import Copy from '$lib/components/copy.svelte';
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { parse } from 'envfile';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tabs } from '@appwrite.io/pink-svelte';
+    import { InputTextarea } from '$lib/elements/forms';
+    import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
 
     export let isGlobal: boolean;
     export let showEditor = false;
@@ -42,7 +43,6 @@
     }
 
     let tab: 'env' | 'json' = 'env';
-    let copyParent: HTMLElement;
 
     async function handleSubmit() {
         try {
@@ -111,90 +111,69 @@
         window.URL.revokeObjectURL(url);
     }
 
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === 'Enter') {
+            if (tab === 'env') {
+                envCode += '\n';
+            } else {
+                jsonCode += '\n';
+            }
+        }
+    }
+
     $: isButtonDisabled =
         (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
 </script>
 
+<svelte:window on:keydown={handleKeydown} />
+
 <Modal
     title="Editor"
-    headerDivider={false}
     bind:show={showEditor}
     onSubmit={handleSubmit}
     bind:error
-    size="big">
-    <p>
+    submitOnEnter={false}>
+    <p slot="description">
         Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
         <span class="inline-code">.{tab}</span> file.
     </p>
-
-    <div class="editor-border">
-        <SecondaryTabs large class="u-sep-block-end u-padding-8">
-            <SecondaryTabsItem
-                stretch
-                fullWidth
-                center
-                on:click={() => (tab = 'env')}
-                disabled={tab === 'env'}>
+    <Layout.Stack gap="s">
+        <Tabs.Root stretch>
+            <Tabs.Item.Button on:click={() => (tab = 'env')} active={tab === 'env'}>
                 ENV
-            </SecondaryTabsItem>
-            <SecondaryTabsItem
-                stretch
-                fullWidth
-                center
-                on:click={() => (tab = 'json')}
-                disabled={tab === 'json'}>
+            </Tabs.Item.Button>
+            <Tabs.Item.Button on:click={() => (tab = 'json')} active={tab === 'json'}>
                 JSON
-            </SecondaryTabsItem>
-        </SecondaryTabs>
+            </Tabs.Item.Button>
+        </Tabs.Root>
 
-        <div class="input-text-wrapper">
-            {#if tab === 'env'}
-                <textarea
-                    placeholder={`SECRET_KEY=dQw4w9WgXcQ...`}
-                    class="input-text u-border-width-0"
-                    bind:value={envCode}
-                    style:--amount-of-buttons={0.25}
-                    style:border-radius="var(--border-radius-small)" />
-            {:else if tab === 'json'}
-                <textarea
-                    placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`}
-                    class="input-text u-border-width-0"
-                    bind:value={jsonCode}
-                    style:--amount-of-buttons={0.25}
-                    style:border-radius="var(--border-radius-small)" />
-            {/if}
-            <ul
-                class="buttons-list u-gap-8 u-cross-center u-position-absolute d u-inset-block-end-1 u-inset-inline-end-1 u-padding-block-8 u-padding-inline-12"
-                style="border-end-end-radius:0.0625rem;">
-                <li class="buttons-list-item">
-                    <Tooltip>
-                        <button
-                            on:click={() => downloadVariables()}
-                            type="button"
-                            class="button is-small is-text is-only-icon"
-                            aria-label={`Download .${tab} file`}>
-                            <span class="icon-download" aria-hidden="true" />
-                        </button>
-                        <p slot="tooltip">Download .{tab} file</p>
-                    </Tooltip>
-                </li>
-                <li class="buttons-list-item">
-                    <div bind:this={copyParent}>
-                        {#key copyParent}
-                            <Copy appendTo={copyParent} value={tab == 'json' ? jsonCode : envCode}>
-                                <button
-                                    type="button"
-                                    class="button is-small is-text is-only-icon"
-                                    aria-label="Click to copy">
-                                    <span class="icon-duplicate" aria-hidden="true" />
-                                </button>
-                            </Copy>
-                        {/key}
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
+        {#if tab === 'env'}
+            <InputTextarea
+                id="variables"
+                bind:value={envCode}
+                rows={10}
+                placeholder={`SECRET_KEY=dQw4w9WgXcQ...`} />
+        {:else if tab === 'json'}
+            <InputTextarea
+                id="variables"
+                bind:value={jsonCode}
+                rows={10}
+                placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`} />
+        {/if}
+        <Layout.Stack direction="row" gap="xs">
+            <Button on:click={() => downloadVariables()} text>
+                <Icon icon={IconDownload} />
+                Download
+            </Button>
+
+            <Copy value={tab == 'json' ? jsonCode : envCode}>
+                <Button text>
+                    <Icon icon={IconDuplicate} />
+                    Copy
+                </Button>
+            </Copy>
+        </Layout.Stack>
+    </Layout.Stack>
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showEditor = false)}>Cancel</Button>

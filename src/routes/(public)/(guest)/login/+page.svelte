@@ -1,14 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import {
-        Button,
-        Form,
-        FormItem,
-        FormList,
-        InputEmail,
-        InputPassword
-    } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
@@ -103,20 +96,14 @@
                     label="Password"
                     placeholder="Password"
                     required={true}
-                    meter={false}
-                    showPasswordButton={true}
                     bind:value={pass} />
-                <FormItem>
-                    <Button fullWidth submit {disabled}>Sign in</Button>
-                </FormItem>
+                <Button fullWidth submit {disabled}>Sign in</Button>
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <FormItem>
-                        <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
-                            <span class="icon-github" aria-hidden="true" />
-                            <span class="text">Sign in with GitHub</span>
-                        </Button>
-                    </FormItem>
+                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true" />
+                        <span class="text">Sign in with GitHub</span>
+                    </Button>
                 {/if}
             </FormList>
         </Form>

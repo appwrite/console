@@ -43,14 +43,7 @@
     }
 </script>
 
-<Modal
-    title="Disconnect installation"
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}
-    bind:show={showGitDisconnect}
-    onSubmit={handleSubmit}
-    size="big">
+<Modal title="Disconnect installation" bind:show={showGitDisconnect} onSubmit={handleSubmit}>
     {#await loadFunctions()}
         <div class="u-flex u-main-center">
             <div class="avatar is-size-x-small">

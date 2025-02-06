@@ -2,6 +2,7 @@
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, Card, ProgressBarBig } from '$lib/components';
     import {
+        TableRow,
         TableBody,
         TableCell,
         TableCellHead,
@@ -13,11 +14,15 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart } from '$lib/charts';
+    import { BarChart, Legend } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
     import { base } from '$app/paths';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import Collapsible from '$lib/components/collapsible.svelte';
+    import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
+    import { getCountryName } from '$lib/helpers/diallingCodes.js';
 
     export let data;
 
@@ -31,6 +36,14 @@
         data.usage.filesStorageTotal +
         data.usage.deploymentsStorageTotal +
         data.usage.buildsStorageTotal;
+
+    $: dbReads = data.usage.databasesReads;
+    $: dbWrites = data.usage.databasesWrites;
+
+    $: legendData = [
+        { name: 'Reads', value: data.usage.databasesReadsTotal },
+        { name: 'Writes', value: data.usage.databasesWritesTotal }
+    ];
 
     const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
@@ -63,16 +76,14 @@
         {#if $organization.billingPlan === BillingPlan.SCALE}
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
-                per resource listed below. <Button
-                    on:click={() => ($showUsageRatesModal = true)}
-                    link>Learn more about plan usage limits.</Button>
+                per resource listed below. <Button on:click={() => ($showUsageRatesModal = true)}
+                    >Learn more about plan usage limits.</Button>
             </p>
         {:else if $organization.billingPlan === BillingPlan.PRO}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
-                per resource listed below. <Button
-                    on:click={() => ($showUsageRatesModal = true)}
-                    link>Learn more about plan usage limits.</Button>
+                per resource listed below. <Button on:click={() => ($showUsageRatesModal = true)}
+                    >Learn more about plan usage limits.</Button>
             </p>
         {:else if $organization.billingPlan === BillingPlan.FREE}
             <p class="text">
@@ -178,6 +189,48 @@
                             data: [...users.map((e) => [e.date, e.value])]
                         }
                     ]} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">Database reads and writes</Heading>
+
+        <p class="text">Total database reads and writes in your project.</p>
+
+        <svelte:fragment slot="aside">
+            {#if dbReads || dbWrites}
+                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
+                            }
+                        }}
+                        series={[
+                            {
+                                name: 'Reads',
+                                data: [...dbReads.map((e) => [e.date, e.value])]
+                            },
+                            {
+                                name: 'Writes',
+                                data: [...dbWrites.map((e) => [e.date, e.value])]
+                            }
+                        ]} />
+                </div>
+
+                <Legend {legendData} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -367,6 +420,70 @@
                     progressMax={totalGbHours}
                     progressValue={totalGbHours}
                     progressBarData={progressBarStorageDate} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">Phone OTP</Heading>
+        <p class="text">
+            Calculated for all Phone OTP sent across your project. Resets at the start of each
+            billing cycle.
+        </p>
+        <p>You will not be charged for Phone OTPs before February 10th.</p>
+        <svelte:fragment slot="aside">
+            {#if data.usage.authPhoneTotal}
+                <div class="u-flex u-main-space-between">
+                    <p>
+                        <span class="heading-level-4"
+                            >{formatNumberWithCommas(data.usage.authPhoneTotal)}</span>
+                        <span class="body-text-1 u-bold">OTPs</span>
+                    </p>
+                    <p class="u-flex u-gap-8 u-cross-center">
+                        <span class="u-color-text-offline">Estimated cost</span>
+                        <span class="body-text-2">
+                            {formatCurrency(data.usage.authPhoneEstimate)}
+                        </span>
+                    </p>
+                </div>
+                {#if data.usage.authPhoneCountryBreakdown.length > 0}
+                    <Collapsible>
+                        <CollapsibleItem>
+                            <svelte:fragment slot="title">Region breakdown</svelte:fragment>
+                            <Table noMargin noStyles style="table-layout: auto">
+                                <TableHeader>
+                                    <TableCellHead>Region</TableCellHead>
+                                    <TableCellHead>Amount</TableCellHead>
+                                    <TableCellHead>Estimated cost</TableCellHead>
+                                </TableHeader>
+                                <TableBody>
+                                    {#each data.usage.authPhoneCountryBreakdown as phone}
+                                        <TableRow>
+                                            <TableCell title="Region">
+                                                {getCountryName(phone.name)}
+                                            </TableCell>
+                                            <TableCell title="Usage">
+                                                {formatNumberWithCommas(phone.value)}
+                                            </TableCell>
+                                            <TableCell title="Estimated cost">
+                                                {formatCurrency(phone.estimate)}
+                                            </TableCell>
+                                        </TableRow>
+                                    {/each}
+                                </TableBody>
+                            </Table>
+                        </CollapsibleItem>
+                    </Collapsible>
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

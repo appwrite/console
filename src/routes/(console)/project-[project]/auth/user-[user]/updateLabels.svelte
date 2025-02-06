@@ -39,7 +39,7 @@
             trackError(error, Submit.UserUpdateLabels);
         }
     }
-
+    $: console.log(labels);
     // TODO: Remove type cast when console SDK is updated
     $: isDisabled =
         !!error ||

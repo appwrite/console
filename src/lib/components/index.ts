@@ -77,3 +77,7 @@ export { default as EmptyCardImageCloud } from './emptyCardImageCloud.svelte';
 export { default as ImagePreview } from './imagePreview.svelte';
 export { default as MfaChallengeFormList } from './mfaChallengeFormList.svelte';
 export { default as BottomModalAlert } from './bottomModalAlert.svelte';
+export { default as Navbar } from './navbar.svelte';
+export { default as Breadcrumbs } from './breadcrumbs.svelte';
+export { default as Sidebar } from './sidebar.svelte';
+export { default as BottomSheet } from './bottom-sheet/index';

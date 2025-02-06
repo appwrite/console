@@ -32,13 +32,7 @@
     }
 </script>
 
-<Modal
-    title="Delete execution"
-    bind:show={showDelete}
-    onSubmit={handleSubmit}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Delete execution" bind:show={showDelete} onSubmit={handleSubmit}>
     <p data-private>Are you sure you want to delete this execution?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

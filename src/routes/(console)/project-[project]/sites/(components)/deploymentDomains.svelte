@@ -1,10 +1,10 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
-    import { Link, Pill } from '$lib/elements';
+    import { Link } from '$lib/elements';
     import { protocol } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
     import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Layout, Popover, Tag } from '@appwrite.io/pink-svelte';
 
     export let domains: Models.ProxyRuleList;
 </script>
@@ -20,9 +20,9 @@
     </Link>
     {#if domains.rules.length > 1}
         <Popover let:toggle>
-            <Pill button on:click={toggle}>
+            <Tag size="s" on:click={toggle}>
                 +{domains.rules.length - 1}
-            </Pill>
+            </Tag>
             <svelte:fragment slot="tooltip">
                 <ActionMenu.Root>
                     {#each domains.rules as rule, i}

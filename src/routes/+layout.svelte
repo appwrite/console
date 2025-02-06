@@ -15,6 +15,7 @@
     import { loading } from '$routes/store';
     import { Root } from '@appwrite.io/pink-svelte';
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
+    import { updateViewport } from '$lib/stores/viewport';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
@@ -26,6 +27,7 @@
     }
 
     onMount(async () => {
+        updateViewport();
         // handle sources
         if (isCloud) {
             const urlParams = $page.url.searchParams;
@@ -105,6 +107,8 @@
     }
 </script>
 
+<svelte:window on:resize={updateViewport} on:load={updateViewport} />
+
 <Root theme={resolveTheme($app.themeInUse)}>
     <Notifications />
     <!-- {#if isCloud}
@@ -117,7 +121,7 @@
 </Root>
 
 <style lang="scss" global>
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);

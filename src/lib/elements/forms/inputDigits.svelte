@@ -1,6 +1,5 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem } from '.';
     import { createPinInput, melt } from '@melt-ui/svelte';
 
     export let length: number = 6;
@@ -66,27 +65,25 @@
     });
 </script>
 
-<FormItem {fullWidth}>
-    <ol class="u-flex u-main-center" use:melt={$root} bind:this={element}>
-        {#each Array.from({ length }) as _}
-            <li>
-                <input
-                    type="number"
-                    class="verification-code-input u-bold u-remove-input-number-buttons"
-                    inputmode="numeric"
-                    maxlength="1"
-                    style:border-radius="var(--border-radius-small)"
-                    use:melt={$input()}
-                    {required}
-                    {readonly}
-                    {disabled} />
-            </li>
-        {/each}
-    </ol>
-</FormItem>
+<ol class="u-flex u-main-center" use:melt={$root} bind:this={element}>
+    {#each Array.from({ length }) as _}
+        <li>
+            <input
+                type="number"
+                class="verification-code-input u-bold u-remove-input-number-buttons"
+                inputmode="numeric"
+                maxlength="1"
+                style:border-radius="var(--border-radius-small)"
+                use:melt={$input()}
+                {required}
+                {readonly}
+                {disabled} />
+        </li>
+    {/each}
+</ol>
 
 <style lang="scss">
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     /* Default (including mobile) */
     ol {

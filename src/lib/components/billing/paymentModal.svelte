@@ -68,12 +68,7 @@
     }
 </script>
 
-<FakeModal
-    bind:show
-    title="Add payment method"
-    bind:error
-    onSubmit={handleSubmit}
-    headerDivider={false}>
+<FakeModal bind:show title="Add payment method" bind:error onSubmit={handleSubmit}>
     <FormList gap={16}>
         <slot />
         <InputText

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
-    import { tooltip } from '$lib/actions/tooltip';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { copy } from '$lib/helpers/copy';
     import { addNotification } from '$lib/stores/notifications';

@@ -7,17 +7,15 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
-    export let icon: string = null;
-    export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;
     export let closable = true;
-    export let headerDivider = true;
-    export let open = false;
+    export let dismissible = true;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
     export let title = '';
     export let hideFooter = false;
+    export let submitOnEnter = true;
 
     let alert: HTMLElement;
     let formComponent: Form;
@@ -27,7 +25,7 @@
     });
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && submitOnEnter) {
             event.preventDefault();
             if (show) {
                 formComponent.triggerSubmit();
@@ -46,7 +44,7 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <Form isModal {onSubmit} bind:this={formComponent}>
-    <Modal {title} bind:open={show} {hideFooter}>
+    <Modal {title} bind:open={show} {hideFooter} {dismissible}>
         <svelte:fragment slot="description">
             <slot name="description" />
         </svelte:fragment>

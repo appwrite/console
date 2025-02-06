@@ -13,7 +13,6 @@
     import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
-    import { Layout } from '@appwrite.io/pink-svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
         Button,
@@ -259,7 +258,7 @@
             <Label class="label u-margin-block-start-16">Select plan</Label>
             <p class="text">
                 For more details on our plans, visit our
-                <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
+                <Button href="https://appwrite.io/pricing" external>pricing page</Button>.
             </p>
             {#if !selfService}
                 <Alert class="u-position-relative u-margin-block-start-16" type="info"
@@ -278,7 +277,7 @@
                         tier={BillingPlan.FREE}
                         class="u-margin-block-start-24"
                         members={data?.members?.total ?? 0} />
-                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE}
+                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
                     {@const extraMembers = collaborators?.length ?? 0}
                     <Alert type="error" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
@@ -316,8 +315,8 @@
                     {/if}
                 </FormList>
             {/if}
-            {#if isDowngrade}
-                <FormList class="u-margin-block-start-24">
+            {#if isDowngrade && billingPlan === BillingPlan.FREE}
+                <FormList>
                     <InputSelect
                         id="reason"
                         label="Reason for plan change"

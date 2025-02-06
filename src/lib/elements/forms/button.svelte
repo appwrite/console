@@ -6,14 +6,12 @@
     import { Button } from '@appwrite.io/pink-svelte';
     import type { ComponentProps } from 'svelte';
 
-    type Props = ComponentProps<Button.Button>;
+    type Props = ComponentProps<Button.Button | Button.Anchor>;
 
     export let submit = false;
     export let secondary = false;
     export let text = false;
-    export let danger = false;
     export let icon = false;
-    export let link = false;
     export let size: Props['size'] = 's';
     export let disabled = false;
     export let external = false;
@@ -86,6 +84,7 @@
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
         --button-width={fullWidth ? '100%' : 'max-content'}>
+        <slot name="start" slot="start" />
         {#if ($isSubmitting && submissionLoader) || (forceShowLoader && submissionLoader)}
             <span
                 class="loader is-small"
@@ -93,5 +92,6 @@
                 aria-hidden="true" />
         {/if}
         <slot isSubmitting={$isSubmitting} />
+        <slot slot="end" name="end" />
     </Button.Button>
 {/if}

@@ -23,7 +23,7 @@
     $: iconClass = enabled ? 'icon-check-circle' : 'icon-exclamation-circle';
 </script>
 
-<Modal title="Webhook error" headerDivider={false} bind:show size="big">
+<Modal title="Webhook error" bind:show>
     <div class="box u-flex-vertical u-gap-24">
         <div class="u-inline-flex u-cross-center u-gap-8">
             <p class="u-stretch">

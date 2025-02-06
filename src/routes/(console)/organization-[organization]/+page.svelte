@@ -127,6 +127,11 @@
             regions = await sdk.forConsole.billing.listRegions();
             checkPricingRefAndRedirect($page.url.searchParams);
         }
+
+        const searchParams = $page.url.searchParams;
+        if (searchParams.has('create-project')) {
+            handleCreateProject();
+        }
     });
 
     function findRegion(project: Models.Project) {

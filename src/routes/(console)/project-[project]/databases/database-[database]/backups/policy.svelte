@@ -11,8 +11,6 @@
     import { parseExpression } from 'cron-parser';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
-    import { tooltip } from '$lib/actions/tooltip';
-
     import EmptyDark from '$lib/images/backups/backups-dark.png';
     import EmptyLight from '$lib/images/backups/backups-light.png';
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
@@ -287,14 +285,7 @@
     </Card>
 </div>
 
-<Modal
-    title="Delete policy"
-    icon="exclamation"
-    state="warning"
-    size="small"
-    bind:show={showDelete}
-    headerDivider={false}
-    onSubmit={deletePolicy}>
+<Modal title="Delete policy" bind:show={showDelete} onSubmit={deletePolicy}>
     <FormList>
         <div class="u-flex-vertical u-gap-16">
             <p class="text" data-private>
@@ -310,7 +301,6 @@
             <div class="input-check-box-friction">
                 <InputCheckbox
                     required
-                    size="small"
                     id="delete_policy"
                     bind:checked={confirmedDeletion}
                     label="I understand and confirm" />

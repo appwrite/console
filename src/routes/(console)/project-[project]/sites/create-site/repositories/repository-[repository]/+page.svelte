@@ -83,8 +83,22 @@
                 silentMode,
                 rootDir
             );
+            trackEvent(Submit.SiteCreate, {
+                source: 'repository',
+                framework: framework.key
+            });
 
-            trackEvent(Submit.SiteCreate, {});
+            //Add variables
+            await Promise.all(
+                Object.keys(variables).map(async (key) => {
+                    await sdk.forProject.sites.createVariable(
+                        site.$id,
+                        key,
+                        variables[key].value,
+                        variables[key].secret
+                    );
+                })
+            );
 
             const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
                 Query.limit(1)
@@ -137,9 +151,9 @@
             <Details bind:name bind:id />
 
             {#await loadBranches()}
-                <div class="u-flex u-gap-8 u-cross-center u-main-center">
+                <Layout.Stack justifyContent="center" alignItems="center">
                     <div class="loader u-margin-32" />
-                </div>
+                </Layout.Stack>
             {:then branches}
                 {@const options =
                     branches

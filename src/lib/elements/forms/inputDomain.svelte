@@ -1,9 +1,7 @@
 <script lang="ts">
-    import { SvelteComponent, onMount } from 'svelte';
     import { Input } from '@appwrite.io/pink-svelte';
 
-    export let label: string;
-    export let showLabel = true;
+    export let label: string = null;
     export let id: string;
     export let name = id;
     export let value = '';
@@ -14,10 +12,6 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
-    export let maxlength: number = null;
-    export let popover: typeof SvelteComponent<unknown> = null;
-    export let popoverProps: Record<string, unknown> = {};
-    export let fullWidth = false;
 
     // https://www.geeksforgeeks.org/how-to-validate-a-domain-name-using-regular-expression/
     const pattern = String.raw`(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}`;

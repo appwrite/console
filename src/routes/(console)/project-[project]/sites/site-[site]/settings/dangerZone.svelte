@@ -10,7 +10,7 @@
     let showDelete = false;
 </script>
 
-<CardGrid danger>
+<CardGrid>
     <Heading tag="h6" size="7">Delete site</Heading>
     <p>
         The site will be permanently deleted, including all deployments associated with it. This

@@ -52,7 +52,7 @@
     $: isFree = org.billingPlan === BillingPlan.FREE;
 </script>
 
-<Modal bind:show size="big" headerDivider={false} title="Usage rates">
+<Modal bind:show size="big" title="Usage rates">
     {#if isFree}
         Usage on the {$plansInfo?.get(BillingPlan.FREE).name} plan is limited for the following resources.
         Next billing period: {toLocaleDate(nextDate)}.
@@ -67,7 +67,7 @@
             following rates. Next billing period: {toLocaleDate(nextDate)}.
         </p>
     {/if}
-    <Table noStyles>
+    <Table noStyles noMargin>
         <TableHeader>
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Limit</TableCellHead>

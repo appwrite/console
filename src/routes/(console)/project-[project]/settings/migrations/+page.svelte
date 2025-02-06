@@ -124,16 +124,6 @@
         window.location.href = `https://cloud.appwrite.io/?migrate=${encodeURIComponent(
             JSON.stringify(migrationData)
         )}`;
-
-        // const migrationData = {
-        //     endpoint: PUBLIC_MOCK_ENDPOINT,
-        //     projectId: PUBLIC_MOCK_PROJECTID,
-        //     apiKey: PUBLIC_MOCK_APIKEY
-        // };
-
-        // window.location.href = `http://localhost:3000/?migrate=${encodeURIComponent(
-        //     JSON.stringify(migrationData)
-        // )}`;
     };
 
     function showDetails(m: Models.Migration) {
@@ -143,13 +133,6 @@
 </script>
 
 <Container>
-    <div class="u-flex u-cross-center u-gap-8">
-        <Heading tag="h2" size="5">Migrations</Heading>
-        <div class="tag eyebrow-heading-3">
-            <span class="text u-x-small">Experimental</span>
-        </div>
-    </div>
-
     <CardGrid>
         <Heading tag="h3" size="7">Import project data</Heading>
         <p class="text">

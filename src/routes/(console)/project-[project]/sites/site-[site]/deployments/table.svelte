@@ -9,7 +9,7 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { page } from '$app/stores';
     import Delete from './deleteDeploymentModal.svelte';
-    import RedeployModal from './redeployModal.svelte';
+    import RedeployModal from '../../redeployModal.svelte';
     import Cancel from './cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
     import { ActionMenu, Popover, Status, Table } from '@appwrite.io/pink-svelte';
@@ -174,5 +174,8 @@
     <Delete {selectedDeployment} bind:showDelete />
     <!-- <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} /> -->
     <Cancel {selectedDeployment} bind:showCancel />
-    <RedeployModal {selectedDeployment} bind:show={showRedeploy} site={data.site} />
+    <RedeployModal
+        selectedDeploymentId={selectedDeployment.$id}
+        bind:show={showRedeploy}
+        site={data.site} />
 {/if}

@@ -5,16 +5,22 @@
     import OpenOnMobileModal from '../(components)/openOnMobileModal.svelte';
     import { timeFromNow } from '$lib/helpers/date';
     import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
-    import { protocol } from '$routes/(console)/store';
+    import { consoleVariables, protocol } from '$routes/(console)/store';
     import { type Models } from '@appwrite.io/console';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { Card } from '$lib/components';
+    import { Card, Trim } from '$lib/components';
 
     export let proxyRuleList: Models.ProxyRuleList;
 
     let showDomainQR = false;
     let selectedDomainURL: string;
+
+    $: hasCustomDomain = proxyRuleList?.total
+        ? proxyRuleList.rules.some((rule) =>
+              rule.domain.includes($consoleVariables._APP_DOMAIN_TARGET)
+          )
+        : false;
 </script>
 
 <Layout.Stack>
@@ -33,17 +39,15 @@
     </Layout.Stack>
     <Card padding="s" isTile>
         {#each proxyRuleList?.rules?.slice(0, 3) as rule, i}
-            <Layout.Stack
-                gap="xs"
-                alignItems="center"
-                justifyContent="space-between"
-                direction="row">
-                <Layout.Stack gap="xs">
+            <Layout.Stack alignItems="center" justifyContent="space-between" direction="row">
+                <Layout.Stack gap="xs" inline>
                     <Link variant="quiet-muted" href={`${$protocol}${rule.domain}`} external>
-                        {rule.domain}
+                        <Trim alternativeTrim>
+                            {rule.domain}
+                        </Trim>
                         <Icon icon={IconExternalLink} />
                     </Link>
-                    <Typography.Text>
+                    <Typography.Text truncate>
                         Added {timeFromNow(rule.$createdAt)}
                     </Typography.Text>
                 </Layout.Stack>

@@ -29,14 +29,7 @@
     }
 </script>
 
-<Modal
-    bind:show
-    bind:error
-    onSubmit={removeAddress}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}
-    title="Remove billing address">
+<Modal bind:show bind:error onSubmit={removeAddress} title="Remove billing address">
     <p data-private>
         Are you sure you want to remove the billing address from <b>{$organization?.name}</b>?
     </p>

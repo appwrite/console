@@ -258,7 +258,6 @@
                     </section>
                     <Button
                         text
-                        noMargin
                         class="u-margin-inline-start-auto u-margin-block-start-16"
                         href={`${base}/project-${$page.params.project}/functions/templates`}>
                         <span> All templates </span>

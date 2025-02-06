@@ -13,11 +13,11 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forProject.functions.updateDeploymentBuild(
+            await sdk.forProject.sites.updateDeploymentBuild(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );
-            await invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.SITE);
             showCancel = false;
             addNotification({
                 type: 'success',
@@ -34,13 +34,7 @@
     }
 </script>
 
-<Modal
-    title="Cancel deployment"
-    bind:show={showCancel}
-    onSubmit={handleSubmit}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Cancel deployment" bind:show={showCancel} onSubmit={handleSubmit}>
     <p data-private>Are you sure you want to cancel this deployment?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showCancel = false)}>Cancel</Button>

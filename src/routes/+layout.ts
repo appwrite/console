@@ -1,4 +1,4 @@
-import '@appwrite.io/pink';
+import '@appwrite.io/pink-legacy';
 import '@appwrite.io/pink-icons';
 import 'tippy.js/dist/tippy.css';
 import { sdk } from '$lib/stores/sdk';

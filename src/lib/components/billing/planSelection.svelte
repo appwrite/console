@@ -73,16 +73,12 @@
                 </div>
             </LabelCard>
         </li>
-        {#if $organization?.billingPlan === BillingPlan.SCALE}
-            <li>
-                <LabelCard
-                    name="plan"
-                    bind:group={billingPlan}
-                    value={BillingPlan.SCALE}
-                    padding="m"
-                    title={tierScale.name}>
+        <li>
+            <LabelCard name="plan" bind:group={billingPlan} value={BillingPlan.SCALE} padding={1.5}>
+                <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
+                            {tierScale.name}
                             {#if $organization?.billingPlan === BillingPlan.SCALE && !isNewOrg}
                                 <span class="inline-tag">Current plan</span>
                             {/if}
@@ -94,8 +90,8 @@
                             {formatCurrency(scalePlan?.price ?? 0)} per month + usage
                         </p>
                     </div>
-                </LabelCard>
-            </li>
-        {/if}
+                </svelte:fragment>
+            </LabelCard>
+        </li>
     </ul>
 {/if}

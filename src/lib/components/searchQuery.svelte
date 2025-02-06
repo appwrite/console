@@ -4,8 +4,8 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { onDestroy } from 'svelte';
-    import { Input, Layout } from '@appwrite.io/pink-svelte';
-    import { IconX } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Input } from '@appwrite.io/pink-svelte';
+    import { IconSearch, IconX } from '@appwrite.io/pink-icons-svelte';
 
     export let search = '';
     export let placeholder = '';
@@ -13,8 +13,6 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let isWithEndButton = true;
-    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let timer: ReturnType<typeof setTimeout>;
@@ -60,15 +58,21 @@
     }
 </script>
 
-<Layout.Stack direction="row" justifyContent="space-between">
-    <div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
-        <Input.Text {placeholder} {disabled} {required} type="search" bind:value={search}>
-            <svelte:fragment slot="end">
-                {#if search}
-                    <Input.Action icon={IconX} on:click={() => (search = '')} />
-                {/if}
-            </svelte:fragment>
-        </Input.Text>
-    </div>
-    <slot />
-</Layout.Stack>
+<div style:max-width="360px" style:width="100%">
+    <Input.Text
+        {placeholder}
+        {disabled}
+        {required}
+        type="search"
+        bind:value={search}
+        --color-bgcolor-neutral-default="var(--color-bgcolor-neutral-primary)">
+        <svelte:fragment slot="start">
+            <Icon icon={IconSearch} />
+        </svelte:fragment>
+        <svelte:fragment slot="end">
+            {#if search}
+                <Input.Action icon={IconX} on:click={() => (search = '')} />
+            {/if}
+        </svelte:fragment>
+    </Input.Text>
+</div>

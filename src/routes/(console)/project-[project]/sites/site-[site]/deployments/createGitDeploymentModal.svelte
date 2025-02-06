@@ -143,6 +143,7 @@
         <Repositories
             bind:selectedRepository
             installationList={installations}
+            product="sites"
             action="button"
             callbackState={{
                 createDeployment: 'true'

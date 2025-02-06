@@ -3,8 +3,6 @@
     import { BillingPlan, INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
-    import Header from '$lib/layout/header.svelte';
-    import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
@@ -65,6 +63,15 @@
     }
 
     const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
+
+    export let data;
+    $: loadedProjects = data.projects.map((project) => {
+        return {
+            name: project?.name,
+            $id: project.$id,
+            isSelected: data.currentProjectId === project.$id
+        };
+    });
 
     $: isOnSettingsLayout = $project?.$id
         ? $page.url.pathname.includes(`project-${$project.$id}/settings`)
@@ -327,15 +334,17 @@
 </script>
 
 <CommandCenter />
-
 <Shell
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
-        !$page.url.pathname.includes('/console/onboarding')}>
-    <Header slot="header" />
-    <SideNavigation slot="side" />
+        !$page.url.pathname.includes('/console/onboarding')}
+    showHeader={!$page.url.pathname.includes('/console/onboarding')}
+    showFooter={!$page.url.pathname.includes('/console/onboarding')}
+    bind:loadedProjects
+    bind:projects={data.projects}>
+    <!--    <Header slot="header" />-->
     <slot />
     <Footer slot="footer" />
 </Shell>

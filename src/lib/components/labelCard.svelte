@@ -5,20 +5,10 @@
 
     type Props = ComponentProps<Selector>;
 
-    export let name: string;
     export let group: string;
     export let value: string | number | boolean;
-    export let disabled = false;
-    export let icon: string = null;
-    export let imageIcon: string = null;
-    export let fullHeight = true;
-    export let borderRadius: 'xsmall' | 'small' | 'medium' | 'large' = 'small';
-    export let backgroundColor: string = null;
-    export let backgroundColorHover: string = null;
     export let tooltipText: string = null;
     export let tooltipShow = false;
-    export let src: string = null;
-    export let alt: string = null;
 
     // Pink v2
     export let radius: Props['radius'] = 's';
@@ -27,6 +17,9 @@
     export let variant: Props['variant'] = 'primary';
     //temporarily unefined
     export let title: Props['title'] = undefined;
+    export let disabled = false;
+    export let src: string = null;
+    export let alt: string = null;
 
     // TODO: remove after label card migration
     let slotTitle: HTMLSpanElement;
@@ -35,18 +28,21 @@
 <Tooltip disabled={!tooltipText || !tooltipShow} inline={false}>
     <div>
         <Card.Selector
-            {padding}
             {src}
-            {imageRadius}
             {alt}
+            {padding}
+            {imageRadius}
             {variant}
             {value}
+            {radius}
             {disabled}
             title={title ?? slotTitle?.innerText}
             bind:group>
-            <p>
-                <slot />
-            </p>
+            {#if $$slots.default}
+                <p>
+                    <slot />
+                </p>
+            {/if}
         </Card.Selector>
     </div>
     <span slot="tooltip">{tooltipText}</span>

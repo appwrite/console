@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { EmptySearch, PaginationWithLimit } from '$lib/components/index.js';
-    import { Button, InputSearch } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
@@ -28,28 +28,33 @@
     import RetryDomainModal from './retryDomainModal.svelte';
     import { queries } from '$lib/components/filters';
     import Card from '$lib/components/card.svelte';
+    import SearchQuery from '$lib/components/searchQuery.svelte';
 
     export let data;
 
-    let search = '';
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Models.ProxyRule = null;
 
     $: console.log(data.domains);
+
+    // TODO: replace status once backend is fixed
+    // created - Verification Failed
+    // verified - Verification OK , Certificate OK
+    // verifying - Verifiacitok OK
+    // unverified - Verificaiton OK , Certificate Failed
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <div>
-            <InputSearch placeholder="Search domains" bind:value={search} />
-        </div>
+        <SearchQuery search={data.search} placeholder="Search sites" />
         <Button
             href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
             <Icon icon={IconPlus} size="s" />
             Add domain
         </Button>
     </Layout.Stack>
+
     {#if data.domains.total}
         <Table.Root>
             <svelte:fragment slot="header">
@@ -70,7 +75,12 @@
                                 {domain.domain}
                                 <Icon icon={IconExternalLink} size="s" />
                             </Link>
-                            {#if domain.status !== 'verified'}
+                            {#if domain.status === 'created'}
+                                <Badge
+                                    variant="secondary"
+                                    content="Verification failed"
+                                    type="error" />
+                            {:else if domain.status === 'veryfing'}
                                 <Badge
                                     variant="secondary"
                                     content="Pending verification"
@@ -132,7 +142,7 @@
             offset={data.offset}
             total={data.domains.total} />
     {:else if data?.query}
-        <EmptySearch hidePages bind:search>
+        <EmptySearch hidePages bind:search={data.search} target="domains">
             <svelte:fragment slot="actions">
                 <Button
                     secondary

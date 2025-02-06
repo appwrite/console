@@ -2,7 +2,6 @@
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { InnerModal } from '$lib/components';
-    import { FormItem } from '$lib/elements/forms';
     import TextCounter from '$lib/elements/forms/textCounter.svelte';
 
     export let id: string;
@@ -61,22 +60,20 @@
     </svelte:fragment>
     <svelte:fragment slot="content">
         <div class="form u-gap-8">
-            <FormItem>
-                <div class="input-text-wrapper">
-                    <input
-                        id="id"
-                        placeholder="Enter ID"
-                        maxlength={36}
-                        {pattern}
-                        autocomplete="off"
-                        type="text"
-                        class="input-text"
-                        bind:value={id}
-                        bind:this={element}
-                        on:invalid={handleInvalid} />
-                    <TextCounter count={id?.length ?? 0} max={36} />
-                </div>
-            </FormItem>
+            <div class="input-text-wrapper">
+                <input
+                    id="id"
+                    placeholder="Enter ID"
+                    maxlength={36}
+                    {pattern}
+                    autocomplete="off"
+                    type="text"
+                    class="input-text"
+                    bind:value={id}
+                    bind:this={element}
+                    on:invalid={handleInvalid} />
+                <TextCounter count={id?.length ?? 0} max={36} />
+            </div>
             <div
                 class="u-flex u-gap-4 u-margin-block-start-8 u-small"
                 class:u-color-text-warning={icon === 'exclamation'}>

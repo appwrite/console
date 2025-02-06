@@ -37,13 +37,7 @@
     };
 </script>
 
-<Modal
-    title="Delete Member"
-    bind:show={showDelete}
-    onSubmit={deleteMembership}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Delete Member" bind:show={showDelete} onSubmit={deleteMembership}>
     <p data-private>
         Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
     </p>

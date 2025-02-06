@@ -16,14 +16,14 @@
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { Badge, Icon, Table, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Table, Layout } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
-    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import { IconDuplicate, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { canWriteUsers } from '$lib/stores/roles';
 
     export let data: PageData;
@@ -35,24 +35,18 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
-        <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-            {#if $canWriteUsers}
-                <Tooltip disabled={!isButtonDisabled}>
-                    <div>
-                        <Button
-                            on:mousedown={() => ($showCreateUser = true)}
-                            event="create_user"
-                            disabled={isButtonDisabled}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Create user</span>
-                        </Button>
-                    </div>
-                    <span slot="tooltip">Upgrade to add more users</span>
-                </Tooltip>
-            {/if}
-        </SearchQuery>
-    </ContainerHeader>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Button on:mousedown={() => ($showCreateUser = true)} event="create_user" size="s">
+                <Icon size="s" icon={IconPlus} slot="start" />
+                <span class="text">Create user</span>
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
+
     {#if data.users.total}
         <Table.Root>
             <svelte:fragment slot="header">
@@ -110,7 +104,7 @@
                     </Table.Cell>
                     <Table.Cell>
                         <Copy value={user.$id} event="user">
-                            <Tag size="s">
+                            <Tag size="xs">
                                 <Icon size="s" icon={IconDuplicate} />
                                 User ID
                             </Tag>

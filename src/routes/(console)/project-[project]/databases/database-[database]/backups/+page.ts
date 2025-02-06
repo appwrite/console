@@ -3,6 +3,7 @@ import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { BackupArchive, BackupArchiveList, BackupPolicyList } from '$lib/sdk/backups';
+import { isCloud } from '$lib/system';
 
 export const load = async ({ params, url, route, depends }) => {
     depends(Dependencies.BACKUPS);
@@ -14,24 +15,26 @@ export const load = async ({ params, url, route, depends }) => {
     let backups: BackupArchiveList = { total: 0, archives: [] };
     let policies: BackupPolicyList = { total: 0, policies: [] };
 
-    try {
-        [backups, policies] = await Promise.all([
-            sdk.forProject.backups.listArchives([
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc('$createdAt'),
-                Query.equal('resourceType', 'database'),
-                Query.equal('resourceId', params.database)
-            ]),
+    if (isCloud) {
+        try {
+            [backups, policies] = await Promise.all([
+                sdk.forProject.backups.listArchives([
+                    Query.limit(limit),
+                    Query.offset(offset),
+                    Query.orderDesc('$createdAt'),
+                    Query.equal('resourceType', 'database'),
+                    Query.equal('resourceId', params.database)
+                ]),
 
-            sdk.forProject.backups.listPolicies([
-                Query.orderDesc('$createdAt'),
-                Query.equal('resourceType', 'database'),
-                Query.equal('resourceId', params.database)
-            ])
-        ]);
-    } catch (e) {
-        // ignore
+                sdk.forProject.backups.listPolicies([
+                    Query.orderDesc('$createdAt'),
+                    Query.equal('resourceType', 'database'),
+                    Query.equal('resourceId', params.database)
+                ])
+            ]);
+        } catch (e) {
+            // ignore
+        }
     }
 
     const archivesByPolicy = groupArchivesByPolicy(backups.archives);

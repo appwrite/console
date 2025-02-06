@@ -16,7 +16,8 @@
         Divider,
         Fieldset,
         Layout,
-        Typography
+        Typography,
+        Spinner
     } from '@appwrite.io/pink-svelte';
     import RecordsCard from '../recordsCard.svelte';
     import { invalidate } from '$app/navigation';
@@ -97,11 +98,24 @@
                     <Button secondary on:click={verifyStatus}>Verify</Button>
                 </Layout.Stack>
             </RecordsCard>
+        {:else if domainData.status === 'verifying'}
+            <Card radius="s">
+                <Layout.Stack gap="s" direction="row" alignItems="center">
+                    <Typography.Text variant="l-500">{domainData.domain}</Typography.Text>
+                    <Badge variant="secondary" type="success" content="Verified" />
+                    <Badge variant="secondary" content="Generating certificate...">
+                        <svelte:fragment slot="start">
+                            <Spinner size="s" />
+                        </svelte:fragment>
+                    </Badge>
+                </Layout.Stack>
+            </Card>
         {:else if domainData.status === 'verified'}
             <Card radius="s">
                 <Layout.Stack gap="s" direction="row" alignItems="center">
                     <Typography.Text variant="l-500">{domainData.domain}</Typography.Text>
                     <Badge variant="secondary" type="success" content="Verified" />
+                    <Badge variant="secondary" type="success" content="Generated certificate" />
                 </Layout.Stack>
             </Card>
         {/if}
@@ -121,9 +135,8 @@
                     </Layout.Stack>
                 </Form>
                 <Alert.Inline title="Domain providers and DNS settings" hideActions>
-                    A list of all domain providers and their DNS setting is available <Link
-                        size="s"
-                        href="#">here</Link
+                    A list of all domain providers and their DNS setting is available <Link href="#"
+                        >here</Link
                     >.
                 </Alert.Inline>
             </Layout.Stack>
@@ -133,9 +146,8 @@
     <svelte:fragment slot="aside">
         <Card>
             <Layout.Stack direction="column">
-                <!-- TODO: Update the Accordion component to conditionally render a divider, as it currently includes one by default for every instance -->
-                {#each siteDomainTips as tips}
-                    <Accordion title={tips.title}>
+                {#each siteDomainTips as tips, i}
+                    <Accordion title={tips.title} hideDivider={i === siteDomainTips.length - 1}>
                         {tips.message}
                     </Accordion>
                 {/each}

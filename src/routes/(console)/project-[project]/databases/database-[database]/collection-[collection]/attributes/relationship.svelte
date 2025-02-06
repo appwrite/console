@@ -92,7 +92,9 @@
             );
             return collections;
         } else {
-            const collections = await sdk.forProject.databases.listCollections(databaseId);
+            const collections = await sdk.forProject.databases.listCollections(databaseId, [
+                Query.limit(100)
+            ]);
             return collections;
         }
     }

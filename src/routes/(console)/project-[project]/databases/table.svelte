@@ -1,7 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Id } from '$lib/components';
     import {
         TableBody,
@@ -16,7 +15,7 @@
     import type { PageData } from './$types';
     import { columns } from './store';
     import Cell from '$lib/elements/table/cell.svelte';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Table } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
     const projectId = $page.params.project;
@@ -31,61 +30,59 @@
     }
 </script>
 
-<TableScroll>
-    <TableHeader>
+<Table.Root>
+    <svelte:fragment slot="header">
         {#each $columns as column}
             {#if column.show}
-                <TableCellHead width={column.width}>{column.title}</TableCellHead>
+                <Table.Header.Cell width={column.width}>{column.title}</Table.Header.Cell>
             {/if}
         {/each}
-    </TableHeader>
-    <TableBody>
-        {#each data.databases.databases as database (database.$id)}
-            <TableRowLink href={`${base}/project-${projectId}/databases/database-${database.$id}`}>
-                {#each $columns as column}
-                    {#if column.show}
-                        {#if column.id === '$id'}
-                            {#key $columns}
-                                <TableCell width={column.width} title={column.title}>
-                                    <Id value={database.$id}>
-                                        {database.$id}
-                                    </Id>
-                                </TableCell>
-                            {/key}
-                        {:else if column.id === 'name'}
-                            <TableCellText width={column.width} title={column.title}>
-                                {database.name}
-                            </TableCellText>
-                        {:else if column.id === 'backup'}
-                            {@const policies = data.policies?.[database.$id] ?? null}
-                            {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
-                            {@const description = policies
-                                ?.map((policy) => getPolicyDescription(policy.schedule))
-                                .join(', ')}
+    </svelte:fragment>
+    {#each data.databases.databases as database (database.$id)}
+        <Table.Link href={`${base}/project-${projectId}/databases/database-${database.$id}`}>
+            {#each $columns as column}
+                {#if column.show}
+                    {#if column.id === '$id'}
+                        {#key $columns}
+                            <Table.Cell width={column.width + 'px'}>
+                                <Id value={database.$id}>
+                                    {database.$id}
+                                </Id>
+                            </Table.Cell>
+                        {/key}
+                    {:else if column.id === 'name'}
+                        <Table.Cell width={column.width + 'px'}>
+                            {database.name}
+                        </Table.Cell>
+                    {:else if column.id === 'backup'}
+                        {@const policies = data.policies?.[database.$id] ?? null}
+                        {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
+                        {@const description = policies
+                            ?.map((policy) => getPolicyDescription(policy.schedule))
+                            .join(', ')}
 
-                            <Cell title={column.title} width={column.width}>
-                                <Tooltip placement="bottom" disabled={!policies || !lastBackup}>
-                                    <span class="u-trim">
-                                        {#if !policies}
-                                            <span class="icon-exclamation" /> No backup policies
-                                        {:else}
-                                            {description}
-                                        {/if}
-                                    </span>
-                                    <span slot="tooltip">{`Last backup: ${lastBackup}`}</span>
-                                </Tooltip>
-                            </Cell>
-                        {:else}
-                            <TableCellText width={column.width} title={column.title}>
-                                {toLocaleDateTime(database[column.id])}
-                            </TableCellText>
-                        {/if}
+                        <Table.Cell width={column.width + 'px'}>
+                            <Tooltip placement="bottom" disabled={!policies || !lastBackup}>
+                                <span class="u-trim">
+                                    {#if !policies}
+                                        <span class="icon-exclamation" /> No backup policies
+                                    {:else}
+                                        {description}
+                                    {/if}
+                                </span>
+                                <span slot="tooltip">{`Last backup: ${lastBackup}`}</span>
+                            </Tooltip>
+                        </Table.Cell>
+                    {:else}
+                        <Table.Cell width={column.width + 'px'}>
+                            {toLocaleDateTime(database[column.id])}
+                        </Table.Cell>
                     {/if}
-                {/each}
-            </TableRowLink>
-        {/each}
-    </TableBody>
-</TableScroll>
+                {/if}
+            {/each}
+        </Table.Link>
+    {/each}
+</Table.Root>
 
 <style lang="scss">
     .icon-exclamation {

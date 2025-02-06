@@ -7,15 +7,6 @@
         SearchQuery,
         PaginationWithLimit
     } from '$lib/components';
-    import {
-        Table,
-        TableHeader,
-        TableBody,
-        TableRowLink,
-        TableCellHead,
-        TableCellText,
-        TableCell
-    } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
@@ -27,6 +18,7 @@
     import DeleteMembership from '../deleteMembership.svelte';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Table, Layout } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -42,51 +34,55 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by ID">
-        <Button on:click={() => (showCreate = true)} event="create_membership">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create membership</span>
-        </Button>
-    </SearchQuery>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search by ID" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Button on:mousedown={() => (showCreate = true)} event="create_membership" size="s">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create membership</span>
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
+
     {#if data.memberships.total}
-        <Table>
-            <TableHeader>
-                <TableCellHead>Name</TableCellHead>
-                <TableCellHead onlyDesktop>Roles</TableCellHead>
-                <TableCellHead onlyDesktop>Joined</TableCellHead>
-                <TableCellHead width={30} />
-            </TableHeader>
-            <TableBody>
-                {#each data.memberships.memberships as membership}
-                    {@const username = membership.userName ? membership.userName : '-'}
-                    <TableRowLink
-                        href={`${base}/project-${project}/auth/user-${membership.userId}`}>
-                        <TableCellText title="Name">
-                            <div class="u-flex u-gap-12 u-cross-center">
-                                <AvatarInitials size={32} name={username} />
-                                <span>{username}</span>
-                            </div>
-                        </TableCellText>
-                        <TableCellText onlyDesktop title="Roles">{membership.roles}</TableCellText>
-                        <TableCellText onlyDesktop title="Joined">
-                            {toLocaleDateTime(membership.joined)}
-                        </TableCellText>
-                        <TableCell>
-                            <button
-                                class="button is-only-icon is-text"
-                                aria-label="Delete item"
-                                on:click|preventDefault={() => {
-                                    selectedMembership = membership;
-                                    showDelete = true;
-                                    trackEvent('click_delete_membership');
-                                }}>
-                                <span class="icon-trash" aria-hidden="true" />
-                            </button>
-                        </TableCell>
-                    </TableRowLink>
-                {/each}
-            </TableBody>
-        </Table>
+        <Table.Root>
+            <svelte:fragment slot="header">
+                <Table.Header.Cell>Name</Table.Header.Cell>
+                <Table.Header.Cell>Roles</Table.Header.Cell>
+                <Table.Header.Cell>Joined</Table.Header.Cell>
+                <Table.Header.Cell width="40px" />
+            </svelte:fragment>
+            {#each data.memberships.memberships as membership}
+                <Table.Link href={`${base}/project-${project}/auth/user-${membership.userId}`}>
+                    <Table.Cell>
+                        <Layout.Stack direction="row" alignItems="center">
+                            <AvatarInitials size={32} name={membership.teamName} />
+                            <span>{membership.teamName ? membership.teamName : 'n/a'}</span>
+                        </Layout.Stack>
+                    </Table.Cell>
+                    <Table.Cell>
+                        {membership.roles}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {toLocaleDateTime(membership.joined)}
+                    </Table.Cell>
+                    <Table.Cell>
+                        <button
+                            class="button is-only-icon is-text"
+                            aria-label="Delete item"
+                            on:click|preventDefault={() => {
+                                selectedMembership = membership;
+                                showDelete = true;
+                                trackEvent('click_delete_membership');
+                            }}>
+                            <span class="icon-trash" aria-hidden="true" />
+                        </button>
+                    </Table.Cell>
+                </Table.Link>
+            {/each}
+        </Table.Root>
 
         <PaginationWithLimit
             name="Memberships"

@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card } from '$lib/components';
+    import { Card, SvgIcon } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -29,6 +29,8 @@
     import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
+    import { getFrameworkIcon } from '../../../store';
+    import { iconPath } from '$lib/stores/app';
 
     export let data;
 
@@ -145,8 +147,22 @@
                 );
 
                 trackEvent(Submit.SiteCreate, {
-                    source: 'template'
+                    source: 'template',
+                    framework: framework.key,
+                    template: data.template.name
                 });
+
+                //Add variables
+                await Promise.all(
+                    Object.keys(variables).map(async (key) => {
+                        await sdk.forProject.sites.createVariable(
+                            site.$id,
+                            key,
+                            variables[key].value,
+                            variables[key].secret
+                        );
+                    })
+                );
 
                 const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
                     Query.limit(1)
@@ -223,7 +239,8 @@
                 {@const options = data.template.frameworks.map((framework) => {
                     return {
                         value: framework.name,
-                        label: framework.name
+                        label: framework.name,
+                        leadingHtml: `<img src='${$iconPath(getFrameworkIcon(framework.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
                     };
                 })}
                 <Layout.Stack gap="xxl">

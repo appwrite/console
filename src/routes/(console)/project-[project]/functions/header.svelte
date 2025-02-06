@@ -3,7 +3,8 @@
     import { page } from '$app/stores';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
-    import { Cover, CoverTitle } from '$lib/layout';
+    import { Cover } from '$lib/layout';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/functions`;
@@ -24,7 +25,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Functions</CoverTitle>
+        <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
+            >Functions</Typography.Title>
     </svelte:fragment>
 
     <Tabs>

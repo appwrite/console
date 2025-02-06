@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Divider, Layout, Card } from '@appwrite.io/pink-svelte';
 
-    export let danger = false;
     export let hideOverflow = false;
     export let hideFooter = false;
 </script>

@@ -39,7 +39,8 @@
 
 <style>
     .alert {
-        padding: 1rem 1rem 0.75rem 1rem;
+        padding: 1rem 1rem 0.75rem 1.5rem;
+        margin-block-start: 18px;
     }
 
     .alert-content {
