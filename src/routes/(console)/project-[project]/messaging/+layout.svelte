@@ -14,6 +14,7 @@
     import { topicsSearcher } from '$lib/commandCenter/searchers/topics';
     import { canWriteMessages } from '$lib/stores/roles';
     import { project } from '../store';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     // TODO: finalize the commands
     $: $registerCommands([
@@ -23,7 +24,7 @@
             callback() {
                 addSubPanel(CreateMessagePanel);
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'messaging',
             disabled: !$canWriteMessages
         },

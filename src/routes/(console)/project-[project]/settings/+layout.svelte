@@ -3,11 +3,12 @@
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { canWriteProjects } from '$lib/stores/roles';
     import { openWebhooksWizard } from './webhooks/+page.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: $registerCommands([
         {
             label: 'Create webhook',
-            icon: 'plus',
+            icon: IconPlus,
             keys: $page.url.pathname.includes('webhooks') ? ['c'] : ['c', 'w'],
             callback: () => {
                 openWebhooksWizard();

@@ -96,7 +96,7 @@
             keys: ['c'],
             disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects,
             group: 'projects',
-            icon: 'plus'
+            icon: IconPlus
         }
     ]);
 

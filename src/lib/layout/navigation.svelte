@@ -30,32 +30,3 @@
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
-
-{#if subNavigation}
-    <div class="level-2-nav" class:icons={state === 'icons'}>
-        <svelte:component this={subNavigation} />
-    </div>
-{/if}
-
-<style>
-    .level-2-nav {
-        display: none;
-
-        @media (min-width: 1024px) {
-            display: block;
-            position: fixed;
-            z-index: 10;
-            left: 200px;
-            transition: left 0.2s ease-in-out;
-            margin-left: -5px;
-        }
-    }
-
-    :global(.level-2-nav nav) {
-        padding-left: 15px !important;
-    }
-
-    .icons {
-        left: 54px;
-    }
-</style>

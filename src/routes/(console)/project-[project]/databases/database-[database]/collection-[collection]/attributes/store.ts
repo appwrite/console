@@ -1,4 +1,4 @@
-import type { SvelteComponent } from 'svelte';
+import type { ComponentType, SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 import Boolean, { submitBoolean, updateBoolean } from './boolean.svelte';
 import Email, { submitEmail, updateEmail } from './email.svelte';
@@ -11,6 +11,17 @@ import Url, { submitUrl, updateUrl } from './url.svelte';
 import Datetime, { submitDatetime, updateDatetime } from './datetime.svelte';
 import type { Attributes } from '../store';
 import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
+import {
+    IconCalendar,
+    IconHashtag,
+    IconLink,
+    IconLocationMarker,
+    IconMail,
+    IconRelationship,
+    IconText,
+    IconToggle,
+    IconViewList
+} from '@appwrite.io/pink-icons-svelte';
 
 export type Option = {
     name:
@@ -39,7 +50,7 @@ export type Option = {
         originalKey: string
     ) => Promise<void>;
     format?: 'email' | 'ip' | 'url' | 'enum';
-    icon: string;
+    icon: ComponentType;
 };
 
 export const attributeOptions: Option[] = [
@@ -49,7 +60,7 @@ export const attributeOptions: Option[] = [
         type: 'string',
         create: submitString,
         update: updateString,
-        icon: 'text'
+        icon: IconText
     },
     {
         name: 'Integer',
@@ -57,7 +68,7 @@ export const attributeOptions: Option[] = [
         type: 'integer',
         create: submitInteger,
         update: updateInteger,
-        icon: 'hashtag'
+        icon: IconHashtag
     },
     {
         name: 'Float',
@@ -65,7 +76,7 @@ export const attributeOptions: Option[] = [
         type: 'double',
         create: submitFloat,
         update: updateFloat,
-        icon: 'hashtag'
+        icon: IconHashtag
     },
     {
         name: 'Boolean',
@@ -73,7 +84,7 @@ export const attributeOptions: Option[] = [
         type: 'boolean',
         create: submitBoolean,
         update: updateBoolean,
-        icon: 'toggle'
+        icon: IconToggle
     },
     {
         name: 'Datetime',
@@ -81,7 +92,7 @@ export const attributeOptions: Option[] = [
         type: 'datetime',
         create: submitDatetime,
         update: updateDatetime,
-        icon: 'calendar'
+        icon: IconCalendar
     },
     {
         name: 'Email',
@@ -90,7 +101,7 @@ export const attributeOptions: Option[] = [
         format: 'email',
         create: submitEmail,
         update: updateEmail,
-        icon: 'mail'
+        icon: IconMail
     },
     {
         name: 'IP',
@@ -99,7 +110,7 @@ export const attributeOptions: Option[] = [
         format: 'ip',
         create: submitIp,
         update: updateIp,
-        icon: 'location-marker'
+        icon: IconLocationMarker
     },
     {
         name: 'URL',
@@ -108,7 +119,7 @@ export const attributeOptions: Option[] = [
         format: 'url',
         create: submitUrl,
         update: updateUrl,
-        icon: 'link'
+        icon: IconLink
     },
     {
         name: 'Enum',
@@ -117,7 +128,7 @@ export const attributeOptions: Option[] = [
         format: 'enum',
         create: submitEnum,
         update: updateEnum,
-        icon: 'view-list'
+        icon: IconViewList
     },
     {
         name: 'Relationship',
@@ -125,7 +136,7 @@ export const attributeOptions: Option[] = [
         type: 'relationship',
         create: submitRelationship,
         update: updateRelationship,
-        icon: 'relationship'
+        icon: IconRelationship
     }
 ];
 

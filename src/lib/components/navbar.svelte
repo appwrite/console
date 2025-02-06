@@ -30,7 +30,7 @@
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     let showSupport = false;
 
@@ -123,12 +123,12 @@
             </Layout.Stack>
             <div class="icons">
                 <Tooltip inline={false}>
-                    <Link.Button
-                        variant="quiet-muted"
+                    <Button.Button
+                        variant="text"
                         aria-label="Toggle Command Center"
                         on:click={toggleCommandCenter}>
                         <Icon icon={IconSearch} />
-                    </Link.Button>
+                    </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
             </div>
             <Link.Button
@@ -179,7 +179,7 @@
         </div>
     </div>
 </Navbar.Base>
-{#if showAccountMenu && $isSmallViewport}
+{#if showAccountMenu && $isTabletViewport}
     <BottomSheet.Menu
         bind:isOpen={showAccountMenu}
         menu={{
@@ -249,7 +249,6 @@
 
     .right {
         display: flex;
-        align-items: center;
         gap: var(--space-9, 24px);
 
         .icons {

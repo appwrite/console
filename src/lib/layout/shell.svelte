@@ -31,7 +31,9 @@
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
-        showContentTransition = !url.pathname.includes('organization');
+        setTimeout(() => {
+            showContentTransition = !url.pathname.includes('organization');
+        }, 1000);
     });
 
     /**
@@ -175,7 +177,7 @@
         min-height: calc(100vh - 48px);
     }
 
-    :global(main:has(.level-2-nav)) {
+    :global(main:has(.sub-navigation)) {
         .main-content {
             @media (min-width: 1024px) {
                 padding-left: 200px;
