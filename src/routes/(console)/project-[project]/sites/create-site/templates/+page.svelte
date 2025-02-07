@@ -63,7 +63,11 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<Wizard href={`${base}/project-${$page.params.project}/sites/`} title="Create Site" invertColumns>
+<Wizard
+    href={`${base}/project-${$page.params.project}/sites/`}
+    title="Create Site"
+    invertColumns
+    hideFooter>
     <svelte:fragment slot="aside">
         <Layout.Stack gap="xxl">
             <InputSearch
