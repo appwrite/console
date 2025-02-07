@@ -81,7 +81,7 @@
         </div>
     </Layout.Stack>
 
-    <!-- <Logs logs={buildLogs ?? ''} /> -->
+    <Logs logs={buildLogs} />
 
     <Layout.Stack alignItems="flex-end">
         {#if ['processing', 'building'].includes(status)}
