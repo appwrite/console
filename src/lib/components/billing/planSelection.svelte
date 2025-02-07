@@ -83,8 +83,10 @@
                 value={BillingPlan.SCALE}
                 padding={1.5}
                 disabled={!selfService}>
-                <svelte:fragment slot="custom">
-                    <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+                <svelte:fragment slot="custom" let:disabled>
+                    <div
+                        class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
+                        class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
                             {tierScale.name}
                             {#if $organization?.billingPlan === BillingPlan.SCALE && !isNewOrg}
