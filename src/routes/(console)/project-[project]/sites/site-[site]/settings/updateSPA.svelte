@@ -11,15 +11,10 @@
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
 
     export let site: Models.Site;
-    let siteAdapter = 'static';
-    let fallback = '';
+    let fallback: null | string;
 
     onMount(async () => {
-        siteAdapter = site?.adapter ?? 'static';
-        fallback ??= site.fallbackFile;
-
-        // what was this check even for?
-        // if (fallback !== undefined) siteAdapter = '';
+        fallback = site.fallbackFile;
     });
 
     async function updateSPA() {
@@ -34,7 +29,7 @@
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                siteAdapter,
+                site.adapter || undefined,
                 fallback,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
@@ -67,15 +62,16 @@
                 id="spa"
                 type="switchbox"
                 label="Single page application (SPA)"
+                value={site.fallbackFile !== null}
                 on:change={(value) => {
                     if (value.detail) {
-                        siteAdapter = 'static';
+                        fallback = '';
                     } else {
-                        siteAdapter = 'ssr';
+                        fallback = null;
                     }
                 }} />
 
-            {#if siteAdapter === 'static'}
+            {#if fallback !== null}
                 <InputText
                     id="fallback"
                     label="Fallback"
@@ -85,7 +81,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={siteAdapter === site.adapter} submit>Update</Button>
+            <Button disabled={fallback === site.fallbackFile} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
