@@ -155,7 +155,7 @@ export const failedInvoice = cachedStore<
             ]);
             // const failedInvoices = invoices.invoices;
             if (failedInvoices?.invoices?.length > 0) {
-                const firstFailed = failedInvoices[0];
+                const firstFailed = failedInvoices.invoices[0];
                 const today = new Date();
                 const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
                 const failedDate = new Date(firstFailed.$createdAt);
