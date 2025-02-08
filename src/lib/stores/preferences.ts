@@ -6,6 +6,7 @@ import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import type { Models } from '@appwrite.io/console';
 import { organization } from './organization';
+import { user } from '$lib/stores/user';
 
 type Preferences = {
     limit?: number;
@@ -30,7 +31,7 @@ type PreferencesStore = {
 } & { hideAiDisclaimer?: boolean };
 
 async function updateConsolePreferences(store: PreferencesStore): Promise<void> {
-    const currentPreferences = await sdk.forConsole.account.getPrefs();
+    const currentPreferences = get(user).prefs ?? (await sdk.forConsole.account.getPrefs());
     if (!currentPreferences?.console || Array.isArray(currentPreferences.console)) {
         currentPreferences.console = {};
     }
