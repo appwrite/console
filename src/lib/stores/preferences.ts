@@ -37,7 +37,7 @@ async function updateConsolePreferences(store: PreferencesStore): Promise<void> 
     }
 
     currentPreferences.console = {
-        ...(currentPreferences['console'] ?? {}),
+        ...(currentPreferences.console ?? {}),
         ...store
     };
 
@@ -50,13 +50,19 @@ function createPreferences() {
 
     if (browser) {
         // fresh fetch.
-        sdk.forConsole.account.getPrefs().then((userPreferences) => {
-            if (!userPreferences?.console || Array.isArray(userPreferences.console)) {
-                userPreferences.console = {};
-            }
+        sdk.forConsole.account
+            .getPrefs()
+            .then((userPreferences) => {
+                if (!userPreferences?.console || Array.isArray(userPreferences.console)) {
+                    userPreferences.console = {};
+                }
 
-            set(userPreferences.console);
-        });
+                set(userPreferences.console);
+            })
+            .catch(() => {
+                // exception is thrown if there's no session; in that case - fallback!
+                set(JSON.parse(globalThis.localStorage.getItem('preferences') ?? '{}'));
+            });
     }
 
     subscribe((v) => {
