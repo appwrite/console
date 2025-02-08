@@ -48,3 +48,21 @@ const formatter = Intl.NumberFormat('en', {
 export function formatNum(number: number): string {
     return formatter.format(number);
 }
+
+/**
+ * Validates a hostname, optionally allowing wildcards.
+ *
+ * @param {string} hostname - The hostname to validate.
+ * @param {boolean} [wildcard=true] - Whether to allow wildcard hostnames (e.g., `*.example.com`).
+ */
+export function isHostnameValid(hostname: string, wildcard: boolean = true): boolean {
+    if (!hostname) return false;
+
+    if (!wildcard && hostname.startsWith('*.')) return false;
+
+    const hostnameRegex = wildcard
+        ? /^(\*\.)?([a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,63}$/
+        : /^([a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,63}$/;
+
+    return hostnameRegex.test(hostname);
+}

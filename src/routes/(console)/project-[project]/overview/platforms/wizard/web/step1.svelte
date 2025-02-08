@@ -8,11 +8,17 @@
     import { createPlatform } from '../store';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { PlatformType } from '@appwrite.io/console';
+    import { isHostnameValid } from '$lib/helpers/string';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
 
     async function beforeSubmit() {
+        // double-check the hostname value.
+        if (!isHostnameValid($createPlatform.hostname)) {
+            throw new Error('Please enter a valid hostname');
+        }
+
         if ($createPlatform.$id) {
             await sdk.forConsole.projects.updatePlatform(
                 projectId,
@@ -43,7 +49,7 @@
     }
 </script>
 
-<WizardStep {beforeSubmit}>
+<WizardStep {beforeSubmit} nextDisabled={!isHostnameValid($createPlatform.hostname)}>
     <svelte:fragment slot="title">Hostname registration</svelte:fragment>
     <FormList>
         <InputText
