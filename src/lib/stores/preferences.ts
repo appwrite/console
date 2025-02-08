@@ -29,12 +29,33 @@ type PreferencesStore = {
     };
 } & { hideAiDisclaimer?: boolean };
 
+async function updateConsolePreferences(store: PreferencesStore): Promise<void> {
+    const currentPreferences = await sdk.forConsole.account.getPrefs();
+    if (!currentPreferences?.console || Array.isArray(currentPreferences.console)) {
+        currentPreferences.console = {};
+    }
+
+    currentPreferences.console = {
+        ...(currentPreferences['console'] ?? {}),
+        ...store
+    };
+
+    await sdk.forConsole.account.updatePrefs(currentPreferences);
+}
+
 function createPreferences() {
     const { subscribe, set, update } = writable<PreferencesStore>({});
     let preferences: PreferencesStore = {};
 
     if (browser) {
-        set(JSON.parse(globalThis.localStorage.getItem('preferences') ?? '{}'));
+        // fresh fetch.
+        sdk.forConsole.account.getPrefs().then((userPreferences) => {
+            if (!userPreferences?.console || Array.isArray(userPreferences.console)) {
+                userPreferences.console = {};
+            }
+
+            set(userPreferences.console);
+        });
     }
 
     subscribe((v) => {
@@ -43,6 +64,30 @@ function createPreferences() {
             globalThis.localStorage.setItem('preferences', JSON.stringify(v));
         }
     });
+
+    /**
+     * Update the local store and then synchronizes them on user prefs.
+     */
+    function updateAndSync(callback: (prefs: PreferencesStore) => void) {
+        let oldPrefsSnapshot: string;
+        let newPrefsSnapshot: PreferencesStore;
+
+        update((currentPrefs) => {
+            oldPrefsSnapshot = JSON.stringify(currentPrefs);
+            callback(currentPrefs);
+            newPrefsSnapshot = currentPrefs;
+            return currentPrefs;
+        });
+
+        // Skip API if no changes (sufficient for simple objects).
+        // The key order seemed to be maintained during local tests.
+        if (oldPrefsSnapshot === JSON.stringify(newPrefsSnapshot)) {
+            return;
+        }
+
+        // sync the preferences.
+        updateConsolePreferences(newPrefsSnapshot).then();
+    }
 
     return {
         subscribe,
@@ -65,7 +110,7 @@ function createPreferences() {
             );
         },
         setLimit: (limit: Preferences['limit']) =>
-            update((n) => {
+            updateAndSync((n) => {
                 const path = get(page).route.id;
                 const project = sdk.forProject.client.config.project;
                 if (!n[project]?.[path]) {
@@ -78,7 +123,7 @@ function createPreferences() {
                 return n;
             }),
         setView: (view: Preferences['view']) =>
-            update((n) => {
+            updateAndSync((n) => {
                 const path = get(page).route.id;
                 const project = sdk.forProject.client.config.project;
                 if (!n[project]?.[path]) {
@@ -91,7 +136,7 @@ function createPreferences() {
                 return n;
             }),
         setColumns: (columns: Preferences['columns']) =>
-            update((n) => {
+            updateAndSync((n) => {
                 const path = get(page).route.id;
                 const project = sdk.forProject.client.config.project;
                 if (!n[project]?.[path]) {
@@ -104,7 +149,7 @@ function createPreferences() {
                 return n;
             }),
         setCustomCollectionColumns: (columns: Preferences['columns']) =>
-            update((n) => {
+            updateAndSync((n) => {
                 const current = get(page);
                 const project = sdk.forProject.client.config.project;
                 const collection = current.params.collection;
