@@ -41,6 +41,7 @@
     onMount(() => {
         installation.set(data.installation);
         repository.set(data.repository);
+        name = data.repository.name;
     });
 
     async function loadBranches() {

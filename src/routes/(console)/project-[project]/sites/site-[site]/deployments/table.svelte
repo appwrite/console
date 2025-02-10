@@ -16,6 +16,7 @@
     import {
         IconLightningBolt,
         IconRefresh,
+        IconTerminal,
         IconTrash,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
@@ -123,6 +124,15 @@
                                 }}>
                                 Redeploy
                             </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Anchor
+                                leadingIcon={IconTerminal}
+                                href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}
+                                on:click={(e) => {
+                                    e.preventDefault();
+                                    toggle(e);
+                                }}>
+                                View details
+                            </ActionMenu.Item.Anchor>
                             {#if deployment?.status === 'ready' && deployment?.$id !== data.site.deploymentId}
                                 <ActionMenu.Item.Button
                                     leadingIcon={IconLightningBolt}
