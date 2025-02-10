@@ -11,7 +11,6 @@
     import { ResourceType, type Models } from '@appwrite.io/console';
     import {
         Alert,
-        Accordion,
         Badge,
         Divider,
         Fieldset,
@@ -68,27 +67,9 @@
             });
         }
     }
-
-    type DomainTips = {
-        title: string;
-        message: string;
-    };
-
-    const siteDomainTips: DomainTips[] = [
-        {
-            title: 'Why a Top-Level Domain (TLD) matters for your site?',
-            message:
-                'A custom TLD helps create a unique web address, improves brand recognition, and makes your domain more memorable.'
-        },
-        {
-            title: 'What is DNS and why do you need it?',
-            message:
-                "DNS (Domain Name System) translates your domain name into an IP address, directing visitors to your website. It's essential for making your site accessible and ensuring it loads properly for users."
-        }
-    ];
 </script>
 
-<Wizard title="Add domain" href={backPage}>
+<Wizard title="Add domain" href={backPage} hideAside>
     {#if domainData}
         {#if domainData.status === 'created'}
             <RecordsCard domain={domainData}>
@@ -142,18 +123,6 @@
             </Layout.Stack>
         </Fieldset>
     {/if}
-
-    <svelte:fragment slot="aside">
-        <Card>
-            <Layout.Stack direction="column">
-                {#each siteDomainTips as tips, i}
-                    <Accordion title={tips.title} hideDivider={i === siteDomainTips.length - 1}>
-                        {tips.message}
-                    </Accordion>
-                {/each}
-            </Layout.Stack>
-        </Card>
-    </svelte:fragment>
 
     <svelte:fragment slot="footer">
         <Button secondary href={backPage}>Cancel</Button>
