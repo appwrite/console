@@ -9,7 +9,7 @@
 
 <div class="auth-bg">
     <div>
-        <Container>
+        <Container size="xxl">
             <slot />
         </Container>
     </div>
