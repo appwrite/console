@@ -10,8 +10,8 @@
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import Table from './table.svelte';
-    import Empty from '$lib/components/empty.svelte';
     import { queries } from '$lib/components/filters';
+    import { Card, Empty } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -126,6 +126,20 @@
             </svelte:fragment>
         </EmptySearch>
     {:else}
-        <Empty single target="execution"></Empty>
+        <Card.Base padding="none">
+            <Empty
+                title="There are no logs to display at the moment"
+                description="Logs are automatically generated based on your site's activity.">
+                <svelte:fragment slot="actions">
+                    <Button
+                        external
+                        href="#"
+                        secondary
+                        event="empty_documentation"
+                        size="s"
+                        ariaLabel="logs">Documentation</Button>
+                </svelte:fragment>
+            </Empty>
+        </Card.Base>
     {/if}
 </Container>
