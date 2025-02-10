@@ -15,7 +15,6 @@
     import { type Models } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
-    import { isTabletViewport } from '$lib/stores/viewport';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen } from '$lib/stores/sidebar';
 
@@ -77,7 +76,6 @@
     let subNavigation: undefined | ComponentType = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
-    $: state = !$isTabletViewport ? 'icons' : $isSidebarOpen ? 'open' : 'closed';
 
     function handleResize() {
         $isSidebarOpen = false;
