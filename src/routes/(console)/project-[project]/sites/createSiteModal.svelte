@@ -27,7 +27,9 @@
                     src={$app?.themeInUse === 'dark' ? TemplateDark : TemplateLight} />
                 <Layout.Stack gap="s">
                     <Typography.Text variant="m-600">Clone a template</Typography.Text>
-                    Clone a pre-built template to quickly set up your site
+                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-secondary">
+                        Clone a pre-built template to quickly set up your site
+                    </Typography.Text>
                 </Layout.Stack>
             </Card>
         </div>
@@ -44,13 +46,16 @@
 
                 <Layout.Stack gap="s">
                     <Typography.Text variant="m-600">Connect a repository</Typography.Text>
-                    Connect to one of your existing Git repositories
+                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-secondary">
+                        Connect to one of your existing Git repositories
+                    </Typography.Text>
                 </Layout.Stack>
             </Card>
         </div>
     </Layout.Stack>
-    <Typography.Text variant="m-400">
+    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-secondary">
         Or simply drag and drop your files to create a site <Link
+            variant="muted"
             href={`${base}/project-${$page.params.project}/sites/create-site/manual`}>
             manually</Link
         >.
