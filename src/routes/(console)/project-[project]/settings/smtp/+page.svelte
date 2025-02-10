@@ -124,13 +124,9 @@
 <Container>
     <Form onSubmit={updateSmtp}>
         <CardGrid>
-            <Heading tag="h6" size="7">SMTP server</Heading>
-            <p class="text">
-                You can customize the email service by providing your own SMTP server. View your
-                email templates <a
-                    href={`${base}/project-${$project.$id}/auth/templates`}
-                    class="link">here</a>
-            </p>
+            <svelte:fragment slot="title">SMTP server</svelte:fragment>
+            You can customize the email service by providing your own SMTP server. View your email templates
+            <a href={`${base}/project-${$project.$id}/auth/templates`} class="link">here</a>
             <svelte:fragment slot="aside">
                 {#if $organization.billingPlan === BillingPlan.FREE}
                     <Alert type="info">
@@ -188,7 +184,6 @@
                                 bind:value={username}
                                 placeholder="Enter username" />
                             <InputPassword
-                                showPasswordButton
                                 id="passwort"
                                 label="Password"
                                 bind:value={password}

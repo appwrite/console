@@ -10,12 +10,10 @@
     let showDelete = false;
 </script>
 
-<CardGrid danger>
-    <Heading tag="h6" size="7">Delete site</Heading>
-    <p>
-        The site will be permanently deleted, including all deployments associated with it. This
-        action is irreversible.
-    </p>
+<CardGrid>
+    <svelte:fragment slot="title">Delete site</svelte:fragment>
+    The site will be permanently deleted, including all deployments associated with it. This action is
+    irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

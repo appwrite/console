@@ -50,8 +50,7 @@
     // import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { currentPlan } from '$lib/stores/organization';
     import EmailSignature from './emailSignature.svelte';
     import { isCloud } from '$lib/system';
     import type {
@@ -125,14 +124,11 @@
     {/if}
 
     <CardGrid>
-        <Heading size="7" tag="h3">Email templates</Heading>
-        <p class="text">
-            Use templates to send and process account management emails. <a
-                href="https://appwrite.io/docs/advanced/platform/message-templates"
-                class="link">
-                Learn more about email templates.
-            </a>
-        </p>
+        <svelte:fragment slot="title">Email templates</svelte:fragment>
+        Use templates to send and process account management emails.
+        <a href="https://appwrite.io/docs/advanced/platform/message-templates" class="link">
+            Learn more about email templates.
+        </a>
 
         <svelte:fragment slot="aside">
             <Collapsible>
@@ -167,7 +163,7 @@
                         e.preventDefault();
                         openEmail('otpSession');
                     }}>
-                    <svelte:fragment slot="title">OTP Session</svelte:fragment>
+                    <svelte:fragment slot="title">OTP session</svelte:fragment>
                     <p class="text">Send an email to users that sign in with a email OTP.</p>
                     <EmailMagicUrlTemplate />
                 </CollapsibleItem>
@@ -268,7 +264,7 @@
             </Collapsible>
         </svelte:fragment>
     </CardGrid>-->
-    {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+    {#if isCloud && $currentPlan.emailBranding}
         <EmailSignature />
     {/if}
 </Container>

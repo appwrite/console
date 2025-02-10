@@ -3,7 +3,8 @@
     import { page } from '$app/stores';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
-    import { Cover, CoverTitle } from '$lib/layout';
+    import { Cover } from '$lib/layout';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/sites`;
@@ -24,12 +25,13 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Sites</CoverTitle>
+        <Typography.Title color="--color-fgcolor-neutral-primary" size="xl">Sites</Typography.Title>
     </svelte:fragment>
 
-    <Tabs>
+    <Tabs variant="primary" let:root>
         {#each tabs as tab}
             <Tab
+                {root}
                 href={tab.href}
                 selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
                 event={tab.event}>

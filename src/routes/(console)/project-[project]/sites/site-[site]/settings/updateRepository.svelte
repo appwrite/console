@@ -82,7 +82,7 @@
                 silentMode || undefined,
                 selectedDir || undefined
             );
-            await invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',
                 message: `${site.name} git configuration has been updated successfully`
@@ -116,10 +116,8 @@
 
 <Form onSubmit={updateConfiguration}>
     <CardGrid>
-        <Heading tag="h6" size="7">Repository</Heading>
-        <p class="text">
-            Automatically deploy changes for every commit pushed to your Git repository.
-        </p>
+        <svelte:fragment slot="title">Repository</svelte:fragment>
+        Automatically deploy changes for every commit pushed to your Git repository.
         <svelte:fragment slot="aside">
             {#if repository === false}
                 <Layout.Stack gap="xl">

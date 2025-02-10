@@ -32,6 +32,7 @@
 
     let showDropdown = [];
     let showFailedError = false;
+    // let isLoadingInvoices = true;
 
     let offset = 0;
     let invoiceList: InvoiceList = {
@@ -45,6 +46,7 @@
     onMount(request);
 
     async function request() {
+        // isLoadingInvoices = true;
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
@@ -52,6 +54,7 @@
             Query.notEqual('status', 'pending'),
             Query.orderDesc('$createdAt')
         ]);
+        // isLoadingInvoices = false;
     }
 
     function retryPayment(invoice: Invoice) {
@@ -65,12 +68,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Payment history</Heading>
-
-    <p class="text">
-        Transaction history for this organization. Download invoices for more details about your
-        payments.
-    </p>
+    <svelte:fragment slot="title">Payment history</svelte:fragment>
+    Transaction history for this organization. Download invoices for more details about your payments.
     <svelte:fragment slot="aside">
         {#if invoiceList.total > 0}
             <TableScroll noMargin transparent noStyles>
@@ -104,13 +103,16 @@
                                         </Pill>
                                         <svelte:fragment slot="list">
                                             <li>
-                                                The scheduled payment has failed. <Button
+                                                The scheduled payment has failed.
+                                                <Button
                                                     link
                                                     on:click={() => {
                                                         retryPayment(invoice);
                                                         showFailedError = false;
-                                                    }}>Try again</Button
-                                                >.
+                                                    }}
+                                                    >Try again
+                                                </Button>
+                                                .
                                             </li>
                                         </svelte:fragment>
                                     </DropList>
@@ -183,9 +185,13 @@
                 </TableBody>
             </TableScroll>
             <div class="u-flex u-main-space-between">
-                <p class="text">Total results: {invoiceList?.total ?? 0}</p>
-                <PaginationInline {limit} bind:offset sum={invoiceList?.total ?? 0} hidePages />
+                <p class="text">Total results: {invoiceList.total}</p>
+                <PaginationInline {limit} bind:offset sum={invoiceList.total} hidePages />
             </div>
+            <!--{:else if isLoadingInvoices}-->
+            <!--    <div class="loader-holder">-->
+            <!--        <div class="loader" />-->
+            <!--    </div>-->
         {:else}
             <EmptySearch hidePagination>
                 <p class="text u-text-center">
@@ -196,3 +202,11 @@
         {/if}
     </svelte:fragment>
 </CardGrid>
+
+<!--<style>-->
+<!--    .loader-holder {-->
+<!--        height: 100%;-->
+<!--        align-content: center;-->
+<!--        justify-items: center;-->
+<!--    }-->
+<!--</style>-->

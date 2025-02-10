@@ -22,12 +22,14 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
-    import { Button, FormItem, FormList, InputDigits, InputText } from '$lib/elements/forms';
+    import { Button, FormList, InputDigits, InputText } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { AuthenticationFactor, type Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconChatAlt, IconDeviceMobile, IconMail } from '@appwrite.io/pink-icons-svelte';
 
     export let factors: Models.MfaFactors & { recoveryCode: boolean };
     /** If true, the form will be submitted automatically when the code is entered. */
@@ -92,59 +94,50 @@
             bind:this={inputDigitFields} />
     {/if}
     {#if showVerifyButton}
-        <FormItem>
-            <Button fullWidth submit {disabled}>Verify</Button>
-        </FormItem>
+        <Button fullWidth submit {disabled}>Verify</Button>
     {/if}
     {#if enabledFactors.length > 1}
         <span class="with-separators eyebrow-heading-3">or</span>
         <div class="u-flex-vertical u-gap-8">
             {#if factors.totp && challengeType != null && challengeType != AuthenticationFactor.Totp}
-                <FormItem>
-                    <Button
-                        secondary
-                        fullWidth
-                        {disabled}
-                        on:click={() => createChallenge(AuthenticationFactor.Totp)}>
-                        <span class="icon-device-mobile u-font-size-20" aria-hidden="true" />
-                        <span class="text">Authenticator app</span>
-                    </Button>
-                </FormItem>
+                <Button
+                    secondary
+                    fullWidth
+                    {disabled}
+                    on:click={() => createChallenge(AuthenticationFactor.Totp)}>
+                    <Icon icon={IconDeviceMobile} slot="start" size="s" />
+                    Authenticator app
+                </Button>
             {/if}
             {#if factors.email && challengeType != AuthenticationFactor.Email}
-                <FormItem>
-                    <Button
-                        secondary
-                        fullWidth
-                        {disabled}
-                        on:click={() => createChallenge(AuthenticationFactor.Email)}>
-                        <span class="icon-mail u-font-size-20" aria-hidden="true" />
-                        <span class="text">Email verification</span>
-                    </Button>
-                </FormItem>
+                <Button
+                    secondary
+                    fullWidth
+                    {disabled}
+                    on:click={() => createChallenge(AuthenticationFactor.Email)}>
+                    <span class="icon-mail u-font-size-20" aria-hidden="true" />
+                    <Icon icon={IconMail} slot="start" size="s" />
+                    Email verification
+                </Button>
             {/if}
             {#if factors.phone && challengeType != AuthenticationFactor.Phone}
-                <FormItem>
-                    <Button
-                        secondary
-                        fullWidth
-                        {disabled}
-                        on:click={() => createChallenge(AuthenticationFactor.Phone)}>
-                        <span class="icon-chat-alt u-font-size-20" aria-hidden="true" />
-                        <span class="text">Phone verification</span>
-                    </Button>
-                </FormItem>
+                <Button
+                    secondary
+                    fullWidth
+                    {disabled}
+                    on:click={() => createChallenge(AuthenticationFactor.Phone)}>
+                    <Icon icon={IconChatAlt} slot="start" size="s" />
+                    Phone verification
+                </Button>
             {/if}
             {#if factors.recoveryCode && challengeType != AuthenticationFactor.Recoverycode}
-                <FormItem>
-                    <Button
-                        text
-                        fullWidth
-                        {disabled}
-                        on:click={() => createChallenge(AuthenticationFactor.Recoverycode)}>
-                        <span class="text">Use recovery code</span>
-                    </Button>
-                </FormItem>
+                <Button
+                    text
+                    fullWidth
+                    {disabled}
+                    on:click={() => createChallenge(AuthenticationFactor.Recoverycode)}>
+                    <span class="text">Use recovery code</span>
+                </Button>
             {/if}
         </div>
     {/if}

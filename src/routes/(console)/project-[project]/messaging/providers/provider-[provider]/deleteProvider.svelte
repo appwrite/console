@@ -37,8 +37,7 @@
     bind:show={showDelete}
     onSubmit={deleteProvider}
     icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+    state="warning">
     <p data-private>
         Are you sure you want to delete <b>{$provider.name}</b> from '{$project.name}'?
     </p>

@@ -3,6 +3,8 @@
     import { Button } from '$lib/elements/forms';
     import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
     import { type Models } from '@appwrite.io/console';
+    import { IconDownload } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     export let showRecoveryCodes = false;
     export let codes: Models.MfaRecoveryCodes = null;
@@ -30,8 +32,8 @@
                         download="appwrite-backups.txt"
                         href={`data:application/octet-stream;charset=utf-8,${formattedBackupCodes}`}
                         text>
-                        <span class="icon-download u-font-size-20" aria-hidden="true" />
-                        <span class="text">Download .txt</span>
+                        <Icon icon={IconDownload} slot="start" size="s" />
+                        Download .txt
                     </Button>
                 </li>
                 <li class="buttons-list-item">

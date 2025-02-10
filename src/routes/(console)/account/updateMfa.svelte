@@ -136,7 +136,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Multi-factor authentication</Heading>
+    <svelte:fragment slot="title">Multi-factor authentication</svelte:fragment>
 
     <svelte:fragment slot="aside">
         <div class="u-flex u-flex-vertical u-gap-32">
@@ -190,7 +190,6 @@
                                 <Button
                                     text
                                     class="is-only-mobile"
-                                    noMargin
                                     on:click={() => (showDelete = true)}>Delete</Button>
                             {:else}
                                 <Button secondary on:click={() => (showSetup = true)}>Add</Button>
@@ -288,7 +287,6 @@
                                     <Button
                                         class="method-button is-only-mobile"
                                         text
-                                        noMargin
                                         on:click={() => (showRegenerateRecoveryCodes = true)}
                                         >Regenerate</Button>
                                 {:else}
@@ -318,7 +316,7 @@
     factors={$factors} />
 
 <style lang="scss">
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     /* Default (including mobile) */
     .method {

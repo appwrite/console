@@ -4,7 +4,7 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { template, templateConfig } from '../../store';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let templateScopes = [];
     onMount(() => {
@@ -36,12 +36,12 @@
             <span class="user-profile-info u-flex u-main-space-between u-gap-16">
                 <div>
                     <p class="name u-bold">
-                        Public (anyone can execute) <span
-                            class="icon-info"
-                            use:tooltip={{
-                                content:
-                                    'You can further customize execute permissions in your function settings.'
-                            }} />
+                        Public (anyone can execute) <Tooltip
+                            ><span class="icon-info" />
+                            <span slot="tooltip"
+                                >You can further customize execute permissions in your function
+                                settings.</span>
+                        </Tooltip>
                     </p>
                     <p class="text u-margin-block-start-4">
                         This could include unauthorized users and bots.

@@ -39,15 +39,8 @@
     }
 </script>
 
-<Modal
-    icon="exclamation"
-    state="warning"
-    onSubmit={reset}
-    size="big"
-    {error}
-    bind:show
-    headerDivider={false}>
-    <svelte:fragment slot="title">Reset SMS Template?</svelte:fragment>
+<Modal onSubmit={reset} {error} bind:show>
+    <svelte:fragment slot="title">Reset SMS template?</svelte:fragment>
     <p class="text">
         Are you sure you want to reset the SMS template?
         <b>Default values will be set in all inputs.</b>

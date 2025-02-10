@@ -21,7 +21,7 @@
             showCancel = false;
             addNotification({
                 type: 'success',
-                message: `Deployment has been deleted`
+                message: `Deployment has been cancelled`
             });
             trackEvent(Submit.DeploymentCancel);
         } catch (error) {
@@ -34,13 +34,7 @@
     }
 </script>
 
-<Modal
-    title="Cancel deployment"
-    bind:show={showCancel}
-    onSubmit={handleSubmit}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
+<Modal title="Cancel deployment" bind:show={showCancel} onSubmit={handleSubmit}>
     <p data-private>Are you sure you want to cancel this deployment?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showCancel = false)}>Cancel</Button>

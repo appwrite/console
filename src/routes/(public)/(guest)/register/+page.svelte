@@ -4,7 +4,6 @@
     import {
         Button,
         Form,
-        FormItem,
         InputChoice,
         InputEmail,
         InputPassword,
@@ -20,6 +19,7 @@
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
     import { redirectTo } from '$routes/store';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
     export let data;
 
@@ -52,6 +52,8 @@
                 $page.url.searchParams.delete('redirect');
                 if (redirect) {
                     await goto(`${redirect}${$page.url.search}`);
+                } else if (isCloud) {
+                    checkPricingRefAndRedirect($page.url.searchParams);
                 } else {
                     await goto(`${base}/${$page.url.search ?? ''}`);
                 }
@@ -106,7 +108,6 @@
                     label="Password"
                     placeholder="Your password"
                     required
-                    showPasswordButton
                     bind:value={pass} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
                     By registering, you agree that you have read, understand, and acknowledge our <a
@@ -122,17 +123,13 @@
                         target="_blank"
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
-                <FormItem>
-                    <Button fullWidth submit {disabled}>Sign up</Button>
-                </FormItem>
+                <Button fullWidth submit {disabled}>Sign up</Button>
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <FormItem>
-                        <Button github fullWidth on:click={onGithubLogin} {disabled}>
-                            <span class="icon-github" aria-hidden="true" />
-                            <span class="text">Sign up with GitHub</span>
-                        </Button>
-                    </FormItem>
+                    <Button fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true" />
+                        <span class="text">Sign up with GitHub</span>
+                    </Button>
                 {/if}
             </FormList>
         </Form>

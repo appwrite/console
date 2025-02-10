@@ -90,7 +90,7 @@
                                 <label class="u-flex u-cross-center u-gap-8" for={user.$id}>
                                     {#if user.email || user.phone}
                                         {#if user.name}
-                                            <AvatarInitials size={32} name={user.name} />
+                                            <AvatarInitials size="s" name={user.name} />
                                             <div class="u-line-height-1-5">
                                                 <div class="body-text-2 u-bold">
                                                     {user.name}

@@ -14,6 +14,8 @@
         ValidOperators
     } from './store';
     import { createEventDispatcher } from 'svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconFilter } from '@appwrite.io/pink-icons-svelte';
 
     export let query = '[]';
     export let columns: Writable<Column[]>;
@@ -118,7 +120,7 @@
     <Drop bind:show={showFiltersDesktop} noArrow>
         <slot {disabled} toggle={toggleDropdown}>
             <Button secondary on:click={toggleDropdown} {disabled}>
-                <i class="icon-filter u-opacity-50" />
+                <Icon icon={IconFilter} slot="start" size="s" />
                 Filters
                 {#if applied > 0}
                     <span class="inline-tag">
@@ -175,7 +177,7 @@
 <div class="is-only-mobile">
     <slot name="mobile" {disabled} toggle={toggleMobileModal}>
         <Button size="s" secondary on:click={toggleMobileModal} {fullWidthMobile}>
-            <i class="icon-filter u-opacity-50" />
+            <Icon icon={IconFilter} slot="start" size="s" />
             Filters
             {#if applied > 0}
                 <span class="inline-tag">
@@ -185,7 +187,7 @@
         </Button>
     </slot>
 
-    <Modal title="Filters" bind:show={showFiltersMobile} size="big">
+    <Modal title="Filters" bind:show={showFiltersMobile}>
         <span slot="description"> Apply filter rules to refine the table view </span>
         {#if displayQuickFilters}
             <slot name="quick" />
@@ -208,7 +210,6 @@
                 {#if quickFilters}
                     <Button
                         text
-                        noMargin
                         on:click={() => (displayQuickFilters = !displayQuickFilters)}
                         class="u-margin-block-end-auto">
                         {displayQuickFilters ? 'Advanced filters' : 'Quick filters'}

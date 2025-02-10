@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, FormItem, FormList, Helper, InputText } from '$lib/elements/forms';
+    import { Button, FormList, Helper, InputText } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { Modal } from '..';
     import type { Writable } from 'svelte/store';
@@ -31,16 +31,14 @@
         role.
     </span>
     <FormList>
-        <FormItem>
-            <InputText
-                id="custom-permission"
-                label="Role"
-                placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
-                bind:value />
-            <Helper type="neutral">
-                A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸
-            </Helper>
-        </FormItem>
+        <InputText
+            id="custom-permission"
+            label="Role"
+            placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
+            bind:value />
+        <Helper type="neutral">
+            A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸
+        </Helper>
     </FormList>
 
     <svelte:fragment slot="footer">

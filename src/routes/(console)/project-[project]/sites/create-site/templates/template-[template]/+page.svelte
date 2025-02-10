@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card } from '$lib/components';
+    import { Card, SvgIcon } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -29,10 +29,13 @@
     import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
+    import { getFrameworkIcon } from '../../../store';
+    import { iconPath } from '$lib/stores/app';
 
     export let data;
 
     let showExitModal = false;
+    let isCreatingRepository = false;
     let hasInstallations = !!data?.installations?.total;
 
     let formComponent: Form;
@@ -41,6 +44,7 @@
     let name = data.template.name;
     let id = ID.unique();
     let domain = id;
+    let domainIsValid = true;
     let framework = data?.template?.frameworks[0];
     let branch = 'main';
     let rootDir = './';
@@ -80,6 +84,7 @@
 
     async function createRepository() {
         try {
+            isCreatingRepository = true;
             const repo = await sdk.forProject.vcs.createRepository(
                 $installation.$id,
                 repositoryName,
@@ -93,6 +98,8 @@
                 type: 'error',
                 message: error.message
             });
+        } finally {
+            isCreatingRepository = false;
         }
     }
 
@@ -103,54 +110,75 @@
                 message: 'Please select a repository'
             });
             return;
-        }
-        try {
-            const fr = Object.values(Framework).find((f) => f === framework.key);
-            const buildRuntime = Object.values(BuildRuntime).find(
-                (f) => f === framework.buildRuntime
-            );
-            let site = await sdk.forProject.sites.create(
-                id || ID.unique(),
-                name,
-                fr,
-                buildRuntime,
-                undefined,
-                undefined,
-                framework.installCommand,
-                framework.buildCommand,
-                framework.outputDirectory,
-                domain,
-                framework.adapter,
-                selectedInstallationId || undefined,
-                framework.fallbackFile,
-                selectedRepository || undefined,
-                branch || undefined,
-                selectedRepository ? silentMode : undefined,
-                rootDir || undefined,
-                data.template.providerRepositoryId || undefined,
-                data.template.providerOwner || undefined,
-                framework.providerRootDirectory || undefined,
-                data.template.providerVersion || undefined
-            );
-
-            trackEvent(Submit.SiteCreate, {
-                source: 'template'
-            });
-
-            const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                Query.limit(1)
-            ]);
-            const deployment = deployments[0];
-            await goto(
-                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
-            );
-        } catch (e) {
-            console.log(e);
+        } else if (!domainIsValid) {
             addNotification({
                 type: 'error',
-                message: e.message
+                message: 'Please enter a valid domain'
             });
-            trackError(e, Submit.SiteCreate);
+            return;
+        } else {
+            try {
+                const fr = Object.values(Framework).find((f) => f === framework.key);
+                const buildRuntime = Object.values(BuildRuntime).find(
+                    (f) => f === framework.buildRuntime
+                );
+                let site = await sdk.forProject.sites.create(
+                    id || ID.unique(),
+                    name,
+                    fr,
+                    buildRuntime,
+                    undefined,
+                    undefined,
+                    framework.installCommand,
+                    framework.buildCommand,
+                    framework.outputDirectory,
+                    domain || undefined,
+                    framework.adapter,
+                    selectedInstallationId || undefined,
+                    framework.fallbackFile,
+                    selectedRepository || undefined,
+                    branch || undefined,
+                    selectedRepository ? silentMode : undefined,
+                    rootDir || undefined,
+                    data.template.providerRepositoryId || undefined,
+                    data.template.providerOwner || undefined,
+                    framework.providerRootDirectory || undefined,
+                    data.template.providerVersion || undefined
+                );
+
+                trackEvent(Submit.SiteCreate, {
+                    source: 'template',
+                    framework: framework.key,
+                    template: data.template.name
+                });
+
+                //Add variables
+                await Promise.all(
+                    Object.keys(variables).map(async (key) => {
+                        await sdk.forProject.sites.createVariable(
+                            site.$id,
+                            key,
+                            variables[key].value,
+                            variables[key].secret
+                        );
+                    })
+                );
+
+                const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
+                    Query.limit(1)
+                ]);
+                const deployment = deployments[0];
+                await goto(
+                    `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                );
+            } catch (e) {
+                console.log(e);
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+                trackError(e, Submit.SiteCreate);
+            }
         }
     }
 
@@ -158,6 +186,12 @@
         selectedInstallationId = $installation?.$id;
         repositoryName = name.split(' ').join('-').toLowerCase();
     }
+
+    $: if (connectBehaviour === 'later') {
+        selectedRepository = null;
+    }
+
+    $: console.log(domain);
 </script>
 
 <svelte:head>
@@ -201,13 +235,14 @@
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <Domain bind:domain />
+                    <Domain bind:domain bind:domainIsValid />
                 </Layout.Stack>
             {:else}
                 {@const options = data.template.frameworks.map((framework) => {
                     return {
                         value: framework.name,
-                        label: framework.name
+                        label: framework.name,
+                        leadingHtml: `<img src='${$iconPath(getFrameworkIcon(framework.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
                     };
                 })}
                 <Layout.Stack gap="xxl">
@@ -216,12 +251,13 @@
                 </Layout.Stack>
                 {#if connectBehaviour === 'now'}
                     {#if hasInstallations}
-                        <Fieldset legend="Git repositoy">
+                        <Fieldset legend="Git repository">
                             <Layout.Stack gap="xl">
                                 <RepositoryBehaviour bind:repositoryBehaviour />
                                 {#if repositoryBehaviour === 'new'}
                                     <NewRepository
                                         bind:selectedInstallationId
+                                        disableFields={isCreatingRepository}
                                         installations={data.installations}
                                         bind:repositoryName
                                         bind:repositoryPrivate />
@@ -231,7 +267,11 @@
                                         <Button
                                             size="s"
                                             on:click={createRepository}
-                                            disabled={!repositoryName || !$installation?.$id}>
+                                            forceShowLoader
+                                            submissionLoader={isCreatingRepository}
+                                            disabled={!repositoryName ||
+                                                !$installation?.$id ||
+                                                isCreatingRepository}>
                                             Create
                                         </Button>
                                     </Layout.Stack>
@@ -256,7 +296,7 @@
                     {:else}
                         <Card isDashed isTile>
                             <Empty
-                                title={`Connect Git repository`}
+                                title="Connect Git repository"
                                 description="Create and deploy a Site with a connected git repository.">
                                 <svelte:fragment slot="actions">
                                     <Button secondary href={connectGitHub().toString()} size="s">
@@ -271,7 +311,7 @@
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <Domain bind:domain />
+                    <Domain bind:domain bind:domainIsValid />
                 {/if}
             {/if}
         </Layout.Stack>
@@ -282,8 +322,7 @@
                 <Typography.Text variant="m-500" truncate>
                     {name || data.template.name}
                 </Typography.Text>
-                <!-- TODO: re-enable -->
-                <Button secondary size="s" href={data.template.demoUrl} disabled>View demo</Button>
+                <Button secondary size="s" external href={data.template.demoUrl}>View demo</Button>
             </Layout.Stack>
 
             <Image
@@ -303,7 +342,7 @@
             fullWidthMobile
             size="s"
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting}>
+            disabled={$isSubmitting || (connectBehaviour === 'now' && !selectedRepository)}>
             Deploy
         </Button>
     </svelte:fragment>

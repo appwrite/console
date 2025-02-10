@@ -81,11 +81,9 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Build settings</Heading>
-        <p class="text">
-            Default build settings are configured based on your framework, ensuring optimal
-            performance. Adjust the settings here if needed.
-        </p>
+        <svelte:fragment slot="title">Build settings</svelte:fragment>
+        Default build settings are configured based on your framework, ensuring optimal performance.
+        Adjust the settings here if needed.
         <svelte:fragment slot="aside">
             <InputSelect
                 id="framework"

@@ -20,19 +20,19 @@ export const load = async ({ url, route }) => {
     const [frameworks, useCases] = siteTemplatesList.templates.reduce(
         ([fr, uc], next) => {
             next.useCases.forEach((useCase) => uc.add(useCase));
-            // next.frameworks.forEach((framework) => fr.add(framework.name));
+            next.frameworks.forEach((framework) => fr.add(framework.name));
             return [fr, uc];
         },
         [new Set<string>(), new Set<string>()]
     );
 
     const templates = siteTemplatesList.templates.filter((template) => {
-        // if (
-        //     filter.framework.length > 0
-        //     && !template.frameworks.some((n) => filter.frameworks.includes(n.name))
-        // ) {
-        //     return false;
-        // }
+        if (
+            filter.frameworks.length > 0 &&
+            !template.frameworks.some((n) => filter.frameworks.includes(n.name))
+        ) {
+            return false;
+        }
 
         const filterLowerCases = filter.useCases.map((n) => n.toLowerCase());
         if (

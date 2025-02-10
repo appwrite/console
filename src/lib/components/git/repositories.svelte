@@ -1,6 +1,5 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { EmptySearch } from '$lib/components';
     import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
@@ -9,10 +8,11 @@
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
     import { createEventDispatcher } from 'svelte';
-    import { Layout, Table, Typography, Icon, Avatar } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Typography, Icon, Avatar, Skeleton } from '@appwrite.io/pink-svelte';
     import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
     import ConnectGit from './connectGit.svelte';
-    import Link from '$lib/elements/link.svelte';
+    import SvgIcon from '../svgIcon.svelte';
+    import { getFrameworkIcon } from '$routes/(console)/project-[project]/sites/store';
 
     const dispatch = createEventDispatcher();
 
@@ -64,12 +64,18 @@
         $repositories.search = search;
         $repositories.installationId = installationId;
 
-        if ($repositories.repositories.length) {
+        if ($repositories.repositories.length && action === 'select') {
             selectedRepository = $repositories.repositories[0].id;
             $repository = $repositories.repositories[0];
         }
 
         return $repositories.repositories.slice(0, 4);
+    }
+
+    async function detectFramework(repo) {
+        console.log(repo);
+        // TODO add code once backend is implemented
+        return '';
     }
 </script>
 
@@ -110,17 +116,25 @@
                     <InputSearch placeholder="Search repositories" bind:value={search} />
                 </Layout.Stack>
             {/await}
-            <p>
-                Manage organization configuration in your <Link
-                    href={`${base}/project-${$page.params.project}/settings`}>project settings</Link
-                >.
-            </p>
         </Layout.Stack>
         {#if selectedInstallation}
             {#await loadRepositories(selectedInstallation, search)}
-                <Layout.Stack justifyContent="center" alignContent="center" alignItems="center">
-                    <div class="loader u-margin-32" />
-                </Layout.Stack>
+                <Table.Root>
+                    {#each Array(4) as _}
+                        <Table.Row>
+                            <Table.Cell>
+                                <Layout.Stack direction="row" alignItems="center">
+                                    <Skeleton variant="circle" width={24} />
+
+                                    <Layout.Stack gap="s" direction="row" alignItems="center">
+                                        <Skeleton variant="line" width={200} height={20} />
+                                    </Layout.Stack>
+                                    <Skeleton variant="line" width={76} height={32} />
+                                </Layout.Stack>
+                            </Table.Cell>
+                        </Table.Row>
+                    {/each}
+                </Table.Root>
             {:then response}
                 {#if response?.length}
                     <Table.Root>
@@ -138,7 +152,16 @@
                                                 value={repo.id} />
                                         {/if}
                                         {#if product === 'sites'}
-                                            <Avatar size="xs" alt={repo.name} />
+                                            {#await detectFramework(repo)}
+                                                <Avatar size="xs" alt={repo.name} empty />
+                                            {:then framework}
+                                                <Avatar
+                                                    size="xs"
+                                                    alt={repo.name}
+                                                    empty={!framework}>
+                                                    <SvgIcon name={getFrameworkIcon(framework)} />
+                                                </Avatar>
+                                            {/await}
                                         {:else}
                                             <Avatar
                                                 size="xs"
@@ -170,7 +193,7 @@
                                         {#if action === 'button'}
                                             <Layout.Stack direction="row" justifyContent="flex-end">
                                                 <Button
-                                                    size="s"
+                                                    size="xs"
                                                     secondary
                                                     on:click={() => dispatch('connect', repo)}>
                                                     Connect

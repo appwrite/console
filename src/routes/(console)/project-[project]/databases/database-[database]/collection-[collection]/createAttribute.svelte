@@ -66,13 +66,19 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} onSubmit={submit} icon={$option?.icon}>
+<Modal
+    {error}
+    size="big"
+    bind:show={showCreate}
+    onSubmit={submit}
+    icon={$option?.icon}
+    iconNotMobile={selectedOption === 'Relationship'}>
     <svelte:fragment slot="title">
         {#if selectedOption === 'Relationship'}
             <span class="u-flex u-gap-16 u-cross-center">
                 {selectedOption}
                 <div class="tag eyebrow-heading-3">
-                    <span class="text u-x-small">Beta</span>
+                    <span class="text u-x-small">Experimental</span>
                 </div>
             </span>
         {:else}
@@ -90,12 +96,12 @@
                     autofocus
                     required />
 
-                <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
+                <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
                     <span
                         class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                         aria-hidden="true" />
                     <span class="text u-line-height-1-5">
-                        Allowed characters: alphanumeric, hyphen, non-leading underscore, period
+                        Allowed characters: alphanumeric, hyphen, non-leading underscore, period.
                     </span>
                 </div>
             </div>

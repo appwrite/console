@@ -40,6 +40,12 @@
     import { consoleVariables } from '$routes/(console)/store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { sortBranches } from '$lib/stores/vcs';
+    import {
+        IconAzure,
+        IconBitBucket,
+        IconGithub,
+        IconGitlab
+    } from '@appwrite.io/pink-icons-svelte';
 
     const functionId = $page.params.function;
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
@@ -162,16 +168,13 @@
 
 <Form onSubmit={updateConfiguration}>
     <CardGrid>
-        <Heading tag="h6" size="7">Configuration</Heading>
-        <p class="text">
-            Connect a Git repository for automatic deployments, or set install and build commands
-            for your function.
-        </p>
+        <svelte:fragment slot="title">Configuration</svelte:fragment>
+        Connect a Git repository for automatic deployments, or set install and build commands for your
+        function.
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText
                     required
-                    hideRequired
                     label="Entrypoint"
                     id="Entrypoint"
                     placeholder="Enter an entrypoint (e.g. 'index.js')"
@@ -288,8 +291,12 @@
                                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                                     <div class="u-flex u-cross-center u-gap-8">
                                         <AvatarGroup
-                                            bordered
-                                            icons={['github', 'gitlab', 'bitBucket', 'azure']} />
+                                            icons={[
+                                                IconGithub,
+                                                IconGitlab,
+                                                IconBitBucket,
+                                                IconAzure
+                                            ]} />
 
                                         <span class="icon-arrow-narrow-right" />
                                         <div class="avatar">

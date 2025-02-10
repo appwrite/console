@@ -44,15 +44,8 @@
     }
 </script>
 
-<Modal
-    icon="exclamation"
-    state="warning"
-    onSubmit={reset}
-    size="big"
-    {error}
-    bind:show
-    headerDivider={false}>
-    <svelte:fragment slot="title">Reset Email Template?</svelte:fragment>
+<Modal onSubmit={reset} {error} bind:show>
+    <svelte:fragment slot="title">Reset email template?</svelte:fragment>
     <p class="text">
         Are you sure you want to reset the email template?
         <b>Default values will be set in all inputs.</b>

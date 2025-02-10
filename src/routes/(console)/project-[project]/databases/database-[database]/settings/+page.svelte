@@ -12,6 +12,7 @@
     import { onMount } from 'svelte';
     import Delete from '../delete.svelte';
     import { database } from '../store';
+    import { Query } from '@appwrite.io/console';
 
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
@@ -22,6 +23,13 @@
     onMount(async () => {
         databaseName ??= $database.name;
     });
+
+    async function loadCollectionCount() {
+        const { total } = await sdk.forProject.databases.listCollections($database.$id, [
+            Query.limit(1)
+        ]);
+        return total;
+    }
 
     function addError(location: typeof showError, message: string, type: typeof errorType) {
         showError = location;
@@ -63,8 +71,7 @@
 
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
-
+                <svelte:fragment slot="title">Name</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <ul>
                         <InputText
@@ -82,25 +89,29 @@
 
                 <svelte:fragment slot="actions">
                     <Button disabled={databaseName === $database.name || !databaseName} submit
-                        >Update</Button>
+                        >Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
-        <CardGrid danger>
-            <div>
-                <Heading tag="h6" size="7">Delete database</Heading>
-            </div>
-
-            <p>
-                The database will be permanently deleted, including all data associated with this
-                team. This action is irreversible.
-            </p>
+        <CardGrid>
+            <svelte:fragment slot="title">Delete database</svelte:fragment>
+            The database will be permanently deleted, including all collections within it. This action
+            is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
-                        <span>Last updated: {toLocaleDateTime($database.$updatedAt)}</span>
+                        <span class="u-flex u-gap-8">
+                            {#await loadCollectionCount()}
+                                <div class="loader is-small" />
+                            {:then count}
+                                {count}
+                            {/await}
+
+                            Collections
+                        </span>
                     </svelte:fragment>
                 </BoxAvatar>
             </svelte:fragment>

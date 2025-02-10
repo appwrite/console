@@ -9,7 +9,7 @@
     import DeploymentSource from './deploymentSource.svelte';
 
     import DeploymentDomains from './deploymentDomains.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let deployment: Models.Deployment;
 </script>
@@ -57,24 +57,21 @@
                 <p class="u-color-text-offline">Total size</p>
                 <p class="u-line-height-2">
                     {totalSize.value + totalSize.unit}
-                    <button
-                        type="button"
-                        on:click|preventDefault
-                        class="tooltip"
-                        aria-label="input tooltip"
-                        use:tooltip={{
-                            content: `
-                                <p><b>Deployment size:</b> ${deploymentSize.value + deploymentSize.unit}</p>
-                                <p><b>Build size:</b> ${buildSize.value + buildSize.unit}</p>
-                            `,
-                            allowHTML: true,
-                            appendTo: 'parent'
-                        }}>
-                        <span
-                            class="icon-info"
-                            aria-hidden="true"
-                            style="font-size: var(--icon-size-small)" />
-                    </button>
+                    <Tooltip>
+                        <button type="button" on:click|preventDefault aria-label="input tooltip">
+                            <span
+                                class="icon-info"
+                                aria-hidden="true"
+                                style="font-size: var(--icon-size-small)" />
+                        </button>
+                        <div slot="tooltip">
+                            <p>
+                                <b>Deployment size:</b>
+                                {deploymentSize.value + deploymentSize.unit}
+                            </p>
+                            <p><b>Build size:</b> {buildSize.value + buildSize.unit}</p>
+                        </div>
+                    </Tooltip>
                 </p>
             </li>
             <li class="u-flex-vertical u-gap-4">
@@ -106,7 +103,7 @@
 </CardGrid>
 
 <style lang="scss">
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     .stats-grid-box {
         display: grid;

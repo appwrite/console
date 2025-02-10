@@ -18,8 +18,8 @@
     }
 </script>
 
-<Modal title="Install" headerDivider={false} bind:show={showGitInstall} size="big">
-    <p>Select a provider to import an existing git repositories.</p>
+<Modal title="Install" bind:show={showGitInstall}>
+    <p>Select a provider to import an existing git repository.</p>
 
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
         <Button href={connectGitHub().toString()} fullWidth secondary>

@@ -56,16 +56,15 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7" id="permissions">Permissions</Heading>
-    <p class="text">
-        Choose who can access your collection and documents. For more about <a
-            href="https://appwrite.io/docs/products/databases/permissions"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">
-            Permissions
-        </a>.
-    </p>
+    <svelte:fragment slot="title">Permissions</svelte:fragment>
+    Choose who can access your collection and documents. For more about
+    <a
+        href="https://appwrite.io/docs/products/databases/permissions"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link">
+        Permissions
+    </a>.
     <svelte:fragment slot="aside">
         {#if collectionPermissions}
             <Permissions bind:permissions={collectionPermissions} withCreate />

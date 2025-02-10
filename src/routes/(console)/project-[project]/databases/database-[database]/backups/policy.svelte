@@ -11,13 +11,13 @@
     import { parseExpression } from 'cron-parser';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
-    import { tooltip } from '$lib/actions/tooltip';
-
     import EmptyDark from '$lib/images/backups/backups-dark.png';
     import EmptyLight from '$lib/images/backups/backups-light.png';
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
     import { backupFrequencies } from '$lib/helpers/backups';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let showDropdown = [];
     let showDelete = false;
@@ -180,9 +180,12 @@
                             class="policy-item-subtitles u-flex u-gap-6"
                             style="width: fit-content;">
                             {#if shouldUseTooltip}
-                                <span use:tooltip={{ content: policyDescription }}>
-                                    {policyDescriptionShort}
-                                </span>
+                                <Tooltip>
+                                    <span>
+                                        {policyDescriptionShort}
+                                    </span>
+                                    <span slot="tooltip">{policyDescription}</span>
+                                </Tooltip>
                             {:else}
                                 {policyDescription}
                             {/if}
@@ -261,8 +264,8 @@
                             event="create_policy"
                             class="small-radius-border-button"
                             on:click={() => (showCreatePolicy = true)}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Create policy</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create policy
                         </Button>
                     </div>
                 </div>
@@ -283,14 +286,7 @@
     </Card>
 </div>
 
-<Modal
-    title="Delete policy"
-    icon="exclamation"
-    state="warning"
-    size="small"
-    bind:show={showDelete}
-    headerDivider={false}
-    onSubmit={deletePolicy}>
+<Modal title="Delete policy" bind:show={showDelete} onSubmit={deletePolicy}>
     <FormList>
         <div class="u-flex-vertical u-gap-16">
             <p class="text" data-private>
@@ -306,7 +302,6 @@
             <div class="input-check-box-friction">
                 <InputCheckbox
                     required
-                    size="small"
                     id="delete_policy"
                     bind:checked={confirmedDeletion}
                     label="I understand and confirm" />

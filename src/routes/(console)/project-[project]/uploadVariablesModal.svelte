@@ -18,6 +18,7 @@
 
     let files: FileList;
     let error: string;
+    export let product: 'function' | 'site' = 'function';
 
     async function handleSubmit() {
         try {
@@ -62,19 +63,18 @@
             error = e.message;
         }
     }
+
+    const title = `Import new ${isGlobal ? 'global' : 'environment'} variables`;
 </script>
 
-<Modal headerDivider={false} bind:show onSubmit={handleSubmit} bind:error>
-    <svelte:fragment slot="title">
-        Import new {isGlobal ? 'global' : 'environment'} variables
-    </svelte:fragment>
+<Modal {title} bind:show bind:error onSubmit={handleSubmit}>
     <div class="u-flex u-flex-vertical u-gap-24 u-margin-block-start-8">
         <p>
-            Import new {isGlobal ? 'global' : 'environment'} variables from
+            {title} from
             <span class="inline-code">.env</span>
-            file that will be passed to {isGlobal
-                ? 'all functions within your project'
-                : 'your function'}.
+            file that will be passed to {!isGlobal
+                ? `your ${product}`
+                : 'all functions and sites within your project'}.
         </p>
 
         {#if variableList.total > 0}

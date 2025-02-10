@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { InputChoice, InputSelect, InputText } from '$lib/elements/forms';
+    import { InputCheckbox, InputSelect, InputText } from '$lib/elements/forms';
     import { installation } from '$lib/stores/vcs';
     import type { Models } from '@appwrite.io/console';
     import { Layout } from '@appwrite.io/pink-svelte';
@@ -8,6 +8,7 @@
     export let installations: Models.InstallationList;
     export let repositoryName: string;
     export let repositoryPrivate = true;
+    export let disableFields = false;
 </script>
 
 <Layout.Stack gap="l">
@@ -15,6 +16,7 @@
         <InputSelect
             id="installation"
             label="Git organization"
+            disabled={disableFields}
             options={installations.installations.map((entry) => {
                 return {
                     label: entry.organization,
@@ -32,9 +34,11 @@
         id="repositoryName"
         label="Repository name"
         placeholder="my-repository"
+        disabled={disableFields}
         bind:value={repositoryName} />
-    <InputChoice
+    <InputCheckbox
         id="repositoryPrivate"
         label="Keep repository private"
-        bind:value={repositoryPrivate} />
+        disabled={disableFields}
+        bind:checked={repositoryPrivate} />
 </Layout.Stack>

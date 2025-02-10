@@ -1,13 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import {
-        Button,
-        Form,
-        FormItem,
-        FormList,
-        InputEmail,
-        InputPassword
-    } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
@@ -70,7 +63,7 @@
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Password Recovery</svelte:fragment>
+    <svelte:fragment slot="title">Password recovery</svelte:fragment>
     <svelte:fragment>
         {#if userId && secret}
             <Form onSubmit={setPassword}>
@@ -81,19 +74,15 @@
                         id="password"
                         autofocus={true}
                         required={true}
-                        showPasswordButton={true}
                         bind:value={password} />
                     <InputPassword
                         label="Confirm password"
                         placeholder="Confirm password"
                         id="confirm-password"
                         required={true}
-                        showPasswordButton={true}
                         bind:value={confirmPassword} />
 
-                    <FormItem>
-                        <Button fullWidth submit>Update</Button>
-                    </FormItem>
+                    <Button fullWidth submit>Update</Button>
                 </FormList>
             </Form>
         {:else}
@@ -107,9 +96,7 @@
                         required={true}
                         bind:value={email} />
 
-                    <FormItem>
-                        <Button fullWidth submit>Recover</Button>
-                    </FormItem>
+                    <Button fullWidth submit>Recover</Button>
                 </FormList>
             </Form>
         {/if}

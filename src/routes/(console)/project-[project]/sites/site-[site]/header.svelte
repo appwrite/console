@@ -47,9 +47,10 @@
         <CoverTitle href={`${base}/project-${projectId}/sites`}>{$site.name}</CoverTitle>
     </svelte:fragment>
 
-    <Tabs>
+    <Tabs let:root>
         {#each tabs as tab}
             <Tab
+                {root}
                 href={tab.href}
                 selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
                 event={tab.event}>

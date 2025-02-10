@@ -227,8 +227,7 @@
             <Button
                 text
                 on:click={() => (showMobileFilters = !showMobileFilters)}
-                ariaLabel="toggle filters"
-                noMargin>
+                ariaLabel="toggle filters">
                 <span class="icon-filter-line" />
                 <span class="text">Filters</span>
             </Button>

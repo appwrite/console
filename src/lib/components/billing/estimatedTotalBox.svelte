@@ -64,14 +64,16 @@
     </span>
 
     <p class="text u-margin-block-start-16">
-        You'll pay <span class="u-bold">{formatCurrency(estimatedTotal)}</span> now, with our first
+        You'll pay <span class="u-bold">{formatCurrency(estimatedTotal)}</span> now, with your first
         billing cycle starting on
         <span class="u-bold"
             >{!currentPlan.trialDays
                 ? toLocaleDate(billingPayDate.toString())
                 : toLocaleDate(trialEndDate.toString())}</span
-        >. Once your credits run out, you'll be charged
-        <span class="u-bold">{formatCurrency(currentPlan.price)}</span> plus usage fees every 30 days.
+        >. {#if couponData?.status === 'active'}Once your credits run out, you'll be charged
+            <span class="u-bold">{formatCurrency(currentPlan.price)}</span> plus usage fees every 30
+            days.
+        {/if}
     </p>
 
     <FormList class="u-margin-block-start-24">

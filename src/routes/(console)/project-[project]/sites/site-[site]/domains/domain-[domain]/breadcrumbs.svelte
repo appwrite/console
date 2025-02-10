@@ -1,0 +1,36 @@
+<script lang="ts">
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { Breadcrumbs } from '$lib/layout';
+    import { organization } from '$lib/stores/organization';
+    import { project } from '../../../../store';
+
+    $: breadcrumbs = [
+        {
+            href: `${base}/organization-${$organization?.$id}`,
+            title: $organization?.name
+        },
+        {
+            href: `${base}/project-${$project?.$id}`,
+            title: $project?.name
+        },
+        {
+            href: `${base}/project-${$project?.$id}/sites`,
+            title: 'Sites'
+        },
+        {
+            href: `${base}/project-${$project?.$id}/sites/site-${$page.params.site}`,
+            title: $page.params.site
+        },
+        {
+            href: `${base}/project-${$project?.$id}/sites/site-${$page.params.site}/domains`,
+            title: 'Domains'
+        },
+        {
+            href: `${base}/project-${$project?.$id}/sites/site-${$page.params.site}/domains/domain-${$page.params.domain}`,
+            title: $page.params.domain
+        }
+    ];
+</script>
+
+<Breadcrumbs {breadcrumbs} />

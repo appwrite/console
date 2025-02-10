@@ -62,8 +62,7 @@
             ...slideTrans,
             css: (t, u) => `
             ${slideTrans.css(t, u)};
-            opacity: ${t};
-			`
+            opacity: ${t};`
         };
     };
 </script>
@@ -125,17 +124,20 @@
                 <Feedback />
             </svelte:fragment>
         </DropList>
-
-        {#if isCloud}
-            <DropList width="18.5" bind:show={showSupport} scrollable={true}>
-                <Button text on:click={() => (showSupport = !showSupport)}>
-                    <span class="text">Support</span>
-                </Button>
-                <svelte:fragment slot="other">
-                    <Support bind:show={showSupport} />
-                </svelte:fragment>
-            </DropList>
-        {/if}
+        <DropList
+            bind:show={showSupport}
+            scrollable={true}
+            noArrow
+            width="28.25"
+            placement="bottom-end"
+            on:blur={() => (showSupport = !showSupport)}>
+            <Button text on:click={() => (showSupport = !showSupport)}>
+                <span class="text">Support</span>
+            </Button>
+            <svelte:fragment slot="other">
+                <Support bind:show={showSupport} />
+            </svelte:fragment>
+        </DropList>
         <Button
             actions={[
                 (node) => {
@@ -156,9 +158,9 @@
         {#if $user}
             <div class="drop-wrapper" class:is-open={showDropdown} bind:this={droplistElement}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
-                    <AvatarInitials size={40} name={$user.name} />
+                    <AvatarInitials size="m" name={$user.name || $user.email} />
                     <span class="user-profile-info is-only-desktop">
-                        <span class="name" data-private>{$user.name}</span>
+                        <span class="name" data-private>{$user.name || $user.email}</span>
                         {#if $organization}
                             <span class="title" data-private>{$organization.name}</span>
                         {/if}
@@ -265,3 +267,10 @@
         {/if}
     </nav>
 </div>
+
+<style>
+    :global(.support-drop-section) {
+        width: 28.375rem;
+        margin-block-start: 0.15rem;
+    }
+</style>

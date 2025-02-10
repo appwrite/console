@@ -20,7 +20,7 @@
 </script>
 
 <ul
-    class="grid-box common-section u-margin-block-start-32"
+    class="grid-box"
     style={`--grid-gap:1.5rem; --grid-item-size-small-screens: 18rem; --grid-item-size:${total > 3 ? '22rem' : '25rem'};`}
     data-private>
     <slot />

@@ -5,6 +5,8 @@
     import { createWebhook } from './store';
     import { EventModal } from '$lib/components';
     import { TableList, TableCellText, TableCell } from '$lib/elements/table';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let showCreate = false;
 
@@ -44,9 +46,9 @@
             {/each}
         </TableList>
         <div class="u-flex u-margin-block-start-16">
-            <Button text noMargin on:click={() => (showCreate = !showCreate)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="u-text">Add event</span>
+            <Button text on:click={() => (showCreate = !showCreate)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add event
             </Button>
         </div>
     {:else}

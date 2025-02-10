@@ -46,13 +46,7 @@
         isRelationship(selectedAttribute) && selectedAttribute?.twoWay && !checked;
 </script>
 
-<Modal
-    title="Delete attribute"
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}
-    bind:show={showDelete}
-    onSubmit={handleDelete}>
+<Modal title="Delete attribute" bind:show={showDelete} onSubmit={handleDelete}>
     <p class="text" data-private>
         Are you sure you want to delete <b data-private>{selectedAttribute?.key}</b> from
         <b data-private>{$collection?.name}</b>?

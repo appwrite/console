@@ -32,6 +32,9 @@
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -93,7 +96,7 @@
             keys: ['c'],
             disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects,
             group: 'projects',
-            icon: 'plus'
+            icon: IconPlus
         }
     ]);
 
@@ -123,12 +126,12 @@
     onMount(async () => {
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
-            if ($page.url.searchParams.has('type')) {
-                const paramType = $page.url.searchParams.get('type');
-                if (paramType === 'createPro') {
-                    goto(`${base}/create-organization`);
-                }
-            }
+            checkPricingRefAndRedirect($page.url.searchParams);
+        }
+
+        const searchParams = $page.url.searchParams;
+        if (searchParams.has('create-project')) {
+            handleCreateProject();
         }
     });
 
@@ -149,8 +152,8 @@
                         on:click={handleCreateProject}
                         event="create_project"
                         disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create project</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create project
                     </Button>
                 {/if}
                 <svelte:fragment slot="list">

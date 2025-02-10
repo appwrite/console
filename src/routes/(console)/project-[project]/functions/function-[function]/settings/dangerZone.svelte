@@ -1,6 +1,5 @@
 <script lang="ts">
     import { BoxAvatar, CardGrid } from '$lib/components';
-    import Heading from '$lib/components/heading.svelte';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Delete from './deleteModal.svelte';
@@ -10,12 +9,10 @@
     let showDelete = false;
 </script>
 
-<CardGrid danger>
-    <Heading tag="h6" size="7">Delete function</Heading>
-    <p>
-        The function will be permanently deleted, including all deployments associated with it. This
-        action is irreversible.
-    </p>
+<CardGrid>
+    <svelte:fragment slot="title">Delete function</svelte:fragment>
+    The function will be permanently deleted, including all deployments associated with it. This action
+    is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

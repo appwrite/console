@@ -1,14 +1,5 @@
 <script lang="ts">
-    import { DropList, DropListItem, Empty, Heading, Modal, Trim } from '$lib/components';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellLink,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
+    import { DropList, DropListItem, Empty, Heading, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { dependencyStore, domain, typeStore } from './wizard/store';
@@ -21,6 +12,8 @@
     import Retry from './wizard/retry.svelte';
     import { Pill } from '$lib/elements';
     import { canWriteRules } from '$lib/stores/roles';
+    import { Layout, Table, Link, Icon } from '@appwrite.io/pink-svelte';
+    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let rules: Models.ProxyRuleList;
     export let type: ResourceType;
@@ -51,135 +44,129 @@
     }
 </script>
 
-<div class="u-flex u-gap-12 common-section u-main-space-between">
-    <Heading tag="h2" size="5">
-        <slot name="heading" />
-    </Heading>
-
-    {#if $canWriteRules}
+{#if $canWriteRules}
+    <Layout.Stack alignItems="flex-end">
         <Button on:click={openWizard}>
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create domain</span>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create domain
         </Button>
-    {/if}
-</div>
+    </Layout.Stack>
+{/if}
 {#if rules.total}
-    <TableScroll>
-        <TableHeader>
-            <TableCellHead width={150}>Name</TableCellHead>
-            <TableCellHead width={120}>Verification Status</TableCellHead>
-            <TableCellHead width={180}>Certificate Status</TableCellHead>
+    <Table.Root>
+        <svelte:fragment slot="header">
+            <Table.Header.Cell>Name</Table.Header.Cell>
+            <Table.Header.Cell>Verification Status</Table.Header.Cell>
+            <Table.Header.Cell>Certificate Status</Table.Header.Cell>
             {#if $canWriteRules}
-                <TableCellHead width={40} />
+                <Table.Header.Cell width="40" />
             {/if}
-        </TableHeader>
-        <TableBody>
-            {#each rules.rules as domain, i}
-                <TableRow>
-                    <TableCellLink title="Domain" href={`http://${domain.domain}`} external noStyle>
-                        <span class="u-flex u-gap-4 u-cross-center">
-                            <Trim>
-                                <span class="link">{domain.domain}</span>
-                            </Trim>
-                            <span class="icon-external-link" aria-hidden="true" />
-                        </span>
-                    </TableCellLink>
-                    <TableCell title="Verification">
-                        {#if domain.status === 'created'}
-                            <div class="u-flex u-gap-16 u-cross-center">
-                                <Pill danger>
-                                    <span
-                                        class="icon-exclamation-circle u-color-text-danger"
-                                        aria-hidden="true" />
-                                    <span class="u-text">failed</span>
-                                </Pill>
-                                <button type="button" on:click={() => openRetry(domain)}>
-                                    <span class="link">Retry</span>
-                                </button>
-                            </div>
-                        {:else}
+        </svelte:fragment>
+        {#each rules.rules as domain, index}
+            <Table.Row>
+                <Table.Cell>
+                    <Layout.Stack direction="row" alignItems="center">
+                        <Link.Anchor href={`https://${domain.domain}`} target="_blank">
+                            {domain.domain}
+                        </Link.Anchor>
+                    </Layout.Stack>
+                </Table.Cell>
+                <Table.Cell>
+                    {#if domain.status === 'created'}
+                        <Layout.Stack direction="row" alignItems="center">
+                            <Pill danger>
+                                <span
+                                    class="icon-exclamation-circle u-color-text-danger"
+                                    aria-hidden="true" />
+                                <span class="u-text">failed</span>
+                            </Pill>
+                            <button type="button" on:click={() => openRetry(domain)}>
+                                <span class="link">Retry</span>
+                            </button>
+                        </Layout.Stack>
+                    {:else}
+                        <Pill success>
+                            <span
+                                class="icon-check-circle u-color-text-success"
+                                aria-hidden="true" />
+                            <p class="text">verified</p>
+                        </Pill>
+                    {/if}
+                </Table.Cell>
+                <Table.Cell>
+                    {#if domain.status === 'unverified'}
+                        <Layout.Stack direction="row" alignItems="center">
+                            <Pill danger>
+                                <span
+                                    class="icon-exclamation-circle u-color-text-danger"
+                                    aria-hidden="true" />
+                                <span class="u-text">failed</span>
+                            </Pill>
+                            <button type="button" on:click={() => openRetry(domain)}>
+                                <span class="link">Retry</span>
+                            </button>
+                        </Layout.Stack>
+                    {:else if domain.status === 'verified'}
+                        <Layout.Stack direction="row" alignItems="center">
                             <Pill success>
                                 <span
                                     class="icon-check-circle u-color-text-success"
                                     aria-hidden="true" />
-                                <p class="text">verified</p>
+                                <span>generated</span>
                             </Pill>
-                        {/if}
-                    </TableCell>
-                    <TableCell title="Certificate">
-                        {#if domain.status === 'unverified'}
-                            <div class="u-flex u-gap-16 u-cross-center">
-                                <Pill danger>
-                                    <span
-                                        class="icon-exclamation-circle u-color-text-danger"
-                                        aria-hidden="true" />
-                                    <span class="u-text">failed</span>
-                                </Pill>
-                                <button type="button" on:click={() => openRetry(domain)}>
-                                    <span class="link">Retry</span>
-                                </button>
-                            </div>
-                        {:else if domain.status === 'verified'}
-                            <div class="u-flex u-gap-16 u-cross-center">
-                                <Pill success>
-                                    <span
-                                        class="icon-check-circle u-color-text-success"
-                                        aria-hidden="true" />
-                                    <span>generated</span>
-                                </Pill>
-                                {#if domain.renewAt}
-                                    <span class="u-text-color-gray">
-                                        Auto-renewal: {toLocaleDate(domain.renewAt)}
-                                    </span>
-                                {/if}
-                            </div>
-                        {:else}
-                            <Pill warning>
-                                <span class="icon-clock u-text-color-gray" aria-hidden="true" />
-                                <p class="text">Blocked by verification</p>
-                            </Pill>
-                        {/if}
-                    </TableCell>
-                    {#if $canWriteRules}
-                        <TableCell right>
-                            <DropList
-                                bind:show={showDomainsDropdown[i]}
-                                placement="bottom-start"
-                                noArrow>
-                                <Button
-                                    text
-                                    icon
-                                    ariaLabel="more options"
-                                    on:click={() =>
-                                        (showDomainsDropdown[i] = !showDomainsDropdown[i])}>
-                                    <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </Button>
-                                <svelte:fragment slot="list">
-                                    {#if domain.status !== 'verified'}
-                                        <DropListItem
-                                            icon="refresh"
-                                            on:click={() => openRetry(domain, i)}>
-                                            {domain.status === 'unverified'
-                                                ? 'Retry generation'
-                                                : 'Retry verification'}
-                                        </DropListItem>
-                                    {/if}
-                                    <DropListItem
-                                        icon="trash"
-                                        on:click={() => {
-                                            selectedDomain = domain;
-                                            showDelete = true;
-                                            showDomainsDropdown[i] = false;
-                                        }}>
-                                        Delete
-                                    </DropListItem>
-                                </svelte:fragment>
-                            </DropList>
-                        </TableCell>
+                            {#if domain.renewAt}
+                                <span class="u-text-color-gray">
+                                    Auto-renewal: {toLocaleDate(domain.renewAt)}
+                                </span>
+                            {/if}
+                        </Layout.Stack>
+                    {:else}
+                        <Pill warning>
+                            <span class="icon-clock u-text-color-gray" aria-hidden="true" />
+                            <p class="text">blocked by verification</p>
+                        </Pill>
                     {/if}
-                </TableRow>
-            {/each}
-        </TableBody>
-    </TableScroll>
+                </Table.Cell>
+                {#if $canWriteRules}
+                    <Table.Cell>
+                        <DropList
+                            bind:show={showDomainsDropdown[index]}
+                            placement="bottom-start"
+                            noArrow>
+                            <Button
+                                text
+                                icon
+                                ariaLabel="more options"
+                                on:click={() =>
+                                    (showDomainsDropdown[index] = !showDomainsDropdown[index])}>
+                                <Icon icon={IconDotsHorizontal} size="s" />
+                            </Button>
+                            <svelte:fragment slot="list">
+                                {#if domain.status !== 'verified'}
+                                    <DropListItem
+                                        icon="refresh"
+                                        on:click={() => openRetry(domain, index)}>
+                                        {domain.status === 'unverified'
+                                            ? 'Retry generation'
+                                            : 'Retry verification'}
+                                    </DropListItem>
+                                {/if}
+                                <DropListItem
+                                    icon="trash"
+                                    on:click={() => {
+                                        selectedDomain = domain;
+                                        showDelete = true;
+                                        showDomainsDropdown[index] = false;
+                                    }}>
+                                    Delete
+                                </DropListItem>
+                            </svelte:fragment>
+                        </DropList>
+                    </Table.Cell>
+                {/if}
+            </Table.Row>
+        {/each}
+    </Table.Root>
 {:else}
     <Empty
         single
@@ -189,7 +176,7 @@
 {/if}
 
 <Delete bind:showDelete bind:selectedDomain {dependency} />
-<Modal bind:show={showRetry} headerDivider={false} bind:error={retryError} size="big">
+<Modal bind:show={showRetry} bind:error={retryError}>
     <svelte:fragment slot="title">
         Retry {$domain.status === 'unverified' ? 'certificate generation' : 'verification'}
     </svelte:fragment>

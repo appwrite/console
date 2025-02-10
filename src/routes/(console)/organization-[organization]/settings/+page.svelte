@@ -42,7 +42,7 @@
         }
     }
 
-    $: avatars = $members.memberships.map((team) => team.userName);
+    $: avatars = $members.memberships.map((m) => m.userName || m.userEmail);
     $: orgProjects = `${$projects.total} ${$projects.total === 1 ? 'project' : 'projects'}`;
     $: orgMembers = `${$organization.total} ${$organization.total === 1 ? 'member' : 'members'}`;
 </script>
@@ -51,8 +51,7 @@
     {#if $organization}
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
-
+                <svelte:fragment slot="title">Name</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <ul>
                         <InputText
@@ -76,14 +75,10 @@
             <Soc2 />
         {/if}
 
-        <CardGrid danger>
-            <div>
-                <Heading tag="h6" size="7">Delete organization</Heading>
-            </div>
-            <p>
-                The organization will be permanently deleted, including all projects and data
-                associated with this organization. This action is irreversible.
-            </p>
+        <CardGrid>
+            <svelte:fragment slot="title">Delete organization</svelte:fragment>
+            The organization will be permanently deleted, including all projects and data associated
+            with this organization. This action is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="image">

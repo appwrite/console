@@ -10,8 +10,6 @@
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let isWithEndButton = true;
-    export let style: string = '';
     export let label: string = '';
 
     const dispatch = createEventDispatcher();
@@ -25,10 +23,9 @@
         }
     });
 
-    const valueChange = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
+    const valueChange = () => {
         clearTimeout(timer);
         timer = setTimeout(() => {
-            value = event.currentTarget.value;
             dispatch('change', value);
         }, debounce);
     };

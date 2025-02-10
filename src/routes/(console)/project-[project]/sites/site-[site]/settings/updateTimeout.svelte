@@ -10,11 +10,10 @@
     import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
+
     let timeout = 0;
-    onMount(async () => {
-        timeout = site.timeout;
-        console.log(timeout);
-    });
+
+    onMount(async () => (timeout = site.timeout));
 
     async function updateTimeout() {
         try {
@@ -54,8 +53,8 @@
 
 <Form onSubmit={updateTimeout}>
     <CardGrid>
-        <Heading tag="h6" size="7" id="timeout">Timeout</Heading>
-        <p>Set a time limit for the execution of your site. The maximum value is 30 seconds.</p>
+        <svelte:fragment slot="title">Timeout</svelte:fragment>
+        Set a time limit for the execution of your site. The maximum value is 30 seconds.
         <svelte:fragment slot="aside">
             <InputNumber
                 min={1}

@@ -31,15 +31,9 @@
     };
 </script>
 
-<Modal
-    title="Delete site"
-    bind:show={showDelete}
-    onSubmit={handleSubmit}
-    icon="exclamation"
-    state="warning">
+<Modal title="Delete site" bind:show={showDelete} onSubmit={handleSubmit}>
     <p data-private>
-        Are you sure you want to delete this function and all associated deployments from your
-        project?
+        Are you sure you want to delete this site and all associated deployments from your project?
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

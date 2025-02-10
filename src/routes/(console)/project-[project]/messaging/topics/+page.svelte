@@ -6,9 +6,8 @@
         EmptySearch,
         SearchQuery,
         PaginationWithLimit,
-        Heading,
-        ViewSelector,
-        EmptyFilter
+        EmptyFilter,
+        ViewSelector
     } from '$lib/components';
     import Create from './create.svelte';
     import { goto } from '$app/navigation';
@@ -17,12 +16,14 @@
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { showCreate } from './store';
-    import { View } from '$lib/helpers/load';
     import { Filters, hasPageQueries } from '$lib/components/filters';
     import Table from './table.svelte';
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteTopics } from '$lib/stores/roles';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { View } from '$lib/helpers/load';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -50,52 +51,22 @@
 </script>
 
 <Container>
-    <div class="u-flex u-flex-vertical">
-        <div class="u-flex u-main-space-between">
-            <Heading tag="h2" size="5">Topics</Heading>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search by name or ID" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Filters query={data.query} {columns} />
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
             {#if $canWriteTopics}
-                <div class="is-only-mobile">
-                    <Button on:click={() => ($showCreate = true)} event="create_topic">
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create topic</span>
-                    </Button>
-                </div>
+                <Button on:click={() => ($showCreate = true)} event="create_topic">
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create topic
+                </Button>
             {/if}
-        </div>
-        <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery search={data.search} placeholder="Search by name or ID">
-            <div class="u-flex u-gap-16 is-not-mobile">
-                <Filters query={data.query} {columns} />
-                <ViewSelector
-                    view={View.Table}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile />
-                {#if $canWriteTopics}
-                    <Button on:click={() => ($showCreate = true)} event="create_topic">
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create topic</span>
-                    </Button>
-                {/if}
-            </div>
-        </SearchQuery>
-        <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
-            <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <ViewSelector
-                    view={View.Table}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile />
-            </div>
-            <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <Filters query={data.query} {columns} />
-            </div>
-        </div>
-    </div>
+        </Layout.Stack>
+    </Layout.Stack>
+
     {#if data.topics.total}
         <Table columns={$columns} {data} />
 

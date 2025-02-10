@@ -21,7 +21,8 @@
         canSeeDatabases,
         canSeeFunctions,
         canSeeMessages,
-        canWriteProjects
+        canWriteProjects,
+        canWriteSites
     } from '$lib/stores/roles';
 
     onMount(() => {
@@ -87,6 +88,15 @@
             keys: ['g', 'e'],
             group: 'navigation',
             disabled: !$canWriteProjects
+        },
+        {
+            label: 'Go to Sites',
+            callback: () => {
+                goto(`${base}/project-${$project.$id}/sites`);
+            },
+            keys: ['g', 'i'],
+            group: 'navigation',
+            disabled: !$canWriteSites
         },
         {
             label: 'Go to Overview',

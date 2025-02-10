@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import BudgetAlert from './budgetAlert.svelte';
     import BudgetCap from './budgetCap.svelte';
     import PlanSummary from './planSummary.svelte';
@@ -17,7 +17,6 @@
     import { confirmPayment } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { BillingPlan } from '$lib/constants';
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
@@ -123,16 +122,14 @@
     <PlanSummary
         creditList={data?.creditList}
         members={data?.members}
-        currentPlan={data?.currentPlan}
+        currentPlan={$currentPlan}
         invoices={data?.invoices.invoices} />
     <PaymentHistory />
     <PaymentMethods />
     <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
-    {#if $organization?.billingPlan !== BillingPlan.FREE && !!$organization?.billingBudget}
-        <BudgetAlert />
-    {/if}
+    <BudgetAlert />
     <AvailableCredit />
 </Container>
 

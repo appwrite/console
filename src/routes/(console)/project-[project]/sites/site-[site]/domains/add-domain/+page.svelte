@@ -9,8 +9,19 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ResourceType, type Models } from '@appwrite.io/console';
-    import { Alert, Badge, Divider, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Alert,
+        Accordion,
+        Badge,
+        Divider,
+        Fieldset,
+        Layout,
+        Typography,
+        Spinner
+    } from '@appwrite.io/pink-svelte';
     import RecordsCard from '../recordsCard.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
 
@@ -25,6 +36,7 @@
                 $page.params.site
             );
             console.log(domainData);
+            invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -56,6 +68,24 @@
             });
         }
     }
+
+    type DomainTips = {
+        title: string;
+        message: string;
+    };
+
+    const siteDomainTips: DomainTips[] = [
+        {
+            title: 'Why a Top-Level Domain (TLD) matters for your site?',
+            message:
+                'A custom TLD helps create a unique web address, improves brand recognition, and makes your domain more memorable.'
+        },
+        {
+            title: 'What is DNS and why do you need it?',
+            message:
+                "DNS (Domain Name System) translates your domain name into an IP address, directing visitors to your website. It's essential for making your site accessible and ensuring it loads properly for users."
+        }
+    ];
 </script>
 
 <Wizard title="Add domain" href={backPage}>
@@ -68,11 +98,24 @@
                     <Button secondary on:click={verifyStatus}>Verify</Button>
                 </Layout.Stack>
             </RecordsCard>
+        {:else if domainData.status === 'verifying'}
+            <Card radius="s">
+                <Layout.Stack gap="s" direction="row" alignItems="center">
+                    <Typography.Text variant="l-500">{domainData.domain}</Typography.Text>
+                    <Badge variant="secondary" type="success" content="Verified" />
+                    <Badge variant="secondary" content="Generating certificate...">
+                        <svelte:fragment slot="start">
+                            <Spinner size="s" />
+                        </svelte:fragment>
+                    </Badge>
+                </Layout.Stack>
+            </Card>
         {:else if domainData.status === 'verified'}
             <Card radius="s">
                 <Layout.Stack gap="s" direction="row" alignItems="center">
                     <Typography.Text variant="l-500">{domainData.domain}</Typography.Text>
                     <Badge variant="secondary" type="success" content="Verified" />
+                    <Badge variant="secondary" type="success" content="Generated certificate" />
                 </Layout.Stack>
             </Card>
         {/if}
@@ -92,9 +135,8 @@
                     </Layout.Stack>
                 </Form>
                 <Alert.Inline title="Domain providers and DNS settings" hideActions>
-                    A list of all domain providers and their DNS setting is available <Link
-                        size="s"
-                        href="#">here</Link
+                    A list of all domain providers and their DNS setting is available <Link href="#"
+                        >here</Link
                     >.
                 </Alert.Inline>
             </Layout.Stack>
@@ -102,7 +144,15 @@
     {/if}
 
     <svelte:fragment slot="aside">
-        <Card>tips</Card>
+        <Card>
+            <Layout.Stack direction="column">
+                {#each siteDomainTips as tips, i}
+                    <Accordion title={tips.title} hideDivider={i === siteDomainTips.length - 1}>
+                        {tips.message}
+                    </Accordion>
+                {/each}
+            </Layout.Stack>
+        </Card>
     </svelte:fragment>
 
     <svelte:fragment slot="footer">

@@ -47,7 +47,7 @@
             if ($organizationList?.total > 1) {
                 await goto(`${base}/account/organizations`);
             } else {
-                await goto(`${base}/onboarding`);
+                await goto(`${base}/onboarding/create-project`);
             }
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
@@ -103,14 +103,7 @@
 </script>
 
 <div class="max-height-dialog">
-    <Modal
-        title="Delete organization"
-        onSubmit={deleteOrg}
-        bind:show={showDelete}
-        bind:error
-        icon="exclamation"
-        state="warning"
-        headerDivider={false}>
+    <Modal title="Delete organization" onSubmit={deleteOrg} bind:show={showDelete} bind:error>
         {#if upcomingInvoice}
             <Alert type="warning">
                 <span slot="title">

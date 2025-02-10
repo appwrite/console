@@ -1,15 +1,16 @@
 <script lang="ts">
-    import { Collapsible, CollapsibleItem, Empty } from '$lib/components';
+    import { Empty } from '$lib/components';
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
     import {
         Fieldset,
         Layout,
-        Tag,
         Popover,
         Icon,
         Table,
         Badge,
-        HiddenText
+        HiddenText,
+        ActionMenu,
+        Accordion
     } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
@@ -20,9 +21,12 @@
         IconEyeOff,
         IconPencil
     } from '@appwrite.io/pink-icons-svelte';
-    import SecretVariableModal from './secretVariableModal.svelte';
-    import ImportSiteVariablesModal from './importSiteVariablesModal.svelte';
+    import SecretVariableModal from '../../secretVariableModal.svelte';
+    import ImportSiteVariablesModal from '../../importSiteVariablesModal.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { getFrameworkIcon } from '../../../store';
+    import { iconPath } from '$lib/stores/app';
+    import VariableEditorModal from '../../variableEditorModal.svelte';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -58,17 +62,15 @@
             bind:value={frameworkId}
             options={frameworks.map((framework) => ({
                 value: framework.key,
-                label: framework.name
+                label: framework.name,
+                leadingHtml: `<img src='${$iconPath(getFrameworkIcon(framework.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
             }))}
             on:change={() => {
                 selectedFramework = frameworks.find((framework) => framework.key === frameworkId);
             }} />
 
-        <Collapsible>
-            <CollapsibleItem>
-                <svelte:fragment slot="title">
-                    Build settings <Tag size="s">Optional</Tag>
-                </svelte:fragment>
+        <Layout.Stack>
+            <Accordion title="Build settings" badge="Optional">
                 <Layout.Stack>
                     Set up how your project is built and where the output files are stored.
                     <Layout.Stack gap="s" direction="row" alignItems="flex-end">
@@ -102,11 +104,11 @@
                         </Button>
                     </Layout.Stack>
                 </Layout.Stack>
-            </CollapsibleItem>
+            </Accordion>
 
-            <CollapsibleItem>
+            <Accordion title="Environment variables" badge="Optional" hideDivider>
                 <svelte:fragment slot="title">
-                    Environment variables <Tag size="s">Optional</Tag>
+                    Environment variables <Badge content="Optional" variant="secondary" />
                 </svelte:fragment>
                 <Layout.Stack gap="l">
                     <Layout.Stack gap="xl">
@@ -148,34 +150,32 @@
                                                         <Icon size="s" icon={IconDotsHorizontal} />
                                                     </Button>
                                                     <svelte:fragment slot="tooltip">
-                                                        <Layout.Stack
-                                                            gap="s"
-                                                            alignItems="flex-start">
-                                                            <Button
-                                                                text
+                                                        <ActionMenu.Root>
+                                                            <ActionMenu.Item.Button
+                                                                trailingIcon={IconPencil}
                                                                 on:click={() => {
                                                                     showEditorModal = true;
                                                                 }}>
-                                                                <Icon icon={IconPencil} /> Edit</Button>
+                                                                Edit
+                                                            </ActionMenu.Item.Button>
                                                             {#if !variable?.secret}
-                                                                <Button
-                                                                    text
+                                                                <ActionMenu.Item.Button
+                                                                    trailingIcon={IconEyeOff}
                                                                     on:click={() => {
                                                                         currentVariable = variable;
                                                                         showSecretModal = true;
                                                                     }}>
-                                                                    <Icon icon={IconEyeOff} />
-                                                                    Secret</Button>
+                                                                    Secret
+                                                                </ActionMenu.Item.Button>
                                                             {/if}
-                                                            <Button
-                                                                text
+                                                            <ActionMenu.Item.Button
+                                                                trailingIcon={IconTrash}
                                                                 on:click={() => {
                                                                     showImportModal = true;
                                                                 }}>
-                                                                <Icon icon={IconTrash} />
                                                                 Delete
-                                                            </Button>
-                                                        </Layout.Stack>
+                                                            </ActionMenu.Item.Button>
+                                                        </ActionMenu.Root>
                                                     </svelte:fragment>
                                                 </Popover>
                                             </div>
@@ -207,19 +207,13 @@
                         </Button>
                     </Layout.Stack>
                 </Layout.Stack>
-            </CollapsibleItem>
-        </Collapsible>
+            </Accordion>
+        </Layout.Stack>
     </Layout.Stack>
 </Fieldset>
 
 {#if showEditorModal}
-    <!-- <RawVariableEditor
-        {isGlobal}
-        {sdkCreateVariable}
-        {sdkUpdateVariable}
-        {sdkDeleteVariable}
-        {variableList}
-        bind:showEditor={showEditorModal} /> -->
+    <VariableEditorModal bind:variables bind:showEditor={showEditorModal} />
 {/if}
 
 {#if showSecretModal}

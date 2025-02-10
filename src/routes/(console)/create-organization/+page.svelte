@@ -24,6 +24,8 @@
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
@@ -78,9 +80,6 @@
             if (plan && Object.values(BillingPlan).includes(plan as BillingPlan)) {
                 billingPlan = plan as BillingPlan;
             }
-        }
-        if (anyOrgFree) {
-            billingPlan = BillingPlan.PRO;
         }
     });
 
@@ -204,12 +203,9 @@
                     ></SelectPaymentMethod>
                 </FormList>
                 {#if !couponData?.code}
-                    <Button
-                        text
-                        noMargin
-                        class="u-margin-block-start-16"
-                        on:click={() => (showCreditModal = true)}>
-                        <span class="icon-plus"></span> <span class="text">Add credits</span>
+                    <Button text on:click={() => (showCreditModal = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add credits
                     </Button>
                 {/if}
             {/if}

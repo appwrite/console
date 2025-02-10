@@ -87,9 +87,8 @@
                 isGlobal={true}
                 variableList={data.variables} />
             <CardGrid>
-                <Heading tag="h6" size="7">Transfer project</Heading>
-                <p class="text">Transfer your project to another organization that you own.</p>
-
+                <svelte:fragment slot="title">Transfer project</svelte:fragment>
+                Transfer your project to another organization that you own.
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSelect

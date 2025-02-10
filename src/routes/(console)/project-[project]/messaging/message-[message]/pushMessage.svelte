@@ -3,8 +3,6 @@
     import {
         Button,
         Form,
-        FormItem,
-        FormItemPart,
         FormList,
         Helper,
         InputFilePicker,
@@ -21,6 +19,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { validateData } from '../wizard/pushFormList.svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     export let message: Models.Message & { data: Record<string, any> };
@@ -120,74 +120,59 @@
                     label="Message"
                     disabled={message.status !== 'draft'}
                     bind:value={body} />
-                <FormItem>
-                    <InputFilePicker
-                        disabled={message.status !== 'draft'}
-                        bind:value={file}
-                        label="Media"
-                        optionalText="(Optional)" />
-                </FormItem>
+                <InputFilePicker
+                    disabled={message.status !== 'draft'}
+                    bind:value={file}
+                    label="Media"
+                    optionalText="(Optional)" />
                 <form class="form">
-                    <FormItem>
-                        <Label
-                            tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
-                            >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
-                    </FormItem>
+                    <Label
+                        tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
+                        >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
                     <div class=" u-grid u-gap-8">
                         <ul class="form-list" style="--p-form-list-gap: 1rem">
                             {#each customData || [] as _, rowIndex}
-                                <FormItem isMultiple>
-                                    <InputText
-                                        id={`${rowIndex}-key`}
-                                        isMultiple
-                                        fullWidth
-                                        disabled={message.status != 'draft'}
-                                        bind:value={customData[rowIndex][0]}
-                                        placeholder="Enter key"
-                                        label="Key"
-                                        showLabel={false} />
-                                    <InputText
-                                        id={`${rowIndex}-value`}
-                                        isMultiple
-                                        fullWidth
-                                        disabled={message.status != 'draft'}
-                                        bind:value={customData[rowIndex][1]}
-                                        placeholder="Enter value"
-                                        label="Value"
-                                        showLabel={false}
-                                        required />
-                                    <FormItemPart alignEnd>
-                                        <Button
-                                            text
-                                            disabled={message.status != 'draft'}
-                                            on:click={() => {
-                                                if (customData.length === 1) {
-                                                    customData = [['', '']];
-                                                    return;
-                                                }
+                                <InputText
+                                    id={`${rowIndex}-key`}
+                                    disabled={message.status != 'draft'}
+                                    bind:value={customData[rowIndex][0]}
+                                    placeholder="Enter key"
+                                    label="Key"
+                                    showLabel={false} />
+                                <InputText
+                                    id={`${rowIndex}-value`}
+                                    disabled={message.status != 'draft'}
+                                    bind:value={customData[rowIndex][1]}
+                                    placeholder="Enter value"
+                                    label="Value"
+                                    showLabel={false}
+                                    required />
+                                <Button
+                                    text
+                                    disabled={message.status != 'draft'}
+                                    on:click={() => {
+                                        if (customData.length === 1) {
+                                            customData = [['', '']];
+                                            return;
+                                        }
 
-                                                customData = customData.filter(
-                                                    (_, i) => i !== rowIndex
-                                                );
-                                            }}>
-                                            <span class="icon-x" aria-hidden="true" />
-                                        </Button>
-                                    </FormItemPart>
-                                </FormItem>
+                                        customData = customData.filter((_, i) => i !== rowIndex);
+                                    }}>
+                                    <span class="icon-x" aria-hidden="true" />
+                                </Button>
                             {/each}
                         </ul>
                         {#if dataError}
                             <Helper type="warning">{dataError}</Helper>
                         {/if}
                         <Button
-                            noMargin
                             text
                             disabled={customData && customData[customData.length - 1][0] === ''}
                             on:click={() => {
                                 customData = [...customData, ['', '']];
                             }}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add data</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add data
                         </Button>
                     </div>
                 </form>

@@ -12,7 +12,7 @@
 
     export function getFlag(country: string, width: number, height: number, quality: number) {
         if (!isValueOfStringEnum(Flag, country)) return '';
-        let flag = sdk.forProject.avatars
+        let flag = sdk.forConsole.avatars
             .getFlag(country, width * 2, height * 2, quality)
             ?.toString();
         flag?.includes('&project=')

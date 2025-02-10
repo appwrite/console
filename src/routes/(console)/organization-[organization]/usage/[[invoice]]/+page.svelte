@@ -10,7 +10,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart } from '$lib/charts';
+    import { BarChart, Legend } from '$lib/charts';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
@@ -18,6 +18,8 @@
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
 
     export let data;
 
@@ -26,7 +28,12 @@
         : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
     const plan = data?.plan ?? undefined;
 
-    $: project = (data.organizationUsage as OrganizationUsage).projects;
+    $: projects = (data.organizationUsage as OrganizationUsage).projects;
+
+    $: legendData = [
+        { name: 'Reads', value: data.organizationUsage.databasesReadsTotal },
+        { name: 'Writes', value: data.organizationUsage.databasesWritesTotal }
+    ];
 </script>
 
 <Container>
@@ -73,12 +80,9 @@
     </div>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Bandwidth</Heading>
-
-        <p class="text">
-            Calculated for all bandwidth used across all projects in your organization. Resets at
-            the start of each billing cycle.
-        </p>
+        <svelte:fragment slot="title">Bandwidth</svelte:fragment>
+        Calculated for all bandwidth used across all projects in your organization. Resets at the start
+        of each billing cycle.
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.bandwidth}
@@ -122,8 +126,8 @@
                             }
                         ]} />
                 </div>
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="bandwidth" {data} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="bandwidth" {data} />
                 {/if}
             {:else}
                 <Card isDashed>
@@ -131,7 +135,7 @@
                         <span
                             class="icon-chart-square-bar text-large"
                             aria-hidden="true"
-                            style="font-size: 32px;" />
+                            style:font-size="32px" />
                         <p class="u-bold">No data to show</p>
                     </div>
                 </Card>
@@ -140,10 +144,8 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Users</Heading>
-
-        <p class="text">The total number of users across all projects in your organization.</p>
-
+        <svelte:fragment slot="title">Users</svelte:fragment>
+        The total number of users across all projects in your organization.
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.users}
                 {@const current = data.organizationUsage.usersTotal}
@@ -169,14 +171,14 @@
                             {
                                 name: 'Users',
                                 data: accumulateFromEndingTotal(
-                                    data.organizationUsage.users,
+                                    data.usersUsageToDate,
                                     data.organizationUsage.usersTotal
                                 )
                             }
                         ]} />
                 </div>
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="users" {data} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="users" {data} />
                 {/if}
             {:else}
                 <Card isDashed>
@@ -193,11 +195,66 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Executions</Heading>
+        <svelte:fragment slot="title">Database reads and writes</svelte:fragment>
+        The total number of database reads and writes across all projects in your organization.
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.databasesReads || data.organizationUsage.databasesWrites}
+                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
+                            }
+                        }}
+                        series={[
+                            {
+                                name: 'Reads',
+                                data: [
+                                    ...(data.organizationUsage.databasesReads ?? []).map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            },
+                            {
+                                name: 'Writes',
+                                data: [
+                                    ...(data.organizationUsage.databasesWrites ?? []).map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            }
+                        ]} />
+                </div>
 
-        <p class="text">
-            Calculated for all functions that are executed in all projects in your organization.
-        </p>
+                <Legend {legendData} />
+
+                {#if projects?.length > 0}
+                    <ProjectBreakdown
+                        {data}
+                        {projects}
+                        databaseOperationMetric={['databasesReads', 'databasesWrites']} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <svelte:fragment slot="title">Executions</svelte:fragment>
+        Calculated for all functions that are executed in all projects in your organization.
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.executionsTotal}
@@ -231,9 +288,10 @@
                             }
                         ]} />
                 </div>
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="executions" {data} />
-                {/if}
+                {#if projects?.length > 0}<ProjectBreakdown
+                        {projects}
+                        metric="executions"
+                        {data} />{/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -249,11 +307,8 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Storage</Heading>
-
-        <p class="text">
-            Calculated for all your files, deployments, builds, databases and backups.
-        </p>
+        <svelte:fragment slot="title">Storage</svelte:fragment>
+        Calculated for all your files, deployments, builds, databases and backups.
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.storageTotal}
@@ -301,9 +356,10 @@
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
                     progressBarData={progressBarStorageDate} />
-                {#if project?.length > 0}
-                    <ProjectBreakdown projects={project} metric="storage" {data} />
-                {/if}
+                {#if projects?.length > 0}<ProjectBreakdown
+                        {projects}
+                        metric="storage"
+                        {data} />{/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -317,13 +373,11 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
-    <CardGrid>
-        <Heading tag="h6" size="7">GB hours</Heading>
 
-        <p class="text">
-            GB hours represent the memory usage (in gigabytes) of your function executions and
-            builds, multiplied by the total execution time (in hours).
-        </p>
+    <CardGrid>
+        <svelte:fragment slot="title">GB hours</svelte:fragment>
+        GB hours represent the memory usage (in gigabytes) of your function executions and builds, multiplied
+        by the total execution time (in hours).
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.storageTotal}
@@ -377,6 +431,57 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+
+    <CardGrid>
+        <svelte:fragment slot="title">Phone OTP</svelte:fragment>
+        OTPs are billed per SMS message, with rates varying by recipient country. For a detailed cost
+        breakdown, see the
+        <a href="https://appwrite.io/docs/advanced/platform/phone-otp" class="link">pricing page</a
+        >.<br />
+        You will not be charged for Phone OTPs before February 10th.
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.authPhoneTotal}
+                <div class="u-flex u-main-space-between">
+                    <p>
+                        <span class="heading-level-4"
+                            >{formatNumberWithCommas(data.organizationUsage.authPhoneTotal)}</span>
+                        <span class="body-text-1 u-bold">OTPs</span>
+                    </p>
+                    <p class="u-flex u-gap-8 u-cross-center">
+                        <span class="u-color-text-offline">Estimated cost</span>
+                        <span class="body-text-2">
+                            {formatCurrency(data.organizationUsage.authPhoneEstimate)}
+                            <span
+                                class="icon-info u-color-text-offline"
+                                use:tooltip={{
+                                    content:
+                                        'The first 10 messages each month are provided at no cost. Pricing may vary as it depends on telecom rates and vendor agreements.'
+                                }} />
+                        </span>
+                    </p>
+                </div>
+
+                {#if projects?.length > 0}
+                    <ProjectBreakdown
+                        {projects}
+                        metric="authPhoneTotal"
+                        estimate="authPhoneEstimate"
+                        {data} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
     <TotalMembers members={data?.organizationMembers} />
 
     <p class="text common-section u-color-text-gray">

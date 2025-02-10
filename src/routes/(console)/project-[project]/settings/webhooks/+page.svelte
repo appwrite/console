@@ -21,7 +21,7 @@
         TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container, GridHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
@@ -33,6 +33,9 @@
     import MessageStatusPill from './messageStatusPill.svelte';
     import { canWriteWebhooks } from '$lib/stores/roles';
     import { get } from 'svelte/store';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import ViewSelector from '$lib/components/viewSelector.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -56,14 +59,15 @@
 </svelte:head>
 
 <Container>
-    <GridHeader title="Webhooks" {columns} view={data.view} hideColumns={false} hideView={true}>
+    <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+        <ViewSelector {columns} view={data.view} hideView />
         {#if $canWriteWebhooks}
             <Button on:click={openWizard} event="create_webhook">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create webhook</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create database
             </Button>
         {/if}
-    </GridHeader>
+    </Layout.Stack>
 
     {#if data.webhooks.total}
         <TableScroll>
@@ -106,7 +110,6 @@
 
                                         {#if webhook.enabled === false}
                                             <Button
-                                                link
                                                 on:click={(e) => {
                                                     e.preventDefault();
                                                     selectedWebhook = webhook;

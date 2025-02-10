@@ -36,11 +36,16 @@
     }
 </script>
 
-<Modal bind:show title="Add credits" headerDivider={false} onSubmit={redeem} size="big" bind:error>
+<Modal bind:show title="Add credits" onSubmit={redeem} bind:error>
     Apply Appwrite credits to your organization.
 
     <FormList>
-        <InputText placeholder="Promo code" id="code" label="Add promo code" bind:value={coupon} />
+        <InputText
+            placeholder="Promo code"
+            id="code"
+            autofocus
+            label="Add promo code"
+            bind:value={coupon} />
     </FormList>
 
     <svelte:fragment slot="footer">
