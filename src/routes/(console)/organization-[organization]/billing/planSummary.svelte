@@ -47,8 +47,7 @@
                 <Collapsible>
                     <div class="u-flex-vertical u-gap-8">
                         <div class="u-flex">
-                            <span class="body-text-2">
-                                {currentPlan.name} plan</span>
+                            <span class="body-text-2">{currentPlan.name} plan</span>
                             <div class="body-text-2 u-margin-inline-start-auto">
                                 {isTrial ||
                                 $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
