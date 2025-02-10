@@ -26,14 +26,23 @@
 </script>
 
 <Wizard title="Create site" href={`${base}/project-${$page.params.project}/sites/`}>
-    <Fieldset legend="Git repository">
+    {#if hasInstallations}
+        <Fieldset legend="Git repository">
+            <Repositories
+                bind:hasInstallations
+                bind:selectedRepository
+                product="sites"
+                action="button"
+                on:connect={onConnect} />
+        </Fieldset>
+    {:else}
         <Repositories
             bind:hasInstallations
             bind:selectedRepository
             product="sites"
             action="button"
             on:connect={onConnect} />
-    </Fieldset>
+    {/if}
 
     <svelte:fragment slot="aside">
         <Card>
