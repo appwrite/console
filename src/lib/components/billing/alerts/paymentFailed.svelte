@@ -9,7 +9,6 @@
     $: isOnProjects = $page.route.id.includes('project-[project]');
 </script>
 
-<!-- This is only shown under projects -->
 {#if $failedInvoice && $failedInvoice.teamId === $organization.$id && isOnProjects}
     <HeaderAlert type="error" title="A scheduled payment for {$organization.name} failed">
         To avoid service disruptions in your projects, please verify your payment details and try
