@@ -371,12 +371,6 @@
             background-size: cover;
             background-position: bottom;
             background-repeat: no-repeat;
-
-            @media (min-width: 768px) {
-                background-size: contain;
-                background-position: top;
-                background-repeat: no-repeat;
-            }
         }
         .full-height-card {
             height: 100%;
