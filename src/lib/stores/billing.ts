@@ -152,11 +152,12 @@ export const failedInvoice = cachedStore<
         load: async (orgId) => {
             if (!isCloud) set(null);
             if (!get(canSeeBilling)) set(null);
-            const invoices = await sdk.forConsole.billing.listInvoices(orgId);
-            const failedInvoices = invoices.invoices.filter((i) => i.status === 'failed');
+            const failedInvoices = await sdk.forConsole.billing.listInvoices(orgId, [
+                Query.equal('status', 'failed')
+            ]);
             // const failedInvoices = invoices.invoices;
-            if (failedInvoices?.length > 0) {
-                const firstFailed = failedInvoices[0];
+            if (failedInvoices?.invoices?.length > 0) {
+                const firstFailed = failedInvoices.invoices[0];
                 const today = new Date();
                 const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
                 const failedDate = new Date(firstFailed.$createdAt);
