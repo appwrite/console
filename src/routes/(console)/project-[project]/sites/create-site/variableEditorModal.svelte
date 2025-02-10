@@ -121,11 +121,11 @@
     submitOnEnter={false}>
     <p slot="description">Add, edit, or delete environment variables using a raw editor.</p>
     <Layout.Stack gap="s">
-        <Tabs.Root stretch>
-            <Tabs.Item.Button on:click={() => (tab = 'env')} active={tab === 'env'}>
+        <Tabs.Root stretch let:root>
+            <Tabs.Item.Button {root} on:click={() => (tab = 'env')} active={tab === 'env'}>
                 ENV
             </Tabs.Item.Button>
-            <Tabs.Item.Button on:click={() => (tab = 'json')} active={tab === 'json'}>
+            <Tabs.Item.Button {root} on:click={() => (tab = 'json')} active={tab === 'json'}>
                 JSON
             </Tabs.Item.Button>
         </Tabs.Root>

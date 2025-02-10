@@ -48,8 +48,7 @@
 
 <Form onSubmit={updateUrl}>
     <CardGrid>
-        <Heading tag="h2" size="7">URL</Heading>
-
+        <svelte:fragment slot="title">URL</svelte:fragment>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText

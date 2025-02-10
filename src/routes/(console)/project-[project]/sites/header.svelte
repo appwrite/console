@@ -28,9 +28,10 @@
         <Typography.Title color="--color-fgcolor-neutral-primary" size="xl">Sites</Typography.Title>
     </svelte:fragment>
 
-    <Tabs>
+    <Tabs variant="primary" let:root>
         {#each tabs as tab}
             <Tab
+                {root}
                 href={tab.href}
                 selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
                 event={tab.event}>

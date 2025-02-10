@@ -14,7 +14,8 @@
     import Table from './table.svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { canWriteDatabases } from '$lib/stores/roles';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -58,8 +59,8 @@
                     on:click={() => (showCreate = true)}
                     event="create_database"
                     disabled={isCreationDisabled}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create database</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create database
                 </Button>
             {/if}
         </Layout.Stack>

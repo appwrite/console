@@ -8,7 +8,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { team } from './store';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($team.prefs))) {
@@ -57,11 +58,9 @@
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">Preferences</Heading>
-        <p>
-            You can update your team's preferences by storing shared information on the teams's
-            objects so they can easily be shared across members.
-        </p>
+        <svelte:fragment slot="title">Preferences</svelte:fragment>
+        You can update your team's preferences by storing shared information on the teams's objects so
+        they can easily be shared across members.
         <svelte:fragment slot="aside">
             {#if prefs}
                 {#each prefs as [key, value], index}
@@ -106,8 +105,8 @@
                         prefs = prefs;
                     }
                 }}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add Preference</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add Preference
             </Button>
         </svelte:fragment>
 

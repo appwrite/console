@@ -4,6 +4,8 @@
     import { Pill } from '$lib/elements';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let isFlex = true;
     export let title: string;
@@ -58,7 +60,7 @@
             disabled={buttonDisabled}
             text={buttonType === 'text'}
             secondary={buttonType === 'secondary'}>
-            <span class="icon-plus" aria-hidden="true" />
+            <Icon icon={IconPlus} slot="start" size="s" />
             {buttonText}
         </Button>
     {/if}

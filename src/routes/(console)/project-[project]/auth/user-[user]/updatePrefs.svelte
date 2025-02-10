@@ -8,7 +8,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -53,8 +54,8 @@
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">Preferences</Heading>
-        <p>Add custom user preferences to share them across devices and sessions.</p>
+        <svelte:fragment slot="title">Preferences</svelte:fragment>
+        Add custom user preferences to share them across devices and sessions.
         <svelte:fragment slot="aside">
             {#if prefs}
                 {#each prefs as [key, value], index}
@@ -99,8 +100,8 @@
                         prefs = prefs;
                     }
                 }}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add preference</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add preference
             </Button>
         </svelte:fragment>
 

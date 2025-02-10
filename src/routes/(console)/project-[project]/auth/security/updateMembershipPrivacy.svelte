@@ -40,27 +40,22 @@
 
 <Form onSubmit={updateMembershipsPrivacy}>
     <CardGrid>
-        <Heading tag="h2" size="7" id="personal-data">Memberships privacy</Heading>
-        <Typography.Text>
-            Set privacy preferences to manage which details team members can view about one another.
-        </Typography.Text>
+        <svelte:fragment slot="title">Memberships privacy</svelte:fragment>
+        Set privacy preferences to manage which details team members can view about one another.
         <svelte:fragment slot="aside">
             <Selector.Checkbox
                 id="membershipsUserName"
                 label="Name"
-                size="s"
                 description="Display team members' names to other team members"
                 bind:checked={authMembershipsUserName} />
             <Selector.Checkbox
                 id="membershipsUserEmail"
                 label="Email"
-                size="s"
                 description="Allow team members to view each other's email addresses"
                 bind:checked={authMembershipsUserEmail} />
             <Selector.Checkbox
                 id="membershipsMfa"
                 label="MFA status"
-                size="s"
                 description="Show if team members have multi-factor authentication enabled"
                 bind:checked={authMembershipsMfa} />
         </svelte:fragment>

@@ -64,7 +64,7 @@
         $repositories.search = search;
         $repositories.installationId = installationId;
 
-        if ($repositories.repositories.length) {
+        if ($repositories.repositories.length && action === 'select') {
             selectedRepository = $repositories.repositories[0].id;
             $repository = $repositories.repositories[0];
         }
@@ -193,7 +193,7 @@
                                         {#if action === 'button'}
                                             <Layout.Stack direction="row" justifyContent="flex-end">
                                                 <Button
-                                                    size="s"
+                                                    size="xs"
                                                     secondary
                                                     on:click={() => dispatch('connect', repo)}>
                                                     Connect

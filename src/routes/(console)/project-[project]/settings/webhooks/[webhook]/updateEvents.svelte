@@ -12,6 +12,8 @@
     import { onMount } from 'svelte';
     import { writable, type Writable } from 'svelte/store';
     import { webhook } from './store';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     const projectId = $page.params.project;
     const eventSet: Writable<Set<string>> = writable(new Set());
@@ -67,10 +69,8 @@
 
 <Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Events</Heading>
-        <p class="text">
-            Set the events that will trigger your webhook. Maximum 100 events allowed.
-        </p>
+        <svelte:fragment slot="title">Events</svelte:fragment>
+        Set the events that will trigger your webhook. Maximum 100 events allowed.
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
                 <TableList>
@@ -95,8 +95,8 @@
                 </TableList>
                 <div class="u-flex u-margin-block-start-16">
                     <Button text on:click={() => (showCreateEvent = true)}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="u-text">Add event</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add event
                     </Button>
                 </div>
             {:else}

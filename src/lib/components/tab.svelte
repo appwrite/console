@@ -5,10 +5,15 @@
     import { getElementDir } from '$lib/helpers/style';
     import { waitUntil } from '$lib/helpers/waitUntil';
     import { Tabs } from '@appwrite.io/pink-svelte';
+    import type { Variant } from '@appwrite.io/pink-svelte/dist/tabs/types';
 
     export let selected = false;
     export let href: string = null;
     export let event: string = null;
+    export let root: { variant: Variant; stretch: boolean } = {
+        variant: 'primary',
+        stretch: false
+    };
 
     async function handleClick(e: Event) {
         if (event) {
@@ -81,11 +86,20 @@
 </script>
 
 {#if href}
-    <Tabs.Item.Link {href} bind:active={selected} on:click={handleClick} on:keydown={handleKeyDown}>
+    <Tabs.Item.Link
+        {root}
+        {href}
+        bind:active={selected}
+        on:click={handleClick}
+        on:keydown={handleKeyDown}>
         <slot />
     </Tabs.Item.Link>
 {:else}
-    <Tabs.Item.Button bind:active={selected} on:click={handleClick} on:keydown={handleKeyDown}>
+    <Tabs.Item.Button
+        {root}
+        bind:active={selected}
+        on:click={handleClick}
+        on:keydown={handleKeyDown}>
         <slot />
     </Tabs.Item.Button>
 {/if}

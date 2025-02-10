@@ -34,11 +34,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7" id="session-length">Session length</Heading>
-    <p>
-        If you reduce the limit, users who are currently logged in will be logged out of the
-        application.
-    </p>
+    <svelte:fragment slot="title">Session length</svelte:fragment>
+    If you reduce the limit, users who are currently logged in will be logged out of the application.
     <svelte:fragment slot="aside">
         <Layout.Stack direction="row">
             <InputNumber id="length" label="Length" bind:value={$value} min={0} />

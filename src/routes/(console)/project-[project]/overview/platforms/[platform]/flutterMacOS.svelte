@@ -46,11 +46,8 @@
 
 <Form onSubmit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Bundle ID</Heading>
-        <p class="text">
-            You can find your Bundle Identifier in the General tab for your app's primary target in
-            Xcode.
-        </p>
+        <svelte:fragment slot="title">Bundle ID</svelte:fragment>
+        You can find your Bundle Identifier in the General tab for your app's primary target in Xcode.
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText

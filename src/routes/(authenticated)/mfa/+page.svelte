@@ -8,6 +8,8 @@
     import MfaChallengeFormList, { verify } from '$lib/components/mfaChallengeFormList.svelte';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications.js';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -55,9 +57,10 @@
     <svelte:fragment slot="top">
         <div class="top u-flex u-position-absolute u-main-center">
             <div class="flex u-width-full-line">
-                <Button text noMargin class="u-border-width-0" on:click={back}>
-                    <span class="icon-cheveron-left u-font-size-20" aria-hidden="true" />
-                    Back</Button>
+                <Button text class="u-border-width-0" on:click={back}>
+                    <Icon icon={IconChevronLeft} slot="start" size="s" />
+                    Back
+                </Button>
             </div>
         </div>
     </svelte:fragment>

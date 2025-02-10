@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { fade } from 'svelte/transition';
+    import { page } from '$app/stores';
     import {
         Icon,
         Sidebar,
@@ -8,7 +10,8 @@
         Link,
         Button,
         Layout,
-        Avatar
+        Avatar,
+        Typography
     } from '@appwrite.io/pink-svelte';
 
     import {
@@ -29,6 +32,8 @@
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
+    import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -43,7 +48,7 @@
         subNavigation?: ComponentType;
     };
 
-    export let state: $$Props['state'] = 'closed';
+    export let state: $$Props['state'] = 'icons';
     export let project: $$Props['project'];
     export let avatar: $$Props['avatar'];
     export let progressCard: $$Props['progressCard'] = undefined;
@@ -53,12 +58,14 @@
 
     function toggleFeedback() {
         feedback.toggleFeedback();
-
         if ($feedback.notification) {
             feedback.toggleNotification();
             feedback.addVisualization();
         }
     }
+
+    $: state = $isTabletViewport ? 'closed' : getSidebarState();
+    $: pathname = $page.url.pathname;
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth' },
@@ -70,22 +77,24 @@
     ];
 </script>
 
-<div class:only-mobile={project === undefined}>
-    <Sidebar.Base {...$$props} bind:state resizable={subNavigation === undefined}>
+<div class:only-mobile-tablet={project === undefined}>
+    <Sidebar.Base
+        {...$$props}
+        bind:state
+        on:resize={(event) => updateSidebarState(event.detail)}
+        resizable>
         <div slot="top">
-            <div class="only-mobile top">
-                <div class="icons">
-                    <Link.Button
-                        variant="quiet-muted"
+            <div class="only-mobile-tablet top">
+                <div class="icons search-icon">
+                    <Button.Button
+                        variant="text"
                         on:click={() => {
                             toggleCommandCenter();
                             state = 'closed';
                             sideBarIsOpen = false;
                         }}>
-                        <div class="icon">
-                            <Icon icon={IconSearch} />
-                        </div>
-                    </Link.Button>
+                        <Icon icon={IconSearch} color="--color-fgcolor-neutral-tertiary" />
+                    </Button.Button>
                 </div>
                 <Link.Button
                     on:click={() => {
@@ -104,11 +113,19 @@
                         on:click={() => {
                             sideBarIsOpen = false;
                         }}>
-                        <ProgressCircle size="s" progress={progressCard.percentage} />
-                        <div class="info" class:no-text={state === 'icons'}>
-                            <span class="title">{progressCard.title}</span>
-                            <span class="description">{progressCard.percentage}% complete</span>
+                        <div class="progressCircle">
+                            <ProgressCircle size="s" progress={progressCard.percentage} />
                         </div>
+                        {#if state !== 'icons'}
+                            <div class="info" in:fade={{ delay: 200, duration: 200 }}>
+                                <Typography.Text
+                                    variant="m-500"
+                                    color="--color-fgcolor-neutral-secondary"
+                                    >{progressCard.title}</Typography.Text>
+                                <Typography.Text color="--color-fgcolor-neutral-secondary"
+                                    >{progressCard.percentage}% complete</Typography.Text>
+                            </div>
+                        {/if}
                     </a>
                     <span slot="tooltip">Getting started</span>
                 </Tooltip>
@@ -117,7 +134,7 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.$id}?getStarted=false`}
+                            href={`/console/project-${project.$id}`}
                             class="link"
                             on:click={() => {
                                 sideBarIsOpen = false;
@@ -145,6 +162,7 @@
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
                                 class="link"
+                                class:active={pathname.includes(projectOption.slug)}
                                 on:click={() => {
                                     sideBarIsOpen = false;
                                 }}
@@ -257,6 +275,11 @@
         </div>
     </Sidebar.Base>
 </div>
+{#if subNavigation}
+    <div class="sub-navigation" class:icons={state === 'icons'}>
+        <svelte:component this={subNavigation} />
+    </div>
+{/if}
 
 <style lang="scss">
     .link {
@@ -306,9 +329,23 @@
             }
         }
     }
+    .active {
+        background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
+        .link-text {
+            color: var(--color-fgcolor-neutral-primary);
+        }
+        .link-icon {
+            color: var(--color-fgcolor-neutral-primary);
+        }
+    }
 
     .icons .link {
         gap: 0;
+        width: 32px;
+    }
+
+    .search-icon {
+        display: flex;
     }
 
     .link-text {
@@ -388,6 +425,10 @@
         width: 18px;
         align-self: center;
         margin-inline: 8px;
+        @media (min-width: 1024px) {
+            margin-block-end: var(--space-2, 4px);
+            margin-block-start: var(--space-9, 24px);
+        }
     }
 
     .hidden,
@@ -406,7 +447,8 @@
     }
 
     @media (min-width: 1024px) {
-        .only-mobile {
+        .only-mobile,
+        .only-mobile-tablet {
             display: none;
         }
         .only-desktop {
@@ -415,13 +457,10 @@
     }
 
     .progress-card {
-        width: 170px;
         height: 60px;
+        width: 168px;
+        padding: var(--base-8, 8px);
         display: flex;
-        padding: 8px;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
         gap: var(--space-5, 10px);
         margin-block-end: var(--space-6, 12px);
         align-self: stretch;
@@ -430,36 +469,24 @@
         background: var(--color-bgcolor-neutral-default, #fafafb);
         transition: all 0.2s ease-in-out;
 
+        @media (min-width: 1024px) {
+            width: 166px;
+        }
         .info {
+            position: absolute;
             display: flex;
             flex-direction: column;
             max-height: 40px;
             overflow: hidden;
+            opacity: 1;
+            transition: opacity 0.2s ease-in-out 0.2s;
+            margin-left: var(--base-36, 36px);
         }
 
-        .no-text {
-            display: none;
-        }
-
-        .title {
-            color: var(--color-fgcolor-neutral-secondary, #56565c);
-
-            font-size: var(--font-size-s, 14px);
-            font-style: normal;
-            font-weight: 600;
-            line-height: 140%; /* 19.6px */
-            letter-spacing: -0.063px;
-        }
-
-        .description {
-            color: var(--color-fgcolor-neutral-secondary, #56565c);
-
-            /* Desktop/Body M 400 */
-            font-size: var(--font-size-s, 14px);
-            font-style: normal;
-            font-weight: 400;
-            line-height: 140%; /* 19.6px */
-            letter-spacing: -0.063px;
+        .progressCircle {
+            display: flex;
+            height: 100%;
+            align-items: center;
         }
     }
 
@@ -467,10 +494,12 @@
         width: var(--base-32, 32px);
         border-color: transparent;
         background: transparent;
+        padding-left: var(--base-4, 4px);
     }
 
     .divider {
-        margin-block: var(--space-2, 4px);
+        margin-block-start: var(--space-2, 4px);
+        margin-block-end: var(--space-6, 12px);
         width: 100%;
     }
 
@@ -482,5 +511,22 @@
 
     :global(button.collapse) {
         transform: translateX(-10px);
+    }
+
+    .sub-navigation {
+        width: 400px;
+        height: calc(100vh - 48px);
+        display: flex;
+        justify-content: flex-end;
+        background-color: var(--color-bgcolor-neutral-primary, #fff);
+        z-index: 14;
+        position: fixed;
+        top: 48px;
+        transition: width 0.2s linear;
+
+        &.icons {
+            width: 266px;
+            transition: width 0.3s linear;
+        }
     }
 </style>

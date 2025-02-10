@@ -9,6 +9,10 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { isCloud } from '$lib/system';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { newOrgModal } from '$lib/stores/organization';
 
     type Project = {
         name: string;
@@ -63,6 +67,12 @@
     let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
 
+    function createOrg() {
+        if (isCloud) {
+            goto(`${base}/create-organization`);
+        } else newOrgModal.set(true);
+    }
+
     const switchOrganization = {
         top: {
             title: 'Switch Organization',
@@ -76,7 +86,7 @@
                 {
                     name: 'Create organization',
                     leadingIcon: IconPlus,
-                    href: `/console/create-organization`
+                    onClick: createOrg
                 }
             ]
         }
@@ -109,7 +119,7 @@
                                 {
                                     name: 'Create organization',
                                     leadingIcon: IconPlus,
-                                    href: `/console/create-organization`
+                                    onClick: createOrg
                                 }
                             ]
                         }
@@ -186,7 +196,8 @@
                 organisationBottomSheetOpen = true;
             }}
             aria-label="Open organizations tab">
-            <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
+            <span class="orgName" class:noProjects={!selectedProject}
+                >{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
             <Icon icon={IconChevronDown} size="s" />
@@ -224,10 +235,9 @@
                         <div class="separator" use:melt={$separatorOrganizations} />
                         <div use:melt={$itemOrganizations}>
                             <ActionMenu.Root>
-                                <ActionMenu.Item.Anchor
-                                    href="/console/create-organization"
+                                <ActionMenu.Item.Button
                                     leadingIcon={IconPlusSm}
-                                    title="">Create organization</ActionMenu.Item.Anchor
+                                    on:click={createOrg}>Create organization</ActionMenu.Item.Button
                                 ></ActionMenu.Root>
                         </div>
                     </div>
@@ -236,9 +246,8 @@
                 <div class="separator" use:melt={$separatorOrganizations} />
                 <div use:melt={$itemOrganizations}>
                     <ActionMenu.Root>
-                        <ActionMenu.Item.Anchor
-                            href="/console/create-organization"
-                            leadingIcon={IconPlusSm}>Create organization</ActionMenu.Item.Anchor
+                        <ActionMenu.Item.Button leadingIcon={IconPlusSm} on:click={createOrg}
+                            >Create organization</ActionMenu.Item.Button
                         ></ActionMenu.Root>
                 </div>
             {/if}
@@ -254,9 +263,8 @@
             <div class="separator" use:melt={$separatorOrganizations} />
             <div use:melt={$itemOrganizations}>
                 <ActionMenu.Root>
-                    <ActionMenu.Item.Anchor
-                        href="/console/create-organization"
-                        leadingIcon={IconPlusSm}>Create organization</ActionMenu.Item.Anchor
+                    <ActionMenu.Item.Button leadingIcon={IconPlusSm} on:click={createOrg}
+                        >Create organization</ActionMenu.Item.Button
                     ></ActionMenu.Root>
             </div>
         {/if}
@@ -377,12 +385,8 @@
         }
     }
 
-    .item:first-of-type {
-        margin-top: 4px;
-    }
-    .item:last-of-type,
-    .switch-org {
-        margin-bottom: 4px;
+    .noProjects {
+        max-width: 150px;
     }
 
     :global(.item[data-highlighted]) {
@@ -393,7 +397,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: var(--space-1, 2px) var(--space-2, 4px);
+        padding: var(--space-1, 2px) var(--space-1, 2px) var(--space-1, 2px) var(--space-3, 6px);
         gap: var(--space-2, 4px);
         margin: 0 var(--space-5, 10px) 0 var(--space-5, 10px);
 

@@ -22,7 +22,8 @@
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
     import { user } from '$lib/stores/user';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let showDropdown = false;
     let showDropdownBackup = false;
@@ -94,9 +95,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6" id="paymentMethod">Payment methods</Heading>
-
-    <p class="text">View or update your organization payment methods here.</p>
+    <svelte:fragment slot="title">Payment methods</svelte:fragment>
+    View or update your organization payment methods here.
     <svelte:fragment slot="aside">
         <div class="u-flex u-flex-vertical u-gap-8">
             {#if $organization?.paymentMethodId}
@@ -162,7 +162,7 @@
                                             showPayment = true;
                                         }
                                     }}>
-                                    <i class="icon-plus" />
+                                    <Icon icon={IconPlus} size="s" />
                                 </Button>
                                 <svelte:fragment slot="list">
                                     {#if $paymentMethods.total}
@@ -262,8 +262,8 @@
                                             showPayment = true;
                                         }
                                     }}>
-                                    <span class="icon-plus" />
-                                    <span class="text"> Add a backup payment method </span>
+                                    <Icon icon={IconPlus} slot="start" size="s" />
+                                    Add a backup payment method
                                 </Button>
 
                                 <span

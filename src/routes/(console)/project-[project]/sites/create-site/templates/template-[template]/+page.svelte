@@ -132,7 +132,7 @@
                     framework.installCommand,
                     framework.buildCommand,
                     framework.outputDirectory,
-                    domain,
+                    domain || undefined,
                     framework.adapter,
                     selectedInstallationId || undefined,
                     framework.fallbackFile,
@@ -190,6 +190,8 @@
     $: if (connectBehaviour === 'later') {
         selectedRepository = null;
     }
+
+    $: console.log(domain);
 </script>
 
 <svelte:head>
@@ -340,7 +342,7 @@
             fullWidthMobile
             size="s"
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting}>
+            disabled={$isSubmitting || (connectBehaviour === 'now' && !selectedRepository)}>
             Deploy
         </Button>
     </svelte:fragment>

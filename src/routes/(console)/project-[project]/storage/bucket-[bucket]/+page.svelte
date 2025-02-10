@@ -39,8 +39,9 @@
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
-    import { Layout, Tooltip, Table } from '@appwrite.io/pink-svelte';
+    import { Layout, Tooltip, Table, Icon } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -113,8 +114,8 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button on:mousedown={() => wizard.start(Create)} event="create_file" size="s">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create file</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create file
             </Button>
         </Layout.Stack>
     </Layout.Stack>
@@ -165,7 +166,7 @@
                         href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
                         <Table.Cell>
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
+                                <Avatar size="s" src={getPreview(file.$id)} alt={file.name} />
                                 <span class="text u-trim">{file.name}</span>
                             </div>
                         </Table.Cell>

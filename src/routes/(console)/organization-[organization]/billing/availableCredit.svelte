@@ -23,7 +23,8 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
     import { Pill } from '$lib/elements';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -90,11 +91,10 @@
 </script>
 
 <CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
-    <Heading tag="h2" size="6">
+    <svelte:fragment slot="title">
         {$organization?.billingPlan === BillingPlan.FREE ? 'Credits' : 'Available credit'}
-    </Heading>
-
-    <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
+    </svelte:fragment>
+    Appwrite credit will automatically be applied to your next invoice.
     <svelte:fragment slot="aside">
         {#if $organization?.billingPlan === BillingPlan.FREE}
             <Alert type="info">
@@ -115,8 +115,8 @@
                 </div>
                 {#if creditList?.total}
                     <Button secondary on:click={handleCredits}>
-                        <span class="icon-plus" aria-hidden="true"></span>
-                        <span class="text">Add credits</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add credits
                     </Button>
                 {/if}
             </div>

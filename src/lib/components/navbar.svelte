@@ -6,7 +6,7 @@
         Link,
         Tooltip,
         Card,
-        ActionList,
+        ActionMenu,
         Input,
         Button,
         Avatar
@@ -30,8 +30,7 @@
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
-    import { isSmallViewport } from '$lib/stores/viewport';
-    import { organization } from '$lib/stores/organization';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     let showSupport = false;
 
@@ -78,7 +77,7 @@
 
 <Navbar.Base {...$$props}>
     <div slot="left" class="left">
-        <div class="only-mobile">
+        <div class="only-mobile-tablet">
             <button
                 class="sideNavToggle"
                 on:click={() => {
@@ -87,7 +86,7 @@
                 <Icon icon={IconMenuAlt4} />
             </button>
         </div>
-        <a href={`${base}/organization-${$organization.$id}`} class="only-desktop">
+        <a href={base} class="only-desktop">
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
@@ -124,12 +123,12 @@
             </Layout.Stack>
             <div class="icons">
                 <Tooltip inline={false}>
-                    <Link.Button
-                        variant="quiet-muted"
+                    <Button.Button
+                        variant="text"
                         aria-label="Toggle Command Center"
                         on:click={toggleCommandCenter}>
                         <Icon icon={IconSearch} />
-                    </Link.Button>
+                    </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
             </div>
             <Link.Button
@@ -142,17 +141,20 @@
                 <div class="account-container">
                     <Card.Base padding="xxs" shadow={true}>
                         <Layout.Stack gap="xxs">
-                            <ActionList.Root>
-                                <ActionList.Item.Anchor
-                                    icon={IconUser}
-                                    title="Account"
-                                    href={`${base}/account`} />
+                            <ActionMenu.Root>
+                                <Layout.Stack gap="xxs">
+                                    <ActionMenu.Item.Anchor
+                                        leadingIcon={IconUser}
+                                        size="l"
+                                        href={`${base}/account`}>
+                                        Account</ActionMenu.Item.Anchor>
 
-                                <ActionList.Item.Button
-                                    icon={IconLogoutRight}
-                                    on:click={logout}
-                                    title="Sign out" />
-                            </ActionList.Root>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconLogoutRight}
+                                        size="l"
+                                        on:click={logout}>Sign out</ActionMenu.Item.Button>
+                                </Layout.Stack>
+                            </ActionMenu.Root>
                             <Input.Select
                                 value={$app.theme === 'auto' ? 'system' : $app.theme}
                                 name="mode"
@@ -177,7 +179,7 @@
         </div>
     </div>
 </Navbar.Base>
-{#if showAccountMenu && $isSmallViewport}
+{#if showAccountMenu && $isTabletViewport}
     <BottomSheet.Menu
         bind:isOpen={showAccountMenu}
         menu={{
@@ -247,7 +249,6 @@
 
     .right {
         display: flex;
-        align-items: center;
         gap: var(--space-9, 24px);
 
         .icons {
@@ -279,11 +280,16 @@
     }
 
     @media (min-width: 768px) {
-        .only-desktop {
-            display: flex;
-        }
         .only-mobile {
             display: none;
+        }
+    }
+    @media (min-width: 1024px) {
+        .only-mobile-tablet {
+            display: none;
+        }
+        .only-desktop {
+            display: flex;
         }
     }
 

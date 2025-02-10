@@ -17,6 +17,7 @@
     export let external = false;
     export let href: string = null;
     export let download: string = undefined;
+    export let badge: string = null;
     export let fullWidth = false;
     export let fullWidthMobile = false;
     export let ariaLabel: string = null;
@@ -78,12 +79,14 @@
         on:click={track}
         {size}
         {icon}
+        {badge}
         disabled={internalDisabled}
         variant={secondary ? 'secondary' : text ? 'text' : 'primary'}
         class={resolvedClasses}
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
         --button-width={fullWidth ? '100%' : 'max-content'}>
+        <slot name="start" slot="start" />
         {#if ($isSubmitting && submissionLoader) || (forceShowLoader && submissionLoader)}
             <span
                 class="loader is-small"
@@ -91,5 +94,6 @@
                 aria-hidden="true" />
         {/if}
         <slot isSubmitting={$isSubmitting} />
+        <slot slot="end" name="end" />
     </Button.Button>
 {/if}

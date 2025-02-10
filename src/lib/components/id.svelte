@@ -49,10 +49,8 @@
 </script>
 
 <Copy {value} {event}>
-    <!-- TODO: @torstendittmann make this part of pink -->
-    <Tag size="s" --badge-font-family="var(--font-family-code)">
-        <Icon icon={IconDuplicate} />
-
+    <Tag size="xs" variant="code">
+        <Icon icon={IconDuplicate} size="s" />
         <span
             style:white-space="nowrap"
             style:overflow="hidden"

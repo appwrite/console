@@ -9,10 +9,8 @@
 </script>
 
 <CardGrid>
-    <div>
-        <Heading tag="h2" size="7">Delete webhook</Heading>
-    </div>
-    <p>The webhook will be permanently deleted. This action is irreversible.</p>
+    <svelte:fragment slot="title">Delete webhooks</svelte:fragment>
+    The webhook will be permanently deleted. This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

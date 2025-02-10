@@ -14,6 +14,8 @@
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { TagList } from '.';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     // We cast to any to not cause type errors in the input components
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
@@ -151,8 +153,8 @@
             {/if}
         {/if}
         {#if !singleCondition}
-            <Button text disabled={isDisabled} class="u-margin-block-start-4" noMargin submit>
-                <i class="icon-plus" />
+            <Button text disabled={isDisabled} class="u-margin-block-start-4" submit>
+                <Icon icon={IconPlus} slot="start" size="s" />
                 Add condition
             </Button>
         {/if}

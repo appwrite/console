@@ -33,7 +33,7 @@
 
 <Form onSubmit={updateSessionsLimit}>
     <CardGrid>
-        <Heading tag="h2" size="7" id="sessions-limit">Sessions limit</Heading>
+        <svelte:fragment slot="title">Sessions limit</svelte:fragment>
         <Typography.Text>
             <p>Maximum number of active sessions allowed per user.</p>
         </Typography.Text>

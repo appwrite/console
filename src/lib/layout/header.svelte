@@ -62,8 +62,7 @@
             ...slideTrans,
             css: (t, u) => `
             ${slideTrans.css(t, u)};
-            opacity: ${t};
-			`
+            opacity: ${t};`
         };
     };
 </script>
@@ -159,7 +158,7 @@
         {#if $user}
             <div class="drop-wrapper" class:is-open={showDropdown} bind:this={droplistElement}>
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
-                    <AvatarInitials size={40} name={$user.name || $user.email} />
+                    <AvatarInitials size="m" name={$user.name || $user.email} />
                     <span class="user-profile-info is-only-desktop">
                         <span class="name" data-private>{$user.name || $user.email}</span>
                         {#if $organization}

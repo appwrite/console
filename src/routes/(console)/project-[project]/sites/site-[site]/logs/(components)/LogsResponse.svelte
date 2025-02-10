@@ -9,16 +9,21 @@
 </script>
 
 <Layout.Stack>
-    <Tabs.Root variant="secondary">
-        <Tabs.Item.Button active={responseTab === 'logs'} on:click={() => (responseTab = 'logs')}>
+    <Tabs.Root variant="secondary" let:root>
+        <Tabs.Item.Button
+            {root}
+            active={responseTab === 'logs'}
+            on:click={() => (responseTab = 'logs')}>
             Logs
         </Tabs.Item.Button>
         <Tabs.Item.Button
+            {root}
             active={responseTab === 'errors'}
             on:click={() => (responseTab = 'errors')}>
             Errors
         </Tabs.Item.Button>
         <Tabs.Item.Button
+            {root}
             active={responseTab === 'headers'}
             on:click={() => (responseTab = 'headers')}>
             Headers <Badge
@@ -26,7 +31,10 @@
                 size="s"
                 content={selectedLog?.responseHeaders?.length?.toString()} />
         </Tabs.Item.Button>
-        <Tabs.Item.Button active={responseTab === 'body'} on:click={() => (responseTab = 'body')}>
+        <Tabs.Item.Button
+            {root}
+            active={responseTab === 'body'}
+            on:click={() => (responseTab = 'body')}>
             Body
         </Tabs.Item.Button>
     </Tabs.Root>

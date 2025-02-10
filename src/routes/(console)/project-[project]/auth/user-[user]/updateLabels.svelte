@@ -39,7 +39,7 @@
             trackError(error, Submit.UserUpdateLabels);
         }
     }
-
+    $: console.log(labels);
     // TODO: Remove type cast when console SDK is updated
     $: isDisabled =
         !!error ||
@@ -63,11 +63,9 @@
 
 <Form onSubmit={updateLabels}>
     <CardGrid>
-        <Heading tag="h6" size="7">Labels</Heading>
-        <p class="text">
-            Categorize and manage your users based on specific criteria by assigning them
-            customizable labels. New label-based roles will be assigned.
-        </p>
+        <svelte:fragment slot="title">Labels</svelte:fragment>
+        Categorize and manage your users based on specific criteria by assigning them customizable labels.
+        New label-based roles will be assigned.
         <svelte:fragment slot="aside">
             <ul class="common-section">
                 <InputTags

@@ -124,16 +124,6 @@
         window.location.href = `https://cloud.appwrite.io/?migrate=${encodeURIComponent(
             JSON.stringify(migrationData)
         )}`;
-
-        // const migrationData = {
-        //     endpoint: PUBLIC_MOCK_ENDPOINT,
-        //     projectId: PUBLIC_MOCK_PROJECTID,
-        //     apiKey: PUBLIC_MOCK_APIKEY
-        // };
-
-        // window.location.href = `http://localhost:3000/?migrate=${encodeURIComponent(
-        //     JSON.stringify(migrationData)
-        // )}`;
     };
 
     function showDetails(m: Models.Migration) {
@@ -143,24 +133,16 @@
 </script>
 
 <Container>
-    <div class="u-flex u-cross-center u-gap-8">
-        <Heading tag="h2" size="5">Migrations</Heading>
-        <div class="tag eyebrow-heading-3">
-            <span class="text u-x-small">Experimental</span>
-        </div>
-    </div>
-
     <CardGrid>
-        <Heading tag="h3" size="7">Import project data</Heading>
-        <p class="text">
-            Import data from another platform or from a different Appwrite instance. <a
-                class="link"
-                href="https://appwrite.io/docs/advanced/migrations"
-                target="_blank"
-                rel="noopener noreferrer">
-                Learn about which platforms are supported</a
-            >.
-        </p>
+        <svelte:fragment slot="title">Import project data</svelte:fragment>
+        Import data from another platform or from a different Appwrite instance.
+        <a
+            class="link"
+            href="https://appwrite.io/docs/advanced/migrations"
+            target="_blank"
+            rel="noopener noreferrer">
+            Learn about which platforms are supported</a
+        >.
         <svelte:fragment slot="aside">
             {#if data.migrations.length}
                 <div class="u-flex">
@@ -247,15 +229,14 @@
     </CardGrid>
     {#if isSelfHosted}
         <CardGrid>
-            <Heading tag="h3" size="7">Deploy to Cloud</Heading>
-            <p class="text">
-                Export data from your project to Appwrite Cloud. <a
-                    class="link"
-                    href="https://appwrite.io/docs/advanced/migrations/self-hosted"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Learn more in our documentation.</a>
-            </p>
+            <svelte:fragment slot="title">Deploy to Cloud</svelte:fragment>
+            Export data from your project to Appwrite Cloud.
+            <a
+                class="link"
+                href="https://appwrite.io/docs/advanced/migrations/self-hosted"
+                target="_blank"
+                rel="noopener noreferrer">
+                Learn more in our documentation.</a>
             <svelte:fragment slot="aside">
                 <div class="import-box">
                     <div class="u-flex u-cross-center u-gap-8">
@@ -275,15 +256,14 @@
         </CardGrid>
     {:else}
         <CardGrid>
-            <Heading tag="h3" size="7">Export to self-hosted instance</Heading>
-            <p class="text">
-                Export data from your project to a self-hosted instance. <a
-                    class="link"
-                    href="https://appwrite.io/docs/advanced/migrations/self-hosted"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Learn more in our documentation.</a>
-            </p>
+            <svelte:fragment slot="title">Export to self-hosted instance</svelte:fragment>
+            Export data from your project to a self-hosted instance.
+            <a
+                class="link"
+                href="https://appwrite.io/docs/advanced/migrations/self-hosted"
+                target="_blank"
+                rel="noopener noreferrer">
+                Learn more in our documentation.</a>
             <svelte:fragment slot="aside">
                 <div class="import-box">
                     <div class="u-flex u-cross-center u-gap-8">

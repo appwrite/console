@@ -15,7 +15,7 @@
     import { type Models } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isTabletViewport } from '$lib/stores/viewport';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen } from '$lib/stores/sidebar';
 
@@ -27,9 +27,13 @@
 
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
     let y: number;
+    let showContentTransition = true;
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
+        setTimeout(() => {
+            showContentTransition = !url.pathname.includes('organization');
+        }, 1000);
     });
 
     /**
@@ -70,10 +74,10 @@
     };
 
     let showAccountMenu = false;
-    let subNavigation: undefined | ComponentType = undefined;
+    let subNavigation: undefined | ComponentType = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
-    $: state = subNavigation && !$isSmallViewport ? 'icons' : $isSidebarOpen ? 'open' : 'closed';
+    $: state = !$isTabletViewport ? 'icons' : $isSidebarOpen ? 'open' : 'closed';
 
     function handleResize() {
         $isSidebarOpen = false;
@@ -115,6 +119,7 @@
     <SideNavigation bind:state bind:subNavigation />
     <div
         class="content"
+        class:has-transition={showContentTransition}
         class:icons-content={state === 'icons'}
         class:no-sidebar={!showSideNavigation}>
         <section class="main-content" data-test={showSideNavigation}>
@@ -135,6 +140,7 @@
     </div>
 
     <button
+        type="button"
         class:overlay={$isSidebarOpen}
         on:click={() => {
             $isSidebarOpen = false;
@@ -149,13 +155,17 @@
 
         @media (min-width: 1024px) {
             width: 100%;
-
             padding-left: 190px;
-            transition: all 0.3s ease-in-out;
 
             &.icons-content {
                 padding-left: 54px;
             }
+        }
+    }
+
+    .has-transition {
+        @media (min-width: 1024px) {
+            transition: all 0.3s ease-in-out;
         }
     }
 
@@ -164,12 +174,20 @@
     }
 
     .main-content {
-        min-height: calc(100vh - 30px);
+        min-height: calc(100vh - 48px);
+    }
+
+    :global(main:has(.sub-navigation)) {
+        .main-content {
+            @media (min-width: 1024px) {
+                padding-left: 200px;
+            }
+        }
     }
 
     .overlay {
         position: fixed;
-        width: calc(100vw - 200px);
+        width: 100vw;
         height: 100vh;
         right: 0;
         top: 0;

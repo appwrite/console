@@ -4,7 +4,6 @@
         Heading,
         ViewSelector,
         EmptyFilter,
-        EmptySearch,
         DropList
     } from '$lib/components';
     import { Container } from '$lib/layout';
@@ -15,6 +14,8 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { Pill } from '$lib/elements';
+    import { Card, Empty } from '@appwrite.io/pink-svelte';
+    import Button from '$lib/elements/forms/button.svelte';
 
     export let data: PageData;
 
@@ -94,11 +95,17 @@
     {:else if $hasPageQueries}
         <EmptyFilter resource="identities" />
     {:else}
-        <EmptySearch hidePagination>
-            <div class="u-text-center">
-                <p>This user has no identities.</p>
-                <p>Once this user signs in via OAuth, you'll see it here.</p>
-            </div>
-        </EmptySearch>
+        <Card.Base padding="none">
+            <Empty
+                title="No identities available"
+                description="Once this user signs in via OAuth, you'll see it here."
+                type="secondary">
+                <svelte:fragment slot="actions">
+                    <Button external secondary href="https://appwrite.io/docs/products/auth/oauth2">
+                        Documentation
+                    </Button>
+                </svelte:fragment>
+            </Empty>
+        </Card.Base>
     {/if}
 </Container>

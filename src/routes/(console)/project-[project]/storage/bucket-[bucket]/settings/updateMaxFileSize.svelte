@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Submit } from '$lib/actions/analytics';
-    import { Alert, CardGrid, Heading } from '$lib/components';
+    import { Alert, CardGrid } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
@@ -11,9 +11,9 @@
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
     import type { Plan } from '$lib/sdk/billing';
-    export let currentPlan: Plan;
+    export let currentPlan: Plan | null;
 
-    const service = currentPlan['fileSize'];
+    const service = currentPlan ? currentPlan['fileSize'] : null;
     const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize, 1000);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
     $: selectedUnit = $unit;
@@ -37,8 +37,8 @@
 
 <Form onSubmit={updateMaxSize}>
     <CardGrid>
-        <Heading tag="h2" size="7">Maximum file size</Heading>
-        <p class="text">Set the maximum file size allowed in the bucket.</p>
+        <svelte:fragment slot="title">Maximum file size</svelte:fragment>
+        Set the maximum file size allowed in the bucket.
         <svelte:fragment slot="aside">
             {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}

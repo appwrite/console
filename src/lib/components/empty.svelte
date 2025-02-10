@@ -9,6 +9,7 @@
     export let href: string = null;
     export let marginTop = false;
     export let allowCreate = true;
+    export let description = 'Need a hand? Learn more in our documentation.';
 
     function track() {
         if (!allowCreate) {
@@ -25,9 +26,7 @@
 {#if single}
     <Card.Base padding="none">
         <slot name="media" />
-        <Empty
-            title={`Create your first ${target}`}
-            description="Need a hand? Learn more in our documentation.">
+        <Empty title={`Create your first ${target}`} {description}>
             <svelte:fragment slot="actions">
                 <Button
                     external

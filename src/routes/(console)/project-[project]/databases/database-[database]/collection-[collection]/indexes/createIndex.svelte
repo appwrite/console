@@ -13,6 +13,8 @@
     import { isRelationship } from '../document-[document]/attributes/store';
     import { type Attributes, collection, indexes } from '../store';
     import Select from './select.svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
@@ -156,9 +158,9 @@
             </li>
         {/each}
 
-        <Button text noMargin on:click={addAttribute} disabled={addAttributeDisabled}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Add attribute</span>
+        <Button text on:click={addAttribute} disabled={addAttributeDisabled}>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Add attribute
         </Button>
     </FormList>
     <svelte:fragment slot="footer">

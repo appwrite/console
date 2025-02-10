@@ -7,6 +7,7 @@
     import { goto } from '$app/navigation';
     import { debounce } from '$lib/helpers/debounce.js';
     import { Card, Layout, Accordion, Selector } from '@appwrite.io/pink-svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let data;
 
@@ -63,9 +64,13 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<Wizard href={`${base}/project-${$page.params.project}/sites/`} title="Create Site" invertColumns>
+<Wizard
+    href={`${base}/project-${$page.params.project}/sites/`}
+    title="Create Site"
+    invertColumns
+    hideFooter>
     <svelte:fragment slot="aside">
-        <Layout.Stack gap="xxl">
+        <Layout.Stack gap="xl">
             <InputSearch
                 placeholder="Search templates"
                 value={$page.url.searchParams.get('search')}
@@ -80,7 +85,7 @@
                                 <Selector.Checkbox
                                     id={useCase}
                                     size="s"
-                                    label={useCase}
+                                    label={capitalize(useCase)}
                                     checked={isChecked(useCase)}
                                     on:change={(e) => {
                                         applyFilter('useCase', useCase, e);

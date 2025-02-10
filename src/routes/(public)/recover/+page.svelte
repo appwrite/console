@@ -63,7 +63,7 @@
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Password Recovery</svelte:fragment>
+    <svelte:fragment slot="title">Password recovery</svelte:fragment>
     <svelte:fragment>
         {#if userId && secret}
             <Form onSubmit={setPassword}>
