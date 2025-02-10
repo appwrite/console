@@ -136,6 +136,7 @@
                         <a
                             href={`/console/project-${project.$id}`}
                             class="link"
+                            class:active={pathname.includes('platforms')}
                             on:click={() => {
                                 sideBarIsOpen = false;
                             }}
