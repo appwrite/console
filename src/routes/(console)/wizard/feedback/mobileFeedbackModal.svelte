@@ -24,12 +24,6 @@
         background-color: #131315;
     }
 
-    /* temporary fix until https://github.com/appwrite/pink/pull/261 is merged */
-    :global(.mobile-feedback-dialog-modal dialog section:first-of-type) {
-        max-width: 600px;
-        width: 100% !important; /* important for override */
-    }
-
     /* pink2 modal doesn't allow removing the header divider yet, temporary fix*/
     :global(.mobile-feedback-dialog-modal dialog header) {
         border-bottom: unset !important;
