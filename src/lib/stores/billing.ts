@@ -34,7 +34,7 @@ import { user } from './user';
 import { browser } from '$app/environment';
 import { canSeeBilling } from './roles';
 
-export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1';
+export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
 export const roles = [
     {
@@ -81,6 +81,8 @@ export function tierToPlan(tier: Tier) {
             return tierGitHubEducation;
         case BillingPlan.CUSTOM:
             return tierCustom;
+        case BillingPlan.ENTERPRISE:
+            return tierEnterprise;
         default:
             return tierFree;
     }
@@ -197,6 +199,11 @@ export const tierScale: TierData = {
 export const tierCustom: TierData = {
     name: 'Custom',
     description: 'Team on a custom contract'
+};
+
+export const tierEnterprise: TierData = {
+    name: 'Enterprise',
+    description: 'For enterprises that need more power and premium support.'
 };
 
 export const showUsageRatesModal = writable<boolean>(false);
