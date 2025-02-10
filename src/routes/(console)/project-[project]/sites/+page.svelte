@@ -59,7 +59,7 @@
             <ViewSelector {columns} view={data.view} hideColumns hideView={!data.siteList.total} />
             {#if $canWriteSites}
                 <Button on:mousedown={() => (show = true)} event="create_site" size="s">
-                    <Icon icon={IconPlus} />
+                    <Icon icon={IconPlus} slot="start" size="s" />
                     Create site
                 </Button>
             {/if}

@@ -25,7 +25,7 @@
     }
 </script>
 
-<Wizard title="Create site" href={`${base}/project-${$page.params.project}/sites/`}>
+<Wizard title="Create site" href={`${base}/project-${$page.params.project}/sites/`} hideFooter>
     {#if hasInstallations}
         <Fieldset legend="Git repository">
             <Repositories
@@ -45,22 +45,17 @@
     {/if}
 
     <svelte:fragment slot="aside">
-        <Card>
-            <Layout.Stack gap="m">
+        <Card radius="s" padding="s">
+            <Layout.Stack gap="l">
                 <Layout.Stack gap="xxs">
-                    <Typography.Text variation="m-500">Missing a repository?</Typography.Text>
-                    <p>
-                        Check your permissions in GitHub, your repository might be set to private.
-                    </p>
+                    <Typography.Text variation="m-400">
+                        Don't have a repository set up yet? Explore our templates, available in all
+                        your favorite frameworks, and deploy in seconds.
+                    </Typography.Text>
                 </Layout.Stack>
-                <Layout.Stack direction="row" gap="s">
-                    <Button href="https://appwrite.io" secondary>Docs</Button>
-                    {#if hasInstallations}
-                        <Button
-                            href={`https://github.com/${data.installations.installations[0].organization}`}
-                            text>Go to GitHub</Button>
-                    {/if}
-                </Layout.Stack>
+                <Button
+                    href={`${base}/project-${$page.params.project}/sites/create-site/templates`}
+                    secondary>View templates</Button>
             </Layout.Stack>
         </Card>
     </svelte:fragment>
