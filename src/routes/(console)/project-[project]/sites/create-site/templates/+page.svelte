@@ -123,7 +123,7 @@
                 <Card.Link
                     variant="secondary"
                     href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}
-                    padding="xs">
+                    padding="xxs">
                     <Card.Media
                         title={template.name}
                         description={templateFrameworks.join(', ')}
