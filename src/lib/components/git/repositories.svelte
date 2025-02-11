@@ -141,7 +141,7 @@
                         {#each response as repo}
                             <Table.Row>
                                 <Table.Cell>
-                                    <Layout.Stack direction="row" alignItems="center">
+                                    <Layout.Stack direction="row" alignItems="center" gap="s">
                                         {#if action === 'select'}
                                             <input
                                                 class="is-small u-margin-inline-end-8"
@@ -173,7 +173,9 @@
                                                 alt={repo.name} />
                                         {/if}
                                         <Layout.Stack gap="s" direction="row" alignItems="center">
-                                            <Typography.Text truncate>
+                                            <Typography.Text
+                                                truncate
+                                                color="--color-fgcolor-neutral-secondary">
                                                 {repo.name}
                                             </Typography.Text>
                                             {#if repo.private}
@@ -183,11 +185,12 @@
                                                     color="--color-fgcolor-neutral-tertiary" />
                                             {/if}
                                             <time datetime={repo.pushedAt}>
-                                                <Typography.Text
+                                                <Typography.Caption
+                                                    variant="400"
                                                     truncate
                                                     color="--color-fgcolor-neutral-tertiary">
                                                     {timeFromNow(repo.pushedAt)}
-                                                </Typography.Text>
+                                                </Typography.Caption>
                                             </time>
                                         </Layout.Stack>
                                         {#if action === 'button'}
