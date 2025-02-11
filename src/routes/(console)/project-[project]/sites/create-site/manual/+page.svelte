@@ -154,7 +154,7 @@
                 <Label>Files or folder</Label>
                 <Upload.Dropzone
                     bind:files
-                    extensions={['.tar', '.zip', '.tar.gzip', '.tar.gz']}
+                    extensions={['tar', 'zip', 'gzip', 'gz']}
                     on:change={handleChange}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack
@@ -168,7 +168,7 @@
                             <Tooltip>
                                 <Icon icon={IconInfo} size="s" />
                                 <svelte:fragment slot="tooltip">
-                                    Only PNG, JPEG, PDF files allowed
+                                    Only zipped files allowed
                                 </svelte:fragment>
                             </Tooltip>
                         </Layout.Stack>
