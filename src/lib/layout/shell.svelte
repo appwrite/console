@@ -17,6 +17,7 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen } from '$lib/stores/sidebar';
+    import { BillingPlan } from '$lib/constants';
 
     export let showSideNavigation = false;
     export let showHeader = true;
@@ -68,6 +69,7 @@
             return {
                 name: org.name,
                 $id: org.$id,
+                showUpgrade: org.billingPlan === BillingPlan.FREE,
                 tierName: isCloud ? tierToPlan(org.billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id,
                 projects: loadedProjects
