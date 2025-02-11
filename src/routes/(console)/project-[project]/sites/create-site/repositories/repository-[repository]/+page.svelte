@@ -14,11 +14,11 @@
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
-    import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import Configuration from '../../configuration.svelte';
 
     export let data;
     let showExitModal = false;
@@ -103,7 +103,6 @@
             const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
                 Query.limit(1)
             ]);
-            console.log(deployments);
             const deployment = deployments[0];
             await goto(
                 `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
@@ -116,8 +115,6 @@
             trackError(e, Submit.SiteCreate);
         }
     }
-
-    $: console.log(variables);
 </script>
 
 <svelte:head>

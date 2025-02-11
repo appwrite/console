@@ -11,12 +11,12 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
     import Details from '../details.svelte';
-    import Configuration from './configuration.svelte';
     import Aside from './aside.svelte';
     import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { processFileList } from '$lib/helpers/files';
     import { createTarGzip } from 'nanotar';
+    import Configuration from '../configuration.svelte';
 
     export let data;
     let showExitModal = false;
