@@ -147,7 +147,9 @@
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
                 }}>
-                <Avatar size="s" src={avatar} />
+                <div style:user-select="none">
+                    <Avatar size="s" src={avatar} />
+                </div>
             </Link.Button>
             {#if showAccountMenu}
                 <div class="account-container">
