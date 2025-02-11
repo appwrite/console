@@ -27,16 +27,20 @@
 
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
     let y: number;
-    let showContentTransition = true;
+    let showContentTransition = false;
+    let timeoutId: NodeJS.Timeout;
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
-        if (url.search.includes('create-project')) {
+        clearTimeout(timeoutId);
+
+        if (url.pathname.includes('project-')) {
+            timeoutId = setTimeout(() => {
+                showContentTransition = true;
+            }, 1000);
+        } else {
             showContentTransition = false;
         }
-        setTimeout(() => {
-            showContentTransition = !url.pathname.includes('organization');
-        }, 1000);
     });
 
     /**
