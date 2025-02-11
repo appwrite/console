@@ -69,7 +69,7 @@
         ? checkForUsageFees($organization?.billingPlan, serviceId)
         : false;
     $: isLimited = limit !== 0 && limit < Infinity;
-    $: overflowingServices = limitedServices.filter((service) => service.value >= 0);
+    $: overflowingServices = limitedServices.filter((service) => service.value > 0);
     $: isButtonDisabled =
         buttonDisabled ||
         ($readOnly && !GRACE_PERIOD_OVERRIDE) ||
@@ -102,7 +102,7 @@
                         >.
                     </span>
                 </Alert>
-            {:else}
+            {:else if services.length}
                 <Alert type={alertType} isStandalone>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan. <Button

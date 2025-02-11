@@ -470,7 +470,8 @@ export enum BillingPlan {
     PRO = 'tier-1',
     SCALE = 'tier-2',
     GITHUB_EDUCATION = 'auto-1',
-    CUSTOM = 'cont-1'
+    CUSTOM = 'cont-1',
+    ENTERPRISE = 'ent-1'
 }
 
 export const feedbackDowngradeOptions = [

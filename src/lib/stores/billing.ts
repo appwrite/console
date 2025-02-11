@@ -33,7 +33,7 @@ import { user } from './user';
 import { browser } from '$app/environment';
 import { canSeeBilling } from './roles';
 
-export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1';
+export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
 export const roles = [
     {
@@ -80,6 +80,8 @@ export function tierToPlan(tier: Tier) {
             return tierGitHubEducation;
         case BillingPlan.CUSTOM:
             return tierCustom;
+        case BillingPlan.ENTERPRISE:
+            return tierEnterprise;
         default:
             return tierFree;
     }
@@ -149,11 +151,12 @@ export const failedInvoice = cachedStore<
         load: async (orgId) => {
             if (!isCloud) set(null);
             if (!get(canSeeBilling)) set(null);
-            const invoices = await sdk.forConsole.billing.listInvoices(orgId);
-            const failedInvoices = invoices.invoices.filter((i) => i.status === 'failed');
+            const failedInvoices = await sdk.forConsole.billing.listInvoices(orgId, [
+                Query.equal('status', 'failed')
+            ]);
             // const failedInvoices = invoices.invoices;
-            if (failedInvoices?.length > 0) {
-                const firstFailed = failedInvoices[0];
+            if (failedInvoices?.invoices?.length > 0) {
+                const firstFailed = failedInvoices.invoices[0];
                 const today = new Date();
                 const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
                 const failedDate = new Date(firstFailed.$createdAt);
@@ -196,6 +199,11 @@ export const tierScale: TierData = {
 export const tierCustom: TierData = {
     name: 'Custom',
     description: 'Team on a custom contract'
+};
+
+export const tierEnterprise: TierData = {
+    name: 'Enterprise',
+    description: 'For enterprises that need more power and premium support.'
 };
 
 export const showUsageRatesModal = writable<boolean>(false);

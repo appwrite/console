@@ -3,7 +3,7 @@
     import { Card, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import type { Aggregation, CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -46,7 +46,7 @@
                 <Collapsible>
                     <div class="u-flex-vertical u-gap-8">
                         <div class="u-flex">
-                            <span class="body-text-2"> {currentPlan.name} plan</span>
+                            <span class="body-text-2">{currentPlan.name} plan</span>
                             <div class="body-text-2 u-margin-inline-start-auto">
                                 {isTrial ||
                                 $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
