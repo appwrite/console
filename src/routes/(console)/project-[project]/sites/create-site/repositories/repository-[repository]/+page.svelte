@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
@@ -130,17 +130,17 @@
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
-            <Card>
+            <Card radius="s" padding="s">
                 <Layout.Stack
                     direction="row"
                     justifyContent="space-between"
                     alignItems="center"
                     gap="xs">
-                    <Layout.Stack direction="row" alignItems="center">
-                        <Icon icon={IconGithub} />
-                        <p>
-                            {data.repository?.name}
-                        </p>
+                    <Layout.Stack direction="row" alignItems="center" gap="xs">
+                        <Icon icon={IconGithub} color="--color-fgcolor-neutral-primary" />
+                        <Typography.Text variation="m-500" color="--color-fgcolor-neutral-primary">
+                            {data.repository?.organization}/{data.repository?.name}
+                        </Typography.Text>
                     </Layout.Stack>
                     <Button
                         secondary

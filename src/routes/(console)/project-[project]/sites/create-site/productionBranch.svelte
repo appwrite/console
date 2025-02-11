@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Button, InputChoice, InputSelect, InputText } from '$lib/elements/forms';
-    import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
+    import { Button, InputSelect, InputText } from '$lib/elements/forms';
+    import { Fieldset, Layout, Selector } from '@appwrite.io/pink-svelte';
     import SelectRootModal from '../(components)/selectRootModal.svelte';
 
     export let branch: string;
@@ -12,7 +12,7 @@
 </script>
 
 <Fieldset legend="Branch">
-    <Layout.Stack gap="l">
+    <Layout.Stack gap="xl">
         <InputSelect
             required
             id="branch"
@@ -32,7 +32,12 @@
                 bind:value={rootDir} />
             <Button secondary size="s" on:click={() => (show = true)}>Select</Button>
         </Layout.Stack>
-        <InputChoice id="silentMode" label="Silent mode" bind:value={silentMode} />
+
+        <Selector.Checkbox
+            id="silentMode"
+            label="Silent mode"
+            description="If selected, comments will not be created when pushing changes to this repository."
+            bind:checked={silentMode} />
     </Layout.Stack>
 </Fieldset>
 
