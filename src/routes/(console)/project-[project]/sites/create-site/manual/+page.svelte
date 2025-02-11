@@ -104,16 +104,15 @@
             });
 
             //Add variables
-            await Promise.all(
-                Object.keys(variables).map(async (key) => {
-                    await sdk.forProject.sites.createVariable(
-                        site.$id,
-                        key,
-                        variables[key].value,
-                        variables[key].secret
-                    );
-                })
+            const promises = variables.map((variable) =>
+                sdk.forProject.sites.createVariable(
+                    site.$id,
+                    variable.key,
+                    variable.value,
+                    variable?.secret ?? false
+                )
             );
+            await Promise.all(promises);
 
             const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
                 Query.limit(1)
