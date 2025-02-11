@@ -41,6 +41,7 @@
 {/if}
 <Card.Base padding="none" border="dashed">
     <Empty
+        type="secondary"
         title="No installation was added to the project yet"
         description="Add an installation to connect repositories">
         <svelte:fragment slot="actions">

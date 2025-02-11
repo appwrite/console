@@ -11,12 +11,12 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
     import Details from '../details.svelte';
-    import Configuration from './configuration.svelte';
     import Aside from './aside.svelte';
-    import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
-    import { processFileList } from '$lib/helpers/files';
-    import { createTarGzip } from 'nanotar';
+    import { gzipUpload } from '$lib/helpers/files';
+    import Configuration from '../configuration.svelte';
+    import Domain from '../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -25,7 +25,9 @@
     let isSubmitting = writable(false);
 
     let name = '';
-    let id = '';
+    let id = ID.unique();
+    let domain = id;
+    let domainIsValid = true;
     let framework: Models.Framework = data.frameworks.frameworks[0];
     let adapter = framework?.adapters[0];
     let installCommand = adapter?.installCommand;
@@ -36,40 +38,7 @@
     let uploadFile: File;
 
     async function handleChange() {
-        const tick = performance.now();
-        if (!files?.length) return;
-
-        // If the file is a tar.gz file, then return it as is
-        if (
-            files?.length === 1 &&
-            files.item(0).type === 'application/gzip' &&
-            files.item(0).name.split('.').pop() === 'tar'
-        ) {
-            uploadFile = files.item(0);
-        }
-        // Else process the file to mantain the folder structure and create a .tar.gz file
-        else {
-            try {
-                const processedFiles = await processFileList(files);
-                const tar = await createTarGzip(
-                    processedFiles.map((f) => ({
-                        name: f.path,
-                        data: f.buffer
-                    }))
-                );
-                const blob = new Blob([tar], { type: 'application/gzip' });
-                const file = new File([blob], 'deployment.tar.gz', { type: 'application/gzip' });
-                uploadFile = file;
-            } catch (e) {
-                addNotification({
-                    type: 'error',
-                    message: e
-                });
-            }
-        }
-        console.log(uploadFile);
-        const tock = performance.now();
-        console.log('Time taken to process files:', tock - tick);
+        uploadFile = await gzipUpload(files);
     }
 
     async function create() {
@@ -85,9 +54,9 @@
                 buildRuntime,
                 undefined,
                 undefined,
-                installCommand,
-                buildCommand,
-                outputDirectory,
+                installCommand || undefined,
+                buildCommand || undefined,
+                outputDirectory || undefined,
                 undefined,
                 framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
                 undefined,
@@ -98,28 +67,31 @@
                 undefined
             );
 
+            //Add variables
+            const promises = variables.map((variable) =>
+                sdk.forProject.sites.createVariable(
+                    site.$id,
+                    variable.key,
+                    variable.value,
+                    variable?.secret ?? false
+                )
+            );
+            await Promise.all(promises);
+
+            const deployment = await sdk.forProject.sites.createDeployment(
+                site.$id,
+                uploadFile,
+                true,
+                installCommand || undefined,
+                buildCommand || undefined,
+                outputDirectory || undefined
+            );
+
             trackEvent(Submit.SiteCreate, {
                 source: 'manual',
                 framework: framework.key
             });
 
-            //Add variables
-            await Promise.all(
-                Object.keys(variables).map(async (key) => {
-                    await sdk.forProject.sites.createVariable(
-                        site.$id,
-                        key,
-                        variables[key].value,
-                        variables[key].secret
-                    );
-                })
-            );
-
-            const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                Query.limit(1)
-            ]);
-            console.log(deployments);
-            const deployment = deployments[0];
             await goto(
                 `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
             );
@@ -146,7 +118,10 @@
         <Layout.Stack gap="xl">
             <Layout.Stack gap="xxs">
                 <Label>Files or folder</Label>
-                <Upload.Dropzone folder bind:files on:change={handleChange}>
+                <Upload.Dropzone
+                    bind:files
+                    extensions={['tar', 'zip', 'gzip', 'gz']}
+                    on:change={handleChange}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack
                             alignItems="center"
@@ -159,7 +134,7 @@
                             <Tooltip>
                                 <Icon icon={IconInfo} size="s" />
                                 <svelte:fragment slot="tooltip">
-                                    Only PNG, JPEG, PDF files allowed
+                                    Only zipped files allowed
                                 </svelte:fragment>
                             </Tooltip>
                         </Layout.Stack>
@@ -177,7 +152,7 @@
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
 
-            <!-- <Domain /> -->
+            <Domain bind:domain bind:domainIsValid />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
