@@ -98,7 +98,7 @@
     <div slot="right" class="only-desktop">
         <div class="right">
             <Layout.Stack gap="l" direction="row" alignItems="center">
-                {#if isCloud && currentOrg.showUpgrade}
+                {#if isCloud && currentOrg?.showUpgrade}
                     <Button.Anchor
                         size="s"
                         variant="primary"
