@@ -3,13 +3,12 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { processFileList } from '$lib/helpers/files';
+    import { gzipUpload } from '$lib/helpers/files';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
-    import { createTarGzip } from 'nanotar';
 
     export let show = false;
     export let site: Models.Site;
@@ -19,39 +18,8 @@
     let error: string = '';
 
     async function handleChange() {
-        const tick = performance.now();
-        if (!files?.length) return;
-
-        // If the file is a tar.gz file, then return it as is
-        if (
-            files?.length === 1 &&
-            files.item(0).type === 'application/gzip' &&
-            files.item(0).name.split('.').pop() === 'tar'
-        ) {
-            uploadFile = files.item(0);
-        }
-        // Else process the file to mantain the folder structure and create a .tar.gz file
-        else {
-            try {
-                const processedFiles = await processFileList(files);
-                const tar = await createTarGzip(
-                    processedFiles.map((f) => ({
-                        name: f.path,
-                        data: f.buffer
-                    }))
-                );
-                const blob = new Blob([tar], { type: 'application/gzip' });
-                const file = new File([blob], 'deployment.tar.gz', { type: 'application/gzip' });
-                uploadFile = file;
-            } catch (e) {
-                error = e;
-            }
-        }
-        console.log(uploadFile);
-        const tock = performance.now();
-        console.log('Time taken to process files:', tock - tick);
+        uploadFile = await gzipUpload(files);
     }
-
     async function createDeployment() {
         try {
             uploader.uploadSiteDeployment(site.$id, uploadFile);

@@ -14,8 +14,7 @@
     import Aside from './aside.svelte';
     import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
-    import { processFileList } from '$lib/helpers/files';
-    import { createTarGzip } from 'nanotar';
+    import { gzipUpload } from '$lib/helpers/files';
     import Configuration from '../configuration.svelte';
     import Domain from '../domain.svelte';
 
@@ -39,40 +38,7 @@
     let uploadFile: File;
 
     async function handleChange() {
-        const tick = performance.now();
-        if (!files?.length) return;
-
-        // If the file is a tar.gz file, then return it as is
-        if (
-            files?.length === 1 &&
-            files.item(0).type === 'application/gzip' &&
-            files.item(0).name.split('.').pop() === 'tar'
-        ) {
-            uploadFile = files.item(0);
-        }
-        // Else process the file to mantain the folder structure and create a .tar.gz file
-        else {
-            try {
-                const processedFiles = await processFileList(files);
-                const tar = await createTarGzip(
-                    processedFiles.map((f) => ({
-                        name: f.path,
-                        data: f.buffer
-                    }))
-                );
-                const blob = new Blob([tar], { type: 'application/gzip' });
-                const file = new File([blob], 'deployment.tar.gz', { type: 'application/gzip' });
-                uploadFile = file;
-            } catch (e) {
-                addNotification({
-                    type: 'error',
-                    message: e
-                });
-            }
-        }
-        console.log(uploadFile);
-        const tock = performance.now();
-        console.log('Time taken to process files:', tock - tick);
+        uploadFile = await gzipUpload(files);
     }
 
     async function create() {
