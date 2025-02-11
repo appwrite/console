@@ -12,11 +12,12 @@
     import { writable } from 'svelte/store';
     import Details from '../details.svelte';
     import Aside from './aside.svelte';
-    import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { processFileList } from '$lib/helpers/files';
     import { createTarGzip } from 'nanotar';
     import Configuration from '../configuration.svelte';
+    import Domain from '../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -25,7 +26,9 @@
     let isSubmitting = writable(false);
 
     let name = '';
-    let id = '';
+    let id = ID.unique();
+    let domain = id;
+    let domainIsValid = true;
     let framework: Models.Framework = data.frameworks.frameworks[0];
     let adapter = framework?.adapters[0];
     let installCommand = adapter?.installCommand;
@@ -85,9 +88,9 @@
                 buildRuntime,
                 undefined,
                 undefined,
-                installCommand,
-                buildCommand,
-                outputDirectory,
+                installCommand || undefined,
+                buildCommand || undefined,
+                outputDirectory || undefined,
                 undefined,
                 framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
                 undefined,
@@ -97,11 +100,6 @@
                 undefined,
                 undefined
             );
-
-            trackEvent(Submit.SiteCreate, {
-                source: 'manual',
-                framework: framework.key
-            });
 
             //Add variables
             const promises = variables.map((variable) =>
@@ -114,11 +112,20 @@
             );
             await Promise.all(promises);
 
-            const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                Query.limit(1)
-            ]);
-            console.log(deployments);
-            const deployment = deployments[0];
+            const deployment = await sdk.forProject.sites.createDeployment(
+                site.$id,
+                uploadFile,
+                true,
+                installCommand || undefined,
+                buildCommand || undefined,
+                outputDirectory || undefined
+            );
+
+            trackEvent(Submit.SiteCreate, {
+                source: 'manual',
+                framework: framework.key
+            });
+
             await goto(
                 `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
             );
@@ -145,7 +152,10 @@
         <Layout.Stack gap="xl">
             <Layout.Stack gap="xxs">
                 <Label>Files or folder</Label>
-                <Upload.Dropzone folder bind:files on:change={handleChange}>
+                <Upload.Dropzone
+                    bind:files
+                    extensions={['.tar', '.zip', '.tar.gzip', '.tar.gz']}
+                    on:change={handleChange}>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack
                             alignItems="center"
@@ -176,7 +186,7 @@
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
 
-            <!-- <Domain /> -->
+            <Domain bind:domain bind:domainIsValid />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
