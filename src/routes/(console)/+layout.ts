@@ -10,6 +10,7 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
     await parent();
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
+    depends(Dependencies.ORGANIZATION);
 
     const prefs = await sdk.forConsole.account.getPrefs();
 
