@@ -55,8 +55,6 @@
             });
         }
     }
-
-    $: console.log(buildLogs);
 </script>
 
 <Layout.Stack>

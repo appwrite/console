@@ -20,9 +20,9 @@
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
             case 'dark':
-                return isCloud ? ThemeDarkCloud : ThemeDark;
+                return true ? ThemeDarkCloud : ThemeDark; //TODO: remove after cloud instance is live
             case 'light':
-                return isCloud ? ThemeLightCloud : ThemeLight;
+                return true ? ThemeLightCloud : ThemeLight;
         }
     }
 
