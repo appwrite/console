@@ -19,6 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
+    import Domain from '../../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -27,7 +28,7 @@
     let isSubmitting = writable(false);
 
     let name = '';
-    let id = '';
+    let id = ID.unique();
     let framework: Models.Framework = data.frameworks.frameworks[0];
     let adapter = framework?.adapters[0];
     let branch: string;
@@ -37,6 +38,8 @@
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
+    let domain = id;
+    let domainIsValid = true;
 
     onMount(() => {
         installation.set(data.installation);
@@ -60,59 +63,67 @@
     }
 
     async function create() {
-        try {
-            const fr = Object.values(Framework).find((f) => f === framework.key);
-            const buildRuntime = Object.values(BuildRuntime).find(
-                (f) => f === framework.buildRuntime
-            );
-            let site = await sdk.forProject.sites.create(
-                id || ID.unique(),
-                name,
-                fr,
-                buildRuntime,
-                undefined,
-                undefined,
-                installCommand,
-                buildCommand,
-                outputDirectory,
-                undefined,
-                framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
-                data.installation.$id,
-                null,
-                data.repository.id,
-                branch,
-                silentMode,
-                rootDir
-            );
-            trackEvent(Submit.SiteCreate, {
-                source: 'repository',
-                framework: framework.key
-            });
-
-            //Add variables
-            const promises = variables.map((variable) =>
-                sdk.forProject.sites.createVariable(
-                    site.$id,
-                    variable.key,
-                    variable.value,
-                    variable?.secret ?? false
-                )
-            );
-            await Promise.all(promises);
-
-            const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                Query.limit(1)
-            ]);
-            const deployment = deployments[0];
-            await goto(
-                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
-            );
-        } catch (e) {
+        if (!domainIsValid) {
             addNotification({
                 type: 'error',
-                message: e.message
+                message: 'Please enter a valid domain'
             });
-            trackError(e, Submit.SiteCreate);
+            return;
+        } else {
+            try {
+                const fr = Object.values(Framework).find((f) => f === framework.key);
+                const buildRuntime = Object.values(BuildRuntime).find(
+                    (f) => f === framework.buildRuntime
+                );
+                let site = await sdk.forProject.sites.create(
+                    id || ID.unique(),
+                    name,
+                    fr,
+                    buildRuntime,
+                    undefined,
+                    undefined,
+                    installCommand,
+                    buildCommand,
+                    outputDirectory,
+                    domain || undefined,
+                    framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
+                    data.installation.$id,
+                    null,
+                    data.repository.id,
+                    branch,
+                    silentMode,
+                    rootDir
+                );
+                trackEvent(Submit.SiteCreate, {
+                    source: 'repository',
+                    framework: framework.key
+                });
+
+                //Add variables
+                const promises = variables.map((variable) =>
+                    sdk.forProject.sites.createVariable(
+                        site.$id,
+                        variable.key,
+                        variable.value,
+                        variable?.secret ?? false
+                    )
+                );
+                await Promise.all(promises);
+
+                const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
+                    Query.limit(1)
+                ]);
+                const deployment = deployments[0];
+                await goto(
+                    `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                );
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+                trackError(e, Submit.SiteCreate);
+            }
         }
     }
 </script>
@@ -176,7 +187,7 @@
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
 
-            <!-- <Domain /> -->
+            <Domain bind:domain bind:domainIsValid />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
