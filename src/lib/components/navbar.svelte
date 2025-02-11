@@ -31,6 +31,7 @@
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { isCloud } from '$lib/system.js';
 
     let showSupport = false;
 
@@ -40,6 +41,7 @@
             name: string;
             $id: string;
             isSelected: boolean;
+            showUpgrade: boolean;
             tierName: string;
             projects: Array<{ name: string; $id: string; isSelected: boolean }>;
         }>;
@@ -73,6 +75,8 @@
     export let avatar: $$Props['avatar'];
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
+
+    $: currentOrg = organizations.find((org) => org.isSelected);
 </script>
 
 <Navbar.Base {...$$props}>
@@ -93,7 +97,15 @@
     </div>
     <div slot="right" class="only-desktop">
         <div class="right">
-            <Layout.Stack gap="l" direction="row">
+            <Layout.Stack gap="l" direction="row" alignItems="center">
+                {#if isCloud && currentOrg?.showUpgrade}
+                    <Button.Anchor
+                        size="s"
+                        variant="primary"
+                        href={`${base}/organization-${currentOrg.$id}/change-plan`}
+                        >Upgrade</Button.Anchor>
+                {/if}
+
                 <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
                     <Button.Button type="button" variant="compact" on:click={toggleFeedback}
                         >Feedback
@@ -135,7 +147,9 @@
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
                 }}>
-                <Avatar size="s" src={avatar} />
+                <div style:user-select="none">
+                    <Avatar size="s" src={avatar} />
+                </div>
             </Link.Button>
             {#if showAccountMenu}
                 <div class="account-container">

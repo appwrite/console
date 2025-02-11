@@ -15,9 +15,9 @@
     import { type Models } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import SideNavigation from '$lib/layout/navigation.svelte';
-    import { isTabletViewport } from '$lib/stores/viewport';
     import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { isSidebarOpen } from '$lib/stores/sidebar';
+    import { BillingPlan } from '$lib/constants';
 
     export let showSideNavigation = false;
     export let showHeader = true;
@@ -27,13 +27,20 @@
 
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
     let y: number;
-    let showContentTransition = true;
+    let showContentTransition = false;
+    let timeoutId: NodeJS.Timeout;
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
-        setTimeout(() => {
-            showContentTransition = !url.pathname.includes('organization');
-        }, 1000);
+        clearTimeout(timeoutId);
+
+        if (url.pathname.includes('project-')) {
+            timeoutId = setTimeout(() => {
+                showContentTransition = true;
+            }, 1000);
+        } else {
+            showContentTransition = false;
+        }
     });
 
     /**
@@ -66,6 +73,7 @@
             return {
                 name: org.name,
                 $id: org.$id,
+                showUpgrade: org.billingPlan === BillingPlan.FREE,
                 tierName: isCloud ? tierToPlan(org.billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id,
                 projects: loadedProjects
@@ -77,7 +85,6 @@
     let subNavigation: undefined | ComponentType = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
-    $: state = !$isTabletViewport ? 'icons' : $isSidebarOpen ? 'open' : 'closed';
 
     function handleResize() {
         $isSidebarOpen = false;
