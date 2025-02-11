@@ -117,4 +117,8 @@
         max-height: 100dvh;
         overflow-y: auto;
     }
+
+    :globla(html) {
+        overflow-y: hidden;
+    }
 </style>

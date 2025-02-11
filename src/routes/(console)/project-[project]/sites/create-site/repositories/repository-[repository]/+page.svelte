@@ -184,11 +184,8 @@
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
-        <Button size="s" fullWidthMobile secondary on:click={() => (showExitModal = true)}>
-            Cancel
-        </Button>
+        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
-            size="s"
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
