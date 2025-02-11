@@ -190,7 +190,6 @@
                                     direction="row"
                                     alignItems="center">
                                     <Typography.Text>Theme</Typography.Text>
-
                                     <ToggleButton
                                         bind:active={activeTheme}
                                         buttons={[
@@ -200,18 +199,6 @@
                                         ]}></ToggleButton>
                                 </Layout.Stack>
                             </div>
-                            <!--                            <Input.Select-->
-                            <!--                                value={$app.theme === 'auto' ? 'system' : $app.theme}-->
-                            <!--                                name="mode"-->
-                            <!--                                on:change={(event) => {-->
-                            <!--                                    updateTheme(event.detail);-->
-                            <!--                                }}-->
-                            <!--                                bind:group={$app.theme}-->
-                            <!--                                options={[-->
-                            <!--                                    { label: 'Light', value: 'light', leadingIcon: IconSun },-->
-                            <!--                                    { label: 'Dark', value: 'dark', leadingIcon: IconMoon },-->
-                            <!--                                    { label: 'System', value: 'system', leadingIcon: IconMode }-->
-                            <!--                                ]} />-->
                         </Layout.Stack>
                     </Card.Base>
                 </div>
