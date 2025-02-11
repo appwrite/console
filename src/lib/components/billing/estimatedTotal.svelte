@@ -33,9 +33,9 @@
         } catch (e) {
             if (e instanceof AppwriteException) {
                 if (
-                    e.type === 'coupon_not_found' ||
-                    e.type === 'coupon_already_used' ||
-                    e.type === 'billing_credits_unsupported'
+                    e.type === 'billing_coupon_not_found' ||
+                    e.type === 'billing_coupon_already_used' ||
+                    e.type === 'billing_credit_unsupported'
                 ) {
                     couponData = {
                         code: null,
@@ -68,9 +68,9 @@
         } catch (e) {
             if (e instanceof AppwriteException) {
                 if (
-                    e.type === 'coupon_not_found' ||
-                    e.type === 'coupon_already_used' ||
-                    e.type === 'billing_credits_unsupported'
+                    e.type === 'billing_coupon_not_found' ||
+                    e.type === 'billing_coupon_already_used' ||
+                    e.type === 'billing_credit_unsupported'
                 ) {
                     couponData = {
                         code: null,
