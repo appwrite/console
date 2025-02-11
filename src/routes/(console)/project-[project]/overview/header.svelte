@@ -4,11 +4,12 @@
     import { Cover } from '$lib/layout';
     import { project } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { Dependencies } from '$lib/constants';
 </script>
 
 {#if !$page.url.pathname.includes('get-started')}
@@ -41,11 +42,10 @@
                             size="s"
                             on:click={async () => {
                                 await setHasOnboardingDismissed($project.$id);
-                                if (location.href.endsWith('get-started')) {
-                                    goto(`${base}/project-${$project.$id}`);
-                                } else {
-                                    location.reload();
-                                }
+                                goto(`${base}/project-${$project.$id}/overview`);
+                                requestAnimationFrame(() => {
+                                    invalidate(Dependencies.ORGANIZATION);
+                                });
                             }}>Dismiss this page</Button.Button>
                     {/if}
                 </div>
