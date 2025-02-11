@@ -134,7 +134,7 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.$id}`}
+                            href={`/console/project-${project.$id}/overview`}
                             class="link"
                             class:active={pathname.includes('platforms')}
                             on:click={() => {
