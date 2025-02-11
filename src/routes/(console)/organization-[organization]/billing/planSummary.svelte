@@ -124,8 +124,7 @@
                                                         ) + 'bytes'}>
                                                         {excessValue.value ?? 0}{excessValue.unit}
                                                     </h5>
-                                                {/if}
-                                                {#if ['users', 'executions'].includes(excess.name)}
+                                                {:else if excess.name !== 'member'}
                                                     <div class="u-flex u-main-space-between">
                                                         <h5
                                                             class="body-text-2 u-stretch u-capitalize">
