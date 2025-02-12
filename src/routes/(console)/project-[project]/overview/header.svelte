@@ -31,7 +31,11 @@
                 gap="xl">
                 <Layout.Stack direction="column" gap={$isSmallViewport ? 's' : 'xs'}>
                     <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
-                        >Welcome, {$user.name}</Typography.Title>
+                        >{#if $user.name === $user.email}
+                            Welcome to Appwrite
+                        {:else}
+                            Welcome, {$user.name}
+                        {/if}</Typography.Title>
                     <Typography.Text size="m" color="--color-fgcolor-neutral-secondary"
                         >Follow a few quick steps to get started with Appwrite</Typography.Text>
                 </Layout.Stack>
