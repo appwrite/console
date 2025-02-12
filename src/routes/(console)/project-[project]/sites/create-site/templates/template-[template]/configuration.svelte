@@ -48,7 +48,7 @@
     }
 </script>
 
-<Fieldset legend="Configuration">
+<Fieldset legend="Settings">
     <Layout.Stack gap="l">
         <Layout.Stack>
             {#if requiredVariables?.length}

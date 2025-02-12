@@ -55,7 +55,7 @@
     $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework.key);
 </script>
 
-<Fieldset legend="Configuration">
+<Fieldset legend="Settings">
     <Layout.Stack gap="l">
         <InputSelect
             id="framework"
@@ -73,37 +73,51 @@
 
         <Layout.Stack>
             <Accordion title="Build settings" badge="Optional">
-                <Layout.Stack>
+                <Layout.Stack gap="xl">
                     Set up how your project is built and where the output files are stored.
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputText
-                            id="installCommand"
-                            label="Install command"
-                            bind:value={installCommand}
-                            placeholder={frameworkData?.defaultInstallCommand} />
-                        <Button secondary size="s" on:click={() => (installCommand = '')}>
-                            Reset
-                        </Button>
-                    </Layout.Stack>
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputText
-                            id="buildCommand"
-                            label="Build command"
-                            bind:value={buildCommand}
-                            placeholder={frameworkData?.defaultBuildCommand} />
-                        <Button secondary size="s" on:click={() => (buildCommand = '')}>
-                            Reset
-                        </Button>
-                    </Layout.Stack>
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputText
-                            id="outputDirectory"
-                            label="Output directory"
-                            bind:value={outputDirectory}
-                            placeholder={frameworkData?.defaultOutputDirectory} />
-                        <Button secondary size="s" on:click={() => (outputDirectory = '')}>
-                            Reset
-                        </Button>
+                    <Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="installCommand"
+                                label="Install command"
+                                bind:value={installCommand}
+                                placeholder={frameworkData?.defaultInstallCommand} />
+                            <Button
+                                secondary
+                                size="s"
+                                disabled={frameworkData?.defaultInstallCommand === installCommand}
+                                on:click={() => (installCommand = '')}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="buildCommand"
+                                label="Build command"
+                                bind:value={buildCommand}
+                                placeholder={frameworkData?.defaultBuildCommand} />
+                            <Button
+                                secondary
+                                size="s"
+                                disabled={frameworkData?.defaultBuildCommand === buildCommand}
+                                on:click={() => (buildCommand = '')}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="outputDirectory"
+                                label="Output directory"
+                                bind:value={outputDirectory}
+                                placeholder={frameworkData?.defaultOutputDirectory} />
+                            <Button
+                                secondary
+                                size="s"
+                                disabled={frameworkData?.defaultOutputDirectory === outputDirectory}
+                                on:click={() => (outputDirectory = '')}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
             </Accordion>
@@ -112,10 +126,31 @@
                 <svelte:fragment slot="title">
                     Environment variables <Badge content="Optional" variant="secondary" />
                 </svelte:fragment>
-                <Layout.Stack gap="l">
-                    <Layout.Stack gap="xl">
-                        Set up environment variables to securely manage keys and settings for your
-                        project.
+                <Layout.Stack gap="xl">
+                    Set up environment variables to securely manage keys and settings for your
+                    project.
+                    <Layout.Stack gap="l">
+                        <Layout.Stack direction="row">
+                            <Layout.Stack direction="row" gap="s">
+                                <Button
+                                    secondary
+                                    size="s"
+                                    on:mousedown={() => (showEditorModal = true)}>
+                                    <Icon slot="start" icon={IconCode} /> Editor
+                                </Button>
+                                <Button
+                                    secondary
+                                    size="s"
+                                    on:mousedown={() => (showImportModal = true)}>
+                                    <Icon slot="start" icon={IconUpload} /> Import .env
+                                </Button>
+                            </Layout.Stack>
+                            {#if variables?.length}
+                                <Button secondary size="s" on:mousedown={() => (showCreate = true)}>
+                                    <Icon slot="start" icon={IconPlus} /> Create variable
+                                </Button>
+                            {/if}
+                        </Layout.Stack>
 
                         {#if variables?.length}
                             <Table.Root>
@@ -189,25 +224,6 @@
                             <Empty on:click={() => (showCreate = true)}
                                 >Create variables to get started</Empty>
                         {/if}
-                    </Layout.Stack>
-                    <Layout.Stack direction="row">
-                        <Layout.Stack direction="row">
-                            <Button
-                                secondary
-                                size="s"
-                                on:mousedown={() => (showEditorModal = true)}>
-                                <Icon icon={IconCode} /> Editor
-                            </Button>
-                            <Button
-                                secondary
-                                size="s"
-                                on:mousedown={() => (showImportModal = true)}>
-                                <Icon icon={IconUpload} /> Import .env
-                            </Button>
-                        </Layout.Stack>
-                        <Button secondary size="s" on:mousedown={() => (showCreate = true)}>
-                            <Icon icon={IconPlus} /> Create variable
-                        </Button>
                     </Layout.Stack>
                 </Layout.Stack>
             </Accordion>
