@@ -5,7 +5,7 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createProject } from './store';
-    import { regions } from '$routes/(console)/organization-[organization]/store';
+    import { regionFlagUrls, regions } from '$routes/(console)/organization-[organization]/store';
 
     let showCustomId = false;
 
@@ -13,6 +13,12 @@
         sdk.forConsole.billing.listRegions().then(regions.set);
     }
 </script>
+
+<svelte:head>
+    {#each $regionFlagUrls as image}
+        <link rel="preload" as="image" href={image} />
+    {/each}
+</svelte:head>
 
 <WizardStep>
     <svelte:fragment slot="title">Details</svelte:fragment>

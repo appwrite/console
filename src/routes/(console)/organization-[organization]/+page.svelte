@@ -36,7 +36,6 @@
 
     export let data;
 
-    $: regionFlagUrls = [];
     let showCreate = false;
     let addOrganization = false;
 
@@ -81,17 +80,7 @@
         );
     }
 
-    function preloadFlagUrls() {
-        // url is same as in Flag#getFlag component.
-        // make sure to use the same for correct preloading!
-        regionFlagUrls = $regionsStore.regions.map((region) => {
-            return `${sdk.forConsole.client.config.endpoint}/avatars/flags/${region.flag}?width=80&height=60&quality=100&mode=admin`;
-        });
-    }
-
     function handleCreateProject() {
-        preloadFlagUrls();
-
         if (!$canWriteProjects) return;
         if (isCloud) wizard.start(Create);
         else showCreate = true;
@@ -144,12 +133,6 @@
         return $regionsStore?.regions?.find((region) => region.$id === project.region);
     }
 </script>
-
-<svelte:head>
-    {#each regionFlagUrls as image}
-        <link rel="preload" as="image" href={image} />
-    {/each}
-</svelte:head>
 
 {#if $organization?.$id}
     <Container>
