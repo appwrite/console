@@ -7,9 +7,10 @@
         Tooltip,
         Card,
         ActionMenu,
-        Input,
+        ToggleButton,
         Button,
-        Avatar
+        Avatar,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
@@ -32,6 +33,7 @@
     import { app } from '$lib/stores/app';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system.js';
+    import { user } from '$lib/stores/user';
 
     let showSupport = false;
 
@@ -76,6 +78,11 @@
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
 
+    let activeTheme = 'dark';
+
+    $: {
+        updateTheme(activeTheme);
+    }
     $: currentOrg = organizations.find((org) => org.isSelected);
 </script>
 
@@ -157,30 +164,41 @@
                         <Layout.Stack gap="xxs">
                             <ActionMenu.Root>
                                 <Layout.Stack gap="xxs">
+                                    <div
+                                        style:padding-inline-start="10px"
+                                        style:padding-inline-end="8px"
+                                        style:padding-block="4px">
+                                        <Typography.Text variant="m-500">
+                                            {$user.email}
+                                        </Typography.Text>
+                                    </div>
                                     <ActionMenu.Item.Anchor
-                                        leadingIcon={IconUser}
+                                        trailingIcon={IconUser}
                                         size="l"
                                         href={`${base}/account`}>
                                         Account</ActionMenu.Item.Anchor>
 
                                     <ActionMenu.Item.Button
-                                        leadingIcon={IconLogoutRight}
+                                        trailingIcon={IconLogoutRight}
                                         size="l"
                                         on:click={logout}>Sign out</ActionMenu.Item.Button>
                                 </Layout.Stack>
                             </ActionMenu.Root>
-                            <Input.Select
-                                value={$app.theme === 'auto' ? 'system' : $app.theme}
-                                name="mode"
-                                on:change={(event) => {
-                                    updateTheme(event.detail);
-                                }}
-                                bind:group={$app.theme}
-                                options={[
-                                    { label: 'Light', value: 'light', leadingIcon: IconSun },
-                                    { label: 'Dark', value: 'dark', leadingIcon: IconMoon },
-                                    { label: 'System', value: 'system', leadingIcon: IconMode }
-                                ]} />
+                            <div style:padding-inline-start="13px" style:padding-inline-end="8px">
+                                <Layout.Stack
+                                    justifyContent="space-between"
+                                    direction="row"
+                                    alignItems="center">
+                                    <Typography.Text>Theme</Typography.Text>
+                                    <ToggleButton
+                                        bind:active={activeTheme}
+                                        buttons={[
+                                            { id: 'light', label: 'Light', icon: IconSun },
+                                            { id: 'dark', label: 'Dark', icon: IconMoon },
+                                            { id: 'system', label: 'System', icon: IconMode }
+                                        ]}></ToggleButton>
+                                </Layout.Stack>
+                            </div>
                         </Layout.Stack>
                     </Card.Base>
                 </div>

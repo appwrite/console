@@ -90,19 +90,29 @@
     $: {
         if (browser) {
             const isCloudClass = isCloud ? 'is-cloud' : '';
+
             if ($app.theme === 'auto') {
                 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (darkThemeMq.matches) {
-                    document.body.setAttribute('class', `theme-dark ${isCloudClass}`);
+                    document.body.setAttribute('class', `theme-dark ${isCloudClass} no-transition`);
                     $app.themeInUse = 'dark';
                 } else {
-                    document.body.setAttribute('class', `theme-light ${isCloudClass}`);
+                    document.body.setAttribute(
+                        'class',
+                        `theme-light ${isCloudClass} no-transition`
+                    );
                     $app.themeInUse = 'light';
                 }
             } else {
-                document.body.setAttribute('class', `theme-${$app.theme} ${isCloudClass}`);
+                document.body.setAttribute(
+                    'class',
+                    `theme-${$app.theme} ${isCloudClass} no-transition`
+                );
                 $app.themeInUse = $app.theme;
             }
+            requestAnimationFrame(() => {
+                document.body.classList.remove('no-transition');
+            });
         }
     }
 </script>
@@ -122,6 +132,12 @@
 
 <style lang="scss" global>
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+
+    .no-transition {
+        * {
+            transition: none !important;
+        }
+    }
 
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);
