@@ -6,7 +6,7 @@
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateReactNative from './createReactNative.svelte';
-    import { versions } from './wizard/store';
+    import { createPlatform, versions } from './wizard/store';
 
     export enum Platform {
         Web,
@@ -18,7 +18,23 @@
 
     export async function addPlatform(type: Platform) {
         await versions.load();
+        createPlatform.reset();
         wizard.start(platforms[type]);
+    }
+
+    export async function continuePlatform(
+        platform: Platform,
+        name: string,
+        key: string,
+        type: string
+    ) {
+        await versions.load();
+        createPlatform.set({
+            name: name,
+            key: key,
+            type: type
+        });
+        wizard.start(platforms[platform], null, 1, { isPlatformCreated: true });
     }
 
     const platforms = {

@@ -1,10 +1,9 @@
 <script lang="ts">
     import { Step, Link, Icon, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
-    import { addPlatform } from './platforms/+page.svelte';
+    import { addPlatform, continuePlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
     import {
         IconArrowRight,
-        IconDeno,
         IconNodeJs,
         IconPhp,
         IconPython
@@ -26,19 +25,39 @@
     import { wizard } from '$lib/stores/wizard';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { AvatarGroup } from '$lib/components';
+    import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
+    import { getPlatformInfo } from '$lib/helpers/platform';
 
     function createKey() {
         wizard.start(Wizard);
     }
 
     export let projectId: string;
-    export let hasPlatforms: boolean;
+    export let platforms: Models.Platform[] = [];
+    export let pingCount = 0;
+
+    function openPlatformWizard(type: number, platform?: Models.Platform) {
+        console.log('type', type);
+        console.log('platform', platform);
+        if (platform) {
+            continuePlatform(type, platform.name, platform.key, platform.type);
+        } else {
+            addPlatform(type);
+        }
+    }
+
+    let platformMap = new Map();
+    platforms.forEach((platform) => {
+        const platformInfo = getPlatformInfo(platform.type);
+        platformMap.set(platformInfo.name, platform);
+    });
 </script>
 
 <div style:container-type="inline-size">
     <div class="console-container">
         <div class="dashboard-content">
-            {#if !hasPlatforms}
+            {#if platforms.length === 0 || pingCount === 0}
                 <Step.List>
                     <Step.Item state="previous"
                         ><div>
@@ -66,7 +85,11 @@
                                 <Layout.Stack
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
-                                    <Card.Button on:click={() => addPlatform(0)} padding="s"
+                                    <Card.Button
+                                        on:click={() => {
+                                            openPlatformWizard(0, platformMap.get('Web'));
+                                        }}
+                                        padding="s"
                                         ><Layout.Stack gap="xl"
                                             ><div class="card-top-image web-image-light"></div>
                                             <div class="card-top-image web-image-dark"></div>
@@ -82,7 +105,7 @@
                                         </Layout.Stack></Card.Button>
                                     <Card.Button
                                         on:click={() => {
-                                            addPlatform(1);
+                                            openPlatformWizard(4, platformMap.get('React Native'));
                                         }}
                                         padding="s"
                                         ><Layout.Stack gap="xl"
@@ -105,7 +128,11 @@
                                 <Layout.Stack
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
-                                    <Card.Button on:click={() => addPlatform(3)} padding="s">
+                                    <Card.Button
+                                        on:click={() => {
+                                            openPlatformWizard(3, platformMap.get('Apple'));
+                                        }}
+                                        padding="s">
                                         <Layout.Stack gap="xxl">
                                             <img
                                                 class="platform-image"
@@ -123,7 +150,11 @@
                                                 </div></Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
-                                    <Card.Button on:click={() => addPlatform(2)} padding="s">
+                                    <Card.Button
+                                        on:click={() => {
+                                            openPlatformWizard(2, platformMap.get('Android'));
+                                        }}
+                                        padding="s">
                                         <Layout.Stack gap="xxl">
                                             <img
                                                 class="platform-image"
@@ -142,7 +173,11 @@
                                                 </div></Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
-                                    <Card.Button on:click={() => addPlatform(1)} padding="s">
+                                    <Card.Button
+                                        on:click={() => {
+                                            openPlatformWizard(1, platformMap.get('Flutter'));
+                                        }}
+                                        padding="s">
                                         <Layout.Stack gap="xxl">
                                             <img
                                                 class="platform-image"

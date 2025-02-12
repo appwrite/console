@@ -108,7 +108,7 @@
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
-        {#if selectedProject.pingCount === 0}
+        {#if selectedProject && selectedProject.pingCount === 0}
             <div class="only-desktop">
                 <Button.Anchor
                     href={`${base}/project-${selectedProject.$id}/get-started`}

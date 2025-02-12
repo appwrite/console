@@ -29,7 +29,7 @@
     import { LabelCard } from '$lib/components';
 
     let showExitModal = false;
-    let isPlatformCreated = false;
+    export let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = $page.params.project;
