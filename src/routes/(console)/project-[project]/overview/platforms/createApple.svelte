@@ -10,7 +10,6 @@
         Typography,
         Fieldset,
         InlineCode,
-        Spinner
     } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconApple, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
@@ -117,8 +116,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                             variant="primary"
                             {value}
                             title={key}
-                            disabled={isPlatformCreated}
-                        />
+                            disabled={isPlatformCreated} />
                     </div>
                 {/each}
             </Layout.Stack>
@@ -228,35 +226,43 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                         icon={IconAppwrite} />
                 </Layout.Stack>
 
-                <Layout.Stack direction="row" justifyContent="center" alignItems="center" gap="l">
-                    {#if !connectionSuccessful}
-                        <Spinner />
-                        <Typography.Text variant="m-400">Waiting for connection...</Typography.Text>
-                    {:else}
-                        <!-- cannot apply fade on components -->
-                        <div
-                            in:fade={{ duration: 2500 }}
-                            class="u-flex u-flex-vertical u-cross-center u-gap-8">
-                            <Typography.Title size="m">Congratulations!</Typography.Title>
-
+                {#if isPlatformCreated}
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                        gap="l">
+                        {#if !connectionSuccessful}
                             <Typography.Text variant="m-400"
-                                >You connected your app successfully.</Typography.Text>
-                        </div>
-                    {/if}
-                </Layout.Stack>
+                                >Waiting for connection...</Typography.Text>
+                        {:else}
+                            <!-- cannot apply fade on components -->
+                            <div
+                                in:fade={{ duration: 2500 }}
+                                class="u-flex u-flex-vertical u-cross-center u-gap-8">
+                                <Typography.Title size="m">Congratulations!</Typography.Title>
+
+                                <Typography.Text variant="m-400"
+                                    >You connected your app successfully.</Typography.Text>
+                            </div>
+                        {/if}
+                    </Layout.Stack>
+                {/if}
             </Layout.Stack>
         </Card>
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
-        <Button
-            size="s"
-            fullWidthMobile
-            secondary
-            disabled={isCreatingPlatform}
-            href={`${base}/project-${projectId}/overview`}>
-            Go to dashboard
-        </Button>
+        {#if isPlatformCreated}
+            <Button
+                size="s"
+                fullWidthMobile
+                secondary
+                disabled={isCreatingPlatform}
+                href={`${base}/project-${projectId}/overview`}>
+                Go to dashboard
+            </Button>
+        {/if}
     </svelte:fragment>
 </Wizard>
 
