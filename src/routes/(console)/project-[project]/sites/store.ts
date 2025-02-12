@@ -34,8 +34,12 @@ export function getFrameworkIcon(framework: string) {
             return 'astro';
         case framework.toLocaleLowerCase().includes('remix'):
             return 'remix';
+        case framework.toLocaleLowerCase().includes('flutter'):
+            return 'flutter';
+        case framework.toLocaleLowerCase().includes('other'):
+            return 'empty';
 
         default:
-            return framework.toLocaleLowerCase();
+            return 'empty';
     }
 }

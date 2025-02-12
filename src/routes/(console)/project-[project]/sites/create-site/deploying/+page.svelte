@@ -6,19 +6,29 @@
     import Button from '$lib/elements/forms/button.svelte';
     import Aside from '../aside.svelte';
     import Logs from '../../(components)/logs.svelte';
+    import { getFrameworkIcon } from '../../store';
+    import { SvgIcon } from '$lib/components';
 
     export let data;
+
+    $: console.log(data.site);
 </script>
 
 <Wizard
     title="Create site"
     href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
     <Layout.Stack gap="xl">
-        <Card.Base padding="s">
+        <Card.Base padding="s" radius="s">
             <Layout.Stack direction="row">
-                <Layout.Stack direction="row" alignItems="center">
-                    <Typography.Text variant="m-500">{data.site.name}</Typography.Text>
-                    <Tag size="s">{data.site.$id}</Tag>
+                <Layout.Stack direction="row" alignItems="center" gap="s">
+                    <SvgIcon
+                        iconSize="small"
+                        size={16}
+                        name={getFrameworkIcon(data.site.framework)} />
+                    <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                        {data.site.name}
+                    </Typography.Text>
+                    <Tag variant="code" size="xs">{data.site.$id}</Tag>
                 </Layout.Stack>
             </Layout.Stack>
         </Card.Base>
