@@ -30,6 +30,7 @@
     import SecretVariableModal from './secretVariableModal.svelte';
     import ImportSiteVariablesModal from './importSiteVariablesModal.svelte';
     import CreateVariable from './createVariable.svelte';
+    import DeleteVariableModal from './deleteVariableModal.svelte';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -42,17 +43,11 @@
     let showEditorModal = false;
     let showImportModal = false;
     let showSecretModal = false;
+    let showDelete = false;
     let showCreate = false;
 
     let currentVariable: Partial<Models.Variable>;
     let frameworkId = selectedFramework.key;
-
-    function markAsSecret() {
-        let variable = variables.find((v) => v.key === currentVariable.key);
-        if (variable) {
-            variable.secret = true;
-        }
-    }
 
     $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework.key);
 </script>
@@ -202,13 +197,16 @@
 
                                                     <svelte:fragment slot="tooltip">
                                                         <ActionMenu.Root noPadding>
-                                                            <ActionMenu.Item.Button
-                                                                leadingIcon={IconPencil}
-                                                                on:click={() => {
-                                                                    showEditorModal = true;
-                                                                }}>
-                                                                Edit
-                                                            </ActionMenu.Item.Button>
+                                                            {#if !variable?.secret}
+                                                                <ActionMenu.Item.Button
+                                                                    leadingIcon={IconPencil}
+                                                                    on:click={() => {
+                                                                        currentVariable = variable;
+                                                                        showCreate = true;
+                                                                    }}>
+                                                                    Edit
+                                                                </ActionMenu.Item.Button>
+                                                            {/if}
                                                             {#if !variable?.secret}
                                                                 <ActionMenu.Item.Button
                                                                     leadingIcon={IconEyeOff}
@@ -223,7 +221,8 @@
                                                                 status="danger"
                                                                 leadingIcon={IconTrash}
                                                                 on:click={() => {
-                                                                    showImportModal = true;
+                                                                    currentVariable = variable;
+                                                                    showDelete = true;
                                                                 }}>
                                                                 Delete
                                                             </ActionMenu.Item.Button>
@@ -251,7 +250,7 @@
 {/if}
 
 {#if showSecretModal}
-    <SecretVariableModal bind:show={showSecretModal} on:click={markAsSecret} />
+    <SecretVariableModal bind:show={showSecretModal} bind:currentVariable bind:variables />
 {/if}
 
 {#if showImportModal}
@@ -259,5 +258,9 @@
 {/if}
 
 {#if showCreate}
-    <CreateVariable bind:show={showCreate} bind:variables />
+    <CreateVariable bind:show={showCreate} bind:variables bind:selectedVar={currentVariable} />
+{/if}
+
+{#if showDelete}
+    <DeleteVariableModal bind:show={showDelete} bind:variables bind:currentVariable />
 {/if}

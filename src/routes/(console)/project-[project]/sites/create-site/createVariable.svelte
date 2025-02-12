@@ -64,6 +64,7 @@
                 minlength={0} />
         </Layout.Stack>
         <Selector.Checkbox
+            size="s"
             id="secret"
             label="Secret"
             bind:checked={pair.secret}

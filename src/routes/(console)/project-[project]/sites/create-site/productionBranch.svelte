@@ -34,6 +34,7 @@
         </Layout.Stack>
 
         <Selector.Checkbox
+            size="s"
             id="silentMode"
             label="Silent mode"
             description="If selected, comments will not be created when pushing changes to this repository."
