@@ -12,32 +12,32 @@
     export let siteId: string;
     let error: string;
 
-    async function promote() {
+    async function activate() {
         try {
-            await sdk.forProject.sites.updateDeploymentBuild(siteId, selectedDeploymentId);
+            await sdk.forProject.sites.updateDeployment(siteId, selectedDeploymentId);
             addNotification({
                 type: 'success',
-                message: `Deployment has been promoted`
+                message: `Deployment has been activated`
             });
-            trackEvent(Submit.SitePromoteDeployment);
+            trackEvent(Submit.SiteActivateDeployment);
 
             invalidate(Dependencies.SITE);
             invalidate(Dependencies.DEPLOYMENTS);
             show = false;
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.SitePromoteDeployment);
+            trackError(e, Submit.SiteActivateDeployment);
         }
     }
 </script>
 
-<Modal title="Promote deployment" bind:show bind:error onSubmit={promote}>
+<Modal title="Activate deployment" bind:show bind:error onSubmit={activate}>
     <p class="text">
-        Are you sure you want to promote this deployment? This might affect your production code.
+        Are you sure you want to activate this deployment? This might affect your production code.
     </p>
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Promote</Button>
+        <Button submit>Activate</Button>
     </svelte:fragment>
 </Modal>

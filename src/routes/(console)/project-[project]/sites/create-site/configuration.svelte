@@ -10,7 +10,9 @@
         Badge,
         HiddenText,
         ActionMenu,
-        Accordion
+        Accordion,
+        Tooltip,
+        Button as PinkButton
     } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
@@ -166,7 +168,16 @@
                                             <!-- TODO: fix max width -->
                                             <div style="max-width: 20rem">
                                                 {#if variable.secret}
-                                                    <Badge content="Secret" variant="secondary" />
+                                                    <Tooltip maxWidth="26rem">
+                                                        <Badge
+                                                            content="Secret"
+                                                            variant="secondary"
+                                                            size="s" />
+                                                        <svelte:fragment slot="tooltip">
+                                                            This value is secret, you cannot see its
+                                                            value.
+                                                        </svelte:fragment>
+                                                    </Tooltip>
                                                 {:else}
                                                     <HiddenText
                                                         isVisible={false}
@@ -177,19 +188,22 @@
                                         <Table.Cell>
                                             <div style="margin-inline-start: auto">
                                                 <Popover placement="bottom-end" let:toggle>
-                                                    <Button
-                                                        text
+                                                    <PinkButton.Button
                                                         icon
+                                                        variant="text"
+                                                        size="s"
+                                                        aria-label="More options"
                                                         on:click={(e) => {
                                                             e.preventDefault();
                                                             toggle(e);
                                                         }}>
-                                                        <Icon size="s" icon={IconDotsHorizontal} />
-                                                    </Button>
+                                                        <Icon icon={IconDotsHorizontal} size="s" />
+                                                    </PinkButton.Button>
+
                                                     <svelte:fragment slot="tooltip">
-                                                        <ActionMenu.Root>
+                                                        <ActionMenu.Root noPadding>
                                                             <ActionMenu.Item.Button
-                                                                trailingIcon={IconPencil}
+                                                                leadingIcon={IconPencil}
                                                                 on:click={() => {
                                                                     showEditorModal = true;
                                                                 }}>
@@ -197,7 +211,7 @@
                                                             </ActionMenu.Item.Button>
                                                             {#if !variable?.secret}
                                                                 <ActionMenu.Item.Button
-                                                                    trailingIcon={IconEyeOff}
+                                                                    leadingIcon={IconEyeOff}
                                                                     on:click={() => {
                                                                         currentVariable = variable;
                                                                         showSecretModal = true;
@@ -206,7 +220,8 @@
                                                                 </ActionMenu.Item.Button>
                                                             {/if}
                                                             <ActionMenu.Item.Button
-                                                                trailingIcon={IconTrash}
+                                                                status="danger"
+                                                                leadingIcon={IconTrash}
                                                                 on:click={() => {
                                                                     showImportModal = true;
                                                                 }}>
