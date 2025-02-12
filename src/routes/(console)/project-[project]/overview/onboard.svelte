@@ -26,7 +26,6 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { AvatarGroup } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
 
     function createKey() {
@@ -38,8 +37,6 @@
     export let pingCount = 0;
 
     function openPlatformWizard(type: number, platform?: Models.Platform) {
-        console.log('type', type);
-        console.log('platform', platform);
         if (platform) {
             continuePlatform(type, platform.name, platform.key, platform.type);
         } else {
