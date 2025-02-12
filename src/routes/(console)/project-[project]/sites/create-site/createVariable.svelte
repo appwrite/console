@@ -46,21 +46,23 @@
             href={`${base}/project-${$page.params.project}/settings`}>project settings</Link
         >.
     </span>
-    <Layout.Stack>
-        <InputText
-            id="key"
-            label="Key"
-            placeholder="ENTER_KEY"
-            bind:value={pair.key}
-            required
-            autofocus
-            autocomplete={false} />
-        <InputPassword
-            id="value"
-            label="Value"
-            placeholder="Enter value"
-            bind:value={pair.value}
-            minlength={0} />
+    <Layout.Stack gap="xxl">
+        <Layout.Stack>
+            <InputText
+                id="key"
+                label="Key"
+                placeholder="ENTER_KEY"
+                bind:value={pair.key}
+                required
+                autofocus
+                autocomplete={false} />
+            <InputPassword
+                id="value"
+                label="Value"
+                placeholder="Enter value"
+                bind:value={pair.value}
+                minlength={0} />
+        </Layout.Stack>
         <Selector.Checkbox
             id="secret"
             label="Secret"
