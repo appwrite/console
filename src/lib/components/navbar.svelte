@@ -45,7 +45,13 @@
             isSelected: boolean;
             showUpgrade: boolean;
             tierName: string;
-            projects: Array<{ name: string; $id: string; isSelected: boolean }>;
+            projects: Array<{
+                name: string;
+                $id: string;
+                isSelected: boolean;
+                platformCount: number;
+                pingCount: number;
+            }>;
         }>;
         showAccountMenu: boolean;
     };
@@ -84,6 +90,7 @@
         updateTheme(activeTheme);
     }
     $: currentOrg = organizations.find((org) => org.isSelected);
+    $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
 </script>
 
 <Navbar.Base {...$$props}>
@@ -101,6 +108,12 @@
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
+        {#if selectedProject.pingCount === 0}
+            <Button.Anchor
+                href={`${base}/project-${selectedProject.$id}/get-started`}
+                variant="secondary"
+                size="xs">Connect</Button.Anchor>
+        {/if}
     </div>
     <div slot="right" class="only-desktop">
         <div class="right">

@@ -69,7 +69,9 @@
         return {
             name: project?.name,
             $id: project.$id,
-            isSelected: data.currentProjectId === project.$id
+            isSelected: data.currentProjectId === project.$id,
+            platformCount: project.platforms.length,
+            pingCount: project.pingCount
         };
     });
 

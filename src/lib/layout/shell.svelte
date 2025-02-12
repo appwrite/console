@@ -22,7 +22,13 @@
     export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
-    export let loadedProjects: Array<{ name: string; $id: string; isSelected: boolean }> = [];
+    export let loadedProjects: Array<{
+        name: string;
+        $id: string;
+        isSelected: boolean;
+        platformCount: number;
+        pingCount: number;
+    }> = [];
     export let projects: Array<Models.Project> = [];
 
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
