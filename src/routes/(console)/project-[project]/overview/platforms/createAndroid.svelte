@@ -103,7 +103,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             <InputText
                                 id="name"
                                 label="Name"
-                                placeholder="My Android App"
+                                placeholder="My Android app"
                                 required
                                 bind:value={$createPlatform.name} />
 

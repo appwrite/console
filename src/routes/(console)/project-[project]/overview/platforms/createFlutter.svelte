@@ -65,35 +65,35 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
         >
     > = {
         [PlatformType.Flutterandroid]: {
-            name: 'My Android App',
+            name: 'My Android app',
             hostname: 'com.company.appname',
             tooltip:
                 'Your package name is generally the applicationId in your app-level build.gradle file.'
         },
         [PlatformType.Flutterios]: {
-            name: 'My iOS App',
+            name: 'My iOS app',
             hostname: 'com.company.appname',
             tooltip:
                 "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
         [PlatformType.Flutterlinux]: {
-            name: 'My Linux App',
+            name: 'My Linux app',
             hostname: 'appname',
             tooltip: 'Your application name'
         },
         [PlatformType.Fluttermacos]: {
-            name: 'My mac OS App',
+            name: 'My mac OS app',
             hostname: 'com.company.appname',
             tooltip:
                 "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
         [PlatformType.Flutterwindows]: {
-            name: 'My Windows App',
+            name: 'My Windows app',
             hostname: 'appname',
             tooltip: 'Your application name'
         },
         [PlatformType.Flutterweb]: {
-            name: 'My Web App',
+            name: 'My Web app',
             hostname: 'localhost',
             tooltip:
                 'The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required.'
@@ -101,12 +101,12 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
     };
 
     const hostname: Partial<Record<PlatformType, string>> = {
-        [PlatformType.Flutterandroid]: 'Package Name',
+        [PlatformType.Flutterandroid]: 'Package name',
         [PlatformType.Flutterios]: 'Bundle ID',
-        [PlatformType.Flutterlinux]: 'Package Name',
+        [PlatformType.Flutterlinux]: 'Package name',
         [PlatformType.Fluttermacos]: 'Bundle ID',
         [PlatformType.Flutterweb]: 'Hostname',
-        [PlatformType.Flutterwindows]: 'Package Name'
+        [PlatformType.Flutterwindows]: 'Package name'
     };
 
     async function createFlutterPlatform() {
