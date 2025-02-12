@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Card, SvgIcon } from '$lib/components';
+    import { Card, SvgIcon, Trim } from '$lib/components';
     import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import { consoleVariables } from '$routes/(console)/store';
@@ -71,13 +71,14 @@
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Domain</Typography.Caption>
 
-                    <Typography.Text
-                        variant="m-500"
-                        color="--color-fgcolor-neutral-primary"
-                        truncate>
-                        {$consoleVariables._APP_OPTIONS_FORCE_HTTPS
-                            ? 'https://'
-                            : 'http://'}{domain}.{$consoleVariables._APP_DOMAIN_TARGET}
+                    <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                        {#key domain}
+                            <Trim alternativeTrim>
+                                {$consoleVariables._APP_OPTIONS_FORCE_HTTPS
+                                    ? 'https://'
+                                    : 'http://'}{domain}.{$consoleVariables._APP_DOMAIN_TARGET}
+                            </Trim>
+                        {/key}
                     </Typography.Text>
                 </Layout.Stack>
             {/if}
