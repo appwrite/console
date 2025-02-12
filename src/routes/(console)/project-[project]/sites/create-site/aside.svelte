@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Card, SvgIcon } from '$lib/components';
-    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import { consoleVariables } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
@@ -14,29 +14,15 @@
     export let showAfter = true;
 </script>
 
-<Card padding="xs">
+<Card padding="s" radius="s">
     <Layout.Stack gap="l">
         <slot />
         <Layout.Stack gap="l">
-            {#if framework?.name}
-                {@const frameworkIcon = getFrameworkIcon(framework.key)}
-                <Layout.Stack gap="xxxs">
-                    <Typography.Caption variant="400">Framework</Typography.Caption>
-                    <Layout.Stack gap="xs" alignItems="center" direction="row">
-                        {#if frameworkIcon}
-                            <SvgIcon iconSize="small" size={20} name={frameworkIcon} />
-                        {/if}
-                        <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
-                            {framework.name}
-                        </Typography.Text>
-                    </Layout.Stack>
-                </Layout.Stack>
-            {/if}
             {#if repositoryName && showAfter}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Git repository</Typography.Caption>
-                    <Layout.Stack gap="xs" alignItems="center" direction="row">
-                        <Icon size="s" icon={IconGithub}></Icon>
+                    <Layout.Stack gap="xxs" alignItems="center" direction="row">
+                        <Icon size="s" icon={IconGithub} color="--color-fgcolor-neutral-primary" />
                         <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
                             {repositoryName}
                         </Typography.Text>
@@ -46,14 +32,18 @@
             {#if branch && showAfter}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Branch</Typography.Caption>
-                    <Layout.Stack gap="xs" alignItems="center" direction="row">
-                        <Icon size="s" icon={IconGitBranch}></Icon>
+                    <Layout.Stack gap="xxs" alignItems="center" direction="row">
+                        <Icon
+                            size="s"
+                            icon={IconGitBranch}
+                            color="--color-fgcolor-neutral-primary" />
                         <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
                             {branch}
                         </Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>
             {/if}
+
             {#if rootDir && showAfter}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Root directory</Typography.Caption>
@@ -62,9 +52,25 @@
                     </Typography.Text>
                 </Layout.Stack>
             {/if}
+            {#if framework?.name}
+                {@const frameworkIcon = getFrameworkIcon(framework.key)}
+                <Layout.Stack gap="xxxs">
+                    <Typography.Caption variant="400">Framework</Typography.Caption>
+                    <Layout.Stack gap="xxs" alignItems="center" direction="row">
+                        {#if frameworkIcon}
+                            <SvgIcon iconSize="small" size={16} name={frameworkIcon} />
+                        {/if}
+                        <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                            {framework.name}
+                        </Typography.Text>
+                    </Layout.Stack>
+                </Layout.Stack>
+            {/if}
+
             {#if domain && showAfter}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Domain</Typography.Caption>
+
                     <Typography.Text
                         variant="m-500"
                         color="--color-fgcolor-neutral-primary"
