@@ -2,7 +2,13 @@
     import { Step, Link, Icon, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
     import { addPlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
-    import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconArrowRight,
+        IconDeno,
+        IconNodeJs,
+        IconPhp,
+        IconPython
+    } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
     import UsersImgSource from './assets/users.svg';
@@ -19,6 +25,7 @@
     import Wizard from './keys/wizard.svelte';
     import { wizard } from '$lib/stores/wizard';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { AvatarGroup } from '$lib/components';
 
     function createKey() {
         wizard.start(Wizard);
@@ -154,6 +161,17 @@
                                                 </div></Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
+                                </Layout.Stack>
+                                <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                    <Typography.Text>Or connect</Typography.Text>
+                                    <Link.Button variant="muted" on:click={createKey}
+                                        >server side</Link.Button>
+                                    <div style:padding-inline-start="8px">
+                                        <AvatarGroup
+                                            icons={[IconPython, IconNodeJs, IconPhp]}
+                                            total={7}
+                                            size="s" />
+                                    </div>
                                 </Layout.Stack>
                             </Layout.Stack>
                         </Layout.Stack></Step.Item>
