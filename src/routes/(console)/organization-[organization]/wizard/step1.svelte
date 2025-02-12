@@ -4,11 +4,14 @@
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { createProject, regions } from './store';
+    import { createProject } from './store';
+    import { regions } from '$routes/(console)/organization-[organization]/store';
 
     let showCustomId = false;
 
-    sdk.forConsole.billing.listRegions().then(regions.set);
+    if (!$regions?.regions) {
+        sdk.forConsole.billing.listRegions().then(regions.set);
+    }
 </script>
 
 <WizardStep>
