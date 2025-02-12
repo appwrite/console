@@ -116,7 +116,9 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                             bind:group={platform}
                             variant="primary"
                             {value}
-                            title={key} />
+                            title={key}
+                            disabled={isPlatformCreated}
+                        />
                     </div>
                 {/each}
             </Layout.Stack>
@@ -129,7 +131,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                             <InputText
                                 id="name"
                                 label="Name"
-                                placeholder="My Apple App"
+                                placeholder="My Apple app"
                                 required
                                 bind:value={$createPlatform.name} />
 
