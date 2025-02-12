@@ -75,7 +75,7 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
     };
 
     const hostname: Partial<Record<PlatformType, string>> = {
-        [PlatformType.Reactnativeandroid]: 'Package Name',
+        [PlatformType.Reactnativeandroid]: 'Package name',
         [PlatformType.Reactnativeios]: 'Bundle ID'
     };
 
@@ -143,7 +143,9 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
                             bind:group={platform}
                             variant="primary"
                             {value}
-                            title={key} />
+                            title={key}
+                            disabled={isPlatformCreated}
+                        />
                     </div>
                 {/each}
             </Layout.Stack>
