@@ -160,7 +160,7 @@
             </Link.Button>
             {#if showAccountMenu}
                 <div class="account-container">
-                    <Card.Base padding="xxs" shadow={true}>
+                    <Card.Base padding="xxxs" shadow={true}>
                         <Layout.Stack gap="xxs">
                             <ActionMenu.Root>
                                 <Layout.Stack gap="xxs">
@@ -182,23 +182,29 @@
                                         trailingIcon={IconLogoutRight}
                                         size="l"
                                         on:click={logout}>Sign out</ActionMenu.Item.Button>
+                                    <div
+                                        style:padding-inline-start="10px"
+                                        style:padding-inline-end="8px">
+                                        <Layout.Stack
+                                            justifyContent="space-between"
+                                            direction="row"
+                                            alignItems="center">
+                                            <Typography.Text>Theme</Typography.Text>
+                                            <ToggleButton
+                                                bind:active={activeTheme}
+                                                buttons={[
+                                                    { id: 'light', label: 'Light', icon: IconSun },
+                                                    { id: 'dark', label: 'Dark', icon: IconMoon },
+                                                    {
+                                                        id: 'system',
+                                                        label: 'System',
+                                                        icon: IconMode
+                                                    }
+                                                ]}></ToggleButton>
+                                        </Layout.Stack>
+                                    </div>
                                 </Layout.Stack>
                             </ActionMenu.Root>
-                            <div style:padding-inline-start="13px" style:padding-inline-end="8px">
-                                <Layout.Stack
-                                    justifyContent="space-between"
-                                    direction="row"
-                                    alignItems="center">
-                                    <Typography.Text>Theme</Typography.Text>
-                                    <ToggleButton
-                                        bind:active={activeTheme}
-                                        buttons={[
-                                            { id: 'light', label: 'Light', icon: IconSun },
-                                            { id: 'dark', label: 'Dark', icon: IconMoon },
-                                            { id: 'system', label: 'System', icon: IconMode }
-                                        ]}></ToggleButton>
-                                </Layout.Stack>
-                            </div>
                         </Layout.Stack>
                     </Card.Base>
                 </div>
