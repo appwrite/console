@@ -11,7 +11,7 @@
 
     export let data;
 
-    $: console.log(data.site);
+    $: console.log(data);
 </script>
 
 <Wizard
@@ -40,16 +40,18 @@
         <!-- TODO: fix use repository name instead of id-->
         <Aside
             framework={data.frameworks.frameworks.find((f) => f.name === data.site.framework)}
-            repositoryName={data.site.providerRepositoryId}
+            repositoryName={data.repository.name}
             branch={data.site.providerBranch}
             rootDir={data.site.providerRootDirectory}
             domain={data.deployment.domain} />
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Typography.Text variant="m-400" color="--color-fgColor-neutral-tertiary">
-                Deployment will continue in the background
-            </Typography.Text>
+            {#if ['processing', 'building', 'failed'].includes(data.deployment.status)}
+                <Typography.Text variant="m-400" color="--color-fgColor-neutral-tertiary">
+                    Deployment will continue in the background
+                </Typography.Text>
+            {/if}
             <Button
                 size="s"
                 fullWidthMobile

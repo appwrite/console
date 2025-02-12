@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Card, SvgIcon, Trim } from '$lib/components';
-    import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import { consoleVariables } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
