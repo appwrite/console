@@ -109,10 +109,12 @@
         </a>
         <Breadcrumbs {organizations} />
         {#if selectedProject.pingCount === 0}
-            <Button.Anchor
-                href={`${base}/project-${selectedProject.$id}/get-started`}
-                variant="secondary"
-                size="xs">Connect</Button.Anchor>
+            <div class="only-desktop">
+                <Button.Anchor
+                    href={`${base}/project-${selectedProject.$id}/get-started`}
+                    variant="secondary"
+                    size="xs">Connect</Button.Anchor>
+            </div>
         {/if}
     </div>
     <div slot="right" class="only-desktop">
