@@ -18,7 +18,7 @@
     import Id from '$lib/components/id.svelte';
     import {
         IconDotsHorizontal,
-        IconGlobeAlt,
+        IconLightningBolt,
         IconRefresh,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
@@ -113,7 +113,7 @@
                                         </ActionMenu.Item.Button>
                                         {#if deployment?.status === 'ready' && deployment?.$id !== site.deploymentId}
                                             <ActionMenu.Item.Button
-                                                leadingIcon={IconGlobeAlt}
+                                                leadingIcon={IconLightningBolt}
                                                 on:click={(e) => {
                                                     e.preventDefault();
                                                     selectedDeployment = deployment;
