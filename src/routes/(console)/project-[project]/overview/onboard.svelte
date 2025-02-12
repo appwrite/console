@@ -46,7 +46,7 @@
                                 <Layout.Stack gap="m">
                                     <Typography.Title
                                         color="--color-fgcolor-neutral-primary"
-                                        size="s">Add a platform</Typography.Title>
+                                        size="s">Connect your platform</Typography.Title>
                                     <div class="build-info">
                                         <span>
                                             Start building with your preferred web, mobile, and
@@ -73,15 +73,22 @@
                                                 </div>
                                             </Layout.Stack>
                                         </Layout.Stack></Card.Button>
-                                    <Card.Button on:click={createKey} padding="s"
+                                    <Card.Button
+                                        on:click={() => {
+                                            addPlatform(1);
+                                        }}
+                                        padding="s"
                                         ><Layout.Stack gap="xl"
-                                            ><div class="card-top-image server-image-light"></div>
-                                            <div class="card-top-image server-image-dark"></div>
+                                            ><div class="card-top-image reactnative-image-light">
+                                            </div>
+                                            <div class="card-top-image reactnative-image-dark">
+                                            </div>
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
-                                                <Typography.Title size="s">Server</Typography.Title>
+                                                <Typography.Title size="s"
+                                                    >React Native</Typography.Title>
                                                 <div class="arrow-icon">
                                                     <Icon icon={IconArrowRight} size="s" />
                                                 </div>
@@ -166,7 +173,7 @@
                     <Step.Item state="previous"
                         ><div>
                             <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
-                                >Add a platform</Typography.Title>
+                                >Connect your platform</Typography.Title>
                         </div></Step.Item>
                     <Step.Item state="current">
                         <Layout.Stack
@@ -327,14 +334,14 @@
 
     :global(.theme-light) {
         .web-image-dark,
-        .server-image-dark {
+        .reactnative-image-dark {
             display: none;
         }
     }
 
     :global(.theme-dark) {
         .web-image-light,
-        .server-image-light {
+        .reactnative-image-light {
             display: none;
         }
     }
@@ -361,11 +368,11 @@
             background-image: url('./assets/platform-web-dark.png');
         }
 
-        .server-image-light {
-            background-image: url('./assets/platform-server.png');
+        .reactnative-image-light {
+            background-image: url('./assets/platform-reactnative.png');
         }
-        .server-image-dark {
-            background-image: url('./assets/platform-server-dark.png');
+        .reactnative-image-dark {
+            background-image: url('./assets/platform-reactnative-dark.png');
         }
         .database-card-image {
             background-size: cover;
