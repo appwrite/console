@@ -130,31 +130,33 @@
             </Tabs.Item.Button>
         </Tabs.Root>
 
-        {#if tab === 'env'}
-            <InputTextarea
-                id="variables"
-                bind:value={envCode}
-                rows={10}
-                placeholder={`SECRET_KEY=dQw4w9WgXcQ...`} />
-        {:else if tab === 'json'}
-            <InputTextarea
-                id="variables"
-                bind:value={jsonCode}
-                rows={10}
-                placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`} />
-        {/if}
-        <Layout.Stack direction="row" gap="xs">
-            <Button on:click={() => downloadVariables()} text>
-                <Icon icon={IconDownload} />
-                Download
-            </Button>
-
-            <Copy value={tab == 'json' ? jsonCode : envCode}>
-                <Button text>
-                    <Icon icon={IconDuplicate} />
-                    Copy
+        <Layout.Stack gap="xxs">
+            {#if tab === 'env'}
+                <InputTextarea
+                    id="variables"
+                    bind:value={envCode}
+                    rows={10}
+                    placeholder={`SECRET_KEY=dQw4w9WgXcQ...`} />
+            {:else if tab === 'json'}
+                <InputTextarea
+                    id="variables"
+                    bind:value={jsonCode}
+                    rows={10}
+                    placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`} />
+            {/if}
+            <Layout.Stack direction="row">
+                <Button size="xs" on:click={() => downloadVariables()} compact>
+                    <Icon slot="start" icon={IconDownload} />
+                    Download
                 </Button>
-            </Copy>
+
+                <Copy value={tab == 'json' ? jsonCode : envCode}>
+                    <Button size="xs" compact>
+                        <Icon slot="start" icon={IconDuplicate} />
+                        Copy
+                    </Button>
+                </Copy>
+            </Layout.Stack>
         </Layout.Stack>
     </Layout.Stack>
 
