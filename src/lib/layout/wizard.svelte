@@ -122,7 +122,7 @@
         overflow-y: auto;
     }
 
-    :globla(html) {
+    :global(html) {
         overflow-y: hidden;
     }
 </style>

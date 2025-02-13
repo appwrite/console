@@ -52,7 +52,7 @@
                     radius="s"
                     width={400}
                     height={280}
-                    src={PlaceholderDark}
+                    src={PlaceholderLight}
                     alt="Screenshot" />
             {/if}
             <Layout.Stack gap="xl">
