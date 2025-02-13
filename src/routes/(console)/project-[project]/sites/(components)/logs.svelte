@@ -102,7 +102,7 @@
         </Layout.Stack>
     </Layout.Stack>
     {#key buildLogs}
-        <Logs logs={buildLogs} />
+        <Logs logs={buildLogs || 'No logs available'} />
     {/key}
     {#if ['processing', 'building'].includes(status)}
         <Layout.Stack alignItems="flex-end">
