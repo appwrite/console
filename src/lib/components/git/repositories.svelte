@@ -8,7 +8,15 @@
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
     import { createEventDispatcher } from 'svelte';
-    import { Layout, Table, Typography, Icon, Avatar, Skeleton } from '@appwrite.io/pink-svelte';
+    import {
+        Layout,
+        Table,
+        Typography,
+        Icon,
+        Avatar,
+        Skeleton,
+        Button as PinkButton
+    } from '@appwrite.io/pink-svelte';
     import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
     import ConnectGit from './connectGit.svelte';
     import SvgIcon from '../svgIcon.svelte';
@@ -195,12 +203,12 @@
                                         </Layout.Stack>
                                         {#if action === 'button'}
                                             <Layout.Stack direction="row" justifyContent="flex-end">
-                                                <Button
+                                                <PinkButton.Button
                                                     size="xs"
-                                                    secondary
+                                                    variant="secondary"
                                                     on:click={() => dispatch('connect', repo)}>
                                                     Connect
-                                                </Button>
+                                                </PinkButton.Button>
                                             </Layout.Stack>
                                         {/if}
                                     </Layout.Stack>
