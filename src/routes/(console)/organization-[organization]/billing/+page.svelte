@@ -120,7 +120,6 @@
     </div>
     <PlanSummary
         creditList={data?.creditList}
-        members={data?.members}
         currentPlan={data?.aggregationBillingPlan}
         currentAggregation={data?.billingAggregation}
         currentInvoice={data?.billingInvoice} />

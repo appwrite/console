@@ -31,7 +31,6 @@
 
     let showDropdown = [];
     let showFailedError = false;
-    let isLoadingInvoices = true;
 
     let offset = 0;
     let invoiceList: InvoiceList = {
@@ -45,13 +44,11 @@
     onMount(request);
 
     async function request() {
-        isLoadingInvoices = true;
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc('$createdAt')
         ]);
-        isLoadingInvoices = false;
     }
 
     function retryPayment(invoice: Invoice) {

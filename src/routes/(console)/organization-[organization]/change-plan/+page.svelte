@@ -81,7 +81,6 @@
 
     onMount(async () => {
         if ($page.url.searchParams.has('code')) {
-            couponId = $page.url.searchParams.get('code');
             const coupon = $page.url.searchParams.get('code');
             try {
                 const response = await sdk.forConsole.billing.getCoupon(coupon);
