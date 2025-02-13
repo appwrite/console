@@ -42,7 +42,6 @@
     };
 
     const limit = 5;
-    const endpoint = getApiEndpoint();
 
     onMount(request);
 
