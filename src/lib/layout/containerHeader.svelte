@@ -86,12 +86,14 @@
 
 <!-- Show only if on Cloud, alerts are enabled, and it isn't a project limited service -->
 {#if isCloud && showAlert}
-    {#if $readOnly}
-        {@const services = overflowingServices
-            .map((s) => {
-                return s.name.toLocaleLowerCase();
-            })
-            .join(', ')}
+    <!-- some services are above limit -->
+    {@const services = overflowingServices
+        .map((s) => {
+            return s.name.toLocaleLowerCase();
+        })
+        .join(', ')}
+
+    {#if $readOnly && services.length}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
             {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
                 <Alert type="info" isStandalone>
@@ -102,7 +104,7 @@
                         >.
                     </span>
                 </Alert>
-            {:else if services.length}
+            {:else}
                 <Alert type={alertType} isStandalone>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan. <Button
