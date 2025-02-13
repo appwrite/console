@@ -305,7 +305,7 @@
                                                         size="m"
                                                         color="--color-fgcolor-neutral-secondary">
                                                         Join our Discord for support, tips and
-                                                        product updatese</Typography.Text>
+                                                        product updates</Typography.Text>
                                                     <div class="arrow-icon arrow-icon-discord">
                                                         <Icon icon={IconArrowRight} size="s" />
                                                     </div>
