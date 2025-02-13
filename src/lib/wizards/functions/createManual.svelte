@@ -26,25 +26,38 @@
             if (!isValueOfStringEnum(Runtime, $createFunction.runtime)) {
                 throw new Error(`Invalid runtime: ${$createFunction.runtime}`);
             }
-            const response = await sdk.forProject.functions.create(
-                $createFunction.$id || ID.unique(),
-                $createFunction.name,
-                $createFunction.runtime,
-                $createFunction.execute || undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                $createFunction.entrypoint,
-                $createFunction.commands || undefined
+            const response = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .functions.create(
+                    $createFunction.$id || ID.unique(),
+                    $createFunction.name,
+                    $createFunction.runtime,
+                    $createFunction.execute || undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    $createFunction.entrypoint,
+                    $createFunction.commands || undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    $createFunction.specification
+                );
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .functions.createDeployment(response.$id, $createFunctionDeployment[0], true);
+            goto(
+                `${base}/project-${$page.params.region}-${$page.params.project}/functions/function-${response.$id}`
             );
-            await sdk.forProject.functions.createDeployment(
-                response.$id,
-                $createFunctionDeployment[0],
-                true
-            );
-            goto(`${base}/project-${$page.params.project}/functions/function-${response.$id}`);
             addNotification({
                 message: `${$createFunction.name} has been created`,
                 type: 'success'

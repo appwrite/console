@@ -10,7 +10,10 @@
     onMount(() => {
         $templateConfig.execute = $template.permissions.includes('any');
         templateScopes = scopes
-            .filter((scope) => $template.scopes.includes(scope.scope))
+            // hot fix for perplexity chat template,
+            // backend doesn't have scopes for this template.
+            // TODO: @itznotabug fix on backend too.
+            .filter((scope) => ($template.scopes ?? []).includes(scope.scope))
             .map((scope) => ({
                 ...scope,
                 active: true

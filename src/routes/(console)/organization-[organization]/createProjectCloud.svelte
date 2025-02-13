@@ -39,7 +39,7 @@
                 type: 'success',
                 message: `${$createProject.name} has been created`
             });
-            await goto(`${base}/project-${project.$id}`);
+            await goto(`${base}/project-${project.region}-${project.$id}`);
             wizard.hide();
         } catch (e) {
             addNotification({

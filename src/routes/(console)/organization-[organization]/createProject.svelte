@@ -40,7 +40,7 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            await goto(`${base}/project-${project.$id}`);
+            await goto(`${base}/project-${project.region}-${project.$id}`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectCreate);
@@ -61,7 +61,7 @@
                 </Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
+            <CustomId autofocus bind:show={showCustomId} name="Project" isProject bind:id />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">

@@ -64,7 +64,7 @@
     </span>
 
     <p class="text u-margin-block-start-16">
-        You'll pay <span class="u-bold">{formatCurrency(estimatedTotal)}</span> now, with our first
+        You'll pay <span class="u-bold">{formatCurrency(estimatedTotal)}</span> now, with your first
         billing cycle starting on
         <span class="u-bold"
             >{!currentPlan.trialDays

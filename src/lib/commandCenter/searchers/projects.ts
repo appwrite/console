@@ -18,7 +18,7 @@ export const projectsSearcher = (async (query: string) => {
             return {
                 label: project.name,
                 callback: () => {
-                    goto(`${base}/project-${project.$id}`);
+                    goto(`${base}/project-${project.region}-${project.$id}`);
                 },
                 group: 'projects'
             } as const;
