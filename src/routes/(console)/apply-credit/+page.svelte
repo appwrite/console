@@ -17,11 +17,9 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import { CreditsApplied } from '$lib/components/billing';
-    import { BillingPlan } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Helper } from '$lib/elements/forms/index.js';
-    import type { Tier } from '$lib/stores/billing';
 
     export let data;
 
@@ -95,11 +93,6 @@
 
     async function handleSubmit() {
         if (couponData) {
-            if (!campaign?.plan || campaign.plan === selectedOrg?.billingPlan) {
-                await applyCouponCredit(selectedOrg);
-                return;
-            }
-
             const createOrganization = selectedAction === 'create';
             const isScalePlanUpgrade =
                 campaign?.plan && selectedOrg?.billingPlan !== campaign?.plan;
@@ -107,6 +100,10 @@
             // on create-org, its `coupon`
             if (createOrganization) {
                 await goto(`${base}/create-organization?coupon=${couponData.code}`);
+                return;
+            }
+            if (!campaign?.plan || campaign.plan === selectedOrg?.billingPlan) {
+                await applyCouponCredit(selectedOrg);
             } else if (isScalePlanUpgrade) {
                 await goto(
                     `${base}/create-organization?coupon=${couponData.code}&plan=${campaign.plan}`
