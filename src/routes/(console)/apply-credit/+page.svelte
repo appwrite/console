@@ -9,6 +9,7 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
+
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
@@ -16,6 +17,11 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import { CreditsApplied } from '$lib/components/billing';
+    import { BillingPlan } from '$lib/constants';
+    import { sdk } from '$lib/stores/sdk';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Helper } from '$lib/elements/forms/index.js';
+    import type { Tier } from '$lib/stores/billing';
 
     export let data;
 
@@ -64,16 +70,60 @@
         }
     });
 
-    function handleSubmit() {
+    async function applyCouponCredit(org: Organization) {
+        $isSubmitting = true;
+        let error = null;
+
+        try {
+            await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+            trackEvent(Submit.CreditRedeem);
+        } catch (e) {
+            error = e;
+            $isSubmitting = false;
+            trackError(error, Submit.CreditRedeem);
+        }
+
+        addNotification({
+            type: error ? 'error' : 'success',
+            message: error ? error.message : 'Credit applied successfully'
+        });
+
+        if (!error) {
+            await goto(`${base}/organization-${selectedOrgId}`);
+        }
+    }
+
+    async function handleSubmit() {
         if (couponData) {
+            if (
+                selectedOrg?.billingPlan === BillingPlan.PRO &&
+                campaign.plan !== BillingPlan.SCALE
+            ) {
+                await applyCouponCredit(selectedOrg);
+                return;
+            }
+
+            const createOrganization = selectedAction === 'create';
+            const isScalePlanUpgrade =
+                selectedOrg &&
+                (selectedOrg?.billingPlan as Tier) === BillingPlan.PRO &&
+                campaign?.plan === BillingPlan.SCALE;
+
             // on create-org, its `coupon`
-            if (selectedAction === 'create') {
-                goto(`${base}/create-organization?coupon=${couponData.code}`);
+            if (createOrganization) {
+                await goto(`${base}/create-organization?coupon=${couponData.code}`);
+            } else if (isScalePlanUpgrade) {
+                await goto(
+                    `${base}/create-organization?coupon=${couponData.code}&plan=${campaign.plan}`
+                );
             } else if (selectedAction === 'update') {
                 // on change-plan, its `code`
-                goto(`${base}/organization-${selectedOrgId}/change-plan?code=${couponData.code}`);
+                await goto(
+                    `${base}/organization-${selectedOrgId}/change-plan?code=${couponData.code}`
+                );
             }
         } else {
+            // we might not reach here but still, just being safe.
             addNotification({
                 type: 'error',
                 message: 'Coupon code is not valid'
@@ -94,7 +144,7 @@
     <svelte:fragment slot="title">Apply credits</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-            <FormList>
+            <FormList gap={8}>
                 {#if $organizationList?.total && !campaign?.onlyNewOrgs && canSelectOrg}
                     <InputSelect
                         bind:value={selectedOrgId}
@@ -103,6 +153,12 @@
                         required
                         placeholder="Select organization"
                         id="organization" />
+                {/if}
+
+                {#if campaign?.plan && selectedOrg && selectedOrg.billingPlan !== campaign?.plan}
+                    <Helper type="neutral">
+                        This coupon code is only valid when upgrading to Scale plan.
+                    </Helper>
                 {/if}
             </FormList>
         </Form>
@@ -168,6 +224,8 @@
             {/if}
             {#if selectedOrgId === newOrgId}
                 Create Organization
+            {:else if campaign?.plan && selectedOrg && selectedOrg.billingPlan !== campaign?.plan}
+                Upgrade plan
             {:else}
                 Apply Credits
             {/if}
