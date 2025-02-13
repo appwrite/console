@@ -5,10 +5,11 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createProject, regions } from './store';
+    import { organization } from '$lib/stores/organization';
 
     let showCustomId = false;
 
-    sdk.forConsole.billing.listRegions().then(regions.set);
+    sdk.forConsole.billing.listRegions($organization.$id).then(regions.set);
 </script>
 
 <WizardStep>
