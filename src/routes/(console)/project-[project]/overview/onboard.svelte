@@ -7,7 +7,6 @@
         Card,
         Typography,
         Badge,
-        Spinner,
         ProgressCircle,
         Button
     } from '@appwrite.io/pink-svelte';
