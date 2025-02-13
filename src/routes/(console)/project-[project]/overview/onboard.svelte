@@ -49,6 +49,7 @@
 
     function openPlatformWizard(type: number, platform?: Models.Platform) {
         if (platform) {
+            console.log('platform', platform);
             continuePlatform(type, platform.name, platform.key, platform.type);
         } else {
             addPlatform(type);

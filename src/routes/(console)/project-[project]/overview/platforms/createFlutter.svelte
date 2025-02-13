@@ -29,7 +29,7 @@
     import { LabelCard } from '$lib/components';
 
     let showExitModal = false;
-    export let isPlatformCreated = false;
+    let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = $page.params.project;
@@ -43,7 +43,7 @@
 static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
         `;
 
-    let platform: PlatformType = PlatformType.Flutterandroid;
+    export let platform: PlatformType = PlatformType.Flutterandroid;
 
     let platforms: { [key: string]: PlatformType } = {
         Android: PlatformType.Flutterandroid,

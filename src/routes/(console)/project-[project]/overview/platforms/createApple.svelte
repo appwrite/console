@@ -44,7 +44,7 @@
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
         `;
 
-    let platform: PlatformType = PlatformType.Appleios;
+    export let platform: PlatformType = PlatformType.Appleios;
 
     let platforms: { [key: string]: PlatformType } = {
         iOS: PlatformType.Appleios,

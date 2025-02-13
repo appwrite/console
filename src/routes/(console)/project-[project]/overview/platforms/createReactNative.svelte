@@ -43,7 +43,7 @@
 const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
         `;
 
-    let platform: PlatformType = PlatformType.Reactnativeandroid;
+    export let platform: PlatformType = PlatformType.Reactnativeandroid;
 
     let platforms: { [key: string]: PlatformType } = {
         Android: PlatformType.Reactnativeandroid,

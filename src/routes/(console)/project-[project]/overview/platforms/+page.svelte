@@ -34,7 +34,10 @@
             key: key,
             type: type
         });
-        wizard.start(platforms[platform], null, 1, { isPlatformCreated: true });
+        wizard.start(platforms[platform], null, 1, {
+            isPlatformCreated: true,
+            platform: type
+        });
     }
 
     const platforms = {
