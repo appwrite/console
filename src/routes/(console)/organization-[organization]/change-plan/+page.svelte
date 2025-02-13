@@ -59,7 +59,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
     let methods: PaymentList;
-    let billingPlan: Tier = $organization.billingPlan;
+    let billingPlan: Tier = $currentPlan?.$id as Tier;
     let paymentMethodId: string;
     let collaborators: string[] =
         data?.members?.memberships
@@ -100,7 +100,7 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        if ($organization?.billingPlan === BillingPlan.SCALE) {
+        if ($currentPlan?.$id === BillingPlan.SCALE) {
             billingPlan = BillingPlan.SCALE;
         } else {
             billingPlan = BillingPlan.PRO;
@@ -141,7 +141,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: tierToPlan($organization.billingPlan).name,
+                    from: tierToPlan($currentPlan?.$id as Tier).name,
                     to: tierToPlan(billingPlan).name,
                     email: $user.email,
                     reason: feedbackDowngradeOptions.find(
@@ -239,12 +239,12 @@
         }
     }
 
-    $: isUpgrade = billingPlan > $organization.billingPlan;
-    $: isDowngrade = billingPlan < $organization.billingPlan;
+    $: isUpgrade = billingPlan > ($currentPlan?.$id as Tier);
+    $: isDowngrade = billingPlan < ($currentPlan?.$id as Tier);
     $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
-    $: isButtonDisabled = $organization.billingPlan === billingPlan;
+    $: isButtonDisabled = ($currentPlan?.$id as Tier) === billingPlan;
 </script>
 
 <svelte:head>
@@ -277,7 +277,7 @@
                         tier={BillingPlan.FREE}
                         class="u-margin-block-start-24"
                         members={data?.members?.total ?? 0} />
-                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
+                {:else if billingPlan === BillingPlan.PRO && $currentPlan?.$id === BillingPlan.SCALE && collaborators?.length > 0}
                     {@const extraMembers = collaborators?.length ?? 0}
                     <Alert type="error" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
@@ -294,7 +294,7 @@
                 {/if}
             {/if}
             <!-- Show email input if upgrading from free plan -->
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
+            {#if billingPlan !== BillingPlan.FREE && $currentPlan?.$id === BillingPlan.FREE}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
                         bind:tags={collaborators}
@@ -335,14 +335,14 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
+            {#if billingPlan !== BillingPlan.FREE && $currentPlan?.$id !== billingPlan && $currentPlan?.$id !== BillingPlan.CUSTOM}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
                     bind:couponData
                     bind:billingBudget
                     {isDowngrade} />
-            {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
+            {:else if $currentPlan?.$id !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
         </svelte:fragment>
