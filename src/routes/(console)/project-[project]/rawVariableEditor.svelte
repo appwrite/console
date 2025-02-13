@@ -182,10 +182,3 @@
         <Button submit disabled={isButtonDisabled}>Save</Button>
     </svelte:fragment>
 </Modal>
-
-<style lang="scss">
-    .editor-border {
-        border: solid 0.0625rem hsl(var(--color-border));
-        border-radius: var(--border-radius-small);
-    }
-</style>
