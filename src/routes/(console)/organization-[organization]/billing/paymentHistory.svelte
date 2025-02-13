@@ -23,7 +23,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Invoice, InvoiceList } from '$lib/sdk/billing';
-    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
