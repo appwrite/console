@@ -14,7 +14,7 @@
     import Table from '$lib/elements/table/table.svelte';
     import { isSameDay, toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { GRACE_PERIOD_OVERRIDE, isSelfHosted } from '$lib/system';
     import { onMount } from 'svelte';
     import { project } from '../../store';
@@ -46,9 +46,9 @@
     };
 
     onMount(() => {
-        return sdk
+        return realtime
             .forProject($page.params.region, $page.params.project)
-            .client.subscribe(['project', 'console'], (response) => {
+            .subscribe(['project', 'console'], (response) => {
                 if (response.events.includes('migrations.*')) {
                     invalidate(Dependencies.MIGRATIONS);
                 }

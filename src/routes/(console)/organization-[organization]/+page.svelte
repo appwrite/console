@@ -123,7 +123,7 @@
     let regions: RegionList;
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
+            regions = await sdk.forConsole.billing.listRegions($page.params.organization);
             checkPricingRefAndRedirect($page.url.searchParams);
         }
     });

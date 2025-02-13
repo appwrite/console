@@ -11,14 +11,15 @@
     import { onMount } from 'svelte';
     import { project } from '../store';
     import type { RegionList } from '$lib/sdk/billing';
+    import { page } from '$app/stores';
 
     let showDelete = false;
     let name: string = null;
-
     let regions: RegionList;
+
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
+            regions = await sdk.forConsole.billing.listRegions($page.params.organization);
         }
     });
 

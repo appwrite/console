@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { parseIfString } from '$lib/helpers/object';
     import { getProjectId } from '$lib/helpers/project';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
@@ -50,9 +50,9 @@
     })();
 
     onMount(() => {
-        return sdk
+        return realtime
             .forProject($page.params.region, $page.params.project)
-            .client.subscribe<Models.Migration>(['console'], async (response) => {
+            .subscribe<Models.Migration>(['console'], async (response) => {
                 if (!response.channels.includes(`projects.${getProjectId()}`)) return;
                 if (response.events.includes('migrations.*')) {
                     if (response.payload.source === 'Backup') return;

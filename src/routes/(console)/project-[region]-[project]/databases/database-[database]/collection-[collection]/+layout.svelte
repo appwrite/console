@@ -17,7 +17,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -35,9 +35,9 @@
     import { canWriteCollections } from '$lib/stores/roles';
 
     onMount(() => {
-        return sdk
+        return realtime
             .forProject($page.params.region, $page.params.project)
-            .client.subscribe(['project', 'console'], (response) => {
+            .subscribe(['project', 'console'], (response) => {
                 if (
                     response.events.includes('databases.*.collections.*.attributes.*') ||
                     response.events.includes('databases.*.collections.*.indexes.*')

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputText, FormList } from '$lib/elements/forms';
@@ -8,7 +9,7 @@
 
     let showCustomId = false;
 
-    sdk.forConsole.billing.listRegions().then(regions.set);
+    sdk.forConsole.billing.listRegions($page.params.organization).then(regions.set);
 </script>
 
 <WizardStep>

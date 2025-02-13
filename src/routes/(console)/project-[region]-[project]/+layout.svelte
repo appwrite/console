@@ -1,6 +1,6 @@
 <script lang="ts">
     import { BackupRestoreBox, MigrationBox, UploadBox } from '$lib/components';
-    import { realtime, sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
 

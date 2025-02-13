@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
     import { Alert, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
     import { organization } from '$lib/stores/organization';
@@ -22,7 +20,6 @@
     import QuickFilters from './quickFilters.svelte';
     import { Pill } from '$lib/elements';
     import { tags } from '$lib/components/filters/store';
-    import { page } from '$app/stores';
 
     export let data;
 
