@@ -16,20 +16,25 @@
     import DeploymentCreatedBy from '../(components)/deploymentCreatedBy.svelte';
     import DeploymentSource from '../(components)/deploymentSource.svelte';
     import Id from '$lib/components/id.svelte';
-    import { IconDotsHorizontal, IconGlobeAlt, IconRefresh } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconLightningBolt,
+        IconRefresh,
+        IconXCircle
+    } from '@appwrite.io/pink-icons-svelte';
     import RedeployModal from '../redeployModal.svelte';
-    import PromoteModal from '../promoteModal.svelte';
     import { Card } from '$lib/components';
+    import ActivateDeploymentModal from '../activateDeploymentModal.svelte';
+    import CancelDeploymentModal from './deployments/cancelDeploymentModal.svelte';
 
     export let site: Models.Site;
     export let activeDeployment: Models.Deployment;
     export let deploymentList: Models.DeploymentList = undefined;
 
-    let showPromote = false;
+    let showActivate = false;
     let showRedeploy = false;
+    let showCancel = false;
     let selectedDeployment: Models.Deployment = null;
-
-    $: console.log(deploymentList);
 </script>
 
 {#if deploymentList.total}
@@ -106,16 +111,31 @@
                                             }}>
                                             Redeploy
                                         </ActionMenu.Item.Button>
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconGlobeAlt}
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                selectedDeployment = deployment;
-                                                showPromote = true;
-                                                toggle(e);
-                                            }}>
-                                            Promote
-                                        </ActionMenu.Item.Button>
+                                        {#if deployment?.status === 'ready' && deployment?.$id !== site.deploymentId}
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconLightningBolt}
+                                                on:click={(e) => {
+                                                    e.preventDefault();
+                                                    selectedDeployment = deployment;
+                                                    showActivate = true;
+                                                    toggle(e);
+                                                }}>
+                                                Activate
+                                            </ActionMenu.Item.Button>
+                                        {/if}
+                                        {#if deployment?.status === 'processing' || deployment?.status === 'building' || deployment.status === 'waiting'}
+                                            <ActionMenu.Item.Button
+                                                leadingIcon={IconXCircle}
+                                                status="danger"
+                                                on:click={(e) => {
+                                                    e.preventDefault();
+                                                    selectedDeployment = deployment;
+                                                    showCancel = true;
+                                                    toggle(e);
+                                                }}>
+                                                Cancel
+                                            </ActionMenu.Item.Button>
+                                        {/if}
                                     </ActionMenu.Root>
                                 </svelte:fragment>
                             </Popover>
@@ -135,9 +155,13 @@
     <RedeployModal {site} selectedDeploymentId={selectedDeployment.$id} bind:show={showRedeploy} />
 {/if}
 
-{#if selectedDeployment && showPromote}
-    <PromoteModal
+{#if selectedDeployment && showActivate}
+    <ActivateDeploymentModal
         siteId={site.$id}
         selectedDeploymentId={selectedDeployment.$id}
-        bind:show={showPromote} />
+        bind:show={showActivate} />
+{/if}
+
+{#if selectedDeployment && showCancel}
+    <CancelDeploymentModal {selectedDeployment} bind:showCancel />
 {/if}

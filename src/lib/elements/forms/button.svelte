@@ -27,6 +27,7 @@
     export { classes as class };
     export let submissionLoader = false;
     export let forceShowLoader = false;
+    export let compact = false;
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -45,6 +46,20 @@
         });
     }
 
+    function getVariant(): 'primary' | 'secondary' | 'text' | 'compact' {
+        switch (true) {
+            case secondary:
+                return 'secondary';
+            case text:
+                return 'text';
+            case compact:
+                return 'compact';
+            default:
+                return 'primary';
+        }
+    }
+
+    $: variant = getVariant();
     $: resolvedClasses = [
         fullWidth && 'is-full-width',
         fullWidthMobile && 'is-full-width-mobile',
@@ -64,7 +79,7 @@
         {size}
         {icon}
         disabled={internalDisabled}
-        variant={secondary ? 'secondary' : text ? 'text' : 'primary'}
+        {variant}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
@@ -81,7 +96,7 @@
         {icon}
         {badge}
         disabled={internalDisabled}
-        variant={secondary ? 'secondary' : text ? 'text' : 'primary'}
+        {variant}
         class={resolvedClasses}
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}

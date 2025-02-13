@@ -42,10 +42,12 @@
             <Layout.Stack alignItems="center" justifyContent="space-between" direction="row">
                 <Layout.Stack gap="xs" inline>
                     <Link variant="quiet-muted" href={`${$protocol}${rule.domain}`} external>
-                        <Trim alternativeTrim>
-                            {rule.domain}
-                        </Trim>
-                        <Icon icon={IconExternalLink} />
+                        <Layout.Stack gap="xs" inline direction="row" alignItems="center">
+                            <Trim alternativeTrim>
+                                {rule.domain}
+                            </Trim>
+                            <Icon icon={IconExternalLink} />
+                        </Layout.Stack>
                     </Link>
                     <Typography.Text truncate>
                         Added {timeFromNow(rule.$createdAt)}

@@ -10,7 +10,9 @@
         Badge,
         HiddenText,
         ActionMenu,
-        Accordion
+        Accordion,
+        Tooltip,
+        Button as PinkButton
     } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
@@ -28,6 +30,7 @@
     import SecretVariableModal from './secretVariableModal.svelte';
     import ImportSiteVariablesModal from './importSiteVariablesModal.svelte';
     import CreateVariable from './createVariable.svelte';
+    import DeleteVariableModal from './deleteVariableModal.svelte';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -40,22 +43,16 @@
     let showEditorModal = false;
     let showImportModal = false;
     let showSecretModal = false;
+    let showDelete = false;
     let showCreate = false;
 
     let currentVariable: Partial<Models.Variable>;
     let frameworkId = selectedFramework.key;
 
-    function markAsSecret() {
-        let variable = variables.find((v) => v.key === currentVariable.key);
-        if (variable) {
-            variable.secret = true;
-        }
-    }
-
     $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework.key);
 </script>
 
-<Fieldset legend="Configuration">
+<Fieldset legend="Settings">
     <Layout.Stack gap="l">
         <InputSelect
             id="framework"
@@ -73,37 +70,51 @@
 
         <Layout.Stack>
             <Accordion title="Build settings" badge="Optional">
-                <Layout.Stack>
+                <Layout.Stack gap="xl">
                     Set up how your project is built and where the output files are stored.
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputText
-                            id="installCommand"
-                            label="Install command"
-                            bind:value={installCommand}
-                            placeholder={frameworkData?.defaultInstallCommand} />
-                        <Button secondary size="s" on:click={() => (installCommand = '')}>
-                            Reset
-                        </Button>
-                    </Layout.Stack>
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputText
-                            id="buildCommand"
-                            label="Build command"
-                            bind:value={buildCommand}
-                            placeholder={frameworkData?.defaultBuildCommand} />
-                        <Button secondary size="s" on:click={() => (buildCommand = '')}>
-                            Reset
-                        </Button>
-                    </Layout.Stack>
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputText
-                            id="outputDirectory"
-                            label="Output directory"
-                            bind:value={outputDirectory}
-                            placeholder={frameworkData?.defaultOutputDirectory} />
-                        <Button secondary size="s" on:click={() => (outputDirectory = '')}>
-                            Reset
-                        </Button>
+                    <Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="installCommand"
+                                label="Install command"
+                                bind:value={installCommand}
+                                placeholder={frameworkData?.defaultInstallCommand} />
+                            <Button
+                                secondary
+                                size="s"
+                                disabled={frameworkData?.defaultInstallCommand === installCommand}
+                                on:click={() => (installCommand = '')}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="buildCommand"
+                                label="Build command"
+                                bind:value={buildCommand}
+                                placeholder={frameworkData?.defaultBuildCommand} />
+                            <Button
+                                secondary
+                                size="s"
+                                disabled={frameworkData?.defaultBuildCommand === buildCommand}
+                                on:click={() => (buildCommand = '')}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="outputDirectory"
+                                label="Output directory"
+                                bind:value={outputDirectory}
+                                placeholder={frameworkData?.defaultOutputDirectory} />
+                            <Button
+                                secondary
+                                size="s"
+                                disabled={frameworkData?.defaultOutputDirectory === outputDirectory}
+                                on:click={() => (outputDirectory = '')}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
             </Accordion>
@@ -112,10 +123,31 @@
                 <svelte:fragment slot="title">
                     Environment variables <Badge content="Optional" variant="secondary" />
                 </svelte:fragment>
-                <Layout.Stack gap="l">
-                    <Layout.Stack gap="xl">
-                        Set up environment variables to securely manage keys and settings for your
-                        project.
+                <Layout.Stack gap="xl">
+                    Set up environment variables to securely manage keys and settings for your
+                    project.
+                    <Layout.Stack gap="l">
+                        <Layout.Stack direction="row">
+                            <Layout.Stack direction="row" gap="s">
+                                <Button
+                                    secondary
+                                    size="s"
+                                    on:mousedown={() => (showEditorModal = true)}>
+                                    <Icon slot="start" icon={IconCode} /> Editor
+                                </Button>
+                                <Button
+                                    secondary
+                                    size="s"
+                                    on:mousedown={() => (showImportModal = true)}>
+                                    <Icon slot="start" icon={IconUpload} /> Import .env
+                                </Button>
+                            </Layout.Stack>
+                            {#if variables?.length}
+                                <Button secondary size="s" on:mousedown={() => (showCreate = true)}>
+                                    <Icon slot="start" icon={IconPlus} /> Create variable
+                                </Button>
+                            {/if}
+                        </Layout.Stack>
 
                         {#if variables?.length}
                             <Table.Root>
@@ -131,7 +163,16 @@
                                             <!-- TODO: fix max width -->
                                             <div style="max-width: 20rem">
                                                 {#if variable.secret}
-                                                    <Badge content="Secret" variant="secondary" />
+                                                    <Tooltip maxWidth="26rem">
+                                                        <Badge
+                                                            content="Secret"
+                                                            variant="secondary"
+                                                            size="s" />
+                                                        <svelte:fragment slot="tooltip">
+                                                            This value is secret, you cannot see its
+                                                            value.
+                                                        </svelte:fragment>
+                                                    </Tooltip>
                                                 {:else}
                                                     <HiddenText
                                                         isVisible={false}
@@ -142,27 +183,33 @@
                                         <Table.Cell>
                                             <div style="margin-inline-start: auto">
                                                 <Popover placement="bottom-end" let:toggle>
-                                                    <Button
-                                                        text
+                                                    <PinkButton.Button
                                                         icon
+                                                        variant="text"
+                                                        size="s"
+                                                        aria-label="More options"
                                                         on:click={(e) => {
                                                             e.preventDefault();
                                                             toggle(e);
                                                         }}>
-                                                        <Icon size="s" icon={IconDotsHorizontal} />
-                                                    </Button>
+                                                        <Icon icon={IconDotsHorizontal} size="s" />
+                                                    </PinkButton.Button>
+
                                                     <svelte:fragment slot="tooltip">
-                                                        <ActionMenu.Root>
-                                                            <ActionMenu.Item.Button
-                                                                trailingIcon={IconPencil}
-                                                                on:click={() => {
-                                                                    showEditorModal = true;
-                                                                }}>
-                                                                Edit
-                                                            </ActionMenu.Item.Button>
+                                                        <ActionMenu.Root noPadding>
                                                             {#if !variable?.secret}
                                                                 <ActionMenu.Item.Button
-                                                                    trailingIcon={IconEyeOff}
+                                                                    leadingIcon={IconPencil}
+                                                                    on:click={() => {
+                                                                        currentVariable = variable;
+                                                                        showCreate = true;
+                                                                    }}>
+                                                                    Edit
+                                                                </ActionMenu.Item.Button>
+                                                            {/if}
+                                                            {#if !variable?.secret}
+                                                                <ActionMenu.Item.Button
+                                                                    leadingIcon={IconEyeOff}
                                                                     on:click={() => {
                                                                         currentVariable = variable;
                                                                         showSecretModal = true;
@@ -171,9 +218,11 @@
                                                                 </ActionMenu.Item.Button>
                                                             {/if}
                                                             <ActionMenu.Item.Button
-                                                                trailingIcon={IconTrash}
+                                                                status="danger"
+                                                                leadingIcon={IconTrash}
                                                                 on:click={() => {
-                                                                    showImportModal = true;
+                                                                    currentVariable = variable;
+                                                                    showDelete = true;
                                                                 }}>
                                                                 Delete
                                                             </ActionMenu.Item.Button>
@@ -190,25 +239,6 @@
                                 >Create variables to get started</Empty>
                         {/if}
                     </Layout.Stack>
-                    <Layout.Stack direction="row">
-                        <Layout.Stack direction="row">
-                            <Button
-                                secondary
-                                size="s"
-                                on:mousedown={() => (showEditorModal = true)}>
-                                <Icon icon={IconCode} /> Editor
-                            </Button>
-                            <Button
-                                secondary
-                                size="s"
-                                on:mousedown={() => (showImportModal = true)}>
-                                <Icon icon={IconUpload} /> Import .env
-                            </Button>
-                        </Layout.Stack>
-                        <Button secondary size="s" on:mousedown={() => (showCreate = true)}>
-                            <Icon icon={IconPlus} /> Create variable
-                        </Button>
-                    </Layout.Stack>
                 </Layout.Stack>
             </Accordion>
         </Layout.Stack>
@@ -220,7 +250,7 @@
 {/if}
 
 {#if showSecretModal}
-    <SecretVariableModal bind:show={showSecretModal} on:click={markAsSecret} />
+    <SecretVariableModal bind:show={showSecretModal} bind:currentVariable bind:variables />
 {/if}
 
 {#if showImportModal}
@@ -228,5 +258,9 @@
 {/if}
 
 {#if showCreate}
-    <CreateVariable bind:show={showCreate} bind:variables />
+    <CreateVariable bind:show={showCreate} bind:variables bind:selectedVar={currentVariable} />
+{/if}
+
+{#if showDelete}
+    <DeleteVariableModal bind:show={showDelete} bind:variables bind:currentVariable />
 {/if}

@@ -190,7 +190,8 @@
         selectedRepository = null;
     }
 
-    $: console.log(domain);
+    $: console.log(data.template);
+    $: console.log(variables);
 </script>
 
 <svelte:head>
