@@ -63,6 +63,9 @@ const endpoint = getApiEndpoint();
 const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');
 
+const clientRealtime = new Client();
+clientRealtime.setProject('console');
+
 const clientProject = new Client();
 clientProject.setMode('admin');
 
@@ -84,6 +87,16 @@ const sdkForProject = {
     vcs: new Vcs(clientProject),
     proxy: new Proxy(clientProject),
     migrations: new Migrations(clientProject)
+};
+
+export const realtime = {
+    forProject(region: string, _projectId: string) {
+        const endpoint = getApiEndpoint(region);
+        if (endpoint !== clientRealtime.config.endpoint) {
+            clientRealtime.setEndpoint(endpoint);
+        }
+        return clientRealtime;
+    }
 };
 
 export const sdk = {

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { BackupRestoreBox, MigrationBox, UploadBox } from '$lib/components';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
 
@@ -25,9 +25,10 @@
     } from '$lib/stores/roles';
 
     onMount(() => {
-        return sdk
+        return realtime
             .forProject($page.params.region, $page.params.project)
-            .client.subscribe(['project', 'console'], (response) => {
+            .subscribe(['project', 'console'], (response) => {
+                console.log(response);
                 if (response.events.includes('stats.connections')) {
                     for (const [projectId, value] of Object.entries(response.payload)) {
                         stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);

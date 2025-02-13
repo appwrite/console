@@ -5,7 +5,7 @@
     import { Button } from '$lib/elements/forms';
     import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
     import { organization } from '$lib/stores/organization';
@@ -147,9 +147,9 @@
     let showMobileFilters = false;
     onMount(() => {
         data?.query ? (showMobileFilters = true) : (showMobileFilters = false);
-        return sdk
+        return realtime
             .forProject($page.params.region, $page.params.project)
-            .client.subscribe('functions.*.executiole', (response) => {
+            .subscribe('functions.*.executions', (response) => {
                 if (response.events.includes('functions.*.executions.*')) {
                     invalidate(Dependencies.EXECUTIONS);
                 }
