@@ -18,7 +18,7 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
-    import { onDestroy, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { collection } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateAttribute from './createAttribute.svelte';
@@ -34,10 +34,8 @@
     import { base } from '$app/paths';
     import { canWriteCollections } from '$lib/stores/roles';
 
-    let unsubscribe: { (): void };
-
     onMount(() => {
-        unsubscribe = sdk
+        return sdk
             .forProject($page.params.region, $page.params.project)
             .client.subscribe(['project', 'console'], (response) => {
                 if (
@@ -47,12 +45,6 @@
                     invalidate(Dependencies.COLLECTION);
                 }
             });
-    });
-
-    onDestroy(() => {
-        if (unsubscribe) {
-            unsubscribe();
-        }
     });
 
     $: $registerCommands([
