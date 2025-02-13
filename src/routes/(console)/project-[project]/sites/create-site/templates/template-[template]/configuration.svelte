@@ -11,7 +11,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout, Popover, Icon, Accordion } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { onMount, type SvelteComponent } from 'svelte';
+    import { type SvelteComponent } from 'svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { project } from '$routes/(console)/project-[project]/store';

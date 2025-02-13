@@ -47,7 +47,7 @@
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            {#if ['processing', 'building', 'failed'].includes(data.deployment.status)}
+            {#if ['processing', 'building'].includes(data.deployment.status)}
                 <Typography.Text variant="m-400" color="--color-fgColor-neutral-tertiary">
                     Deployment will continue in the background
                 </Typography.Text>

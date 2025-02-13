@@ -6,7 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { capitalize } from '$lib/helpers/string';
-    import { calculateTime, formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
@@ -44,6 +44,7 @@
     async function cancelDeployment() {
         try {
             await sdk.forProject.sites.updateDeploymentBuild(deployment.resourceId, deployment.$id);
+
             await invalidate(Dependencies.DEPLOYMENTS);
             addNotification({
                 type: 'success',
@@ -90,7 +91,7 @@
                 <Typography.Code color="--color-fgcolor-neutral-secondary">
                     <Layout.Stack direction="row" alignItems="center" inline>
                         <p use:timer={{ start: deployment.$createdAt }} />
-                        <Spinner />
+                        <Spinner size="s" />
                     </Layout.Stack>
                 </Typography.Code>
             {:else}

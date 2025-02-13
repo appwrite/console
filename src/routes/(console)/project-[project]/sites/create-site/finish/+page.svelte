@@ -30,20 +30,18 @@
     });
 </script>
 
-<Wizard
-    title="Create a site"
-    hideAside={true}
-    href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
+<Wizard column href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
     <!-- Creating a new stack -->
     <div style:position="relative" style="z-index: 1;">
         <Layout.Stack gap="xxl">
-            <Layout.Stack gap="xxl">
+            <Layout.Stack gap="xxxl">
                 <Layout.Stack gap="l" direction="column" alignItems="center">
                     <Check />
                     <Layout.Stack gap="s" direction="column" alignItems="center">
-                        <Typography.Text variant="l-400">Congratulations!</Typography.Text>
-                        <Typography.Text variant="m-400"
-                            >You deployed your Site successfully.</Typography.Text>
+                        <Typography.Title size="l">Congratulations!</Typography.Title>
+                        <Typography.Text variant="m-400">
+                            You deployed your Site successfully.
+                        </Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>
                 <Lights style="top: -100px; height:200px; width: 50%" />
