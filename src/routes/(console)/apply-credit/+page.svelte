@@ -12,7 +12,6 @@
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
-    import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
@@ -50,13 +49,12 @@
             label: 'Create new organization'
         }
     ];
-    let isCouponValid = false;
+
     let couponData = data?.couponData;
     let campaign = data?.campaign;
     $: selectedAction = selectedOrgId === newOrgId ? 'create' : 'update';
 
     onMount(async () => {
-        await checkCouponValidity();
         if (!$organizationList?.total || campaign?.onlyNewOrgs) {
             selectedOrgId = newOrgId;
         }
@@ -66,21 +64,8 @@
         }
     });
 
-    async function checkCouponValidity(): Promise<void> {
-        try {
-            await sdk.forConsole.billing.getCoupon(couponData.code);
-            isCouponValid = true;
-        } catch (e) {
-            isCouponValid = false;
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
-    }
-
     function handleSubmit() {
-        if (isCouponValid) {
+        if (couponData) {
             // on create-org, its `coupon`
             if (selectedAction === 'create') {
                 goto(`${base}/create-organization?coupon=${couponData.code}`);
