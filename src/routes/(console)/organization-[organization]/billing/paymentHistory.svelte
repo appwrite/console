@@ -28,11 +28,10 @@
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
-    import { organization } from '$lib/stores/organization';
 
     let showDropdown = [];
     let showFailedError = false;
-    // let isLoadingInvoices = true;
+    let isLoadingInvoices = true;
 
     let offset = 0;
     let invoiceList: InvoiceList = {
@@ -46,13 +45,13 @@
     onMount(request);
 
     async function request() {
-        // isLoadingInvoices = true;
+        isLoadingInvoices = true;
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc('$createdAt')
         ]);
-        // isLoadingInvoices = false;
+        isLoadingInvoices = false;
     }
 
     function retryPayment(invoice: Invoice) {

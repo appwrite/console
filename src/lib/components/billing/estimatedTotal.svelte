@@ -105,7 +105,7 @@
                 {/if}
             {/each}
             {#each estimation.discounts ?? [] as item}
-                <DiscountsApplied bind:couponData {...item} />
+                <DiscountsApplied {fixedCoupon} bind:couponData {...item} />
             {/each}
             <div class="u-sep-block-start" />
             <span class="u-flex u-main-space-between">

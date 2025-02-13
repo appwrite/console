@@ -11,10 +11,8 @@
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
-    import { type Models } from '@appwrite.io/console';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
 
-    export let members: Models.MembershipList;
     export let currentPlan: Plan;
     export let creditList: CreditList;
     export let currentInvoice: Invoice | undefined = undefined;

@@ -9,7 +9,6 @@
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import SelectPlan from '$lib/components/billing/selectPlan.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
-    import Card from '$lib/components/card.svelte';
     import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
@@ -72,7 +71,6 @@
         status: null,
         credits: null
     };
-    let couponId: string;
     let taxId: string;
     let billingBudget: number;
     let showCreditModal = false;

@@ -11,7 +11,7 @@
     import { projects } from '../store';
     import { toLocaleDate } from '$lib/helpers/date';
     import { isCloud } from '$lib/system';
-    import type { EstimationDeleteOrganization, InvoiceList } from '$lib/sdk/billing';
+    import type { EstimationDeleteOrganization } from '$lib/sdk/billing';
     import {
         TableBody,
         TableCell,
@@ -25,7 +25,6 @@
     import { billingURL } from '$lib/stores/billing';
 
     export let showDelete = false;
-    export let invoices: InvoiceList;
     let error: string = null;
 
     let selectedTab = 'projects';

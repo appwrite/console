@@ -12,7 +12,6 @@
     import { calculateExcess, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { Button } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { formatNum } from '$lib/helpers/string';
@@ -23,7 +22,6 @@
     import { tooltip } from '$lib/actions/tooltip';
 
     export let tier: Tier;
-    export let members: number;
 
     const plan = $plansInfo?.get(tier);
     let excess: {
