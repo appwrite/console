@@ -90,8 +90,9 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`) && isPlatformCreated) {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
                 unsubscribe();
             }
         });

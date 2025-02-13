@@ -29,7 +29,7 @@
     import { LabelCard } from '$lib/components';
 
     let showExitModal = false;
-    let isPlatformCreated = false;
+    export let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = $page.params.project;
@@ -79,7 +79,7 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
         [PlatformType.Reactnativeios]: 'Bundle ID'
     };
 
-    async function createFlutterPlatform() {
+    async function createReactNativePlatform() {
         try {
             isCreatingPlatform = true;
             await sdk.forConsole.projects.createPlatform(
@@ -95,7 +95,6 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
             trackEvent(Submit.PlatformCreate, {
                 type: platform
             });
-
             await Promise.all([
                 invalidate(Dependencies.PROJECT),
                 invalidate(Dependencies.PLATFORMS)
@@ -117,8 +116,9 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`) && isPlatformCreated) {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
                 unsubscribe();
             }
         });
@@ -131,7 +131,7 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
 </script>
 
 <Wizard title="Add React Native platform" bind:showExitModal confirmExit>
-    <Form onSubmit={createFlutterPlatform}>
+    <Form onSubmit={createReactNativePlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
             <Layout.Stack gap="l" direction="row">

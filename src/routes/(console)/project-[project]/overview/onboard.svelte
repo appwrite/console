@@ -57,10 +57,15 @@
     }
 
     let platformMap = new Map();
-    platforms.forEach((platform) => {
-        const platformInfo = getPlatformInfo(platform.type);
-        platformMap.set(platformInfo.name, platform);
-    });
+
+    $: {
+        let updatedMap = new Map();
+        platforms.forEach((platform) => {
+            const platformInfo = getPlatformInfo(platform.type);
+            updatedMap.set(platformInfo.name, platform);
+        });
+        platformMap = updatedMap;
+    }
 </script>
 
 <div style:container-type="inline-size">

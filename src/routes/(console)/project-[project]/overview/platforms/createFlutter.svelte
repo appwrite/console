@@ -125,6 +125,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
             trackEvent(Submit.PlatformCreate, {
                 type: platform
             });
+
             await Promise.all([
                 invalidate(Dependencies.PROJECT),
                 invalidate(Dependencies.PLATFORMS)
@@ -146,8 +147,9 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`) && isPlatformCreated) {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
                 unsubscribe();
             }
         });
