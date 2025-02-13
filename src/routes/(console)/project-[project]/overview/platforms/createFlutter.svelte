@@ -15,7 +15,6 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconFlutter, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -150,6 +149,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
             if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
                 invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.PROJECT);
                 unsubscribe();
             }
         });
@@ -312,7 +312,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
             fullWidthMobile
             secondary
             disabled={isCreatingPlatform}
-            href={`${base}/project-${projectId}/overview`}>
+            href={location.pathname}>
             Go to dashboard
         </Button>
     </svelte:fragment>
