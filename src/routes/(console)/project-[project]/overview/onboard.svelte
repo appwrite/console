@@ -1,5 +1,15 @@
 <script lang="ts">
-    import { Step, Link, Icon, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Step,
+        Link,
+        Icon,
+        Layout,
+        Card,
+        Typography,
+        Badge,
+        Spinner,
+        ProgressCircle
+    } from '@appwrite.io/pink-svelte';
     import { addPlatform, continuePlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
     import {
@@ -90,6 +100,16 @@
                                         ><Layout.Stack gap="xl"
                                             ><div class="card-top-image web-image-light"></div>
                                             <div class="card-top-image web-image-dark"></div>
+                                            {#if !platformMap.has('Web')}
+                                                <Badge
+                                                    size="s"
+                                                    variant="secondary"
+                                                    content="In progress">
+                                                    <div slot="start">
+                                                        <ProgressCircle size="s" progress={33} />
+                                                    </div>
+                                                </Badge>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
