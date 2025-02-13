@@ -41,7 +41,7 @@
             setTimeout(() => {
                 visible = true;
             }, 1000);
-        }, 5000);
+        }, 3000);
 
         return () => {
             clearInterval(interval);
@@ -233,7 +233,7 @@
         --appwrite-icon-fade-in-delay: calc(
             var(--final-icon-fade-out-delay) + 0.1s
         ); //delay before the appwrite logo appears
-        --welcome-to-appwrite-delay: calc(var(--icon-move-to-center-delay) + 0.3s);
+        --welcome-to-appwrite-delay: calc(var(--icon-move-to-center-delay) + 1.25s);
 
         --cell-dimension: 65px;
         --icon-width: 26px;
@@ -279,7 +279,6 @@
             var(--welcome-to-appwrite-delay);
     }
     .grid {
-        opacity: 0;
         transition: opacity var(--fade-in-animation-component-duration) var(--animation-type);
         display: grid;
         grid-template-columns: var(--half-cell-dimension) repeat(5, var(--cell-dimension)) var(
@@ -291,10 +290,6 @@
             grid-template-columns: repeat(9, var(--cell-dimension));
             grid-template-rows: 180px repeat(4, var(--cell-dimension));
         }
-    }
-
-    .start-animation .grid {
-        opacity: 1;
     }
 
     .icon-container {
@@ -309,8 +304,8 @@
         border-width: 1px;
         border-color: transparent;
         border-style: solid;
-        transition: all var(--icon-colorize-animation-duration) var(--animation-type)
-            var(--show-icon-color-delay);
+        transition: all calc(var(--icon-colorize-animation-duration) + var(--delay))
+            var(--animation-type) var(--show-icon-color-delay);
 
         @media (min-width: 768px) {
             width: calc(var(--cell-dimension) + 20px);
