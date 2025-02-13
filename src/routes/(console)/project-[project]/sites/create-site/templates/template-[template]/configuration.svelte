@@ -11,12 +11,16 @@
     import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout, Popover, Icon, Accordion } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import type { SvelteComponent } from 'svelte';
+    import { type SvelteComponent } from 'svelte';
+    import { getApiEndpoint } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
+    import { project } from '$routes/(console)/project-[project]/store';
 
     export let variables: Partial<Models.TemplateVariable>[] = [];
     export let templateVariables: Models.TemplateVariable[] = [];
 
-    let { requiredVariables, optionalVariables } = templateVariables.reduce(
+    variables = [...templateVariables];
+    let { requiredVariables, optionalVariables } = variables.reduce(
         (acc, variable) => {
             if (variable.required) {
                 acc.requiredVariables.push(variable);
@@ -27,6 +31,17 @@
         },
         { requiredVariables: [], optionalVariables: [] }
     );
+
+    variables.map((variable) => {
+        if (variable.value === '{apiEndpoint}') {
+            variable.value = getApiEndpoint();
+        } else if (variable.value === '{projectId}') {
+            variable.value = $page.params.project;
+        } else if (variable.value === '{projectName}') {
+            variable.value = $project.name;
+        } else return variable;
+    });
+    variables = [...variables];
 
     function selectComponent(variableType: string): typeof SvelteComponent<unknown> {
         switch (variableType) {
@@ -46,6 +61,8 @@
                 return InputPassword;
         }
     }
+
+    $: console.log(variables);
 </script>
 
 <Fieldset legend="Settings">
@@ -60,23 +77,16 @@
                         {#each requiredVariables as variable}
                             <Layout.Stack gap="s" direction="row">
                                 <Layout.Stack gap="s" direction="row">
-                                    <div style="flex-basis:1; width: 100%">
-                                        <InputText
-                                            id={variable.name}
-                                            value={variable.name}
-                                            readonly />
-                                    </div>
-                                    <div style="flex-basis:1;width: 100%">
-                                        <svelte:component
-                                            this={selectComponent(variable.type)}
-                                            id={variable.name}
-                                            placeholder={variable.placeholder ?? 'Enter value'}
-                                            required={variable.required}
-                                            autocomplete={false}
-                                            minlength={variable.type === 'password' ? 0 : null}
-                                            showPasswordButton={variable.type === 'password'}
-                                            bind:value={variables[variable.name].value} />
-                                    </div>
+                                    <InputText id={variable.name} value={variable.name} readonly />
+                                    <svelte:component
+                                        this={selectComponent(variable.type)}
+                                        id={variable.name}
+                                        placeholder={variable.placeholder ?? 'Enter value'}
+                                        required={variable.required}
+                                        autocomplete={false}
+                                        minlength={variable.type === 'password' ? 0 : null}
+                                        showPasswordButton={variable.type === 'password'}
+                                        bind:value={variable.value} />
                                 </Layout.Stack>
                                 <Popover placement="bottom-end" let:toggle>
                                     <Button
@@ -103,23 +113,16 @@
                         {#each optionalVariables as variable}
                             <Layout.Stack gap="s" direction="row">
                                 <Layout.Stack gap="s" direction="row">
-                                    <div style="flex-basis:1; width: 100%">
-                                        <InputText
-                                            id={variable.name}
-                                            value={variable.name}
-                                            readonly />
-                                    </div>
-                                    <div style="flex-basis:1;width: 100%">
-                                        <svelte:component
-                                            this={selectComponent(variable.type)}
-                                            id={variable.name}
-                                            placeholder={variable.placeholder ?? 'Enter value'}
-                                            required={variable.required}
-                                            autocomplete={false}
-                                            minlength={variable.type === 'password' ? 0 : null}
-                                            showPasswordButton={variable.type === 'password'}
-                                            bind:value={variables[variable.name].value} />
-                                    </div>
+                                    <InputText id={variable.name} value={variable.name} readonly />
+                                    <svelte:component
+                                        this={selectComponent(variable.type)}
+                                        id={variable.name}
+                                        placeholder={variable.placeholder ?? 'Enter value'}
+                                        required={variable.required}
+                                        autocomplete={false}
+                                        minlength={variable.type === 'password' ? 0 : null}
+                                        showPasswordButton={variable.type === 'password'}
+                                        bind:value={variables[variable.name].value} />
                                 </Layout.Stack>
                                 <Popover placement="bottom-end" let:toggle>
                                     <Button

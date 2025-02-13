@@ -4,7 +4,7 @@
     import { protocol } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
     import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Icon, Layout, Popover, Tag } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Layout, Popover, Tag, Typography } from '@appwrite.io/pink-svelte';
 
     export let domains: Models.ProxyRuleList;
 </script>
@@ -13,7 +13,9 @@
     <Link external href={`${$protocol}${domains.rules[0].domain}`} variant="muted">
         <Layout.Stack gap="xxs" direction="row" alignItems="center">
             <Trim alternativeTrim>
-                {domains.rules[0].domain}
+                <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
+                    {domains.rules[0].domain}
+                </Typography.Text>
             </Trim>
             <Icon icon={IconExternalLink} size="s" />
         </Layout.Stack>

@@ -1,12 +1,29 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
+    import { Dialog, Layout } from '@appwrite.io/pink-svelte';
 
     export let show = false;
+
+    export let currentVariable: Partial<Models.Variable>;
+    export let variables: Partial<Models.Variable>[];
+
+    function markAsSecret() {
+        let variable = variables.find((v) => v.key === currentVariable.key);
+        if (variable) {
+            variable.secret = true;
+        }
+        variables = [...variables];
+        currentVariable = null;
+        show = false;
+    }
+
+    $: if (!show) {
+        currentVariable = null;
+    }
 </script>
 
-<Modal title="Secret variable" bind:show>
+<Dialog title="Secret variable" bind:open={show}>
     <Layout.Stack gap="l">
         <p>
             Secret variables are hidden from both the UI and API. Once a variable is marked as
@@ -15,13 +32,9 @@
         <p>Are you sure you want to make this variable secret?</p>
     </Layout.Stack>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button
-            on:click
-            on:click={() => {
-                show = false;
-            }}>
-            Mark as secret
-        </Button>
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button text on:click={() => (show = false)}>Cancel</Button>
+            <Button on:click={markAsSecret}>Mark as secret</Button>
+        </Layout.Stack>
     </svelte:fragment>
-</Modal>
+</Dialog>

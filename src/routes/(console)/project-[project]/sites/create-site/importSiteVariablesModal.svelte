@@ -80,6 +80,7 @@
             {/if}
         </Layout.Stack>
         <Selector.Checkbox
+            size="s"
             id="secret"
             label="Secret"
             bind:checked={secret}
