@@ -1,3 +1,13 @@
+<script lang="ts" context="module">
+    export type NavbarProject = {
+        name: string;
+        $id: string;
+        isSelected: boolean;
+        platformCount: number;
+        pingCount: number;
+    };
+</script>
+
 <script lang="ts">
     import {
         Navbar,
@@ -45,13 +55,7 @@
             isSelected: boolean;
             showUpgrade: boolean;
             tierName: string;
-            projects: Array<{
-                name: string;
-                $id: string;
-                isSelected: boolean;
-                platformCount: number;
-                pingCount: number;
-            }>;
+            projects: Array<NavbarProject>;
         }>;
         showAccountMenu: boolean;
     };
