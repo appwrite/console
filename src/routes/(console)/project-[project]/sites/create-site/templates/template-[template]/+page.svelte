@@ -156,7 +156,7 @@
                 const promises = variables.map((variable) =>
                     sdk.forProject.sites.createVariable(
                         site.$id,
-                        variable.key,
+                        variable.name,
                         variable.value,
                         variable?.secret ?? false
                     )
