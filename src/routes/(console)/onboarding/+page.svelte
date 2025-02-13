@@ -12,7 +12,7 @@
     import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { tierToPlan, type Tier, plansInfo } from '$lib/stores/billing';
+    import { tierToPlan, type Tier, plansInfo, isOrganization } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -59,11 +59,18 @@
                         plan: tierToPlan(plan)?.name
                     });
                     await invalidate(Dependencies.ACCOUNT);
-                    await goto(`${base}/organization-${org.$id}`);
-                    addNotification({
-                        message: `${orgName} organization successfully created`,
-                        type: 'success'
-                    });
+                    if (isOrganization(org)) {
+                        await goto(`${base}/organization-${org.$id}`);
+                        addNotification({
+                            message: `${orgName} organization successfully created`,
+                            type: 'success'
+                        });
+                    } else {
+                        addNotification({
+                            message: `${org.message}`,
+                            type: 'error'
+                        });
+                    }
                 } catch (error) {
                     addNotification({
                         message: error.message,
