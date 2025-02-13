@@ -11,12 +11,13 @@
     import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout, Popover, Icon, Accordion } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { onMount, type SvelteComponent } from 'svelte';
+    import { type SvelteComponent } from 'svelte';
 
     export let variables: Partial<Models.TemplateVariable>[] = [];
     export let templateVariables: Models.TemplateVariable[] = [];
 
-    let { requiredVariables, optionalVariables } = templateVariables.reduce(
+    variables = [...templateVariables];
+    let { requiredVariables, optionalVariables } = variables.reduce(
         (acc, variable) => {
             if (variable.required) {
                 acc.requiredVariables.push(variable);
@@ -27,14 +28,6 @@
         },
         { requiredVariables: [], optionalVariables: [] }
     );
-
-    onMount(() => {
-        templateVariables.forEach((variable) => {
-            variables[variable.name] = {
-                value: variable.value ?? ''
-            };
-        });
-    });
 
     function selectComponent(variableType: string): typeof SvelteComponent<unknown> {
         switch (variableType) {
@@ -54,6 +47,8 @@
                 return InputPassword;
         }
     }
+
+    $: console.log(variables);
 </script>
 
 <Fieldset legend="Settings">
@@ -77,7 +72,7 @@
                                         autocomplete={false}
                                         minlength={variable.type === 'password' ? 0 : null}
                                         showPasswordButton={variable.type === 'password'}
-                                        bind:value={variables[variable.name].value} />
+                                        bind:value={variable.value} />
                                 </Layout.Stack>
                                 <Popover placement="bottom-end" let:toggle>
                                     <Button
