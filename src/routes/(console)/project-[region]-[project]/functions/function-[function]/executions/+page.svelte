@@ -147,13 +147,6 @@
     let showMobileFilters = false;
     onMount(() => {
         data?.query ? (showMobileFilters = true) : (showMobileFilters = false);
-        return realtime
-            .forProject($page.params.region, $page.params.project)
-            .subscribe('functions.*.executions', (response) => {
-                if (response.events.includes('functions.*.executions.*')) {
-                    invalidate(Dependencies.EXECUTIONS);
-                }
-            });
     });
 
     function clearAll() {
