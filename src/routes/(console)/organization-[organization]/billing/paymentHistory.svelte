@@ -29,6 +29,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
     import { organization } from '$lib/stores/organization';
+    import { base } from '$app/paths';
 
     let showDropdown = [];
     let showFailedError = false;
@@ -153,14 +154,14 @@
                                         <DropListLink
                                             icon="external-link"
                                             external
-                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
+                                            href={`${base}/organization-${$page.params.organization}/invoices/${invoice.$id}/view`}
                                             on:click={() => (showDropdown[i] = !showDropdown[i])}
                                             event="view_invoice">
                                             View invoice
                                         </DropListLink>
                                         <DropListLink
                                             icon="download"
-                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
+                                            href={`${base}/organization-${$page.params.organization}/invoices/${invoice.$id}/download`}
                                             on:click={() => {
                                                 showDropdown[i] = !showDropdown[i];
                                             }}
