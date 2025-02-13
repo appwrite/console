@@ -95,19 +95,14 @@
 
     async function handleSubmit() {
         if (couponData) {
-            if (
-                selectedOrg?.billingPlan === BillingPlan.PRO &&
-                campaign.plan !== BillingPlan.SCALE
-            ) {
+            if (!campaign?.plan || campaign.plan === selectedOrg?.billingPlan) {
                 await applyCouponCredit(selectedOrg);
                 return;
             }
 
             const createOrganization = selectedAction === 'create';
             const isScalePlanUpgrade =
-                selectedOrg &&
-                (selectedOrg?.billingPlan as Tier) === BillingPlan.PRO &&
-                campaign?.plan === BillingPlan.SCALE;
+                campaign?.plan && selectedOrg?.billingPlan !== campaign?.plan;
 
             // on create-org, its `coupon`
             if (createOrganization) {
