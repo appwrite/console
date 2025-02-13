@@ -13,11 +13,16 @@
     export let showEditor = false;
     export let variables: Partial<Models.Variable>[];
 
+    const editableVariables = variables.filter((variable) => !variable.secret);
+    const secretVariables = variables.filter((variable) => variable.secret);
+
     let error = '';
-    let envCode = variables.map((variable) => `${variable.key}=${variable.value}`).join('\n');
+    let envCode = editableVariables
+        .map((variable) => `${variable.key}=${variable.value}`)
+        .join('\n');
     let jsonCode = JSON.stringify(
         JSON.parse(
-            `{${variables
+            `{${editableVariables
                 .map((variable) => `"${variable.key}":"${variable.value.split('"').join('\\"')}"`)
                 .join(',')}}`
         ),
@@ -36,7 +41,6 @@
     async function handleSubmit() {
         try {
             const vars = tab === 'env' ? parse(envCode) : JSON.parse(jsonCode ? jsonCode : '{}');
-
             const entries = Object.entries(vars);
 
             for (const [key, value] of entries) {
@@ -45,22 +49,28 @@
                 }
             }
 
-            variables.map((variable) => {
+            // Update or remove editable variables
+            editableVariables.map((variable) => {
                 const newValue = vars[variable.key] ?? null;
 
                 if (newValue === null) {
                     variables = variables.filter((v) => v.key !== variable.key);
                 } else if (newValue !== variable.value) {
                     variable.value = newValue;
-                    variables = [...variables];
                 }
                 delete vars[variable.key];
             });
 
+            // Add new variables, skipping keys that exist in secret variables
             Object.keys(vars).map(async (key) => {
-                const value = vars[key];
-                variables.push({ key, value });
+                if (!secretVariables.some((v) => v.key === key)) {
+                    const value = vars[key];
+                    variables.push({ key, value });
+                }
             });
+
+            // Ensure secret variables are preserved
+            variables = [...secretVariables, ...variables.filter((v) => !v.secret)];
 
             showEditor = false;
 

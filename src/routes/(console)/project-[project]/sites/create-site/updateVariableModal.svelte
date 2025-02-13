@@ -9,7 +9,7 @@
     import { page } from '$app/stores';
 
     export let show = false;
-    export let selectedVar: Partial<Models.Variable> = null;
+    export let selectedVar: Partial<Models.Variable>;
     export let variables: Partial<Models.Variable>[];
 
     let pair = {
@@ -38,7 +38,7 @@
     }
 </script>
 
-<Modal bind:show onSubmit={handleVariable} title={`${selectedVar ? 'Update' : 'Create'} variables`}>
+<Modal bind:show onSubmit={handleVariable} title="Update variable">
     <span slot="description">
         Set the environment variables or secret that will be passed to your site. Global variables
         can be set in <Link

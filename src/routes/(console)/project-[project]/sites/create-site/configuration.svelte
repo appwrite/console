@@ -29,8 +29,9 @@
     import VariableEditorModal from './variableEditorModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
     import ImportSiteVariablesModal from './importSiteVariablesModal.svelte';
-    import CreateVariable from './createVariable.svelte';
+    import CreateVariableModal from './createVariableModal.svelte';
     import DeleteVariableModal from './deleteVariableModal.svelte';
+    import UpdateVariableModal from './updateVariableModal.svelte';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -43,8 +44,9 @@
     let showEditorModal = false;
     let showImportModal = false;
     let showSecretModal = false;
-    let showDelete = false;
     let showCreate = false;
+    let showUpdate = false;
+    let showDelete = false;
 
     let currentVariable: Partial<Models.Variable>;
     let frameworkId = selectedFramework.key;
@@ -202,7 +204,7 @@
                                                                     leadingIcon={IconPencil}
                                                                     on:click={() => {
                                                                         currentVariable = variable;
-                                                                        showCreate = true;
+                                                                        showUpdate = true;
                                                                     }}>
                                                                     Edit
                                                                 </ActionMenu.Item.Button>
@@ -258,7 +260,10 @@
 {/if}
 
 {#if showCreate}
-    <CreateVariable bind:show={showCreate} bind:variables bind:selectedVar={currentVariable} />
+    <CreateVariableModal bind:show={showCreate} bind:variables />
+{/if}
+{#if showUpdate}
+    <UpdateVariableModal bind:show={showUpdate} bind:variables bind:selectedVar={currentVariable} />
 {/if}
 
 {#if showDelete}
