@@ -8,7 +8,8 @@
         Typography,
         Badge,
         Spinner,
-        ProgressCircle
+        ProgressCircle,
+        Button
     } from '@appwrite.io/pink-svelte';
     import { addPlatform, continuePlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
@@ -97,27 +98,42 @@
                                             openPlatformWizard(0, platformMap.get('Web'));
                                         }}
                                         padding="s"
-                                        ><Layout.Stack gap="xl"
+                                        ><Layout.Stack
+                                            gap={platformMap.has('Web') ? 'm' : 'xl'}
+                                            height="100%"
+                                            justifyContent="space-between"
                                             ><div class="card-top-image web-image-light"></div>
                                             <div class="card-top-image web-image-dark"></div>
-                                            {#if !platformMap.has('Web')}
-                                                <Badge
-                                                    size="s"
-                                                    variant="secondary"
-                                                    content="In progress">
-                                                    <div slot="start">
-                                                        <ProgressCircle size="s" progress={33} />
-                                                    </div>
-                                                </Badge>
+                                            {#if platformMap.has('Web')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
                                             {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
                                                 <Typography.Title size="s">Web</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div>
+                                                {#if platformMap.has('Web')}<Button.Button size="xs"
+                                                        >Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}
                                             </Layout.Stack>
                                         </Layout.Stack></Card.Button>
                                     <Card.Button
@@ -125,20 +141,45 @@
                                             openPlatformWizard(4, platformMap.get('React Native'));
                                         }}
                                         padding="s"
-                                        ><Layout.Stack gap="xl"
-                                            ><div class="card-top-image reactnative-image-light">
+                                        ><Layout.Stack
+                                            gap={platformMap.has('React Native') ? 'm' : 'xl'}
+                                            height="100%"
+                                            justifyContent="space-between">
+                                            <div class="card-top-image reactnative-image-light">
                                             </div>
                                             <div class="card-top-image reactnative-image-dark">
                                             </div>
+                                            {#if platformMap.has('React Native')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
                                                 <Typography.Title size="s"
                                                     >React Native</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div>
+                                                {#if platformMap.has('React Native')}<Button.Button
+                                                        size="xs">Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}
                                             </Layout.Stack>
                                         </Layout.Stack></Card.Button>
                                 </Layout.Stack>
@@ -150,21 +191,46 @@
                                             openPlatformWizard(3, platformMap.get('Apple'));
                                         }}
                                         padding="s">
-                                        <Layout.Stack gap="xxl">
+                                        <Layout.Stack
+                                            gap={platformMap.has('Apple') ? 's' : 'xxl'}
+                                            height="100%"
+                                            justifyContent="space-between">
                                             <img
                                                 class="platform-image"
                                                 src={$app.themeInUse === 'dark'
                                                     ? PlatformIosImgSourceDark
                                                     : PlatformIosImgSource}
                                                 alt="" />
+                                            {#if platformMap.has('Apple')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
                                                 <Typography.Title size="s">Apple</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div></Layout.Stack>
+                                                {#if platformMap.has('Apple')}<Button.Button
+                                                        size="xs">Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}</Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
                                     <Card.Button
@@ -172,22 +238,47 @@
                                             openPlatformWizard(2, platformMap.get('Android'));
                                         }}
                                         padding="s">
-                                        <Layout.Stack gap="xxl">
+                                        <Layout.Stack
+                                            gap={platformMap.has('Android') ? 's' : 'xxl'}
+                                            height="100%"
+                                            justifyContent="space-between">
                                             <img
                                                 class="platform-image"
                                                 src={$app.themeInUse === 'dark'
                                                     ? PlatformAndroidImgSourceDark
                                                     : PlatformAndroidImgSource}
                                                 alt="" />
+                                            {#if platformMap.has('Android')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
                                                 <Typography.Title size="s"
                                                     >Android</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div></Layout.Stack>
+                                                {#if platformMap.has('Android')}<Button.Button
+                                                        size="xs">Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}</Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
                                     <Card.Button
@@ -195,22 +286,47 @@
                                             openPlatformWizard(1, platformMap.get('Flutter'));
                                         }}
                                         padding="s">
-                                        <Layout.Stack gap="xxl">
+                                        <Layout.Stack
+                                            gap={platformMap.has('Flutter') ? 's' : 'xxl'}
+                                            height="100%"
+                                            justifyContent="space-between">
                                             <img
                                                 class="platform-image"
                                                 src={$app.themeInUse === 'dark'
                                                     ? PlatformFlutterImgSourceDark
                                                     : PlatformFlutterImgSource}
                                                 alt="" />
+                                            {#if platformMap.has('Flutter')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
                                                 <Typography.Title size="s"
                                                     >Flutter</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div></Layout.Stack>
+                                                {#if platformMap.has('Flutter')}<Button.Button
+                                                        size="xs">Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}</Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
                                 </Layout.Stack>
@@ -403,6 +519,7 @@
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     :global(.theme-light) {
+        --progress-background-color: var(--neutral-200);
         .web-image-dark,
         .reactnative-image-dark {
             display: none;
@@ -410,6 +527,7 @@
     }
 
     :global(.theme-dark) {
+        --progress-background-color: var(--neutral-600);
         .web-image-light,
         .reactnative-image-light {
             display: none;
