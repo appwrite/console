@@ -117,7 +117,7 @@
 
             <p class="text u-margin-block-start-16">
                 You'll pay <span class="u-bold">{formatCurrency(estimation.grossAmount)}</span> now.
-                Once your credits run out, you'll be charged
+                {#if couponData?.code}Once your credits run out,{:else}Then{/if} you'll be charged
                 <span class="u-bold">{formatCurrency(estimation.amount)}</span> every 30 days.
             </p>
         {/if}
