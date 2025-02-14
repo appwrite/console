@@ -26,25 +26,23 @@
 </script>
 
 <Tooltip disabled={!tooltipText || !tooltipShow} inline={false}>
-    <div>
-        <Card.Selector
-            {src}
-            {alt}
-            {padding}
-            {imageRadius}
-            {variant}
-            {value}
-            {radius}
-            {disabled}
-            title={title ?? slotTitle?.innerText}
-            bind:group>
-            {#if $$slots.default}
-                <p>
-                    <slot />
-                </p>
-            {/if}
-        </Card.Selector>
-    </div>
+    <Card.Selector
+        {src}
+        {alt}
+        {padding}
+        {imageRadius}
+        {variant}
+        {value}
+        {radius}
+        {disabled}
+        title={title ?? slotTitle?.innerText}
+        bind:group>
+        {#if $$slots.default}
+            <p>
+                <slot />
+            </p>
+        {/if}
+    </Card.Selector>
     <span slot="tooltip">{tooltipText}</span>
 </Tooltip>
 
