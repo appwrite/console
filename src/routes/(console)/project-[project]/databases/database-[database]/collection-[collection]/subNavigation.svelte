@@ -32,23 +32,23 @@
         </h5>
         {#if data?.allCollections?.total}
             <ul
-                class="drop-list u-padding-inline-start-4 u-margin-inline-start-20 u-margin-block-start-8">
+                class="drop-list u-padding-inline-8 u-margin-inline-start-20 u-margin-block-start-8">
                 {#each sortedCollections as collection}
                     {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                     {@const isSelected = collectionId === collection.$id}
                     <li class:is-selected={isSelected}>
                         <a
-                            class="u-padding-block-8 u-padding-inline-12 u-flex u-cross-center u-gap-8"
+                            class="u-padding-block-4 u-padding-inline-12 u-flex u-cross-center u-gap-8"
                             {href}>
                             <Icon icon={IconTable} size="s" />
-                            <span class="text" data-private>{collection.name}</span>
+                            <span class="text collection-name" data-private>{collection.name}</span>
                         </a>
                     </li>
                 {/each}
             </ul>
         {/if}
         <button
-            class="body-text-2 u-block u-margin-block-start-8 is-full-width u-padding-inline-0"
+            class="body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-16 is-full-width u-padding-inline-0"
             on:click={() => {
                 $showCreate = true;
                 $showSubNavigation = false;
@@ -71,6 +71,13 @@
         .is-selected {
             border-radius: var(--border-radius-xs, 4px);
             background: var(--color-bgcolor-neutral-tertiary, #fafafb);
+        }
+
+        .collection-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-clamp: 1;
         }
     }
 </style>
