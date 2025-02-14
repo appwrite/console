@@ -272,10 +272,15 @@
         margin-bottom: -100px;
         z-index: 1;
         opacity: 0;
+        filter: blur(4px);
+        transform: translateY(-12px);
     }
     .start-animation .title-container {
         opacity: 1;
-        transition: opacity var(--welcome-to-appwrite-animation-duration) var(--animation-type)
+        filter: blur(0px);
+        transform: translateY(0);
+        transition-property: opacity, filter, transform;
+        transition: var(--welcome-to-appwrite-animation-duration) var(--animation-type)
             var(--welcome-to-appwrite-delay);
     }
     .grid {
@@ -365,6 +370,7 @@
     }
     .appwrite {
         opacity: 0;
+        filter: blur(4px);
         grid-row-start: 3;
         grid-column-start: 4;
         @media (min-width: 768px) {
@@ -375,7 +381,9 @@
 
     .start-animation .appwrite {
         opacity: 1;
-        transition: opacity var(--icons-fade-out-animation-duration) var(--animation-type)
+        filter: blur(0px);
+        transition-property: opacity, filter;
+        transition: var(--icons-fade-out-animation-duration) var(--animation-type)
             calc(var(--appwrite-icon-fade-in-delay) + 0.35s);
     }
 
