@@ -13,8 +13,7 @@
     import DeploymentDomains from './deploymentDomains.svelte';
     import { protocol } from '$routes/(console)/store';
     import { app } from '$lib/stores/app';
-    import PlaceholderLight from './screenshot-placeholder-light.svg';
-    import PlaceholderDark from './screenshot-placeholder-dark.svg';
+    import { base } from '$app/paths';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList = { total: 0, rules: [] };
@@ -30,31 +29,17 @@
 <Card padding="s" radius="m">
     <Layout.Stack gap="l">
         <Layout.Stack gap="xl" direction="row" alignItems="center">
-            {#if deployment?.preview}
-                <Image
-                    border
-                    radius="s"
-                    width={445}
-                    height={280}
-                    src={deployment?.preview}
-                    alt="Screenshot" />
-            {:else if $app.themeInUse === 'dark'}
-                <Image
-                    border
-                    radius="s"
-                    width={400}
-                    height={280}
-                    src={PlaceholderDark}
-                    alt="Screenshot" />
-            {:else}
-                <Image
-                    border
-                    radius="s"
-                    width={400}
-                    height={280}
-                    src={PlaceholderLight}
-                    alt="Screenshot" />
-            {/if}
+            <Image
+                border
+                radius="s"
+                width={445}
+                height={280}
+                src={deployment?.preview ||
+                    ($app.themeInUse === 'dark'
+                        ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                        : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                alt="Screenshot" />
+
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row" alignItems="flex-start">
                     <Layout.Stack direction="row" gap="xl">
