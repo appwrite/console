@@ -85,7 +85,9 @@
         class={resolvedClasses}
         aria-label={ariaLabel}
         --button-width={fullWidth ? '100%' : 'max-content'}>
+        <slot name="start" slot="start" />
         <slot />
+        <slot slot="end" name="end" />
     </Button.Anchor>
 {:else}
     <Button.Button
