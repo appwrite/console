@@ -58,7 +58,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
     let methods: PaymentList;
-    let billingPlan: Tier = $organization.billingPlan;
+    let billingPlan: Tier = $currentPlan?.$id as Tier;
     let paymentMethodId: string;
     let collaborators: string[] =
         data?.members?.memberships
@@ -99,7 +99,7 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        if ($organization?.billingPlan === BillingPlan.SCALE) {
+        if ($currentPlan?.$id === BillingPlan.SCALE) {
             billingPlan = BillingPlan.SCALE;
         } else {
             billingPlan = BillingPlan.PRO;
@@ -140,7 +140,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: tierToPlan($organization.billingPlan).name,
+                    from: tierToPlan($currentPlan?.$id as Tier).name,
                     to: tierToPlan(billingPlan).name,
                     email: $user.email,
                     reason: feedbackDowngradeOptions.find(
@@ -267,7 +267,7 @@
     $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
-    $: isButtonDisabled = $organization.billingPlan === billingPlan;
+    $: isButtonDisabled = ($currentPlan?.$id as Tier) === billingPlan;
 </script>
 
 <svelte:head>
