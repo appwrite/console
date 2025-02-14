@@ -3,20 +3,19 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Button, Form, Label } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Layout, Icon, Upload, Typography, Tooltip } from '@appwrite.io/pink-svelte';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
     import Details from '../details.svelte';
     import Aside from './aside.svelte';
     import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
-    import { gzipUpload } from '$lib/helpers/files';
     import Configuration from '../configuration.svelte';
     import Domain from '../domain.svelte';
+    import InputFile from '$lib/elements/forms/inputFile.svelte';
 
     export let data;
     let showExitModal = false;
@@ -35,11 +34,6 @@
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
-    let uploadFile: File;
-
-    async function handleChange() {
-        uploadFile = await gzipUpload(files);
-    }
 
     async function create() {
         try {
@@ -80,7 +74,7 @@
 
             const deployment = await sdk.forProject.sites.createDeployment(
                 site.$id,
-                uploadFile,
+                files[0],
                 true,
                 installCommand || undefined,
                 buildCommand || undefined,
@@ -117,30 +111,11 @@
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
             <Layout.Stack gap="xxs">
-                <Label>Files or folder</Label>
-                <Upload.Dropzone
-                    bind:files
-                    extensions={['tar', 'zip', 'gzip', 'gz']}
-                    on:change={handleChange}>
-                    <Layout.Stack alignItems="center" gap="s">
-                        <Layout.Stack
-                            alignItems="center"
-                            justifyContent="center"
-                            direction="row"
-                            gap="s">
-                            <Typography.Text variant="l-500">
-                                Drag and drop files here or click to upload
-                            </Typography.Text>
-                            <Tooltip>
-                                <Icon icon={IconInfo} size="s" />
-                                <svelte:fragment slot="tooltip">
-                                    Only zipped files allowed
-                                </svelte:fragment>
-                            </Tooltip>
-                        </Layout.Stack>
-                        <Typography.Caption variant="400">Max file size: 10MB</Typography.Caption>
-                    </Layout.Stack>
-                </Upload.Dropzone>
+                <InputFile
+                label="Upload a zip file (tar.gz) containing your function source code"
+                allowedFileExtensions={['gz']}
+                bind:files
+                required />
             </Layout.Stack>
             <Details bind:name bind:id />
 
