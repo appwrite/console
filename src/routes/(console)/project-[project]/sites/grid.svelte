@@ -10,10 +10,11 @@
         IconGlobeAlt,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Card, Icon, Popover } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Card, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import RedeployModal from './redeployModal.svelte';
     import { getFrameworkIcon } from './store';
     import { SvgIcon } from '$lib/components';
+    import { app } from '$lib/stores/app';
 
     export let siteList: Models.SiteList;
 
@@ -21,7 +22,7 @@
     let selectedSite: Models.Site = null;
 </script>
 
-<section class="sites-grid">
+<Layout.GridBox>
     {#each siteList.sites as site}
         <Card.Link
             href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}
@@ -29,8 +30,10 @@
             <Card.Media
                 title={site.name}
                 description={`Updated ${timeFromNow(site.$updatedAt)}`}
-                src={site.preview ??
-                    `https://placehold.co/600x400/111/bbb?text=Screenshot+coming+soon&font=inter`}
+                src={site?.preview ||
+                    ($app.themeInUse === 'dark'
+                        ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                        : `${base}/images/sites/screenshot-placeholder-light.svg`)}
                 alt={site.name}
                 avatar>
                 <svelte:fragment slot="avatar">
@@ -74,7 +77,7 @@
             </Card.Media>
         </Card.Link>
     {/each}
-</section>
+</Layout.GridBox>
 
 {#if selectedSite?.$id && showRedeploy}
     <RedeployModal
@@ -82,11 +85,3 @@
         bind:show={showRedeploy}
         site={selectedSite} />
 {/if}
-
-<style lang="scss">
-    .sites-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(237.5px, 1fr));
-        gap: 1rem;
-    }
-</style>

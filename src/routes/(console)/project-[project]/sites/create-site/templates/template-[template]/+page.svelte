@@ -30,7 +30,7 @@
     import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
     import { getFrameworkIcon } from '../../../store';
-    import { iconPath } from '$lib/stores/app';
+    import { app, iconPath } from '$lib/stores/app';
 
     export let data;
 
@@ -323,14 +323,19 @@
                     {name || data.template.name}
                 </Typography.Text>
                 {#if data?.template?.demoUrl}
-                    <Button secondary size="s" external href={data.template.demoUrl}
-                        >View demo</Button>
+                    <Button secondary size="s" external href={data.template.demoUrl}>
+                        View demo
+                    </Button>
                 {/if}
             </Layout.Stack>
 
             <Image
                 objectPosition="top"
-                src={data.template.demoImage}
+                border
+                src={data?.template?.demoImage ||
+                    ($app.themeInUse === 'dark'
+                        ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                        : `${base}/images/sites/screenshot-placeholder-light.svg`)}
                 alt={data.template.name}
                 width={357}
                 height={200} />
