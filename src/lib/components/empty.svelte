@@ -10,6 +10,7 @@
     export let marginTop = false;
     export let allowCreate = true;
     export let description = 'Need a hand? Learn more in our documentation.';
+    export let src: string = null;
 
     function track() {
         if (!allowCreate) {
@@ -25,8 +26,7 @@
 
 {#if single}
     <Card.Base padding="none">
-        <slot name="media" />
-        <Empty title={`Create your first ${target}`} {description}>
+        <Empty title={`Create your first ${target}`} {description} {src}>
             <svelte:fragment slot="actions">
                 <Button
                     external
