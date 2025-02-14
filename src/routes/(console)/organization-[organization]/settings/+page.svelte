@@ -105,4 +105,4 @@
     {/if}
 </Container>
 
-<Delete bind:showDelete  />
+<Delete bind:showDelete />
