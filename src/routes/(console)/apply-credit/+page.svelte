@@ -215,11 +215,11 @@
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
             {/if}
             {#if selectedOrgId === newOrgId}
-                Create Organization
+                Create organization
             {:else if campaign?.plan && selectedOrg && selectedOrg.billingPlan !== campaign?.plan}
                 Upgrade plan
             {:else}
-                Apply Credits
+                Apply credits
             {/if}
         </Button>
     </WizardSecondaryFooter>
