@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ url, route }) => {
 
     const organizations = isCloud
         ? await sdk.forConsole.billing.listOrganization(queries)
-        : sdk.forConsole.teams.list(queries);
+        : await sdk.forConsole.teams.list(queries);
 
     return {
         offset,
