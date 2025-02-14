@@ -356,11 +356,18 @@
         opacity: 1;
         visibility: visible;
         color: var(--color-fgcolor-neutral-secondary, #56565c);
+        filter: blur(0);
+
+        &.has-text {
+            transition-delay: 0.1s;
+        }
 
         &.no-text {
             visibility: hidden;
             opacity: 0;
             width: 0;
+            filter: blur(2px);
+            transition-delay: 0s;
         }
     }
 
