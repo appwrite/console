@@ -71,8 +71,8 @@
     .list-container {
         display: flex;
         flex-direction: column;
-        height: 100%; /* Takes full height of Sidebar.Base */
-        min-height: 0; /* Allows flex children to shrink below content size */
+        height: 100%;
+        min-height: 0;
     }
 
     .collection-content {
@@ -80,6 +80,28 @@
         overflow-y: auto;
         min-height: 0;
         margin-bottom: auto;
+
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-border-neutral, #ededf0) transparent;
+
+        &::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 2px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: var(--color-border-neutral, #ededf0);
+            border-radius: 2px;
+
+            &:hover {
+                background: var(--color-border-neutral-emphasis, #dbdbdf);
+            }
+        }
     }
 
     .drop-list {
