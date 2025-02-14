@@ -22,7 +22,7 @@ import { goto } from '$app/navigation';
 import { base } from '$app/paths';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
-import { BillingPlan } from '$lib/constants';
+import { BillingPlan, NEW_DEV_PRO_UPGRADE_CUPON } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
@@ -465,7 +465,7 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (isDismissed) return;
     // check if coupon already applied
     try {
-        await sdk.forConsole.billing.getCoupon('appw50');
+        await sdk.forConsole.billing.getCoupon(NEW_DEV_PRO_UPGRADE_CUPON);
     } catch (e) {
         return;
     }
