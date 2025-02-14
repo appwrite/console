@@ -389,7 +389,7 @@
         display: flex;
         width: 199px;
         max-height: 48px;
-        padding: var(--space-4, 8px) var(--space-7, 16px) var(--space-4, 8px) var(--space-7, 16px);
+        padding: var(--space-4, 8px) var(--space-7, 16px);
         margin-left: calc(-1 * var(--space-7, 16px));
         justify-content: space-between;
         align-items: center;

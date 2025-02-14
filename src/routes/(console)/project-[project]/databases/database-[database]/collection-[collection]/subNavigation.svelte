@@ -26,7 +26,7 @@
             <h5 class="eyebrow-heading-3 u-margin-inline-auto">Collections</h5>
         </a>
         <h5
-            class="database-name u-flex u-cross-center body-text-2 u-gap-8 u-padding-inline-12 u-padding-block-8 is-not-mobile is-selected">
+            class="u-flex u-cross-center body-text-2 u-gap-8 u-padding-inline-12 u-padding-block-8 is-not-mobile is-selected">
             <Icon icon={IconDatabase} size="s" color="light-neutral" />
             {data.database.name}
         </h5>
@@ -51,7 +51,7 @@
             {/if}
         </div>
         <button
-            class="new-button body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-16 is-full-width u-padding-inline-0"
+            class="new-button body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-8 is-full-width"
             on:click={() => {
                 $showCreate = true;
                 $showSubNavigation = false;
@@ -63,11 +63,6 @@
 </Sidebar.Base>
 
 <style lang="scss">
-    .database-name {
-        border-radius: var(--border-radius-xs, 4px);
-        background: var(--color-bgcolor-neutral-default, #fafafb);
-    }
-
     .list-container {
         display: flex;
         flex-direction: column;
@@ -80,7 +75,7 @@
         overflow-y: auto;
         min-height: 0;
         margin-bottom: auto;
-
+        padding-bottom: 16px;
         scrollbar-width: thin;
         scrollbar-color: var(--color-border-neutral, #ededf0) transparent;
 
@@ -108,7 +103,8 @@
         border-left: 1px solid var(--color-border-neutral, #ededf0);
         flex: 1;
 
-        .is-selected {
+        .is-selected,
+        li:hover {
             border-radius: var(--border-radius-xs, 4px);
             background: var(--color-bgcolor-neutral-tertiary, #fafafb);
         }
