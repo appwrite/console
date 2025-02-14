@@ -35,10 +35,13 @@
     variables.map((variable) => {
         if (variable.value === '{apiEndpoint}') {
             variable.value = getApiEndpoint();
+            variable.placeholder = getApiEndpoint();
         } else if (variable.value === '{projectId}') {
             variable.value = $page.params.project;
+            variable.placeholder = $page.params.project;
         } else if (variable.value === '{projectName}') {
             variable.value = $project.name;
+            variable.placeholder = $project.name;
         } else return variable;
     });
     variables = [...variables];
