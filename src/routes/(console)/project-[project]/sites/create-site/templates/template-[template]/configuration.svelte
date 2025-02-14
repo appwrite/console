@@ -72,7 +72,10 @@
     <Layout.Stack gap="l">
         <Layout.Stack>
             {#if requiredVariables?.length}
-                <Accordion title="Required environment variables" open>
+                <Accordion
+                    title="Required environment variables"
+                    open
+                    hideDivider={!!optionalVariables?.length}>
                     <Layout.Stack>
                         Provide the values for the required environment variables to run this
                         application.
@@ -108,7 +111,7 @@
                 </Accordion>
             {/if}
             {#if optionalVariables?.length}
-                <Accordion title="Environment variables" badge="Optional">
+                <Accordion title="Environment variables" badge="Optional" hideDivider>
                     <Layout.Stack>
                         Set up environment variables to securely manage keys and settings for your
                         project.
@@ -125,7 +128,7 @@
                                         autocomplete={false}
                                         minlength={variable.type === 'password' ? 0 : null}
                                         showPasswordButton={variable.type === 'password'}
-                                        bind:value={variables[variable.name].value} />
+                                        bind:value={variable.value} />
                                 </Layout.Stack>
                                 <Popover placement="bottom-end" let:toggle>
                                     <Button
