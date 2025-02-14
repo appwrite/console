@@ -5,28 +5,27 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import type { CreditList, Invoice, Plan } from '$lib/sdk/billing';
+    import type { Aggregation, CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
-    import { type Models } from '@appwrite.io/console';
+    import CancelDowngradeModel from './cancelDowngradeModal.svelte';
 
-    export let invoices: Array<Invoice>;
-    export let members: Models.MembershipList;
     export let currentPlan: Plan;
     export let creditList: CreditList;
+    export let currentInvoice: Invoice | undefined = undefined;
+    export let currentAggregation: Aggregation | undefined = undefined;
 
-    const currentInvoice: Invoice | undefined = invoices.length > 0 ? invoices[0] : undefined;
-    const extraMembers = members.total > 1 ? members.total - 1 : 0;
+    let showCancel: boolean = false;
+
     const availableCredit = creditList.available;
     const today = new Date();
     const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
     const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
-    const extraAddons = currentInvoice ? currentInvoice.usage?.length : 0;
 </script>
 
 {#if $organization}
@@ -39,9 +38,7 @@
         </p>
         <svelte:fragment slot="aside">
             <p class="text u-bold">
-                Billing period: {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
-                    $organization?.billingNextInvoiceDate
-                )}
+                Due at: {toLocaleDate($organization?.billingNextInvoiceDate)}
             </p>
             <Card isTile style="--p-card-padding: 1.5rem;" class="card-only-on-desktop">
                 <Collapsible>
@@ -58,12 +55,14 @@
                             </div>
                         </div>
 
-                        {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION && extraUsage > 0}
+                        {#if currentPlan.budgeting && extraUsage > 0}
                             <CollapsibleItem gap={8}>
                                 <svelte:fragment slot="beforetitle">
                                     <span class="body-text-2"><b>Add-ons</b></span><span
                                         class="inline-tag"
-                                        >{extraMembers ? extraAddons + 1 : extraAddons}</span>
+                                        >{currentAggregation.additionalMembers > 0
+                                            ? currentInvoice.usage.length + 1
+                                            : currentInvoice.usage.length}</span>
                                     <div class="icon">
                                         <span class="icon-cheveron-down" aria-hidden="true"></span>
                                     </div>
@@ -77,7 +76,7 @@
                                 </svelte:fragment>
 
                                 <ul>
-                                    {#if extraMembers}
+                                    {#if currentAggregation.additionalMembers}
                                         <li class="u-flex-vertical u-gap-4 u-padding-block-8">
                                             <div class="u-flex u-gap-4">
                                                 <h5 class="body-text-2 u-stretch">
@@ -85,16 +84,14 @@
                                                 </h5>
                                                 <div>
                                                     {formatCurrency(
-                                                        extraMembers *
-                                                            (currentPlan?.addons?.member?.price ??
-                                                                0)
+                                                        currentAggregation.additionalMemberAmount
                                                     )}
                                                 </div>
                                             </div>
                                             <div class="u-flex u-gap-4">
                                                 <h5
                                                     class="body-text-2 u-stretch u-color-text-offline">
-                                                    {extraMembers}
+                                                    {currentAggregation.additionalMembers}
                                                 </h5>
                                             </div>
                                         </li>
@@ -102,10 +99,12 @@
                                     {#if currentInvoice?.usage}
                                         {#each currentInvoice.usage as excess, i}
                                             <li
-                                                class="u-flex-vertical u-gap-4 {extraMembers
+                                                class="u-flex-vertical u-gap-4 {currentAggregation.additionalMembers >
+                                                0
                                                     ? 'u-padding-block-8'
                                                     : 'u-padding-block-start-8'}"
-                                                class:u-sep-block-start={i > 0 || extraMembers}>
+                                                class:u-sep-block-start={i > 0 ||
+                                                    currentAggregation.additionalMembers > 0}>
                                                 {#if ['storage', 'bandwidth'].includes(excess.name)}
                                                     {@const excessValue = humanFileSize(
                                                         excess.value
@@ -147,7 +146,7 @@
                             </CollapsibleItem>
                         {/if}
 
-                        {#if $organization?.billingPlan !== BillingPlan.FREE && availableCredit > 0}
+                        {#if currentPlan.supportsCredit && availableCredit > 0}
                             <CollapsibleItem noContent gap={4}>
                                 <span class="body-text-2 u-flex u-cross-center u-gap-2"
                                     ><svg
@@ -229,17 +228,21 @@
             {:else}
                 <div
                     class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
-                    <Button
-                        text
-                        disabled={$organization?.markedForDeletion}
-                        href={$upgradeURL}
-                        on:click={() =>
-                            trackEvent('click_organization_plan_update', {
-                                from: 'button',
-                                source: 'billing_tab'
-                            })}>
-                        Change plan
-                    </Button>
+                    {#if $organization?.billingPlanDowngrade !== null}
+                        <Button text on:click={() => (showCancel = true)}>Cancel change</Button>
+                    {:else}
+                        <Button
+                            text
+                            disabled={$organization?.markedForDeletion}
+                            href={$upgradeURL}
+                            on:click={() =>
+                                trackEvent('click_organization_plan_update', {
+                                    from: 'button',
+                                    source: 'billing_tab'
+                                })}>
+                            Change plan
+                        </Button>
+                    {/if}
                     <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
                     </Button>
@@ -248,6 +251,7 @@
         </svelte:fragment>
     </CardGrid>
 {/if}
+<CancelDowngradeModel bind:showCancel />
 
 <style>
     :root {

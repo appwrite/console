@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { currentPlan, organization } from '$lib/stores/organization';
+    import { organization } from '$lib/stores/organization';
     import BudgetAlert from './budgetAlert.svelte';
     import BudgetCap from './budgetCap.svelte';
     import PlanSummary from './planSummary.svelte';
@@ -110,10 +110,9 @@
     {/if}
     {#if $organization?.billingPlanDowngrade}
         <Alert type="info" class="common-section">
-            Your organization will change to a {tierToPlan($organization?.billingPlanDowngrade)
-                .name} plan once your current billing cycle ends and your invoice is paid on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}.
+            Your organization has changed to {tierToPlan($organization?.billingPlanDowngrade).name} plan.
+            You will continue to have access to {tierToPlan($organization?.billingPlan).name} plan features
+            until your billing period ends on {toLocaleDate($organization.billingNextInvoiceDate)}.
         </Alert>
     {/if}
     <div class="common-section">
@@ -121,9 +120,9 @@
     </div>
     <PlanSummary
         creditList={data?.creditList}
-        members={data?.members}
-        currentPlan={$currentPlan}
-        invoices={data?.invoices.invoices} />
+        currentPlan={data?.aggregationBillingPlan}
+        currentAggregation={data?.billingAggregation}
+        currentInvoice={data?.billingInvoice} />
     <PaymentHistory />
     <PaymentMethods />
     <BillingAddress billingAddress={data?.billingAddress} />

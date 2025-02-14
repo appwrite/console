@@ -3,12 +3,8 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        EstimatedTotalBox,
-        PlanComparisonBox,
-        PlanSelection,
-        SelectPaymentMethod
-    } from '$lib/components/billing';
+    import { PlanComparisonBox, SelectPaymentMethod, SelectPlan } from '$lib/components/billing';
+    import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
@@ -19,10 +15,15 @@
         WizardSecondaryFooter
     } from '$lib/layout';
     import type { Coupon, PaymentList } from '$lib/sdk/billing';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { isOrganization, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organizationList, type Organization } from '$lib/stores/organization';
+    import {
+        organizationList,
+        type OrganizationError,
+        type Organization
+    } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
@@ -79,6 +80,21 @@
                 billingPlan = plan as BillingPlan;
             }
         }
+        if (
+            anyOrgFree ||
+            ($page.url.searchParams.has('type') &&
+                $page.url.searchParams.get('type') === 'createPro')
+        ) {
+            billingPlan = BillingPlan.PRO;
+        }
+        if ($page.url.searchParams.has('type')) {
+            const type = $page.url.searchParams.get('type');
+            if (type === 'payment_confirmed') {
+                const organizationId = $page.url.searchParams.get('id');
+                const invites = $page.url.searchParams.getAll('invites');
+                await validate(organizationId, invites);
+            }
+        }
     });
 
     async function loadPaymentMethods() {
@@ -86,9 +102,29 @@
         paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     }
 
+    async function validate(organizationId: string, invites: string[]) {
+        try {
+            const org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            if (isOrganization(org)) {
+                await preloadData(`${base}/console/organization-${org.$id}`);
+                await goto(`${base}/console/organization-${org.$id}`);
+                addNotification({
+                    type: 'success',
+                    message: `${org.name ?? 'Organization'} has been created`
+                });
+            }
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+            trackError(e, Submit.OrganizationCreate);
+        }
+    }
+
     async function create() {
         try {
-            let org: Organization;
+            let org: Organization | OrganizationError;
 
             if (billingPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.createOrganization(
@@ -104,37 +140,29 @@
                     name,
                     billingPlan,
                     paymentMethodId,
-                    null
+                    null,
+                    couponData.code ? couponData.code : null,
+                    collaborators,
+                    billingBudget,
+                    taxId
                 );
 
-                //Add budget
-                if (billingBudget) {
-                    await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-                }
-
-                //Add coupon
-                if (couponData?.code) {
-                    await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                    trackEvent(Submit.CreditRedeem);
-                }
-
-                //Add collaborators
-                if (collaborators?.length) {
-                    collaborators.forEach(async (collaborator) => {
-                        await sdk.forConsole.teams.createMembership(
-                            org.$id,
-                            ['developer'],
-                            collaborator,
-                            undefined,
-                            undefined,
-                            `${$page.url.origin}${base}/invite`
-                        );
-                    });
-                }
-
-                // Add tax ID
-                if (taxId) {
-                    await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                if (!isOrganization(org) && org.status === 402) {
+                    let clientSecret = org.clientSecret;
+                    let params = new URLSearchParams();
+                    params.append('type', 'payment_confirmed');
+                    params.append('id', org.teamId);
+                    for (let index = 0; index < collaborators.length; index++) {
+                        const invite = collaborators[index];
+                        params.append('invites', invite);
+                    }
+                    await confirmPayment(
+                        '',
+                        clientSecret,
+                        paymentMethodId,
+                        '/console/create-organization?' + params.toString()
+                    );
+                    await validate(org.teamId, collaborators);
                 }
             }
 
@@ -144,13 +172,15 @@
                 members_invited: collaborators?.length
             });
 
-            await invalidate(Dependencies.ACCOUNT);
-            await preloadData(`${base}/organization-${org.$id}`);
-            await goto(`${base}/organization-${org.$id}`);
-            addNotification({
-                type: 'success',
-                message: `${name ?? 'Organization'} has been created`
-            });
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await preloadData(`${base}/organization-${org.$id}`);
+                await goto(`${base}/organization-${org.$id}`);
+                addNotification({
+                    type: 'success',
+                    message: `${org.name ?? 'Organization'} has been created`
+                });
+            }
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -186,7 +216,7 @@
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
-            <PlanSelection bind:billingPlan {anyOrgFree} isNewOrg />
+            <SelectPlan bind:billingPlan {anyOrgFree} isNewOrg />
             {#if billingPlan !== BillingPlan.FREE}
                 <FormList class="u-margin-block-start-24">
                     <InputTags
@@ -213,11 +243,7 @@
         </Form>
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE}
-                <EstimatedTotalBox
-                    {billingPlan}
-                    {collaborators}
-                    bind:couponData
-                    bind:billingBudget />
+                <EstimatedTotal bind:billingBudget {billingPlan} {collaborators} bind:couponData />
             {:else}
                 <PlanComparisonBox />
             {/if}

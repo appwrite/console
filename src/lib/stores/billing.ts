@@ -1,7 +1,7 @@
 import { page } from '$app/stores';
 import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
-import { organization, type Organization } from './organization';
+import { organization, type Organization, type OrganizationError } from './organization';
 import type {
     InvoiceList,
     AddressesList,
@@ -9,8 +9,8 @@ import type {
     PaymentList,
     PlansMap,
     PaymentMethodData,
-    OrganizationUsage,
-    Plan
+    Plan,
+    Aggregation
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
@@ -22,13 +22,12 @@ import { goto } from '$app/navigation';
 import { base } from '$app/paths';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
-import { BillingPlan } from '$lib/constants';
+import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import { trackEvent } from '$lib/actions/analytics';
 import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
-import { last } from '$lib/helpers/array';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
 import { user } from './user';
 import { browser } from '$app/environment';
@@ -283,7 +282,8 @@ export async function checkForUsageLimit(org: Organization) {
 
     const members = org.total;
     const plan = get(plansInfo)?.get(org.billingPlan);
-    const membersOverflow = members > plan.members ? members - (plan.members || members) : 0;
+    const membersOverflow =
+        members - 1 > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
@@ -463,30 +463,36 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
     const isDismissed = !!localStorage.getItem('newDevUpgradePro');
     if (isDismissed) return;
-    if (now - accountCreated < 1000 * 60 * 60 * 24 * 37) {
-        headerAlert.add({
-            id: 'newDevUpgradePro',
-            component: newDevUpgradePro,
-            show: true,
-            importance: 1
-        });
+    // check if coupon already applied
+    try {
+        await sdk.forConsole.billing.getCoupon(NEW_DEV_PRO_UPGRADE_COUPON);
+    } catch (e) {
+        return;
     }
+    headerAlert.add({
+        id: 'newDevUpgradePro',
+        component: newDevUpgradePro,
+        show: true,
+        importance: 1
+    });
 }
 export const upgradeURL = derived(
     page,
     ($page) => `${base}/organization-${$page.data?.organization?.$id}/change-plan`
 );
+export const billingURL = derived(
+    page,
+    ($page) => `${base}/organization-${$page.data?.organization?.$id}/billing`
+);
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(usage: OrganizationUsage, plan: Plan, members: number) {
-    const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
+export function calculateExcess(addon: Aggregation, plan: Plan) {
     return {
-        bandwidth: calculateResourceSurplus(totBandwidth, plan.bandwidth),
-        storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
-        users: calculateResourceSurplus(usage?.usersTotal, plan.users),
-        executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
-        members: calculateResourceSurplus(members, plan.members)
+        bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
+        storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),
+        executions: calculateResourceSurplus(addon.usageExecutions, plan.executions, 'GB'),
+        members: addon.additionalMembers
     };
 }
 
@@ -494,4 +500,8 @@ export function calculateResourceSurplus(total: number, limit: number, limitUnit
     if (total === undefined || limit === undefined) return 0;
     const realLimit = (limitUnit ? sizeToBytes(limit, limitUnit) : limit) || Infinity;
     return total > realLimit ? total - realLimit : 0;
+}
+
+export function isOrganization(org: Organization | OrganizationError): org is Organization {
+    return (org as Organization).$id !== undefined;
 }
