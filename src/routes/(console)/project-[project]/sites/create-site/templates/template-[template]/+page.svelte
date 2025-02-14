@@ -322,7 +322,10 @@
                 <Typography.Text variant="m-500" truncate>
                     {name || data.template.name}
                 </Typography.Text>
-                <Button secondary size="s" external href={data.template.demoUrl}>View demo</Button>
+                {#if data?.template?.demoUrl}
+                    <Button secondary size="s" external href={data.template.demoUrl}
+                        >View demo</Button>
+                {/if}
             </Layout.Stack>
 
             <Image
