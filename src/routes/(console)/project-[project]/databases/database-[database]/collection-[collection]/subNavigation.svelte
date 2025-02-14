@@ -13,12 +13,12 @@
     $: collectionId = $page.params.collection;
 
     $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
-        a.name.localeCompare(b.name)
+        a.$createdAt > b.$createdAt ? -1 : 1
     );
 </script>
 
 <Sidebar.Base state="open" resizable={false}>
-    <section slot="top" style:width="100%">
+    <section class="list-container" slot="top" style:width="100%">
         <a
             class="u-flex u-cross-center u-sep-block-end u-padding-block-12 is-not-desktop"
             href={`${base}/project-${project}/databases/database-${databaseId}?openNavbar=true`}>
@@ -30,25 +30,28 @@
             <Icon icon={IconDatabase} size="s" color="light-neutral" />
             {data.database.name}
         </h5>
-        {#if data?.allCollections?.total}
-            <ul
-                class="drop-list u-padding-inline-8 u-margin-inline-start-20 u-margin-block-start-8">
-                {#each sortedCollections as collection}
-                    {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
-                    {@const isSelected = collectionId === collection.$id}
-                    <li class:is-selected={isSelected}>
-                        <a
-                            class="u-padding-block-4 u-padding-inline-12 u-flex u-cross-center u-gap-8"
-                            {href}>
-                            <Icon icon={IconTable} size="s" />
-                            <span class="text collection-name" data-private>{collection.name}</span>
-                        </a>
-                    </li>
-                {/each}
-            </ul>
-        {/if}
+        <div class="collection-content">
+            {#if data?.allCollections?.total}
+                <ul
+                    class="drop-list u-padding-inline-8 u-margin-inline-start-20 u-margin-block-start-8">
+                    {#each sortedCollections as collection}
+                        {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
+                        {@const isSelected = collectionId === collection.$id}
+                        <li class:is-selected={isSelected}>
+                            <a
+                                class="u-padding-block-4 u-padding-inline-12 u-flex u-cross-center u-gap-8"
+                                {href}>
+                                <Icon icon={IconTable} size="s" />
+                                <span class="text collection-name" data-private
+                                    >{collection.name}</span>
+                            </a>
+                        </li>
+                    {/each}
+                </ul>
+            {/if}
+        </div>
         <button
-            class="body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-16 is-full-width u-padding-inline-0"
+            class="new-button body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-16 is-full-width u-padding-inline-0"
             on:click={() => {
                 $showCreate = true;
                 $showSubNavigation = false;
@@ -65,8 +68,23 @@
         background: var(--color-bgcolor-neutral-default, #fafafb);
     }
 
+    .list-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* Takes full height of Sidebar.Base */
+        min-height: 0; /* Allows flex children to shrink below content size */
+    }
+
+    .collection-content {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+        margin-bottom: auto;
+    }
+
     .drop-list {
         border-left: 1px solid var(--color-border-neutral, #ededf0);
+        flex: 1;
 
         .is-selected {
             border-radius: var(--border-radius-xs, 4px);
@@ -79,5 +97,9 @@
             text-overflow: ellipsis;
             line-clamp: 1;
         }
+    }
+
+    .new-button {
+        flex-shrink: 0;
     }
 </style>
