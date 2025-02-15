@@ -9,16 +9,17 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
-    import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import Configuration from '../../configuration.svelte';
+    import Domain from '../../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -27,7 +28,7 @@
     let isSubmitting = writable(false);
 
     let name = '';
-    let id = '';
+    let id = ID.unique();
     let framework: Models.Framework = data.frameworks.frameworks[0];
     let adapter = framework?.adapters[0];
     let branch: string;
@@ -37,10 +38,13 @@
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
+    let domain = id;
+    let domainIsValid = true;
 
     onMount(() => {
         installation.set(data.installation);
         repository.set(data.repository);
+        name = data.repository.name;
     });
 
     async function loadBranches() {
@@ -59,61 +63,67 @@
     }
 
     async function create() {
-        try {
-            const fr = Object.values(Framework).find((f) => f === framework.key);
-            const buildRuntime = Object.values(BuildRuntime).find(
-                (f) => f === framework.buildRuntime
-            );
-            let site = await sdk.forProject.sites.create(
-                id || ID.unique(),
-                name,
-                fr,
-                buildRuntime,
-                undefined,
-                undefined,
-                installCommand,
-                buildCommand,
-                outputDirectory,
-                undefined,
-                framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
-                data.installation.$id,
-                null,
-                data.repository.id,
-                branch,
-                silentMode,
-                rootDir
-            );
-            trackEvent(Submit.SiteCreate, {
-                source: 'repository',
-                framework: framework.key
-            });
-
-            //Add variables
-            await Promise.all(
-                Object.keys(variables).map(async (key) => {
-                    await sdk.forProject.sites.createVariable(
-                        site.$id,
-                        key,
-                        variables[key].value,
-                        variables[key].secret
-                    );
-                })
-            );
-
-            const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                Query.limit(1)
-            ]);
-            console.log(deployments);
-            const deployment = deployments[0];
-            await goto(
-                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
-            );
-        } catch (e) {
+        if (!domainIsValid) {
             addNotification({
                 type: 'error',
-                message: e.message
+                message: 'Please enter a valid domain'
             });
-            trackError(e, Submit.SiteCreate);
+            return;
+        } else {
+            try {
+                const fr = Object.values(Framework).find((f) => f === framework.key);
+                const buildRuntime = Object.values(BuildRuntime).find(
+                    (f) => f === framework.buildRuntime
+                );
+                let site = await sdk.forProject.sites.create(
+                    id || ID.unique(),
+                    name,
+                    fr,
+                    buildRuntime,
+                    undefined,
+                    undefined,
+                    installCommand,
+                    buildCommand,
+                    outputDirectory,
+                    domain || undefined,
+                    framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
+                    data.installation.$id,
+                    null,
+                    data.repository.id,
+                    branch,
+                    silentMode,
+                    rootDir
+                );
+                trackEvent(Submit.SiteCreate, {
+                    source: 'repository',
+                    framework: framework.key
+                });
+
+                //Add variables
+                const promises = variables.map((variable) =>
+                    sdk.forProject.sites.createVariable(
+                        site.$id,
+                        variable.key,
+                        variable.value,
+                        variable?.secret ?? false
+                    )
+                );
+                await Promise.all(promises);
+
+                const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
+                    Query.limit(1)
+                ]);
+                const deployment = deployments[0];
+                await goto(
+                    `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                );
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+                trackError(e, Submit.SiteCreate);
+            }
         }
     }
 </script>
@@ -129,17 +139,17 @@
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
-            <Card>
+            <Card radius="s" padding="s">
                 <Layout.Stack
                     direction="row"
                     justifyContent="space-between"
                     alignItems="center"
                     gap="xs">
-                    <Layout.Stack direction="row" alignItems="center">
-                        <Icon icon={IconGithub} />
-                        <p>
-                            {data.repository?.name}
-                        </p>
+                    <Layout.Stack direction="row" alignItems="center" gap="xs">
+                        <Icon icon={IconGithub} color="--color-fgcolor-neutral-primary" />
+                        <Typography.Text variation="m-500" color="--color-fgcolor-neutral-primary">
+                            {data.repository?.organization}/{data.repository?.name}
+                        </Typography.Text>
                     </Layout.Stack>
                     <Button
                         secondary
@@ -177,19 +187,16 @@
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
 
-            <!-- <Domain /> -->
+            <Domain bind:domain bind:domainIsValid />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} />
+        <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} {domain} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
-        <Button size="s" fullWidthMobile secondary on:click={() => (showExitModal = true)}>
-            Cancel
-        </Button>
+        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
-            size="s"
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>

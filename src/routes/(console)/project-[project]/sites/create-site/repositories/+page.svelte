@@ -47,15 +47,33 @@
     <svelte:fragment slot="aside">
         <Card radius="s" padding="s">
             <Layout.Stack gap="l">
-                <Layout.Stack gap="xxs">
-                    <Typography.Text variation="m-400">
-                        Don't have a repository set up yet? Explore our templates, available in all
-                        your favorite frameworks, and deploy in seconds.
-                    </Typography.Text>
-                </Layout.Stack>
-                <Button
-                    href={`${base}/project-${$page.params.project}/sites/create-site/templates`}
-                    secondary>View templates</Button>
+                {#if !hasInstallations}
+                    <Layout.Stack gap="xxs">
+                        <Typography.Text variation="m-400">
+                            Don't have a repository set up yet? Explore our templates, available in
+                            all your favorite frameworks, and deploy in seconds.
+                        </Typography.Text>
+                    </Layout.Stack>
+                    <Button
+                        href={`${base}/project-${$page.params.project}/sites/create-site/templates`}
+                        secondary>View templates</Button>
+                {:else}
+                    <Layout.Stack gap="s">
+                        <Typography.Text variation="m-500" color="--color-fgcolor-neutral-primary">
+                            Missing a repository?
+                        </Typography.Text>
+                        <Typography.Text variation="m-400">
+                            Check your permissions in GitHub, your repository might be set to
+                            private.
+                        </Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="s" direction="row">
+                        <Button href="#" secondary>Docs</Button>
+                        <Button
+                            href={`https://github.com/${data.installations.installations[0].organization}`}
+                            text>Go to GitHub</Button>
+                    </Layout.Stack>
+                {/if}
             </Layout.Stack>
         </Card>
     </svelte:fragment>

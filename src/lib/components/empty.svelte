@@ -1,15 +1,16 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
-    import { Empty, Card } from '@appwrite.io/pink-svelte';
+    import { Empty, Card, Layout, Avatar, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let single = false;
-    export let isCard = true;
     export let target: string = null;
     export let href: string = null;
     export let marginTop = false;
     export let allowCreate = true;
     export let description = 'Need a hand? Learn more in our documentation.';
+    export let src: string = null;
 
     function track() {
         if (!allowCreate) {
@@ -25,8 +26,7 @@
 
 {#if single}
     <Card.Base padding="none">
-        <slot name="media" />
-        <Empty title={`Create your first ${target}`} {description}>
+        <Empty title={`Create your first ${target}`} {description} {src}>
             <svelte:fragment slot="actions">
                 <Button
                     external
@@ -48,23 +48,12 @@
         </Empty>
     </Card.Base>
 {:else}
-    <button
-        on:click|preventDefault
-        on:click={track}
-        aria-label="create"
-        type="button"
-        class:card={isCard}
-        class="u-grid u-cross-center u-width-full-line dashed"
-        class:common-section={marginTop}>
-        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-            <div class="common-section">
-                <div class="button is-secondary is-only-icon">
-                    <i class="icon-plus" />
-                </div>
-            </div>
-            <div class="common-section">
-                <slot />
-            </div>
-        </div>
-    </button>
+    <Card.Button on:click on:click={track} aria-label="create">
+        <Layout.Stack justifyContent="center" alignItems="center" gap="m">
+            <Avatar>
+                <Icon icon={IconPlus} />
+            </Avatar>
+            <Typography.Text variation="m-400"><slot /></Typography.Text>
+        </Layout.Stack>
+    </Card.Button>
 {/if}

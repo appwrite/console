@@ -134,8 +134,9 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.$id}`}
+                            href={`/console/project-${project.$id}/overview`}
                             class="link"
+                            class:active={pathname.includes('platforms')}
                             on:click={() => {
                                 sideBarIsOpen = false;
                             }}
@@ -228,7 +229,10 @@
             {#if project}
                 <div class="only-desktop">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
-                        <a href={`/console/project-${project.$id}/settings`} class="link"
+                        <a
+                            href={`/console/project-${project.$id}/settings`}
+                            class="link"
+                            class:active={pathname.includes('settings')}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}

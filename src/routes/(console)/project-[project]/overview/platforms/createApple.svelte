@@ -10,12 +10,10 @@
         Typography,
         Fieldset,
         InlineCode,
-        Spinner
     } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconApple, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -44,7 +42,7 @@
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
         `;
 
-    let platform: PlatformType = PlatformType.Appleios;
+    export let platform: PlatformType = PlatformType.Appleios;
 
     let platforms: { [key: string]: PlatformType } = {
         iOS: PlatformType.Appleios,
@@ -90,8 +88,10 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`) && isPlatformCreated) {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.PROJECT);
                 unsubscribe();
             }
         });
@@ -116,7 +116,8 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                             bind:group={platform}
                             variant="primary"
                             {value}
-                            title={key} />
+                            title={key}
+                            disabled={isPlatformCreated} />
                     </div>
                 {/each}
             </Layout.Stack>
@@ -226,35 +227,43 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                         icon={IconAppwrite} />
                 </Layout.Stack>
 
-                <Layout.Stack direction="row" justifyContent="center" alignItems="center" gap="l">
-                    {#if !connectionSuccessful}
-                        <Spinner />
-                        <Typography.Text variant="m-400">Waiting for connection...</Typography.Text>
-                    {:else}
-                        <!-- cannot apply fade on components -->
-                        <div
-                            in:fade={{ duration: 2500 }}
-                            class="u-flex u-flex-vertical u-cross-center u-gap-8">
-                            <Typography.Title size="m">Congratulations!</Typography.Title>
-
+                {#if isPlatformCreated}
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                        gap="l">
+                        {#if !connectionSuccessful}
                             <Typography.Text variant="m-400"
-                                >You connected your app successfully.</Typography.Text>
-                        </div>
-                    {/if}
-                </Layout.Stack>
+                                >Waiting for connection...</Typography.Text>
+                        {:else}
+                            <!-- cannot apply fade on components -->
+                            <div
+                                in:fade={{ duration: 2500 }}
+                                class="u-flex u-flex-vertical u-cross-center u-gap-8">
+                                <Typography.Title size="m">Congratulations!</Typography.Title>
+
+                                <Typography.Text variant="m-400"
+                                    >You connected your app successfully.</Typography.Text>
+                            </div>
+                        {/if}
+                    </Layout.Stack>
+                {/if}
             </Layout.Stack>
         </Card>
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
-        <Button
-            size="s"
-            fullWidthMobile
-            secondary
-            disabled={isCreatingPlatform}
-            href={`${base}/project-${projectId}/overview`}>
-            Go to dashboard
-        </Button>
+        {#if isPlatformCreated}
+            <Button
+                size="s"
+                fullWidthMobile
+                secondary
+                disabled={isCreatingPlatform}
+                href={location.pathname}>
+                Go to dashboard
+            </Button>
+        {/if}
     </svelte:fragment>
 </Wizard>
 

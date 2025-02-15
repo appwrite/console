@@ -41,11 +41,12 @@
 {/if}
 <Card.Base padding="none" border="dashed">
     <Empty
+        type="secondary"
         title="No installation was added to the project yet"
         description="Add an installation to connect repositories">
         <svelte:fragment slot="actions">
             <Button size="m" secondary href={connectGitHub().toString()} disabled={!isVcsEnabled}>
-                <Icon icon={IconGithub} size="m" />
+                <Icon slot="start" icon={IconGithub} size="m" />
                 Connect to GitHub
             </Button>
         </svelte:fragment>

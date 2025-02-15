@@ -1,17 +1,26 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
+    import { sdk } from '$lib/stores/sdk';
     import { Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
 
     onMount(async () => {
-        //check if user has access
-        //if not, redirect to login
+        const params = new URLSearchParams(window.location.search);
 
-        //simulate login
-        setTimeout(() => {
-            goto(`${base}/auth/preview/access`);
-        }, 3000);
+        const projectId = params.get('projectId');
+        const origin = params.get('origin');
+        const path = params.get('path');
+        try {
+            await sdk.forConsole.projects.get(projectId);
+            const jwt = await sdk.forConsole.account.createJWT();
+            window.location.href = `${origin}/_appwrite/authorize?jwt=${jwt.jwt}&path=${path}`;
+        } catch (error) {
+            console.log(error);
+            goto(
+                `${base}/auth/preview/access?origin=${origin}&path=${path}&projectId=${projectId}`
+            );
+        }
     });
 </script>
 

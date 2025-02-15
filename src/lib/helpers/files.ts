@@ -1,4 +1,6 @@
+import { addNotification } from '$lib/stores/notifications';
 import ignore from 'ignore';
+import { createTarGzip } from 'nanotar';
 
 export interface FileData {
     path: string;
@@ -40,6 +42,48 @@ export async function processFileList(files: FileList): Promise<FileData[]> {
     });
 
     return Promise.all(filePromises);
+}
+
+export async function gzipUpload(files: FileList) {
+    let uploadFile: File;
+    const tick = performance.now();
+    if (!files?.length) return;
+
+    // If the file is a tar.gz file, then return it as is
+    if (
+        files?.length === 1 &&
+        files.item(0).type === 'application/gzip' &&
+        files.item(0).name.split('.').pop() === 'tar'
+    ) {
+        uploadFile = files.item(0);
+    }
+    // Else process the file to mantain the folder structure and create a .tar.gz file
+    else {
+        try {
+            const processedFiles = await processFileList(files);
+            const tar = await createTarGzip(
+                processedFiles.map((f) => ({
+                    name: f.path,
+                    data: f.buffer
+                }))
+            );
+            const blob = new Blob([tar], { type: 'application/gzip' });
+            const file = new File([blob], 'deployment.tar.gz', {
+                type: 'application/gzip'
+            });
+            uploadFile = file;
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e
+            });
+        }
+    }
+    console.log(uploadFile);
+    const tock = performance.now();
+    console.log('Time taken to process files:', tock - tick);
+
+    return uploadFile;
 }
 
 export const defaultIgnore = `

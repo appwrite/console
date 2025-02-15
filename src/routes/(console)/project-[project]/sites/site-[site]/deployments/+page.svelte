@@ -17,6 +17,10 @@
     import CreateManualDeploymentModal from './createManualDeploymentModal.svelte';
     import DeploymentMetrics from './deploymentMetrics.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { onMount } from 'svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let data;
 
@@ -33,6 +37,15 @@
         queries.clearAll();
         queries.apply();
     }
+
+    onMount(() => {
+        data?.query ? (showMobileFilters = true) : (showMobileFilters = false);
+        return sdk.forConsole.client.subscribe('console', (response) => {
+            if (response.events.includes('sites.*.deployments.*')) {
+                invalidate(Dependencies.DEPLOYMENTS);
+            }
+        });
+    });
 </script>
 
 <Container>
@@ -74,12 +87,7 @@
                 </Layout.Stack>
                 <Layout.Stack direction="row" inline>
                     {#if data.deploymentList.total}
-                        <ViewSelector
-                            view={View.Table}
-                            {columns}
-                            hideView
-                            allowNoColumns
-                            hideText />
+                        <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
                     {/if}
                     <Popover let:toggle>
                         <Button size="s" on:click={toggle}>

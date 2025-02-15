@@ -85,14 +85,8 @@
             href="https://appwrite.io/docs/products/sites"
             description="Deploy, manage, and scale your web applications effortlessly with Sites. "
             target="site"
+            src={$app.themeInUse === 'dark' ? EmptyDark : EmptyLight}
             on:click={() => (show = true)}>
-            <svelte:fragment slot="media">
-                {#if $app.themeInUse === 'dark'}
-                    <Image src={EmptyDark} alt="Empty state" height={235} width={1079} />
-                {:else}
-                    <Image src={EmptyLight} alt="Empty state" height={235} width={1079} />
-                {/if}
-            </svelte:fragment>
         </Empty>
     {/if}
 </Container>

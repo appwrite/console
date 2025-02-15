@@ -4,11 +4,12 @@
     import { Cover } from '$lib/layout';
     import { project } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Layout, Button, Typography } from '@appwrite.io/pink-svelte';
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { Dependencies } from '$lib/constants';
 </script>
 
 {#if !$page.url.pathname.includes('get-started')}
@@ -30,7 +31,11 @@
                 gap="xl">
                 <Layout.Stack direction="column" gap={$isSmallViewport ? 's' : 'xs'}>
                     <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
-                        >Welcome, {$user.name}</Typography.Title>
+                        >{#if $user.name === $user.email}
+                            Welcome to Appwrite
+                        {:else}
+                            Welcome, {$user.name}
+                        {/if}</Typography.Title>
                     <Typography.Text size="m" color="--color-fgcolor-neutral-secondary"
                         >Follow a few quick steps to get started with Appwrite</Typography.Text>
                 </Layout.Stack>
@@ -41,11 +46,10 @@
                             size="s"
                             on:click={async () => {
                                 await setHasOnboardingDismissed($project.$id);
-                                if (location.href.endsWith('get-started')) {
-                                    goto(`${base}/project-${$project.$id}`);
-                                } else {
-                                    location.reload();
-                                }
+                                goto(`${base}/project-${$project.$id}/overview`);
+                                requestAnimationFrame(() => {
+                                    invalidate(Dependencies.ORGANIZATION);
+                                });
                             }}>Dismiss this page</Button.Button>
                     {/if}
                 </div>
