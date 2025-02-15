@@ -24,11 +24,35 @@ import {
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
 import { Sources } from '$lib/sdk/sources';
+import {
+    REGION_FRA,
+    REGION_NYC,
+    REGION_SYD,
+    SUBDOMAIN_FRA,
+    SUBDOMAIN_NYC,
+    SUBDOMAIN_SYD
+} from '$lib/constants';
 
-export function getApiEndpoint(): string {
+export function getApiEndpoint(region?: string): string {
     if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
-    return globalThis?.location?.origin + '/v1';
+    const protocol = globalThis?.location?.protocol;
+    const hostname = globalThis?.location?.hostname;
+    const subdomain = getSubdomain(region);
+    return `${protocol}//${subdomain}${hostname}/v1`;
 }
+
+const getSubdomain = (region?: string) => {
+    switch (region) {
+        case REGION_FRA:
+            return SUBDOMAIN_FRA;
+        case REGION_SYD:
+            return SUBDOMAIN_SYD;
+        case REGION_NYC:
+            return SUBDOMAIN_NYC;
+        default:
+            return '';
+    }
+};
 
 const endpoint = getApiEndpoint();
 

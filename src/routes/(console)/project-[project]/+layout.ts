@@ -1,5 +1,5 @@
 import { Dependencies } from '$lib/constants';
-import { sdk } from '$lib/stores/sdk';
+import { getApiEndpoint, sdk } from '$lib/stores/sdk';
 import { error } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
 import { preferences } from '$lib/stores/preferences';
@@ -48,6 +48,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                 }
             }
         }
+
+        console.log(getApiEndpoint(project.region));
+        sdk.forProject.client.setEndpoint(getApiEndpoint(project.region));
 
         return {
             project,
