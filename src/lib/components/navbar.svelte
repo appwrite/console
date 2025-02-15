@@ -1,3 +1,13 @@
+<script lang="ts" context="module">
+    export type NavbarProject = {
+        name: string;
+        $id: string;
+        isSelected: boolean;
+        platformCount: number;
+        pingCount: number;
+    };
+</script>
+
 <script lang="ts">
     import {
         Navbar,
@@ -45,7 +55,7 @@
             isSelected: boolean;
             showUpgrade: boolean;
             tierName: string;
-            projects: Array<{ name: string; $id: string; isSelected: boolean }>;
+            projects: Array<NavbarProject>;
         }>;
         showAccountMenu: boolean;
     };
@@ -84,6 +94,7 @@
         updateTheme(activeTheme);
     }
     $: currentOrg = organizations.find((org) => org.isSelected);
+    $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
 </script>
 
 <Navbar.Base {...$$props}>
@@ -101,6 +112,14 @@
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
+        {#if selectedProject && selectedProject.pingCount === 0}
+            <div class="only-desktop">
+                <Button.Anchor
+                    href={`${base}/project-${selectedProject.$id}/get-started`}
+                    variant="secondary"
+                    size="xs">Connect</Button.Anchor>
+            </div>
+        {/if}
     </div>
     <div slot="right" class="only-desktop">
         <div class="right">

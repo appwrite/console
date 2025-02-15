@@ -1,6 +1,7 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
+    import { type NavbarProject } from '$lib/components/navbar.svelte';
     import { page } from '$app/stores';
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
@@ -22,7 +23,7 @@
     export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
-    export let loadedProjects: Array<{ name: string; $id: string; isSelected: boolean }> = [];
+    export let loadedProjects: Array<NavbarProject> = [];
     export let projects: Array<Models.Project> = [];
 
     $: selectedProject = loadedProjects.find((project) => project.isSelected);

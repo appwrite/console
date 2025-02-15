@@ -13,6 +13,7 @@ export type WizardStore = {
     nextDisabled: boolean;
     step: number;
     interceptorNotificationEnabled: boolean;
+    props: Record<string, unknown>;
 };
 
 function createWizardStore() {
@@ -25,7 +26,8 @@ function createWizardStore() {
         media: null,
         nextDisabled: false,
         step: 1,
-        finalAction: null
+        finalAction: null,
+        props: {}
     });
 
     return {
@@ -34,7 +36,8 @@ function createWizardStore() {
         start: (
             component: typeof SvelteComponent<unknown>,
             media: string = null,
-            step: number = 1
+            step: number = 1,
+            props: Record<string, unknown> = {}
         ) =>
             update((n) => {
                 n.show = true;
@@ -46,6 +49,7 @@ function createWizardStore() {
                 n.cover = null;
                 n.nextDisabled = false;
                 n.finalAction = null;
+                n.props = props;
                 trackEvent('wizard_start');
                 return n;
             }),
