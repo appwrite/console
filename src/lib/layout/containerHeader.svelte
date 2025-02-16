@@ -93,7 +93,7 @@
         })
         .join(', ')}
 
-    {#if $readOnly && services.length}
+    {#if services.length}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
             {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
                 <Alert type="info" isStandalone>
