@@ -46,6 +46,7 @@ export enum Dependencies {
     KEY = 'dependency:key',
     KEYS = 'dependency:keys',
     DOMAINS = 'dependency:domains',
+    DOMAIN = 'dependency:domains',
     WEBHOOK = 'dependency:webhook',
     WEBHOOKS = 'dependency:webhooks',
     MIGRATIONS = 'dependency:migrations',
