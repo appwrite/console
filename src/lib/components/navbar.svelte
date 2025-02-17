@@ -60,9 +60,9 @@
         showAccountMenu: boolean;
     };
 
-    function updateTheme(theme: 'light' | 'dark' | 'system') {
+    function updateTheme(theme: 'light' | 'dark' | 'auto') {
         const themeInUse =
-            theme === 'system'
+            theme === 'auto'
                 ? window.matchMedia('(prefers-color-scheme: dark)').matches
                     ? 'dark'
                     : 'light'
@@ -70,7 +70,7 @@
 
         app.update(() => ({
             themeInUse: themeInUse,
-            theme: theme === 'system' ? 'auto' : theme
+            theme: theme
         }));
     }
 
@@ -88,10 +88,12 @@
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
 
-    let activeTheme = 'dark';
+    let activeTheme = $app.theme;
 
     $: {
-        updateTheme(activeTheme);
+        if (activeTheme) {
+            updateTheme(activeTheme);
+        }
     }
     $: currentOrg = organizations.find((org) => org.isSelected);
     $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
@@ -215,7 +217,7 @@
                                                     { id: 'light', label: 'Light', icon: IconSun },
                                                     { id: 'dark', label: 'Dark', icon: IconMoon },
                                                     {
-                                                        id: 'system',
+                                                        id: 'auto',
                                                         label: 'System',
                                                         icon: IconMode
                                                     }
@@ -282,7 +284,7 @@
                                         name: 'System',
                                         leadingIcon: IconMode,
                                         onClick: () => {
-                                            updateTheme('system');
+                                            updateTheme('auto');
                                         }
                                     }
                                 ]
