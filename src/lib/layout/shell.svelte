@@ -27,7 +27,7 @@
     export let projects: Array<Models.Project> = [];
 
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
-    let y: number;
+    let yOnMenuOpen: number;
     let showContentTransition = false;
     let timeoutId: NodeJS.Timeout;
 
@@ -45,13 +45,14 @@
     });
 
     $: {
-        $isSidebarOpen
-            ? (document.body.style.overflow = 'hidden')
-            : (document.body.style.overflow = '');
-
-        $isSidebarOpen
-            ? (document.body.style.maxHeight = '100vh')
-            : (document.body.style.maxHeight = '');
+        if ($isSidebarOpen) {
+            yOnMenuOpen = window.scrollY;
+            document.body.style.top = `-${window.scrollY}px`;
+            document.body.style.position = 'fixed';
+        } else if (!$isSidebarOpen) {
+            document.body.style.position = 'static';
+            window.scrollTo(0, yOnMenuOpen);
+        }
     }
 
     /**
@@ -116,12 +117,11 @@
     };
 
     onDestroy(() => {
-        document.body.style.overflow = '';
-        document.body.style.maxHeight = '';
+        document.body.style.position = 'static';
     });
 </script>
 
-<svelte:window bind:scrollY={y} on:resize={handleResize} />
+<svelte:window on:resize={handleResize} />
 <main
     class:grid-with-side={showSideNavigation}
     class:is-open={$showSubNavigation}
@@ -209,8 +209,7 @@
     }
 
     .overlay {
-        margin-top: calc(-1 * var(--base-48));
-        position: absolute;
+        position: fixed;
         width: 100vw;
         height: 100vh;
         right: 0;

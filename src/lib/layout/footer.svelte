@@ -111,7 +111,6 @@
     }
     footer {
         margin-block-start: auto;
-        margin-inline: 2rem;
         padding-block: 1rem;
         display: flex;
         flex-direction: column;
