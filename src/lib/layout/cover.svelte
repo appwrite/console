@@ -2,15 +2,16 @@
     import { Layout } from '@appwrite.io/pink-svelte';
 
     export let size: 'small' | 'medium' | 'large' | 'xl' = null;
+    export let blocksize = '152px';
 
     $: style = size
         ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`
         : '';
 </script>
 
-<div class="top-cover-console">
+<div class="top-cover-console" style:block-size={blocksize}>
     <div class="cover-container" {style}>
-        <Layout.Stack direction="row" alignItems="baseline">
+        <Layout.Stack direction="row" alignItems="center">
             <slot name="header" />
         </Layout.Stack>
         <slot />
@@ -22,7 +23,6 @@
         container-type: inline-size;
         padding-block-start: var(--base-32);
         padding-block-end: var(--base-16);
-        block-size: 152px;
         border-bottom: 1px solid var(--color-border-neutral, #2d2d31);
         background: var(--color-bgcolor-neutral-primary, #1d1d21);
         margin-left: -190px;

@@ -44,6 +44,16 @@
     import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
+    import {
+        IconAnnotation,
+        IconBookOpen,
+        IconDiscord,
+        IconPencil,
+        IconPlus,
+        IconQuestionMarkCircle,
+        IconSparkles,
+        IconSwitchHorizontal
+    } from '@appwrite.io/pink-icons-svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -59,7 +69,9 @@
         return {
             name: project?.name,
             $id: project.$id,
-            isSelected: data.currentProjectId === project.$id
+            isSelected: data.currentProjectId === project.$id,
+            platformCount: project.platforms.length,
+            pingCount: project.pingCount
         };
     });
 
@@ -88,7 +100,7 @@
                 addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
-            icon: 'sparkles',
+            icon: IconSparkles,
             disabled: !isAssistantEnabled
         },
         {
@@ -97,7 +109,8 @@
                 isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true);
             },
             keys: ['c', 'o'],
-            group: 'organizations'
+            group: 'organizations',
+            icon: IconPlus
         },
         {
             label: 'Open documentation',
@@ -105,7 +118,7 @@
                 window.open('https://appwrite.io/docs', '_blank');
             },
             group: 'help',
-            icon: 'book-open'
+            icon: IconBookOpen
         },
         {
             label: 'Contact support',
@@ -113,7 +126,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: 'question-mark-circle'
+            icon: IconQuestionMarkCircle
         },
         {
             label: 'Send feedback',
@@ -121,7 +134,7 @@
                 feedback.toggleFeedback();
             },
             group: 'help',
-            icon: 'annotation'
+            icon: IconAnnotation
         },
         {
             label: 'Join Discord community',
@@ -129,7 +142,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: 'discord'
+            icon: IconDiscord
         },
         ...(['auto', 'dark', 'light'] as const).map((theme) => {
             return {
@@ -143,7 +156,7 @@
                     });
                 },
                 group: 'misc',
-                icon: 'switch-horizontal',
+                icon: IconSwitchHorizontal,
                 keys: ['t', theme[0]]
             } as const;
         }),
@@ -165,7 +178,7 @@
                     },
                     disabled: !$project?.$id,
                     group: 'security',
-                    icon: 'pencil'
+                    icon: IconPencil
                 }) as const
         ),
         // Settings
@@ -339,7 +352,7 @@
 </Shell>
 
 {#if $wizard.show && $wizard.component}
-    <svelte:component this={$wizard.component} />
+    <svelte:component this={$wizard.component} {...$wizard.props} />
 {:else if $wizard.cover}
     <svelte:component this={$wizard.cover} />
 {/if}

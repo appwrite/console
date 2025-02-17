@@ -41,11 +41,11 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">API credentials</Heading>
-    <p class="text">Access Appwrite services using this project's API Endpoint and Project ID.</p>
+    <svelte:fragment slot="title">API credentials</svelte:fragment>
+    Access Appwrite services using this project's API Endpoint and Project ID.
     <svelte:fragment slot="aside">
-        <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
-        <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
+        <CopyInput label="Project ID" value={$project.$id} />
+        <CopyInput label="API Endpoint" value={endpoint} />
     </svelte:fragment>
     <svelte:fragment slot="actions">
         <Button
@@ -59,8 +59,7 @@
 {#if $canWriteProjects}
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
-
+            <svelte:fragment slot="title">Name</svelte:fragment>
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputText

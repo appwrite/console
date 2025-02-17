@@ -55,12 +55,9 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7" id="users-limit">Users limit</Heading>
-    <Typography.Text>
-        Limit new users from signing up for your project, regardless of authentication method. You
-        can still create users and team memberships from your Appwrite console.
-    </Typography.Text>
-
+    <svelte:fragment slot="title">Users limit</svelte:fragment>
+    Limit new users from signing up for your project, regardless of authentication method. You can still
+    create users and team memberships from your Appwrite console.
     <svelte:fragment slot="aside">
         <Layout.Stack>
             <Layout.Stack direction="row" alignItems="center">

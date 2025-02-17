@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -53,8 +53,8 @@
 
 <Form onSubmit={updateTimeout}>
     <CardGrid>
-        <Heading tag="h6" size="7" id="timeout">Timeout</Heading>
-        <p>Set a time limit for the execution of your site. The maximum value is 30 seconds.</p>
+        <svelte:fragment slot="title">Timeout</svelte:fragment>
+        Set a time limit for the execution of your site. The maximum value is 30 seconds.
         <svelte:fragment slot="aside">
             <InputNumber
                 min={1}

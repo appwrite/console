@@ -33,7 +33,7 @@
                     href={`${base}/project-${project}/auth/teams/team-${membership.teamId}`}>
                     <Table.Cell>
                         <Layout.Stack direction="row" alignItems="center">
-                            <AvatarInitials size={32} name={membership.teamName} />
+                            <AvatarInitials size="xs" name={membership.teamName} />
                             <span>{membership.teamName ? membership.teamName : 'n/a'}</span>
                         </Layout.Stack>
                     </Table.Cell>

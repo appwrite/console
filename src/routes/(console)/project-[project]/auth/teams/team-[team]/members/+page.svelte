@@ -1,12 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import {
-        Empty,
-        EmptySearch,
-        AvatarInitials,
-        SearchQuery,
-        PaginationWithLimit
-    } from '$lib/components';
+    import { Empty, EmptySearch, AvatarInitials, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
@@ -18,7 +12,8 @@
     import DeleteMembership from '../deleteMembership.svelte';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import { Table, Layout } from '@appwrite.io/pink-svelte';
+    import { Table, Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -34,16 +29,11 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search by ID" />
-        </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Button on:mousedown={() => (showCreate = true)} event="create_membership" size="s">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create membership</span>
-            </Button>
-        </Layout.Stack>
+    <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+        <Button on:mousedown={() => (showCreate = true)} event="create_membership" size="s">
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create membership
+        </Button>
     </Layout.Stack>
 
     {#if data.memberships.total}
@@ -58,7 +48,7 @@
                 <Table.Link href={`${base}/project-${project}/auth/user-${membership.userId}`}>
                     <Table.Cell>
                         <Layout.Stack direction="row" alignItems="center">
-                            <AvatarInitials size={32} name={membership.teamName} />
+                            <AvatarInitials size="xs" name={membership.teamName} />
                             <span>{membership.teamName ? membership.teamName : 'n/a'}</span>
                         </Layout.Stack>
                     </Table.Cell>

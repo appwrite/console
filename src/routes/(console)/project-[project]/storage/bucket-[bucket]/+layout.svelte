@@ -12,6 +12,7 @@
     import { project } from '../../store';
     import { showCreateFile } from './+page.svelte';
     import { bucket } from './store';
+    import { IconKey, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
     $: $registerCommands([
         {
@@ -24,7 +25,7 @@
             },
             keys: $page.url.pathname.endsWith($bucket.$id) ? ['c'] : ['c', 'f'],
             group: 'files',
-            icon: 'plus'
+            icon: IconPlus
         },
         {
             label: 'Permissions',
@@ -35,7 +36,7 @@
                 scrollBy({ top: -100 });
             },
             group: 'buckets',
-            icon: 'key',
+            icon: IconKey,
             disabled: !$canWriteBuckets
         },
         {
@@ -46,7 +47,7 @@
                 );
             },
             group: 'buckets',
-            icon: 'puzzle',
+            icon: IconPuzzle,
             disabled: !$canWriteBuckets
         },
         {
@@ -58,7 +59,7 @@
                 scrollBy({ top: -100 });
             },
             group: 'buckets',
-            icon: 'lock-closed',
+            icon: IconLockClosed,
             disabled: !$canWriteBuckets
         },
         {

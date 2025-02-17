@@ -17,6 +17,7 @@
     export let external = false;
     export let href: string = null;
     export let download: string = undefined;
+    export let badge: string = null;
     export let fullWidth = false;
     export let fullWidthMobile = false;
     export let ariaLabel: string = null;
@@ -26,6 +27,7 @@
     export { classes as class };
     export let submissionLoader = false;
     export let forceShowLoader = false;
+    export let compact = false;
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -44,6 +46,20 @@
         });
     }
 
+    function getVariant(): 'primary' | 'secondary' | 'text' | 'compact' {
+        switch (true) {
+            case secondary:
+                return 'secondary';
+            case text:
+                return 'text';
+            case compact:
+                return 'compact';
+            default:
+                return 'primary';
+        }
+    }
+
+    $: variant = getVariant();
     $: resolvedClasses = [
         fullWidth && 'is-full-width',
         fullWidthMobile && 'is-full-width-mobile',
@@ -63,13 +79,15 @@
         {size}
         {icon}
         disabled={internalDisabled}
-        variant={secondary ? 'secondary' : text ? 'text' : 'primary'}
+        {variant}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
         aria-label={ariaLabel}
         --button-width={fullWidth ? '100%' : 'max-content'}>
+        <slot name="start" slot="start" />
         <slot />
+        <slot slot="end" name="end" />
     </Button.Anchor>
 {:else}
     <Button.Button
@@ -78,12 +96,14 @@
         on:click={track}
         {size}
         {icon}
+        {badge}
         disabled={internalDisabled}
-        variant={secondary ? 'secondary' : text ? 'text' : 'primary'}
+        {variant}
         class={resolvedClasses}
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
         --button-width={fullWidth ? '100%' : 'max-content'}>
+        <slot name="start" slot="start" />
         {#if ($isSubmitting && submissionLoader) || (forceShowLoader && submissionLoader)}
             <span
                 class="loader is-small"
@@ -91,5 +111,6 @@
                 aria-hidden="true" />
         {/if}
         <slot isSubmitting={$isSubmitting} />
+        <slot slot="end" name="end" />
     </Button.Button>
 {/if}

@@ -35,7 +35,7 @@
 
 <Form onSubmit={updatePersonalDataCheck}>
     <CardGrid>
-        <Heading tag="h2" size="7" id="personal-data">Personal data</Heading>
+        <svelte:fragment slot="title">Personal data</svelte:fragment>
         <svelte:fragment slot="aside">
             <InputSwitch
                 bind:value={authPersonalDataCheck}

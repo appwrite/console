@@ -77,7 +77,7 @@
     ];
 </script>
 
-<div class:only-mobile={project === undefined}>
+<div class:only-mobile-tablet={project === undefined}>
     <Sidebar.Base
         {...$$props}
         bind:state
@@ -86,17 +86,15 @@
         <div slot="top">
             <div class="only-mobile-tablet top">
                 <div class="icons search-icon">
-                    <Link.Button
-                        variant="quiet-muted"
+                    <Button.Button
+                        variant="text"
                         on:click={() => {
                             toggleCommandCenter();
                             state = 'closed';
                             sideBarIsOpen = false;
                         }}>
-                        <div class="icon">
-                            <Icon icon={IconSearch} />
-                        </div>
-                    </Link.Button>
+                        <Icon icon={IconSearch} color="--color-fgcolor-neutral-tertiary" />
+                    </Button.Button>
                 </div>
                 <Link.Button
                     on:click={() => {
@@ -120,9 +118,11 @@
                         </div>
                         {#if state !== 'icons'}
                             <div class="info" in:fade={{ delay: 200, duration: 200 }}>
-                                <Typography.Text variant="m-600"
-                                    >{progressCard.title}</Typography.Text>
                                 <Typography.Text
+                                    variant="m-500"
+                                    color="--color-fgcolor-neutral-secondary"
+                                    >{progressCard.title}</Typography.Text>
+                                <Typography.Text color="--color-fgcolor-neutral-secondary"
                                     >{progressCard.percentage}% complete</Typography.Text>
                             </div>
                         {/if}
@@ -134,8 +134,9 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.$id}?getStarted=false`}
+                            href={`/console/project-${project.$id}/overview`}
                             class="link"
+                            class:active={pathname.includes('platforms')}
                             on:click={() => {
                                 sideBarIsOpen = false;
                             }}
@@ -197,7 +198,7 @@
                     <Layout.Stack direction="column" gap="s">
                         <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
                             <Button.Button variant="secondary" size="s" on:click={toggleFeedback}
-                                >Feedback
+                                ><span>Feedback</span>
                             </Button.Button>
                             <svelte:fragment slot="other">
                                 <Feedback />
@@ -225,7 +226,10 @@
             {#if project}
                 <div class="only-desktop">
                     <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
-                        <a href={`/console/project-${project.$id}/settings`} class="link"
+                        <a
+                            href={`/console/project-${project.$id}/settings`}
+                            class="link"
+                            class:active={pathname.includes('settings')}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
@@ -245,7 +249,7 @@
                                     variant="secondary"
                                     size="s"
                                     on:click={toggleFeedback}
-                                    >Feedback
+                                    ><span>Feedback</span>
                                 </Button.Button>
                                 <svelte:fragment slot="other">
                                     <Feedback />
@@ -272,6 +276,11 @@
         </div>
     </Sidebar.Base>
 </div>
+{#if subNavigation}
+    <div class="sub-navigation" class:icons={state === 'icons'}>
+        <svelte:component this={subNavigation} />
+    </div>
+{/if}
 
 <style lang="scss">
     .link {
@@ -333,6 +342,7 @@
 
     .icons .link {
         gap: 0;
+        width: 32px;
     }
 
     .search-icon {
@@ -416,6 +426,10 @@
         width: 18px;
         align-self: center;
         margin-inline: 8px;
+        @media (min-width: 1024px) {
+            margin-block-end: var(--space-2, 4px);
+            margin-block-start: var(--space-9, 24px);
+        }
     }
 
     .hidden,
@@ -457,7 +471,7 @@
         transition: all 0.2s ease-in-out;
 
         @media (min-width: 1024px) {
-            width: 178px;
+            width: 166px;
         }
         .info {
             position: absolute;
@@ -498,5 +512,22 @@
 
     :global(button.collapse) {
         transform: translateX(-10px);
+    }
+
+    .sub-navigation {
+        width: 400px;
+        height: calc(100vh - 48px);
+        display: flex;
+        justify-content: flex-end;
+        background-color: var(--color-bgcolor-neutral-primary, #fff);
+        z-index: 14;
+        position: fixed;
+        top: 48px;
+        transition: width 0.2s linear;
+
+        &.icons {
+            width: 266px;
+            transition: width 0.3s linear;
+        }
     }
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -10,7 +10,8 @@
     import { Dependencies } from '$lib/constants';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import EmptySearch from '$lib/components/emptySearch.svelte';
-    import { Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { IconTrash } from '@appwrite.io/pink-icons-svelte';
 
     async function deleteIdentity(id: string) {
         try {
@@ -32,10 +33,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Identities</Heading>
-    <p class="text">
-        Identities are your connected GitHub accounts. You can sign in using these accounts.
-    </p>
+    <svelte:fragment slot="title">Identities</svelte:fragment>
+    Identities are your connected GitHub accounts. You can sign in using these accounts.
 
     <svelte:fragment slot="aside">
         {#if $identities.length === 0}
@@ -80,8 +79,9 @@
                             <Button
                                 text
                                 class="is-only-icon"
-                                on:click={() => deleteIdentity(identity.$id)}
-                                ><span class="icon-trash" aria-hidden="true" /></Button>
+                                on:click={() => deleteIdentity(identity.$id)}>
+                                <Icon icon={IconTrash} size="s" />
+                            </Button>
                         </Table.Cell>
                     </Table.Row>
                 {/each}

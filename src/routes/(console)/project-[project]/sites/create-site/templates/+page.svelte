@@ -7,6 +7,8 @@
     import { goto } from '$app/navigation';
     import { debounce } from '$lib/helpers/debounce.js';
     import { Card, Layout, Accordion, Selector } from '@appwrite.io/pink-svelte';
+    import { capitalize } from '$lib/helpers/string';
+    import { app } from '$lib/stores/app.js';
 
     export let data;
 
@@ -63,9 +65,13 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<Wizard href={`${base}/project-${$page.params.project}/sites/`} title="Create Site" invertColumns>
+<Wizard
+    href={`${base}/project-${$page.params.project}/sites/`}
+    title="Create Site"
+    invertColumns
+    hideFooter>
     <svelte:fragment slot="aside">
-        <Layout.Stack gap="xxl">
+        <Layout.Stack gap="xl">
             <InputSearch
                 placeholder="Search templates"
                 value={$page.url.searchParams.get('search')}
@@ -80,7 +86,7 @@
                                 <Selector.Checkbox
                                     id={useCase}
                                     size="s"
-                                    label={useCase}
+                                    label={capitalize(useCase)}
                                     checked={isChecked(useCase)}
                                     on:change={(e) => {
                                         applyFilter('useCase', useCase, e);
@@ -110,24 +116,26 @@
     </svelte:fragment>
 
     {#if data.templates?.length > 0}
-        <ul
-            class="grid-box"
-            style="--grid-item-size:18rem; --grid-item-size-small-screens:19rem; --grid-gap: 12px">
+        <Layout.GridBox>
             {#each data.templates as template}
                 {@const templateFrameworks = template.frameworks.map((t) => t.name)}
+
                 <Card.Link
                     variant="secondary"
                     href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}
-                    padding="xs">
+                    padding="xxs">
                     <Card.Media
                         title={template.name}
                         description={templateFrameworks.join(', ')}
-                        src={template.demoImage}
+                        src={template.demoImage ||
+                            ($app.themeInUse === 'dark'
+                                ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                                : `${base}/images/sites/screenshot-placeholder-light.svg`)}
                         alt={template.name}>
                     </Card.Media>
                 </Card.Link>
             {/each}
-        </ul>
+        </Layout.GridBox>
     {:else}
         <EmptySearch
             hidePagination

@@ -10,7 +10,7 @@ export const consoleVariables = derived(
     ($page) => $page.data.consoleVariables as Models.ConsoleVariables
 );
 export const protocol = derived(page, ($page) =>
-    ($page.data.consoleVariables as Models.ConsoleVariables)?._APP_OPTIONS_FORCE_HTTPS
+    ($page.data.consoleVariables as Models.ConsoleVariables)?._APP_OPTIONS_FORCE_HTTPS === 'enabled'
         ? 'https://'
         : 'http://'
 );

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -16,11 +16,8 @@
         InputText
     } from '$lib/elements/forms';
     import { logout } from '$lib/helpers/logout';
-    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
     import { isCloud } from '$lib/system';
-    import { redirectTo } from '$routes/store';
     import { ID, OAuthProvider } from '@appwrite.io/console';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
@@ -35,11 +32,20 @@
     let pass: string;
     let terms = false;
     let name: string;
+    let error: string;
+
+    let projectId: string;
+    let origin: string;
+    let path: string;
 
     onMount(() => {
         if (data?.account?.$id) {
             state = 'authenticated';
         }
+        const params = new URLSearchParams(window.location.search);
+        projectId = params.get('projectId');
+        origin = params.get('origin');
+        path = params.get('path');
     });
 
     async function login() {
@@ -47,22 +53,11 @@
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountLogin);
-            if ($user) {
-                addNotification({
-                    type: 'success',
-                    message: 'Successfully logged in.'
-                });
-            }
-            if ($redirectTo) {
-                window.location.href = $redirectTo;
-                return;
-            }
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.AccountLogin);
+
+            goto(`${base}/auth/preview?origin=${origin}&path=${path}&projectId=${projectId}`);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.AccountLogin);
         }
     }
 
@@ -71,19 +66,12 @@
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
 
-            if ($redirectTo) {
-                window.location.href = $redirectTo;
-                return;
-            }
-
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.AccountCreate);
+            goto(`${base}/auth/preview?origin=${origin}&path=${path}&projectId=${projectId}`);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.AccountCreate);
         }
     }
 
@@ -136,7 +124,8 @@
     title={state === 'authenticated' ? 'Request access' : 'Sign up or log in to view this preview'}
     dismissible={false}
     show
-    hideFooter={state !== 'authenticated'}>
+    hideFooter={state !== 'authenticated'}
+    {error}>
     <Form onSubmit={handleSubmit}>
         <Layout.Stack gap="l">
             {#if state === 'login'}

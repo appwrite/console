@@ -20,6 +20,8 @@
     import { onMount } from 'svelte';
     import { getTotal } from '../wizard/store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     export let message: Models.Message;
     export let selectedTopicsById: Record<string, Models.Topic>;
@@ -95,12 +97,11 @@
                     {#if message.status == 'draft'}
                         <Button
                             text
-                            noMargin
                             on:click={() => {
                                 showTopics = true;
                             }}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add
                         </Button>
                     {/if}
                 </div>

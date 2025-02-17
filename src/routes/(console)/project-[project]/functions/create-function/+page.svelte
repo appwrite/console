@@ -46,6 +46,7 @@
     import { repository } from '$lib/stores/vcs';
     import { Repositories } from '$lib/components/git';
     import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconDeno, IconDotnet } from '@appwrite.io/pink-icons-svelte';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
@@ -66,7 +67,7 @@
 </script>
 
 <WizardCover bind:previousPage>
-    <svelte:fragment slot="title">Create Function</svelte:fragment>
+    <svelte:fragment slot="title">Create function</svelte:fragment>
     <div class="wizard-container container">
         <div class="git-container u-position-relative">
             <div class="grid-1-1 u-gap-24">
@@ -182,11 +183,9 @@
                                                 padding={16}
                                                 radius="small">
                                                 <AvatarGroup
-                                                    icons={['dotnet', 'deno']}
+                                                    icons={[IconDotnet, IconDeno]}
                                                     total={4}
-                                                    avatarSize="small"
-                                                    color="u-color-text-gray"
-                                                    bordered />
+                                                    size="s" />
                                             </Box>
                                         </li>
                                         <span slot="tooltip">More runtimes coming soon</span>

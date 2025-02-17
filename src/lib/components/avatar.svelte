@@ -1,15 +1,10 @@
 <script lang="ts">
-    export let size: number;
-    export let src: string;
-    export let name: string;
-    export let color = 'transparent';
+    import { Avatar } from '@appwrite.io/pink-svelte';
+    import type { AvatarProps } from '@appwrite.io/pink-svelte/dist/avatar/Avatar.svelte';
+
+    export let size: AvatarProps['size'] = 'm';
+    export let src: AvatarProps['src'];
+    export let alt: AvatarProps['alt'];
 </script>
 
-<img
-    width={size}
-    height={size}
-    class="avatar"
-    style="--size: {size / 16}rem; background-color: {color};"
-    {src}
-    title={name}
-    alt={name} />
+<Avatar {alt} {src} {size} />

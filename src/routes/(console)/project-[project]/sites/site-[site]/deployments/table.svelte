@@ -16,15 +16,17 @@
     import {
         IconLightningBolt,
         IconRefresh,
+        IconTerminal,
         IconTrash,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
     import { columns } from './store';
+    import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
 
     export let data: PageData;
 
     let showDelete = false;
-    // let showActivate = false;
+    let showActivate = false;
     let showRedeploy = false;
     let showCancel = false;
 
@@ -123,13 +125,22 @@
                                 }}>
                                 Redeploy
                             </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Anchor
+                                leadingIcon={IconTerminal}
+                                href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}
+                                on:click={(e) => {
+                                    e.preventDefault();
+                                    toggle(e);
+                                }}>
+                                View details
+                            </ActionMenu.Item.Anchor>
                             {#if deployment?.status === 'ready' && deployment?.$id !== data.site.deploymentId}
                                 <ActionMenu.Item.Button
                                     leadingIcon={IconLightningBolt}
                                     on:click={(e) => {
                                         e.preventDefault();
                                         selectedDeployment = deployment;
-                                        // showActivate = true;
+                                        showActivate = true;
                                         toggle(e);
                                     }}>
                                     Activate
@@ -172,10 +183,16 @@
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
-    <!-- <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} /> -->
+
     <Cancel {selectedDeployment} bind:showCancel />
     <RedeployModal
         selectedDeploymentId={selectedDeployment.$id}
         bind:show={showRedeploy}
         site={data.site} />
+{/if}
+{#if selectedDeployment && showActivate}
+    <ActivateDeploymentModal
+        siteId={data.site.$id}
+        selectedDeploymentId={selectedDeployment.$id}
+        bind:show={showActivate} />
 {/if}

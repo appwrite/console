@@ -59,11 +59,9 @@
 
 <Form onSubmit={updateSecurity}>
     <CardGrid>
-        <Heading tag="h2" size="7">Security</Heading>
-        <p class="text">
-            Set an optional basic HTTP authentication username and password to protect your endpoint
-            from unauthorized access.
-        </p>
+        <svelte:fragment slot="title">Security</svelte:fragment>
+        Set an optional basic HTTP authentication username and password to protect your endpoint from
+        unauthorized access.
         <svelte:fragment slot="aside">
             <FormList>
                 <div>

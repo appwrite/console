@@ -47,8 +47,8 @@
 {#if $authMethods && $project}
     <Container>
         <CardGrid>
-            <Heading tag="h2" size="7">Auth methods</Heading>
-            <Typography.Text>Enable the authentication methods you wish to use.</Typography.Text>
+            <svelte:fragment slot="title">Auth methods</svelte:fragment>
+            Enable the authentication methods you wish to use.
             <svelte:fragment slot="aside">
                 <Layout.Stack gap="l" direction="row" wrap="wrap">
                     {#each $authMethods.list as box}

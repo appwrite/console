@@ -27,14 +27,16 @@
 </script>
 
 <Layout.Stack>
-    <Tabs.Root variant="secondary">
+    <Tabs.Root variant="secondary" let:root>
         <Tabs.Item.Button
+            {root}
             active={requestTab === 'parameters'}
             on:click={() => (requestTab = 'parameters')}>
             Parameters
             <Badge variant="secondary" size="s" content={parameters?.length?.toString()} />
         </Tabs.Item.Button>
         <Tabs.Item.Button
+            {root}
             active={requestTab === 'headers'}
             on:click={() => (requestTab = 'headers')}>
             Headers <Badge
@@ -42,7 +44,10 @@
                 size="s"
                 content={selectedLog?.requestHeaders?.length?.toString()} />
         </Tabs.Item.Button>
-        <Tabs.Item.Button active={requestTab === 'body'} on:click={() => (requestTab = 'body')}>
+        <Tabs.Item.Button
+            {root}
+            active={requestTab === 'body'}
+            on:click={() => (requestTab = 'body')}>
             Body
         </Tabs.Item.Button>
     </Tabs.Root>

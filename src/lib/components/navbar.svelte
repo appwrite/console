@@ -1,3 +1,13 @@
+<script lang="ts" context="module">
+    export type NavbarProject = {
+        name: string;
+        $id: string;
+        isSelected: boolean;
+        platformCount: number;
+        pingCount: number;
+    };
+</script>
+
 <script lang="ts">
     import {
         Navbar,
@@ -7,9 +17,10 @@
         Tooltip,
         Card,
         ActionMenu,
-        Input,
+        ToggleButton,
         Button,
-        Avatar
+        Avatar,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import type { BaseNavbarProps } from '@appwrite.io/pink-svelte/dist/navbar/Base.svelte';
@@ -30,7 +41,9 @@
     import { base } from '$app/paths';
     import { logout } from '$lib/helpers/logout';
     import { app } from '$lib/stores/app';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isTabletViewport } from '$lib/stores/viewport';
+    import { isCloud } from '$lib/system.js';
+    import { user } from '$lib/stores/user';
 
     let showSupport = false;
 
@@ -40,8 +53,9 @@
             name: string;
             $id: string;
             isSelected: boolean;
+            showUpgrade: boolean;
             tierName: string;
-            projects: Array<{ name: string; $id: string; isSelected: boolean }>;
+            projects: Array<NavbarProject>;
         }>;
         showAccountMenu: boolean;
     };
@@ -73,6 +87,14 @@
     export let avatar: $$Props['avatar'];
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
+
+    let activeTheme = 'dark';
+
+    $: {
+        updateTheme(activeTheme);
+    }
+    $: currentOrg = organizations.find((org) => org.isSelected);
+    $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
 </script>
 
 <Navbar.Base {...$$props}>
@@ -90,10 +112,26 @@
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
+        {#if selectedProject && selectedProject.pingCount === 0}
+            <div class="only-desktop">
+                <Button.Anchor
+                    href={`${base}/project-${selectedProject.$id}/get-started`}
+                    variant="secondary"
+                    size="xs">Connect</Button.Anchor>
+            </div>
+        {/if}
     </div>
     <div slot="right" class="only-desktop">
         <div class="right">
-            <Layout.Stack gap="l" direction="row">
+            <Layout.Stack gap="l" direction="row" alignItems="center">
+                {#if isCloud && currentOrg?.showUpgrade}
+                    <Button.Anchor
+                        size="s"
+                        variant="primary"
+                        href={`${base}/organization-${currentOrg.$id}/change-plan`}
+                        >Upgrade</Button.Anchor>
+                {/if}
+
                 <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
                     <Button.Button type="button" variant="compact" on:click={toggleFeedback}
                         >Feedback
@@ -123,50 +161,69 @@
             </Layout.Stack>
             <div class="icons">
                 <Tooltip inline={false}>
-                    <Link.Button
-                        variant="quiet-muted"
+                    <Button.Button
+                        variant="text"
                         aria-label="Toggle Command Center"
                         on:click={toggleCommandCenter}>
                         <Icon icon={IconSearch} />
-                    </Link.Button>
+                    </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
             </div>
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
                 }}>
-                <Avatar size="s" src={avatar} />
+                <div style:user-select="none">
+                    <Avatar size="s" src={avatar} />
+                </div>
             </Link.Button>
             {#if showAccountMenu}
                 <div class="account-container">
-                    <Card.Base padding="xxs" shadow={true}>
+                    <Card.Base padding="xxxs" shadow={true}>
                         <Layout.Stack gap="xxs">
                             <ActionMenu.Root>
                                 <Layout.Stack gap="xxs">
+                                    <div
+                                        style:padding-inline-start="10px"
+                                        style:padding-inline-end="8px"
+                                        style:padding-block="4px">
+                                        <Typography.Text variant="m-500">
+                                            {$user.email}
+                                        </Typography.Text>
+                                    </div>
                                     <ActionMenu.Item.Anchor
-                                        leadingIcon={IconUser}
+                                        trailingIcon={IconUser}
                                         size="l"
                                         href={`${base}/account`}>
                                         Account</ActionMenu.Item.Anchor>
 
                                     <ActionMenu.Item.Button
-                                        leadingIcon={IconLogoutRight}
+                                        trailingIcon={IconLogoutRight}
                                         size="l"
                                         on:click={logout}>Sign out</ActionMenu.Item.Button>
+                                    <div
+                                        style:padding-inline-start="10px"
+                                        style:padding-inline-end="8px">
+                                        <Layout.Stack
+                                            justifyContent="space-between"
+                                            direction="row"
+                                            alignItems="center">
+                                            <Typography.Text>Theme</Typography.Text>
+                                            <ToggleButton
+                                                bind:active={activeTheme}
+                                                buttons={[
+                                                    { id: 'light', label: 'Light', icon: IconSun },
+                                                    { id: 'dark', label: 'Dark', icon: IconMoon },
+                                                    {
+                                                        id: 'system',
+                                                        label: 'System',
+                                                        icon: IconMode
+                                                    }
+                                                ]}></ToggleButton>
+                                        </Layout.Stack>
+                                    </div>
                                 </Layout.Stack>
                             </ActionMenu.Root>
-                            <Input.Select
-                                value={$app.theme === 'auto' ? 'system' : $app.theme}
-                                name="mode"
-                                on:change={(event) => {
-                                    updateTheme(event.detail);
-                                }}
-                                bind:group={$app.theme}
-                                options={[
-                                    { label: 'Light', value: 'light', leadingIcon: IconSun },
-                                    { label: 'Dark', value: 'dark', leadingIcon: IconMoon },
-                                    { label: 'System', value: 'system', leadingIcon: IconMode }
-                                ]} />
                         </Layout.Stack>
                     </Card.Base>
                 </div>
@@ -179,7 +236,7 @@
         </div>
     </div>
 </Navbar.Base>
-{#if showAccountMenu && $isSmallViewport}
+{#if showAccountMenu && $isTabletViewport}
     <BottomSheet.Menu
         bind:isOpen={showAccountMenu}
         menu={{
@@ -249,7 +306,6 @@
 
     .right {
         display: flex;
-        align-items: center;
         gap: var(--space-9, 24px);
 
         .icons {

@@ -31,6 +31,14 @@
     import dayjs from 'dayjs';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import {
+        IconAzure,
+        IconBitBucket,
+        IconGithub,
+        IconGitlab,
+        IconPlus
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let total: number;
     export let limit: number;
@@ -82,11 +90,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Git configuration</Heading>
-    <p class="text">
-        Add a Git installation to your project. You can connect a repository in your function
-        settings.
-    </p>
+    <svelte:fragment slot="title">Git configuration</svelte:fragment>
+    Add a Git installation to your project. You can connect a repository in your function settings.
     <svelte:fragment slot="aside">
         {#if total > 0}
             <div>
@@ -94,8 +99,8 @@
                     <ul class="buttons-list">
                         <li class="buttons-list-item">
                             <Button secondary on:click={() => (showGitIstall = true)}>
-                                <span class="icon-plus" />
-                                <span class="text">Add installation</span>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Add installation
                             </Button>
                         </li>
                     </ul>
@@ -206,13 +211,8 @@
             <article class="card-git card is-border-dashed is-no-shadow">
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                     <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
-                        <AvatarGroup
-                            class="git-installation-avatar-group"
-                            bordered
-                            icons={['github', 'gitlab', 'bitBucket', 'azure']} />
-
+                        <AvatarGroup icons={[IconGithub, IconGitlab, IconBitBucket, IconAzure]} />
                         <Arrow direction="down" />
-
                         <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
                     </div>
                     <Button

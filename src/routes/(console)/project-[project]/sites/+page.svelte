@@ -37,7 +37,7 @@
                 $wizard.show ||
                 isServiceLimited('sites', $organization?.billingPlan, data.siteList?.total) ||
                 !$canWriteSites,
-            icon: 'plus',
+            icon: IconPlus,
             group: 'sites'
         }
     ]);
@@ -53,13 +53,13 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search sites" />
+            <SearchQuery search={data.search} placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector {columns} view={data.view} hideColumns hideView={!data.siteList.total} />
             {#if $canWriteSites}
                 <Button on:mousedown={() => (show = true)} event="create_site" size="s">
-                    <Icon icon={IconPlus} />
+                    <Icon icon={IconPlus} slot="start" size="s" />
                     Create site
                 </Button>
             {/if}
@@ -83,15 +83,10 @@
             single
             allowCreate={TMPSITEROLES}
             href="https://appwrite.io/docs/products/sites"
+            description="Deploy, manage, and scale your web applications effortlessly with Sites. "
             target="site"
+            src={$app.themeInUse === 'dark' ? EmptyDark : EmptyLight}
             on:click={() => (show = true)}>
-            <svelte:fragment slot="media">
-                {#if $app.themeInUse === 'dark'}
-                    <Image src={EmptyDark} alt="Empty state" height={235} width={1079} />
-                {:else}
-                    <Image src={EmptyLight} alt="Empty state" height={235} width={1079} />
-                {/if}
-            </svelte:fragment>
         </Empty>
     {/if}
 </Container>

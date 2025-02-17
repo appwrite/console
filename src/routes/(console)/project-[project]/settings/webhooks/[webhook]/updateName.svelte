@@ -48,8 +48,8 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h2" size="7">Name</Heading>
-        <p>Choose any name that will help you distinguish between Webhooks.</p>
+        <svelte:fragment slot="title">Name</svelte:fragment>
+        Choose any name that will help you distinguish between Webhooks.
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText

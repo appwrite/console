@@ -24,6 +24,8 @@
     import Actions from './actions.svelte';
     import Row from './row.svelte';
     import Table from '$lib/elements/table/table.svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let withCreate = false;
     export let permissions: string[] = [];
@@ -215,9 +217,9 @@
         bind:showUser
         {groups}
         on:create={create}>
-        <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Add role</span>
+        <Button text on:click={() => (showDropdown = !showDropdown)}>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Add role
         </Button>
     </Actions>
 {:else}
@@ -233,7 +235,7 @@
                     {groups}
                     on:create={create}>
                     <Button secondary icon on:click={() => (showDropdown = !showDropdown)}>
-                        <i class="icon-plus" />
+                        <Icon icon={IconPlus} size="s" />
                     </Button>
                 </Actions>
             </div>

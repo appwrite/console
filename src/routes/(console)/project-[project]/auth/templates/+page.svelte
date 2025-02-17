@@ -124,14 +124,11 @@
     {/if}
 
     <CardGrid>
-        <Heading size="7" tag="h3">Email templates</Heading>
-        <p class="text">
-            Use templates to send and process account management emails. <a
-                href="https://appwrite.io/docs/advanced/platform/message-templates"
-                class="link">
-                Learn more about email templates.
-            </a>
-        </p>
+        <svelte:fragment slot="title">Email templates</svelte:fragment>
+        Use templates to send and process account management emails.
+        <a href="https://appwrite.io/docs/advanced/platform/message-templates" class="link">
+            Learn more about email templates.
+        </a>
 
         <svelte:fragment slot="aside">
             <Collapsible>
@@ -166,7 +163,7 @@
                         e.preventDefault();
                         openEmail('otpSession');
                     }}>
-                    <svelte:fragment slot="title">OTP Session</svelte:fragment>
+                    <svelte:fragment slot="title">OTP session</svelte:fragment>
                     <p class="text">Send an email to users that sign in with a email OTP.</p>
                     <EmailMagicUrlTemplate />
                 </CollapsibleItem>

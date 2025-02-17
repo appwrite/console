@@ -28,6 +28,8 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { AuthenticationFactor, type Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconChatAlt, IconDeviceMobile, IconMail } from '@appwrite.io/pink-icons-svelte';
 
     export let factors: Models.MfaFactors & { recoveryCode: boolean };
     /** If true, the form will be submitted automatically when the code is entered. */
@@ -103,8 +105,8 @@
                     fullWidth
                     {disabled}
                     on:click={() => createChallenge(AuthenticationFactor.Totp)}>
-                    <span class="icon-device-mobile u-font-size-20" aria-hidden="true" />
-                    <span class="text">Authenticator app</span>
+                    <Icon icon={IconDeviceMobile} slot="start" size="s" />
+                    Authenticator app
                 </Button>
             {/if}
             {#if factors.email && challengeType != AuthenticationFactor.Email}
@@ -114,7 +116,8 @@
                     {disabled}
                     on:click={() => createChallenge(AuthenticationFactor.Email)}>
                     <span class="icon-mail u-font-size-20" aria-hidden="true" />
-                    <span class="text">Email verification</span>
+                    <Icon icon={IconMail} slot="start" size="s" />
+                    Email verification
                 </Button>
             {/if}
             {#if factors.phone && challengeType != AuthenticationFactor.Phone}
@@ -123,8 +126,8 @@
                     fullWidth
                     {disabled}
                     on:click={() => createChallenge(AuthenticationFactor.Phone)}>
-                    <span class="icon-chat-alt u-font-size-20" aria-hidden="true" />
-                    <span class="text">Phone verification</span>
+                    <Icon icon={IconChatAlt} slot="start" size="s" />
+                    Phone verification
                 </Button>
             {/if}
             {#if factors.recoveryCode && challengeType != AuthenticationFactor.Recoverycode}

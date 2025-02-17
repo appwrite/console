@@ -33,35 +33,14 @@
     import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { getPlatformInfo } from '$lib/helpers/platform';
 
     export let data;
 
     let addOrganization = false;
     let showCreate = false;
-
-    const getPlatformInfo = (platform: string) => {
-        let name: string, icon: string;
-        if (platform.includes('flutter')) {
-            name = 'Flutter';
-            icon = 'flutter';
-        } else if (platform.includes('apple')) {
-            name = 'Apple';
-            icon = 'apple';
-        } else if (platform.includes('android')) {
-            name = 'Android';
-            icon = 'android';
-        } else if (platform.includes('unity')) {
-            name = 'Unity';
-            icon = 'unity';
-        } else if (platform.includes('web')) {
-            name = 'Web';
-            icon = 'code';
-        } else {
-            name = 'Unknown';
-            icon = 'unknown';
-        }
-        return { name, icon };
-    };
 
     function allServiceDisabled(project: Models.Project): boolean {
         let disabled = true;
@@ -94,7 +73,7 @@
             keys: ['c'],
             disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects,
             group: 'projects',
-            icon: 'plus'
+            icon: IconPlus
         }
     ]);
 
@@ -150,8 +129,8 @@
                         on:click={handleCreateProject}
                         event="create_project"
                         disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create project</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create project
                     </Button>
                 {/if}
                 <svelte:fragment slot="list">

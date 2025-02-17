@@ -35,11 +35,9 @@
 
 <Form onSubmit={updatePhone}>
     <CardGrid>
-        <Heading tag="h6" size="7">Phone</Heading>
-        <p>
-            Update user's phone. Phone number must start with '+' and maximum of 15 digits, for
-            example: +14155552671.
-        </p>
+        <svelte:fragment slot="title">Phone</svelte:fragment>
+        Update user's phone. Phone number must start with '+' and maximum of 15 digits, for example:
+        +14155552671.
         <svelte:fragment slot="aside">
             <ul>
                 <InputPhone

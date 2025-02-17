@@ -14,6 +14,10 @@ export const load: PageLoad = async ({ url }) => {
 
     return {
         site,
-        deployment
+        deployment,
+        repository: await sdk.forProject.vcs.getRepository(
+            site.installationId,
+            site.providerRepositoryId
+        )
     };
 };

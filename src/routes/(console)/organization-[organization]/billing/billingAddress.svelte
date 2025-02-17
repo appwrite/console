@@ -15,6 +15,8 @@
     import AddressModal from '$routes/(console)/account/payments/addressModal.svelte';
     import EditAddressModal from '$routes/(console)/account/payments/editAddressModal.svelte';
     import ReplaceAddress from './replaceAddress.svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let billingAddress: Address = null;
 
@@ -49,12 +51,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Billing address</Heading>
-
-    <p class="text">
-        View or update your billing address. This address will be included in your invoices from
-        Appwrite.
-    </p>
+    <svelte:fragment slot="title">Billing address</svelte:fragment>
+    View or update your billing address. This address will be included in your invoices from Appwrite.
     <svelte:fragment slot="aside">
         {#if $organization?.billingAddressId && billingAddress}
             <div class="box">
@@ -81,7 +79,7 @@
                             on:click={() => {
                                 showBillingAddressDropdown = !showBillingAddressDropdown;
                             }}>
-                            <span class="icon-dots-horizontal" aria-hidden="true" />
+                            <Icon icon={IconDotsHorizontal} size="s" />
                         </Button>
                         <svelte:fragment slot="list">
                             {#if billingAddress.userId === $user.$id}
@@ -129,7 +127,7 @@
                                         showCreate = true;
                                     }
                                 }}>
-                                <i class="icon-plus" />
+                                <Icon icon={IconPlus} size="s" />
                             </Button>
                             <svelte:fragment slot="list">
                                 {#if $addressList?.total}

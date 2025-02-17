@@ -33,8 +33,9 @@
     import MessageStatusPill from './messageStatusPill.svelte';
     import { canWriteWebhooks } from '$lib/stores/roles';
     import { get } from 'svelte/store';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import ViewSelector from '$lib/components/viewSelector.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -62,8 +63,8 @@
         <ViewSelector {columns} view={data.view} hideView />
         {#if $canWriteWebhooks}
             <Button on:click={openWizard} event="create_webhook">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create database</span>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create database
             </Button>
         {/if}
     </Layout.Stack>

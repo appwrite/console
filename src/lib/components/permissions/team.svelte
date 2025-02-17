@@ -97,7 +97,7 @@
                             </TableCell>
                             <TableCell title="Team">
                                 <label class="u-flex u-cross-center u-gap-8" for={team.$id}>
-                                    <AvatarInitials size={32} name={team.name} />
+                                    <AvatarInitials size="s" name={team.name} />
                                     <div class="u-line-height-1-5">
                                         <div class="body-text-2 u-bold">{team.name}</div>
                                         <div class="u-x-small">{team.$id}</div>

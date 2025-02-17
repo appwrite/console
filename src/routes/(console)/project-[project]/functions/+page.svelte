@@ -28,6 +28,7 @@
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
     import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -76,7 +77,7 @@
                 $wizard.show ||
                 isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total) ||
                 !$canWriteFunctions,
-            icon: 'plus',
+            icon: IconPlus,
             group: 'functions'
         }
     ]);

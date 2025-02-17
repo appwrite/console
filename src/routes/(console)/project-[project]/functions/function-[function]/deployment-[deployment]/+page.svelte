@@ -136,12 +136,10 @@
     </div>
 
     {#if !data.activeDeployment}
-        <CardGrid danger>
-            <Heading tag="h6" size="7">Delete deployment</Heading>
-            <p>
-                The deployment will be permanently deleted, including all data associated with it.
-                This action is irreversible.
-            </p>
+        <CardGrid>
+            <svelte:fragment slot="title">Delete deployment</svelte:fragment>
+            The deployment will be permanently deleted, including all data associated with it. This action
+            is irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <p>Last updated: {toLocaleDateTime($func.$updatedAt)}</p>

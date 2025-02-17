@@ -340,5 +340,5 @@ export enum Submit {
     SiteConnectRepo = 'submit_site_connect_repo',
     SiteRedeploy = 'submit_site_redeploy',
     SiteDisconnectRepo = 'submit_site_disconnect_repo',
-    SitePromoteDeployment = 'submit_site_promote_deployment'
+    SiteActivateDeployment = 'submit_site_activate_deployment'
 }

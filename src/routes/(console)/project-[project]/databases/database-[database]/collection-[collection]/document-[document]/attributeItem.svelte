@@ -1,8 +1,10 @@
 <script lang="ts">
     import { Button, FormList } from '$lib/elements/forms';
     import { capitalize } from '$lib/helpers/string';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import type { Attributes } from '../store';
     import Attribute from './attribute.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let attribute: Attributes;
     export let formValues: object = {};
@@ -52,9 +54,9 @@
                     {getAttributeType(attribute)}
                 </span>
             </span>
-            <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add item</span>
+            <Button text on:click={() => addArrayItem(attribute.key)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add item
             </Button>
         </div>
     {:else}
@@ -80,9 +82,9 @@
                     </div>
                 </li>
             {/each}
-            <Button text noMargin on:click={() => addArrayItem(attribute.key)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text"> Add item</span>
+            <Button text on:click={() => addArrayItem(attribute.key)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add item
             </Button>
         </ul>
     {/if}

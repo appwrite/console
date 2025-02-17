@@ -1,98 +1,120 @@
 <script>
     import { isCloud } from '$lib/system';
     import { version } from '$routes/(console)/store';
+    import { IconCloud, IconDiscord, IconGithub } from '@appwrite.io/pink-icons-svelte';
+    import { Layout, Typography, Link, Icon, Divider, Button } from '@appwrite.io/pink-svelte';
 
     const currentYear = new Date().getFullYear();
 </script>
 
-<footer class="main-footer u-cross-center">
-    <div class="main-footer-start">
-        <ul class="inline-links is-no-padding-first-and-last u-x-small u-flex-wrap u-gap-16">
-            <li class="inline-links-item" style="line-height: 1.02;">
-                <div class="u-flex u-cross-center u-gap-8">
-                    {#if isCloud}
-                        <span class="icon-cloud" />
-                    {/if}
-                    {#if $version}
-                        <a
-                            class="text"
-                            href="https://github.com/appwrite/appwrite/releases"
-                            aria-label="Appwrite releases on Github"
-                            target="_blank"
-                            rel="noreferrer">
-                            Version {$version}
-                        </a>
-                    {/if}
-                </div>
-            </li>
-            <li class="inline-links-item">
-                <a href="https://appwrite.io/docs" target="_blank" rel="noreferrer">
-                    <span class="text">Docs</span>
-                </a>
-            </li>
-            <li class="inline-links-item">
-                <a href="https://appwrite.io/terms" target="_blank" rel="noreferrer">
-                    <span class="text">Terms</span>
-                </a>
-            </li>
-            <li class="inline-links-item">
-                <a href="https://appwrite.io/privacy" target="_blank" rel="noreferrer">
-                    <span class="text">Privacy</span>
-                </a>
-            </li>
-            {#if isCloud}
-                <li class="inline-links-item">
-                    <a href="https://appwrite.io/cookies" target="_blank" rel="noreferrer">
-                        <span class="text">Cookies</span>
-                    </a>
-                </li>
-            {/if}
-        </ul>
-    </div>
-    <div class="main-footer-end">
-        <ul class="inline-links is-no-padding-first-and-last u-x-small">
-            <li class="inline-links-item">
-                <span class="text">ⓒ {currentYear} Appwrite. All rights reserved.</span>
-            </li>
-            <li class="inline-links-item u-flex u-gap-8">
-                <a
+<footer>
+    <Divider />
+    <Layout.Stack direction="row">
+        <Layout.Stack direction="row" alignItems="center" gap="l">
+            <Typography.Caption variant="400">
+                ⓒ {currentYear} Appwrite. All rights reserved.
+            </Typography.Caption>
+            <span class="divider-wrapper">
+                <Divider vertical />
+            </span>
+            <Layout.Stack direction="row" gap="xxs" inline>
+                <Button.Anchor
+                    icon
+                    size="xs"
+                    variant="ghost"
                     href="https://github.com/appwrite/appwrite"
                     target="_blank"
                     rel="noreferrer"
                     aria-label="Appwrite on Github">
-                    <span class="icon-github" aria-hidden="true" />
-                </a>
-                <a
+                    <Icon size="s" icon={IconGithub} />
+                </Button.Anchor>
+                <Button.Anchor
+                    icon
+                    size="xs"
+                    variant="ghost"
                     href="https://appwrite.io/discord"
                     target="_blank"
                     rel="noreferrer"
                     aria-label="Appwrite on Discord">
-                    <span class="icon-discord" aria-hidden="true" />
-                </a>
-            </li>
-        </ul>
-    </div>
+                    <Icon size="s" icon={IconDiscord} />
+                </Button.Anchor>
+            </Layout.Stack>
+        </Layout.Stack>
+        <Layout.Stack direction="row" justifyContent="flex-end" gap="l" alignItems="center">
+            {#if isCloud}
+                <Icon size="s" icon={IconCloud} />
+            {/if}
+            {#if $version}
+                <Link.Anchor
+                    size="s"
+                    variant="quiet"
+                    href="https://github.com/appwrite/appwrite/releases"
+                    aria-label="Appwrite releases on Github"
+                    target="_blank"
+                    rel="noreferrer">
+                    Version {$version}
+                </Link.Anchor>
+                <span class="divider-wrapper">
+                    <Divider vertical />
+                </span>
+            {/if}
+            <Link.Anchor
+                size="s"
+                variant="quiet"
+                href="https://appwrite.io/docs"
+                target="_blank"
+                rel="noreferrer">
+                Docs
+            </Link.Anchor>
+            <span class="divider-wrapper">
+                <Divider vertical />
+            </span>
+            <Link.Anchor
+                size="s"
+                variant="quiet"
+                href="https://appwrite.io/terms"
+                target="_blank"
+                rel="noreferrer">
+                Terms
+            </Link.Anchor>
+            <span class="divider-wrapper">
+                <Divider vertical />
+            </span>
+            <Link.Anchor
+                size="s"
+                variant="quiet"
+                href="https://appwrite.io/privacy"
+                target="_blank"
+                rel="noreferrer">
+                Privacy
+            </Link.Anchor>
+            {#if isCloud}
+                <span class="divider-wrapper">
+                    <Divider vertical />
+                </span>
+                <Link.Anchor
+                    size="s"
+                    variant="quiet"
+                    href="https://appwrite.io/cookies"
+                    target="_blank"
+                    rel="noreferrer">
+                    Cookies
+                </Link.Anchor>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
 </footer>
 
 <style lang="scss">
-    .main-footer {
+    .divider-wrapper {
+        height: 18px;
+    }
+    footer {
         margin-block-start: auto;
-        background-color: hsl(var(--p-body-bg-color));
-        z-index: 1;
-    }
-
-    .main-footer-start .inline-links-item {
-        padding-inline-end: 1rem;
-        padding-inline-start: unset;
-    }
-
-    [class^='icon-']:not(.icon-cloud):not(:hover) {
-        color: hsl(var(--color-neutral-50));
-    }
-
-    @media (max-width: 1200px) {
-        .main-footer {
-            gap: 2rem;
-        }
+        margin-inline: 2rem;
+        padding-block: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-l);
     }
 </style>

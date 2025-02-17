@@ -7,8 +7,13 @@
     export let startAnimation = false;
 
     const loadingSentences = [
-        'Setting up 20 authentication methods...',
-        'Preparing messaging providers...'
+        'Database services are initializing',
+        'In-memory caching is ready',
+        'Backup services are ready',
+        'All 37 OAuth providers are ready',
+        'Global CDN is ready',
+        'Advanced DDoS protection is ready',
+        'Appwrite network is ready'
     ];
     let currentSentenceIndex = 0;
     let visible = true;

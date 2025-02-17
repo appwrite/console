@@ -8,7 +8,15 @@
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
     import { createEventDispatcher } from 'svelte';
-    import { Layout, Table, Typography, Icon, Avatar, Skeleton } from '@appwrite.io/pink-svelte';
+    import {
+        Layout,
+        Table,
+        Typography,
+        Icon,
+        Avatar,
+        Skeleton,
+        Button as PinkButton
+    } from '@appwrite.io/pink-svelte';
     import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
     import ConnectGit from './connectGit.svelte';
     import SvgIcon from '../svgIcon.svelte';
@@ -64,7 +72,7 @@
         $repositories.search = search;
         $repositories.installationId = installationId;
 
-        if ($repositories.repositories.length) {
+        if ($repositories.repositories.length && action === 'select') {
             selectedRepository = $repositories.repositories[0].id;
             $repository = $repositories.repositories[0];
         }
@@ -141,7 +149,7 @@
                         {#each response as repo}
                             <Table.Row>
                                 <Table.Cell>
-                                    <Layout.Stack direction="row" alignItems="center">
+                                    <Layout.Stack direction="row" alignItems="center" gap="s">
                                         {#if action === 'select'}
                                             <input
                                                 class="is-small u-margin-inline-end-8"
@@ -173,7 +181,9 @@
                                                 alt={repo.name} />
                                         {/if}
                                         <Layout.Stack gap="s" direction="row" alignItems="center">
-                                            <Typography.Text truncate>
+                                            <Typography.Text
+                                                truncate
+                                                color="--color-fgcolor-neutral-secondary">
                                                 {repo.name}
                                             </Typography.Text>
                                             {#if repo.private}
@@ -183,21 +193,22 @@
                                                     color="--color-fgcolor-neutral-tertiary" />
                                             {/if}
                                             <time datetime={repo.pushedAt}>
-                                                <Typography.Text
+                                                <Typography.Caption
+                                                    variant="400"
                                                     truncate
                                                     color="--color-fgcolor-neutral-tertiary">
                                                     {timeFromNow(repo.pushedAt)}
-                                                </Typography.Text>
+                                                </Typography.Caption>
                                             </time>
                                         </Layout.Stack>
                                         {#if action === 'button'}
                                             <Layout.Stack direction="row" justifyContent="flex-end">
-                                                <Button
-                                                    size="s"
-                                                    secondary
+                                                <PinkButton.Button
+                                                    size="xs"
+                                                    variant="secondary"
                                                     on:click={() => dispatch('connect', repo)}>
                                                     Connect
-                                                </Button>
+                                                </PinkButton.Button>
                                             </Layout.Stack>
                                         {/if}
                                     </Layout.Stack>

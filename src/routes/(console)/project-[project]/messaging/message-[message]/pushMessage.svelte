@@ -19,6 +19,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { validateData } from '../wizard/pushFormList.svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     export let message: Models.Message & { data: Record<string, any> };
@@ -164,14 +166,13 @@
                             <Helper type="warning">{dataError}</Helper>
                         {/if}
                         <Button
-                            noMargin
                             text
                             disabled={customData && customData[customData.length - 1][0] === ''}
                             on:click={() => {
                                 customData = [...customData, ['', '']];
                             }}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add data</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add data
                         </Button>
                     </div>
                 </form>

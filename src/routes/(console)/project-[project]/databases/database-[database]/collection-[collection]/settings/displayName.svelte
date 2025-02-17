@@ -10,6 +10,8 @@
     import { attributes } from '../store';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/stores';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     const collectionId = $page.params.collection;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
@@ -55,12 +57,10 @@
 
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
-        <Heading tag="h6" size="7" id="display-name">Display name</Heading>
-        <p class="text">
-            Select string attributes as display names for your documents. The selected names will be
-            used as short forms to identify documents in the Appwrite console, like when creating
-            database relationships. You can specify up to 5 names.
-        </p>
+        <svelte:fragment slot="title">Display name</svelte:fragment>
+        Select string attributes as display names for your documents. The selected names will be used
+        as short forms to identify documents in the Appwrite console, like when creating database relationships.
+        You can specify up to 5 names.
 
         <svelte:fragment slot="aside">
             <div class="u-flex u-flex-vertical u-gap-4">
@@ -121,7 +121,6 @@
                     {/if}
                 </ul>
                 <Button
-                    noMargin
                     text
                     disabled={addAttributeDisabled}
                     on:click={() => {
@@ -129,8 +128,8 @@
                         search = null;
                         names = names;
                     }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add attribute</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add attribute
                 </Button>
             </div>
         </svelte:fragment>

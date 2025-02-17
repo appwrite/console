@@ -55,8 +55,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">{$webhook.url}</Heading>
-
+    <svelte:fragment slot="title">{$webhook.url}</svelte:fragment>
     <svelte:fragment slot="aside">
         <div class="u-flex u-gap-16">
             <ul class="u-stretch">

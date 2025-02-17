@@ -7,23 +7,25 @@
 
     type $$Props =
         | {
-              title: string;
+              title?: string;
               confirmExit: boolean;
               showExitModal: boolean;
               href?: string;
               invertColumns?: boolean;
-              hideAside?: boolean;
               hideFooter?: boolean;
+              column?: boolean;
+              columnSize?: 's' | 'm';
               onExit?: () => void;
           }
         | {
-              title: string;
+              title?: string;
               href: string;
               confirmExit?: boolean;
               showExitModal?: boolean;
               invertColumns?: boolean;
-              hideAside?: boolean;
               hideFooter?: boolean;
+              column?: boolean;
+              columnSize?: 's' | 'm';
               onExit?: () => void;
           };
 
@@ -32,8 +34,9 @@
     export let href: $$Props['href'] = '';
     export let showExitModal: $$Props['showExitModal'] = false;
     export let invertColumns: $$Props['invertColumns'] = false;
-    export let hideAside = false;
     export let hideFooter = false;
+    export let column: $$Props['column'] = false;
+    export let columnSize: $$Props['columnSize'] = 'm';
     export let onExit: $$Props['onExit'] = undefined;
 
     function handleKeydown(event: KeyboardEvent) {
@@ -58,7 +61,8 @@
     <Layout.Wizard
         {title}
         {invertColumns}
-        {hideAside}
+        {column}
+        {columnSize}
         {hideFooter}
         href={confirmExit ? null : href}
         buttonMethod={() => {
@@ -117,4 +121,8 @@
         max-height: 100dvh;
         overflow-y: auto;
     }
+
+    // :global(html) {
+    //     overflow-y: hidden;
+    // }
 </style>

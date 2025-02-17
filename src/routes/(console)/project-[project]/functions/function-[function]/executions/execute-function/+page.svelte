@@ -42,7 +42,8 @@
         toLocaleTimeISO
     } from '$lib/helpers/date';
     import { last } from '$lib/helpers/array';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let previousPage: string = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/executions`;
 
@@ -148,7 +149,7 @@
 </svelte:head>
 
 <WizardSecondaryContainer href={previousPage}>
-    <svelte:fragment slot="title">Execute Function</svelte:fragment>
+    <svelte:fragment slot="title">Execute function</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
@@ -221,7 +222,6 @@
                                         bind:value />
                                     <Button
                                         text
-                                        noMargin
                                         disabled={(!name || !value) && index === 0}
                                         on:click={() => {
                                             if (index === 0) {
@@ -237,7 +237,6 @@
                             {/if}
                         </FormList>
                         <Button
-                            noMargin
                             text
                             disabled={headers?.length && headers[headers.length - 1][0]
                                 ? false
@@ -248,8 +247,8 @@
                                     headers = headers;
                                 }
                             }}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add Header</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add Header
                         </Button>
                     </div>
 

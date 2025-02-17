@@ -30,10 +30,8 @@
 
 <Form onSubmit={updatePassword}>
     <CardGrid>
-        <Heading tag="h2" size="7">Password</Heading>
-        <p class="text">
-            Forgot your password? <a class="link" href={`${base}/recover`}>Recover your password</a>
-        </p>
+        <svelte:fragment slot="title">Password</svelte:fragment>
+        Forgot your password? <a class="link" href={`${base}/recover`}>Recover your password</a>
 
         <svelte:fragment slot="aside">
             <FormList>
@@ -41,7 +39,6 @@
                     id="oldPassword"
                     label="Old password"
                     placeholder="Enter password"
-                    showPasswordButton={true}
                     bind:value={oldPassword} />
                 <InputPassword
                     id="newPassword"

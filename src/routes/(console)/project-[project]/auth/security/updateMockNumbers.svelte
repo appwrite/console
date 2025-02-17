@@ -17,7 +17,8 @@
     import { app } from '$lib/stores/app';
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -81,17 +82,15 @@
 
 <Form onSubmit={updateMockNumbers}>
     <CardGrid hideFooter={isComponentDisabled}>
-        <Heading tag="h6" size="7" id="variables">Mock phone numbers</Heading>
-        <p>
-            Generate <b>fictional</b> numbers to simulate phone verification when testing demo
-            accounts for submitting your application to the App Store or Google Play.
-            <a
-                href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
-                target="_blank"
-                class="u-underline"
-                rel="noopener noreferrer">
-                Learn more</a>
-        </p>
+        <svelte:fragment slot="title">Mock phone numbers</svelte:fragment>
+        Generate <b>fictional</b> numbers to simulate phone verification when testing demo accounts
+        for submitting your application to the App Store or Google Play.
+        <a
+            href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
+            target="_blank"
+            class="u-underline"
+            rel="noopener noreferrer">
+            Learn more</a>
         <svelte:fragment slot="aside">
             {#if isComponentDisabled}
                 <EmptyCardImageCloud source="email_signature_card" noAspectRatio>
@@ -217,8 +216,8 @@
                                 otp: generateOTP()
                             })}
                         disabled={numbers.length >= 10}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Add number</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add number
                     </Button>
                 {/if}
             {:else}

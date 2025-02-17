@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Remarkable } from 'remarkable';
     import Template from './template.svelte';
+    import { Keyboard, Layout } from '@appwrite.io/pink-svelte';
 
     const markdownInstance = new Remarkable();
 
@@ -227,47 +228,48 @@
         </div>
     {/if}
 
-    <div class="footer" slot="footer">
-        <div class="u-flex u-cross-center u-gap-4">
-            <AvatarInitials size={32} name={$user.name} />
-            <form
-                class="input-text-wrapper u-width-full-line"
-                style="--amount-of-buttons: 1;"
-                on:submit|preventDefault={(e) => {
-                    handleSubmit(e);
-                }}>
-                <!--  svelte-ignore a11y-autofocus -->
-                <input
-                    type="text"
-                    class="input-text"
-                    placeholder="Ask a question..."
-                    autofocus
-                    bind:value={$input}
-                    disabled={$isLoading} />
-                <div class="options-list">
-                    <button
-                        class="options-list-button"
-                        aria-label="ask AI"
-                        type="submit"
-                        disabled={!$input.trim() || $isLoading}>
-                        <span class="icon-arrow-sm-right" aria-hidden="true" />
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="u-flex u-main-end u-cross-center u-gap-16 u-margin-block-start-16">
-            <div class="u-flex u-cross-center u-gap-4">
-                <kbd class="kbd">Enter</kbd>
-                <span>to search</span>
-            </div>
-            <div class="sep" />
-            <div class="u-flex u-cross-center u-gap-4">
-                <kbd class="kbd">Esc</kbd>
-                <span>to {$subPanels.length === 1 ? 'close' : 'go back'}</span>
-            </div>
-        </div>
-    </div>
+    <Layout.Stack slot="footer">
+        <Layout.Stack gap="l">
+            <Layout.Stack direction="row" gap="s">
+                <AvatarInitials size="s" name={$user.name} />
+                <form
+                    class="input-text-wrapper u-width-full-line"
+                    style="--amount-of-buttons: 1;"
+                    on:submit|preventDefault={(e) => {
+                        handleSubmit(e);
+                    }}>
+                    <!--  svelte-ignore a11y-autofocus -->
+                    <input
+                        type="text"
+                        class="input-text"
+                        placeholder="Ask a question..."
+                        autofocus
+                        bind:value={$input}
+                        disabled={$isLoading} />
+                    <div class="options-list">
+                        <button
+                            class="options-list-button"
+                            aria-label="ask AI"
+                            type="submit"
+                            disabled={!$input.trim() || $isLoading}>
+                            <span class="icon-arrow-sm-right" aria-hidden="true" />
+                        </button>
+                    </div>
+                </form>
+            </Layout.Stack>
+            <Layout.Stack direction="row" justifyContent="space-between" gap="xxl">
+                <Layout.Stack direction="row" alignItems="center" gap="xxs">
+                    <Keyboard key="Enter" autoWidth={true} /> <span>to search</span></Layout.Stack>
+                <Layout.Stack
+                    direction="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    gap="xxs">
+                    <Keyboard key="Esc" autoWidth={true} />
+                    <span>to {$subPanels.length === 1 ? 'close' : 'go back'}</span></Layout.Stack>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Layout.Stack>
 </Template>
 
 <style lang="scss">

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { Badge, Icon, type SheetMenu, ActionMenu } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, type SheetMenu, ActionMenu, Card } from '@appwrite.io/pink-svelte';
     import {
         IconChevronDown,
         IconChevronRight,
@@ -196,7 +196,8 @@
                 organisationBottomSheetOpen = true;
             }}
             aria-label="Open organizations tab">
-            <span class="orgName">{selectedOrg?.name ?? 'Organization'}</span>
+            <span class="orgName" class:noProjects={!selectedProject}
+                >{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
             <Icon icon={IconChevronDown} size="s" />
@@ -204,44 +205,66 @@
     {/if}
 
     <div class="menu" use:melt={$menuOrganizations}>
-        {#if selectedOrg}
-            <div use:melt={$itemOrganizations}>
-                <ActionMenu.Root>
-                    <ActionMenu.Item.Anchor href={`/console/organization-${selectedOrg?.$id}`}
-                        >Organization overview</ActionMenu.Item.Anchor
-                    ></ActionMenu.Root>
-            </div>
-            {#if organizations.length > 1}
-                <div class="separator" use:melt={$separatorOrganizations} />
-
-                <div use:melt={$subTriggerOrganizations}>
+        <Card.Base padding="xxxs" shadow={true}>
+            {#if selectedOrg}
+                <div use:melt={$itemOrganizations}>
                     <ActionMenu.Root>
-                        <ActionMenu.Item.Button trailingIcon={IconChevronRight}
-                            >Switch organization</ActionMenu.Item.Button>
-                    </ActionMenu.Root>
+                        <ActionMenu.Item.Anchor href={`/console/organization-${selectedOrg?.$id}`}
+                            >Organization overview</ActionMenu.Item.Anchor
+                        ></ActionMenu.Root>
                 </div>
-                <div class="menu subMenu" use:melt={$subMenuOrganizations}>
-                    <div use:melt={$radioGroupOrganizations}>
-                        {#each organizations as organization}
-                            <div use:melt={$itemOrganizations}>
-                                <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor
-                                        href={`/console/organization-${organization?.$id}`}
-                                        >{organization.name}</ActionMenu.Item.Anchor>
-                                </ActionMenu.Root>
-                            </div>
-                        {/each}
-                        <div class="separator" use:melt={$separatorOrganizations} />
-                        <div use:melt={$itemOrganizations}>
-                            <ActionMenu.Root>
-                                <ActionMenu.Item.Button
-                                    leadingIcon={IconPlusSm}
-                                    on:click={createOrg}>Create organization</ActionMenu.Item.Button
-                                ></ActionMenu.Root>
-                        </div>
+                {#if organizations.length > 1}
+                    <div class="separator" use:melt={$separatorOrganizations} />
+
+                    <div use:melt={$subTriggerOrganizations}>
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Button trailingIcon={IconChevronRight}
+                                >Switch organization</ActionMenu.Item.Button>
+                        </ActionMenu.Root>
                     </div>
-                </div>
+                    <div class="menu subMenu" use:melt={$subMenuOrganizations}>
+                        <Card.Base padding="xxxs" shadow={true}>
+                            <div use:melt={$radioGroupOrganizations}>
+                                {#each organizations as organization}
+                                    <div use:melt={$itemOrganizations}>
+                                        <ActionMenu.Root>
+                                            <ActionMenu.Item.Anchor
+                                                href={`/console/organization-${organization?.$id}`}
+                                                >{organization.name}</ActionMenu.Item.Anchor>
+                                        </ActionMenu.Root>
+                                    </div>
+                                {/each}
+                                <div class="separator" use:melt={$separatorOrganizations} />
+                                <div use:melt={$itemOrganizations}>
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Button
+                                            leadingIcon={IconPlusSm}
+                                            on:click={createOrg}
+                                            >Create organization</ActionMenu.Item.Button
+                                        ></ActionMenu.Root>
+                                </div>
+                            </div>
+                        </Card.Base>
+                    </div>
+                {:else}
+                    <div class="separator" use:melt={$separatorOrganizations} />
+                    <div use:melt={$itemOrganizations}>
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Button leadingIcon={IconPlusSm} on:click={createOrg}
+                                >Create organization</ActionMenu.Item.Button
+                            ></ActionMenu.Root>
+                    </div>
+                {/if}
             {:else}
+                {#each organizations as organization}
+                    <div use:melt={$itemOrganizations}>
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Anchor
+                                href={`/console/organization-${organization?.$id}`}
+                                >{organization.name}</ActionMenu.Item.Anchor
+                            ></ActionMenu.Root>
+                    </div>
+                {/each}
                 <div class="separator" use:melt={$separatorOrganizations} />
                 <div use:melt={$itemOrganizations}>
                     <ActionMenu.Root>
@@ -250,23 +273,7 @@
                         ></ActionMenu.Root>
                 </div>
             {/if}
-        {:else}
-            {#each organizations as organization}
-                <div use:melt={$itemOrganizations}>
-                    <ActionMenu.Root>
-                        <ActionMenu.Item.Anchor href={`/console/organization-${organization?.$id}`}
-                            >{organization.name}</ActionMenu.Item.Anchor
-                        ></ActionMenu.Root>
-                </div>
-            {/each}
-            <div class="separator" use:melt={$separatorOrganizations} />
-            <div use:melt={$itemOrganizations}>
-                <ActionMenu.Root>
-                    <ActionMenu.Item.Button leadingIcon={IconPlusSm} on:click={createOrg}
-                        >Create organization</ActionMenu.Item.Button
-                    ></ActionMenu.Root>
-            </div>
-        {/if}
+        </Card.Base>
     </div>
 
     {#if selectedOrg && selectedProject}
@@ -292,35 +299,37 @@
         {/if}
 
         <div class="menu" use:melt={$menuProjects}>
-            {#if selectedOrg.projects.length > 1}
-                {#each selectedOrg.projects as project, index}
-                    {#if index < 4}
-                        <div use:melt={$itemProjects}>
-                            <ActionMenu.Root>
-                                <ActionMenu.Item.Anchor href={`/console/project-${project.$id}`}
-                                    >{project.name}</ActionMenu.Item.Anchor
-                                ></ActionMenu.Root>
-                        </div>
-                    {:else if index === 4}
-                        <div use:melt={$itemProjects}>
-                            <ActionMenu.Root>
-                                <ActionMenu.Item.Anchor
-                                    href={`/console/organization-${selectedOrg.$id}`}
-                                    >All projects</ActionMenu.Item.Anchor
-                                ></ActionMenu.Root>
-                        </div>
-                    {/if}
-                {/each}
-                <div class="separator" use:melt={$separatorProjects} />
-            {/if}
-            <div use:melt={$itemProjects}>
-                <ActionMenu.Root>
-                    <ActionMenu.Item.Anchor
-                        leadingIcon={IconPlusSm}
-                        href={`/console/organization-${selectedOrg?.$id}?create-project`}
-                        >Create project</ActionMenu.Item.Anchor
-                    ></ActionMenu.Root>
-            </div>
+            <Card.Base padding="xxxs" shadow={true}>
+                {#if selectedOrg.projects.length > 1}
+                    {#each selectedOrg.projects as project, index}
+                        {#if index < 4}
+                            <div use:melt={$itemProjects}>
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Anchor href={`/console/project-${project.$id}`}
+                                        >{project.name}</ActionMenu.Item.Anchor
+                                    ></ActionMenu.Root>
+                            </div>
+                        {:else if index === 4}
+                            <div use:melt={$itemProjects}>
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Anchor
+                                        href={`/console/organization-${selectedOrg.$id}`}
+                                        >All projects</ActionMenu.Item.Anchor
+                                    ></ActionMenu.Root>
+                            </div>
+                        {/if}
+                    {/each}
+                    <div class="separator" use:melt={$separatorProjects} />
+                {/if}
+                <div use:melt={$itemProjects}>
+                    <ActionMenu.Root>
+                        <ActionMenu.Item.Anchor
+                            leadingIcon={IconPlusSm}
+                            href={`/console/organization-${selectedOrg?.$id}?create-project`}
+                            >Create project</ActionMenu.Item.Anchor
+                        ></ActionMenu.Root>
+                </div>
+            </Card.Base>
         </div>
     {/if}
 </div>
@@ -331,19 +340,19 @@
 
 <style lang="scss">
     .menu {
-        display: flex;
-        flex-direction: column;
-        outline: none !important;
+        //display: flex;
+        //flex-direction: column;
+        //outline: none !important;
         min-width: 220px;
-        border-radius: var(--border-radius-m, 12px);
-        border: 1px solid var(--color-border-neutral, #ededf0);
-        background: var(--color-bgcolor-neutral-primary, #fff);
+        //border-radius: var(--border-radius-m, 12px);
+        //border: 1px solid var(--color-border-neutral, #ededf0);
+        //background: var(--color-bgcolor-neutral-primary, #fff);
         z-index: 20;
-
-        /* box-shadow/neutral/L */
-        box-shadow:
-            -2px 8px 16px 0px rgba(0, 0, 0, 0.02),
-            -2px 20px 24px 0px rgba(0, 0, 0, 0.02);
+        //
+        ///* box-shadow/neutral/L */
+        //box-shadow:
+        //    -2px 8px 16px 0px rgba(0, 0, 0, 0.02),
+        //    -2px 20px 24px 0px rgba(0, 0, 0, 0.02);
     }
 
     .not-mobile {
@@ -384,12 +393,8 @@
         }
     }
 
-    .item:first-of-type {
-        margin-top: 4px;
-    }
-    .item:last-of-type,
-    .switch-org {
-        margin-bottom: 4px;
+    .noProjects {
+        max-width: 150px;
     }
 
     :global(.item[data-highlighted]) {
@@ -400,7 +405,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: var(--space-1, 2px) var(--space-2, 4px);
+        padding: var(--space-1, 2px) var(--space-1, 2px) var(--space-1, 2px) var(--space-3, 6px);
         gap: var(--space-2, 4px);
         margin: 0 var(--space-5, 10px) 0 var(--space-5, 10px);
 
@@ -440,8 +445,10 @@
             0 0 0 4px var(--color-border-focus, #818186);
     }
     .separator {
-        margin: 5px 0;
         height: 1px;
+        margin-block: 2px;
+        margin-inline-start: calc(var(--base-4) * -1);
+        width: calc(100% + var(--base-8));
         background-color: var(--color-border-neutral);
     }
     .breadcrumb-separator {

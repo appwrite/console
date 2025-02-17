@@ -1,7 +1,9 @@
 <script lang="ts">
     import { DropList, DropListItem } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { attributeOptions, type Option } from './store';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let showCreateDropdown = false;
 
@@ -14,8 +16,8 @@
         <Button
             on:click={() => (showCreateDropdown = !showCreateDropdown)}
             event="create_attribute">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create attribute</span>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create attribute
         </Button>
     </slot>
     <svelte:fragment slot="list">

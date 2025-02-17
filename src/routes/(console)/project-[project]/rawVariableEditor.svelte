@@ -6,7 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { parse } from 'envfile';
-    import { Icon, Layout, Tabs } from '@appwrite.io/pink-svelte';
+    import { Icon, InlineCode, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { InputTextarea } from '$lib/elements/forms';
     import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
 
@@ -135,43 +135,45 @@
     submitOnEnter={false}>
     <p slot="description">
         Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
-        <span class="inline-code">.{tab}</span> file.
+        <InlineCode size="s" code={`.${tab}`} /> file.
     </p>
     <Layout.Stack gap="s">
-        <Tabs.Root stretch>
-            <Tabs.Item.Button on:click={() => (tab = 'env')} active={tab === 'env'}>
+        <Tabs.Root stretch let:root>
+            <Tabs.Item.Button {root} on:click={() => (tab = 'env')} active={tab === 'env'}>
                 ENV
             </Tabs.Item.Button>
-            <Tabs.Item.Button on:click={() => (tab = 'json')} active={tab === 'json'}>
+            <Tabs.Item.Button {root} on:click={() => (tab = 'json')} active={tab === 'json'}>
                 JSON
             </Tabs.Item.Button>
         </Tabs.Root>
 
-        {#if tab === 'env'}
-            <InputTextarea
-                id="variables"
-                bind:value={envCode}
-                rows={10}
-                placeholder={`SECRET_KEY=dQw4w9WgXcQ...`} />
-        {:else if tab === 'json'}
-            <InputTextarea
-                id="variables"
-                bind:value={jsonCode}
-                rows={10}
-                placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`} />
-        {/if}
-        <Layout.Stack direction="row" gap="xs">
-            <Button on:click={() => downloadVariables()} text>
-                <Icon icon={IconDownload} />
-                Download
-            </Button>
-
-            <Copy value={tab == 'json' ? jsonCode : envCode}>
-                <Button text>
-                    <Icon icon={IconDuplicate} />
-                    Copy
+        <Layout.Stack gap="xxs">
+            {#if tab === 'env'}
+                <InputTextarea
+                    id="variables"
+                    bind:value={envCode}
+                    rows={10}
+                    placeholder={`SECRET_KEY=dQw4w9WgXcQ...`} />
+            {:else if tab === 'json'}
+                <InputTextarea
+                    id="variables"
+                    bind:value={jsonCode}
+                    rows={10}
+                    placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`} />
+            {/if}
+            <Layout.Stack direction="row">
+                <Button size="xs" on:click={() => downloadVariables()} compact>
+                    <Icon slot="start" icon={IconDownload} />
+                    Download
                 </Button>
-            </Copy>
+
+                <Copy value={tab == 'json' ? jsonCode : envCode}>
+                    <Button size="xs" compact>
+                        <Icon slot="start" icon={IconDuplicate} />
+                        Copy
+                    </Button>
+                </Copy>
+            </Layout.Stack>
         </Layout.Stack>
     </Layout.Stack>
 
@@ -180,10 +182,3 @@
         <Button submit disabled={isButtonDisabled}>Save</Button>
     </svelte:fragment>
 </Modal>
-
-<style lang="scss">
-    .editor-border {
-        border: solid 0.0625rem hsl(var(--color-border));
-        border-radius: var(--border-radius-small);
-    }
-</style>

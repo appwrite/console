@@ -10,6 +10,6 @@
 
 <Container>
     <ProxyRulesPage rules={data.rules} type={ResourceType.Api} dependency={Dependencies.DOMAINS}>
-        <svelte:fragment slot="heading">Custom Domains</svelte:fragment>
+        <svelte:fragment slot="heading">Custom domains</svelte:fragment>
     </ProxyRulesPage>
 </Container>

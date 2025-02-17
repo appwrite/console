@@ -4,14 +4,11 @@
     import Card from '$lib/components/card.svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { InputDomain } from '$lib/elements/forms/index.js';
-    import Link from '$lib/elements/link.svelte';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ResourceType, type Models } from '@appwrite.io/console';
     import {
-        Alert,
-        Accordion,
         Badge,
         Divider,
         Fieldset,
@@ -68,27 +65,9 @@
             });
         }
     }
-
-    type DomainTips = {
-        title: string;
-        message: string;
-    };
-
-    const siteDomainTips: DomainTips[] = [
-        {
-            title: 'Why a Top-Level Domain (TLD) matters for your site?',
-            message:
-                'A custom TLD helps create a unique web address, improves brand recognition, and makes your domain more memorable.'
-        },
-        {
-            title: 'What is DNS and why do you need it?',
-            message:
-                "DNS (Domain Name System) translates your domain name into an IP address, directing visitors to your website. It's essential for making your site accessible and ensuring it loads properly for users."
-        }
-    ];
 </script>
 
-<Wizard title="Add domain" href={backPage}>
+<Wizard title="Add domain" href={backPage} column columnSize="s">
     {#if domainData}
         {#if domainData.status === 'created'}
             <RecordsCard domain={domainData}>
@@ -121,39 +100,24 @@
         {/if}
     {:else}
         <Fieldset legend="Configuration">
-            <Layout.Stack gap="l">
-                <Form onSubmit={addDomain}>
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputDomain
-                            label="Domain"
-                            id="domain"
-                            name="domain"
-                            bind:value={domain}
-                            required
-                            placeholder="appwrite.example.com" />
-                        <Button secondary submit>Add</Button>
+            <Form onSubmit={addDomain}>
+                <Layout.Stack gap="xl">
+                    <InputDomain
+                        label="Domain"
+                        id="domain"
+                        name="domain"
+                        bind:value={domain}
+                        required
+                        placeholder="appwrite.example.com" />
+
+                    <Divider />
+                    <Layout.Stack alignItems="flex-end">
+                        <Button submit>Add</Button>
                     </Layout.Stack>
-                </Form>
-                <Alert.Inline title="Domain providers and DNS settings" hideActions>
-                    A list of all domain providers and their DNS setting is available <Link href="#"
-                        >here</Link
-                    >.
-                </Alert.Inline>
-            </Layout.Stack>
+                </Layout.Stack>
+            </Form>
         </Fieldset>
     {/if}
-
-    <svelte:fragment slot="aside">
-        <Card>
-            <Layout.Stack direction="column">
-                {#each siteDomainTips as tips, i}
-                    <Accordion title={tips.title} hideDivider={i === siteDomainTips.length - 1}>
-                        {tips.message}
-                    </Accordion>
-                {/each}
-            </Layout.Stack>
-        </Card>
-    </svelte:fragment>
 
     <svelte:fragment slot="footer">
         <Button secondary href={backPage}>Cancel</Button>

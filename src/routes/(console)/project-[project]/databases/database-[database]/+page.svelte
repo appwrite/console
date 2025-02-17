@@ -7,7 +7,8 @@
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
     import { canWriteCollections } from '$lib/stores/roles';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 </script>
@@ -25,8 +26,8 @@
                 hideView={!data.collections.total} />
             {#if $canWriteCollections}
                 <Button on:click={() => ($showCreate = true)} event="create_collection">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create collection</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create collection
                 </Button>
             {/if}
         </Layout.Stack>

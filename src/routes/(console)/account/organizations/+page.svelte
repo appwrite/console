@@ -21,7 +21,8 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
     let addOrganization = false;
@@ -49,8 +50,8 @@
         <Heading tag="h2" size="5">Organizations</Heading>
 
         <Button on:click={createOrg} event="create_organization">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create organization</span>
+            <Icon icon={IconPlus} slot="start" size="s" />
+            Create organization
         </Button>
     </div>
 
@@ -97,7 +98,7 @@
                     {#await avatarList}
                         <span class="avatar is-color-empty" />
                     {:then avatars}
-                        <AvatarGroup size={40} {avatars} />
+                        <AvatarGroup {avatars} />
                     {/await}
                 </GridItem1>
             {/each}

@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card, SvgIcon } from '$lib/components';
+    import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -30,7 +30,7 @@
     import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
     import { getFrameworkIcon } from '../../../store';
-    import { iconPath } from '$lib/stores/app';
+    import { app, iconPath } from '$lib/stores/app';
 
     export let data;
 
@@ -132,7 +132,7 @@
                     framework.installCommand,
                     framework.buildCommand,
                     framework.outputDirectory,
-                    domain,
+                    domain || undefined,
                     framework.adapter,
                     selectedInstallationId || undefined,
                     framework.fallbackFile,
@@ -153,16 +153,15 @@
                 });
 
                 //Add variables
-                await Promise.all(
-                    Object.keys(variables).map(async (key) => {
-                        await sdk.forProject.sites.createVariable(
-                            site.$id,
-                            key,
-                            variables[key].value,
-                            variables[key].secret
-                        );
-                    })
+                const promises = variables.map((variable) =>
+                    sdk.forProject.sites.createVariable(
+                        site.$id,
+                        variable.name,
+                        variable.value,
+                        variable?.secret ?? false
+                    )
                 );
+                await Promise.all(promises);
 
                 const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
                     Query.limit(1)
@@ -190,6 +189,9 @@
     $: if (connectBehaviour === 'later') {
         selectedRepository = null;
     }
+
+    $: console.log(data.template);
+    $: console.log(variables);
 </script>
 
 <svelte:head>
@@ -320,12 +322,20 @@
                 <Typography.Text variant="m-500" truncate>
                     {name || data.template.name}
                 </Typography.Text>
-                <Button secondary size="s" external href={data.template.demoUrl}>View demo</Button>
+                {#if data?.template?.demoUrl}
+                    <Button secondary size="s" external href={data.template.demoUrl}>
+                        View demo
+                    </Button>
+                {/if}
             </Layout.Stack>
 
             <Image
                 objectPosition="top"
-                src={data.template.demoImage}
+                border
+                src={data?.template?.demoImage ||
+                    ($app.themeInUse === 'dark'
+                        ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                        : `${base}/images/sites/screenshot-placeholder-light.svg`)}
                 alt={data.template.name}
                 width={357}
                 height={200} />
@@ -340,7 +350,7 @@
             fullWidthMobile
             size="s"
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting}>
+            disabled={$isSubmitting || (connectBehaviour === 'now' && !selectedRepository)}>
             Deploy
         </Button>
     </svelte:fragment>

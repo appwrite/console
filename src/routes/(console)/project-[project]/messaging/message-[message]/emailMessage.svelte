@@ -66,9 +66,7 @@
 
 <Form onSubmit={update}>
     <CardGrid hideFooter={!isDraft}>
-        <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-            <Heading tag="h6" size="7">Message</Heading>
-        </div>
+        <svelte:fragment slot="title">Message</svelte:fragment>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputText id="subject" label="Subject" disabled={!isDraft} bind:value={subject}
