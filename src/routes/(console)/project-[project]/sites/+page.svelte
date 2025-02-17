@@ -10,9 +10,8 @@
     import { Container } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
     import { canWriteSites } from '$lib/stores/roles.js';
-    import { Icon, Image, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import CreateSiteModal from './createSiteModal.svelte';
     import EmptyLight from './(images)/empty-light.png';
@@ -34,7 +33,6 @@
             },
             keys: ['c'],
             disabled:
-                $wizard.show ||
                 isServiceLimited('sites', $organization?.billingPlan, data.siteList?.total) ||
                 !$canWriteSites,
             icon: IconPlus,

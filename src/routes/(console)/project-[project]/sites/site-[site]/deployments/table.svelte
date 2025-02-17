@@ -22,6 +22,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { columns } from './store';
     import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
+    import { deploymentStatusConverter } from '../store';
 
     export let data: PageData;
 
@@ -61,13 +62,7 @@
                             {#if data?.activeDeployment?.$id === deployment?.$id}
                                 <Status status="complete" label="active" />
                             {:else}
-                                <Status
-                                    status={status === 'failed'
-                                        ? status
-                                        : status === 'building'
-                                          ? 'pending'
-                                          : 'ready'}
-                                    label={status} />
+                                <Status status={deploymentStatusConverter(status)} label={status} />
                             {/if}
                         </Table.Cell>
                     {:else if column.id === 'domains'}
