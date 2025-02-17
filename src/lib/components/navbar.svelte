@@ -60,9 +60,9 @@
         showAccountMenu: boolean;
     };
 
-    function updateTheme(theme: 'light' | 'dark' | 'system') {
+    function updateTheme(theme: 'light' | 'dark' | 'auto') {
         const themeInUse =
-            theme === 'system'
+            theme === 'auto'
                 ? window.matchMedia('(prefers-color-scheme: dark)').matches
                     ? 'dark'
                     : 'light'
@@ -70,7 +70,7 @@
 
         app.update(() => ({
             themeInUse: themeInUse,
-            theme: theme === 'system' ? 'auto' : theme
+            theme: theme
         }));
     }
 
@@ -88,10 +88,12 @@
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
 
-    let activeTheme = 'dark';
+    let activeTheme = $app.theme;
 
     $: {
-        updateTheme(activeTheme);
+        if (activeTheme) {
+            updateTheme(activeTheme);
+        }
     }
     $: currentOrg = organizations.find((org) => org.isSelected);
     $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
@@ -159,7 +161,7 @@
                     </svelte:fragment>
                 </DropList>
             </Layout.Stack>
-            <div class="icons">
+            <Layout.Stack direction="row">
                 <Tooltip inline={false}>
                     <Button.Button
                         variant="text"
@@ -168,7 +170,7 @@
                         <Icon icon={IconSearch} />
                     </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
-            </div>
+            </Layout.Stack>
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
@@ -215,7 +217,7 @@
                                                     { id: 'light', label: 'Light', icon: IconSun },
                                                     { id: 'dark', label: 'Dark', icon: IconMoon },
                                                     {
-                                                        id: 'system',
+                                                        id: 'auto',
                                                         label: 'System',
                                                         icon: IconMode
                                                     }
@@ -282,7 +284,7 @@
                                         name: 'System',
                                         leadingIcon: IconMode,
                                         onClick: () => {
-                                            updateTheme('system');
+                                            updateTheme('auto');
                                         }
                                     }
                                 ]
