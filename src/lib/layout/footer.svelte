@@ -3,13 +3,14 @@
     import { version } from '$routes/(console)/store';
     import { IconCloud, IconDiscord, IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Typography, Link, Icon, Divider, Button } from '@appwrite.io/pink-svelte';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     const currentYear = new Date().getFullYear();
 </script>
 
 <footer>
     <Divider />
-    <Layout.Stack direction="row">
+    <Layout.Stack direction={$isTabletViewport ? 'column' : 'row'}>
         <Layout.Stack direction="row" alignItems="center" gap="l">
             <Typography.Caption variant="400">
                 ⓒ {currentYear} Appwrite. All rights reserved.
@@ -111,6 +112,7 @@
     }
     footer {
         margin-block-start: auto;
+        margin-inline: 2rem;
         padding-block: 1rem;
         display: flex;
         flex-direction: column;
