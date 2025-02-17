@@ -57,7 +57,8 @@
         </Layout.Stack>
         <Layout.Stack
             direction="row"
-            justifyContent={$isTabletViewport ? 'flex-start' : 'flex-end'}>
+            justifyContent={$isTabletViewport ? 'flex-start' : 'flex-end'}
+            alignItems="center">
             {#if isCloud}
                 {#if !$isTabletViewport}<Badge size="xs" variant="secondary" content="BETA" />{/if}
                 <Icon size="s" icon={IconCloud} />
