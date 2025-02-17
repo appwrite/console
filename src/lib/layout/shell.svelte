@@ -6,7 +6,7 @@
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { type ComponentType, setContext } from 'svelte';
+    import { type ComponentType, onDestroy, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -43,6 +43,16 @@
             showContentTransition = false;
         }
     });
+
+    $: {
+        $isSidebarOpen
+            ? (document.body.style.overflow = 'hidden')
+            : (document.body.style.overflow = '');
+
+        $isSidebarOpen
+            ? (document.body.style.maxHeight = '100vh')
+            : (document.body.style.maxHeight = '');
+    }
 
     /**
      * Cancel navigation when wizard is open and triggered by popstate
@@ -104,6 +114,11 @@
 
         return undefined;
     };
+
+    onDestroy(() => {
+        document.body.style.overflow = '';
+        document.body.style.maxHeight = '';
+    });
 </script>
 
 <svelte:window bind:scrollY={y} on:resize={handleResize} />
@@ -194,7 +209,8 @@
     }
 
     .overlay {
-        position: fixed;
+        margin-top: calc(-1 * var(--base-48));
+        position: absolute;
         width: 100vw;
         height: 100vh;
         right: 0;
