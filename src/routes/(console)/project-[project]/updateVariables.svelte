@@ -140,14 +140,28 @@
                     variable.value,
                     variable.secret
                 );
-                await sdk.forProject.functions.deleteVariable(variable.resourceId, variable.$id);
+                if (product === 'site') {
+                    await sdk.forProject.sites.deleteVariable(variable.resourceId, variable.$id);
+                } else {
+                    await sdk.forProject.functions.deleteVariable(
+                        variable.resourceId,
+                        variable.$id
+                    );
+                }
             } else {
                 await sdk.forProject.projectApi.createVariable(
                     variable.key,
                     variable.value,
                     variable.secret
                 );
-                await sdk.forProject.functions.deleteVariable(variable.resourceId, variable.$id);
+                if (product === 'site') {
+                    await sdk.forProject.sites.deleteVariable(variable.resourceId, variable.$id);
+                } else {
+                    await sdk.forProject.functions.deleteVariable(
+                        variable.resourceId,
+                        variable.$id
+                    );
+                }
             }
 
             selectedVar = null;

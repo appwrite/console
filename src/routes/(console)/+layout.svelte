@@ -69,7 +69,9 @@
         return {
             name: project?.name,
             $id: project.$id,
-            isSelected: data.currentProjectId === project.$id
+            isSelected: data.currentProjectId === project.$id,
+            platformCount: project.platforms.length,
+            pingCount: project.pingCount
         };
     });
 
@@ -350,7 +352,7 @@
 </Shell>
 
 {#if $wizard.show && $wizard.component}
-    <svelte:component this={$wizard.component} />
+    <svelte:component this={$wizard.component} {...$wizard.props} />
 {:else if $wizard.cover}
     <svelte:component this={$wizard.cover} />
 {/if}

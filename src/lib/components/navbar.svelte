@@ -1,3 +1,13 @@
+<script lang="ts" context="module">
+    export type NavbarProject = {
+        name: string;
+        $id: string;
+        isSelected: boolean;
+        platformCount: number;
+        pingCount: number;
+    };
+</script>
+
 <script lang="ts">
     import {
         Navbar,
@@ -45,14 +55,14 @@
             isSelected: boolean;
             showUpgrade: boolean;
             tierName: string;
-            projects: Array<{ name: string; $id: string; isSelected: boolean }>;
+            projects: Array<NavbarProject>;
         }>;
         showAccountMenu: boolean;
     };
 
-    function updateTheme(theme: 'light' | 'dark' | 'system') {
+    function updateTheme(theme: 'light' | 'dark' | 'auto') {
         const themeInUse =
-            theme === 'system'
+            theme === 'auto'
                 ? window.matchMedia('(prefers-color-scheme: dark)').matches
                     ? 'dark'
                     : 'light'
@@ -60,7 +70,7 @@
 
         app.update(() => ({
             themeInUse: themeInUse,
-            theme: theme === 'system' ? 'auto' : theme
+            theme: theme
         }));
     }
 
@@ -78,12 +88,15 @@
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
 
-    let activeTheme = 'dark';
+    let activeTheme = $app.theme;
 
     $: {
-        updateTheme(activeTheme);
+        if (activeTheme) {
+            updateTheme(activeTheme);
+        }
     }
     $: currentOrg = organizations.find((org) => org.isSelected);
+    $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
 </script>
 
 <Navbar.Base {...$$props}>
@@ -101,6 +114,14 @@
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
+        {#if selectedProject && selectedProject.pingCount === 0}
+            <div class="only-desktop">
+                <Button.Anchor
+                    href={`${base}/project-${selectedProject.$id}/get-started`}
+                    variant="secondary"
+                    size="xs">Connect</Button.Anchor>
+            </div>
+        {/if}
     </div>
     <div slot="right" class="only-desktop">
         <div class="right">
@@ -113,8 +134,8 @@
                         >Upgrade</Button.Anchor>
                 {/if}
 
-                <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
-                    <Button.Button type="button" variant="compact" on:click={toggleFeedback}
+                <DropList show={$feedback.show} class="extended-width">
+                    <Button.Button type="button" variant="compact" on:click={() => toggleFeedback()}
                         >Feedback
                     </Button.Button>
                     <svelte:fragment slot="other">
@@ -140,7 +161,7 @@
                     </svelte:fragment>
                 </DropList>
             </Layout.Stack>
-            <div class="icons">
+            <Layout.Stack direction="row">
                 <Tooltip inline={false}>
                     <Button.Button
                         variant="text"
@@ -149,7 +170,7 @@
                         <Icon icon={IconSearch} />
                     </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
-            </div>
+            </Layout.Stack>
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
@@ -196,7 +217,7 @@
                                                     { id: 'light', label: 'Light', icon: IconSun },
                                                     { id: 'dark', label: 'Dark', icon: IconMoon },
                                                     {
-                                                        id: 'system',
+                                                        id: 'auto',
                                                         label: 'System',
                                                         icon: IconMode
                                                     }
@@ -263,7 +284,7 @@
                                         name: 'System',
                                         leadingIcon: IconMode,
                                         onClick: () => {
-                                            updateTheme('system');
+                                            updateTheme('auto');
                                         }
                                     }
                                 ]

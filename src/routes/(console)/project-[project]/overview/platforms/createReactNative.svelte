@@ -7,7 +7,6 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconReact, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -21,7 +20,7 @@
     import { LabelCard } from '$lib/components';
 
     let showExitModal = false;
-    let isPlatformCreated = false;
+    export let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = $page.params.project;
@@ -35,7 +34,7 @@
 const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
         `;
 
-    let platform: PlatformType = PlatformType.Reactnativeandroid;
+    export let platform: PlatformType = PlatformType.Reactnativeandroid;
 
     let platforms: { [key: string]: PlatformType } = {
         Android: PlatformType.Reactnativeandroid,
@@ -71,7 +70,7 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
         [PlatformType.Reactnativeios]: 'Bundle ID'
     };
 
-    async function createFlutterPlatform() {
+    async function createReactNativePlatform() {
         try {
             isCreatingPlatform = true;
             await sdk.forConsole.projects.createPlatform(
@@ -87,7 +86,6 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
             trackEvent(Submit.PlatformCreate, {
                 type: platform
             });
-
             await Promise.all([
                 invalidate(Dependencies.PROJECT),
                 invalidate(Dependencies.PLATFORMS)
@@ -109,8 +107,10 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`) && isPlatformCreated) {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.PROJECT);
                 unsubscribe();
             }
         });
@@ -123,7 +123,7 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
 </script>
 
 <Wizard title="Add React Native platform" bind:showExitModal confirmExit>
-    <Form onSubmit={createFlutterPlatform}>
+    <Form onSubmit={createReactNativePlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
             <Layout.Stack gap="l" direction="row">
@@ -277,7 +277,7 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
                 fullWidthMobile
                 secondary
                 disabled={isCreatingPlatform}
-                href={`${base}/project-${projectId}/overview`}>
+                href={location.pathname}>
                 Go to dashboard
             </Button>
         {/if}

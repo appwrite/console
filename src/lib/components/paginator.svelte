@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import PaginationInline from './paginationInline.svelte';
 
     export let items = [];
@@ -11,11 +12,14 @@
     $: paginatedItems = items.slice(offset, offset + limit);
 </script>
 
-<slot {paginatedItems} {limit} />
+<Layout.Stack gap="s">
+    <slot {paginatedItems} {limit} />
 
-{#if !hideFooter}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
-        <p class="text">Total results: {total}</p>
-        <PaginationInline {limit} bind:offset sum={total} hidePages />
-    </div>
-{/if}
+    {#if !hideFooter}
+        <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography.Text variant="m-400" color="--color-fgcolor-neutral-secondary"
+                >Total results: {total}</Typography.Text>
+            <PaginationInline {limit} bind:offset sum={total} hidePages />
+        </Layout.Stack>
+    {/if}
+</Layout.Stack>

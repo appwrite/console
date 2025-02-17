@@ -13,6 +13,7 @@
     export let autofocus = false;
     export let maxlength: number = null;
     export let rows = 3;
+    export let helper: string = '';
 
     let error: string;
 
@@ -42,7 +43,7 @@
     {nullable}
     {rows}
     autofocus={autofocus || undefined}
-    helper={error}
+    helper={error || helper}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
     on:input

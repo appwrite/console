@@ -4,13 +4,11 @@
     import Card from '$lib/components/card.svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { InputDomain } from '$lib/elements/forms/index.js';
-    import Link from '$lib/elements/link.svelte';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ResourceType, type Models } from '@appwrite.io/console';
     import {
-        Alert,
         Badge,
         Divider,
         Fieldset,
@@ -69,7 +67,7 @@
     }
 </script>
 
-<Wizard title="Add domain" href={backPage} hideAside>
+<Wizard title="Add domain" href={backPage} column columnSize="s">
     {#if domainData}
         {#if domainData.status === 'created'}
             <RecordsCard domain={domainData}>
@@ -102,25 +100,22 @@
         {/if}
     {:else}
         <Fieldset legend="Configuration">
-            <Layout.Stack gap="l">
-                <Form onSubmit={addDomain}>
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputDomain
-                            label="Domain"
-                            id="domain"
-                            name="domain"
-                            bind:value={domain}
-                            required
-                            placeholder="appwrite.example.com" />
-                        <Button secondary submit>Add</Button>
+            <Form onSubmit={addDomain}>
+                <Layout.Stack gap="xl">
+                    <InputDomain
+                        label="Domain"
+                        id="domain"
+                        name="domain"
+                        bind:value={domain}
+                        required
+                        placeholder="appwrite.example.com" />
+
+                    <Divider />
+                    <Layout.Stack alignItems="flex-end">
+                        <Button submit>Add</Button>
                     </Layout.Stack>
-                </Form>
-                <Alert.Inline title="Domain providers and DNS settings" hideActions>
-                    A list of all domain providers and their DNS setting is available <Link href="#"
-                        >here</Link
-                    >.
-                </Alert.Inline>
-            </Layout.Stack>
+                </Layout.Stack>
+            </Form>
         </Fieldset>
     {/if}
 

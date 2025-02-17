@@ -35,35 +35,12 @@
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { getPlatformInfo } from '$lib/helpers/platform';
 
     export let data;
 
     let addOrganization = false;
     let showCreate = false;
-
-    const getPlatformInfo = (platform: string) => {
-        let name: string, icon: string;
-        if (platform.includes('flutter')) {
-            name = 'Flutter';
-            icon = 'flutter';
-        } else if (platform.includes('apple')) {
-            name = 'Apple';
-            icon = 'apple';
-        } else if (platform.includes('android')) {
-            name = 'Android';
-            icon = 'android';
-        } else if (platform.includes('unity')) {
-            name = 'Unity';
-            icon = 'unity';
-        } else if (platform.includes('web')) {
-            name = 'Web';
-            icon = 'code';
-        } else {
-            name = 'Unknown';
-            icon = 'unknown';
-        }
-        return { name, icon };
-    };
 
     function allServiceDisabled(project: Models.Project): boolean {
         let disabled = true;

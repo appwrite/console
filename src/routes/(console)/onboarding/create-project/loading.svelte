@@ -46,13 +46,15 @@
             setTimeout(() => {
                 visible = true;
             }, 1000);
-        }, 5000);
+        }, 3000);
 
         return () => {
             clearInterval(interval);
             clearTimeout(removeShadowTimeout);
         };
     });
+
+    let initialDelay = 0;
 </script>
 
 <svelte:window on:resize={handleResize} />
@@ -93,7 +95,7 @@
         <div class="horizontal-fade-left" style="grid-row: 1 / 6; grid-column-start: 1;" />
         <div class="horizontal-fade-right" style="grid-row: 1 / 6; " />
 
-        <div class="icon icon1">
+        <div class="icon icon1" style:--delay={`${initialDelay}s`}>
             <div class="icon-container">
                 <div class="icon-content">
                     <img src={`${base}/images/onboarding/icon1.svg`} class="u-only-light" alt="" />
@@ -104,7 +106,7 @@
                 </div>
             </div>
         </div>
-        <div class="icon icon2">
+        <div class="icon icon2" style:--delay={`${initialDelay + 0.1}s`}>
             <div class="icon-container">
                 <div class="icon-content">
                     <img src={`${base}/images/onboarding/icon2.svg`} class="u-only-light" alt="" />
@@ -115,7 +117,7 @@
                 </div>
             </div>
         </div>
-        <div class="icon icon3">
+        <div class="icon icon3" style:--delay={`${initialDelay + 0.15}s`}>
             <div class="icon-container">
                 <div class="icon-content">
                     <img src={`${base}/images/onboarding/icon3.svg`} class="u-only-light" alt="" />
@@ -126,7 +128,7 @@
                 </div>
             </div>
         </div>
-        <div class="icon icon4">
+        <div class="icon icon4" style:--delay={`${initialDelay + 0.2}s`}>
             <div class="icon-container">
                 <div class="icon-content">
                     <img src={`${base}/images/onboarding/icon4.svg`} class="u-only-light" alt="" />
@@ -137,7 +139,7 @@
                 </div>
             </div>
         </div>
-        <div class="icon icon5">
+        <div class="icon icon5" style:--delay={`${initialDelay + 0.25}s`}>
             <div class="icon-container">
                 <div class="icon-content">
                     <img src={`${base}/images/onboarding/icon5.svg`} class="u-only-light" alt="" />
@@ -148,7 +150,7 @@
                 </div>
             </div>
         </div>
-        <div class="icon icon6">
+        <div class="icon icon6" style:--delay={`${initialDelay + 0.3}s`}>
             <div class="icon-container">
                 <div class="icon-content">
                     <img src={`${base}/images/onboarding/icon6.svg`} class="u-only-light" alt="" />
@@ -159,7 +161,7 @@
                 </div>
             </div>
         </div>
-        <div class="icon icon7">
+        <div class="icon icon7" style:--delay={`${initialDelay + 0.35}s`}>
             <div class="icon-container">
                 <div class="icon-content">
                     <img src={`${base}/images/onboarding/icon6.svg`} class="u-only-light" alt="" />
@@ -170,7 +172,7 @@
                 </div>
             </div>
         </div>
-        <div class="icon icon8">
+        <div class="icon icon8" style:--delay={`${initialDelay + 0.4}s`}>
             <div class="icon-container">
                 <div class="icon-content">
                     <img src={`${base}/images/onboarding/icon6.svg`} class="u-only-light" alt="" />
@@ -216,10 +218,10 @@
         align-items: center;
         color: var(--color-fgcolor-neutral-primary, #2d2d31);
 
-        --animation-type: ease-in-out;
+        --animation-type: cubic-bezier(0.77, 0, 0.175, 1);
         --icon-colorize-animation-duration: 0.3s; // duration of icons going from gray to colorized
         --icon-move-to-center-animation-duration: 0.8s; // duration of icons merging together
-        --icons-fade-out-animation-duration: 0.25s; //duration of icons disappearing animation
+        --icons-fade-out-animation-duration: 0.75s; //duration of icons disappearing animation
         --welcome-to-appwrite-animation-duration: 0.8s; //duration of fading in the welcome to appwrite text
         --fade-in-animation-component-duration: 1s; //duration for the entire icon grid to show up
 
@@ -236,7 +238,7 @@
         --appwrite-icon-fade-in-delay: calc(
             var(--final-icon-fade-out-delay) + 0.1s
         ); //delay before the appwrite logo appears
-        --welcome-to-appwrite-delay: calc(var(--icon-move-to-center-delay) + 0.3s);
+        --welcome-to-appwrite-delay: calc(var(--icon-move-to-center-delay) + 1.25s);
 
         --cell-dimension: 65px;
         --icon-width: 26px;
@@ -275,14 +277,18 @@
         margin-bottom: -100px;
         z-index: 1;
         opacity: 0;
+        filter: blur(4px);
+        transform: translateY(-12px);
     }
     .start-animation .title-container {
         opacity: 1;
-        transition: opacity var(--welcome-to-appwrite-animation-duration) var(--animation-type)
+        filter: blur(0px);
+        transform: translateY(0);
+        transition-property: opacity, filter, transform;
+        transition: var(--welcome-to-appwrite-animation-duration) var(--animation-type)
             var(--welcome-to-appwrite-delay);
     }
     .grid {
-        opacity: 0;
         transition: opacity var(--fade-in-animation-component-duration) var(--animation-type);
         display: grid;
         grid-template-columns: var(--half-cell-dimension) repeat(5, var(--cell-dimension)) var(
@@ -294,10 +300,6 @@
             grid-template-columns: repeat(9, var(--cell-dimension));
             grid-template-rows: 180px repeat(4, var(--cell-dimension));
         }
-    }
-
-    .start-animation .grid {
-        opacity: 1;
     }
 
     .icon-container {
@@ -312,8 +314,8 @@
         border-width: 1px;
         border-color: transparent;
         border-style: solid;
-        transition: all var(--icon-colorize-animation-duration) var(--animation-type)
-            var(--show-icon-color-delay);
+        transition: all calc(var(--icon-colorize-animation-duration) + var(--delay))
+            var(--animation-type) var(--show-icon-color-delay);
 
         @media (min-width: 768px) {
             width: calc(var(--cell-dimension) + 20px);
@@ -342,7 +344,7 @@
         align-items: center;
         filter: grayscale(100%) brightness(150%) contrast(90%);
         transition: all var(--icon-colorize-animation-duration) var(--animation-type)
-            var(--show-icon-color-delay);
+            calc(var(--show-icon-color-delay) + var(--delay));
 
         img {
             width: var(--icon-width);
@@ -369,10 +371,11 @@
 
     .icon {
         transition: transform var(--icon-move-to-center-animation-duration) var(--animation-type)
-            var(--icon-move-to-center-delay);
+            calc(var(--icon-move-to-center-delay) + var(--delay));
     }
     .appwrite {
         opacity: 0;
+        filter: blur(4px);
         grid-row-start: 3;
         grid-column-start: 4;
         @media (min-width: 768px) {
@@ -383,8 +386,10 @@
 
     .start-animation .appwrite {
         opacity: 1;
-        transition: opacity var(--icons-fade-out-animation-duration) var(--animation-type)
-            var(--appwrite-icon-fade-in-delay);
+        filter: blur(0px);
+        transition-property: opacity, filter;
+        transition: var(--icons-fade-out-animation-duration) var(--animation-type)
+            calc(var(--appwrite-icon-fade-in-delay) + 0.35s);
     }
 
     .border-right {

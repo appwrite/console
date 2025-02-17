@@ -21,6 +21,7 @@
     let hasRepository = !!site?.providerRepositoryId;
     let selectedRepository: string = null;
     let branch: string = null;
+    let error = '';
 
     onMount(async () => {
         installations = await sdk.forProject.vcs.listInstallations();
@@ -79,16 +80,13 @@
                 message: 'Deployment has been created successfully',
                 type: 'success'
             });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
+        } catch (e) {
+            error = e.message;
         }
     }
 </script>
 
-<Modal title="Create Git deployment" bind:show onSubmit={createDeployment}>
+<Modal title="Create Git deployment" bind:show onSubmit={createDeployment} bind:error>
     <span slot="description">
         Enter a valid commit reference to create a new deployment from <InlineCode code="test" /> or
         use the CLI to deploy. <Link href="#">Learn more</Link>

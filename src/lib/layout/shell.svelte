@@ -1,11 +1,12 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
+    import { type NavbarProject } from '$lib/components/navbar.svelte';
     import { page } from '$app/stores';
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { type ComponentType, setContext } from 'svelte';
+    import { type ComponentType, onDestroy, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -22,11 +23,11 @@
     export let showSideNavigation = false;
     export let showHeader = true;
     export let showFooter = true;
-    export let loadedProjects: Array<{ name: string; $id: string; isSelected: boolean }> = [];
+    export let loadedProjects: Array<NavbarProject> = [];
     export let projects: Array<Models.Project> = [];
 
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
-    let y: number;
+    let yOnMenuOpen: number;
     let showContentTransition = false;
     let timeoutId: NodeJS.Timeout;
 
@@ -42,6 +43,32 @@
             showContentTransition = false;
         }
     });
+
+    const bodyStyle = writable({ position: 'static', top: '' });
+
+    function style(node, { position, top }) {
+        node.style.position = position;
+        node.style.top = top;
+
+        return {
+            update: ({ position, top }) => {
+                node.style.position = position;
+                node.style.top = top;
+            }
+        };
+    }
+
+    $: {
+        if ($isSidebarOpen) {
+            yOnMenuOpen = window.scrollY;
+            bodyStyle.set({ position: 'fixed', top: `-${window.scrollY}px` });
+        } else if (!$isSidebarOpen) {
+            bodyStyle.set({ position: 'static', top: '' });
+            requestAnimationFrame(() => {
+                window.scrollTo(0, yOnMenuOpen);
+            });
+        }
+    }
 
     /**
      * Cancel navigation when wizard is open and triggered by popstate
@@ -105,7 +132,8 @@
     };
 </script>
 
-<svelte:window bind:scrollY={y} on:resize={handleResize} />
+<svelte:window on:resize={handleResize} />
+<svelte:body use:style={$bodyStyle} />
 <main
     class:grid-with-side={showSideNavigation}
     class:is-open={$showSubNavigation}
@@ -201,7 +229,9 @@
         z-index: 10;
         background-color: #56565c1a;
         backdrop-filter: blur(5px);
-        transition: backdrop-filter 0.2s ease-in-out;
+        transition:
+            backdrop-filter 0.5s ease-in-out,
+            background-color 0.35s ease-in-out;
 
         @media (min-width: 1024px) {
             display: none;
