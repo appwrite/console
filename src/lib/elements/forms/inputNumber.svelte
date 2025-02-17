@@ -60,4 +60,8 @@
     helper={error}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
-    on:input />
+    on:input>
+    <svelte:fragment slot="info">
+        <slot name="info" slot="info" />
+    </svelte:fragment>
+</Input.Number>

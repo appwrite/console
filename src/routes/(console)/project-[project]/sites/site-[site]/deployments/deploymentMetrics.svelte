@@ -2,11 +2,11 @@
     import { InputSelect } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
-    import UsageCard from './usageCard.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { SiteUsageRange, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import { UsageCard } from '$lib/components';
 
     export let deploymentList: Models.DeploymentList;
     let range = SiteUsageRange.ThirtyDays;

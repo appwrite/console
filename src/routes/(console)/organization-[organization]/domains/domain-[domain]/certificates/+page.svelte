@@ -16,6 +16,7 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import CertificateInfoModal from './certificateInfoModal.svelte';
 
     export let data;
 
@@ -127,3 +128,7 @@
         </Card.Base>
     {/if}
 </Container>
+
+{#if showAdvancedInfo}
+    <CertificateInfoModal {selectedCertificate} show={showAdvancedInfo} />
+{/if}

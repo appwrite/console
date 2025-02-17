@@ -21,10 +21,10 @@
                 type: 'success',
                 message: `Certificate has been deleted`
             });
-            trackEvent(Submit.DomainDelete);
+            trackEvent(Submit.CertificateDelete);
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.DomainDelete);
+            trackError(e, Submit.CertificateDelete);
         }
     }
 </script>
