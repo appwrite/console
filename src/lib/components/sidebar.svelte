@@ -28,10 +28,10 @@
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import { feedback } from '$lib/stores/feedback';
     import { DropList } from '$lib/components/index';
-    import { Feedback } from '$lib/components/feedback';
     import type { ComponentType } from 'svelte';
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
+    import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
 
@@ -196,12 +196,15 @@
             {:else}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
-                        <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
-                            <Button.Button variant="secondary" size="s" on:click={toggleFeedback}
-                                ><span>Feedback</span>
+                        <DropList show={$feedback.show} scrollable>
+                            <Button.Button
+                                variant="secondary"
+                                size="s"
+                                on:click={() => toggleFeedback()}
+                                >Feedback
                             </Button.Button>
                             <svelte:fragment slot="other">
-                                <Feedback />
+                                <MobileFeedbackModal />
                             </svelte:fragment>
                         </DropList>
 
@@ -244,15 +247,15 @@
                 <div class="only-mobile">
                     <div class="action-buttons">
                         <Layout.Stack direction="column" gap="s">
-                            <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
+                            <DropList show={$feedback.show} scrollable>
                                 <Button.Button
                                     variant="secondary"
                                     size="s"
-                                    on:click={toggleFeedback}
-                                    ><span>Feedback</span>
+                                    on:click={() => toggleFeedback()}
+                                    >Feedback
                                 </Button.Button>
                                 <svelte:fragment slot="other">
-                                    <Feedback />
+                                    <MobileFeedbackModal />
                                 </svelte:fragment>
                             </DropList>
 

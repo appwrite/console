@@ -5,9 +5,9 @@
 
 <FormList>
     <InputTextarea
-        id="feedback"
-        placeholder="Your message here"
-        label="Message"
         required
-        bind:value={$feedbackData.message} />
+        id="feedback"
+        bind:value={$feedbackData.message}
+        label="Tell us more about your experience"
+        placeholder="Share your suggestions and feature requests..." />
 </FormList>

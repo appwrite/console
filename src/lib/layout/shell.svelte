@@ -229,7 +229,9 @@
         z-index: 10;
         background-color: #56565c1a;
         backdrop-filter: blur(5px);
-        transition: backdrop-filter 0.2s ease-in-out;
+        transition:
+            backdrop-filter 0.5s ease-in-out,
+            background-color 0.35s ease-in-out;
 
         @media (min-width: 1024px) {
             display: none;
