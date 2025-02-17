@@ -44,14 +44,29 @@
         }
     });
 
+    const bodyStyle = writable({ position: 'static', top: '' });
+
+    function style(node, { position, top }) {
+        node.style.position = position;
+        node.style.top = top;
+
+        return {
+            update: ({ position, top }) => {
+                node.style.position = position;
+                node.style.top = top;
+            }
+        };
+    }
+
     $: {
         if ($isSidebarOpen) {
             yOnMenuOpen = window.scrollY;
-            document.body.style.top = `-${window.scrollY}px`;
-            document.body.style.position = 'fixed';
+            bodyStyle.set({ position: 'fixed', top: `-${window.scrollY}px` });
         } else if (!$isSidebarOpen) {
-            document.body.style.position = 'static';
-            window.scrollTo(0, yOnMenuOpen);
+            bodyStyle.set({ position: 'static', top: '' });
+            requestAnimationFrame(() => {
+                window.scrollTo(0, yOnMenuOpen);
+            });
         }
     }
 
@@ -115,13 +130,10 @@
 
         return undefined;
     };
-
-    onDestroy(() => {
-        document.body.style.position = 'static';
-    });
 </script>
 
 <svelte:window on:resize={handleResize} />
+<svelte:body use:style={$bodyStyle} />
 <main
     class:grid-with-side={showSideNavigation}
     class:is-open={$showSubNavigation}
