@@ -121,6 +121,8 @@
 
     $: isButtonDisabled =
         (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
+
+    // TODO: merge this component with the rawVariableEditor?
 </script>
 
 <svelte:window on:keydown={handleKeydown} />

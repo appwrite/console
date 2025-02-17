@@ -48,9 +48,8 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search sites" />
-        <Button
-            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
+        <SearchQuery search={data.search} placeholder="Search domains" />
+        <Button href={`${base}/organization-${$page.params.organization}/domains/add-domain`}>
             <Icon icon={IconPlus} size="s" />
             Add domain
         </Button>
@@ -60,12 +59,16 @@
         <Table.Root>
             <svelte:fragment slot="header">
                 <Table.Header.Cell>Domain</Table.Header.Cell>
-                <Table.Header.Cell>Updated</Table.Header.Cell>
+                <Table.Header.Cell>Registrar</Table.Header.Cell>
+                <Table.Header.Cell>Nameservers</Table.Header.Cell>
+                <Table.Header.Cell>Expiry date</Table.Header.Cell>
+                <Table.Header.Cell>Renewal</Table.Header.Cell>
+                <Table.Header.Cell>Auto renewal</Table.Header.Cell>
                 <Table.Header.Cell />
             </svelte:fragment>
             {#each data.domains.rules as domain}
                 <Table.Link
-                    href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/domain-${domain.$id}`}>
+                    href={`${base}/organization-${$page.params.organization}/domains/domain-${domain.$id}`}>
                     <Table.Cell>
                         <Layout.Stack direction="row" alignItems="center" gap="xs">
                             <Link
@@ -91,7 +94,13 @@
                             {/if}
                         </Layout.Stack>
                     </Table.Cell>
-                    <Table.Cell>{toLocaleDateTime(domain.$updatedAt)}</Table.Cell>
+                    <Table.Cell>{domain?.registrar ?? 'N/A'}</Table.Cell>
+                    <Table.Cell>{domain?.nameservers ?? 'N/A'}</Table.Cell>
+                    <Table.Cell>{domain?.expiry ?? 'N/A'}</Table.Cell>
+                    <Table.Cell>
+                        {domain.renewAt ? toLocaleDateTime(domain.renewAt) : 'N/A'}
+                    </Table.Cell>
+                    <Table.Cell>{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
                     <Table.Cell>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-start" padding="none">
@@ -174,7 +183,7 @@
 
                     <Button
                         secondary
-                        href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}
+                        href={`${base}/organization-${$page.params.organization}/domains/add-domain`}
                         size="s">
                         Add domain
                     </Button>
