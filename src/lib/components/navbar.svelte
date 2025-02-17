@@ -159,7 +159,7 @@
                     </svelte:fragment>
                 </DropList>
             </Layout.Stack>
-            <div class="icons">
+            <Layout.Stack direction="row">
                 <Tooltip inline={false}>
                     <Button.Button
                         variant="text"
@@ -168,7 +168,7 @@
                         <Icon icon={IconSearch} />
                     </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
-            </div>
+            </Layout.Stack>
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
