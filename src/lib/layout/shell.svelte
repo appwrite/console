@@ -6,7 +6,7 @@
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { type ComponentType, setContext } from 'svelte';
+    import { type ComponentType, onDestroy, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -27,7 +27,7 @@
     export let projects: Array<Models.Project> = [];
 
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
-    let y: number;
+    let yOnMenuOpen: number;
     let showContentTransition = false;
     let timeoutId: NodeJS.Timeout;
 
@@ -43,6 +43,32 @@
             showContentTransition = false;
         }
     });
+
+    const bodyStyle = writable({ position: 'static', top: '' });
+
+    function style(node, { position, top }) {
+        node.style.position = position;
+        node.style.top = top;
+
+        return {
+            update: ({ position, top }) => {
+                node.style.position = position;
+                node.style.top = top;
+            }
+        };
+    }
+
+    $: {
+        if ($isSidebarOpen) {
+            yOnMenuOpen = window.scrollY;
+            bodyStyle.set({ position: 'fixed', top: `-${window.scrollY}px` });
+        } else if (!$isSidebarOpen) {
+            bodyStyle.set({ position: 'static', top: '' });
+            requestAnimationFrame(() => {
+                window.scrollTo(0, yOnMenuOpen);
+            });
+        }
+    }
 
     /**
      * Cancel navigation when wizard is open and triggered by popstate
@@ -106,7 +132,8 @@
     };
 </script>
 
-<svelte:window bind:scrollY={y} on:resize={handleResize} />
+<svelte:window on:resize={handleResize} />
+<svelte:body use:style={$bodyStyle} />
 <main
     class:grid-with-side={showSideNavigation}
     class:is-open={$showSubNavigation}
