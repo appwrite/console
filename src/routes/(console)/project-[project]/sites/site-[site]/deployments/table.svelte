@@ -23,6 +23,7 @@
     import { columns } from './store';
     import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
     import { deploymentStatusConverter } from '../store';
+    import { capitalize } from '$lib/helpers/string';
 
     export let data: PageData;
 
@@ -62,7 +63,9 @@
                             {#if data?.activeDeployment?.$id === deployment?.$id}
                                 <Status status="complete" label="active" />
                             {:else}
-                                <Status status={deploymentStatusConverter(status)} label={status} />
+                                <Status
+                                    status={deploymentStatusConverter(status)}
+                                    label={capitalize(status)} />
                             {/if}
                         </Table.Cell>
                     {:else if column.id === 'domains'}
