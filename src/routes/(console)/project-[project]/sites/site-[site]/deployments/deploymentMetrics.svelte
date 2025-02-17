@@ -20,32 +20,32 @@
         {
             id: 'buildsTotal',
             value: null,
-            description: 'Total build count'
+            description: 'Total builds count'
         },
         {
             id: 'buildsStorageTotal',
             value: null,
-            description: 'Total build size'
+            description: 'Total builds size'
         },
         {
             id: 'buildsTimeTotal',
             value: null,
-            description: 'Total build time'
+            description: 'Total builds time'
         },
         {
             id: 'avgTime',
             value: null,
-            description: 'Average build time'
+            description: 'Average builds time'
         },
         {
             id: 'success',
             value: null,
-            description: 'Successful deployment'
+            description: 'Successful deployments'
         },
         {
             id: 'failed',
             value: null,
-            description: 'Failed deployment'
+            description: 'Failed deployments'
         }
     ];
     onMount(async () => {

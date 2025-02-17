@@ -9,6 +9,7 @@
     import type { Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import { canWriteSites } from '$lib/stores/roles';
+    import { IconList, IconPlus, IconSearch } from '@appwrite.io/pink-icons-svelte';
 
     onMount(() => {
         let previousStatus = null;
@@ -45,8 +46,8 @@
                 }
             },
             keys: $page.url.pathname.endsWith($page.params.site) ? ['c'] : ['c', 'd'],
-            group: 'functions',
-            icon: 'plus',
+            group: 'sites',
+            icon: IconPlus,
             disabled: !$canWriteSites
         },
         {
@@ -57,22 +58,11 @@
                 );
                 scrollBy({ top: -100 });
             },
-            icon: 'search',
-            group: 'functions',
+            icon: IconSearch,
+            group: 'sites',
             disabled: !$canWriteSites
         },
-        {
-            label: 'Events',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.$id}/sites/site-${$page.params.site}/settings#events`
-                );
-                scrollBy({ top: -100 });
-            },
-            icon: 'calendar',
-            group: 'functions',
-            disabled: !$canWriteSites
-        },
+
         {
             label: 'Variables',
             async callback() {
@@ -80,42 +70,19 @@
                     `${base}/project-${$project.$id}/sites/site-${$page.params.site}/settings#variables`
                 );
             },
-            icon: 'list',
-            group: 'functions',
-            disabled: !$canWriteSites
-        },
-        {
-            label: 'Timeout',
-            callback() {
-                goto(
-                    `${base}/project-${$project.$id}/sites/site-${$page.params.site}/settings#timeout`
-                );
-            },
-            icon: 'x-circle',
-            group: 'functions',
-            disabled: !$canWriteSites
-        },
-        {
-            label: 'Schedule',
-            async callback() {
-                await goto(
-                    `${base}/project-${$project.$id}/sites/site-${$page.params.site}/settings#schedule`
-                );
-                scrollBy({ top: -100 });
-            },
-            icon: 'clock',
-            group: 'functions',
+            icon: IconList,
+            group: 'sites',
             disabled: !$canWriteSites
         },
         {
             label: 'Go to deployments',
             callback() {
-                goto(`${base}/project-${$project.$id}/sites/site-${$page.params.site}`);
+                goto(`${base}/project-${$project.$id}/sites/site-${$page.params.site}/deployments`);
             },
             keys: ['g', 'd'],
             group: 'navigation',
             rank: 10,
-            disabled: $page.url.pathname.endsWith($page.params.site)
+            disabled: $page.url.pathname.endsWith('deployments')
         },
         {
             label: 'Go to usage',
@@ -128,14 +95,14 @@
             disabled: $page.url.pathname.endsWith('usage')
         },
         {
-            label: 'Go to executions',
+            label: 'Go to logs',
             callback() {
-                goto(`${base}/project-${$project.$id}/sites/site-${$page.params.site}/executions`);
+                goto(`${base}/project-${$project.$id}/sites/site-${$page.params.site}/logs`);
             },
             keys: ['g', 'e'],
             group: 'navigation',
             rank: 10,
-            disabled: $page.url.pathname.endsWith('executions')
+            disabled: $page.url.pathname.endsWith('logs')
         },
         {
             label: 'Go to settings',
