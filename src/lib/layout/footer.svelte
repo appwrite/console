@@ -2,7 +2,15 @@
     import { isCloud } from '$lib/system';
     import { version } from '$routes/(console)/store';
     import { IconCloud, IconDiscord, IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { Layout, Typography, Link, Icon, Divider, Button } from '@appwrite.io/pink-svelte';
+    import {
+        Layout,
+        Typography,
+        Link,
+        Icon,
+        Divider,
+        Button,
+        Badge
+    } from '@appwrite.io/pink-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
 
     const currentYear = new Date().getFullYear();
@@ -10,8 +18,8 @@
 
 <footer>
     <Divider />
-    <Layout.Stack direction={$isTabletViewport ? 'column' : 'row'}>
-        <Layout.Stack direction="row" alignItems="center" gap="l">
+    <Layout.Stack direction={$isTabletViewport ? 'column-reverse' : 'row'}>
+        <Layout.Stack direction="row" alignItems="center" gap={$isTabletViewport ? 'm' : 'l'}>
             <Typography.Caption variant="400">
                 ⓒ {currentYear} Appwrite. All rights reserved.
             </Typography.Caption>
@@ -40,9 +48,18 @@
                     <Icon size="s" icon={IconDiscord} />
                 </Button.Anchor>
             </Layout.Stack>
+            {#if isCloud && $isTabletViewport}
+                <span class="divider-wrapper">
+                    <Divider vertical />
+                </span>
+                <Badge size="xs" variant="secondary" content="BETA" />
+            {/if}
         </Layout.Stack>
-        <Layout.Stack direction="row" justifyContent="flex-end" gap="l" alignItems="center">
+        <Layout.Stack
+            direction="row"
+            justifyContent={$isTabletViewport ? 'flex-start' : 'flex-end'}>
             {#if isCloud}
+                {#if !$isTabletViewport}<Badge size="xs" variant="secondary" content="BETA" />{/if}
                 <Icon size="s" icon={IconCloud} />
             {/if}
             {#if $version}
