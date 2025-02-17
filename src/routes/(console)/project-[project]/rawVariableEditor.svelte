@@ -14,21 +14,29 @@
     export let showEditor = false;
     export let variableList: Models.VariableList;
 
-    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
+    const editableVariables = variableList.variables.filter((variable) => !variable.secret);
+    const secretVariables = variableList.variables.filter((variable) => variable.secret);
+
+    export let sdkCreateVariable: (
+        key: string,
+        value: string,
+        secret?: boolean
+    ) => Promise<unknown>;
     export let sdkUpdateVariable: (
         variableId: string,
         key: string,
-        value: string
+        value: string,
+        secret?: boolean
     ) => Promise<unknown>;
     export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
 
     let error = '';
-    let envCode = variableList.variables
+    let envCode = editableVariables
         .map((variable) => `${variable.key}=${variable.value}`)
         .join('\n');
     let jsonCode = JSON.stringify(
         JSON.parse(
-            `{${variableList.variables
+            `{${editableVariables
                 .map((variable) => `"${variable.key}":"${variable.value.split('"').join('\\"')}"`)
                 .join(',')}}`
         ),
@@ -57,24 +65,31 @@
             }
 
             await Promise.all(
-                variableList.variables.map(async (variable) => {
+                editableVariables.map(async (variable) => {
                     const newValue = vars[variable.key] ?? null;
 
                     if (newValue === null) {
                         await sdkDeleteVariable(variable.$id);
                     } else if (newValue !== variable.value) {
-                        await sdkUpdateVariable(variable.$id, variable.key, newValue);
+                        await sdkUpdateVariable(variable.$id, variable.key, newValue, false);
                     }
-
                     delete vars[variable.key];
                 })
             );
 
+            // Add new variables, skipping keys that exist in secret variables
             await Promise.all(
                 Object.keys(vars).map(async (key) => {
-                    await sdkCreateVariable(key, vars[key]);
+                    if (!secretVariables.some((v) => v.key === key)) {
+                        await sdkCreateVariable(key, vars[key], false);
+                    }
                 })
             );
+            // Ensure secret variables are preserved
+            variableList.variables = [
+                ...secretVariables,
+                ...variableList.variables.filter((v) => !v.secret)
+            ];
 
             showEditor = false;
 
