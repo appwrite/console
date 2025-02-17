@@ -4,16 +4,26 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import type { Models } from '@appwrite.io/console';
-    import { Divider, Icon, Image, Layout, Status, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Divider,
+        Icon,
+        Image,
+        Layout,
+        Status,
+        Tooltip,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import { Button } from '$lib/elements/forms';
-    import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
+    import { IconExternalLink, IconInfo, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
     import { protocol } from '$routes/(console)/store';
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
+    import { isCloud } from '$lib/system';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList = { total: 0, rules: [] };
@@ -125,6 +135,40 @@
                         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
                             {totalSize.value}{totalSize.unit}
                         </Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs" inline>
+                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                            <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                Global CDN <Tooltip>
+                                    <Icon icon={IconInfo} size="s" />
+                                    <span slot="tooltip">
+                                        Optimized speed by caching content on servers closer to
+                                        users.
+                                    </span>
+                                </Tooltip>
+                            </Layout.Stack>
+                        </Typography.Text>
+                        <Badge
+                            variant="secondary"
+                            type={isCloud ? 'success' : null}
+                            content={isCloud ? 'Connected' : 'Available on Cloud'} />
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs" inline>
+                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                            <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                DDoS protection <Tooltip>
+                                    <Icon icon={IconInfo} size="s" />
+                                    <span slot="tooltip">
+                                        Safeguards your site by detecting and blocking malicious
+                                        traffic.
+                                    </span>
+                                </Tooltip>
+                            </Layout.Stack>
+                        </Typography.Text>
+                        <Badge
+                            variant="secondary"
+                            type={isCloud ? 'success' : null}
+                            content={isCloud ? 'Connected' : 'Available on Cloud'} />
                     </Layout.Stack>
                 </Layout.Stack>
                 <Layout.Stack gap="xxs">
