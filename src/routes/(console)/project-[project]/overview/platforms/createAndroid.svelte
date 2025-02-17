@@ -3,14 +3,7 @@
     import { invalidate } from '$app/navigation';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import {
-        Code,
-        Layout,
-        Icon,
-        Typography,
-        Fieldset,
-        InlineCode,
-    } from '@appwrite.io/pink-svelte';
+    import { Code, Layout, Icon, Typography, Fieldset, InlineCode } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconAndroid, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';

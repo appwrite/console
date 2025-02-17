@@ -2,14 +2,14 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
     export let selectedSessionId: string;
+    let error: string;
 
     async function deleteSession() {
         try {
@@ -21,20 +21,13 @@
                 message: 'Session has been deleted'
             });
             trackEvent(Submit.SessionDelete);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.SessionDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.SessionDelete);
         }
     }
 </script>
 
-<Modal title="Delete sessions" bind:show={showDelete} onSubmit={deleteSession}>
-    <p>Are you sure you want to delete this session?</p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+<Confirm onSubmit={deleteSession} title="Delete session" bind:open={showDelete} bind:error>
+    Are you sure you want to delete this session?
+</Confirm>

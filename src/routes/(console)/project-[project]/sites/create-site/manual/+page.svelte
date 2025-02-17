@@ -112,10 +112,10 @@
         <Layout.Stack gap="xl">
             <Layout.Stack gap="xxs">
                 <InputFile
-                label="Upload a zip file (tar.gz) containing your function source code"
-                allowedFileExtensions={['gz']}
-                bind:files
-                required />
+                    label="Upload a zip file (tar.gz) containing your function source code"
+                    allowedFileExtensions={['gz']}
+                    bind:files
+                    required />
             </Layout.Stack>
             <Details bind:name bind:id />
 

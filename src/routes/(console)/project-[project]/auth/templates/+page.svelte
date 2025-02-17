@@ -59,6 +59,7 @@
         EmailTemplateType,
         EmailTemplateLocale
     } from '@appwrite.io/console';
+    import { Accordion, Layout } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -131,8 +132,9 @@
         </a>
 
         <svelte:fragment slot="aside">
-            <Collapsible>
-                <CollapsibleItem
+            <Layout.Stack>
+                <Accordion
+                    title="Verification"
                     bind:open={emailVerificationOpen}
                     on:click={(e) => {
                         // preventing default and propagation to open the collapsible correctly
@@ -140,74 +142,70 @@
                         e.stopImmediatePropagation();
                         openEmail('verification');
                     }}>
-                    <svelte:fragment slot="title">Verification</svelte:fragment>
-                    <p class="text">
-                        Send a verification email to users that sign in with their email and
-                        password.
-                    </p>
+                    Send a verification email to users that sign in with their email and password.
                     <EmailVerificationTemplate />
-                </CollapsibleItem>
-                <CollapsibleItem
+                </Accordion>
+                <Accordion
+                    title="Magic URL"
                     bind:open={emailMagicSessionOpen}
                     on:click={(e) => {
                         e.preventDefault();
                         openEmail('magicSession');
                     }}>
-                    <svelte:fragment slot="title">Magic URL</svelte:fragment>
-                    <p class="text">Send an email to users that sign in with a magic URL.</p>
+                    Send an email to users that sign in with a magic URL.
                     <EmailMagicUrlTemplate />
-                </CollapsibleItem>
-                <CollapsibleItem
+                </Accordion>
+                <Accordion
+                    title="OTP session"
                     bind:open={emailOtpSessionOpen}
                     on:click={(e) => {
                         e.preventDefault();
                         openEmail('otpSession');
                     }}>
-                    <svelte:fragment slot="title">OTP session</svelte:fragment>
-                    <p class="text">Send an email to users that sign in with a email OTP.</p>
+                    Send an email to users that sign in with a email OTP.
                     <EmailMagicUrlTemplate />
-                </CollapsibleItem>
-                <CollapsibleItem
+                </Accordion>
+                <Accordion
+                    title="Reset password"
                     bind:open={emailResetPassword}
                     on:click={(e) => {
                         e.preventDefault();
                         openEmail('recovery');
                     }}>
-                    <svelte:fragment slot="title">Reset password</svelte:fragment>
-                    <p class="text">Send a recovery email to users that forget their password.</p>
+                    Send a recovery email to users that forget their password.
                     <EmailRecoveryTemplate />
-                </CollapsibleItem>
-                <CollapsibleItem
+                </Accordion>
+                <Accordion
+                    title="Invite user"
                     bind:open={emailInviteUser}
                     on:click={(e) => {
                         e.preventDefault();
                         openEmail('invitation');
                     }}>
-                    <svelte:fragment slot="title">Invite user</svelte:fragment>
-                    <p class="text">Send an invitation email to become a member of your project.</p>
+                    Send an invitation email to become a member of your project.
                     <EmailInviteTemplate />
-                </CollapsibleItem>
-                <CollapsibleItem
+                </Accordion>
+                <Accordion
+                    title="2FA verification"
                     bind:open={email2FAVerificationOpen}
                     on:click={(e) => {
                         e.preventDefault();
                         openEmail('mfaChallenge');
                     }}>
-                    <svelte:fragment slot="title">2FA verification</svelte:fragment>
-                    <p class="text">Send a two-factor authentication email to a user.</p>
+                    Send a two-factor authentication email to a user.
                     <Email2FaTemplate />
-                </CollapsibleItem>
-                <CollapsibleItem
+                </Accordion>
+                <Accordion
+                    title="Session alert"
                     bind:open={emailSessionAlertOpen}
                     on:click={(e) => {
                         e.preventDefault();
                         openEmail('sessionAlert');
                     }}>
-                    <svelte:fragment slot="title">Session alert</svelte:fragment>
-                    <p class="text">Send an email to users when a new session is created.</p>
+                    Send an email to users when a new session is created.
                     <EmailSessionAlertTemplate />
-                </CollapsibleItem>
-            </Collapsible>
+                </Accordion>
+            </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button href={`${base}/project-${data.project.$id}/settings/smtp`} secondary>

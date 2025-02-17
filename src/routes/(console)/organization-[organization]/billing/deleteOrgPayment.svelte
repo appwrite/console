@@ -7,6 +7,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan, Dependencies } from '$lib/constants';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let showDelete = false;
     export let isBackup = false;
@@ -55,29 +56,18 @@
 </script>
 
 {#if disabled}
-    <Modal bind:show={showDelete} title="Unable to delete payment method">
-        <p data-private>
-            The {isBackup ? 'backup' : 'default'} payment method cannot be removed as
-            <b>{$organization?.name}</b>
-            has an upcoming invoice. To proceed, set a {isBackup ? 'default' : 'backup'} or add a new
-            {isBackup ? 'backup' : 'default'} payment method.
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        </svelte:fragment>
-    </Modal>
+    <Confirm title="Unable to delete payment method" bind:open={showDelete} canDelete={false}>
+        The {isBackup ? 'backup' : 'default'} payment method cannot be removed as
+        <b>{$organization?.name}</b>
+        has an upcoming invoice. To proceed, set a {isBackup ? 'default' : 'backup'} or add a new
+        {isBackup ? 'backup' : 'default'} payment method.
+    </Confirm>
 {:else}
-    <Modal
-        bind:show={showDelete}
-        bind:error
+    <Confirm
         onSubmit={isBackup ? removeBackuptMethod : removeDefaultMethod}
-        title="Remove payment method">
-        <p data-private>
-            Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?
-        </p>
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Remove</Button>
-        </svelte:fragment>
-    </Modal>
+        title="Remove payment method"
+        bind:open={showDelete}
+        bind:error>
+        Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?
+    </Confirm>
 {/if}

@@ -12,6 +12,7 @@
     export let secondary = false;
     export let text = false;
     export let icon = false;
+    export let danger = false;
     export let size: Props['size'] = 's';
     export let disabled = false;
     export let external = false;
@@ -46,7 +47,7 @@
         });
     }
 
-    function getVariant(): 'primary' | 'secondary' | 'text' | 'compact' {
+    function getVariant(): 'primary' | 'secondary' | 'text' | 'compact' | 'danger' {
         switch (true) {
             case secondary:
                 return 'secondary';
@@ -54,6 +55,8 @@
                 return 'text';
             case compact:
                 return 'compact';
+            case danger:
+                return 'danger';
             default:
                 return 'primary';
         }
