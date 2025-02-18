@@ -11,15 +11,20 @@
         Button,
         Badge
     } from '@appwrite.io/pink-svelte';
-    import { isTabletViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
 
     const currentYear = new Date().getFullYear();
 </script>
 
 <footer>
     <Divider />
-    <Layout.Stack direction={$isTabletViewport ? 'column-reverse' : 'row'}>
-        <Layout.Stack direction="row" alignItems="center" gap={$isTabletViewport ? 'm' : 'l'}>
+    <Layout.Stack direction={$isSmallViewport ? 'column-reverse' : 'row'}>
+        <Layout.Stack
+            direction="row"
+            alignItems="center"
+            gap={$isSmallViewport ? 'm' : 'l'}
+            inline={$isTabletViewport}
+            justifyContent="flex-start">
             <Typography.Caption variant="400">
                 ⓒ {currentYear} Appwrite. All rights reserved.
             </Typography.Caption>
@@ -48,35 +53,56 @@
                     <Icon size="s" icon={IconDiscord} />
                 </Button.Anchor>
             </Layout.Stack>
-            {#if isCloud && $isTabletViewport}
-                <span class="divider-wrapper">
-                    <Divider vertical />
-                </span>
-                <Badge size="xs" variant="secondary" content="BETA" />
-            {/if}
         </Layout.Stack>
+        {#if isCloud && $isSmallViewport}
+            <div class="extra-margin">
+                <Layout.Stack direction="row" justifyContent={'flex-start'} alignItems="center">
+                    {#if $version}
+                        {#if isCloud}
+                            <Icon size="s" icon={IconCloud} />
+                        {/if}
+                        <Link.Anchor
+                            size="s"
+                            variant="quiet"
+                            href="https://github.com/appwrite/appwrite/releases"
+                            aria-label="Appwrite releases on Github"
+                            target="_blank"
+                            rel="noreferrer">
+                            Version {$version}
+                        </Link.Anchor>
+                        <span class="divider-wrapper">
+                            <Divider vertical />
+                        </span>
+                    {/if}
+                    <Badge size="xs" variant="secondary" content="BETA" />
+                </Layout.Stack>
+            </div>
+        {/if}
         <Layout.Stack
             direction="row"
-            justifyContent={$isTabletViewport ? 'flex-start' : 'flex-end'}
+            justifyContent={$isSmallViewport ? 'flex-start' : 'flex-end'}
             alignItems="center">
             {#if isCloud}
-                {#if !$isTabletViewport}<Badge size="xs" variant="secondary" content="BETA" />{/if}
-                <Icon size="s" icon={IconCloud} />
+                {#if !$isSmallViewport}<Badge size="xs" variant="secondary" content="BETA" /><Icon
+                        size="s"
+                        icon={IconCloud} />
+                    {#if $version}
+                        <Link.Anchor
+                            size="s"
+                            variant="quiet"
+                            href="https://github.com/appwrite/appwrite/releases"
+                            aria-label="Appwrite releases on Github"
+                            target="_blank"
+                            rel="noreferrer">
+                            Version {$version}
+                        </Link.Anchor>
+                        <span class="divider-wrapper">
+                            <Divider vertical />
+                        </span>
+                    {/if}
+                {/if}
             {/if}
-            {#if $version}
-                <Link.Anchor
-                    size="s"
-                    variant="quiet"
-                    href="https://github.com/appwrite/appwrite/releases"
-                    aria-label="Appwrite releases on Github"
-                    target="_blank"
-                    rel="noreferrer">
-                    Version {$version}
-                </Link.Anchor>
-                <span class="divider-wrapper">
-                    <Divider vertical />
-                </span>
-            {/if}
+
             <Link.Anchor
                 size="s"
                 variant="quiet"
@@ -135,5 +161,8 @@
         display: flex;
         flex-direction: column;
         gap: var(--gap-l);
+    }
+    .extra-margin {
+        margin-block-start: var(--space-2, 4px);
     }
 </style>
