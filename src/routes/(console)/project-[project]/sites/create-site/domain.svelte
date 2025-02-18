@@ -4,7 +4,7 @@
     import { debounce } from '$lib/helpers/debounce';
     import { sdk } from '$lib/stores/sdk';
     import { consoleVariables } from '$routes/(console)/store';
-    import { ResourceType } from '@appwrite.io/console';
+    import { Type } from '@appwrite.io/console';
     import { Fieldset, Layout, Divider, Status, Typography } from '@appwrite.io/pink-svelte';
 
     export let domain: string;
@@ -14,8 +14,11 @@
 
     const checkDomain = debounce(async (value: string) => {
         try {
-            // TODO: @Meldiron Fix in future, blocked by issue PLA-2254
-            // await sdk.forProject.proxy.checkSubdomain(ResourceType.Site, value);
+            await sdk.forConsole.console.getResource(
+                `${value}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                Type.Rules
+            );
+
             domainIsValid = true;
         } catch {
             domainIsValid = false;

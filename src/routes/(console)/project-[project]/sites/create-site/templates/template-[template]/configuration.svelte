@@ -70,68 +70,83 @@
     <Layout.Stack gap="l">
         <Layout.Stack>
             {#if requiredVariables?.length}
-                <Accordion
-                    title="Required variables"
-                    open
-                    hideDivider={!!optionalVariables?.length}>
-                    {#each requiredVariables as variable}
-                        <Layout.Stack gap="s" direction="row">
+                <Accordion title="Required variables" open hideDivider={!optionalVariables?.length}>
+                    <Layout.Stack>
+                        {#each requiredVariables as variable, i}
                             <Layout.Stack gap="s" direction="row">
-                                <InputText id={variable.name} value={variable.name} readonly />
-                                <svelte:component
-                                    this={selectComponent(variable.type)}
-                                    id={variable.name}
-                                    placeholder={variable.placeholder ?? 'Enter value'}
-                                    required={variable.required}
-                                    autocomplete={false}
-                                    minlength={variable.type === 'password' ? 0 : null}
-                                    showPasswordButton={variable.type === 'password'}
-                                    bind:value={variable.value} />
+                                <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                                    <InputText
+                                        id={variable.name}
+                                        value={variable.name}
+                                        readonly
+                                        label={i === 0 ? 'Key' : null} />
+                                    <svelte:component
+                                        this={selectComponent(variable.type)}
+                                        label={i === 0 ? 'Value' : null}
+                                        id={variable.name}
+                                        placeholder={variable.placeholder ?? 'Enter value'}
+                                        required={variable.required}
+                                        autocomplete={false}
+                                        minlength={variable.type === 'password' ? 0 : null}
+                                        showPasswordButton={variable.type === 'password'}
+                                        bind:value={variable.value} />
+                                </Layout.Stack>
+                                <Layout.Stack gap="s" justifyContent="flex-end" inline>
+                                    <Popover let:toggle>
+                                        <Button
+                                            secondary
+                                            icon
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                toggle(e);
+                                            }}>
+                                            <Icon size="s" icon={IconInfo} /></Button>
+                                        <p slot="tooltip">{variable.description}</p>
+                                    </Popover>
+                                </Layout.Stack>
                             </Layout.Stack>
-                            <Popover placement="bottom-end" let:toggle>
-                                <Button
-                                    secondary
-                                    icon
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        toggle(e);
-                                    }}>
-                                    <Icon size="s" icon={IconInfo} /></Button>
-                                <p slot="tooltip">{variable.description}</p>
-                            </Popover>
-                        </Layout.Stack>
-                    {/each}
+                        {/each}
+                    </Layout.Stack>
                 </Accordion>
             {/if}
             {#if optionalVariables?.length}
                 <Accordion title="Optional variables" hideDivider>
-                    {#each optionalVariables as variable}
-                        <Layout.Stack gap="s" direction="row">
+                    <Layout.Stack>
+                        {#each optionalVariables as variable, i}
                             <Layout.Stack gap="s" direction="row">
-                                <InputText id={variable.name} value={variable.name} readonly />
-                                <svelte:component
-                                    this={selectComponent(variable.type)}
-                                    id={variable.name}
-                                    placeholder={variable.placeholder ?? 'Enter value'}
-                                    required={variable.required}
-                                    autocomplete={false}
-                                    minlength={variable.type === 'password' ? 0 : null}
-                                    showPasswordButton={variable.type === 'password'}
-                                    bind:value={variable.value} />
+                                <Layout.Stack gap="s" direction="row">
+                                    <InputText
+                                        id={variable.name}
+                                        value={variable.name}
+                                        readonly
+                                        label={i === 0 ? 'Key' : null} />
+                                    <svelte:component
+                                        this={selectComponent(variable.type)}
+                                        label={i === 0 ? 'Value' : null}
+                                        id={variable.name}
+                                        placeholder={variable.placeholder ?? 'Enter value'}
+                                        required={variable.required}
+                                        autocomplete={false}
+                                        minlength={variable.type === 'password' ? 0 : null}
+                                        showPasswordButton={variable.type === 'password'}
+                                        bind:value={variable.value} />
+                                </Layout.Stack>
+                                <Layout.Stack gap="s" justifyContent="flex-end" inline>
+                                    <Popover let:toggle>
+                                        <Button
+                                            secondary
+                                            icon
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                toggle(e);
+                                            }}>
+                                            <Icon size="s" icon={IconInfo} /></Button>
+                                        <p slot="tooltip">{variable.description}</p>
+                                    </Popover>
+                                </Layout.Stack>
                             </Layout.Stack>
-                            <Popover placement="bottom-end" let:toggle>
-                                <Button
-                                    secondary
-                                    icon
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        toggle(e);
-                                    }}>
-                                    <Icon size="s" icon={IconInfo} /></Button>
-                                <p slot="tooltip">{variable.description}</p>
-                            </Popover>
-                        </Layout.Stack>
-                    {/each}
+                        {/each}
+                    </Layout.Stack>
                 </Accordion>
             {/if}
         </Layout.Stack>

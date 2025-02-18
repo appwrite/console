@@ -18,7 +18,7 @@
         Typography,
         Image
     } from '@appwrite.io/pink-svelte';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
+    import { IconExternalLink, IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
@@ -26,11 +26,12 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, ResourceType } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
     import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
+    import { consoleVariables } from '$routes/(console)/store';
 
     export let data;
 
@@ -132,25 +133,21 @@
                     framework.installCommand,
                     framework.buildCommand,
                     framework.outputDirectory,
-                    domain || undefined,
                     framework.adapter,
                     selectedInstallationId || undefined,
                     framework.fallbackFile,
                     selectedRepository || undefined,
                     branch || undefined,
                     selectedRepository ? silentMode : undefined,
-                    rootDir || undefined,
-                    data.template.providerRepositoryId || undefined,
-                    data.template.providerOwner || undefined,
-                    framework.providerRootDirectory || undefined,
-                    data.template.providerVersion || undefined
+                    rootDir || undefined
                 );
 
-                trackEvent(Submit.SiteCreate, {
-                    source: 'template',
-                    framework: framework.key,
-                    template: data.template.name
-                });
+                // Add domain
+                await sdk.forProject.proxy.createRule(
+                    `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                    ResourceType.Site,
+                    site.$id
+                );
 
                 //Add variables
                 const promises = variables.map((variable) =>
@@ -163,10 +160,20 @@
                 );
                 await Promise.all(promises);
 
-                const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                    Query.limit(1)
-                ]);
-                const deployment = deployments[0];
+                const deployment = await sdk.forProject.sites.createTemplateDeployment(
+                    site.$id,
+                    data.template.providerRepositoryId || undefined,
+                    data.template.providerOwner || undefined,
+                    framework.providerRootDirectory || undefined,
+                    data.template.providerVersion || undefined
+                );
+
+                trackEvent(Submit.SiteCreate, {
+                    source: 'template',
+                    framework: framework.key,
+                    template: data.template.name
+                });
+
                 await goto(
                     `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
                 );
@@ -246,7 +253,12 @@
                     };
                 })}
                 <Layout.Stack gap="xxl">
-                    <Details bind:name bind:id bind:framework {options} showFramework />
+                    <Details
+                        bind:name
+                        bind:id
+                        bind:framework
+                        {options}
+                        showFramework={options?.length > 1} />
                     <ConnectBehaviour bind:connectBehaviour />
                 </Layout.Stack>
                 {#if connectBehaviour === 'now'}
@@ -294,13 +306,14 @@
                             </Layout.Stack>
                         </Fieldset>
                     {:else}
-                        <Card isDashed isTile>
+                        <Card isDashed isTile padding="none">
                             <Empty
+                                type="secondary"
                                 title="Connect Git repository"
                                 description="Create and deploy a Site with a connected git repository.">
                                 <svelte:fragment slot="actions">
                                     <Button secondary href={connectGitHub().toString()} size="s">
-                                        <Icon icon={IconGithub} />
+                                        <Icon icon={IconGithub} slot="start" />
                                         Connect to GitHub
                                     </Button>
                                 </svelte:fragment>
@@ -318,27 +331,33 @@
     </Form>
     <svelte:fragment slot="aside">
         <Aside {framework} {repositoryName} {branch} {rootDir} {domain} showAfter={showSiteConfig}>
-            <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography.Text variant="m-500" truncate>
-                    {name || data.template.name}
-                </Typography.Text>
-                {#if data?.template?.demoUrl}
-                    <Button secondary size="s" external href={data.template.demoUrl}>
-                        View demo
-                    </Button>
-                {/if}
-            </Layout.Stack>
+            <Layout.Stack>
+                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography.Text
+                        variant="m-500"
+                        truncate
+                        color="--color-fgcolor-neutral-primary">
+                        {name || data.template.name}
+                    </Typography.Text>
+                    {#if data?.template?.demoUrl}
+                        <Button secondary size="s" external href={data.template.demoUrl}>
+                            View demo
+                            <Icon icon={IconExternalLink} slot="end" size="s" />
+                        </Button>
+                    {/if}
+                </Layout.Stack>
 
-            <Image
-                objectPosition="top"
-                border
-                src={data?.template?.demoImage ||
-                    ($app.themeInUse === 'dark'
-                        ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                        : `${base}/images/sites/screenshot-placeholder-light.svg`)}
-                alt={data.template.name}
-                width={357}
-                height={200} />
+                <Image
+                    objectPosition="top"
+                    border
+                    src={data?.template?.demoImage ||
+                        ($app.themeInUse === 'dark'
+                            ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                            : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                    alt={data.template.name}
+                    width={357}
+                    height={200} />
+            </Layout.Stack>
         </Aside>
     </svelte:fragment>
 

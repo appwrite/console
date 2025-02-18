@@ -15,7 +15,7 @@
 </script>
 
 <Card padding="s" radius="s">
-    <Layout.Stack gap="l">
+    <Layout.Stack gap="xl">
         <slot />
         <Layout.Stack gap="l">
             {#if repositoryName && showAfter}
