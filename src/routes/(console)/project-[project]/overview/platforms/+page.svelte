@@ -151,6 +151,9 @@
                             </Button>
                         {/if}
                         <svelte:fragment slot="list">
+                            <DropListItem on:click={() => addPlatform(Platform.Web)}>
+                                Web
+                            </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
                                 Flutter
                             </DropListItem>
