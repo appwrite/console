@@ -20,7 +20,7 @@
     import { page } from '$app/stores';
     import { redirectTo } from '$routes/store';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Link, Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -112,18 +112,16 @@
                     required
                     bind:value={pass} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                    By registering, you agree that you have read, understand, and acknowledge our <a
-                        class="link"
+                    By registering, you agree that you have read, understand, and acknowledge our <Link.Anchor
                         href="https://appwrite.io/privacy"
                         target="_blank"
                         rel="noopener noreferrer">
-                        Privacy Policy</a>
+                        Privacy Policy</Link.Anchor>
                     and accept our
-                    <a
-                        class="link"
+                    <Link.Anchor
                         href="https://appwrite.io/terms"
                         target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</a
+                        rel="noopener noreferrer">General Terms of Use</Link.Anchor
                     >.</InputChoice>
                 <Button fullWidth submit {disabled}>Sign up</Button>
                 {#if isCloud}
