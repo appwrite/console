@@ -127,6 +127,13 @@
 
 <svelte:window on:resize={updateViewport} on:load={updateViewport} />
 
+<svelte:head>
+    <!-- {#if isCloud} -->
+    <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
+    <!-- {/if} -->
+    <link rel="stylesheet" href={`${base}/fonts/main.css`} />
+</svelte:head>
+
 <Root theme={resolveTheme($app.themeInUse)}>
     <Notifications />
     <!-- {#if isCloud}
