@@ -38,12 +38,13 @@
 
 <Card padding="s" radius="m">
     <Layout.Stack gap="l">
-        <Layout.Stack gap="xl" direction="row" alignItems="center">
+        <!-- <Layout.Stack gap="xl" direction="row" alignItems="center"> -->
+        <div class="card-grid">
             <Image
                 border
                 radius="s"
-                width={445}
-                height={280}
+                ratio="16/9"
+                style="width: 100%; align-self: start"
                 src={deployment?.preview ||
                     ($app.themeInUse === 'dark'
                         ? `${base}/images/sites/screenshot-placeholder-dark.svg`
@@ -113,7 +114,7 @@
                         </Link>
                     </Layout.Stack>
                 {/if}
-                <Layout.Stack gap="xl" direction="row">
+                <Layout.Stack gap="xl" direction="row" wrap="wrap">
                     {#if deployment?.buildTime}
                         <Layout.Stack gap="xxs" inline>
                             <Typography.Text
@@ -148,10 +149,13 @@
                                 </Tooltip>
                             </Layout.Stack>
                         </Typography.Text>
-                        <Badge
-                            variant="secondary"
-                            type={isCloud ? 'success' : null}
-                            content={isCloud ? 'Connected' : 'Available on Cloud'} />
+                        <Layout.Stack inline alignItems="flex-start">
+                            <Badge
+                                size="xs"
+                                variant="secondary"
+                                type={isCloud ? 'success' : null}
+                                content={isCloud ? 'Connected' : 'Available on Cloud'} />
+                        </Layout.Stack>
                     </Layout.Stack>
                     <Layout.Stack gap="xxs" inline>
                         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
@@ -165,10 +169,13 @@
                                 </Tooltip>
                             </Layout.Stack>
                         </Typography.Text>
-                        <Badge
-                            variant="secondary"
-                            type={isCloud ? 'success' : null}
-                            content={isCloud ? 'Connected' : 'Available on Cloud'} />
+                        <Layout.Stack inline alignItems="flex-start">
+                            <Badge
+                                size="xs"
+                                variant="secondary"
+                                type={isCloud ? 'success' : null}
+                                content={isCloud ? 'Connected' : 'Available on Cloud'} />
+                        </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
                 <Layout.Stack gap="xxs">
@@ -180,8 +187,8 @@
                     </Typography.Text>
                 </Layout.Stack>
             </Layout.Stack>
-        </Layout.Stack>
-
+            <!-- </Layout.Stack> -->
+        </div>
         {#if $$slots.footer}
             <span
                 style="margin-left: calc(-1* var(--space-7));margin-right: calc(-1* var(--space-7));width:auto;">
@@ -197,3 +204,17 @@
 {#if show && siteUrl}
     <OpenOnMobileModal bind:show siteURL={siteUrl} />
 {/if}
+
+<style lang="scss">
+    .card-grid {
+        display: grid;
+        grid-template-columns: 45% 55%;
+        // justify-content: center;
+        align-items: center;
+        gap: var(--gap-xl);
+
+        @media (max-width: 930px) {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

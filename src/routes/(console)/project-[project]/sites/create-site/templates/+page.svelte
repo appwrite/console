@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { EmptySearch } from '$lib/components';
+    import { EmptySearch, Pagination, PaginationWithLimit } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import Wizard from '$lib/layout/wizard.svelte';
@@ -114,38 +114,41 @@
             </Layout.Stack>
         </Layout.Stack>
     </svelte:fragment>
+    <Layout.Stack gap="l">
+        {#if data.templates?.length > 0}
+            <Layout.GridBox>
+                {#each data.templates as template}
+                    {@const templateFrameworks = template.frameworks.map((t) => t.name)}
 
-    {#if data.templates?.length > 0}
-        <Layout.GridBox>
-            {#each data.templates as template}
-                {@const templateFrameworks = template.frameworks.map((t) => t.name)}
+                    <Card.Link
+                        variant="secondary"
+                        href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}
+                        padding="xxs">
+                        <Card.Media
+                            title={template.name}
+                            description={templateFrameworks.join(', ')}
+                            src={template.demoImage ||
+                                ($app.themeInUse === 'dark'
+                                    ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                                    : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                            alt={template.name}>
+                        </Card.Media>
+                    </Card.Link>
+                {/each}
+            </Layout.GridBox>
+        {:else}
+            <EmptySearch
+                hidePagination
+                target="templates"
+                search={$page.url.searchParams.get('search')}>
+                <Button secondary on:click={clearSearch}>Clear search</Button>
+            </EmptySearch>
+        {/if}
 
-                <Card.Link
-                    variant="secondary"
-                    href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}
-                    padding="xxs">
-                    <Card.Media
-                        title={template.name}
-                        description={templateFrameworks.join(', ')}
-                        src={template.demoImage ||
-                            ($app.themeInUse === 'dark'
-                                ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                                : `${base}/images/sites/screenshot-placeholder-light.svg`)}
-                        alt={template.name}>
-                    </Card.Media>
-                </Card.Link>
-            {/each}
-        </Layout.GridBox>
-    {:else}
-        <EmptySearch
-            hidePagination
-            target="templates"
-            search={$page.url.searchParams.get('search')}>
-            <Button secondary on:click={clearSearch}>Clear search</Button>
-        </EmptySearch>
-    {/if}
-    <!-- <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
-        <p class="text">Total templates: {data.templates?.length}</p>
-        <Pagination limit={data.limit} offset={data.offset} sum={data.templates?.length} />
-    </div> -->
+        <PaginationWithLimit
+            name="Templates"
+            limit={data.limit}
+            offset={data.offset}
+            total={data.templates?.length} />
+    </Layout.Stack>
 </Wizard>

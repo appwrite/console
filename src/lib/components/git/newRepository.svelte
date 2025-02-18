@@ -11,31 +11,33 @@
     export let disableFields = false;
 </script>
 
-<Layout.Stack gap="l">
-    {#key selectedInstallationId}
-        <InputSelect
-            id="installation"
-            label="Git organization"
+<Layout.Stack gap="xl">
+    <Layout.Stack gap="l">
+        {#key selectedInstallationId}
+            <InputSelect
+                id="installation"
+                label="Git organization"
+                disabled={disableFields}
+                options={installations.installations.map((entry) => {
+                    return {
+                        label: entry.organization,
+                        value: entry.$id
+                    };
+                })}
+                on:change={() => {
+                    $installation = installations.installations.find(
+                        (entry) => entry.$id === selectedInstallationId
+                    );
+                }}
+                bind:value={selectedInstallationId} />
+        {/key}
+        <InputText
+            id="repositoryName"
+            label="Repository name"
+            placeholder="my-repository"
             disabled={disableFields}
-            options={installations.installations.map((entry) => {
-                return {
-                    label: entry.organization,
-                    value: entry.$id
-                };
-            })}
-            on:change={() => {
-                $installation = installations.installations.find(
-                    (entry) => entry.$id === selectedInstallationId
-                );
-            }}
-            bind:value={selectedInstallationId} />
-    {/key}
-    <InputText
-        id="repositoryName"
-        label="Repository name"
-        placeholder="my-repository"
-        disabled={disableFields}
-        bind:value={repositoryName} />
+            bind:value={repositoryName} />
+    </Layout.Stack>
     <InputCheckbox
         id="repositoryPrivate"
         label="Keep repository private"
