@@ -4,6 +4,7 @@
     export let id: string;
     export let label: string;
     export let value = '';
+    export let helper = '';
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
@@ -44,6 +45,6 @@
     state={error ? 'error' : 'default'}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
-    helper={error}
+    helper={helper || error}
     on:invalid={handleInvalid}
     bind:value />

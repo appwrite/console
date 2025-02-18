@@ -3,7 +3,7 @@
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
-    import { Layout, Table, Card, Empty } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Card, Empty, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
 
     export let logs: Models.LogList;
@@ -12,6 +12,9 @@
 </script>
 
 <Container>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Typography.Title>Activity</Typography.Title>
+    </Layout.Stack>
     {#if logs.total}
         <Table.Root>
             <svelte:fragment slot="header">

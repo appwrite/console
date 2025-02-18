@@ -8,6 +8,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
+    import { Divider, Layout, Link } from '@appwrite.io/pink-svelte';
 
     let email: string;
     let userId: string;
@@ -102,11 +103,12 @@
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <a href={`${base}/login`}><span class="text">Sign in</span></a>
-        </li>
-        <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
-        </li>
+        <Layout.Stack direction="row" justifyContent="center" alignItems="center">
+            <Link.Anchor href={`${base}/login`} variant="quiet">Sign in</Link.Anchor>
+            <div style:height="20px">
+                <Divider vertical />
+            </div>
+            <Link.Anchor href={`${base}/register`} variant="quiet">Sign up</Link.Anchor>
+        </Layout.Stack>
     </svelte:fragment>
 </Unauthenticated>

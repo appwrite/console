@@ -9,8 +9,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
-    import EmptySearch from '$lib/components/emptySearch.svelte';
-    import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Card, Empty, Icon, Layout, Table } from '@appwrite.io/pink-svelte';
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
 
     async function deleteIdentity(id: string) {
@@ -38,12 +37,13 @@
 
     <svelte:fragment slot="aside">
         {#if $identities.length === 0}
-            <EmptySearch hidePagination>
-                <div class="u-text-center">
-                    No identities are currently available. Once you sign in via GitHub, you'll see
-                    it here.
-                </div>
-            </EmptySearch>
+            <Card.Base padding="none">
+                <Empty
+                    type="secondary"
+                    title="No identities are currently available."
+                    description="Once you sign in via GitHub, you'll see
+                it here." />
+            </Card.Base>
         {:else}
             <Table.Root>
                 <svelte:fragment slot="header">
