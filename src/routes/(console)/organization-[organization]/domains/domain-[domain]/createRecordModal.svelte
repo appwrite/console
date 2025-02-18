@@ -7,7 +7,7 @@
         InputTextarea
     } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
-    import { Icon, Input, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -147,6 +147,6 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit danger>Delete</Button>
+        <Button secondary submit>Create DNS record</Button>
     </svelte:fragment>
 </Modal>

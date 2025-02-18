@@ -8,15 +8,15 @@
 
 <Card radius="s" padding="xs" isTile>
     <Layout.Stack gap="xxs">
+        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+            {description}
+        </Typography.Text>
         <slot>
             {#if value !== null && value !== undefined}
-                <Typography.Title size="s">{value}</Typography.Title>
+                <Typography.Title size="s" truncate>{value}</Typography.Title>
             {:else}
                 <Skeleton variant="line" width={100} height={26} />
             {/if}
         </slot>
-        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-            {description}
-        </Typography.Text>
     </Layout.Stack>
 </Card>

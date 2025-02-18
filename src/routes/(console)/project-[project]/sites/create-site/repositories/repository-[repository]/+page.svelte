@@ -96,7 +96,6 @@
                 );
 
                 // Add domain
-                console.log('test');
                 await sdk.forProject.proxy.createRule(
                     `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
                     ResourceType.Site,

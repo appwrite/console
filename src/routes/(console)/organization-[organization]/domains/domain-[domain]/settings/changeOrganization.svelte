@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { CardGrid } from '$lib/components';
     import { Button, InputSelect } from '$lib/elements/forms';
     import type { OrganizationList } from '$lib/stores/organization';
@@ -13,7 +14,9 @@
     }
 
     $: options = organizations.total
-        ? organizations.teams.map((org) => ({ label: org.name, value: org.$id }))
+        ? organizations.teams
+              .map((org) => ({ label: org.name, value: org.$id }))
+              .filter((org) => org.value !== $page.params.organization)
         : [];
 </script>
 
@@ -25,6 +28,7 @@
             id="orgs"
             label="Move to"
             placeholder="Select destination"
+            disabled={options?.length === 0}
             {options}
             bind:value={selectedOrg} />
     </svelte:fragment>

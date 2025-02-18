@@ -28,7 +28,7 @@ const mockCertificates = {
             renewAt: '2023-01-15T10:30:00Z',
             autoRenewal: true,
             issuedAt: '2023-01-15T10:30:00Z',
-            expiresAt: '2024-01-15T10:30:00Z',
+            expiresAt: '2026-01-15T10:30:00Z',
             issuer: "Let's Encrypt",
             status: 'active',
             type: 'SSL/TLS',

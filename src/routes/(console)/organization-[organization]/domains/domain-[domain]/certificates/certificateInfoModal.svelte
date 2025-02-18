@@ -1,13 +1,13 @@
 <script lang="ts">
     import { Button, InputText, InputTextarea } from '$lib/elements/forms';
-    import { Confirm } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let selectedCertificate; //TODO: add type
 </script>
 
-<Confirm title="Advanced information" bind:open={show}>
+<Modal title="Advanced information" bind:show>
     <Layout.Stack gap="xxl">
         <Layout.Stack gap="s">
             <Typography.Text variant="m-600">Issued to</Typography.Text>
@@ -69,4 +69,4 @@
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button secondary submit danger>Delete</Button>
     </svelte:fragment>
-</Confirm>
+</Modal>
