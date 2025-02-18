@@ -144,7 +144,7 @@
 
                 // Add domain
                 await sdk.forProject.proxy.createRule(
-                    `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                    `${domain}.sites.${$consoleVariables._APP_DOMAIN_TARGET}`,
                     ResourceType.Site,
                     site.$id
                 );

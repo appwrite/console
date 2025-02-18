@@ -15,7 +15,7 @@
     const checkDomain = debounce(async (value: string) => {
         try {
             await sdk.forConsole.console.getResource(
-                `${value}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                `${value}.sites.${$consoleVariables._APP_DOMAIN_TARGET}`,
                 Type.Rules
             );
 
@@ -37,7 +37,7 @@
                 <InputText id="domain" placeholder="my-domain" bind:value={domain}>
                     <svelte:fragment slot="end">
                         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                            .{$consoleVariables._APP_DOMAIN_TARGET}
+                            .sites.{$consoleVariables._APP_DOMAIN_TARGET}
                         </Typography.Text>
                     </svelte:fragment>
                 </InputText>
@@ -67,7 +67,7 @@
             <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
                 <Layout.Stack direction="row" gap="s" alignItems="center">
                     <span class="icon-globe-alt"></span>
-                    {domain}.{$consoleVariables._APP_DOMAIN_TARGET}
+                    {domain}.sites.{$consoleVariables._APP_DOMAIN_TARGET}
                 </Layout.Stack>
             </Typography.Text>
             <Button

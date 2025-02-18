@@ -96,8 +96,9 @@
                 );
 
                 // Add domain
+                console.log('test');
                 await sdk.forProject.proxy.createRule(
-                    `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                    `${domain}.sites.${$consoleVariables._APP_DOMAIN_TARGET}`,
                     ResourceType.Site,
                     site.$id
                 );
@@ -113,15 +114,19 @@
                 );
                 await Promise.all(promises);
 
+                const deployment = await sdk.forProject.sites.createTemplateDeployment(
+                    site.$id,
+                    data.repository.id,
+                    undefined, //TODO: fix once matej is back
+                    rootDir,
+                    undefined //TODO: fix once matej is back
+                );
+
                 trackEvent(Submit.SiteCreate, {
                     source: 'repository',
                     framework: framework.key
                 });
 
-                const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                    Query.limit(1)
-                ]);
-                const deployment = deployments[0];
                 await goto(
                     `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
                 );
