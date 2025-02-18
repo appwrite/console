@@ -136,9 +136,8 @@
     </svelte:fragment>
     <svelte:fragment slot="links">
         <Typography.Text variant="m-400">
-            Already got an account? <a
-                class="link"
-                href={`${base}/login${$page?.url?.search ?? ''}`}>Sign in</a>
+            Already got an account? <Link.Anchor href={`${base}/login${$page?.url?.search ?? ''}`}
+                >Sign in</Link.Anchor>
         </Typography.Text>
     </svelte:fragment>
 </Unauthenticated>
