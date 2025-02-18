@@ -3,7 +3,15 @@
     import { invalidate } from '$app/navigation';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import { Code, Layout, Icon, Typography, Fieldset, InlineCode } from '@appwrite.io/pink-svelte';
+    import {
+        Code,
+        Layout,
+        Icon,
+        Typography,
+        Fieldset,
+        InlineCode,
+        ShimmerText
+    } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconFlutter, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
@@ -286,7 +294,9 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
                         gap="l">
                         {#if !connectionSuccessful}
                             <Typography.Text variant="m-400"
-                                >Waiting for connection...</Typography.Text>
+                                ><ShimmerText --font-family="Inter"
+                                    >Waiting for connection...</ShimmerText
+                                ></Typography.Text>
                         {:else}
                             <!-- cannot apply fade on components -->
                             <div
