@@ -46,7 +46,7 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
             return {
                 mfaRequired: true
             };
-        redirect(303, withParams(`${base}/mfa`, url.searchParams));
+        redirect(303, withParams(`${base}/mfa`, url));
     }
 
     if (!isPublicRoute) {
@@ -54,11 +54,22 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
             checkPricingRefAndRedirect(url.searchParams, true);
         }
 
-        redirect(303, withParams(`${base}/login`, url.searchParams));
+        redirect(303, withParams(`${base}/login`, url));
     }
 };
 
-function withParams(pathname: string, searchParams: URLSearchParams) {
-    if (searchParams.size > 0) return `${pathname}?${searchParams.toString()}`;
-    return pathname;
+function withParams(pathname: string, url: URL): string {
+    const { searchParams } = url;
+    const redirect = searchParams.get('redirect');
+    if (redirect) {
+        const extras = new URLSearchParams(searchParams);
+        extras.delete('redirect');
+        const extraQuery = extras.toString();
+        const finalRedirect = extraQuery
+            ? `${redirect}${redirect.includes('?') ? '&' : '?'}${extraQuery}`
+            : redirect;
+        return `${pathname}?redirect=${encodeURIComponent(finalRedirect)}`;
+    }
+    const query = searchParams.toString();
+    return query ? `${pathname}?${query}` : pathname;
 }
