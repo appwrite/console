@@ -49,3 +49,4 @@ export const canSeeTeams = derived(scopes, ($scopes) => $scopes.includes('teams.
 export const canSeeBuckets = derived(scopes, ($scopes) => $scopes.includes('buckets.read'));
 export const canSeeMessages = derived(scopes, ($scopes) => $scopes.includes('messages.read'));
 export const canSeeSites = derived(scopes, ($scopes) => $scopes.includes('sites.read'));
+export const canSeeDomains = derived(scopes, ($scopes) => $scopes.includes('domains.read')); //TODO: check if correct

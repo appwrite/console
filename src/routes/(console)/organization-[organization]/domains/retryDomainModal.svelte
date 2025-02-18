@@ -1,21 +1,21 @@
 <script lang="ts">
-    import { Button, InputCheckbox } from '$lib/elements/forms';
+    import { Modal } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import type { Models } from '@appwrite.io/console';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
-    import { Confirm } from '$lib/components';
+    import RecordsCard from './recordsCard.svelte';
 
     export let show = false;
     export let selectedDomain: Models.ProxyRule;
-    let confirm = false;
-    let error = '';
 
-    async function deleteDomain() {
+    let error = null;
+    async function retryDomain() {
         try {
-            await sdk.forProject.proxy.deleteRule(selectedDomain.$id);
+            await sdk.forProject.proxy.updateRuleVerification(selectedDomain.$id);
             await invalidate(Dependencies.SITES_DOMAINS);
             show = false;
             addNotification({
@@ -24,27 +24,23 @@
             });
             trackEvent(Submit.DomainDelete);
         } catch (e) {
-            error = e.message;
+            error = e;
             trackError(e, Submit.DomainDelete);
         }
     }
+
+    $: if (!show) {
+        error = null;
+    }
 </script>
 
-<Confirm title="Delete domain" bind:open={show} onSubmit={deleteDomain} bind:error>
+<Modal title="Retry verification" bind:show onSubmit={retryDomain} bind:error>
     {#if selectedDomain}
-        <p data-private>
-            Are you sure you want to delete <b>{selectedDomain.domain}</b>? You will no longer be
-            able to execute your function by visiting this domain.
-        </p>
+        <RecordsCard domain={selectedDomain} />
     {/if}
-    <InputCheckbox
-        required
-        bind:checked={confirm}
-        id="confirm"
-        label="I understand and confirm"
-        size="s" />
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit disabled={!confirm}>Delete</Button>
+        <Button submit>Retry</Button>
     </svelte:fragment>
-</Confirm>
+</Modal>
