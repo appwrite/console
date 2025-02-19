@@ -19,7 +19,9 @@
         IconAppwrite,
         IconSvelte,
         IconReact,
-        IconNuxt
+        IconNuxt,
+        IconInfo,
+        IconExternalLink
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/stores';
     import { type ComponentType, onMount } from 'svelte';
@@ -55,6 +57,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
         label: string;
         icon: ComponentType;
         smallIcon: ComponentType;
+        portNumber: number;
     };
     export let platform: PlatformType = PlatformType.Flutterandroid;
     export let selectedFrameworkKey: string | undefined = key ? key : undefined;
@@ -64,31 +67,36 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
             key: 'svelte',
             label: 'Svelte',
             icon: SvelteFrameworkIcon,
-            smallIcon: IconSvelte
+            smallIcon: IconSvelte,
+            portNumber: 5173
         },
         {
             key: 'react',
             label: 'React',
             icon: ReactFrameworkIcon,
-            smallIcon: IconReact
+            smallIcon: IconReact,
+            portNumber: 3000
         },
         {
             key: 'nuxt',
             label: 'Nuxt',
             icon: NuxtFrameworkIcon,
-            smallIcon: IconNuxt
+            smallIcon: IconNuxt,
+            portNumber: 3000
         },
         {
             key: 'nextjs',
             label: 'Next.js',
             icon: NextjsFrameworkIcon,
-            smallIcon: NextjsFrameworkIcon
+            smallIcon: NextjsFrameworkIcon,
+            portNumber: 3000
         },
         {
             key: 'vue',
             label: 'Vue',
             icon: VueFrameworkIcon,
-            smallIcon: IconVue
+            smallIcon: IconVue,
+            portNumber: 5173
         }
     ];
 
@@ -243,6 +251,27 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                                 code="Send a ping" /> button to verify the setup.</Typography.Text>
                     </Layout.Stack>
                 </Fieldset>
+                <Card.Base padding="s"
+                    ><Layout.Stack direction="row" justifyContent="space-between"
+                        ><Layout.Stack direction="row" alignItems="center">
+                            <Icon
+                                icon={IconInfo}
+                                color="--color-fgcolor-neutral-tertiary" /><Typography.Text
+                                variant="m-500"
+                                color="--color-fgcolor-neutral-primary">
+                                Demo app runs on http://localhost:{selectedFramework.portNumber}</Typography.Text
+                            ></Layout.Stack>
+                        <Button.Anchor
+                            variant="secondary"
+                            href={`http://localhost:${selectedFramework.portNumber}`}
+                            target="_blank"
+                            ><Layout.Stack direction="row" gap="xs"
+                                >Open <Icon
+                                    icon={IconExternalLink}
+                                    color="--color-fgcolor-neutral-tertiary" /></Layout.Stack
+                            ></Button.Anchor
+                        ></Layout.Stack
+                    ></Card.Base>
             {/if}
         </Layout.Stack>
     </Form>
