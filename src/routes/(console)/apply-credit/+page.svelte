@@ -13,7 +13,7 @@
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
-    import { ID } from '@appwrite.io/console';
+    import { BillingPlan, ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import { CreditsApplied } from '$lib/components/billing';
@@ -59,6 +59,10 @@
     $: selectedAction = selectedOrgId === newOrgId ? 'create' : 'update';
 
     onMount(async () => {
+        if (!$organizationList?.total && couponData?.code) {
+            goto(`${base}/create-organization?coupon=${couponData.code}&plan=${BillingPlan.Tier1}`);
+        }
+
         if (!$organizationList?.total || campaign?.onlyNewOrgs) {
             selectedOrgId = newOrgId;
         }
@@ -134,7 +138,7 @@
 
 <WizardSecondaryContainer href={previousPage} bind:showExitModal confirmExit>
     <svelte:fragment slot="title">Apply credits</svelte:fragment>
-    <WizardSecondaryContent>
+    <WizardSecondaryContent hideSidebar={!$organizationList?.total}>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList gap={8}>
                 {#if $organizationList?.total && !campaign?.onlyNewOrgs && canSelectOrg}
@@ -145,6 +149,59 @@
                         required
                         placeholder="Select organization"
                         id="organization" />
+                {/if}
+
+                <!-- TEMP FIX -->
+                {#if !$organizationList?.total}
+                    {#if campaign?.template === 'card'}
+                        <div
+                            class="box card-container u-position-relative"
+                            style:--box-border-radius="var(--border-radius-small)">
+                            <div class="card-bg"></div>
+                            <div
+                                class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
+                                <img
+                                    src={campaign?.image[$app.themeInUse]}
+                                    class="u-block u-image-object-fit-cover card-img"
+                                    alt="promo" />
+                                <p class="text">
+                                    {#if couponData?.credits}
+                                        {campaign.title.replace(
+                                            'VALUE',
+                                            couponData.credits.toString()
+                                        )}
+                                    {:else}
+                                        {campaign.title}
+                                    {/if}
+                                </p>
+                            </div>
+                        </div>
+                    {/if}
+
+                    <section
+                        class="card u-margin-block-start-24"
+                        style:--p-card-padding="1.5rem"
+                        style:--p-card-border-radius="var(--border-radius-small)">
+                        {#if couponData?.code && couponData?.status === 'active'}
+                            {@const dateAvailable = selectedOrg?.billingNextInvoiceDate}
+                            <CreditsApplied
+                                bind:couponData
+                                fixedCoupon={!!data?.couponData?.code} />
+                            <p class="text u-margin-block-start-12">
+                                {#if !dateAvailable}
+                                    Credits will automatically be applied to your next invoice.
+                                {:else}
+                                    Credits will automatically be applied to your next invoice on <b
+                                        >{toLocaleDate(selectedOrg?.billingNextInvoiceDate)}</b
+                                    >.
+                                {/if}
+                            </p>
+                        {:else}
+                            <p class="text">
+                                Add a coupon code to apply credits to your organization.
+                            </p>
+                        {/if}
+                    </section>
                 {/if}
 
                 {#if campaign?.plan && selectedOrg && selectedOrg.billingPlan !== campaign?.plan}
@@ -214,13 +271,14 @@
             {#if $isSubmitting}
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
             {/if}
-            {#if selectedOrgId === newOrgId}
+            <!-- {#if selectedOrgId === newOrgId}
                 Create organization
             {:else if campaign?.plan && selectedOrg && selectedOrg.billingPlan !== campaign?.plan}
                 Upgrade plan
             {:else}
-                Apply credits
-            {/if}
+            Apply credits
+            {/if} -->
+            Apply credits
         </Button>
     </WizardSecondaryFooter>
     <svelte:fragment slot="exit">

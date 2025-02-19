@@ -83,7 +83,7 @@
         if ($page.url.searchParams.has('code')) {
             const coupon = $page.url.searchParams.get('code');
             try {
-                const response = await sdk.forConsole.billing.getCoupon(coupon);
+                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
                 couponData = response;
             } catch (e) {
                 couponData = {
