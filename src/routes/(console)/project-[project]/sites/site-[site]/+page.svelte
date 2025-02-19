@@ -52,6 +52,7 @@
                         alignItems="center"
                         justifyContent="center"
                         slot="actions">
+                        <!-- TODO: enable it after we have copy again-->
                         <!-- <Button
                             text
                             href={`${base}/console/project-${$page.params.project}/sites/site-${data.site.$id}/deployments/deployment-${data.deployment.$id}`}>

@@ -35,17 +35,17 @@
         {
             id: 'avgTime',
             value: null,
-            description: 'Average builds time'
+            description: 'Avg. builds time'
         },
         {
             id: 'success',
             value: null,
-            description: 'Successful deployments'
+            description: 'Successful'
         },
         {
             id: 'failed',
             value: null,
-            description: 'Failed deployments'
+            description: 'Failed '
         }
     ];
     onMount(async () => {
@@ -62,7 +62,7 @@
         try {
             const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
             metrics = metrics.map((metric) => {
-                metric.value = usage[metric.id] ?? 'n/a';
+                metric.value = usage[metric.id] ?? '-';
                 return metric;
             });
             metrics = metrics;
@@ -76,7 +76,7 @@
 </script>
 
 <Layout.Stack gap="xl">
-    <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-end" wrap="wrap">
         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
             Metrics for {range !== SiteUsageRange.TwentyFourHours
                 ? `${toLocaleDate(
@@ -95,9 +95,9 @@
                 on:change={fetchUsage} />
         </div>
     </Layout.Stack>
-    <Layout.Stack direction="row">
+    <Layout.GridBox gap="m" itemSize="154px">
         {#each metrics as metric}
             <UsageCard description={metric.description} bind:value={metric.value} />
         {/each}
-    </Layout.Stack>
+    </Layout.GridBox>
 </Layout.Stack>

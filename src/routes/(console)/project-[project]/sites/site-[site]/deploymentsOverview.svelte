@@ -28,6 +28,7 @@
     import ActivateDeploymentModal from '../activateDeploymentModal.svelte';
     import CancelDeploymentModal from './deployments/cancelDeploymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { deploymentStatusConverter } from './store';
 
     export let site: Models.Site;
     export let activeDeployment: Models.Deployment;
@@ -76,11 +77,7 @@
                             <Status status="complete" label="Active" />
                         {:else}
                             <Status
-                                status={status === 'failed'
-                                    ? status
-                                    : status === 'building'
-                                      ? 'pending'
-                                      : 'ready'}
+                                status={deploymentStatusConverter(status)}
                                 label={capitalize(status)} />
                         {/if}
                     </Table.Cell>
@@ -102,7 +99,8 @@
                                         e.preventDefault();
                                         toggle(e);
                                     }}>
-                                    <Icon size="s" icon={IconDotsHorizontal} /></Button>
+                                    <Icon size="s" icon={IconDotsHorizontal} />
+                                </Button>
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Button

@@ -16,7 +16,7 @@
     import { columns } from './store';
     import CreateManualDeploymentModal from './createManualDeploymentModal.svelte';
     import DeploymentMetrics from './deploymentMetrics.svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconFilterLine, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -49,13 +49,13 @@
 </script>
 
 <Container>
-    <Layout.Stack gap="xxl">
+    <Layout.Stack gap="xxxl">
         {#if data.deploymentList.total}
             <DeploymentMetrics deploymentList={data.deploymentList} />
         {/if}
         <Layout.Stack gap="l">
             <Layout.Stack justifyContent="space-between" direction="row">
-                <Layout.Stack alignItems="center" direction="row" gap="s">
+                <Layout.Stack alignItems="center" direction="row">
                     {#if data.deploymentList.total}
                         <QuickFilters {columns} />
                         <Filters
@@ -66,13 +66,13 @@
                             singleCondition>
                             <Layout.Stack alignItems="center" direction="row" gap="xs">
                                 <Button
-                                    text
+                                    compact
                                     on:click={toggle}
                                     {disabled}
                                     size="s"
                                     ariaLabel="open filter">
-                                    <span class="icon-filter-line" />
-                                    <span class="text">More filters</span>
+                                    <Icon icon={IconFilterLine} size="s" slot="start" />
+                                    More filters
                                 </Button>
                                 {#if $tags?.length}
                                     <!-- TODO: add vertical divider to pink 2 -->
