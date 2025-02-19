@@ -2,6 +2,7 @@
     import {
         ActionMenu,
         Badge,
+        Empty,
         Icon,
         Layout,
         Popover,
@@ -26,6 +27,8 @@
     import { Card } from '$lib/components';
     import ActivateDeploymentModal from '../activateDeploymentModal.svelte';
     import CancelDeploymentModal from './deployments/cancelDeploymentModal.svelte';
+    import { capitalize } from '$lib/helpers/string';
+    import { deploymentStatusConverter } from './store';
 
     export let site: Models.Site;
     export let activeDeployment: Models.Deployment;
@@ -37,58 +40,56 @@
     let selectedDeployment: Models.Deployment = null;
 </script>
 
-{#if deploymentList.total}
-    <Layout.Stack>
-        <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Layout.Stack gap="xs" direction="row" alignItems="center" inline>
-                <Typography.Text variant="l-500">Deployments</Typography.Text><Badge
-                    variant="secondary"
-                    content={deploymentList?.total.toString()}
-                    size="s" />
-            </Layout.Stack>
-            <Button
-                secondary
-                href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments`}>
-                View all
-            </Button>
+<Layout.Stack>
+    <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Layout.Stack gap="xs" direction="row" alignItems="center" inline>
+            <Typography.Text variant="l-500" color="--color-fgcolor-neutral-primary">
+                Deployments
+            </Typography.Text><Badge
+                variant="secondary"
+                content={deploymentList?.total.toString()}
+                size="s" />
         </Layout.Stack>
-        {#if deploymentList?.total}
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell>Deployment ID</Table.Header.Cell>
-                    <Table.Header.Cell>Status</Table.Header.Cell>
-                    <Table.Header.Cell>Source</Table.Header.Cell>
-                    <Table.Header.Cell>Updated</Table.Header.Cell>
-                    <Table.Header.Cell />
-                </svelte:fragment>
-                {#each deploymentList?.deployments as deployment}
-                    <Table.Link
-                        href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}>
-                        <Table.Cell>
-                            <Id value={deployment.$id}>{deployment.$id}</Id>
-                        </Table.Cell>
-                        <Table.Cell>
-                            {@const status = deployment.status}
-                            {#if activeDeployment?.$id === deployment?.$id}
-                                <Status status="complete" label="active" />
-                            {:else}
-                                <Status
-                                    status={status === 'failed'
-                                        ? status
-                                        : status === 'building'
-                                          ? 'pending'
-                                          : 'ready'}
-                                    label={status} />
-                            {/if}
-                        </Table.Cell>
+        <Button
+            secondary
+            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments`}>
+            View all
+        </Button>
+    </Layout.Stack>
+    {#if deploymentList?.total}
+        <Table.Root>
+            <svelte:fragment slot="header">
+                <Table.Header.Cell>Deployment ID</Table.Header.Cell>
+                <Table.Header.Cell>Status</Table.Header.Cell>
+                <Table.Header.Cell>Source</Table.Header.Cell>
+                <Table.Header.Cell>Updated</Table.Header.Cell>
+                <Table.Header.Cell />
+            </svelte:fragment>
+            {#each deploymentList?.deployments as deployment}
+                <Table.Link
+                    href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}>
+                    <Table.Cell>
+                        <Id value={deployment.$id}>{deployment.$id}</Id>
+                    </Table.Cell>
+                    <Table.Cell>
+                        {@const status = deployment.status}
+                        {#if activeDeployment?.$id === deployment?.$id}
+                            <Status status="complete" label="Active" />
+                        {:else}
+                            <Status
+                                status={deploymentStatusConverter(status)}
+                                label={capitalize(status)} />
+                        {/if}
+                    </Table.Cell>
 
-                        <Table.Cell>
-                            <DeploymentSource {deployment} />
-                        </Table.Cell>
-                        <Table.Cell>
-                            <DeploymentCreatedBy {deployment} />
-                        </Table.Cell>
-                        <Table.Cell>
+                    <Table.Cell>
+                        <DeploymentSource {deployment} />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <DeploymentCreatedBy {deployment} />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Layout.Stack alignItems="flex-end">
                             <Popover placement="bottom-end" let:toggle>
                                 <Button
                                     text
@@ -98,7 +99,8 @@
                                         e.preventDefault();
                                         toggle(e);
                                     }}>
-                                    <Icon size="s" icon={IconDotsHorizontal} /></Button>
+                                    <Icon size="s" icon={IconDotsHorizontal} />
+                                </Button>
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Button
@@ -139,17 +141,22 @@
                                     </ActionMenu.Root>
                                 </svelte:fragment>
                             </Popover>
-                        </Table.Cell>
-                    </Table.Link>
-                {/each}
-            </Table.Root>
-        {/if}
-    </Layout.Stack>
-{:else}
-    <Card>
-        <Typography.Text>No deployments exist</Typography.Text>
-    </Card>
-{/if}
+                        </Layout.Stack>
+                    </Table.Cell>
+                </Table.Link>
+            {/each}
+        </Table.Root>
+    {:else}
+        <Card isTile padding="l" radius="s">
+            <Empty title="No deployments exist" type="secondary">
+                <span slot="description">
+                    Deployments are created when you deploy your site. You can deploy your site
+                    using the CLI, Git, or manually.
+                </span>
+            </Empty>
+        </Card>
+    {/if}
+</Layout.Stack>
 
 {#if selectedDeployment && showRedeploy}
     <RedeployModal {site} selectedDeploymentId={selectedDeployment.$id} bind:show={showRedeploy} />

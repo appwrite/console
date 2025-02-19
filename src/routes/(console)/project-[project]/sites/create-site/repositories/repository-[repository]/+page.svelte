@@ -15,7 +15,7 @@
     import Details from '../../details.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Query, ResourceType } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, Query, ResourceType, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
@@ -97,7 +97,7 @@
 
                 // Add domain
                 await sdk.forProject.proxy.createRule(
-                    `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                    `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
                     ResourceType.Site,
                     site.$id
                 );
@@ -113,15 +113,18 @@
                 );
                 await Promise.all(promises);
 
+                const deployment = await sdk.forProject.sites.createVcsDeployment(
+                    site.$id,
+                    Type.Branch,
+                    branch,
+                    true
+                );
+
                 trackEvent(Submit.SiteCreate, {
                     source: 'repository',
                     framework: framework.key
                 });
 
-                const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                    Query.limit(1)
-                ]);
-                const deployment = deployments[0];
                 await goto(
                     `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
                 );

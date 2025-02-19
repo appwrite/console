@@ -6,6 +6,7 @@
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateReactNative from './createReactNative.svelte';
+    import CreateWeb from './createWeb.svelte';
     import { createPlatform, versions } from './wizard/store';
 
     export enum Platform {
@@ -36,11 +37,13 @@
         });
         wizard.start(platforms[platform], null, 1, {
             isPlatformCreated: true,
-            platform: type
+            platform: type,
+            key: key
         });
     }
 
     const platforms = {
+        [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
         [Platform.Apple]: CreateApple,
@@ -60,7 +63,13 @@
     import { setOverviewAction } from '../context';
     import { ActionMenu, Card, Empty, Popover, Table } from '@appwrite.io/pink-svelte';
     import Action from './action.svelte';
-    import { IconAndroid, IconApple, IconFlutter, IconReact } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconAndroid,
+        IconApple,
+        IconCode,
+        IconFlutter,
+        IconReact
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -136,6 +145,11 @@
                     {/if}
                     <div style:min-width="232px" slot="tooltip">
                         <ActionMenu.Root>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.Web)}
+                                leadingIcon={IconCode}>
+                                Web
+                            </ActionMenu.Item.Button>
                             <ActionMenu.Item.Button
                                 on:click={() => addPlatform(Platform.Flutter)}
                                 leadingIcon={IconFlutter}>

@@ -94,11 +94,11 @@
                             {/if}
                         </Layout.Stack>
                     </Table.Cell>
-                    <Table.Cell>{domain?.registrar ?? 'N/A'}</Table.Cell>
-                    <Table.Cell>{domain?.nameservers ?? 'N/A'}</Table.Cell>
-                    <Table.Cell>{domain?.expiry ?? 'N/A'}</Table.Cell>
+                    <Table.Cell>{domain?.registrar ?? '-'}</Table.Cell>
+                    <Table.Cell>{domain?.nameservers ?? '-'}</Table.Cell>
+                    <Table.Cell>{domain?.expiry ?? '-'}</Table.Cell>
                     <Table.Cell>
-                        {domain.renewAt ? toLocaleDateTime(domain.renewAt) : 'N/A'}
+                        {domain.renewAt ? toLocaleDateTime(domain.renewAt) : '-'}
                     </Table.Cell>
                     <Table.Cell>{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
                     <Table.Cell>

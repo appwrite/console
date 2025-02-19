@@ -8,6 +8,7 @@
     import {
         IconAndroid,
         IconApple,
+        IconCode,
         IconFlutter,
         IconPlus,
         IconReact
@@ -26,6 +27,11 @@
         {/if}
         <div style:min-width="232px" slot="tooltip">
             <ActionMenu.Root>
+                <ActionMenu.Item.Button
+                    on:click={() => addPlatform(Platform.Web)}
+                    leadingIcon={IconCode}>
+                    Web
+                </ActionMenu.Item.Button>
                 <ActionMenu.Item.Button
                     on:click={() => addPlatform(Platform.Flutter)}
                     leadingIcon={IconFlutter}>

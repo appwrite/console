@@ -84,7 +84,7 @@
                     </Layout.Stack>
                     {#if siteUrl && !hideQRCode}
                         <Button icon secondary on:click={() => (show = true)}>
-                            <Icon icon={IconQrcode} />
+                            <Icon icon={IconQrcode} size="l" />
                         </Button>
                     {/if}
                 </Layout.Stack>
@@ -114,7 +114,7 @@
                         </Link>
                     </Layout.Stack>
                 {/if}
-                <Layout.Stack gap="xl" direction="row" wrap="wrap">
+                <Layout.Stack gap="xxl" direction="row" wrap="wrap">
                     {#if deployment?.buildTime}
                         <Layout.Stack gap="xxs" inline>
                             <Typography.Text
@@ -208,7 +208,7 @@
 <style lang="scss">
     .card-grid {
         display: grid;
-        grid-template-columns: 45% 55%;
+        grid-template-columns: 45% auto;
         // justify-content: center;
         align-items: center;
         gap: var(--gap-xl);

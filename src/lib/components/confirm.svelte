@@ -28,10 +28,12 @@
         <slot />
         <svelte:fragment slot="footer">
             <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
-                <Button text on:click={() => (open = false)}>Cancel</Button>
-                {#if canDelete}
-                    <Button danger submit {disabled}>{action}</Button>
-                {/if}
+                <slot name="footer">
+                    <Button text on:click={() => (open = false)}>Cancel</Button>
+                    {#if canDelete}
+                        <Button danger submit {disabled}>{action}</Button>
+                    {/if}
+                </slot>
             </Layout.Stack>
         </svelte:fragment>
     </Dialog>

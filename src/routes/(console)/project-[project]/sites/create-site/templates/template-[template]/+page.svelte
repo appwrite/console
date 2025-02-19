@@ -144,7 +144,7 @@
 
                 // Add domain
                 await sdk.forProject.proxy.createRule(
-                    `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                    `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
                     ResourceType.Site,
                     site.$id
                 );
@@ -165,7 +165,8 @@
                     data.template.providerRepositoryId || undefined,
                     data.template.providerOwner || undefined,
                     framework.providerRootDirectory || undefined,
-                    data.template.providerVersion || undefined
+                    data.template.providerVersion || undefined,
+                    true
                 );
 
                 trackEvent(Submit.SiteCreate, {

@@ -15,8 +15,8 @@
     const checkDomain = debounce(async (value: string) => {
         try {
             await sdk.forConsole.console.getResource(
-                `${value}.${$consoleVariables._APP_DOMAIN_TARGET}`,
-                Type.Rules
+                `${value}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                'rules' as unknown as Type //TODO: fix after Matej fixes backend
             );
 
             domainIsValid = true;
@@ -37,7 +37,7 @@
                 <InputText id="domain" placeholder="my-domain" bind:value={domain}>
                     <svelte:fragment slot="end">
                         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                            .{$consoleVariables._APP_DOMAIN_TARGET}
+                            .{$consoleVariables._APP_DOMAIN_SITES}
                         </Typography.Text>
                     </svelte:fragment>
                 </InputText>
@@ -67,7 +67,7 @@
             <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
                 <Layout.Stack direction="row" gap="s" alignItems="center">
                     <span class="icon-globe-alt"></span>
-                    {domain}.{$consoleVariables._APP_DOMAIN_TARGET}
+                    {domain}.{$consoleVariables._APP_DOMAIN_SITES}
                 </Layout.Stack>
             </Typography.Text>
             <Button

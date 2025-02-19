@@ -11,15 +11,15 @@
             description: 'Domain'
         },
         {
-            value: domain?.registrar || 'N/A',
+            value: domain?.registrar || '-',
             description: 'Registrar'
         },
         {
-            value: domain?.nameservers || 'N/A',
+            value: domain?.nameservers || '-',
             description: 'Nameservers'
         },
         {
-            value: domain?.expiresAt ? toLocaleDate(domain?.expiresAt) : 'N/A',
+            value: domain?.expiresAt ? toLocaleDate(domain?.expiresAt) : '-',
             description: 'Exipiry date'
         },
         {
@@ -27,7 +27,7 @@
             description: 'Auto renewal'
         },
         {
-            value: domain?.renewalPrice || 'N/A',
+            value: domain?.renewalPrice || '-',
             description: 'Renewal price'
         }
     ];
