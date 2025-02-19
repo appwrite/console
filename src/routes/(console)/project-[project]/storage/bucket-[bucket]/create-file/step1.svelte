@@ -10,11 +10,14 @@
     import { bucket } from '../store';
     import { createFile } from './store';
     import { base } from '$app/paths';
+    import { getServiceLimit } from '$lib/stores/billing';
 
     let showCustomId = false;
     let fileError: string = null;
-    const service = $currentPlan['fileSize'];
+
     const projectId = $page.params.project;
+    // hot fix for now, remove later. there's no `currentPlan` on self-hosted.
+    const service = $currentPlan ? $currentPlan['fileSize'] : getServiceLimit('fileSize');
 </script>
 
 <WizardStep>

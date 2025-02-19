@@ -31,7 +31,7 @@ export const toLocaleDate = (datetime: string) => {
     return date.toLocaleDateString('en', options);
 };
 
-export const toLocaleDateTime = (datetime: string | number) => {
+export const toLocaleDateTime = (datetime: string | number, is12HourFormat: boolean = false) => {
     const date = new Date(datetime);
 
     if (isNaN(date.getTime())) {
@@ -44,7 +44,8 @@ export const toLocaleDateTime = (datetime: string | number) => {
         day: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
-        hourCycle: 'h23'
+        hourCycle: is12HourFormat ? 'h12' : 'h23',
+        ...(is12HourFormat && { hour12: true })
     };
 
     return date.toLocaleDateString('en', options);

@@ -83,3 +83,4 @@ export { default as Sidebar } from './sidebar.svelte';
 export { default as BottomSheet } from './bottom-sheet/index';
 export { default as Confirm } from './confirm.svelte';
 export { default as UsageCard } from './usageCard.svelte';
+export { default as ExpirationInput } from './expirationInput.svelte';

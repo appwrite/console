@@ -1,7 +1,7 @@
 <script lang="ts">
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import ExpirationInput from '../expirationInput.svelte';
+    import { ExpirationInput } from '$lib/components';
     import { key } from './store';
 </script>
 
