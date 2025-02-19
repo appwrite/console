@@ -11,11 +11,16 @@
         TableRow
     } from '$lib/elements/table';
     import { domain } from './store';
+    import { page } from '$app/stores';
 
-    const target = window?.location.hostname ?? '';
     $: parts = $domain.domain.split('.');
     $: registerable = [parts[parts.length - 2], parts[parts.length - 1]].join('.');
     $: cnameValue = $domain.domain.replace('.' + registerable, '');
+
+    const targetValue = () => {
+        const region = $page.params.region ?? '';
+        return `${region}-${window?.location.hostname ?? ''}`;
+    };
 </script>
 
 <Table noMargin noStyles style="--p-table-bg-color: var(--transparent);">
@@ -27,6 +32,7 @@
     </TableHeader>
     <TableBody>
         <TableRow>
+            {@const target = targetValue()}
             <TableCellText title="Type">CNAME</TableCellText>
             <TableCellText title="Name">{cnameValue}</TableCellText>
             <TableCellText title="Value">
