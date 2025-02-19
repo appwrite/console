@@ -6,6 +6,7 @@
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateReactNative from './createReactNative.svelte';
+    import CreateWeb from './createWeb.svelte';
     import { createPlatform, versions } from './wizard/store';
 
     export enum Platform {
@@ -36,11 +37,13 @@
         });
         wizard.start(platforms[platform], null, 1, {
             isPlatformCreated: true,
-            platform: type
+            platform: type,
+            key: key
         });
     }
 
     const platforms = {
+        [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
         [Platform.Apple]: CreateApple,
@@ -148,6 +151,9 @@
                             </Button>
                         {/if}
                         <svelte:fragment slot="list">
+                            <DropListItem on:click={() => addPlatform(Platform.Web)}>
+                                Web
+                            </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
                                 Flutter
                             </DropListItem>
