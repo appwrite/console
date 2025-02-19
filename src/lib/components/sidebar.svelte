@@ -66,6 +66,7 @@
 
     $: state = $isTabletViewport ? 'closed' : getSidebarState();
     $: pathname = $page.url.pathname;
+    $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(pathname);
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth' },
@@ -232,7 +233,7 @@
                         <a
                             href={`/console/project-${project.$id}/settings`}
                             class="link"
-                            class:active={pathname.includes('settings')}
+                            class:active={isOnProjectSettings}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
