@@ -2,7 +2,7 @@
     import { Id, Trim } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
-    import { calculateTime } from '$lib/helpers/timeConversion';
+    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import DeploymentSource from '../../(components)/deploymentSource.svelte';
     import DeploymentCreatedBy from '../../(components)/deploymentCreatedBy.svelte';
     import { timer } from '$lib/actions/timer';
@@ -91,7 +91,7 @@
                             {#if ['processing', 'building'].includes(deployment.status)}
                                 <span use:timer={{ start: deployment.$createdAt }} />
                             {:else}
-                                {calculateTime(deployment.buildTime)}
+                                {formatTimeDetailed(deployment.buildTime)}
                             {/if}
                         </Table.Cell>
                     {:else if column.id === 'size'}

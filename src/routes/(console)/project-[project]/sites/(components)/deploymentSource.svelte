@@ -22,7 +22,7 @@
                     e.preventDefault();
                     toggle(e);
                 }}>
-                <Layout.Stack direction="row" gap="xs">
+                <Layout.Stack direction="row" gap="xs" alignItems="center">
                     <Icon icon={IconGithub} size="s" /> GitHub
                 </Layout.Stack>
             </Link>
