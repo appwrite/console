@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -21,8 +22,10 @@
     ];
 
     onMount(async () => {
-        const countryList = await sdk.forProject.locale.listCountries();
-        const locale = await sdk.forProject.locale.get();
+        const countryList = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .locale.listCountries();
+        const locale = await sdk.forProject($page.params.region, $page.params.project).locale.get();
         if (locale.countryCode) {
             selectedAddress.country = locale.countryCode;
         }

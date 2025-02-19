@@ -26,12 +26,13 @@
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
     import { ID, Region } from '@appwrite.io/console';
-    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
+    import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
     export let data;
 
@@ -111,7 +112,7 @@
             trackEvent(Submit.ProjectCreate, {
                 teamId: $page.params.organization
             });
-            await goto(`${base}/project-${project.$id}/settings/migrations`);
+            await goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
             openImportWizard();
             loading.set(false);
         } catch (e) {
@@ -122,13 +123,8 @@
     let regions: RegionList;
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
-            if ($page.url.searchParams.has('type')) {
-                const paramType = $page.url.searchParams.get('type');
-                if (paramType === 'createPro') {
-                    goto(`${base}/create-organization`);
-                }
-            }
+            regions = await sdk.forConsole.billing.listRegions($page.params.organization);
+            checkPricingRefAndRedirect($page.url.searchParams);
         }
     });
 
@@ -175,7 +171,7 @@
                         project.platforms.map((platform) => getPlatformInfo(platform.type))
                     )}
                     <li>
-                        <GridItem1 href={`${base}/project-${project.$id}`}>
+                        <GridItem1 href={`${base}/project-${project.region}-${project.$id}`}>
                             <svelte:fragment slot="eyebrow">
                                 {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                             </svelte:fragment>

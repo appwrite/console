@@ -7,15 +7,16 @@
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { page } from '$app/stores';
+    import { realtime } from '$lib/stores/sdk';
 
     onMount(() => {
         domain.set({ $id: '', domain: '' });
 
-        return sdk.forConsole.client.subscribe<Models.ProxyRule>('console', (data) =>
-            domain.set(data.payload)
-        );
+        return realtime
+            .forProject($page.params.region, $page.params.region)
+            .subscribe<Models.ProxyRule>('console', (data) => domain.set(data.payload));
     });
 
     async function onFinish() {

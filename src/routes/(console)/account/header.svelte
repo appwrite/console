@@ -52,7 +52,7 @@
 <Cover>
     <svelte:fragment slot="header">
         <CoverTitle>
-            {$user.name}
+            {$user.name || $user.email}
         </CoverTitle>
         <div class="u-margin-inline-start-auto">
             <Button secondary on:click={logout}>Logout</Button>

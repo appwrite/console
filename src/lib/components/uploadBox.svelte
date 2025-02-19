@@ -8,8 +8,14 @@
 
     let hovering = false;
 
-    const getPreview = (fileId: string, bucketId: string) =>
-        sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+    function getPreview(fileId: string, bucketId: string) {
+        return (
+            sdk
+                .forProject($page.params.region, $page.params.project)
+                .storage.getFilePreview(bucketId, fileId, 32, 32)
+                .toString() + '&mode=admin'
+        );
+    }
 </script>
 
 {#if $uploader?.isOpen}
@@ -41,7 +47,7 @@
                     {#if file.completed || file.progress === 100}
                         <a
                             class="upload-box-item"
-                            href={`${base}/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/file-${file.$id}`}>
+                            href={`${base}/project-${$page.params.region}-${$page.params.project}/storage/bucket-${$page.params.bucket}/file-${file.$id}`}>
                             <div class="u-margin-inline-end-16">
                                 <Avatar
                                     size={32}

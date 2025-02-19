@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormList, InputSelect, InputTextarea } from '$lib/elements/forms';
+    import { FormList, InputSelect, InputText, InputTextarea } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { supportData } from './store';
     import { Pill } from '$lib/elements';
@@ -50,6 +50,13 @@
                     bind:value={$supportData.project}
                     {options} />
             {/if}
+            <InputText
+                label="Subject"
+                id="subject"
+                placeholder="What do you need help with?"
+                bind:value={$supportData.subject}
+                required />
+
             <InputTextarea
                 label="Tell us a bit more"
                 id="message"

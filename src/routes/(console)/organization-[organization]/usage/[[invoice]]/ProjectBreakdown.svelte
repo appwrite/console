@@ -10,42 +10,62 @@
         TableRowLink,
         TableScroll
     } from '$lib/elements/table';
-    import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
 
-    type Metric = 'users' | 'storage' | 'bandwidth' | 'executions';
+    type Metric = 'users' | 'storage' | 'bandwidth' | 'executions' | 'authPhoneTotal';
+    type Estimate = 'authPhoneEstimate';
+
     export let data: PageData;
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric;
+    export let estimate: Estimate | undefined = undefined;
 
-    function getProjectUsageLink(projectId: string): string {
-        return `${base}/project-${projectId}/settings/usage`;
+    function getMetricTitle(metric: Metric): string {
+        switch (metric) {
+            case 'authPhoneTotal':
+                return 'Amount';
+            default:
+                return 'Usage';
+        }
     }
 
-    function groupByProject(metric: Metric): Array<{ projectId: string; usage: number }> {
+    function getProjectUsageLink(region: string, projectId: string): string {
+        return `${base}/project-${region}-${projectId}/settings/usage`;
+    }
+
+    function groupByProject(
+        metric: Metric,
+        estimate?: Estimate
+    ): Array<{ projectId: string; usage: number; estimate?: number }> {
         const data = [];
         for (const project of projects) {
             const usage = project[metric];
+            if (!usage) {
+                continue;
+            }
             data.push({
                 projectId: project.projectId,
-                usage: usage ?? 0
+                usage: usage ?? 0,
+                estimate: estimate ? project[estimate] : undefined
             });
         }
         return data;
     }
 
     function format(value: number): string {
-        const humanized = humanFileSize(value);
         switch (metric) {
+            case 'authPhoneTotal':
+                return formatNumberWithCommas(value);
             case 'executions':
             case 'users':
                 return abbreviateNumber(value);
             case 'storage':
             case 'bandwidth':
-                return humanized.value + humanized.unit;
+                return humanFileSize(value).value + humanFileSize(value).unit;
         }
     }
 </script>
@@ -53,29 +73,43 @@
 <Collapsible>
     <CollapsibleItem>
         <svelte:fragment slot="title">Project breakdown</svelte:fragment>
-        <TableScroll noMargin style="table-layout: auto">
+        <TableScroll dense noStyles noMargin style="table-layout: auto">
             <TableHeader>
                 <TableCellHead>Project</TableCellHead>
-                <TableCellHead>Usage</TableCellHead>
+                <TableCellHead>{getMetricTitle(metric)}</TableCellHead>
+                {#if estimate}
+                    <TableCellHead>Estimated cost</TableCellHead>
+                {/if}
                 {#if $canSeeProjects}
                     <TableCellHead />
                 {/if}
             </TableHeader>
             <TableBody>
-                {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
+                {#each groupByProject(metric, estimate).sort((a, b) => b.usage - a.usage) as project}
                     {#if !$canSeeProjects}
                         <TableRow>
                             <TableCell title="Project">
                                 {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                             </TableCell>
-                            <TableCell title="Usage">{format(project.usage)}</TableCell>
+                            <TableCell title={getMetricTitle(metric)}
+                                >{format(project.usage)}</TableCell>
+                            {#if project.estimate}
+                                <TableCell title="Estimated cost"
+                                    >{formatCurrency(project.estimate)}</TableCell>
+                            {/if}
                         </TableRow>
                     {:else}
-                        <TableRowLink href={getProjectUsageLink(project.projectId)}>
+                        <!-- TODO: hardcoded region -->
+                        <TableRowLink href={getProjectUsageLink('fra1', project.projectId)}>
                             <TableCell title="Project">
                                 {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                             </TableCell>
-                            <TableCell title="Usage">{format(project.usage)}</TableCell>
+                            <TableCell title={getMetricTitle(metric)}
+                                >{format(project.usage)}</TableCell>
+                            {#if project.estimate}
+                                <TableCell title="Estimated cost"
+                                    >{formatCurrency(project.estimate)}</TableCell>
+                            {/if}
                             <TableCell right={true}>
                                 <span
                                     class="icon-cheveron-right u-cross-child-center ignore-icon-rotate" />

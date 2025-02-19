@@ -1,14 +1,14 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Alert, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { roles } from '$lib/stores/billing';
@@ -60,22 +60,6 @@
 </script>
 
 <Modal title="Invite member" {error} size="big" bind:show={showCreate} onSubmit={create}>
-    {#if isCloud}
-        {#if $organization?.billingPlan === BillingPlan.PRO}
-            <!-- <Alert type="info">
-                You can add unlimited organization members on the {plan.name} plan for
-                <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.
-            </Alert> -->
-            <Alert type="info">
-                New roles are free until 1st January 2025. <a
-                    class="link"
-                    href="https://appwrite.io/docs/advanced/platform/roles"
-                    target="_blank"
-                    rel="noopener noreferrer">Learn more</a
-                >.
-            </Alert>
-        {/if}
-    {/if}
     <FormList>
         <InputEmail
             required

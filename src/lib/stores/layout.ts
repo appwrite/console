@@ -25,3 +25,5 @@ export function updateLayout(args: updateLayoutArguments) {
     header.set(args.header ?? null);
     breadcrumb.set(args.breadcrumb ?? null);
 }
+
+export const showSubNavigation = writable(false);
