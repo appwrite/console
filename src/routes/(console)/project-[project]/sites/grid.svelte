@@ -22,7 +22,7 @@
     let selectedSite: Models.Site = null;
 </script>
 
-<Layout.GridBox>
+<Layout.GridBox itemSize="274px">
     {#each siteList.sites as site}
         <Card.Link
             href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}

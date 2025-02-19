@@ -27,7 +27,7 @@
 </script>
 
 <Container>
-    <Layout.Stack gap="xxl">
+    <Layout.Stack gap="xxxl">
         {#if data?.deployment && data.deployment.status === 'ready'}
             <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
                 <svelte:fragment slot="footer">
@@ -37,7 +37,7 @@
                         >Instant rollback</Button>
                 </svelte:fragment>
             </SiteCard>
-        {:else if data.deployment && data.deployment.status === 'building'}
+        {:else}
             <Card.Base padding="none">
                 <Empty
                     title="Deployment is still building"
@@ -52,11 +52,11 @@
                         alignItems="center"
                         justifyContent="center"
                         slot="actions">
-                        <Button
+                        <!-- <Button
                             text
                             href={`${base}/console/project-${$page.params.project}/sites/site-${data.site.$id}/deployments/deployment-${data.deployment.$id}`}>
                             View logs
-                        </Button>
+                        </Button> -->
                         <Button secondary on:click={() => invalidate(Dependencies.SITE)}
                             >Reload</Button>
                     </Layout.Stack>
