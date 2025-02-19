@@ -465,7 +465,7 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (isDismissed) return;
     // check if coupon already applied
     try {
-        await sdk.forConsole.billing.getCoupon(NEW_DEV_PRO_UPGRADE_COUPON);
+        await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
     } catch (e) {
         return;
     }

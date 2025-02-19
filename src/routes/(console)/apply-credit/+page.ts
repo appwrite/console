@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ url }) => {
         let campaign: Campaign;
         const code = url.searchParams.get('code');
         try {
-            couponData = await sdk.forConsole.billing.getCoupon(code);
+            couponData = await sdk.forConsole.billing.getCouponAccount(code);
             if (couponData.campaign) {
                 campaign = await sdk.forConsole.billing.getCampaign(couponData.campaign);
             }
