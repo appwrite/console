@@ -10,9 +10,10 @@
     import { Button } from '$lib/elements/forms';
     import { ExpirationInput, Modal } from '$lib/components';
     import { createEventDispatcher } from 'svelte';
+    import { Confirm } from '$lib/components/index.js';
 
+    export let show = false;
     export let isDelete = false;
-    export let showCreate = false;
     export let fileToken: object | undefined = undefined;
 
     let expire = null;
@@ -20,8 +21,8 @@
     const dispatch = createEventDispatcher();
 
     function close() {
+        show = false;
         fileToken = null;
-        showCreate = false;
     }
 
     function handleFileToken() {
@@ -33,14 +34,14 @@
         close();
     }
 
-    $: if (!showCreate) {
+    $: if (!show) {
         expire = null;
         fileToken = null;
     }
 </script>
 
 {#if isDelete}
-    <Modal bind:show={showCreate} onSubmit={handleFileToken} title="Delete token">
+    <Confirm bind:open={show} title="Delete token" onSubmit={handleFileToken}>
         {@const formattedDate = cleanFormattedDate(fileToken.created)}
         <p data-private>
             Are you sure you want to delete the file token created on <b>{formattedDate}</b>?
@@ -55,17 +56,9 @@
                 This token has never been accessed.
             {/if}
         </p>
-
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={close}>Cancel</Button>
-            <Button danger submit>Delete</Button>
-        </svelte:fragment>
-    </Modal>
+    </Confirm>
 {:else}
-    <Modal
-        bind:show={showCreate}
-        onSubmit={handleFileToken}
-        title={`${fileToken ? 'Edit' : 'Create'} file token`}>
+    <Modal {show} onSubmit={handleFileToken} title={`${fileToken ? 'Edit' : 'Create'} file token`}>
         <!-- TODO: docs link needed-->
         <svelte:fragment slot="description">
             {#if fileToken}

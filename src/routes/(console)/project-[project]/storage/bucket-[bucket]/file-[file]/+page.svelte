@@ -316,7 +316,7 @@
 <ManageFileTokenModal
     isDelete={tokenDeleteMode}
     fileToken={selectedFileToken}
-    bind:showCreate={showManageToken}
+    bind:show={showManageToken}
     on:created={({ detail: expiry }) => createFileToken(expiry)}
     on:updated={({ detail: newExpiry }) => updateFileTokenExpiry(newExpiry)}
     on:deleted={async () => await deleteFileToken(selectedFileToken)} />
