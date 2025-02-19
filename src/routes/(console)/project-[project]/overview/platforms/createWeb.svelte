@@ -11,9 +11,9 @@
         Fieldset,
         InlineCode,
         Card,
-        Button as ButtonV2
+        Button
     } from '@appwrite.io/pink-svelte';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Form } from '$lib/elements/forms';
     import {
         IconVue,
         IconAppwrite,
@@ -170,27 +170,15 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
 
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             {#if isChangingFramework}
-                                <Button
-                                    fullWidthMobile
-                                    size="s"
-                                    forceShowLoader
-                                    submissionLoader={isCreatingPlatform}
+                                <Button.Button
                                     disabled={!selectedFramework}
                                     on:click={() => {
                                         isChangingFramework = false;
                                     }}>
-                                    Change framework instructions
-                                </Button>
+                                    Change framework instructions</Button.Button>
                             {:else}
-                                <Button
-                                    fullWidthMobile
-                                    size="s"
-                                    submit
-                                    forceShowLoader
-                                    submissionLoader={isCreatingPlatform}
-                                    disabled={!selectedFramework}>
-                                    Create platform
-                                </Button>
+                                <Button.Button type="submit" disabled={!selectedFramework}
+                                    >Create platform</Button.Button>
                             {/if}
                         </Layout.Stack>
                     </Layout.Stack>
@@ -206,12 +194,12 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             <Typography.Text variant="m-500"
                                 >{selectedFramework.label}</Typography.Text>
                         </Layout.Stack>
-                        <ButtonV2.Button
+                        <Button.Button
                             variant="secondary"
                             size="s"
                             on:click={() => {
                                 isChangingFramework = true;
-                            }}>Change</ButtonV2.Button>
+                            }}>Change</Button.Button>
                     </Layout.Stack></Card.Base>
             {/if}
 
@@ -300,14 +288,10 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
 
     <svelte:fragment slot="footer">
         {#if isPlatformCreated}
-            <Button
-                size="s"
-                fullWidthMobile
-                secondary
-                disabled={isCreatingPlatform}
-                href={location.pathname}>
-                Go to dashboard
-            </Button>
+            <Button.Anchor
+                href={location.pathname}
+                variant="secondary"
+                disabled={isCreatingPlatform}>Go to dashboard</Button.Anchor>
         {/if}
     </svelte:fragment>
 </Wizard>
