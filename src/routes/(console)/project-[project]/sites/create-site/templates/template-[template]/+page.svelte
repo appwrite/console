@@ -165,7 +165,8 @@
                     data.template.providerRepositoryId || undefined,
                     data.template.providerOwner || undefined,
                     framework.providerRootDirectory || undefined,
-                    data.template.providerVersion || undefined
+                    data.template.providerVersion || undefined,
+                    true
                 );
 
                 trackEvent(Submit.SiteCreate, {

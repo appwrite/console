@@ -17,6 +17,7 @@
             Add platform
         </Button>
         <svelte:fragment slot="list">
+            <DropListItem on:click={() => addPlatform(Platform.Web)}>Web app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Android)}>Android app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple app</DropListItem>

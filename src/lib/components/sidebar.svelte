@@ -136,7 +136,7 @@
                         <a
                             href={`/console/project-${project.$id}/overview`}
                             class="link"
-                            class:active={pathname.includes('platforms')}
+                            class:active={pathname.includes('overview')}
                             on:click={() => {
                                 sideBarIsOpen = false;
                             }}
@@ -252,7 +252,7 @@
                                     variant="secondary"
                                     size="s"
                                     on:click={() => toggleFeedback()}
-                                    >Feedback
+                                    ><span>Feedback</span>
                                 </Button.Button>
                                 <svelte:fragment slot="other">
                                     <MobileFeedbackModal />

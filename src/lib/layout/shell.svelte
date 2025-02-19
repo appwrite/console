@@ -165,13 +165,10 @@
                 <svelte:component this={$page.data.header} />
             {/if}
             <slot />
-            {#if showFooter && showSideNavigation}
+            {#if showFooter}
                 <slot name="footer" />
             {/if}
         </section>
-        {#if showFooter && !showSideNavigation}
-            <slot name="footer" />
-        {/if}
     </div>
 
     <button

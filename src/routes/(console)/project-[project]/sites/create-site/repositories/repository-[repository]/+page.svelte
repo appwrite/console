@@ -15,7 +15,7 @@
     import Details from '../../details.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Query, ResourceType } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, Query, ResourceType, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
@@ -113,12 +113,11 @@
                 );
                 await Promise.all(promises);
 
-                const deployment = await sdk.forProject.sites.createTemplateDeployment(
+                const deployment = await sdk.forProject.sites.createVcsDeployment(
                     site.$id,
-                    data.repository.id,
-                    undefined, //TODO: fix once matej is back
-                    rootDir,
-                    undefined //TODO: fix once matej is back
+                    Type.Branch,
+                    branch,
+                    true
                 );
 
                 trackEvent(Submit.SiteCreate, {
