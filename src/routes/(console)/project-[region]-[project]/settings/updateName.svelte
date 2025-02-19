@@ -12,8 +12,9 @@
     import { project } from '../store';
     import { canWriteProjects } from '$lib/stores/roles';
 
-    const endpoint = sdk.forConsole.client.config.endpoint;
-    const projectId = $page.params.project;
+    const { project: projectId, region } = $page.params;
+    const { protocol, hostname, href } = new URL(sdk.forConsole.client.config.endpoint);
+    const endpoint = region ? `${protocol}//${region}-${hostname}/v1` : href;
 
     let name: string = null;
 
