@@ -47,7 +47,12 @@
                     .getCampaign(coupon.campaign)
                     .catch<null>(() => null);
                 if (campaign && $user) {
-                    goto(`${base}/apply-credit?code=${code}`);
+                    const params = new URLSearchParams($page.url.searchParams);
+                    params.delete('code'); // Remove the code param since we're using it in the new path
+                    const searchString = params.toString();
+                    goto(
+                        `${base}/apply-credit?code=${code}${searchString ? '&' + searchString : ''}`
+                    );
                     loading.set(false);
                     return;
                 }
@@ -59,7 +64,12 @@
                 .getCampaign(campaignId)
                 .catch<null>(() => null);
             if (campaign) {
-                goto(`${base}/apply-credit?campaign=${campaign.$id}`);
+                const params = new URLSearchParams($page.url.searchParams);
+                params.delete('campaign'); // Remove the campaign param since we're using it in the new path
+                const searchString = params.toString();
+                goto(
+                    `${base}/apply-credit?campaign=${campaign.$id}${searchString ? '&' + searchString : ''}`
+                );
                 loading.set(false);
                 return;
             }

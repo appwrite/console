@@ -99,6 +99,15 @@
                 billingPlan = plan as BillingPlan;
             }
         }
+
+        if ($page.url.searchParams.has('type')) {
+            const type = $page.url.searchParams.get('type');
+            if (type === 'payment_confirmed') {
+                const organizationId = $page.url.searchParams.get('id');
+                const invites = $page.url.searchParams.get('invites').split(',');
+                await validate(organizationId, invites);
+            }
+        }
         if ($currentPlan?.$id === BillingPlan.SCALE) {
             billingPlan = BillingPlan.SCALE;
         } else {
@@ -224,17 +233,20 @@
             if (!isOrganization(org) && org.status == 402) {
                 let clientSecret = org.clientSecret;
                 let params = new URLSearchParams();
+                for (const [key, value] of $page.url.searchParams.entries()) {
+                    if (key !== 'type' && key !== 'id') {
+                        params.append(key, value);
+                    }
+                }
                 params.append('type', 'payment_confirmed');
                 params.append('id', org.teamId);
-                for (let index = 0; index < collaborators.length; index++) {
-                    const invite = collaborators[index];
-                    params.append('invites', invite);
-                }
+                params.append('invites', collaborators.join(','));
+                params.append('plan', billingPlan);
                 await confirmPayment(
                     '',
                     clientSecret,
                     paymentMethodId,
-                    '/console/create-organization?' + params.toString()
+                    '/console/change-plan?' + params.toString()
                 );
                 await validate(org.teamId, collaborators);
             }
