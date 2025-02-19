@@ -252,7 +252,7 @@
                                     variant="secondary"
                                     size="s"
                                     on:click={() => toggleFeedback()}
-                                    >Feedback
+                                    ><span>Feedback</span>
                                 </Button.Button>
                                 <svelte:fragment slot="other">
                                     <MobileFeedbackModal />
