@@ -8,6 +8,7 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { PlatformType } from '@appwrite.io/console';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { isHostnameValid } from '$lib/helpers/string';
 
     // enum Platform {
     //     Android = 'flutter-android',
@@ -84,6 +85,11 @@
     };
 
     async function beforeSubmit() {
+        // double-check the hostname value.
+        if (platform === PlatformType.Flutterweb && !isHostnameValid($createPlatform.hostname)) {
+            throw new Error('Please enter a valid hostname');
+        }
+
         if ($createPlatform.$id) {
             await sdk.forConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
@@ -115,7 +121,11 @@
     }[platform];
 </script>
 
-<WizardStep {beforeSubmit}>
+<WizardStep
+    {beforeSubmit}
+    nextDisabled={platform === PlatformType.Flutterweb
+        ? !isHostnameValid($createPlatform.hostname)
+        : false}>
     <svelte:fragment slot="title">{registee} registration</svelte:fragment>
     <svelte:fragment slot="subtitle">
         <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
