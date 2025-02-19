@@ -891,8 +891,24 @@ export class Billing {
         }
     }
 
-    async getCoupon(couponId: string): Promise<Coupon> {
+    async getCouponAccount(couponId: string): Promise<Coupon> {
         const path = `/account/coupons/${couponId}`;
+        const params = {
+            couponId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getCoupon(couponId: string): Promise<Coupon> {
+        const path = `/console/coupons/${couponId}`;
         const params = {
             couponId
         };
