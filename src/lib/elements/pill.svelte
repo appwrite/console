@@ -73,3 +73,11 @@
         <slot />
     </div>
 {/if}
+
+<style>
+    /* button and anchor tags seem to have special dimens, this should be auto fixed in pink2. */
+    :global(.tag):where(button, a) {
+        --p-tag-height: 2.125rem;
+        --p-tag-content-height: 2.024rem;
+    }
+</style>

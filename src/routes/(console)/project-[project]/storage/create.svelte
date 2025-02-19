@@ -45,7 +45,7 @@
     }
 </script>
 
-<Modal title="Create bucket" {error} onSubmit={create} size="big" bind:show={showCreate}>
+<Modal title="Create bucket" {error} onSubmit={create} bind:show={showCreate}>
     <FormList>
         <InputText
             id="name"
@@ -63,7 +63,7 @@
                 </Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Bucket" bind:id />
+            <CustomId autofocus bind:show={showCustomId} name="Bucket" bind:id />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">

@@ -119,7 +119,7 @@
         {#each $collection.attributes as attribute}
             {@const label = attribute.key}
             <CardGrid>
-                <Heading tag="h6" size="7">{label}</Heading>
+                <svelte:fragment slot="title">{label}</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <AttributeItem {attribute} bind:formValues={$work} {label} {editing} />
                 </svelte:fragment>

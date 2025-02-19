@@ -7,7 +7,7 @@
     export let errors: string[];
 </script>
 
-<Modal title="Message error" headerDivider={false} bind:show size="big">
+<Modal title="Message error" bind:show>
     <div class="box u-flex-vertical u-gap-24">
         <p class="u-inline-flex u-cross-center u-gap-8">
             <span

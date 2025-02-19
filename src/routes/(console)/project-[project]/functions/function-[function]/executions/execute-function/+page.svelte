@@ -4,7 +4,6 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { timer } from '$lib/actions/timer';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Alert, Card, Id } from '$lib/components';
 
     import { Dependencies } from '$lib/constants';
@@ -12,8 +11,6 @@
     import {
         Button,
         Form,
-        FormItem,
-        FormItemPart,
         FormList,
         Helper,
         InputDate,
@@ -45,6 +42,8 @@
         toLocaleTimeISO
     } from '$lib/helpers/date';
     import { last } from '$lib/helpers/array';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let previousPage: string = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/executions`;
 
@@ -150,7 +149,7 @@
 </svelte:head>
 
 <WizardSecondaryContainer href={previousPage}>
-    <svelte:fragment slot="title">Execute Function</svelte:fragment>
+    <svelte:fragment slot="title">Execute function</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
@@ -176,77 +175,68 @@
                         id="body"
                         bind:value={body} />
                 {:else}
-                    <FormItem isMultiple stackOnMobile style="gap: 1rem">
-                        <InputSelect
-                            required
-                            id="method"
-                            label="Method"
-                            options={methodOptions}
-                            bind:value={method} />
-                        <InputText
-                            label="Path"
-                            id="path"
-                            fullWidth
-                            placeholder="/"
-                            bind:value={path}
-                            required />
-                    </FormItem>
+                    <InputSelect
+                        required
+                        id="method"
+                        label="Method"
+                        options={methodOptions}
+                        bind:value={method} />
+                    <InputText
+                        label="Path"
+                        id="path"
+                        fullWidth
+                        placeholder="/"
+                        bind:value={path}
+                        required />
                     <div>
                         <h3>
                             <span class="body-text-2 u-bold">Headers</span>
                             <span class="optional">(optional)</span>
-                            <span
-                                use:tooltip={{
-                                    content:
-                                        'Headers should contain alphanumeric characters (a-z, A-Z, and 0-9) and hyphens only (- and _).'
-                                }}
-                                class="icon-info"></span>
+                            <Tooltip placement="top"
+                                ><span class="icon-info"></span>
+                                <div slot="tooltip">
+                                    Headers should contain alphanumeric characters (a-z, A-Z, and
+                                    0-9) and hyphens only (- and _).
+                                </div>
+                            </Tooltip>
                         </h3>
 
                         <FormList class="u-gap-8 u-margin-block-start-8">
                             {#if headers}
                                 {#each headers as [name, value], index}
-                                    <FormItem isMultiple style="gap: 1rem">
-                                        <InputSelectSearch
-                                            fullWidth
-                                            label="Key"
-                                            placeholder="Select key"
-                                            interactiveOutput
-                                            hideEmpty
-                                            options={filteredKeyList}
-                                            id={`key-${index}`}
-                                            bind:value={name}
-                                            bind:search={name}>
-                                        </InputSelectSearch>
-                                        <InputText
-                                            isMultiple
-                                            fullWidth
-                                            label="Value"
-                                            placeholder="Enter value"
-                                            id={`value-${index}`}
-                                            bind:value />
-                                        <FormItemPart alignEnd>
-                                            <Button
-                                                text
-                                                noMargin
-                                                disabled={(!name || !value) && index === 0}
-                                                on:click={() => {
-                                                    if (index === 0) {
-                                                        headers = [['', '']];
-                                                    } else {
-                                                        headers.splice(index, 1);
-                                                        headers = headers;
-                                                    }
-                                                }}>
-                                                <span class="icon-x" aria-hidden="true" />
-                                            </Button>
-                                        </FormItemPart>
-                                    </FormItem>
+                                    <InputSelectSearch
+                                        fullWidth
+                                        label="Key"
+                                        placeholder="Select key"
+                                        interactiveOutput
+                                        hideEmpty
+                                        options={filteredKeyList}
+                                        id={`key-${index}`}
+                                        bind:value={name}
+                                        bind:search={name}>
+                                    </InputSelectSearch>
+                                    <InputText
+                                        label="Value"
+                                        placeholder="Enter value"
+                                        id={`value-${index}`}
+                                        bind:value />
+                                    <Button
+                                        text
+                                        disabled={(!name || !value) && index === 0}
+                                        on:click={() => {
+                                            if (index === 0) {
+                                                headers = [['', '']];
+                                            } else {
+                                                headers.splice(index, 1);
+                                                headers = headers;
+                                            }
+                                        }}>
+                                        <span class="icon-x" aria-hidden="true" />
+                                    </Button>
                                 {/each}
                             {/if}
                         </FormList>
                         <Button
-                            noMargin
                             text
                             disabled={headers?.length && headers[headers.length - 1][0]
                                 ? false
@@ -257,8 +247,8 @@
                                     headers = headers;
                                 }
                             }}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add Header</span>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add Header
                         </Button>
                     </div>
 
@@ -284,24 +274,18 @@
                                 }
                             ]} />
                         {#if isScheduled}
-                            <FormItem isMultiple tag="div" class="u-margin-block-start-16">
-                                <InputDate
-                                    id="date"
-                                    label="Date"
-                                    required={true}
-                                    min={minDate}
-                                    bind:value={date}
-                                    isMultiple
-                                    fullWidth />
-                                <InputTime
-                                    id="time"
-                                    label="Time"
-                                    required={true}
-                                    min={minTime}
-                                    bind:value={time}
-                                    isMultiple
-                                    fullWidth />
-                            </FormItem>
+                            <InputDate
+                                id="date"
+                                label="Date"
+                                required={true}
+                                min={minDate}
+                                bind:value={date} />
+                            <InputTime
+                                id="time"
+                                label="Time"
+                                required={true}
+                                min={minTime}
+                                bind:value={time} />
                         {/if}
                         <Helper type="neutral">
                             {isScheduled
@@ -356,30 +340,29 @@
                         <p>
                             {humanFileSize(deployment.size + deployment.buildSize).value +
                                 humanFileSize(deployment.size + deployment.buildSize).unit}
-                            <button
-                                type="button"
-                                on:click|preventDefault
-                                class="tooltip"
-                                aria-label="input tooltip"
-                                use:tooltip={{
-                                    content: `
-                                <p><b>Deployment size:</b> ${
-                                    humanFileSize(deployment.size).value +
-                                    humanFileSize(deployment.size).unit
-                                }</p>
-                                <p><b>Build size:</b> ${
-                                    humanFileSize(deployment.buildSize).value +
-                                    humanFileSize(deployment.buildSize).unit
-                                }</p>
-                            `,
-                                    allowHTML: true,
-                                    appendTo: 'parent'
-                                }}>
-                                <span
-                                    class="icon-info"
-                                    aria-hidden="true"
-                                    style="font-size: var(--icon-size-small)" />
-                            </button>
+                            <Tooltip>
+                                <button
+                                    type="button"
+                                    on:click|preventDefault
+                                    aria-label="input tooltip">
+                                    <span
+                                        class="icon-info"
+                                        aria-hidden="true"
+                                        style="font-size: var(--icon-size-small)" />
+                                </button>
+                                <div slot="tooltip">
+                                    <p>
+                                        <b>Deployment size:</b>
+                                        {humanFileSize(deployment.size).value +
+                                            humanFileSize(deployment.size).unit}
+                                    </p>
+                                    <p>
+                                        <b>Build size:</b>
+                                        {humanFileSize(deployment.buildSize).value +
+                                            humanFileSize(deployment.buildSize).unit}
+                                    </p>
+                                </div>
+                            </Tooltip>
                         </p>
                     </li>
                 </ul>

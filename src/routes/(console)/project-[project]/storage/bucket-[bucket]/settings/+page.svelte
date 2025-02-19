@@ -65,7 +65,6 @@
     import {
         Button,
         Form,
-        FormItem,
         FormList,
         InputChoice,
         InputSelect,
@@ -87,6 +86,9 @@
     import { readOnly } from '$lib/stores/billing';
     import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import type { PageData } from './$types';
+
+    export let data: PageData;
 
     let showDelete = false;
 
@@ -222,8 +224,7 @@
     {#if $bucket}
         <Form onSubmit={toggleBucket}>
             <CardGrid>
-                <Heading tag="h2" size="7">{$bucket.name}</Heading>
-
+                <svelte:fragment slot="title">{$bucket.name}</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <div>
                         <FormList>
@@ -250,7 +251,7 @@
 
         <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Name</Heading>
+                <svelte:fragment slot="title">Name</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputText
@@ -276,16 +277,15 @@
 
         <Form onSubmit={updatePermissions}>
             <CardGrid hideOverflow>
-                <Heading tag="h6" size="7" id="permissions">Permissions</Heading>
-                <p class="text">
-                    Choose who can access your buckets and files. For more information, visit our <a
-                        href="https://appwrite.io/docs/advanced/platform/permissions"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="link">
-                        Permissions guide
-                    </a>.
-                </p>
+                <svelte:fragment slot="title">Permissions</svelte:fragment>
+                Choose who can access your buckets and files. For more information, visit our
+                <a
+                    href="https://appwrite.io/docs/advanced/platform/permissions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link">
+                    Permissions guide
+                </a>.
                 <svelte:fragment slot="aside">
                     {#if bucketPermissions}
                         <Permissions bind:permissions={bucketPermissions} withCreate />
@@ -299,7 +299,7 @@
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7" id="file-security">File security</Heading>
+                <svelte:fragment slot="title">File security</svelte:fragment>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
@@ -330,36 +330,27 @@
 
         <Form onSubmit={updateSecurity}>
             <CardGrid>
-                <Heading tag="h2" size="7">Security settings</Heading>
-                <p class="text">
-                    Enable or disable security services for the bucket including <b>Ecryption</b>
-                    and <b>Antivirus scanning.</b>
-                </p>
+                <svelte:fragment slot="title">Security settings</svelte:fragment>
+                Enable or disable security services for the bucket including <b>Ecryption</b>
+                and <b>Antivirus scanning.</b>
                 <svelte:fragment slot="aside">
                     <FormList>
-                        <FormItem>
-                            <InputChoice
-                                label="Encryption"
-                                id="encryption"
-                                type="switchbox"
-                                bind:value={encryption}>
-                                This parameter allows you to configure whether or not the files
-                                inside the bucket will be encrypted. We don't encrypt files bigger
-                                than 20MB.
-                            </InputChoice>
-                        </FormItem>
-
-                        <FormItem>
-                            <InputChoice
-                                label="Antivirus"
-                                id="antivirus"
-                                type="switchbox"
-                                bind:value={antivirus}>
-                                This parameter allows you to configure whether or not the files
-                                inside the bucket should be scanned by the Appwrite Antivirus
-                                scanner.
-                            </InputChoice>
-                        </FormItem>
+                        <InputChoice
+                            label="Encryption"
+                            id="encryption"
+                            type="switchbox"
+                            bind:value={encryption}>
+                            This parameter allows you to configure whether or not the files inside
+                            the bucket will be encrypted. We don't encrypt files bigger than 20MB.
+                        </InputChoice>
+                        <InputChoice
+                            label="Antivirus"
+                            id="antivirus"
+                            type="switchbox"
+                            bind:value={antivirus}>
+                            This parameter allows you to configure whether or not the files inside
+                            the bucket should be scanned by the Appwrite Antivirus scanner.
+                        </InputChoice>
                     </FormList>
                 </svelte:fragment>
 
@@ -376,11 +367,9 @@
 
         <Form onSubmit={updateCompression}>
             <CardGrid>
-                <Heading tag="h2" size="6">Compression</Heading>
-                <p class="text">
-                    Choose an algorithm for compression. For files larger than 20MB, compression
-                    will be skipped even if it's enabled.
-                </p>
+                <svelte:fragment slot="title">Compression</svelte:fragment>
+                Choose an algorithm for compression. For files larger than 20MB, compression will be
+                skipped even if it's enabled.
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSelect
@@ -397,15 +386,13 @@
             </CardGrid>
         </Form>
 
-        <UpdateMaxFileSize />
+        <UpdateMaxFileSize currentPlan={data.currentPlan} />
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid hideOverflow>
-                <Heading tag="h6" size="7" id="extensions">Allowed file Extensions</Heading>
-                <p class="text">
-                    Allowed file extensions. A maximum of 100 file extensions can be added. Leave
-                    blank to allow all file types.
-                </p>
+                <svelte:fragment slot="title">Allowed file extension</svelte:fragment>
+                Allowed file extensions. A maximum of 100 file extensions can be added. Leave blank to
+                allow all file types.
                 <svelte:fragment slot="aside">
                     <ul class="common-section">
                         <InputTags
@@ -441,12 +428,10 @@
             </CardGrid>
         </Form>
 
-        <CardGrid danger>
-            <Heading tag="h6" size="7">Delete bucket</Heading>
-            <p class="text">
-                The bucket will be permanently deleted, including all the files within it. This
-                action is irreversible.
-            </p>
+        <CardGrid>
+            <svelte:fragment slot="title">Delete bucket</svelte:fragment>
+            The bucket will be permanently deleted, including all the files within it. This action is
+            irreversible.
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="title">

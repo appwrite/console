@@ -3,6 +3,7 @@
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,6 +13,8 @@
     export let linkedOrgs: Organization[] = [];
     export let showDelete = false;
     export let method: string;
+
+    let error: string;
 
     async function handleDelete() {
         try {
@@ -23,25 +26,19 @@
                 message: `Payment method has been deleted`
             });
             trackEvent(Submit.PaymentMethodDelete);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.PaymentMethodDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.PaymentMethodDelete);
         }
     }
 </script>
 
-<Modal
-    bind:show={showDelete}
+<Confirm
     onSubmit={handleDelete}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
-    <svelte:fragment slot="title">
-        {linkedOrgs.length ? 'Unable to delete payment method' : 'Delete payment method'}
-    </svelte:fragment>
+    title={linkedOrgs.length ? 'Unable to delete payment method' : 'Delete payment method'}
+    canDelete={linkedOrgs.length === 0}
+    bind:open={showDelete}
+    bind:error>
     {#if linkedOrgs.length === 1}
         <p class="text">
             This payment method is set as the default for the <span class="u-bold"
@@ -63,11 +60,4 @@
     {:else}
         <p class="text">Are you sure you want to delete this payment method from your account?</p>
     {/if}
-
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        {#if !linkedOrgs.length}
-            <Button secondary submit>Delete</Button>
-        {/if}
-    </svelte:fragment>
-</Modal>
+</Confirm>

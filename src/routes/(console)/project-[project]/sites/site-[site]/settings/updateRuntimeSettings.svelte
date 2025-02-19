@@ -45,7 +45,7 @@
             await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',
-                message: 'Timeout has been updated'
+                message: 'Runtime has been updated'
             });
             trackEvent(Submit.SiteUpdateTimeout);
         } catch (error) {
@@ -60,12 +60,9 @@
 
 <Form onSubmit={updateRuntime}>
     <CardGrid>
-        <Heading tag="h6" size="7">Runtime settings</Heading>
-        <p class="text">
-            Select the runtime for building and serving your site. Version changes apply on redeploy
-            and can be updated here.
-        </p>
-
+        <svelte:fragment slot="title">Runtime settings</svelte:fragment>
+        Select the runtime for building and serving your site. Version changes apply on redeploy and
+        can be updated here.
         <svelte:fragment slot="aside">
             <InputSelect
                 label="Build runtime"
@@ -73,8 +70,7 @@
                 placeholder="Select runtime"
                 bind:value={buildRuntime}
                 options={buildRuntimeOptions}
-                required
-                hideRequired />
+                required />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

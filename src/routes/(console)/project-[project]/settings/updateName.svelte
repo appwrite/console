@@ -40,31 +40,26 @@
     }
 </script>
 
-<Form onSubmit={updateName}>
-    <CardGrid>
-        <Heading tag="h6" size="7">API credentials</Heading>
-        <p class="text">
-            Access Appwrite services using this project's API Endpoint and Project ID.
-        </p>
-        <svelte:fragment slot="aside">
-            <FormList>
-                <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
-                <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
-            </FormList>
-        </svelte:fragment>
-        <svelte:fragment slot="actions">
-            <Button
-                secondary
-                event="view_keys"
-                href={`${base}/project-${projectId}/overview/keys#integrations`}>
-                View API keys
-            </Button>
-        </svelte:fragment>
-    </CardGrid>
-    {#if $canWriteProjects}
+<CardGrid>
+    <svelte:fragment slot="title">API credentials</svelte:fragment>
+    Access Appwrite services using this project's API Endpoint and Project ID.
+    <svelte:fragment slot="aside">
+        <CopyInput label="Project ID" value={$project.$id} />
+        <CopyInput label="API Endpoint" value={endpoint} />
+    </svelte:fragment>
+    <svelte:fragment slot="actions">
+        <Button
+            secondary
+            event="view_keys"
+            href={`${base}/project-${projectId}/overview/keys#integrations`}>
+            View API keys
+        </Button>
+    </svelte:fragment>
+</CardGrid>
+{#if $canWriteProjects}
+    <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
-
+            <svelte:fragment slot="title">Name</svelte:fragment>
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputText
@@ -80,5 +75,5 @@
                 <Button disabled={name === $project.name} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
-    {/if}
-</Form>
+    </Form>
+{/if}

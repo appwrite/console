@@ -7,10 +7,8 @@
 </script>
 
 <CardGrid>
-    <div>
-        <Heading tag="h6" size="7">BAA</Heading>
-    </div>
-    <p class="text">After requesting a BAA, we will contact you via email for the next steps.</p>
+    <svelte:fragment slot="title">BAA</svelte:fragment>
+    After requesting a BAA, we will contact you via email for the next steps.
     <svelte:fragment slot="aside">
         <Box>
             <h6>

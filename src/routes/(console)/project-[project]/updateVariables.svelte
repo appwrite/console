@@ -2,14 +2,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
-    import {
-        CardGrid,
-        Heading,
-        DropListItem,
-        Empty,
-        Output,
-        PaginationInline
-    } from '$lib/components';
+    import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -21,11 +14,22 @@
     import CreateVariable from './createVariable.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
     import { base } from '$app/paths';
-    import { Badge, HiddenText, Icon, Layout, Popover, Table } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Badge,
+        HiddenText,
+        Icon,
+        Layout,
+        Popover,
+        Table
+    } from '@appwrite.io/pink-svelte';
     import {
         IconCode,
         IconDotsHorizontal,
+        IconGlobeAlt,
+        IconPencil,
         IconPlus,
+        IconTrash,
         IconUpload
     } from '@appwrite.io/pink-icons-svelte';
     import Link from '$lib/elements/link.svelte';
@@ -61,6 +65,7 @@
         const variable = event.detail;
         try {
             await sdkCreateVariable(variable.key, variable.value, variable.secret);
+            selectedVar = null;
             showVariablesModal = false;
             addNotification({
                 type: 'success',
@@ -135,14 +140,28 @@
                     variable.value,
                     variable.secret
                 );
-                await sdk.forProject.functions.deleteVariable(variable.resourceId, variable.$id);
+                if (product === 'site') {
+                    await sdk.forProject.sites.deleteVariable(variable.resourceId, variable.$id);
+                } else {
+                    await sdk.forProject.functions.deleteVariable(
+                        variable.resourceId,
+                        variable.$id
+                    );
+                }
             } else {
                 await sdk.forProject.projectApi.createVariable(
                     variable.key,
                     variable.value,
                     variable.secret
                 );
-                await sdk.forProject.functions.deleteVariable(variable.resourceId, variable.$id);
+                if (product === 'site') {
+                    await sdk.forProject.sites.deleteVariable(variable.resourceId, variable.$id);
+                } else {
+                    await sdk.forProject.functions.deleteVariable(
+                        variable.resourceId,
+                        variable.$id
+                    );
+                }
             }
 
             selectedVar = null;
@@ -151,7 +170,8 @@
             await Promise.all([
                 invalidate(Dependencies.FUNCTION),
                 invalidate(Dependencies.VARIABLES),
-                invalidate(Dependencies.PROJECT_VARIABLES)
+                invalidate(Dependencies.PROJECT_VARIABLES),
+                invalidate(Dependencies.SITE)
             ]);
 
             addNotification({
@@ -186,22 +206,16 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7" id="variables">
-        {isGlobal ? 'Global variables' : 'Environment variables'}
-    </Heading>
+    <svelte:fragment slot="title"
+        >{isGlobal ? 'Global variables' : 'Environment variables'}</svelte:fragment>
     {#if isGlobal}
-        <p>
-            Set the environment variables or secret keys that will be passed to all functions and
-            sites within your project.
-        </p>
+        Set the environment variables or secret keys that will be passed to all functions and sites
+        within your project.
     {:else}
-        <p>
-            Set the environment variables or secret keys that will be passed to your {product}.
-            Global variables can be found in <Link
-                href={`${base}/project-${$project.$id}/settings#variables`}>
-                project settings</Link
-            >.
-        </p>
+        Set the environment variables or secret keys that will be passed to your {product}. Global
+        variables can be found in <Link href={`${base}/project-${$project.$id}/settings#variables`}>
+            project settings</Link
+        >.
     {/if}
     <svelte:fragment slot="aside">
         <Layout.Stack justifyContent="space-between" direction="row">
@@ -290,37 +304,41 @@
                                             }}>
                                             <Icon size="s" icon={IconDotsHorizontal} />
                                         </Button>
-                                        <svelte:fragment slot="tooltip">
-                                            <Layout.Stack gap="s" alignItems="flex-start">
-                                                <DropListItem
-                                                    icon="pencil"
-                                                    on:click={() => {
+                                        <svelte:fragment slot="tooltip" let:toggle>
+                                            <ActionMenu.Root>
+                                                <ActionMenu.Item.Button
+                                                    trailingIcon={IconPencil}
+                                                    on:click={(e) => {
                                                         selectedVar = variable;
                                                         showVariablesDropdown[i] = false;
                                                         showVariablesModal = true;
+                                                        toggle(e);
                                                     }}>
                                                     Edit
-                                                </DropListItem>
+                                                </ActionMenu.Item.Button>
+
                                                 {#if !isGlobal}
-                                                    <DropListItem
-                                                        icon="globe-alt"
-                                                        on:click={async () => {
+                                                    <ActionMenu.Item.Button
+                                                        trailingIcon={IconGlobeAlt}
+                                                        on:click={async (e) => {
                                                             selectedVar = variable;
                                                             showVariablesDropdown[i] = false;
                                                             showPromoteModal = true;
+                                                            toggle(e);
                                                         }}>
                                                         Promote
-                                                    </DropListItem>
+                                                    </ActionMenu.Item.Button>
                                                 {/if}
-                                                <DropListItem
-                                                    icon="trash"
-                                                    on:click={async () => {
+                                                <ActionMenu.Item.Button
+                                                    trailingIcon={IconTrash}
+                                                    on:click={async (e) => {
                                                         handleVariableDeleted(variable);
                                                         showVariablesDropdown[i] = false;
+                                                        toggle(e);
                                                     }}>
                                                     Delete
-                                                </DropListItem>
-                                            </Layout.Stack>
+                                                </ActionMenu.Item.Button>
+                                            </ActionMenu.Root>
                                         </svelte:fragment>
                                     </Popover>
                                 </div>
@@ -382,9 +400,3 @@
         {variableList}
         bind:show={showVariablesUpload} />
 {/if}
-
-<style>
-    .padding-start {
-        margin-left: -1rem;
-    }
-</style>

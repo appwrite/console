@@ -21,11 +21,9 @@
     import { base } from '$app/paths';
 </script>
 
-<CardGrid danger>
-    <div>
-        <Heading tag="h6" size="7">Delete provider</Heading>
-    </div>
-    <p>The provider's instance will be permanently deleted. This action is irreversible.</p>
+<CardGrid>
+    <svelte:fragment slot="title">Delete provider</svelte:fragment>
+    The provider's instance will be permanently deleted. This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

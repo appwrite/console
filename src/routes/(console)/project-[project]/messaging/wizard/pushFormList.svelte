@@ -27,8 +27,6 @@
     import { messageParams, providerType } from './store';
     import {
         Button,
-        FormItem,
-        FormItemPart,
         FormList,
         Helper,
         InputEmail,
@@ -38,7 +36,7 @@
         Label
     } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { Modal } from '$lib/components';
+    import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { ID, MessagingProviderType } from '@appwrite.io/console';
@@ -46,6 +44,8 @@
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
     import InputFilePicker from '$lib/elements/forms/inputFilePicker.svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let showCustomId = false;
     let showTest = false;
@@ -152,76 +152,62 @@
         </div>
         <form class="form">
             <FormList>
-                <FormItem>
-                    <InputFilePicker
-                        bind:value={$messageParams[MessagingProviderType.Push].file}
-                        label="Media" />
-                </FormItem>
-                <FormItem>
-                    <Label
-                        tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
-                        >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
-                </FormItem>
+                <InputFilePicker
+                    bind:value={$messageParams[MessagingProviderType.Push].file}
+                    label="Media" />
+                <Label
+                    tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
+                    >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
             </FormList>
 
             <div class=" u-grid u-gap-8">
                 <ul class="form-list" style="--p-form-list-gap: 1rem">
                     {#each customData || [] as _, rowIndex}
-                        <FormItem isMultiple>
-                            <InputText
-                                id={`${rowIndex}-key`}
-                                isMultiple
-                                fullWidth
-                                bind:value={$messageParams[MessagingProviderType.Push].data[
-                                    rowIndex
-                                ][0]}
-                                placeholder="Enter key"
-                                label="Key"
-                                showLabel={false} />
+                        <InputText
+                            id={`${rowIndex}-key`}
+                            bind:value={
+                                $messageParams[MessagingProviderType.Push].data[rowIndex][0]
+                            }
+                            placeholder="Enter key"
+                            label="Key"
+                            showLabel={false} />
 
-                            <InputText
-                                id={`${rowIndex}-value`}
-                                isMultiple
-                                fullWidth
-                                bind:value={$messageParams[MessagingProviderType.Push].data[
-                                    rowIndex
-                                ][1]}
-                                placeholder="Enter value"
-                                label="Value"
-                                showLabel={false}
-                                required />
-                            <FormItemPart alignEnd>
-                                <Button
-                                    text
-                                    on:click={() => {
-                                        if (customData.length === 1) {
-                                            $messageParams[MessagingProviderType.Push].data = [
-                                                ['', '']
-                                            ];
-                                            return;
-                                        }
+                        <InputText
+                            id={`${rowIndex}-value`}
+                            bind:value={
+                                $messageParams[MessagingProviderType.Push].data[rowIndex][1]
+                            }
+                            placeholder="Enter value"
+                            label="Value"
+                            showLabel={false}
+                            required />
+                        <Button
+                            text
+                            on:click={() => {
+                                if (customData.length === 1) {
+                                    $messageParams[MessagingProviderType.Push].data = [['', '']];
+                                    return;
+                                }
 
-                                        $messageParams[MessagingProviderType.Push].data =
-                                            customData.filter((_, i) => i !== rowIndex);
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </Button>
-                            </FormItemPart>
-                        </FormItem>
+                                $messageParams[MessagingProviderType.Push].data = customData.filter(
+                                    (_, i) => i !== rowIndex
+                                );
+                            }}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </Button>
                     {/each}
                 </ul>
                 {#if dataError}
                     <Helper type="warning">{dataError}</Helper>
                 {/if}
                 <Button
-                    noMargin
                     text
                     disabled={customData && customData[customData.length - 1][0] === ''}
                     on:click={() => {
                         $messageParams[MessagingProviderType.Push].data = [...customData, ['', '']];
                     }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add data</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add data
                 </Button>
             </div>
         </form>
@@ -232,6 +218,13 @@
                         Message ID
                     </span></Pill>
             </div>
+        {:else}
+            <CustomId
+                autofocus
+                bind:show={showCustomId}
+                name="Message"
+                bind:id={$messageParams[$providerType].messageId}
+                fullWidth />
         {/if}
     </FormList>
     <PushPhone

@@ -73,7 +73,7 @@
             </button>
         </header>
         <div class="upload-box-content is-open">
-            <section class="progress-bar">
+            <section class="progress-bar u-padding-inline-16 u-padding-block-16">
                 <div class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                     <span>{percentage}%</span>
                 </div>

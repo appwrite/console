@@ -9,6 +9,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
@@ -16,6 +17,7 @@
     import Create from './createDocument.svelte';
     import { collection, columns } from './store';
     import Table from './table.svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -55,8 +57,8 @@
                     disabled={!(hasAttributes && hasValidAttributes)}
                     on:click={openWizard}
                     event="create_document">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create document</span>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create document
                 </Button>
             </div>
 
@@ -78,8 +80,8 @@
                         disabled={!(hasAttributes && hasValidAttributes)}
                         on:click={openWizard}
                         event="create_document">
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create document</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Create document
                     </Button>
                 </div>
             </div>

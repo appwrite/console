@@ -13,6 +13,8 @@
         TableRow
     } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let showCreate = false;
 
@@ -108,9 +110,9 @@
             </TableBody>
         </Table>
         <div class="u-flex u-margin-block-start-16">
-            <Button text noMargin on:click={() => (showCreate = !showCreate)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="u-text">Create variable</span>
+            <Button text on:click={() => (showCreate = !showCreate)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create variable
             </Button>
         </div>
     {:else}

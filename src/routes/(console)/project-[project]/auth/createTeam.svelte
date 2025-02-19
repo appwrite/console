@@ -58,7 +58,7 @@
                 </Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Team" bind:id />
+            <CustomId autofocus bind:show={showCustomId} name="Team" bind:id />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">

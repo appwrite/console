@@ -80,7 +80,7 @@
     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
         {#if $user.email || $user.phone}
             {#if $user.name}
-                <AvatarInitials size={48} name={$user.name} />
+                <AvatarInitials size="l" name={$user.name} />
                 <Heading tag="h6" size="7">{$user.name}</Heading>
             {:else}
                 <div class="avatar">

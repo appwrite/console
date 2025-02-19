@@ -83,7 +83,7 @@
     }
 </script>
 
-<Modal title="Create CLI deployment" size="big" bind:show headerDivider={false}>
+<Modal title="Create CLI deployment" bind:show>
     <p class="text">
         Deploy your function using the Appwrite CLI by running the following command inside your
         function's folder.
@@ -98,7 +98,7 @@
         >.
     </Alert>
 
-    <div class="editor-border">
+    <div class="editor-border box">
         <SecondaryTabs large class="u-sep-block-end u-padding-8">
             {#each ['Unix', 'CMD', 'PowerShell'] as cat}
                 <SecondaryTabsItem
@@ -118,6 +118,7 @@
                     withLineNumbers
                     withCopy
                     language="sh"
+                    class="cli-commands-code-box-no-outline"
                     label={codeSnippets[cat].language}
                     code={codeSnippets[cat].code} />
             {/if}
@@ -127,3 +128,22 @@
         <Button secondary on:click={() => (show = false)}>Close</Button>
     </svelte:fragment>
 </Modal>
+
+<style>
+    .box {
+        padding: unset;
+        background-color: unset;
+    }
+
+    .editor-border :global(.cli-commands-code-box-no-outline) {
+        margin: 1rem 0;
+        border: unset;
+        border-radius: unset;
+        background-color: unset;
+        padding: 0 var(--box-padding, 1.5rem) 0 var(--box-padding, 1.5rem);
+    }
+
+    :global(.editor-border .cli-commands-code-box-no-outline pre) {
+        background-color: unset;
+    }
+</style>

@@ -12,6 +12,13 @@
     import Repositories from '../components/repositories.svelte';
     import { installation, repository, template, templateConfig } from '../store';
     import { Box } from '$lib/components';
+    import {
+        IconAzure,
+        IconBitBucket,
+        IconGithub,
+        IconGitlab
+    } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     let selectedInstallationId: string;
     let hasInstallations: boolean;
@@ -123,20 +130,20 @@
             {:else}
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
                     <Button href={connectGitHub().toString()} fullWidth secondary>
-                        <span class="icon-github" aria-hidden="true" />
-                        <span class="text">GitHub</span>
+                        <Icon icon={IconGithub} slot="start" size="s" />
+                        GitHub
                     </Button>
                     <Button disabled fullWidth secondary>
-                        <span class="icon-gitlab" aria-hidden="true" />
-                        <span class="text">GitLab (coming soon)</span>
+                        <Icon icon={IconGitlab} slot="start" size="s" />
+                        GitLab (coming soon)
                     </Button>
                     <Button disabled fullWidth secondary>
-                        <span class="icon-bitBucket" aria-hidden="true" />
-                        <span class="text">BitBucket (coming soon)</span>
+                        <Icon icon={IconBitBucket} slot="start" size="s" />
+                        BitBucket (coming soon)
                     </Button>
                     <Button disabled fullWidth secondary>
-                        <span class="icon-azure" aria-hidden="true" />
-                        <span class="text">Azure (coming soon)</span>
+                        <Icon icon={IconAzure} slot="start" size="s" />
+                        Azure (coming soon)
                     </Button>
                 </div>
             {/if}

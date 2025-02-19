@@ -1,5 +1,9 @@
 <script lang="ts">
+    import { Remarkable } from 'remarkable';
     import Template from './template.svelte';
+    import { Keyboard, Layout } from '@appwrite.io/pink-svelte';
+
+    const markdownInstance = new Remarkable();
 
     import { Alert, AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
@@ -18,8 +22,6 @@
         },
         credentials: 'include'
     });
-
-    let question = $input;
 
     const examples = [
         'How to add platform in the console?',
@@ -87,9 +89,46 @@
 
     $: answer = parseCompletion($completion);
 
+    function renderMarkdown(answer: string): string {
+        const trimmedAnswer = answer
+            .trim()
+            .replace(/[ \t]+/g, ' ')
+            .replace(/\n[ \t]+/g, '\n')
+            .replace(/\n+/g, '\n');
+
+        // targeting links in plain text.
+        const processedAnswer = trimmedAnswer
+            .replace(/(\[(.*?)]\((.*?)\))|https?:\/\/\S+/g, (match, fullMarkdownLink, _, __) =>
+                fullMarkdownLink ? match : `[${match}](${match})`
+            )
+            .replace(/https?:\/\/\S+##/g, (url) => url.replace(/##/, '#'));
+
+        const formattedAnswer = processedAnswer.replace(
+            /(^|\n)Sources:/g,
+            (_, prefix) => `${prefix}\nSources:`
+        );
+
+        let renderedHTML = markdownInstance.render(formattedAnswer);
+
+        // add target blank to open links in a new tab.
+        renderedHTML = renderedHTML.replace(/<a\s+href="([^"]+)"/g, '<a href="$1" target="_blank"');
+
+        return renderedHTML;
+    }
+
     function getInitials(name: string) {
         const [first, last] = name.split(' ');
         return `${first?.[0] ?? ''}${last?.[0] ?? ''}`;
+    }
+
+    let previousQuestion = '';
+    $: if ($input) {
+        previousQuestion = $input;
+    }
+
+    $: if (!$isLoading && answer) {
+        // reset input if answer received.
+        $input = '';
     }
 </script>
 
@@ -142,7 +181,7 @@
         <div class="content">
             <div class="u-flex u-gap-8 u-cross-center">
                 <div class="avatar is-size-x-small">{getInitials($user.name)}</div>
-                <p class="u-opacity-75">{question}</p>
+                <p class="u-opacity-75">{previousQuestion}</p>
             </div>
             <div class="u-flex u-gap-8 u-margin-block-start-24">
                 <div class="logo">
@@ -154,7 +193,7 @@
                     {:else}
                         {#each answer as part}
                             {#if part.type === 'text'}
-                                <p>{part.value.trimStart()}</p>
+                                <p>{@html renderMarkdown(part.value.trim())}</p>
                             {:else if part.type === 'code'}
                                 {#key part.value}
                                     <div
@@ -189,48 +228,48 @@
         </div>
     {/if}
 
-    <div class="footer" slot="footer">
-        <div class="u-flex u-cross-center u-gap-4">
-            <AvatarInitials size={32} name={$user.name} />
-            <form
-                class="input-text-wrapper u-width-full-line"
-                style="--amount-of-buttons: 1;"
-                on:submit|preventDefault={(e) => {
-                    question = $input;
-                    handleSubmit(e);
-                }}>
-                <!--  svelte-ignore a11y-autofocus -->
-                <input
-                    type="text"
-                    class="input-text"
-                    placeholder="Ask a question..."
-                    autofocus
-                    bind:value={$input}
-                    disabled={$isLoading} />
-                <div class="options-list">
-                    <button
-                        class="options-list-button"
-                        aria-label="ask AI"
-                        type="submit"
-                        disabled={!$input.trim() || $isLoading}>
-                        <span class="icon-arrow-sm-right" aria-hidden="true" />
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="u-flex u-main-end u-cross-center u-gap-16 u-margin-block-start-16">
-            <div class="u-flex u-cross-center u-gap-4">
-                <kbd class="kbd">Enter</kbd>
-                <span>to search</span>
-            </div>
-            <div class="sep" />
-            <div class="u-flex u-cross-center u-gap-4">
-                <kbd class="kbd">Esc</kbd>
-                <span>to {$subPanels.length === 1 ? 'close' : 'go back'}</span>
-            </div>
-        </div>
-    </div>
+    <Layout.Stack slot="footer">
+        <Layout.Stack gap="l">
+            <Layout.Stack direction="row" gap="s">
+                <AvatarInitials size="s" name={$user.name} />
+                <form
+                    class="input-text-wrapper u-width-full-line"
+                    style="--amount-of-buttons: 1;"
+                    on:submit|preventDefault={(e) => {
+                        handleSubmit(e);
+                    }}>
+                    <!--  svelte-ignore a11y-autofocus -->
+                    <input
+                        type="text"
+                        class="input-text"
+                        placeholder="Ask a question..."
+                        autofocus
+                        bind:value={$input}
+                        disabled={$isLoading} />
+                    <div class="options-list">
+                        <button
+                            class="options-list-button"
+                            aria-label="ask AI"
+                            type="submit"
+                            disabled={!$input.trim() || $isLoading}>
+                            <span class="icon-arrow-sm-right" aria-hidden="true" />
+                        </button>
+                    </div>
+                </form>
+            </Layout.Stack>
+            <Layout.Stack direction="row" justifyContent="space-between" gap="xxl">
+                <Layout.Stack direction="row" alignItems="center" gap="xxs">
+                    <Keyboard key="Enter" autoWidth={true} /> <span>to search</span></Layout.Stack>
+                <Layout.Stack
+                    direction="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    gap="xxs">
+                    <Keyboard key="Esc" autoWidth={true} />
+                    <span>to {$subPanels.length === 1 ? 'close' : 'go back'}</span></Layout.Stack>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Layout.Stack>
 </Template>
 
 <style lang="scss">
@@ -269,9 +308,19 @@
         .answer {
             overflow: hidden;
 
-            p {
+            p:first-of-type {
                 white-space: pre-wrap;
             }
+        }
+
+        :global(.answer ul),
+        :global(.answer ol) {
+            gap: 1rem;
+            display: grid;
+        }
+
+        :global(.answer a) {
+            text-decoration: underline;
         }
     }
 

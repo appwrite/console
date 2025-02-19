@@ -37,13 +37,7 @@
     }
 </script>
 
-<Modal
-    bind:show
-    title="Add credits"
-    headerDivider={false}
-    onSubmit={addCoupon}
-    size="big"
-    bind:error>
+<Modal bind:show title="Add credits" onSubmit={addCoupon} size="big" bind:error>
     Credits will be applied automatically to your next invoice.
 
     <FormList>

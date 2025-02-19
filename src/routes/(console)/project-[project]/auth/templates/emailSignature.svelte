@@ -11,8 +11,8 @@
 </script>
 
 <CardGrid>
-    <Heading size="7" tag="h3">Email signature</Heading>
-    <p class="text">Enable or disable Appwrite branding in your email template signature.</p>
+    <svelte:fragment slot="title">Email signature</svelte:fragment>
+    Enable or disable Appwrite branding in your email template signature.
 
     <svelte:fragment slot="aside">
         <EmptyCardImageCloud source="email_signature_card" let:nextTier noAspectRatio>

@@ -1,9 +1,7 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
 
-    export let label: string | undefined = undefined;
-    export let optionalText: string | undefined = undefined;
-    export let showLabel = true;
+    export let label: string = null;
     export let id: string;
     export let name = id;
     export let value: number = null;
@@ -16,8 +14,6 @@
     export let min: number = null;
     export let max: number = null;
     export let step: number | 'any' = 1;
-    export let isMultiple = false;
-    export let fullWidth = false;
 
     let error: string;
 
@@ -59,8 +55,13 @@
     {label}
     {step}
     {nullable}
+    bind:value
     autofocus={autofocus || undefined}
     helper={error}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
-    on:input />
+    on:input>
+    <svelte:fragment slot="info">
+        <slot name="info" slot="info" />
+    </svelte:fragment>
+</Input.Number>

@@ -1,12 +1,5 @@
 <script lang="ts">
-    import {
-        CardGrid,
-        CreditCardInfo,
-        DropList,
-        DropListItem,
-        Empty,
-        Heading
-    } from '$lib/components';
+    import { CardGrid, CreditCardInfo, DropList, DropListItem, Empty } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -25,6 +18,8 @@
     import DeletePaymentModal from './deletePaymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     export let showPayment = false;
     let showDropdown = [];
@@ -43,12 +38,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Payment Methods</Heading>
-
-    <p class="text">
-        View or update your payment methods. These can be applied to any organizations you have
-        created.
-    </p>
+    <svelte:fragment slot="title">Payment methods</svelte:fragment>
+    View or update your payment methods. These can be applied to any organizations you have created.
     <svelte:fragment slot="aside">
         {#if $paymentMethods?.total && filteredMethods?.length > 0}
             <Table noMargin noStyles transparent>
@@ -87,7 +78,7 @@
                                                         {#each linkedOrgs as org}
                                                             <a
                                                                 class="u-underline u-trim"
-                                                                href={`${base}/console/organization-${org.$id}/billing`}>
+                                                                href={`${base}/organization-${org.$id}/billing`}>
                                                                 {org.name}
                                                             </a>
                                                         {/each}
@@ -106,7 +97,7 @@
                                                 on:click={() => {
                                                     showDropdown[i] = !showDropdown[i];
                                                 }}>
-                                                <span class="icon-dots-horizontal" />
+                                                <Icon icon={IconDotsHorizontal} size="s" />
                                             </Button>
                                             <svelte:fragment slot="list">
                                                 <DropListItem
@@ -138,9 +129,9 @@
                     {/each}
                 </TableBody>
             </Table>
-            <Button text noMargin on:click={() => (showPayment = true)}>
-                <span class="icon-plus" />
-                <span class="text">Add a payment method</span>
+            <Button text on:click={() => (showPayment = true)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add a payment method
             </Button>
         {:else}
             <Empty on:click={() => (showPayment = true)}>

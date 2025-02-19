@@ -2,15 +2,14 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { InputPhone, InputOTP } from '$lib/elements/forms';
-    import { Button, Form, FormItem, FormItemPart } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
     import { upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { currentPlan } from '$lib/stores/organization';
     import { isCloud, isSelfHosted } from '$lib/system';
     import MockNumbersLight from './mock-numbers-light.png';
     import MockNumbersDark from './mock-numbers-dark.png';
@@ -18,7 +17,8 @@
     import { app } from '$lib/stores/app';
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -27,7 +27,7 @@
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
     let isComponentDisabled: boolean =
-        isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+        isSelfHosted || (isCloud && !$currentPlan.supportsMockNumbers);
     let emptyStateTitle: string = isSelfHosted
         ? 'Available on Appwrite Cloud'
         : 'Upgrade to add mock phone numbers';
@@ -82,17 +82,15 @@
 
 <Form onSubmit={updateMockNumbers}>
     <CardGrid hideFooter={isComponentDisabled}>
-        <Heading tag="h6" size="7" id="variables">Mock phone numbers</Heading>
-        <p>
-            Generate <b>fictional</b> numbers to simulate phone verification when testing demo
-            accounts for submitting your application to the App Store or Google Play.
-            <a
-                href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
-                target="_blank"
-                class="u-underline"
-                rel="noopener noreferrer">
-                Learn more</a>
-        </p>
+        <svelte:fragment slot="title">Mock phone numbers</svelte:fragment>
+        Generate <b>fictional</b> numbers to simulate phone verification when testing demo accounts
+        for submitting your application to the App Store or Google Play.
+        <a
+            href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
+            target="_blank"
+            class="u-underline"
+            rel="noopener noreferrer">
+            Learn more</a>
         <svelte:fragment slot="aside">
             {#if isComponentDisabled}
                 <EmptyCardImageCloud source="email_signature_card" noAspectRatio>
@@ -150,66 +148,67 @@
             {:else if numbers?.length > 0}
                 <ul class="form-list u-gap-8">
                     {#each numbers as number, index}
-                        <FormItem isMultiple>
-                            <InputPhone
-                                id={`key-${index}`}
-                                bind:value={number.phone}
-                                fullWidth
-                                placeholder="Enter phone number"
-                                label="Phone number"
-                                showLabel={index === 0}
-                                minlength={9}
-                                maxlength={16}
-                                required>
-                                <button
-                                    slot="options"
-                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
-                                    on:click={() => (number.phone = generateNumber())}
-                                    class="options-list-button"
-                                    aria-label="regenerate text"
-                                    type="button">
+                        <InputPhone
+                            id={`key-${index}`}
+                            bind:value={number.phone}
+                            fullWidth
+                            placeholder="Enter phone number"
+                            label="Phone number"
+                            showLabel={index === 0}
+                            minlength={9}
+                            maxlength={16}
+                            required>
+                            <button
+                                slot="options"
+                                on:click={() => (number.phone = generateNumber())}
+                                class="options-list-button"
+                                aria-label="regenerate text"
+                                type="button">
+                                <Tooltip>
                                     <span class="icon-refresh" aria-hidden="true"></span>
-                                </button>
-                            </InputPhone>
-                            <InputOTP
-                                id={`value-${index}`}
-                                bind:value={number.otp}
-                                fullWidth
-                                placeholder="Enter value"
-                                label="Verification code"
-                                maxlength={6}
-                                pattern={'^[0-9]{6}$'}
-                                patternError="The value must contain 6 digits"
-                                showLabel={index === 0}
-                                required>
-                                <button
-                                    slot="options"
-                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
-                                    on:click={() => (number.otp = generateOTP())}
-                                    class="options-list-button"
-                                    aria-label="regenerate text"
-                                    type="button">
-                                    <span class="icon-refresh" aria-hidden="true"></span>
-                                </button>
-                            </InputOTP>
-                            <FormItemPart>
-                                <Button
-                                    text
-                                    disabled={numbers.length === 0}
-                                    class={'u-padding-4 ' +
-                                        (index === 0 ? 'u-margin-block-start-24' : '')}
-                                    on:click={() => {
-                                        deletePhoneNumber(index);
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </Button>
-                            </FormItemPart>
-                        </FormItem>
+                                    <span slot="tooltip">Regenerate</span>
+                                </Tooltip>
+                            </button>
+                        </InputPhone>
+                        <InputOTP
+                            id={`value-${index}`}
+                            bind:value={number.otp}
+                            fullWidth
+                            placeholder="Enter value"
+                            label="Verification code"
+                            maxlength={6}
+                            pattern={'^[0-9]{6}$'}
+                            patternError="The value must contain 6 digits"
+                            showLabel={index === 0}
+                            required>
+                            <button
+                                slot="options"
+                                on:click={() => (number.otp = generateOTP())}
+                                class="options-list-button"
+                                aria-label="regenerate text"
+                                type="button">
+                                <Tooltip
+                                    ><span class="icon-refresh" aria-hidden="true"></span><span
+                                        slot="tooltip">Regenerate</span
+                                    ></Tooltip>
+                            </button>
+                        </InputOTP>
+                        <Button
+                            text
+                            disabled={numbers.length === 0}
+                            class={'u-padding-4 ' + (index === 0 ? 'u-margin-block-start-24' : '')}
+                            on:click={() => {
+                                deletePhoneNumber(index);
+                            }}>
+                            <Tooltip
+                                ><span class="icon-refresh" aria-hidden="true"></span><span
+                                    slot="tooltip">Regenerate</span
+                                ></Tooltip>
+                        </Button>
                     {/each}
                 </ul>
                 {#if numbers?.length < 10}
                     <Button
-                        noMargin
                         text
                         on:click={() =>
                             addPhoneNumber({
@@ -217,8 +216,8 @@
                                 otp: generateOTP()
                             })}
                         disabled={numbers.length >= 10}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Add number</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add number
                     </Button>
                 {/if}
             {:else}

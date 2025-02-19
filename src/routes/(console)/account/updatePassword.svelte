@@ -5,6 +5,7 @@
     import { Button, Form, FormList, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Link } from '@appwrite.io/pink-svelte';
 
     let newPassword: string = null;
     let oldPassword: string = null;
@@ -30,10 +31,9 @@
 
 <Form onSubmit={updatePassword}>
     <CardGrid>
-        <Heading tag="h2" size="7">Password</Heading>
-        <p class="text">
-            Forgot your password? <a class="link" href={`${base}/recover`}>Recover your password</a>
-        </p>
+        <svelte:fragment slot="title">Password</svelte:fragment>
+        Forgot your password? <Link.Anchor href={`${base}/recover`}
+            >Recover your password</Link.Anchor>
 
         <svelte:fragment slot="aside">
             <FormList>
@@ -41,13 +41,13 @@
                     id="oldPassword"
                     label="Old password"
                     placeholder="Enter password"
-                    showPasswordButton={true}
+                    required
                     bind:value={oldPassword} />
                 <InputPassword
                     id="newPassword"
                     label="New password"
                     placeholder="Enter password"
-                    showPasswordButton={true}
+                    required
                     bind:value={newPassword} />
             </FormList>
         </svelte:fragment>

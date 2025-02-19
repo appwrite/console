@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, DropList, DropListItem, Empty, Heading } from '$lib/components';
+    import { CardGrid, DropList, DropListItem, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -20,6 +20,8 @@
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
+    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     let show = false;
     let showEdit = false;
@@ -38,12 +40,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Billing Address</Heading>
-
-    <p class="text">
-        View or update your billing address. This address will be included in your invoices from
-        Appwrite.
-    </p>
+    <svelte:fragment slot="title">Billing Address</svelte:fragment>
+    View or update your billing address. This address will be included in your invoices from Appwrite.
     <svelte:fragment slot="aside">
         {#if $addressList.total && countryList?.total}
             <Table noMargin noStyles transparent>
@@ -91,7 +89,7 @@
                                                 {#each linkedOrgs as org}
                                                     <a
                                                         class="u-underline u-trim"
-                                                        href={`${base}/console/organization-${org.$id}/billing`}>
+                                                        href={`${base}/organization-${org.$id}/billing`}>
                                                         {org.name}
                                                     </a>
                                                 {/each}
@@ -112,7 +110,7 @@
                                         on:click={() => {
                                             showDropdown[i] = !showDropdown[i];
                                         }}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                                        <Icon icon={IconDotsHorizontal} size="s" />
                                     </Button>
                                     <svelte:fragment slot="list">
                                         <DropListItem
@@ -142,9 +140,9 @@
                 </TableBody>
             </Table>
 
-            <Button text noMargin on:click={() => (show = true)}>
-                <span class="icon-plus" />
-                <span class="text">Add a billing address</span>
+            <Button text on:click={() => (show = true)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add a billing address
             </Button>
         {:else}
             <Empty on:click={() => (show = true)}>

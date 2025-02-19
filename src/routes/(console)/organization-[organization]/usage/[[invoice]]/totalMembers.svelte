@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
     import { AvatarInitials, CardGrid, Heading, Paginator } from '$lib/components';
     import { EmptyCardCloud } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
@@ -18,6 +17,8 @@
     import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { newMemberModal, organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
 
     export let members: Models.MembershipList;
 
@@ -26,9 +27,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Members</Heading>
-
-    <p class="text">The number of members in your organization.</p>
+    <svelte:fragment slot="title">Members</svelte:fragment>
+    The number of members in your organization.
     <svelte:fragment slot="aside">
         {#if $organization.billingPlan !== BillingPlan.FREE}
             <div class="u-flex u-flex-vertical">
@@ -38,16 +38,17 @@
                         <span class="body-text-1 u-bold">Members</span>
                     </p>
                     <Button secondary on:click={() => newMemberModal.set(true)}>
-                        <span class="icon-plus"></span> <span class="text">Invite</span>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Invite
                     </Button>
                 </div>
                 <p class="body-text-2">
                     Unlimited
-                    <span
-                        class="icon-info"
-                        use:tooltip={{
-                            content: `You can add unlimited organization members on the ${tierToPlan($organization.billingPlan).name} plan ${$organization.billingPlan === BillingPlan.PRO ? `for ${formatCurrency(plan.addons.member.price)} each per billing period.` : '.'}`
-                        }}></span>
+                    <Tooltip>
+                        <span class="icon-info"></span>
+                        <span slot="tooltip"
+                            >{`You can add unlimited organization members on the ${tierToPlan($organization.billingPlan).name} plan ${$organization.billingPlan === BillingPlan.PRO ? `for ${formatCurrency(plan.addons.member.price)} each per billing period.` : '.'}`}</span>
+                    </Tooltip>
                 </p>
             </div>
             <Paginator
@@ -64,7 +65,7 @@
                             <TableRow>
                                 <TableCell title="name">
                                     <div class="u-flex u-gap-12 u-cross-center">
-                                        <AvatarInitials size={32} name={member.userName} />
+                                        <AvatarInitials size="s" name={member.userName} />
                                         <span class="text u-trim">
                                             {member.userName ? member.userName : member.userEmail}
                                         </span>

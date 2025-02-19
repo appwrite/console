@@ -45,7 +45,7 @@
     let tab = 'details' as 'details' | 'logs';
 </script>
 
-<Modal bind:show size="big">
+<Modal bind:show>
     <svelte:fragment slot="title">
         {#if migration.status === 'failed'}
             Resolve migration issues

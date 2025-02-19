@@ -14,6 +14,8 @@
     import Actions from '../actions.svelte';
     import { topicsById } from '../store';
     import type { Models } from '@appwrite.io/console';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     let showDropdown = false;
     let showTopics = false;
@@ -69,7 +71,7 @@
                     on:addTargets={addTargets}
                     on:addTopics={addTopics}>
                     <Button secondary icon on:click={() => (showDropdown = !showDropdown)}>
-                        <i class="icon-plus" />
+                        <Icon icon={IconPlus} size="s" />
                     </Button>
                 </Actions>
                 <div class="common-section">
@@ -146,9 +148,9 @@
             bind:showTopics
             on:addTargets={addTargets}
             on:addTopics={addTopics}>
-            <Button text noMargin on:click={() => (showDropdown = !showDropdown)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add</span>
+            <Button text on:click={() => (showDropdown = !showDropdown)}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add
             </Button>
         </Actions>
     {/if}

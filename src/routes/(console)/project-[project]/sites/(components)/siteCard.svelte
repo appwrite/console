@@ -2,19 +2,32 @@
     import { Card, Trim } from '$lib/components/index.js';
     import Link from '$lib/elements/link.svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { calculateTime } from '$lib/helpers/timeConversion';
+    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import type { Models } from '@appwrite.io/console';
-    import { Icon, Image, Layout, Status, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Divider,
+        Icon,
+        Image,
+        Layout,
+        Status,
+        Tooltip,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import { Button } from '$lib/elements/forms';
-    import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
+    import { IconExternalLink, IconInfo, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
-    import { consoleVariables } from '$routes/(console)/store';
+    import { protocol } from '$routes/(console)/store';
+    import { app } from '$lib/stores/app';
+    import { base } from '$app/paths';
+    import { isCloud } from '$lib/system';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList = { total: 0, rules: [] };
+    export let hideQRCode = false;
 
     let show = false;
     const siteUrl =
@@ -23,100 +36,185 @@
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
 </script>
 
-<Card padding="xs">
-    <Layout.Stack gap="m" direction="row">
-        <Image
-            width={445}
-            height={280}
-            src={`https://placehold.co/600x400/111/bbb?text=Screenshot+coming+soon&font=inter`}
-            alt="Screenshot" />
-        <Layout.Stack>
-            <Layout.Stack direction="row" alignItems="flex-start">
-                <Layout.Stack direction="row" gap="xl">
-                    {#if deployment.status === 'failed'}
-                        <Layout.Stack gap="xs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
-                                Status
-                            </Typography.Text>
-                            <Typography.Text variant="m-400">
-                                <Status status={deployment.status} label={deployment.status} />
-                            </Typography.Text>
-                        </Layout.Stack>
-                    {:else}
-                        <Layout.Stack gap="xs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
-                                Deployed
-                            </Typography.Text>
-                            <DeploymentCreatedBy {deployment} />
-                        </Layout.Stack>
+<Card padding="s" radius="m">
+    <Layout.Stack gap="l">
+        <!-- <Layout.Stack gap="xl" direction="row" alignItems="center"> -->
+        <div class="card-grid">
+            <Image
+                border
+                radius="s"
+                ratio="16/9"
+                style="width: 100%; align-self: start"
+                src={deployment?.preview ||
+                    ($app.themeInUse === 'dark'
+                        ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                        : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                alt="Screenshot" />
+
+            <Layout.Stack gap="xl">
+                <Layout.Stack direction="row" alignItems="flex-start">
+                    <Layout.Stack direction="row" gap="xl">
+                        {#if deployment.status === 'failed'}
+                            <Layout.Stack gap="xxs" inline>
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--color-fgcolor-neutral-tertiary">
+                                    Status
+                                </Typography.Text>
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--color-fgcolor-neutral-primary">
+                                    <Status status={deployment.status} label={deployment.status} />
+                                </Typography.Text>
+                            </Layout.Stack>
+                        {:else}
+                            <Layout.Stack gap="xxs" inline>
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--color-fgcolor-neutral-tertiary">
+                                    Deployed
+                                </Typography.Text>
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--color-fgcolor-neutral-primary">
+                                    <DeploymentCreatedBy {deployment} />
+                                </Typography.Text>
+                            </Layout.Stack>
+                        {/if}
+                    </Layout.Stack>
+                    {#if siteUrl && !hideQRCode}
+                        <Button icon secondary on:click={() => (show = true)}>
+                            <Icon icon={IconQrcode} />
+                        </Button>
                     {/if}
                 </Layout.Stack>
-                {#if siteUrl}
-                    <Button icon text on:click={() => (show = true)}
-                        ><Icon icon={IconQrcode} /></Button>
-                {/if}
-            </Layout.Stack>
-            {#if proxyRuleList?.total}
-                <Layout.Stack gap="xs">
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                        Domains
-                    </Typography.Text>
-                    <DeploymentDomains domains={proxyRuleList} />
-                </Layout.Stack>
-            {:else if deployment.domain}
-                <Layout.Stack gap="xs">
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                        Domains
-                    </Typography.Text>
-                    <Link
-                        external
-                        href={`${
-                            $consoleVariables?._APP_OPTIONS_FORCE_HTTPS ? 'https://' : 'http://'
-                        }${deployment.domain}`}
-                        variant="muted">
-                        <Layout.Stack gap="xxs" direction="row" alignItems="center">
-                            <Trim alternativeTrim>
-                                {deployment.domain}
-                            </Trim>
-                            <Icon icon={IconExternalLink} size="s" />
-                        </Layout.Stack>
-                    </Link>
-                </Layout.Stack>
-            {/if}
-            <Layout.Stack gap="xl" direction="row">
-                {#if deployment?.buildTime}
-                    <Layout.Stack gap="xs" inline>
+                {#if proxyRuleList?.total}
+                    <Layout.Stack gap="xxs">
                         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                            Build time
+                            Domains
                         </Typography.Text>
-                        <Typography.Text variant="m-400">
-                            {calculateTime(deployment.buildTime)}
+                        <DeploymentDomains domains={proxyRuleList} />
+                    </Layout.Stack>
+                {:else if deployment.domain}
+                    <Layout.Stack gap="xxs">
+                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                            Domains
                         </Typography.Text>
+                        <Link external href={`${$protocol}${deployment.domain}`} variant="muted">
+                            <Layout.Stack gap="xxs" direction="row" alignItems="center">
+                                <Trim alternativeTrim>
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--color-fgcolor-neutral-primary">
+                                        {deployment.domain}
+                                    </Typography.Text>
+                                </Trim>
+                                <Icon icon={IconExternalLink} size="s" />
+                            </Layout.Stack>
+                        </Link>
                     </Layout.Stack>
                 {/if}
-                <Layout.Stack gap="xs" inline>
+                <Layout.Stack gap="xl" direction="row" wrap="wrap">
+                    {#if deployment?.buildTime}
+                        <Layout.Stack gap="xxs" inline>
+                            <Typography.Text
+                                variant="m-400"
+                                color="--color-fgcolor-neutral-tertiary">
+                                Build time
+                            </Typography.Text>
+                            <Typography.Text
+                                variant="m-400"
+                                color="--color-fgcolor-neutral-primary">
+                                {formatTimeDetailed(deployment.buildTime)}
+                            </Typography.Text>
+                        </Layout.Stack>
+                    {/if}
+                    <Layout.Stack gap="xxs" inline>
+                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                            Total size
+                        </Typography.Text>
+                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
+                            {totalSize.value}{totalSize.unit}
+                        </Typography.Text>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs" inline>
+                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                            <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                Global CDN <Tooltip>
+                                    <Icon icon={IconInfo} size="s" />
+                                    <span slot="tooltip">
+                                        Optimized speed by caching content on servers closer to
+                                        users.
+                                    </span>
+                                </Tooltip>
+                            </Layout.Stack>
+                        </Typography.Text>
+                        <Layout.Stack inline alignItems="flex-start">
+                            <Badge
+                                size="xs"
+                                variant="secondary"
+                                type={isCloud ? 'success' : null}
+                                content={isCloud ? 'Connected' : 'Available on Cloud'} />
+                        </Layout.Stack>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxs" inline>
+                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                            <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                DDoS protection <Tooltip>
+                                    <Icon icon={IconInfo} size="s" />
+                                    <span slot="tooltip">
+                                        Safeguards your site by detecting and blocking malicious
+                                        traffic.
+                                    </span>
+                                </Tooltip>
+                            </Layout.Stack>
+                        </Typography.Text>
+                        <Layout.Stack inline alignItems="flex-start">
+                            <Badge
+                                size="xs"
+                                variant="secondary"
+                                type={isCloud ? 'success' : null}
+                                content={isCloud ? 'Connected' : 'Available on Cloud'} />
+                        </Layout.Stack>
+                    </Layout.Stack>
+                </Layout.Stack>
+                <Layout.Stack gap="xxs">
                     <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                        Total size
+                        Source
                     </Typography.Text>
-                    <Typography.Text variant="m-400">
-                        {totalSize.value}{totalSize.unit}
+                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
+                        <DeploymentSource {deployment} />
                     </Typography.Text>
                 </Layout.Stack>
             </Layout.Stack>
-            <Layout.Stack gap="xs">
-                <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                    Source
-                </Typography.Text>
-                <DeploymentSource {deployment} />
+            <!-- </Layout.Stack> -->
+        </div>
+        {#if $$slots.footer}
+            <span
+                style="margin-left: calc(-1* var(--space-7));margin-right: calc(-1* var(--space-7));width:auto;">
+                <Divider />
+            </span>
+            <Layout.Stack direction="row-reverse">
+                <slot name="footer" />
             </Layout.Stack>
-        </Layout.Stack>
+        {/if}
     </Layout.Stack>
 </Card>
 
 {#if show && siteUrl}
     <OpenOnMobileModal bind:show siteURL={siteUrl} />
 {/if}
+
+<style lang="scss">
+    .card-grid {
+        display: grid;
+        grid-template-columns: 45% 55%;
+        // justify-content: center;
+        align-items: center;
+        gap: var(--gap-xl);
+
+        @media (max-width: 930px) {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

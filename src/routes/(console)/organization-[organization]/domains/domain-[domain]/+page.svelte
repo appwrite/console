@@ -1,0 +1,110 @@
+<script lang="ts">
+    import { Container } from '$lib/layout';
+    import {
+        ActionMenu,
+        Card,
+        Empty,
+        Icon,
+        InlineCode,
+        Layout,
+        Button as PinkButton,
+        Popover
+    } from '@appwrite.io/pink-svelte';
+    import DomainMetrics from './domainMetrics.svelte';
+    import { base } from '$app/paths';
+    import { app } from '$lib/stores/app';
+    import { Button } from '$lib/elements/forms';
+    import { IconDownload, IconPlus, IconUpload } from '@appwrite.io/pink-icons-svelte';
+    import { ViewSelector } from '$lib/components';
+    import { View } from '$lib/helpers/load';
+    import { columns } from './store';
+    import CreateRecordModal from './createRecordModal.svelte';
+    import Table from './table.svelte';
+    import AddPresetModal from './addPresetModal.svelte';
+
+    export let data;
+
+    let showCreate = false;
+    let showPresetModal = false;
+    let selectedPreset = '';
+
+    const presets = ['Zoho', 'Mailgun', 'Outlook', 'Proton Mail', 'iCloud', 'Google Workspace'];
+</script>
+
+<Container>
+    <Layout.Stack gap="xxl">
+        <DomainMetrics domain={data.domain} />
+
+        <Layout.Stack gap="l">
+            {#if data.records.total}
+                <Layout.Stack direction="row" justifyContent="space-between">
+                    <Layout.Stack direction="row" gap="s" inline>
+                        <Button secondary>
+                            <Icon icon={IconUpload} size="s" slot="start" />
+                            Import zone file
+                        </Button>
+                        <PinkButton.Button variant="secondary" icon>
+                            <Icon icon={IconDownload} size="s" />
+                        </PinkButton.Button>
+                    </Layout.Stack>
+                    <Layout.Stack direction="row" gap="s" inline>
+                        <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                        <Popover let:toggle>
+                            <Button secondary on:click={toggle}>Add preset</Button>
+                            <svelte:fragment slot="tooltip">
+                                <ActionMenu.Root>
+                                    {#each presets as preset}
+                                        <ActionMenu.Item.Button
+                                            on:click={() => {
+                                                selectedPreset = preset;
+                                                showPresetModal = true;
+                                            }}>{preset}</ActionMenu.Item.Button>
+                                    {/each}
+                                </ActionMenu.Root>
+                            </svelte:fragment>
+                        </Popover>
+                        <Button size="s" on:click={() => (showCreate = true)}>
+                            <Icon size="s" icon={IconPlus} slot="start" />
+                            Create record
+                        </Button>
+                    </Layout.Stack>
+                </Layout.Stack>
+                <Table {data} />
+            {:else}
+                <Card.Base padding="none">
+                    <Empty
+                        src={$app.themeInUse === 'dark'
+                            ? `${base}/images/domains/empty-records-dark.svg`
+                            : `${base}/images/domains/empty-records-light.svg`}
+                        title="Get started with Appwrite DNS">
+                        <span slot="description">
+                            Navigate to your domain provider and update the nameservers to <InlineCode
+                                code="ns1.appwrite-dns.com"
+                                size="s" /> and <InlineCode code="ns2.appwrite-dns.com" size="s" />.
+                            Note that DNS changes may take time to propagate fully.
+                        </span>
+                        <svelte:fragment slot="actions">
+                            <Button
+                                external
+                                href="#"
+                                text
+                                event="empty_documentation"
+                                size="s"
+                                ariaLabel="add domain">Documentation</Button>
+
+                            <Button secondary size="s">Verify DNS setup</Button>
+                        </svelte:fragment>
+                    </Empty>
+                </Card.Base>
+            {/if}
+        </Layout.Stack>
+    </Layout.Stack>
+</Container>
+
+{#if showCreate}
+    <CreateRecordModal bind:show={showCreate} />
+{/if}
+
+{#if showPresetModal}
+    <AddPresetModal bind:show={showPresetModal} {selectedPreset} />
+{/if}

@@ -19,11 +19,11 @@
         "e2e:ui": "playwright test tests/e2e --ui"
     },
     "dependencies": {
-        "@appwrite.io/console": "https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@5a49580",
-        "@appwrite.io/pink": "0.25.0",
+        "@appwrite.io/console": "https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ae1eb53",
         "@appwrite.io/pink-icons": "0.25.0",
-        "@appwrite.io/pink-icons-svelte": "1.0.0-next.7",
-        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@72885ea",
+        "@appwrite.io/pink-icons-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@35f29290",
+        "@appwrite.io/pink-legacy": "^1.0.1",
+        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@35f29290",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",
@@ -40,12 +40,13 @@
         "plausible-tracker": "^0.3.9",
         "pretty-bytes": "^6.1.1",
         "prismjs": "^1.29.0",
+        "remarkable": "^2.0.1",
         "svelte-confetti": "^1.4.0",
         "tippy.js": "^6.3.7"
     },
     "devDependencies": {
         "@melt-ui/pp": "^0.3.2",
-        "@melt-ui/svelte": "^0.83.0",
+        "@melt-ui/svelte": "^0.86.2",
         "@playwright/test": "^1.49.0",
         "@sveltejs/adapter-static": "^3.0.6",
         "@sveltejs/kit": "^2.8.1",
@@ -56,10 +57,10 @@
         "@testing-library/user-event": "^14.5.2",
         "@types/deep-equal": "^1.0.4",
         "@types/prismjs": "^1.26.5",
+        "@types/remarkable": "^2.0.8",
         "@typescript-eslint/eslint-plugin": "^7.18.0",
         "@typescript-eslint/parser": "^7.18.0",
         "@vitest/ui": "^1.6.0",
-        "ansicolor": "^2.0.3",
         "eslint": "^8.57.1",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-svelte": "^2.46.0",
@@ -79,5 +80,5 @@
         "vitest": "^1.6.0"
     },
     "type": "module",
-    "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf"
+    "packageManager": "pnpm@10.4.1"
 }

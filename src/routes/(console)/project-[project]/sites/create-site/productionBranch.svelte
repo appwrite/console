@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Button, InputChoice, InputSelectSearch, InputText } from '$lib/elements/forms';
-    import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
+    import { Button, InputSelect, InputText } from '$lib/elements/forms';
+    import { Fieldset, Layout, Selector } from '@appwrite.io/pink-svelte';
     import SelectRootModal from '../(components)/selectRootModal.svelte';
 
     export let branch: string;
@@ -12,20 +12,17 @@
 </script>
 
 <Fieldset legend="Branch">
-    <Layout.Stack gap="l">
-        <InputSelectSearch
-            required={true}
+    <Layout.Stack gap="xl">
+        <InputSelect
+            required
             id="branch"
             label="Production branch"
             placeholder="Select branch"
-            hideRequired
+            isSearchable
             bind:value={branch}
-            bind:search={branch}
             on:select={(event) => {
                 branch = event.detail.value;
             }}
-            interactiveOutput
-            name="branch"
             {options} />
         <Layout.Stack direction="row" gap="s" alignItems="flex-end">
             <InputText
@@ -35,7 +32,13 @@
                 bind:value={rootDir} />
             <Button secondary size="s" on:click={() => (show = true)}>Select</Button>
         </Layout.Stack>
-        <InputChoice id="silentMode" label="Silent mode" bind:value={silentMode} />
+
+        <Selector.Checkbox
+            size="s"
+            id="silentMode"
+            label="Silent mode"
+            description="If selected, comments will not be created when pushing changes to this repository."
+            bind:checked={silentMode} />
     </Layout.Stack>
 </Fieldset>
 

@@ -2,6 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 import { sdk } from '$lib/stores/sdk';
+import { VARS } from '$lib/system';
 
 const handleGithubEducationMembership = async (name: string, email: string) => {
     const result = await sdk.forConsole.billing.setMembership('github-student-developer');
@@ -41,14 +42,13 @@ export const load: PageLoad = async ({ parent, url }) => {
             redirect(303, `${base}/organization-${teamId}${url.search}`);
         }
     } else {
-        redirect(303, `${base}/onboarding${url.search}`);
+        redirect(303, `${base}/onboarding/create-project${url.search}`);
     }
 };
 
 const setToGhStudentMailingList = async (name: string, email: string) => {
-    const path = `/mailinglists/gh-student`;
     const body = name !== '' ? { name, email } : { email };
-    return fetch('https://growth.appwrite.io/v1' + path, {
+    return fetch(`${VARS.GROWTH_ENDPOINT}/mailinglists/gh-student`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {

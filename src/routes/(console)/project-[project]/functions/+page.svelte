@@ -1,7 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import {
         CardContainer,
@@ -28,6 +27,8 @@
     import { functionsList } from './store';
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -76,7 +77,7 @@
                 $wizard.show ||
                 isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total) ||
                 !$canWriteFunctions,
-            icon: 'plus',
+            icon: IconPlus,
             group: 'functions'
         }
     ]);
@@ -89,7 +90,7 @@
         title="Functions"
         buttonText={$canWriteFunctions ? 'Create function' : ''}
         buttonEvent="create_function"
-        buttonHref={`${base}/project-${project}/functions/create-function`}
+        buttonMethod={openWizard}
         total={data.functions.total} />
 
     {#if data.functions.total}
@@ -113,13 +114,12 @@
                     <svelte:fragment slot="icons">
                         {#if func.schedule}
                             <li>
-                                <span
-                                    class="icon-clock"
-                                    aria-hidden="true"
-                                    use:tooltip={{
-                                        content: `Next execution:
-                                        ${getNextScheduledExecution(func)}`
-                                    }} />
+                                <Tooltip>
+                                    <span class="icon-clock" aria-hidden="true" />
+                                    <span slot="tooltip"
+                                        >{`Next execution:
+                                        ${getNextScheduledExecution(func)}`}</span>
+                                </Tooltip>
                             </li>
                         {/if}
                     </svelte:fragment>

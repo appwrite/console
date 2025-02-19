@@ -21,6 +21,7 @@ export const load = async ({ params, depends, url, route, parent }) => {
         limit,
         query,
         search,
+        site,
         logs: await sdk.forProject.sites.listLogs(
             params.site,
             [
@@ -30,7 +31,6 @@ export const load = async ({ params, depends, url, route, parent }) => {
                 ...parsedQueries.values()
             ],
             search
-        ),
-        site
+        )
     };
 };

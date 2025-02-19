@@ -1,23 +1,17 @@
 <script lang="ts">
-    import { SvelteComponent } from 'svelte';
     import { Input } from '@appwrite.io/pink-svelte';
 
     export let id: string;
     export let label: string;
-    export let showLabel = true;
     export let value = '';
+    export let helper = '';
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
     export let autofocus = false;
-    export let meter = false;
     export let autocomplete = false;
-    export let showPasswordButton = false;
     export let minlength = 8;
     export let maxlength: number = null;
-    export let popover: typeof SvelteComponent<unknown> = null;
-    export let popoverProps: Record<string, unknown> = {};
-    export let fullWidth = false;
 
     let error: string;
 
@@ -51,6 +45,6 @@
     state={error ? 'error' : 'default'}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
-    helper={error}
+    helper={helper || error}
     on:invalid={handleInvalid}
     bind:value />

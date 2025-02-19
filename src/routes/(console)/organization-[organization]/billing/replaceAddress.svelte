@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Modal, RadioBoxes } from '$lib/components';
-    import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
+    import { Alert, Modal, RadioBoxes } from '$lib/components';
+    import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
@@ -10,6 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
+    import { base } from '$app/paths';
 
     export let show = false;
     let addresses: AddressesList;
@@ -102,13 +103,7 @@
     }
 </script>
 
-<Modal
-    bind:show
-    bind:error
-    onSubmit={handleSubmit}
-    size="big"
-    headerDivider={false}
-    title="Replace billing address">
+<Modal bind:show bind:error onSubmit={handleSubmit} title="Replace billing address">
     <p class="text">Replace the existing billing address for your organization.</p>
     {#if addresses?.total}
         <FormList>
@@ -140,7 +135,7 @@
                 <svelte:fragment slot="new">
                     <span style="padding-inline:0.25rem">Add a new billing address</span>
                 </svelte:fragment>
-                <FormList gap={16} class="u-margin-block-start-24">
+                <FormList>
                     <InputSelect
                         bind:value={country}
                         {options}
@@ -165,30 +160,35 @@
                         label="City or suburb"
                         placeholder="Enter your city"
                         required />
-                    <FormItem isMultiple>
-                        <InputText
-                            isMultiple
-                            fullWidth
-                            bind:value={state}
-                            id="state"
-                            label="State"
-                            placeholder="Enter your state"
-                            required />
-                        <InputText
-                            isMultiple
-                            fullWidth
-                            bind:value={postalCode}
-                            id="zip"
-                            label="Postal code"
-                            placeholder="Enter postal code" />
-                    </FormItem>
+                    <InputText
+                        bind:value={state}
+                        id="state"
+                        label="State"
+                        placeholder="Enter your state"
+                        required />
+                    <InputText
+                        bind:value={postalCode}
+                        id="zip"
+                        label="Postal code"
+                        placeholder="Enter postal code" />
                 </FormList>
             </RadioBoxes>
         </FormList>
+    {:else}
+        <Alert
+            buttons={[
+                {
+                    slot: 'Add address',
+                    href: `${base}/account/payments`
+                }
+            ]}>There are no billing addresses linked to your account.</Alert>
     {/if}
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit disabled={selectedAddress === $organization.billingAddressId}>
+        <Button
+            secondary
+            submit
+            disabled={selectedAddress === $organization.billingAddressId || !addresses?.total}>
             Save
         </Button>
     </svelte:fragment>

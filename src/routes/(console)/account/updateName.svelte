@@ -36,11 +36,16 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h2" size="7">Name</Heading>
+        <svelte:fragment slot="title">Name</svelte:fragment>
 
         <svelte:fragment slot="aside">
             <FormList>
-                <InputText id="name" label="Name" placeholder="Enter name" bind:value={name} />
+                <InputText
+                    id="name"
+                    label="Name"
+                    placeholder="Enter name"
+                    bind:value={name}
+                    required />
             </FormList>
         </svelte:fragment>
 

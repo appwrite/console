@@ -15,17 +15,20 @@
     import { loading } from '$routes/store';
     import { Root } from '@appwrite.io/pink-svelte';
     import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
+    import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
+    import { feedback } from '$lib/stores/feedback';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
             case 'dark':
-                return isCloud ? ThemeDarkCloud : ThemeDark;
+                return true ? ThemeDarkCloud : ThemeDark; //TODO: remove after cloud instance is live
             case 'light':
-                return isCloud ? ThemeLightCloud : ThemeLight;
+                return true ? ThemeLightCloud : ThemeLight;
         }
     }
 
     onMount(async () => {
+        updateViewport();
         // handle sources
         if (isCloud) {
             const urlParams = $page.url.searchParams;
@@ -77,6 +80,13 @@
         }
 
         loading.set(false);
+
+        isSmallViewport.subscribe(() => {
+            // reset the feedback form if the viewport changed else it requires dual click.
+            if ($feedback.show) {
+                feedback.toggleFeedback();
+            }
+        });
     });
 
     afterNavigate((navigation) => {
@@ -88,22 +98,41 @@
     $: {
         if (browser) {
             const isCloudClass = isCloud ? 'is-cloud' : '';
+
             if ($app.theme === 'auto') {
                 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (darkThemeMq.matches) {
-                    document.body.setAttribute('class', `theme-dark ${isCloudClass}`);
+                    document.body.setAttribute('class', `theme-dark ${isCloudClass} no-transition`);
                     $app.themeInUse = 'dark';
                 } else {
-                    document.body.setAttribute('class', `theme-light ${isCloudClass}`);
+                    document.body.setAttribute(
+                        'class',
+                        `theme-light ${isCloudClass} no-transition`
+                    );
                     $app.themeInUse = 'light';
                 }
             } else {
-                document.body.setAttribute('class', `theme-${$app.theme} ${isCloudClass}`);
+                document.body.setAttribute(
+                    'class',
+                    `theme-${$app.theme} ${isCloudClass} no-transition`
+                );
                 $app.themeInUse = $app.theme;
             }
+            requestAnimationFrame(() => {
+                document.body.classList.remove('no-transition');
+            });
         }
     }
 </script>
+
+<svelte:window on:resize={updateViewport} on:load={updateViewport} />
+
+<svelte:head>
+    <!-- {#if isCloud} -->
+    <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
+    <!-- {/if} -->
+    <link rel="stylesheet" href={`${base}/fonts/main.css`} />
+</svelte:head>
 
 <Root theme={resolveTheme($app.themeInUse)}>
     <Notifications />
@@ -117,7 +146,13 @@
 </Root>
 
 <style lang="scss" global>
-    @use '@appwrite.io/pink/src/abstract/variables/devices';
+    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+
+    .no-transition {
+        * {
+            transition: none !important;
+        }
+    }
 
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);

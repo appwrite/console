@@ -11,7 +11,6 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { tooltip } from '$lib/actions/tooltip';
     import RestoreModal from './restoreModal.svelte';
     import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
@@ -27,6 +26,7 @@
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
     import { Dependencies } from '$lib/constants';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -142,7 +142,7 @@
         <TableCellHead width={192}>Backups</TableCellHead>
         <TableCellHead width={80}>Size</TableCellHead>
         <TableCellHead width={120}>Status</TableCellHead>
-        <TableCellHead width={80}>Policy</TableCellHead>
+        <TableCellHead width={120}>Policy</TableCellHead>
         <TableCellHead width={48} />
     </TableHeader>
     <TableBody>
@@ -155,12 +155,12 @@
             <TableRow>
                 <TableCellCheck id={backup.$id} bind:selectedIds={selectedBackups} />
                 <TableCell title={backup.$createdAt}>
-                    <span
-                        use:tooltip={{
-                            content: timeFromNow(backup.$createdAt)
-                        }}>
-                        {cleanBackupName(backup)}
-                    </span>
+                    <Tooltip>
+                        <span>
+                            {cleanBackupName(backup)}
+                        </span>
+                        <span slot="tooltip">{timeFromNow(backup.$createdAt)}</span>
+                    </Tooltip>
                 </TableCell>
                 <TableCell title="Backup Size">
                     {#if backup.status === 'completed'}
@@ -184,14 +184,15 @@
                 </TableCell>
                 <TableCell title="Backup Policy">
                     <div class="u-flex u-main-space-between u-cross-baseline">
-                        <span
-                            use:tooltip={{
-                                content: policy
+                        <Tooltip>
+                            <span>
+                                {policy?.name || 'Manual'}
+                            </span>
+                            <span slot="tooltip"
+                                >{policy
                                     ? `Retained until: ${formattedRetainedUntil}`
-                                    : `Retained forever`
-                            }}>
-                            {policy?.name || 'Manual'}
-                        </span>
+                                    : `Retained forever`}</span>
+                        </Tooltip>
                     </div>
                 </TableCell>
 
@@ -273,10 +274,7 @@
 
 <Modal
     title="Delete {selectedBackups.length ? 'backups' : 'backup'}"
-    icon="exclamation"
-    state="warning"
     bind:show={showDelete}
-    headerDivider={false}
     onSubmit={deleteBackups}>
     <p class="text" data-private>
         Are you sure you want to delete
@@ -294,7 +292,7 @@
     </svelte:fragment>
 </Modal>
 
-<Modal headerDivider={true} title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
+<Modal title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
     <Card
         isTile
         class="restore-modal-inner-card u-width-full-line"
@@ -322,7 +320,7 @@
             {#each restoreOptions as restoreOption}
                 <div class="u-width-full-line">
                     <LabelCard
-                        padding="small"
+                        padding="s"
                         name="restore"
                         value={restoreOption.id}
                         bind:group={selectedRestoreOption}>
@@ -350,7 +348,6 @@
                     bind:value={newDatabaseInfo.name}
                     autofocus
                     required />
-
                 {#if !showCustomId}
                     <div>
                         <Pill button on:click={() => (showCustomId = !showCustomId)}
@@ -373,7 +370,7 @@
             <div class="input-check-box-friction">
                 <InputCheckbox
                     required
-                    size="small"
+                    size="s"
                     id="delete_policy"
                     bind:checked={confirmSameDbRestore}>
                     <svelte:fragment slot="description">

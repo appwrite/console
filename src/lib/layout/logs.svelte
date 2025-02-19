@@ -18,7 +18,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { BillingPlan } from '$lib/constants';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -129,35 +129,36 @@
                         {/if}
                     </ul>
                     <div class="status u-margin-inline-start-auto">
-                        <div
-                            use:tooltip={{
-                                content: `Scheduled to execute on ${toLocaleDateTime(execution.scheduledAt)}`,
-                                disabled:
-                                    !execution?.scheduledAt || execution.status !== 'scheduled',
-                                maxWidth: 180
-                            }}>
-                            <Pill
-                                warning={execution.status === 'waiting' ||
-                                    execution.status === 'building'}
-                                danger={execution.status === 'failed'}
-                                info={execution.status === 'completed' ||
-                                    execution.status === 'ready'}>
-                                {#if execution.status === 'scheduled'}
-                                    <span class="icon-clock" aria-hidden="true" />
-                                    {timeFromNow(execution.scheduledAt)}
-                                {:else}
-                                    {execution.status}
-                                {/if}
-                            </Pill>
-                        </div>
+                        <Tooltip
+                            maxWidth="180px"
+                            disabled={!execution?.scheduledAt || execution.status !== 'scheduled'}>
+                            <div>
+                                <Pill
+                                    warning={execution.status === 'waiting' ||
+                                        execution.status === 'building'}
+                                    danger={execution.status === 'failed'}
+                                    info={execution.status === 'completed' ||
+                                        execution.status === 'ready'}>
+                                    {#if execution.status === 'scheduled'}
+                                        <span class="icon-clock" aria-hidden="true" />
+                                        {timeFromNow(execution.scheduledAt)}
+                                    {:else}
+                                        {execution.status}
+                                    {/if}
+                                </Pill>
+                            </div>
+                            <span slot="tooltip"
+                                >{`Scheduled to execute on ${toLocaleDateTime(execution.scheduledAt)}`}</span>
+                        </Tooltip>
                     </div>
                 </div>
             </div>
 
             <div class="u-stretch u-margin-block-start-32 u-overflow-hidden">
                 <section class="code-panel">
-                    <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
-                        <div class="u-flex u-gap-24">
+                    <header
+                        class="code-panel-header code-panel-compact-header u-main-space-between u-width-full-line">
+                        <div class="u-flex">
                             <div class="u-flex u-gap-16">
                                 <h4 class="text u-bold">Method:</h4>
                                 <span class="u-text-color-gray">{execution.requestMethod}</span>
@@ -197,8 +198,9 @@
                             </div>
                         </div>
                     </header>
-                    <div class="code-panel-content grid-1-2" style="u-grid">
-                        <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
+                    <div class="code-panel-content grid-1-2">
+                        <div
+                            class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16 mobile-only-inline-20-padding">
                             <Heading tag="h3" size="6">Request</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>
@@ -281,7 +283,7 @@
                                     </div>
                                 {/if}
 
-                                <p class="text u-text-center u-padding-24">
+                                <p class="text u-text-center u-padding-16">
                                     {execution.requestHeaders?.length
                                         ? 'Not all header data is'
                                         : 'Header data is not'}
@@ -296,7 +298,7 @@
                                     >.
                                 </p>
                             {:else if selectedRequest === 'body'}
-                                <p class="text u-text-center u-padding-24">
+                                <p class="text u-text-center u-padding-16">
                                     Body data is not captured by Appwrite for your user's security
                                     and privacy. To display body data in the Logs tab, use
                                     <b>context.log()</b>.
@@ -309,7 +311,9 @@
                                 </p>
                             {/if}
                         </div>
-                        <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0">
+                        <div class="u-sep-block-end is-only-mobile u-padding-block-start-16" />
+                        <div
+                            class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0 mobile-only-inline-20-padding mobile-only-block-start-20-padding">
                             <Heading tag="h3" size="6">Response</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>
@@ -342,16 +346,18 @@
                                             Logs are retained in rolling {hoursToDays(limit)} intervals
                                             with the {tier} plan.
                                             {#if $organization.billingPlan === BillingPlan.FREE}
-                                                <Button link href={$upgradeURL}>Upgrade</Button> to increase
+                                                <Button href={$upgradeURL}>Upgrade</Button> to increase
                                                 your log retention for a longer period.
                                             {/if}
                                         </Alert>
                                     {/if}
                                     <Code
+                                        allowScroll
                                         withCopy
                                         noMargin
                                         code={unescapeNewLines(execution.logs)}
-                                        language="sh" />
+                                        language="sh"
+                                        class="limited-code-height" />
                                 {:else}
                                     <Card isDashed isTile>
                                         <p class="text u-text-center">No response was recorded.</p>
@@ -360,10 +366,12 @@
                             {:else if selectedResponse === 'errors'}
                                 {#if execution?.errors}
                                     <Code
+                                        allowScroll
                                         withCopy
                                         noMargin
                                         code={unescapeNewLines(execution.errors)}
-                                        language="sh" />
+                                        language="sh"
+                                        class="limited-code-height" />
                                 {:else}
                                     <Card isDashed isTile>
                                         <p class="text u-text-center">No response was recorded.</p>
@@ -389,7 +397,7 @@
                                         </TableBody>
                                     </TableScroll>
                                 {/if}
-                                <p class="text u-text-center u-padding-24">
+                                <p class="text u-text-center u-padding-16">
                                     {execution.responseHeaders?.length
                                         ? 'Not all header data is'
                                         : 'Header data is not'}
@@ -404,7 +412,7 @@
                                     >.
                                 </p>
                             {:else if selectedResponse === 'body'}
-                                <p class="text u-text-center u-padding-24">
+                                <p class="text u-text-center u-padding-16">
                                     Body data is not captured by Appwrite for your user's security
                                     and privacy. To display body data in the Logs tab, use
                                     <b>context.log()</b>.
@@ -423,3 +431,39 @@
         </div>
     </section>
 {/if}
+
+<style>
+    :global(.limited-code-height) {
+        overflow: auto;
+        max-height: 50vh;
+    }
+
+    .code-panel-compact-header .u-flex {
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .code-panel-compact-header {
+            row-gap: 1rem;
+            flex-direction: column;
+        }
+
+        .code-panel-content {
+            padding: unset;
+            padding-block: 1.5rem;
+        }
+
+        .mobile-only-inline-20-padding {
+            padding-inline: 1.5rem;
+        }
+
+        .mobile-only-block-start-20-padding {
+            padding-block-start: 1.5rem;
+        }
+
+        .code-panel-content.grid-1-2 {
+            display: unset;
+            row-gap: unset;
+        }
+    }
+</style>

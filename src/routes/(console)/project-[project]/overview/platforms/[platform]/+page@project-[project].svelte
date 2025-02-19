@@ -71,8 +71,8 @@
 <Container>
     <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Name</Heading>
-            <p class="text">Choose any name that will help you distinguish between platforms.</p>
+            <svelte:fragment slot="title">Name</svelte:fragment>
+            Choose any name that will help you distinguish between platforms.
             <svelte:fragment slot="aside">
                 <FormList>
                     <InputText
@@ -92,11 +92,9 @@
 
     <svelte:component this={types[$platform.type]} />
 
-    <CardGrid danger>
-        <div>
-            <Heading tag="h6" size="7">Delete platform</Heading>
-        </div>
-        <p>The Platform will be permanently deleted. This action is irreversible.</p>
+    <CardGrid>
+        <svelte:fragment slot="title">Delete platform</svelte:fragment>
+        The Platform will be permanently deleted. This action is irreversible.
         <svelte:fragment slot="aside">
             <Box>
                 <div class="u-flex u-gap-16">

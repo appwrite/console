@@ -11,11 +11,11 @@
     import { page } from '$app/stores';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { PlatformsPanel } from '$lib/commandCenter/panels';
-    import { Heading, Tab } from '$lib/components';
+    import { Heading, Tab, Tabs } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
-    import { onMount } from 'svelte';
-    import { onboarding, project } from '../store';
+    import { onMount, setContext, SvelteComponent } from 'svelte';
+    import { project } from '../store';
     import Bandwidth from './bandwidth.svelte';
     import { createApiKey } from './keys/+page.svelte';
     import Onboard from './onboard.svelte';
@@ -27,6 +27,10 @@
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
+    import { Layout } from '@appwrite.io/pink-svelte';
+    import { writable, type Writable } from 'svelte/store';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
@@ -34,6 +38,8 @@
 
     onMount(handle);
     afterNavigate(handle);
+
+    const action = setContext<Writable<typeof SvelteComponent>>('overview-action', writable(null));
 
     async function handle() {
         const promise = changePeriod(period);
@@ -56,13 +62,13 @@
             callback() {
                 addSubPanel(PlatformsPanel);
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'integrations',
             disabled: !$canWriteProjects
         },
         {
             label: 'Create API Key',
-            icon: 'plus',
+            icon: IconPlus,
             callback() {
                 createApiKey();
             },
@@ -83,157 +89,143 @@
 
 {#if $project}
     <Container overlapCover>
-        {#if $onboarding}
-            <Onboard {projectId} />
-        {:else}
-            {#if $usage}
-                {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
-                <section class="common-section">
-                    <div class="grid-dashboard-1s-2m-6l">
-                        <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
-                            <Bandwidth {period} on:change={(e) => changePeriod(e.detail)} />
-                        </div>
-                        <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
-                            <Requests {period} on:change={(e) => changePeriod(e.detail)} />
-                        </div>
-                        <a
-                            href={`${base}/project-${projectId}/databases`}
-                            class="card is-2-columns-large-screen">
-                            <div class="grid-item-1">
-                                <div class="grid-item-1-start-start">
-                                    <div class="eyebrow-heading-3">
-                                        <span class="icon-database" aria-hidden="true" />
-                                        <span class="text">Database</span>
-                                    </div>
-                                </div>
-
-                                <div class="grid-item-1-start-end" />
-
-                                <div class="grid-item-1-end-start">
-                                    <div class="heading-level-4">
-                                        {formatNum($usage.documentsTotal ?? 0)}
-                                    </div>
-                                    <div>Documents</div>
-                                </div>
-
-                                <div class="grid-item-1-end-end">
-                                    <div class="text">
-                                        Databases: {formatNum($usage.databasesTotal ?? 0)}
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a
-                            href={`${base}/project-${projectId}/storage`}
-                            class="card is-2-columns-large-screen">
-                            <div class="grid-item-1">
-                                <div class="grid-item-1-start-start">
-                                    <div class="eyebrow-heading-3">
-                                        <span class="icon-folder" aria-hidden="true" />
-                                        <span class="text">Storage</span>
-                                    </div>
-                                </div>
-
-                                <div class="grid-item-1-start-end" />
-
-                                <div class="grid-item-1-end-start">
-                                    <div class="heading-level-4">
-                                        {storage.value}
-                                        <span class="body-text-2">{storage.unit}</span>
-                                    </div>
-                                    <div>Storage</div>
-                                </div>
-
-                                <div class="grid-item-1-end-end">
-                                    <div class="text">
-                                        Buckets: {formatNum($usage.bucketsTotal ?? 0)}
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a
-                            href={`${base}/project-${projectId}/auth`}
-                            class="card is-2-columns-large-screen">
-                            <div class="grid-item-1">
-                                <div class="grid-item-1-start-start">
-                                    <div class="eyebrow-heading-3">
-                                        <span class="icon-user-group" aria-hidden="true" />
-                                        <span class="text">Auth</span>
-                                    </div>
-                                </div>
-
-                                <div class="grid-item-1-start-end" />
-
-                                <div class="grid-item-1-end-start">
-                                    <div class="heading-level-4">
-                                        {formatNum($usage.usersTotal ?? 0)}
-                                    </div>
-                                    <div>Users</div>
-                                </div>
-                            </div>
-                        </a>
-                        <a
-                            href={`${base}/project-${projectId}/functions`}
-                            class="card is-2-columns-large-screen">
-                            <div class="grid-item-1">
-                                <div class="grid-item-1-start-start">
-                                    <div class="eyebrow-heading-3">
-                                        <span class="icon-lightning-bolt" aria-hidden="true" />
-                                        <span class="text">Functions</span>
-                                    </div>
-                                </div>
-
-                                <div class="grid-item-1-start-end" />
-
-                                <div class="grid-item-1-end-start">
-                                    <div class="heading-level-4">
-                                        {formatNum($usage.executionsTotal ?? 0)}
-                                    </div>
-                                    <div>Executions</div>
-                                </div>
-
-                                <div class="grid-item-1-end-end">
-                                    <div class="text" />
-                                </div>
-                            </div>
-                        </a>
-                        <div
-                            class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
-                            <Realtime />
-                        </div>
+        {#if $usage}
+            {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
+            <section class="common-section">
+                <div class="grid-dashboard-1s-2m-6l">
+                    <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
+                        <Bandwidth {period} on:change={(e) => changePeriod(e.detail)} />
                     </div>
-                </section>
-            {/if}
+                    <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
+                        <Requests {period} on:change={(e) => changePeriod(e.detail)} />
+                    </div>
+                    <a
+                        href={`${base}/project-${projectId}/databases`}
+                        class="card is-2-columns-large-screen">
+                        <div class="grid-item-1">
+                            <div class="grid-item-1-start-start">
+                                <div class="eyebrow-heading-3">
+                                    <span class="icon-database" aria-hidden="true" />
+                                    <span class="text">Database</span>
+                                </div>
+                            </div>
 
-            <section class="common-section u-margin-block-start-100">
-                <Heading tag="h2" size="5" id="integrations">Integrations</Heading>
-                <div class="tabs u-margin-block-start-24 u-sep-block-end">
-                    <button
-                        class="tabs-button-scroll is-start u-hide"
-                        aria-label="Show items in start side">
-                        <span class="icon-cheveron-left" aria-hidden="true" />
-                    </button>
-                    <button
-                        class="tabs-button-scroll is-end u-hide"
-                        aria-label="Show items in end side">
-                        <span class="icon-cheveron-right" aria-hidden="true" />
-                    </button>
-                    <ul class="tabs-list" role="tablist" data-sveltekit-noscroll>
-                        <Tab
-                            href={`${path}/platforms`}
-                            selected={$page.url.pathname === `${path}/platforms`}
-                            event="platforms">Platforms</Tab>
-                        <Tab
-                            href={`${path}/keys`}
-                            selected={$page.url.pathname === `${path}/keys`}
-                            event="keys">API keys</Tab>
-                    </ul>
-                </div>
+                            <div class="grid-item-1-start-end" />
 
-                <div class="u-margin-block-start-40">
-                    <slot />
+                            <div class="grid-item-1-end-start">
+                                <div class="heading-level-4">
+                                    {formatNum($usage.documentsTotal ?? 0)}
+                                </div>
+                                <div>Documents</div>
+                            </div>
+
+                            <div class="grid-item-1-end-end">
+                                <div class="text">
+                                    Databases: {formatNum($usage.databasesTotal ?? 0)}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a
+                        href={`${base}/project-${projectId}/storage`}
+                        class="card is-2-columns-large-screen">
+                        <div class="grid-item-1">
+                            <div class="grid-item-1-start-start">
+                                <div class="eyebrow-heading-3">
+                                    <span class="icon-folder" aria-hidden="true" />
+                                    <span class="text">Storage</span>
+                                </div>
+                            </div>
+
+                            <div class="grid-item-1-start-end" />
+
+                            <div class="grid-item-1-end-start">
+                                <div class="heading-level-4">
+                                    {storage.value}
+                                    <span class="body-text-2">{storage.unit}</span>
+                                </div>
+                                <div>Storage</div>
+                            </div>
+
+                            <div class="grid-item-1-end-end">
+                                <div class="text">
+                                    Buckets: {formatNum($usage.bucketsTotal ?? 0)}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a
+                        href={`${base}/project-${projectId}/auth`}
+                        class="card is-2-columns-large-screen">
+                        <div class="grid-item-1">
+                            <div class="grid-item-1-start-start">
+                                <div class="eyebrow-heading-3">
+                                    <span class="icon-user-group" aria-hidden="true" />
+                                    <span class="text">Auth</span>
+                                </div>
+                            </div>
+
+                            <div class="grid-item-1-start-end" />
+
+                            <div class="grid-item-1-end-start">
+                                <div class="heading-level-4">
+                                    {formatNum($usage.usersTotal ?? 0)}
+                                </div>
+                                <div>Users</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a
+                        href={`${base}/project-${projectId}/functions`}
+                        class="card is-2-columns-large-screen">
+                        <div class="grid-item-1">
+                            <div class="grid-item-1-start-start">
+                                <div class="eyebrow-heading-3">
+                                    <span class="icon-lightning-bolt" aria-hidden="true" />
+                                    <span class="text">Functions</span>
+                                </div>
+                            </div>
+
+                            <div class="grid-item-1-start-end" />
+
+                            <div class="grid-item-1-end-start">
+                                <div class="heading-level-4">
+                                    {formatNum($usage.executionsTotal ?? 0)}
+                                </div>
+                                <div>Executions</div>
+                            </div>
+
+                            <div class="grid-item-1-end-end">
+                                <div class="text" />
+                            </div>
+                        </div>
+                    </a>
+                    <div
+                        class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
+                        <Realtime />
+                    </div>
                 </div>
             </section>
         {/if}
+
+        <Layout.Stack gap="xl">
+            <Heading tag="h2" size="5" id="integrations">Integrations</Heading>
+            <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
+                <Tabs>
+                    <Tab
+                        href={`${path}/platforms`}
+                        selected={$page.url.pathname === `${path}/platforms`}
+                        event="platforms">Platforms</Tab>
+                    <Tab
+                        href={`${path}/keys`}
+                        selected={$page.url.pathname === `${path}/keys`}
+                        event="keys">API keys</Tab>
+                </Tabs>
+                {#if $action}
+                    <svelte:component this={$action} />
+                {/if}
+            </Layout.Stack>
+            <slot />
+        </Layout.Stack>
     </Container>
 {/if}

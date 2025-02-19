@@ -4,9 +4,10 @@
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import type { TabElement } from '$lib/helpers/load';
-    import { Cover, CoverTitle } from '$lib/layout';
+    import { Cover } from '$lib/layout';
     import { canWriteProjects } from '$lib/stores/roles';
     import { isCloud } from '$lib/system';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     const projectId = $page.params.project;
     const path = `${base}/project-${projectId}/settings`;
@@ -18,7 +19,7 @@
         },
         {
             href: `${path}/domains`,
-            title: 'Custom Domains',
+            title: 'Custom domains',
             event: 'domains'
         },
         {
@@ -50,7 +51,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Settings</CoverTitle>
+        <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
+            >Settings</Typography.Title>
     </svelte:fragment>
 
     <Tabs>

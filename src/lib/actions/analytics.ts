@@ -255,6 +255,7 @@ export enum Submit {
     DomainCreate = 'submit_domain_create',
     DomainDelete = 'submit_domain_delete',
     DomainUpdateVerification = 'submit_domain_update_verification',
+    CertificateDelete = 'submit_certificate_delete',
     WebhookCreate = 'submit_webhook_create',
     WebhookDelete = 'submit_webhook_delete',
     WebhookUpdateSignature = 'submit_webhook_update_signature',
@@ -338,5 +339,9 @@ export enum Submit {
     SiteUpdateBuildSettings = 'submit_site_update_build_settings',
     SiteUpdateSinglePageApplication = 'submit_site_update_single_page_application',
     SiteConnectRepo = 'submit_site_connect_repo',
-    SiteRedeploy = 'submit_site_redeploy'
+    SiteRedeploy = 'submit_site_redeploy',
+    SiteDisconnectRepo = 'submit_site_disconnect_repo',
+    SiteActivateDeployment = 'submit_site_activate_deployment',
+    RecordCreate = 'submit_dns_record_create',
+    RecordDelete = 'submit_dns_record_delete'
 }

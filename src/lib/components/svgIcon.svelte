@@ -9,10 +9,11 @@
     export { className as class };
 
     enum iconSizes {
-        small = '--icon-size-small',
-        medium = '--icon-size-medium',
-        large = '--icon-size-large',
-        xlarge = '--icon-size-extra-large'
+        xs = '--icon-size-xs',
+        small = '--icon-size-s',
+        medium = '--icon-size-m',
+        large = '--icon-size-l',
+        xlarge = '--icon-size-xl'
     }
 </script>
 

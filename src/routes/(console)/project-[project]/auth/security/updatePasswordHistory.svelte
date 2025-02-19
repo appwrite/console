@@ -4,9 +4,9 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
-    import FormList from '$lib/elements/forms/formList.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import { project } from '../../store';
 
     let passwordHistory = $project?.authPasswordHistory < 1 ? 5 : $project?.authPasswordHistory;
@@ -38,30 +38,26 @@
 
 <Form onSubmit={updatePasswordHistoryLimit}>
     <CardGrid>
-        <Heading tag="h2" size="7" id="password-history">Password history</Heading>
+        <svelte:fragment slot="title">Password history</svelte:fragment>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputSwitch
-                    bind:value={passwordHistoryEnabled}
-                    id="passwordHistoryEnabled"
-                    label="Password history" />
-            </FormList>
-            <p class="text">
+            <InputSwitch
+                bind:value={passwordHistoryEnabled}
+                id="passwordHistoryEnabled"
+                label="Password history" />
+            <Typography.Text>
                 Enabling this option prevents users from reusing recent passwords by comparing the
                 new password with their password history.
-            </p>
-            <p class="text">
+            </Typography.Text>
+            <Typography.Text>
                 Set the maximum number of passwords saved per user. Maximum 20 passwords.
-            </p>
-            <FormList>
-                <InputNumber
-                    max={20}
-                    min={1}
-                    id="max-session"
-                    label="Limit"
-                    disabled={!passwordHistoryEnabled}
-                    bind:value={passwordHistory} />
-            </FormList>
+            </Typography.Text>
+            <InputNumber
+                max={20}
+                min={1}
+                id="password-history"
+                label="Limit"
+                disabled={!passwordHistoryEnabled}
+                bind:value={passwordHistory} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

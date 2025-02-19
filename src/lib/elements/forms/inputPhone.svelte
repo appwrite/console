@@ -1,10 +1,7 @@
 <script lang="ts">
-    import { SvelteComponent, onMount } from 'svelte';
     import { Input } from '@appwrite.io/pink-svelte';
-    import type { States } from '@appwrite.io/pink-svelte/dist/input/types';
 
-    export let label: string;
-    export let showLabel = true;
+    export let label: string = null;
     export let id: string;
     export let name: string = id;
     export let value = '';
@@ -17,9 +14,6 @@
     export let minlength: number = null;
     export let maxlength: number = 15;
     export let nullable = false;
-    export let popover: typeof SvelteComponent<unknown> = null;
-    export let popoverProps: Record<string, unknown> = {};
-    export let fullWidth = false;
 
     const pattern = String.raw`^\+[1-9]\d{1,14}$`;
 
@@ -57,6 +51,7 @@
     {placeholder}
     {disabled}
     {required}
+    {readonly}
     {label}
     {nullable}
     {pattern}

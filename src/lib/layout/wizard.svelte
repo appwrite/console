@@ -3,25 +3,30 @@
     import { trackEvent } from '$lib/actions/analytics';
     import WizardExitModal from './wizardExitModal.svelte';
     import { goto } from '$app/navigation';
+    import { wizard } from '$lib/stores/wizard';
 
     type $$Props =
         | {
-              title: string;
+              title?: string;
               confirmExit: boolean;
               showExitModal: boolean;
               href?: string;
               invertColumns?: boolean;
-              hideAside?: boolean;
               hideFooter?: boolean;
+              column?: boolean;
+              columnSize?: 's' | 'm';
+              onExit?: () => void;
           }
         | {
-              title: string;
+              title?: string;
               href: string;
               confirmExit?: boolean;
               showExitModal?: boolean;
               invertColumns?: boolean;
-              hideAside?: boolean;
               hideFooter?: boolean;
+              column?: boolean;
+              columnSize?: 's' | 'm';
+              onExit?: () => void;
           };
 
     export let title: $$Props['title'] = '';
@@ -29,12 +34,15 @@
     export let href: $$Props['href'] = '';
     export let showExitModal: $$Props['showExitModal'] = false;
     export let invertColumns: $$Props['invertColumns'] = false;
-    export let hideAside = false;
     export let hideFooter = false;
+    export let column: $$Props['column'] = false;
+    export let columnSize: $$Props['columnSize'] = 'm';
+    export let onExit: $$Props['onExit'] = undefined;
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
             event.preventDefault();
+
             if (confirmExit) {
                 showExitModal = true;
             } else {
@@ -53,7 +61,8 @@
     <Layout.Wizard
         {title}
         {invertColumns}
-        {hideAside}
+        {column}
+        {columnSize}
         {hideFooter}
         href={confirmExit ? null : href}
         buttonMethod={() => {
@@ -83,6 +92,14 @@
             trackEvent('wizard_exit', {
                 from: 'prompt'
             });
+
+            wizard.hide();
+            if (onExit) {
+                onExit();
+
+                // clear exit
+                onExit = null;
+            }
         }}>
         <slot name="exit">
             Are you sure you want to exit from this process? All data will be deleted. This action
@@ -104,4 +121,8 @@
         max-height: 100dvh;
         overflow-y: auto;
     }
+
+    // :global(html) {
+    //     overflow-y: hidden;
+    // }
 </style>

@@ -8,65 +8,47 @@
 </script>
 
 <script lang="ts">
-    import { Empty, Heading } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRowLink
-    } from '$lib/elements/table';
+    import { Empty } from '$lib/components';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { canWriteKeys } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
     import { get } from 'svelte/store';
     import type { PageData } from './$types';
     import Wizard from './wizard.svelte';
+    import Action from './action.svelte';
+    import { setOverviewAction } from '../context';
+    import { Table } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
+
+    setOverviewAction(Action);
 </script>
 
-<div class="common-section u-flex u-gap-12">
-    <Heading tag="h3" size="7">API keys</Heading>
-    {#if $canWriteKeys}
-        <span class="u-margin-inline-start-auto">
-            <Button on:click={createApiKey}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create API key</span>
-            </Button>
-        </span>
-    {/if}
-</div>
-
 {#if data.keys.total}
-    <Table>
-        <TableHeader>
-            <TableCellHead>Name</TableCellHead>
-            <TableCellHead onlyDesktop>last accessed</TableCellHead>
-            <TableCellHead onlyDesktop>expiration date</TableCellHead>
-            <TableCellHead onlyDesktop>scopes</TableCellHead>
-        </TableHeader>
-        <TableBody>
-            {#each data.keys.keys as key}
-                <TableRowLink href={`keys/${key.$id}`}>
-                    <TableCellText title="Name">
-                        {key.name}
-                    </TableCellText>
-                    <TableCellText onlyDesktop title="Last Accessed">
-                        {key.accessedAt ? toLocaleDate(key.accessedAt) : 'never'}
-                    </TableCellText>
-                    <TableCellText onlyDesktop title="Expiration Date">
-                        {key.expire ? toLocaleDateTime(key.expire) : 'never'}
-                    </TableCellText>
-                    <TableCellText onlyDesktop title="Expiration Date">
-                        {key.scopes.length} Scopes
-                    </TableCellText>
-                </TableRowLink>
-            {/each}
-        </TableBody>
-    </Table>
+    <Table.Root>
+        <svelte:fragment slot="header">
+            <Table.Header.Cell>Name</Table.Header.Cell>
+            <Table.Header.Cell>Last accessed</Table.Header.Cell>
+            <Table.Header.Cell>Expiration date</Table.Header.Cell>
+            <Table.Header.Cell>Scopes</Table.Header.Cell>
+        </svelte:fragment>
+        {#each data.keys.keys as key}
+            <Table.Link href={`keys/${key.$id}`}>
+                <Table.Cell>
+                    {key.name}
+                </Table.Cell>
+                <Table.Cell>
+                    {key.accessedAt ? toLocaleDate(key.accessedAt) : 'never'}
+                </Table.Cell>
+                <Table.Cell>
+                    {key.expire ? toLocaleDateTime(key.expire) : 'never'}
+                </Table.Cell>
+                <Table.Cell>
+                    {key.scopes.length} Scopes
+                </Table.Cell>
+            </Table.Link>
+        {/each}
+    </Table.Root>
 {:else}
     <Empty
         single

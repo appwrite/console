@@ -21,22 +21,19 @@ export type FeedbackData = {
 
 export type FeedbackOption = {
     type: Feedback['type'];
-    title: string;
-    desc: string;
+    desc?: string;
     component: typeof SvelteComponent<unknown>;
 };
 
 export const feedbackOptions: FeedbackOption[] = [
     {
         type: 'general',
-        title: 'Help us improve Appwrite',
         desc: 'Appwrite evolves with your input. Share your thoughts and help us improve Appwrite.',
         component: FeedbackGeneral
     },
     {
         type: 'nps',
-        title: 'Help us improve Appwrite',
-        desc: 'Appwrite evolves with your input. Share your thoughts and help us improve Appwrite. If you would like to be contacted regarding your feedback, please share your contact details below.',
+        desc: 'How likely are you to recommend Appwrite to a friend or colleague?',
         component: FeedbackNps
     }
 ];

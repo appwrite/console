@@ -37,7 +37,6 @@
     import { trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import WizardCover from '$lib/layout/wizardCover.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import { featuredTemplatesList, starterTemplate } from '$lib/stores/templates';
@@ -46,6 +45,8 @@
     import CreateManual from './wizard/createManual.svelte';
     import { repository } from '$lib/stores/vcs';
     import { Repositories } from '$lib/components/git';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconDeno, IconDotnet } from '@appwrite.io/pink-icons-svelte';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
@@ -66,7 +67,7 @@
 </script>
 
 <WizardCover bind:previousPage>
-    <svelte:fragment slot="title">Create Function</svelte:fragment>
+    <svelte:fragment slot="title">Create function</svelte:fragment>
     <div class="wizard-container container">
         <div class="git-container u-position-relative">
             <div class="grid-1-1 u-gap-24">
@@ -175,22 +176,20 @@
                                 {/each}
 
                                 {#if templates.length < 6}
-                                    <li
-                                        use:tooltip={{
-                                            content: 'More runtimes coming soon'
-                                        }}>
-                                        <Box
-                                            class="u-width-full-line u-flex u-cross-center u-gap-8"
-                                            padding={16}
-                                            radius="small">
-                                            <AvatarGroup
-                                                icons={['dotnet', 'deno']}
-                                                total={4}
-                                                avatarSize="small"
-                                                color="u-color-text-gray"
-                                                bordered />
-                                        </Box>
-                                    </li>
+                                    <Tooltip>
+                                        <li>
+                                            <Box
+                                                class="u-width-full-line u-flex u-cross-center u-gap-8"
+                                                padding={16}
+                                                radius="small">
+                                                <AvatarGroup
+                                                    icons={[IconDotnet, IconDeno]}
+                                                    total={4}
+                                                    size="s" />
+                                            </Box>
+                                        </li>
+                                        <span slot="tooltip">More runtimes coming soon</span>
+                                    </Tooltip>
                                 {/if}
                             {/await}
                         </ul>

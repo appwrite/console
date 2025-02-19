@@ -94,3 +94,23 @@ export function secsToUnit(time: number, unit: Unit) {
             return time;
     }
 }
+
+/**
+ * Formats time in seconds to a detailed string showing days, hours, minutes, and seconds
+ * @param time Time in seconds
+ * @returns Formatted string like "3d 4h 30m 23s"
+ */
+export function formatTimeDetailed(time: number): string {
+    const seconds = Math.floor(time % 60);
+    const minutes = Math.floor((time / 60) % 60);
+    const hours = Math.floor((time / (60 * 60)) % 24);
+    const days = Math.floor(time / (60 * 60 * 24));
+
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
+
+    return parts.join(' ');
+}

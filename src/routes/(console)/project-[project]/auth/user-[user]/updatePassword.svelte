@@ -29,11 +29,8 @@
 
 <Form onSubmit={updatePassword}>
     <CardGrid>
-        <div>
-            <Heading tag="h6" size="7">Password</Heading>
-        </div>
-
-        <p>Enter a new password. A password must contain at least 8 characters.</p>
+        <svelte:fragment slot="title">Password</svelte:fragment>
+        Enter a new password. A password must contain at least 8 characters.
         <svelte:fragment slot="aside">
             <ul>
                 <InputPassword

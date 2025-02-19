@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, InputChoice, InputPassword } from '$lib/elements/forms';
+    import { Button, InputPassword } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
     import { InputText } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
@@ -7,7 +7,7 @@
     import Alert from '$lib/components/alert.svelte';
     import { project } from './store';
     import { base } from '$app/paths';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let isGlobal: boolean;
     export let product: 'function' | 'site' = 'function';
@@ -35,6 +35,11 @@
             dispatch('created', pair);
         }
         close();
+    }
+
+    $: if (!showCreate) {
+        console.log('test');
+        selectedVar = null;
     }
 </script>
 
@@ -76,8 +81,11 @@
             placeholder="Enter value"
             bind:value={pair.value}
             minlength={0} />
-        <InputChoice id="secret" label="Secret" bind:value={pair.secret}>
-            If selected, you and your team won't be able to read the values after creation.</InputChoice>
+        <Selector.Checkbox
+            id="secret"
+            label="Secret"
+            bind:checked={pair.secret}
+            description="If selected, you and your team won't be able to read the values after creation." />
     </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button secondary on:click={close}>Cancel</Button>

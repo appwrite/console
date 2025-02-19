@@ -26,7 +26,6 @@
 <TableCellHead width={10}>
     <InputCheckbox
         id="select-all"
-        wrapperTag="div"
         indeterminate={someSelected && !allSelected}
         checked={allSelected}
         on:click={handleClick} />

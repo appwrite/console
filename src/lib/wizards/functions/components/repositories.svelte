@@ -9,6 +9,13 @@
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '../store';
     import { createEventDispatcher } from 'svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import {
+        IconAzure,
+        IconBitBucket,
+        IconGithub,
+        IconGitlab
+    } from '@appwrite.io/pink-icons-svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -92,30 +99,25 @@
             </ul>
         </div>
     {:then installations}
-        <div class="u-flex u-gap-16">
-            <ul class="u-width-full-line">
-                <InputSelect
-                    id="installation"
-                    label="Select installation"
-                    showLabel={false}
-                    options={installations.map((entry) => {
-                        return {
-                            label: entry.organization,
-                            value: entry.$id
-                        };
-                    })}
-                    on:change={() => {
-                        search = '';
-                        installation.set(
-                            installations.find((entry) => entry.$id === selectedInstallation)
-                        );
-                    }}
-                    bind:value={selectedInstallation} />
-            </ul>
-            <ul class="u-width-full-line">
-                <InputSearch placeholder="Search repositories" bind:value={search} />
-            </ul>
-        </div>
+        <Layout.Stack direction="row" alignItems="flex-end">
+            <InputSelect
+                id="installation"
+                label="Select installation"
+                options={installations.map((entry) => {
+                    return {
+                        label: entry.organization,
+                        value: entry.$id
+                    };
+                })}
+                on:change={() => {
+                    search = '';
+                    installation.set(
+                        installations.find((entry) => entry.$id === selectedInstallation)
+                    );
+                }}
+                bind:value={selectedInstallation} />
+            <InputSearch placeholder="Search repositories" bind:value={search} />
+        </Layout.Stack>
     {/await}
     <p class="text u-margin-block-start-16">
         Manage organization configuration in your <a
@@ -125,7 +127,7 @@
     </p>
     {#if selectedInstallation}
         {#await loadRepositories(selectedInstallation, search)}
-            <div class="u-flex u-gap-8 u-cross-center u-main-center">
+            <div class="u-flex u-gap-8 u-cross-center u-main-center" style:height="50vh">
                 <div class="loader u-margin-32" />
             </div>
         {:then response}
@@ -208,20 +210,26 @@
 {:else}
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
         <Button href={connectGitHub().toString()} fullWidth secondary>
-            <span class="icon-github" aria-hidden="true" />
-            <span class="text">GitHub</span>
+            <Icon icon={IconGithub} slot="start" size="s" />
+            GitHub
         </Button>
         <Button disabled fullWidth secondary>
-            <span class="icon-gitlab" aria-hidden="true" />
-            <span class="text">GitLab (coming soon)</span>
+            <Icon icon={IconGitlab} slot="start" size="s" />
+            GitLab (coming soon)
         </Button>
         <Button disabled fullWidth secondary>
-            <span class="icon-bitBucket" aria-hidden="true" />
-            <span class="text">BitBucket (coming soon)</span>
+            <Icon icon={IconBitBucket} slot="start" size="s" />
+            BitBucket (coming soon)
         </Button>
         <Button disabled fullWidth secondary>
-            <span class="icon-azure" aria-hidden="true" />
-            <span class="text">Azure (coming soon)</span>
+            <Icon icon={IconAzure} slot="start" size="s" />
+            Azure (coming soon)
         </Button>
     </div>
 {/if}
+
+<style>
+    .icon-lock-closed {
+        color: hsl(var(--color-neutral-50));
+    }
+</style>

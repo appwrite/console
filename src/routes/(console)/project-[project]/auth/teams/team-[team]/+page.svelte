@@ -11,7 +11,7 @@
 <Container>
     <CardGrid>
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-            <AvatarInitials size={48} name={$team.name} />
+            <AvatarInitials size="l" name={$team.name} />
             <div>
                 <Heading tag="h6" size="7">{$team.name}</Heading>
             </div>

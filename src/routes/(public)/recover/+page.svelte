@@ -1,13 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import {
-        Button,
-        Form,
-        FormItem,
-        FormList,
-        InputEmail,
-        InputPassword
-    } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
@@ -15,6 +8,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
+    import { Divider, Layout, Link } from '@appwrite.io/pink-svelte';
 
     let email: string;
     let userId: string;
@@ -70,7 +64,7 @@
 </svelte:head>
 
 <Unauthenticated>
-    <svelte:fragment slot="title">Password Recovery</svelte:fragment>
+    <svelte:fragment slot="title">Password recovery</svelte:fragment>
     <svelte:fragment>
         {#if userId && secret}
             <Form onSubmit={setPassword}>
@@ -81,19 +75,15 @@
                         id="password"
                         autofocus={true}
                         required={true}
-                        showPasswordButton={true}
                         bind:value={password} />
                     <InputPassword
                         label="Confirm password"
                         placeholder="Confirm password"
                         id="confirm-password"
                         required={true}
-                        showPasswordButton={true}
                         bind:value={confirmPassword} />
 
-                    <FormItem>
-                        <Button fullWidth submit>Update</Button>
-                    </FormItem>
+                    <Button fullWidth submit>Update</Button>
                 </FormList>
             </Form>
         {:else}
@@ -107,19 +97,18 @@
                         required={true}
                         bind:value={email} />
 
-                    <FormItem>
-                        <Button fullWidth submit>Recover</Button>
-                    </FormItem>
+                    <Button fullWidth submit>Recover</Button>
                 </FormList>
             </Form>
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <a href={`${base}/login`}><span class="text">Sign in</span></a>
-        </li>
-        <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
-        </li>
+        <Layout.Stack direction="row" justifyContent="center" alignItems="center">
+            <Link.Anchor href={`${base}/login`} variant="quiet">Sign in</Link.Anchor>
+            <div style:height="20px">
+                <Divider vertical />
+            </div>
+            <Link.Anchor href={`${base}/register`} variant="quiet">Sign up</Link.Anchor>
+        </Layout.Stack>
     </svelte:fragment>
 </Unauthenticated>

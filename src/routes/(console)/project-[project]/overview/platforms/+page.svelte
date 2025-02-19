@@ -5,9 +5,8 @@
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
-    import CreateWeb from './createWeb.svelte';
     import CreateReactNative from './createReactNative.svelte';
-    import { versions } from './wizard/store';
+    import { createPlatform, versions } from './wizard/store';
 
     export enum Platform {
         Web,
@@ -19,11 +18,29 @@
 
     export async function addPlatform(type: Platform) {
         await versions.load();
+        createPlatform.reset();
         wizard.start(platforms[type]);
     }
 
+    export async function continuePlatform(
+        platform: Platform,
+        name: string,
+        key: string,
+        type: string
+    ) {
+        await versions.load();
+        createPlatform.set({
+            name: name,
+            key: key,
+            type: type
+        });
+        wizard.start(platforms[platform], null, 1, {
+            isPlatformCreated: true,
+            platform: type
+        });
+    }
+
     const platforms = {
-        [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
         [Platform.Apple]: CreateApple,
@@ -36,11 +53,13 @@
     import { page } from '$app/stores';
     import { DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
-    import { ContainerHeader } from '$lib/layout';
     import { canWritePlatforms } from '$lib/stores/roles';
+    import { setOverviewAction } from '../context';
+    import { Table } from '@appwrite.io/pink-svelte';
+    import Action from './action.svelte';
 
     export let data: PageData;
 
@@ -56,11 +75,10 @@
         'flutter-macos' = 'macOS',
         'flutter-windows' = 'Windows',
         'flutter-web' = 'Web',
-        'web' = 'Web',
         'react-native-android' = 'Android',
-        'react-native-ios' = 'iOS'
+        'react-native-ios' = 'iOS',
+        'web' = 'Web'
     }
-    let showDropdown = false;
     let showDropdownEmpty = false;
     const path = `${base}/project-${$page.params.project}/overview/platforms`;
 
@@ -73,74 +91,35 @@
             return 'color/apple';
         } else if (platform.includes('android')) {
             return 'color/android';
-        } else if (platform.includes('web')) {
-            return 'grayscale/code';
         } else {
             return 'unknown';
         }
     };
+
+    setOverviewAction(Action);
 </script>
 
-<ContainerHeader
-    title="Platforms"
-    titleTag="h3"
-    titleSize="7"
-    total={data?.platforms?.total}
-    let:isButtonDisabled>
-    <DropList bind:show={showDropdown} placement="bottom-start">
-        {#if $canWritePlatforms}
-            <Button on:click={() => (showDropdown = !showDropdown)} disabled={isButtonDisabled}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add platform</span>
-            </Button>
-        {/if}
-        <svelte:fragment slot="list">
-            <DropListItem on:click={() => addPlatform(Platform.Web)}>Web app</DropListItem>
-            <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter app</DropListItem>
-            <DropListItem on:click={() => addPlatform(Platform.Android)}>Android app</DropListItem>
-            <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple app</DropListItem>
-            <DropListItem on:click={() => addPlatform(Platform.ReactNative)}
-                >React Native app</DropListItem>
-        </svelte:fragment>
-    </DropList>
-</ContainerHeader>
-
 {#if data.platforms.platforms.length}
-    <div
-        class="grid-box u-margin-block-start-32"
-        style="--grid-gap:1.5rem; --grid-item-size:20rem;"
-        data-private>
+    <Table.Root>
+        <svelte:fragment slot="header">
+            <Table.Header.Cell>Name</Table.Header.Cell>
+            <Table.Header.Cell>Platform type</Table.Header.Cell>
+            <Table.Header.Cell>Last updated</Table.Header.Cell>
+        </svelte:fragment>
         {#each data.platforms.platforms as platform}
-            <a class="card" href={`${path}/${platform.$id}`}>
-                <div class="grid-item-1" style="min-block-size: calc(182 / 16 * 1rem)">
-                    <div class="grid-item-1-start-start">
-                        <div class="u-flex u-gap-16 u-cross-center">
-                            <div class="avatar is-medium" aria-hidden="true">
-                                <img
-                                    src={`${base}/icons/${$app.themeInUse}/${getPlatformInfo(
-                                        platform.type.toLowerCase()
-                                    )}.svg`}
-                                    alt="technology" />
-                            </div>
-                            <div>
-                                <Heading size="6" tag="h3">{platform.name}</Heading>
-                                <p class="text">{PlatformTypes[platform.type]}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid-item-1-end-start">
-                        <div class="u-flex u-gap-16 u-flex-wrap">
-                            <div class="grid-item-1-end-start">
-                                <p class="eyebrow-heading-3">Last updated</p>
-                                <p>{toLocaleDateTime(platform.$updatedAt)}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
+            <Table.Link href={`${path}/${platform.$id}`}>
+                <Table.Cell>
+                    {platform.name}
+                </Table.Cell>
+                <Table.Cell>
+                    {PlatformTypes[platform.type]}
+                </Table.Cell>
+                <Table.Cell>
+                    {platform.$updatedAt ? toLocaleDate(platform.$updatedAt) : 'never'}
+                </Table.Cell>
+            </Table.Link>
         {/each}
-    </div>
+    </Table.Root>
 {:else}
     <article class="card u-grid u-cross-center u-width-full-line common-section">
         <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
@@ -169,9 +148,6 @@
                             </Button>
                         {/if}
                         <svelte:fragment slot="list">
-                            <DropListItem on:click={() => addPlatform(Platform.Web)}>
-                                Web
-                            </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
                                 Flutter
                             </DropListItem>
@@ -180,6 +156,9 @@
                             </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Apple)}>
                                 Apple
+                            </DropListItem>
+                            <DropListItem on:click={() => addPlatform(Platform.ReactNative)}>
+                                React Native
                             </DropListItem>
                         </svelte:fragment>
                     </DropList>

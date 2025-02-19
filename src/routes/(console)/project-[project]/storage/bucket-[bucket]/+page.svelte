@@ -22,16 +22,6 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableRowLink
-    } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import {
         bytesToSize,
@@ -44,12 +34,14 @@
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
-    import { tooltip } from '$lib/actions/tooltip';
     import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
+    import { Layout, Tooltip, Table, Icon } from '@appwrite.io/pink-svelte';
+    import { onMount } from 'svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -90,150 +82,135 @@
     $: maxFileSize = isCloud
         ? humanFileSize(sizeToBytes(getServiceLimit('fileSize'), 'MB', 1000))
         : null;
+
+    let isUploading = false;
+
+    const beforeunload = (event: BeforeUnloadEvent) => {
+        // legacy browser **may** support showing a custom message.
+        const message = 'An upload is in progress. Are you sure you want to leave?';
+
+        if (isUploading) {
+            event.preventDefault();
+            event.returnValue = message;
+            return message;
+        }
+    };
+
+    onMount(() => {
+        return uploader.subscribe(() => {
+            isUploading = $uploader.files.some(
+                (file) => !file.completed && file.progress < 100 && !file.failed
+            );
+        });
+    });
 </script>
 
+<svelte:window on:beforeunload={beforeunload} />
+
 <Container>
-    <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={usedStorage}>
-        <svelte:fragment let:isButtonDisabled>
-            <SearchQuery search={data.search} placeholder="Search by filename">
-                <div
-                    use:tooltip={{
-                        content: `Upgrade to add more files`,
-                        disabled: !isButtonDisabled
-                    }}>
-                    <Button
-                        on:click={() => wizard.start(Create)}
-                        event="create_file"
-                        disabled={isButtonDisabled}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create file</span>
-                    </Button>
-                </div>
-            </SearchQuery>
-        </svelte:fragment>
-        <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
-            {#if tier === tierToPlan(BillingPlan.FREE).name}
-                <p class="u-bold">The {tier} plan has limits</p>
-                <ul>
-                    <li>{limit}GB total file storage</li>
-                    <li>
-                        {Math.floor(parseInt(maxFileSize.value))}{maxFileSize.unit} file upload size
-                        limit
-                    </li>
-                </ul>
-                <p class="text">
-                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                        >Upgrade</button>
-                    for additional storage resources.
-                </p>
-            {:else}
-                <p class="text">
-                    You are limited to {limit} GB storage on the {tier} plan. After this amount
-                    <button
-                        class="link"
-                        type="button"
-                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
-                        >usage fees will apply</button>
-                    .
-                </p>
-            {/if}
-        </svelte:fragment>
-    </ContainerHeader>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search files" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Button on:mousedown={() => wizard.start(Create)} event="create_file" size="s">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Create file
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
 
     {#if data.files.total}
-        <Table>
-            <TableHeader>
-                <TableCellHead>Filename</TableCellHead>
-                <TableCellHead onlyDesktop width={140}>Type</TableCellHead>
-                <TableCellHead onlyDesktop width={100}>Size</TableCellHead>
-                <TableCellHead onlyDesktop width={120}>Created</TableCellHead>
-                <TableCellHead width={40} />
-            </TableHeader>
-            <TableBody>
-                {#each data.files.files as file, index}
-                    {#if file.chunksTotal / file.chunksUploaded !== 1}
-                        <TableRow>
-                            <TableCell title="Name">
-                                <div class="u-flex u-gap-12 u-cross-center">
-                                    <span class="avatar is-size-small is-color-empty" />
-
-                                    <span class="text u-trim">{file.name}</span>
-                                    <div>
-                                        <Pill warning>Pending</Pill>
-                                    </div>
+        <Table.Root>
+            <svelte:fragment slot="header">
+                <Table.Header.Cell>Filename</Table.Header.Cell>
+                <Table.Header.Cell width="140px">Type</Table.Header.Cell>
+                <Table.Header.Cell width="100px">Size</Table.Header.Cell>
+                <Table.Header.Cell width="120px">Created</Table.Header.Cell>
+                <Table.Header.Cell width="40px" />
+            </svelte:fragment>
+            {#each data.files.files as file, index}
+                {#if file.chunksTotal / file.chunksUploaded !== 1}
+                    <Table.Row>
+                        <Table.Cell>
+                            <Layout.Stack direction="row" alignItems="center">
+                                <span class="avatar is-size-small is-color-empty" />
+                                <span class="text u-trim">{file.name}</span>
+                                <div>
+                                    <Pill warning>Pending</Pill>
                                 </div>
-                            </TableCell>
-                            <TableCellText onlyDesktop title="Type">{file.mimeType}</TableCellText>
-                            <TableCellText onlyDesktop title="Size">
-                                {calculateSize(file.sizeOriginal)}
-                            </TableCellText>
-                            <TableCellText onlyDesktop title="Date Created">
-                                {toLocaleDate(file.$createdAt)}
-                            </TableCellText>
-                            <TableCell>
-                                <div class="u-flex u-main-center">
-                                    <button
-                                        class="button is-only-icon is-text"
-                                        aria-label="Delete item"
-                                        on:click|preventDefault={() => {
-                                            deleteFile(file);
-                                        }}>
-                                        <span class="icon-trash" aria-hidden="true" />
-                                    </button>
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    {:else}
-                        <TableRowLink
-                            href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
-                            <TableCell title="Name">
-                                <div class="u-flex u-gap-12 u-cross-center">
-                                    <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
-                                    <span class="text u-trim">{file.name}</span>
-                                </div>
-                            </TableCell>
-                            <TableCellText onlyDesktop title="Type">{file.mimeType}</TableCellText>
-                            <TableCellText onlyDesktop title="Size">
-                                {calculateSize(file.sizeOriginal)}
-                            </TableCellText>
-                            <TableCellText onlyDesktop title="Date Created">
-                                {toLocaleDate(file.$createdAt)}
-                            </TableCellText>
-                            <TableCell showOverflow>
-                                <DropList
-                                    bind:show={showDropdown[index]}
-                                    placement="bottom-start"
-                                    noArrow>
-                                    <button
-                                        class="button is-only-icon is-text"
-                                        aria-label="More options"
-                                        on:click|preventDefault={() => {
-                                            showDropdown[index] = !showDropdown[index];
-                                        }}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
-                                    </button>
-                                    <svelte:fragment slot="list">
-                                        <DropListLink
-                                            on:click={() => {
-                                                showDropdown[index] = false;
-                                            }}
-                                            href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
-                                            icon="pencil">Update</DropListLink>
-                                        <DropListItem
-                                            icon="trash"
-                                            on:click={() => {
-                                                showDropdown[index] = false;
-                                                selectedFile = file;
-                                                showDelete = true;
-                                            }}>Delete</DropListItem>
-                                    </svelte:fragment>
-                                </DropList>
-                            </TableCell>
-                        </TableRowLink>
-                    {/if}
-                {/each}
-            </TableBody>
-        </Table>
+                            </Layout.Stack>
+                        </Table.Cell>
+                        <Table.Cell>{file.mimeType}</Table.Cell>
+                        <Table.Cell>
+                            {calculateSize(file.sizeOriginal)}
+                        </Table.Cell>
+                        <Table.Cell>
+                            {toLocaleDate(file.$createdAt)}
+                        </Table.Cell>
+                        <Table.Cell>
+                            <div class="u-flex u-main-center">
+                                <button
+                                    class="button is-only-icon is-text"
+                                    aria-label="Delete item"
+                                    on:click|preventDefault={() => {
+                                        deleteFile(file);
+                                    }}>
+                                    <span class="icon-trash" aria-hidden="true" />
+                                </button>
+                            </div>
+                        </Table.Cell>
+                    </Table.Row>
+                {:else}
+                    <Table.Link
+                        href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
+                        <Table.Cell>
+                            <div class="u-flex u-gap-12 u-cross-center">
+                                <Avatar size="s" src={getPreview(file.$id)} alt={file.name} />
+                                <span class="text u-trim">{file.name}</span>
+                            </div>
+                        </Table.Cell>
+                        <Table.Cell>{file.mimeType}</Table.Cell>
+                        <Table.Cell>
+                            {calculateSize(file.sizeOriginal)}
+                        </Table.Cell>
+                        <Table.Cell>
+                            {toLocaleDate(file.$createdAt)}
+                        </Table.Cell>
+                        <Table.Cell>
+                            <DropList
+                                bind:show={showDropdown[index]}
+                                placement="bottom-start"
+                                noArrow>
+                                <button
+                                    class="button is-only-icon is-text"
+                                    aria-label="More options"
+                                    on:click|preventDefault={() => {
+                                        showDropdown[index] = !showDropdown[index];
+                                    }}>
+                                    <span class="icon-dots-horizontal" aria-hidden="true" />
+                                </button>
+                                <svelte:fragment slot="list">
+                                    <DropListLink
+                                        on:click={() => {
+                                            showDropdown[index] = false;
+                                        }}
+                                        href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
+                                        icon="pencil">Update</DropListLink>
+                                    <DropListItem
+                                        icon="trash"
+                                        on:click={() => {
+                                            showDropdown[index] = false;
+                                            selectedFile = file;
+                                            showDelete = true;
+                                        }}>Delete</DropListItem>
+                                </svelte:fragment>
+                            </DropList>
+                        </Table.Cell>
+                    </Table.Link>
+                {/if}
+            {/each}
+        </Table.Root>
 
         <PaginationWithLimit
             name="Files"

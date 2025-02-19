@@ -32,10 +32,17 @@
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
     import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization, organizationList, type Organization } from '$lib/stores/organization';
+    import {
+        currentPlan,
+        organization,
+        organizationList,
+        type Organization
+    } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
@@ -101,8 +108,7 @@
             billingPlan = BillingPlan.PRO;
         }
 
-        const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
-        selfService = currentPlan.selfService;
+        selfService = $currentPlan?.selfService ?? true;
     });
 
     async function loadPaymentMethods() {
@@ -254,7 +260,7 @@
             <Label class="label u-margin-block-start-16">Select plan</Label>
             <p class="text">
                 For more details on our plans, visit our
-                <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
+                <Button href="https://appwrite.io/pricing" external>pricing page</Button>.
             </p>
             {#if !selfService}
                 <Alert class="u-position-relative u-margin-block-start-16" type="info"
@@ -265,9 +271,7 @@
                 bind:billingPlan
                 bind:selfService
                 anyOrgFree={!!anyOrgFree}
-                class={anyOrgFree && billingPlan !== BillingPlan.FREE
-                    ? 'u-margin-block-start-16'
-                    : ''} />
+                class="u-margin-block-16" />
 
             {#if isDowngrade}
                 {#if billingPlan === BillingPlan.FREE}
@@ -275,7 +279,7 @@
                         tier={BillingPlan.FREE}
                         class="u-margin-block-start-24"
                         members={data?.members?.total ?? 0} />
-                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE}
+                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
                     {@const extraMembers = collaborators?.length ?? 0}
                     <Alert type="error" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
@@ -293,7 +297,7 @@
             {/if}
             <!-- Show email input if upgrading from free plan -->
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
-                <FormList class="u-margin-block-start-16">
+                <FormList>
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
@@ -303,19 +307,19 @@
                         validityMessage="Invalid email address"
                         id="members" />
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
+                    {#if !couponData?.code}
+                        <Button
+                            text
+                            class="u-margin-block-start-16 align-left"
+                            on:click={() => (showCreditModal = true)}>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add credits
+                        </Button>
+                    {/if}
                 </FormList>
-                {#if !couponData?.code}
-                    <Button
-                        text
-                        noMargin
-                        class="u-margin-block-start-16"
-                        on:click={() => (showCreditModal = true)}>
-                        <span class="icon-plus"></span> <span class="text">Add credits</span>
-                    </Button>
-                {/if}
             {/if}
-            {#if isDowngrade}
-                <FormList class="u-margin-block-start-24">
+            {#if isDowngrade && billingPlan === BillingPlan.FREE}
+                <FormList>
                     <InputSelect
                         id="reason"
                         label="Reason for plan change"

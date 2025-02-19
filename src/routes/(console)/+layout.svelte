@@ -3,8 +3,6 @@
     import { BillingPlan, INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
-    import Header from '$lib/layout/header.svelte';
-    import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
@@ -46,6 +44,16 @@
     import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert } from '$lib/components';
+    import {
+        IconAnnotation,
+        IconBookOpen,
+        IconDiscord,
+        IconPencil,
+        IconPlus,
+        IconQuestionMarkCircle,
+        IconSparkles,
+        IconSwitchHorizontal
+    } from '@appwrite.io/pink-icons-svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -55,6 +63,17 @@
     }
 
     const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
+
+    export let data;
+    $: loadedProjects = data.projects.map((project) => {
+        return {
+            name: project?.name,
+            $id: project.$id,
+            isSelected: data.currentProjectId === project.$id,
+            platformCount: project.platforms.length,
+            pingCount: project.pingCount
+        };
+    });
 
     $: isOnSettingsLayout = $project?.$id
         ? $page.url.pathname.includes(`project-${$project.$id}/settings`)
@@ -81,7 +100,7 @@
                 addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
-            icon: 'sparkles',
+            icon: IconSparkles,
             disabled: !isAssistantEnabled
         },
         {
@@ -90,7 +109,8 @@
                 isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true);
             },
             keys: ['c', 'o'],
-            group: 'organizations'
+            group: 'organizations',
+            icon: IconPlus
         },
         {
             label: 'Open documentation',
@@ -98,7 +118,7 @@
                 window.open('https://appwrite.io/docs', '_blank');
             },
             group: 'help',
-            icon: 'book-open'
+            icon: IconBookOpen
         },
         {
             label: 'Contact support',
@@ -106,7 +126,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: 'question-mark-circle'
+            icon: IconQuestionMarkCircle
         },
         {
             label: 'Send feedback',
@@ -114,7 +134,7 @@
                 feedback.toggleFeedback();
             },
             group: 'help',
-            icon: 'annotation'
+            icon: IconAnnotation
         },
         {
             label: 'Join Discord community',
@@ -122,7 +142,7 @@
                 window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
-            icon: 'discord'
+            icon: IconDiscord
         },
         ...(['auto', 'dark', 'light'] as const).map((theme) => {
             return {
@@ -136,7 +156,7 @@
                     });
                 },
                 group: 'misc',
-                icon: 'switch-horizontal',
+                icon: IconSwitchHorizontal,
                 keys: ['t', theme[0]]
             } as const;
         }),
@@ -158,7 +178,7 @@
                     },
                     disabled: !$project?.$id,
                     group: 'security',
-                    icon: 'pencil'
+                    icon: IconPencil
                 }) as const
         ),
         // Settings
@@ -238,7 +258,6 @@
             rank: -1
         }
     ]);
-    let isOpen = false;
     onMount(async () => {
         loading.set(false);
         if (!localStorage.getItem('feedbackElapsed')) {
@@ -317,22 +336,23 @@
 </script>
 
 <CommandCenter />
-
 <Shell
-    bind:isOpen
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
-        !$page.url.pathname.includes('/console/onboarding')}>
-    <Header slot="header" />
-    <SideNavigation slot="side" bind:isOpen />
+        !$page.url.pathname.includes('/console/onboarding')}
+    showHeader={!$page.url.pathname.includes('/console/onboarding')}
+    showFooter={!$page.url.pathname.includes('/console/onboarding')}
+    bind:loadedProjects
+    bind:projects={data.projects}>
+    <!--    <Header slot="header" />-->
     <slot />
     <Footer slot="footer" />
 </Shell>
 
 {#if $wizard.show && $wizard.component}
-    <svelte:component this={$wizard.component} />
+    <svelte:component this={$wizard.component} {...$wizard.props} />
 {:else if $wizard.cover}
     <svelte:component this={$wizard.cover} />
 {/if}

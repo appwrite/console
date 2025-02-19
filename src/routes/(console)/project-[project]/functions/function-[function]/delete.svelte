@@ -1,15 +1,15 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
     export let selectedDeployment: Models.Deployment = null;
+    let error: string;
 
     async function handleSubmit() {
         try {
@@ -24,26 +24,13 @@
                 message: `Deployment has been deleted`
             });
             trackEvent(Submit.DeploymentDelete);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.DeploymentDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.DeploymentDelete);
         }
     }
 </script>
 
-<Modal
-    title="Delete deployment"
-    bind:show={showDelete}
-    onSubmit={handleSubmit}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
-    <p data-private>Are you sure you want to delete this deployment?</p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+<Confirm onSubmit={handleSubmit} title="Delete deployment" bind:open={showDelete} bind:error>
+    Are you sure you want to delete this deployment?
+</Confirm>

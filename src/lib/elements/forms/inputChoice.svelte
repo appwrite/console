@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { tooltip as tooltipAction } from '$lib/actions/tooltip';
-    import { Layout, Selector } from '@appwrite.io/pink-svelte';
+    import { Layout, Selector, Tooltip } from '@appwrite.io/pink-svelte';
     import { Helper } from '.';
 
     export let type: 'checkbox' | 'switchbox' = 'checkbox';
@@ -37,7 +36,6 @@
                 {id}
                 {disabled}
                 {required}
-                bind:value
                 bind:checked={value}
                 on:change
                 on:invalid={handleInvalid} />
@@ -47,7 +45,6 @@
                 {disabled}
                 size="s"
                 {required}
-                bind:value
                 bind:checked={value}
                 on:invalid={handleInvalid}
                 on:change />
@@ -62,16 +59,15 @@
                         </span>
                     {/if}
                     {#if tooltip}
-                        <button
-                            type="button"
-                            class="tooltip"
-                            aria-label="variables info"
-                            use:tooltipAction={{ content: tooltip }}>
-                            <span
-                                class="icon-info"
-                                aria-hidden="true"
-                                style="font-size: var(--icon-size-small)" />
-                        </button>
+                        <Tooltip>
+                            <button type="button" class="tooltip" aria-label="variables info">
+                                <span
+                                    class="icon-info"
+                                    aria-hidden="true"
+                                    style="font-size: var(--icon-size-small)" />
+                            </button>
+                            <p slot="tooltip">{tooltip}</p>
+                        </Tooltip>
                     {/if}
                 </div>
             {/if}

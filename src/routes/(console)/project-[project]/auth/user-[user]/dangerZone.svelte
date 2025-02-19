@@ -22,20 +22,16 @@
     $: accessedAt = ($user as unknown as { accessedAt: string }).accessedAt;
 </script>
 
-<CardGrid danger>
-    <div>
-        <Heading tag="h6" size="7">Delete user</Heading>
-    </div>
-    <p>
-        The user will be permanently deleted, including all data associated with this user. This
-        action is irreversible.
-    </p>
+<CardGrid>
+    <svelte:fragment slot="title">Delete user</svelte:fragment>
+    The user will be permanently deleted, including all data associated with this user. This action is
+    irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="image">
                 {#if $user.email || $user.phone}
                     {#if $user.name}
-                        <AvatarInitials size={48} name={$user.name} />
+                        <AvatarInitials size="l" name={$user.name} />
                     {:else}
                         <div class="avatar">
                             <span class="icon-minus-sm" aria-hidden="true" />

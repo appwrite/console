@@ -18,6 +18,8 @@
     import Table from './table.svelte';
     import { base } from '$app/paths';
     import { canWriteProviders } from '$lib/stores/roles';
+    import { Layout } from '@appwrite.io/pink-svelte';
+    import { View } from '$lib/helpers/load';
 
     export let data: PageData;
 
@@ -27,46 +29,19 @@
 </script>
 
 <Container>
-    <div class="u-flex u-flex-vertical">
-        <div class="u-flex u-main-space-between">
-            <Heading tag="h2" size="5">Providers</Heading>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery search={data.search} placeholder="Search providers" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Filters query={data.query} {columns} />
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
             {#if $canWriteProviders}
-                <div class="is-only-mobile">
-                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
-                </div>
+                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
             {/if}
-        </div>
-        <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery search={data.search} placeholder="Search provider">
-            <div class="u-flex u-gap-16 is-not-mobile">
-                <Filters query={data.query} {columns} />
-                <ViewSelector
-                    view={data.view}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile />
-                {#if $canWriteProviders}
-                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
-                {/if}
-            </div>
-        </SearchQuery>
-        <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
-            <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <ViewSelector
-                    view={data.view}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile />
-            </div>
-            <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <Filters query={data.query} {columns} />
-            </div>
-        </div>
-    </div>
+        </Layout.Stack>
+    </Layout.Stack>
+
     {#if data.providers.total}
         <Table {data} />
 

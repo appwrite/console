@@ -43,19 +43,7 @@
     }
 </script>
 
-<Modal
-    title="Disconnect installation"
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}
-    bind:show={showGitDisconnect}
-    onSubmit={handleSubmit}
-    size="big">
-    <p>
-        Are you sure you want to disconnect this git installation? This will affect future
-        deployments to the following functions:
-    </p>
-
+<Modal title="Disconnect installation" bind:show={showGitDisconnect} onSubmit={handleSubmit}>
     {#await loadFunctions()}
         <div class="u-flex u-main-center">
             <div class="avatar is-size-x-small">
@@ -64,6 +52,10 @@
         </div>
     {:then functions}
         {#if functions.total}
+            <p>
+                Are you sure you want to disconnect this git installation? This will affect future
+                deployments to the following functions:
+            </p>
             <div class="u-flex u-flex-vertical u-gap-12">
                 {#each functions.functions as func}
                     <div class="u-flex u-main-start u-gap-8">
@@ -73,7 +65,9 @@
                         <div
                             class="u-cross-child-center u-flex u-main-space-between u-flex-wrap u-gap-8 u-width-full-line">
                             <h6>{func.name}</h6>
-                            <p class="u-x-small" style="color: hsl(var(--color-neutral-70));">
+                            <p
+                                class="u-x-small u-cross-child-center"
+                                style="color: hsl(var(--color-neutral-70));">
                                 Last deployed: {toLocaleDateTime(func.$updatedAt)}
                             </p>
                         </div>
