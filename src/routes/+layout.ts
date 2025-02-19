@@ -58,18 +58,7 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 };
 
-function withParams(pathname: string, searchParams: URLSearchParams): string {
-    const redirect = searchParams.get('redirect');
-
-    if (redirect) {
-        const extras = new URLSearchParams(searchParams);
-        extras.delete('redirect');
-        const extraQuery = extras.toString();
-        const finalRedirect = extraQuery
-            ? `${redirect}${redirect.includes('?') ? '&' : '?'}${extraQuery}`
-            : redirect;
-        return `${pathname}?redirect=${encodeURIComponent(finalRedirect)}`;
-    }
-    const query = searchParams.toString();
-    return query ? `${pathname}?${query}` : pathname;
+function withParams(pathname: string, searchParams: URLSearchParams) {
+    if (searchParams.size > 0) return `${pathname}?${searchParams.toString()}`;
+    return pathname;
 }
