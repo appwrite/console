@@ -58,8 +58,9 @@
     import type { PageData } from './$types';
     import { canWritePlatforms } from '$lib/stores/roles';
     import { setOverviewAction } from '../context';
-    import { Table } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Card, Empty, Popover, Table } from '@appwrite.io/pink-svelte';
     import Action from './action.svelte';
+    import { IconAndroid, IconApple, IconFlutter, IconReact } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -121,49 +122,44 @@
         {/each}
     </Table.Root>
 {:else}
-    <article class="card u-grid u-cross-center u-width-full-line common-section">
-        <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
-            {#if $app.themeInUse === 'dark'}
-                <img src={SearchDark} alt="empty" aria-hidden="true" />
-            {:else}
-                <img src={SearchLight} alt="empty" aria-hidden="true" />
-            {/if}
-            <slot>
-                <div class="u-text-center">
-                    <Heading size="7" tag="h4">Create a platform to get started.</Heading>
-                    <p class="body-text-2 u-bold u-margin-block-start-4">
-                        Need a hand? Learn more in our documentation.
-                    </p>
-                </div>
-                <div class="u-flex u-gap-16 u-main-center">
-                    <Button external href="https://appwrite.io/docs/sdks" text>
-                        Documentation
-                    </Button>
-                    <DropList bind:show={showDropdownEmpty} placement="bottom-start">
-                        {#if $canWritePlatforms}
-                            <Button
-                                secondary
-                                on:click={() => (showDropdownEmpty = !showDropdownEmpty)}>
-                                <span class="text">Add platform</span>
-                            </Button>
-                        {/if}
-                        <svelte:fragment slot="list">
-                            <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
+    <Card.Base padding="none">
+        <Empty
+            title="Add a platform to get started."
+            description="Need a hand? Learn more in our documentation.">
+            <svelte:fragment slot="actions">
+                <Button external href="https://appwrite.io/docs/sdks" text>Documentation</Button>
+                <Popover let:toggle padding="none" placement="bottom-end">
+                    {#if $canWritePlatforms}
+                        <Button secondary on:click={toggle}>
+                            <span class="text">Add platform</span>
+                        </Button>
+                    {/if}
+                    <div style:min-width="232px" slot="tooltip">
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.Flutter)}
+                                leadingIcon={IconFlutter}>
                                 Flutter
-                            </DropListItem>
-                            <DropListItem on:click={() => addPlatform(Platform.Android)}>
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.Android)}
+                                leadingIcon={IconAndroid}>
                                 Android
-                            </DropListItem>
-                            <DropListItem on:click={() => addPlatform(Platform.Apple)}>
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.Apple)}
+                                leadingIcon={IconApple}>
                                 Apple
-                            </DropListItem>
-                            <DropListItem on:click={() => addPlatform(Platform.ReactNative)}>
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.ReactNative)}
+                                leadingIcon={IconReact}>
                                 React Native
-                            </DropListItem>
-                        </svelte:fragment>
-                    </DropList>
-                </div>
-            </slot>
-        </div>
-    </article>
+                            </ActionMenu.Item.Button>
+                        </ActionMenu.Root>
+                    </div>
+                </Popover>
+            </svelte:fragment>
+        </Empty>
+    </Card.Base>
 {/if}
