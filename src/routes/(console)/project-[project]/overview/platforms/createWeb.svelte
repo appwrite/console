@@ -55,7 +55,6 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
         label: string;
         icon: ComponentType;
         smallIcon: ComponentType;
-        gitCloneCode: string;
     };
     export let platform: PlatformType = PlatformType.Flutterandroid;
     export let selectedFrameworkKey: string | undefined = key ? key : undefined;
@@ -65,41 +64,31 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
             key: 'svelte',
             label: 'Svelte',
             icon: SvelteFrameworkIcon,
-            smallIcon: IconSvelte,
-            gitCloneCode:
-                '\ngit clone https://github.com/appwrite/starter-for-svelte\ncd starter-for-svelte'
+            smallIcon: IconSvelte
         },
         {
             key: 'react',
             label: 'React',
             icon: ReactFrameworkIcon,
-            smallIcon: IconReact,
-            gitCloneCode:
-                '\ngit clone https://github.com/appwrite/starter-for-react\ncd starter-for-react'
+            smallIcon: IconReact
         },
         {
             key: 'nuxt',
             label: 'Nuxt',
             icon: NuxtFrameworkIcon,
-            smallIcon: IconNuxt,
-            gitCloneCode:
-                '\ngit clone https://github.com/appwrite/starter-for-nuxt\ncd starter-for-nuxt'
+            smallIcon: IconNuxt
         },
         {
             key: 'nextjs',
             label: 'Next.js',
             icon: NextjsFrameworkIcon,
-            smallIcon: NextjsFrameworkIcon,
-            gitCloneCode:
-                '\ngit clone https://github.com/appwrite/starter-for-nextjs\ncd starter-for-nextjs'
+            smallIcon: NextjsFrameworkIcon
         },
         {
             key: 'vue',
             label: 'Vue',
             icon: VueFrameworkIcon,
-            smallIcon: IconVue,
-            gitCloneCode:
-                '\ngit clone https://github.com/appwrite/starter-for-vue\ncd starter-for-vue'
+            smallIcon: IconVue
         }
     ];
 
@@ -236,7 +225,10 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                         <div class="pink2-code-margin-fix">
-                            <Code lang="bash" lineNumbers code={selectedFramework.gitCloneCode} />
+                            <Code
+                                lang="bash"
+                                lineNumbers
+                                code={`\ngit clone https://github.com/appwrite/starter-for-${selectedFramework.key}\ncd starter-for--${selectedFramework.key}`} />
                         </div>
 
                         <Typography.Text variant="m-500"
