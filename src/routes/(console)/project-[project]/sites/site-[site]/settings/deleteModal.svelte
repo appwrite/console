@@ -7,16 +7,17 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { type Models } from '@appwrite.io/console';
 
+    export let site: Models.Site;
     export let showDelete = false;
-    const siteId = $page.params.site;
 
     let error: string;
     let confirmedDeletion = false;
 
     const handleSubmit = async () => {
         try {
-            await sdk.forProject.sites.delete(siteId);
+            await sdk.forProject.sites.delete(site.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -38,7 +39,12 @@
     bind:open={showDelete}
     bind:error>
     <FormList>
-        Are you sure you want to delete this site and all associated deployments from your project?
+        <p data-private>Are you sure you want to delete <b>{site.name}</b>?</p>
+
+        <p data-private>
+            The site and all associated deployments will be permanently deleted. This action is
+            irreversible.
+        </p>
 
         <InputCheckbox
             size="s"

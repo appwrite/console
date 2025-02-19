@@ -1,6 +1,5 @@
 <script lang="ts">
     import { BoxAvatar, CardGrid } from '$lib/components';
-    import Heading from '$lib/components/heading.svelte';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
@@ -28,4 +27,4 @@
     </svelte:fragment>
 </CardGrid>
 
-<Delete siteName={site.name} bind:showDelete />
+<Delete {site} bind:showDelete />
