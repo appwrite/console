@@ -16,7 +16,7 @@
         try {
             await sdk.forConsole.console.getResource(
                 `${value}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                Type.Rules
+                'rules' as unknown as Type //TODO: fix after Matej fixes backend
             );
 
             domainIsValid = true;
