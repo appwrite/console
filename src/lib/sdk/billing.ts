@@ -195,7 +195,11 @@ export type OrganizationUsage = {
         executions: number;
         bandwidth: number;
         users: number;
+        authPhoneTotal: number;
+        authPhoneEstimate: number;
     }>;
+    authPhoneTotal: number;
+    authPhoneEstimate: number;
 };
 
 export type AggregationList = {
@@ -270,6 +274,7 @@ export type Plan = {
     executions: number;
     realtime: number;
     logs: number;
+    authPhone: number;
     addons: {
         bandwidth: AdditionalResource;
         executions: AdditionalResource;
@@ -281,6 +286,12 @@ export type Plan = {
     trialDays: number;
     isAvailable: boolean;
     selfService: boolean;
+    premiumSupport: boolean;
+    budgeting: boolean;
+    supportsMockNumbers: boolean;
+    backupsEnabled: boolean;
+    backupPolicies: number;
+    emailBranding: boolean;
 };
 
 export type PlansInfo = {
@@ -1087,9 +1098,11 @@ export class Billing {
         );
     }
 
-    async listRegions(): Promise<RegionList> {
+    async listRegions(teamId: string): Promise<RegionList> {
         const path = `/console/regions`;
-        const params = {};
+        const params = {
+            teamId
+        };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'GET',

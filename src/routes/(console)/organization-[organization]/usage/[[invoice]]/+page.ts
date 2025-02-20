@@ -27,7 +27,9 @@ export const load: PageLoad = async ({ params, parent }) => {
                 executionsTotal: null,
                 projects: null,
                 executionsMBSecondsTotal: null,
-                buildsMBSecondsTotal: null
+                buildsMBSecondsTotal: null,
+                authPhoneTotal: null,
+                authPhoneEstimate: null
             }
         };
     }
@@ -72,12 +74,15 @@ export const load: PageLoad = async ({ params, parent }) => {
         }
     }
 
+    const usersUsageToDate = usage.users.filter((user) => new Date(user.date) < new Date());
+
     return {
         organizationUsage: usage,
         projectNames,
         invoices,
         currentInvoice,
         organizationMembers,
-        plan
+        plan,
+        usersUsageToDate
     };
 };

@@ -20,6 +20,7 @@
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
     import { redirectTo } from '$routes/store';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
     export let data;
 
@@ -52,6 +53,8 @@
                 $page.url.searchParams.delete('redirect');
                 if (redirect) {
                     await goto(`${redirect}${$page.url.search}`);
+                } else if (isCloud) {
+                    checkPricingRefAndRedirect($page.url.searchParams);
                 } else {
                     await goto(`${base}/${$page.url.search ?? ''}`);
                 }

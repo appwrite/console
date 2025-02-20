@@ -40,7 +40,12 @@
     Apply Appwrite credits to your organization.
 
     <FormList>
-        <InputText placeholder="Promo code" id="code" label="Add promo code" bind:value={coupon} />
+        <InputText
+            placeholder="Promo code"
+            id="code"
+            autofocus
+            label="Add promo code"
+            bind:value={coupon} />
     </FormList>
 
     <svelte:fragment slot="footer">

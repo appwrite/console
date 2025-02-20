@@ -6,6 +6,7 @@ test('getProjectId', () => {
         pathname: string;
         expected: string | null;
     }> = [
+        // legacy
         {
             pathname: '/console/project-6374e9031588b25d1841/databases',
             expected: '6374e9031588b25d1841'
@@ -34,6 +35,28 @@ test('getProjectId', () => {
         {
             pathname: '/console',
             expected: null
+        },
+
+        // multi-region
+        {
+            pathname: '/console/project-fra-6374e9031588b25d1841/databases',
+            expected: '6374e9031588b25d1841'
+        },
+        {
+            pathname: '/console/project-/databases',
+            expected: null
+        },
+        {
+            pathname: '/console/project-nyc-project-project-abc/databases',
+            expected: 'project-project-abc'
+        },
+        {
+            pathname: '/console/project-fra-abc/databases',
+            expected: 'abc'
+        },
+        {
+            pathname: '/console/project-syd-abc/databases/project-123',
+            expected: 'abc'
         }
     ];
 

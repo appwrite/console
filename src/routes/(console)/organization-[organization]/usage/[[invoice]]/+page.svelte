@@ -18,6 +18,8 @@
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
 
     export let data;
 
@@ -143,7 +145,6 @@
         <Heading tag="h6" size="7">Users</Heading>
 
         <p class="text">The total number of users across all projects in your organization.</p>
-
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.users}
                 {@const current = data.organizationUsage.usersTotal}
@@ -169,7 +170,7 @@
                             {
                                 name: 'Users',
                                 data: accumulateFromEndingTotal(
-                                    data.organizationUsage.users,
+                                    data.usersUsageToDate,
                                     data.organizationUsage.usersTotal
                                 )
                             }
@@ -364,6 +365,58 @@
                     progressMax={totalGbHours}
                     progressValue={totalGbHours}
                     progressBarData={progressBarStorageDate} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">Phone OTP</Heading>
+        <p class="text">
+            OTPs are billed per SMS message, with rates varying by recipient country. For a detailed
+            cost breakdown, see the <a
+                href="https://appwrite.io/docs/advanced/platform/phone-otp"
+                class="link">pricing page</a
+            >.
+        </p>
+        <p>You will not be charged for Phone OTPs before February 10th.</p>
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.authPhoneTotal}
+                <div class="u-flex u-main-space-between">
+                    <p>
+                        <span class="heading-level-4"
+                            >{formatNumberWithCommas(data.organizationUsage.authPhoneTotal)}</span>
+                        <span class="body-text-1 u-bold">OTPs</span>
+                    </p>
+                    <p class="u-flex u-gap-8 u-cross-center">
+                        <span class="u-color-text-offline">Estimated cost</span>
+                        <span class="body-text-2">
+                            {formatCurrency(data.organizationUsage.authPhoneEstimate)}
+                            <span
+                                class="icon-info u-color-text-offline"
+                                use:tooltip={{
+                                    content:
+                                        'The first 10 messages each month are provided at no cost. Pricing may vary as it depends on telecom rates and vendor agreements.'
+                                }} />
+                        </span>
+                    </p>
+                </div>
+
+                {#if project?.length > 0}
+                    <ProjectBreakdown
+                        projects={project}
+                        metric="authPhoneTotal"
+                        estimate="authPhoneEstimate"
+                        {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

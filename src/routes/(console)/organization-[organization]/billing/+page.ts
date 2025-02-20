@@ -25,33 +25,24 @@ export const load: PageLoad = async ({ parent, depends }) => {
               .catch(() => null)
         : null;
 
-    const [
-        paymentMethods,
-        addressList,
-        aggregationList,
-        billingAddress,
-        currentPlan,
-        creditList,
-        invoices
-    ] = await Promise.all([
-        sdk.forConsole.billing.listPaymentMethods(),
-        sdk.forConsole.billing.listAddresses(),
-        sdk.forConsole.billing.listAggregation(organization.$id),
-        billingAddressPromise,
-        sdk.forConsole.billing.getPlan(organization.$id),
-        sdk.forConsole.billing.listCredits(organization.$id),
-        sdk.forConsole.billing.listInvoices(organization.$id, [
-            Query.limit(1),
-            Query.equal('from', organization.billingCurrentInvoiceDate)
-        ])
-    ]);
+    const [paymentMethods, addressList, aggregationList, billingAddress, creditList, invoices] =
+        await Promise.all([
+            sdk.forConsole.billing.listPaymentMethods(),
+            sdk.forConsole.billing.listAddresses(),
+            sdk.forConsole.billing.listAggregation(organization.$id),
+            billingAddressPromise,
+            sdk.forConsole.billing.listCredits(organization.$id),
+            sdk.forConsole.billing.listInvoices(organization.$id, [
+                Query.limit(1),
+                Query.equal('from', organization.billingCurrentInvoiceDate)
+            ])
+        ]);
 
     return {
         paymentMethods,
         addressList,
         aggregationList,
         billingAddress,
-        currentPlan,
         creditList,
         invoices
     };

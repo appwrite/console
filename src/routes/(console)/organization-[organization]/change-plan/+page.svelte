@@ -32,7 +32,12 @@
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
     import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization, organizationList, type Organization } from '$lib/stores/organization';
+    import {
+        currentPlan,
+        organization,
+        organizationList,
+        type Organization
+    } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
@@ -101,8 +106,7 @@
             billingPlan = BillingPlan.PRO;
         }
 
-        const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
-        selfService = currentPlan.selfService;
+        selfService = $currentPlan?.selfService ?? true;
     });
 
     async function loadPaymentMethods() {
@@ -265,9 +269,7 @@
                 bind:billingPlan
                 bind:selfService
                 anyOrgFree={!!anyOrgFree}
-                class={anyOrgFree && billingPlan !== BillingPlan.FREE
-                    ? 'u-margin-block-start-16'
-                    : ''} />
+                class="u-margin-block-16" />
 
             {#if isDowngrade}
                 {#if billingPlan === BillingPlan.FREE}

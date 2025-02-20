@@ -17,6 +17,7 @@
     import { tierToPlan, type Tier, plansInfo } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
     let name: string;
     let id: string;
@@ -27,11 +28,11 @@
         ? [
               {
                   value: BillingPlan.FREE,
-                  label: `${tierToPlan(BillingPlan.FREE).name} - ${formatCurrency($plansInfo.get(BillingPlan.FREE).price)}/month`
+                  label: `${tierToPlan(BillingPlan.FREE).name} - ${formatCurrency($plansInfo.get(BillingPlan.FREE).price)} / month`
               },
               {
                   value: BillingPlan.PRO,
-                  label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
+                  label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)} / month + add-ons`
               }
               // {
               //     value: BillingPlan.SCALE,
@@ -42,12 +43,7 @@
 
     onMount(() => {
         if (isCloud) {
-            if ($page.url.searchParams.has('type')) {
-                const paramType = $page.url.searchParams.get('type');
-                if (paramType === 'createPro') {
-                    goto(`${base}/create-organization`);
-                }
-            }
+            checkPricingRefAndRedirect($page.url.searchParams);
         }
     });
 
@@ -125,7 +121,12 @@
                         </Pill>
                     </div>
                 {:else}
-                    <CustomId bind:show={showCustomId} name="Organization" isProject bind:id />
+                    <CustomId
+                        autofocus
+                        bind:show={showCustomId}
+                        name="Organization"
+                        isProject
+                        bind:id />
                 {/if}
                 {#if isCloud}
                     <div class="u-margin-block-start-8">
