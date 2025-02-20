@@ -3,8 +3,7 @@ import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
-export const domain = derived(page, ($page) => $page.data.domain as Models.ProxyRule);
-// columns: namem type, value, ttl, priority, comment, created
+export const domain = derived(page, ($page) => $page.data.domain as Models.Domain);
 export const columns = writable<Column[]>([
     { id: 'name', title: 'Name', type: 'string', show: true },
     { id: 'type', title: 'Type', type: 'string', show: true },

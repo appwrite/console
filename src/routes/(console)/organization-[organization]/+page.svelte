@@ -39,7 +39,6 @@
         IconApple,
         IconCode,
         IconFlutter,
-        IconGlobe,
         IconPlus,
         IconReact,
         IconUnity
