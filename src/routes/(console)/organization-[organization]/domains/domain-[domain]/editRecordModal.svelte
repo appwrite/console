@@ -11,10 +11,14 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import type { Models } from '@appwrite.io/console';
+    import { symmetricDifference } from '$lib/helpers/array';
+    import { deepClone } from '$lib/helpers/object';
 
-    type RecordType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'TXT' | 'NS' | 'SRV' | 'CAA' | 'PTR';
+    // type RecordType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'TXT' | 'NS' | 'SRV' | 'CAA' | 'PTR';
 
     export let show = false;
+    export let selectedRecord: Models.DnsRecord;
     const options = [
         {
             value: 'A',
@@ -67,56 +71,56 @@
             helper: 'ALIAS records are similar to CNAMEs but can be used for the root domain, allowing you to point your domain to another domain or server.'
         }
     ];
-    let name: string;
-    let type: RecordType = 'A';
-    let value: string;
-    let ttl = 3600;
-    let priority: number;
-    let comment: string;
+    let record = deepClone(selectedRecord);
     let error = '';
 
     async function handleSubmit() {
         try {
-            //TODO: create DNS record
+            //TODO: update DNS record
 
             show = false;
             addNotification({
                 type: 'success',
-                message: `Record has been created`
+                message: `Record has been updated`
             });
-            trackEvent(Submit.RecordCreate);
+            trackEvent(Submit.RecordUpdate);
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.RecordCreate);
+            trackError(e, Submit.RecordUpdate);
         }
     }
+
+    $: if (!show) {
+        selectedRecord = null;
+    }
+
+    $: isDisabled = !symmetricDifference(Object.values(record), Object.values(selectedRecord))
+        ?.length;
 </script>
 
-<Modal title="Create DNS record" bind:show bind:error onSubmit={handleSubmit}>
+<Modal title="Update DNS record" bind:show bind:error onSubmit={handleSubmit}>
     <span slot="description">
         DNS records map domain names to IP addresses or other resources.
     </span>
     <Layout.Stack gap="l">
-        <InputText id="name" label="Name" placeholder="subdomain" bind:value={name} />
+        <InputText id="name" label="Name" placeholder="subdomain" bind:value={record.name} />
         <Layout.Stack gap="xs">
-            <InputSelect {options} bind:value={type} id="type" label="Type" required />
+            <InputSelect {options} bind:value={record.type} id="type" label="Type" />
             <Layout.Stack direction="row" gap="xs">
                 <Icon icon={IconInfo} />
-                {options.find((option) => option.value === type)?.helper}
             </Layout.Stack>
         </Layout.Stack>
 
-        <InputText id="value" label="Value" placeholder="76.75.21.21" bind:value>
+        <InputText id="value" label="Value" placeholder="76.75.21.21" bind:value={record.value}>
             <Tooltip slot="info">
                 <Icon icon={IconInfo} />
                 <span slot="tooltip">
-                    Enter the target or destination for this DNS record (e.g., IP address, hostname,
-                    or other required data)
+                    {options.find((option) => option.value === record.type)?.helper}
                 </span>
             </Tooltip>
         </InputText>
         <Layout.Stack direction="row" gap="l">
-            <InputNumber id="ttl" label="TTL" placeholder="Enter number" bind:value={ttl}>
+            <InputNumber id="ttl" label="TTL" placeholder="Enter number" bind:value={record.ttl}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} />
                     <span slot="tooltip">
@@ -129,7 +133,7 @@
                 id="priority"
                 label="Priority"
                 placeholder="Enter number"
-                bind:value={priority}>
+                bind:value={record.priority}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} />
                     <span slot="tooltip">
@@ -144,11 +148,11 @@
             id="comment"
             label="Comment"
             placeholder="Provide an explanation of this DNS record's purpose"
-            bind:value={comment} />
+            bind:value={record.comment} />
     </Layout.Stack>
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit>Create DNS record</Button>
+        <Button secondary submit disabled={isDisabled}>Update DNS record</Button>
     </svelte:fragment>
 </Modal>
