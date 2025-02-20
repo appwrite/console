@@ -194,6 +194,9 @@
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
+                    if (showAccountMenu) {
+                        trackEvent('click_menu_dropdown');
+                    }
                 }}>
                 <div style:user-select="none">
                     <Avatar size="s" src={avatar} />
