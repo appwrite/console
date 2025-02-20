@@ -31,14 +31,11 @@
     import PlatformFlutterImgSource from './assets/platform-flutter.svg';
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.svg';
     import { base } from '$app/paths';
-    import Wizard from './keys/wizard.svelte';
-    import { wizard } from '$lib/stores/wizard';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { AvatarGroup } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { trackEvent } from '$lib/actions/analytics';
-    import { redirect } from '@sveltejs/kit';
     import { goto } from '$app/navigation';
 
     function createKey() {
@@ -46,7 +43,9 @@
             platform: 'server',
             state: 'add'
         });
-        wizard.start(Wizard);
+        goto(`${base}/project-${projectId}/overview/keys/create`, {
+            replaceState: true
+        });
     }
 
     export let projectId: string;
