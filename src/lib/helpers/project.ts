@@ -14,7 +14,7 @@ import { get } from 'svelte/store';
  * Example:
  * - `/project-console/` → `console`
  * - `/project-fra-console/` → `console`
- * - `/project-us-console/` → `console`
+ * - `/project-nyc-console/` → `console`
  */
 export function getProjectId() {
     // safety check!
