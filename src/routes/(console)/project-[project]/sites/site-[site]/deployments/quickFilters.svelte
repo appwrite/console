@@ -193,7 +193,7 @@
             <span class:icon-cheveron-down={!showing} class:icon-cheveron-up={showing}> </span>
         </Tag>
         <svelte:fragment slot="tooltip" let:toggle>
-            <ActionMenu.Root>
+            <ActionMenu.Root noPadding>
                 {#each filter.options as option (option.value + option.checked)}
                     <SelectSearchCheckbox
                         padding={8}

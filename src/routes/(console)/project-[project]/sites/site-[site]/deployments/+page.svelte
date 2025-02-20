@@ -94,11 +94,12 @@
                             <Icon size="s" icon={IconPlus} />
                             Create deployment
                         </Button>
-                        <svelte:fragment slot="tooltip">
-                            <ActionMenu.Root>
+                        <svelte:fragment slot="tooltip" let:toggle>
+                            <ActionMenu.Root noPadding>
                                 <ActionMenu.Item.Button
                                     badge="Recommended"
-                                    on:click={() => {
+                                    on:click={(e) => {
+                                        toggle(e);
                                         if (!hasInstallation) {
                                             showConnectRepo = true;
                                         } else {
@@ -108,13 +109,15 @@
                                     Git
                                 </ActionMenu.Item.Button>
                                 <ActionMenu.Item.Button
-                                    on:click={() => {
+                                    on:click={(e) => {
+                                        toggle(e);
                                         showConnectCLI = true;
                                     }}>
                                     CLI
                                 </ActionMenu.Item.Button>
                                 <ActionMenu.Item.Button
-                                    on:click={() => {
+                                    on:click={(e) => {
+                                        toggle(e);
                                         showConnectManual = true;
                                     }}>
                                     Manual

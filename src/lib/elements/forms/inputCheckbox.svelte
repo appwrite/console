@@ -11,6 +11,7 @@
         element?: HTMLInputElement | undefined;
         indeterminate?: boolean;
         size?: 's' | 'm';
+        description?: string;
     }
 
     export let id: string = '';
@@ -20,6 +21,7 @@
     export let disabled = false;
     export let element: HTMLInputElement | undefined = undefined;
     export let size: $$Props['size'] = 's';
+    export let description = '';
     let error: string;
 
     const handleInvalid = (event: Event) => {
@@ -47,6 +49,7 @@
                 {size}
                 {label}
                 {required}
+                {description}
                 on:invalid={handleInvalid}
                 on:click
                 on:change />
