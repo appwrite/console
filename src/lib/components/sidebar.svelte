@@ -212,7 +212,7 @@
                                 size="s"
                                 on:click={() => {
                                     toggleFeedback();
-                                    trackEvent('click_menu_feedback');
+                                    trackEvent('click_menu_feedback', { source: 'side_nav' });
                                 }}
                                 >Feedback
                             </Button.Button>
@@ -227,7 +227,7 @@
                                 size="s"
                                 on:click={() => {
                                     $showSupportModal = true;
-                                    trackEvent('click_menu_support');
+                                    trackEvent('click_menu_support', { source: 'side_nav' });
                                 }}>
                                 <span>Support</span>
 
@@ -272,7 +272,7 @@
                                     size="s"
                                     on:click={() => {
                                         toggleFeedback();
-                                        trackEvent('click_menu_feedback');
+                                        trackEvent('click_menu_feedback', { source: 'side_nav' });
                                     }}
                                     ><span>Feedback</span>
                                 </Button.Button>
@@ -287,7 +287,7 @@
                                     size="s"
                                     on:click={() => {
                                         $showSupportModal = true;
-                                        trackEvent('click_menu_support');
+                                        trackEvent('click_menu_support', { source: 'side_nav' });
                                     }}>
                                     <span>Support</span>
 
