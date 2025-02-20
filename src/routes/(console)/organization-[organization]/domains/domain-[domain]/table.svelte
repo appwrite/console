@@ -17,6 +17,7 @@
     import type { Models } from '@appwrite.io/console';
     import DeleteRecordModal from './deleteRecordModal.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import EditRecordModal from './editRecordModal.svelte';
 
     export let data;
 
@@ -142,4 +143,7 @@
 
 {#if showDelete}
     <DeleteRecordModal bind:show={showDelete} {selectedRecord} />
+{/if}
+{#if showEdit}
+    <EditRecordModal bind:show={showEdit} {selectedRecord} />
 {/if}
