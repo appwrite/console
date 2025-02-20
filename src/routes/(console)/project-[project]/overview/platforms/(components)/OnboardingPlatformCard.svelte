@@ -1,19 +1,18 @@
 <script lang="ts">
     import type { ComponentType } from 'svelte';
+    import { Icon } from '@appwrite.io/pink-svelte';
 
     export let icon: ComponentType;
     export let iconSize: number | undefined = undefined;
     export let iconColor: string | undefined = undefined;
+
+    let usableIconColor = `--icon-color, ${iconColor}`;
 </script>
 
 <div class="outer-card">
-    <div
-        class="inner-card"
-        style="
-            --icon-color: {iconColor || 'inherit'};
-            --icon-size: {iconSize ? `${iconSize}rem` : 'inherit'};
-        ">
-        <svelte:component this={icon} />
+    <div class="inner-card" style="--icon-size: {iconSize ? `${iconSize}rem` : 'inherit'};">
+        <!-- custom size; the icon has a cap at 24px -->
+        <Icon {icon} color={usableIconColor} />
     </div>
 </div>
 
@@ -43,10 +42,10 @@
         border: 0.54px solid #ededf0;
         box-shadow: 0 6.736px 6.736px 0 rgba(0, 0, 0, 0.05);
 
-        & :global(svg) {
+        // targeting `i` or `svg` doesn't seem to help.
+        & :global(*) {
             width: var(--icon-size);
             height: var(--icon-size);
-            color: var(--icon-color);
         }
     }
 

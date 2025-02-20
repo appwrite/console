@@ -13,8 +13,8 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { fade } from 'svelte/transition';
-    import ConnectionLine from './components/ConnectionLine.svelte';
-    import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
+    import ConnectionLine from './(components)/ConnectionLine.svelte';
+    import OnboardingPlatformCard from './(components)/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import { app } from '$lib/stores/app';
