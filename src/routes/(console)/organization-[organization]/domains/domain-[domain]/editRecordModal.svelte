@@ -68,7 +68,7 @@
         }
     ];
     let name: string;
-    let type: RecordType = 'A';
+    let type: RecordType;
     let value: string;
     let ttl = 3600;
     let priority: number;
@@ -99,10 +99,9 @@
     <Layout.Stack gap="l">
         <InputText id="name" label="Name" placeholder="subdomain" bind:value={name} />
         <Layout.Stack gap="xs">
-            <InputSelect {options} bind:value={type} id="type" label="Type" required />
+            <InputSelect {options} bind:value={type} id="type" label="Type" />
             <Layout.Stack direction="row" gap="xs">
                 <Icon icon={IconInfo} />
-                {options.find((option) => option.value === type)?.helper}
             </Layout.Stack>
         </Layout.Stack>
 
@@ -110,8 +109,7 @@
             <Tooltip slot="info">
                 <Icon icon={IconInfo} />
                 <span slot="tooltip">
-                    Enter the target or destination for this DNS record (e.g., IP address, hostname,
-                    or other required data)
+                    {options.find((option) => option.value === type)?.helper}
                 </span>
             </Tooltip>
         </InputText>

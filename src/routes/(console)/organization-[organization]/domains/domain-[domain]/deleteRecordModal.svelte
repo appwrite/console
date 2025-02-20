@@ -6,20 +6,21 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { Confirm } from '$lib/components';
+    import { page } from '$app/stores';
 
     export let show = false;
-    export let selectedDomain: Models.Domain;
+    export let selectedRecord: Models.DnsRecord;
 
     let error = '';
 
     async function deleteDomain() {
         try {
-            await sdk.forConsole.domains.delete(selectedDomain.$id);
+            await sdk.forConsole.domains.deleteRecord($page.params.domain, selectedRecord.$id);
             await invalidate(Dependencies.DOMAINS);
             show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been deleted`
+                message: 'Record has been deleted'
             });
             trackEvent(Submit.DomainDelete);
         } catch (e) {
@@ -30,6 +31,5 @@
 </script>
 
 <Confirm onSubmit={deleteDomain} title="Delete domain" bind:open={show} bind:error>
-    <p data-private>Are you sure you want to delete <b>{selectedDomain?.domain}</b>?</p>
-    <p>Your site will no longer be available at this domain. This action is irreversible.</p>
+    <p>Are you sure you want to delete this record? This action is irreversible.</p>
 </Confirm>

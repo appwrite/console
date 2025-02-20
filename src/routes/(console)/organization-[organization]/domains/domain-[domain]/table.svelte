@@ -15,6 +15,8 @@
     import { columns } from './store';
     import { timeFromNow } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
+    import DeleteRecordModal from './deleteRecordModal.svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let data;
 
@@ -79,7 +81,7 @@
                         {:else if column.id === '$createdAt'}
                             <Table.Cell>
                                 <Typography.Text>
-                                    {timeFromNow(record.$createdAt)}
+                                    {capitalize(timeFromNow(record.$createdAt))}
                                 </Typography.Text>
                             </Table.Cell>
                         {/if}
@@ -137,3 +139,7 @@
         offset={data.offset}
         total={data.recordList.total} />
 </Layout.Stack>
+
+{#if showDelete}
+    <DeleteRecordModal bind:show={showDelete} {selectedRecord} />
+{/if}
