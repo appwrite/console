@@ -5,7 +5,7 @@
     let container: HTMLSpanElement | null;
 </script>
 
-<Tooltip maxWidth="auto" inline={false}>
+<Tooltip maxWidth="auto">
     <span class={`text ${alternativeTrim ? 'u-trim-1' : 'u-trim'}`} bind:this={container}>
         <slot />
     </span>

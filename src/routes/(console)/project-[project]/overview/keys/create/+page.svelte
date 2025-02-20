@@ -1,7 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import Card from '$lib/components/card.svelte';
     import { InputText } from '$lib/elements/forms/index.js';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -16,8 +15,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
-
-    export let data;
 
     let showExitModal = false;
     let formComponent: Form;
@@ -65,7 +62,7 @@
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xxl">
-            <Fieldset legend="Step 1">
+            <Fieldset legend="Settings">
                 <Layout.Stack>
                     <InputText
                         id="name"

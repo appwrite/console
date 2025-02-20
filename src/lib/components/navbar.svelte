@@ -182,7 +182,7 @@
                 </DropList>
             </Layout.Stack>
             <Layout.Stack direction="row">
-                <Tooltip inline={false}>
+                <Tooltip>
                     <Button.Button
                         variant="text"
                         aria-label="Toggle Command Center"
@@ -373,10 +373,6 @@
         .only-desktop {
             display: flex;
         }
-    }
-
-    :global(.icons div:first-of-type:not(:has(.progress-card))) {
-        height: 20px;
     }
 
     .account-container {

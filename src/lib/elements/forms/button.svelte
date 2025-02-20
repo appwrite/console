@@ -86,8 +86,7 @@
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
-        aria-label={ariaLabel}
-        --button-width={fullWidth ? '100%' : 'max-content'}>
+        aria-label={ariaLabel}>
         <slot name="start" slot="start" />
         <slot />
         <slot slot="end" name="end" />
@@ -104,8 +103,7 @@
         {variant}
         class={resolvedClasses}
         aria-label={ariaLabel}
-        type={submit ? 'submit' : 'button'}
-        --button-width={fullWidth ? '100%' : 'max-content'}>
+        type={submit ? 'submit' : 'button'}>
         <slot name="start" slot="start" />
         {#if ($isSubmitting && submissionLoader) || (forceShowLoader && submissionLoader)}
             <span

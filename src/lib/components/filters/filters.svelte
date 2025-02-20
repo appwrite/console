@@ -117,19 +117,17 @@
 </script>
 
 <div class="is-not-mobile">
-    <Drop bind:show={showFiltersDesktop} noArrow>
-        <slot {disabled} toggle={toggleDropdown}>
-            <Button secondary on:click={toggleDropdown} {disabled}>
-                <Icon icon={IconFilter} slot="start" size="s" />
-                Filters
-                {#if applied > 0}
-                    <span class="inline-tag">
-                        {applied}
-                    </span>
-                {/if}
-            </Button>
-        </slot>
-        <svelte:fragment slot="list">
+    <Popover let:toggle placement="bottom-start">
+        <Button secondary on:click={toggle} {disabled}>
+            <Icon icon={IconFilter} slot="start" size="s" />
+            Filters
+            {#if applied > 0}
+                <span class="inline-tag">
+                    {applied}
+                </span>
+            {/if}
+        </Button>
+        <svelte:fragment slot="tooltip">
             <div class="dropped card">
                 {#if displayQuickFilters}
                     <slot name="quick" />
@@ -171,7 +169,7 @@
                 </div>
             </div>
         </svelte:fragment>
-    </Drop>
+    </Popover>
 </div>
 
 <div class="is-only-mobile">

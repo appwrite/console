@@ -41,7 +41,7 @@
         }
     }
 
-    function categoryState(category: string, s: string[]): boolean | null {
+    function categoryState(category: string, s: string[]): boolean | 'indeterminate' {
         const scopesByCategory = allScopes.filter((n) => n.category === category);
         const filtered = scopesByCategory.filter((n) => s.includes(n.scope));
         if (filtered.length === 0) {
@@ -49,16 +49,15 @@
         } else if (filtered.length === scopesByCategory.length) {
             return true;
         } else {
-            return null;
+            return 'indeterminate';
         }
     }
 
-    function onCategoryChange(event: Event, category: Category) {
+    function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: Category) {
+        if (event.detail === 'indeterminate') return;
         allScopes.forEach((s) => {
             if (s.category === category) {
-                activeScopes[s.scope] = (
-                    event.currentTarget as EventTarget & HTMLInputElement
-                ).checked;
+                activeScopes[s.scope] = event.detail;
             }
         });
     }
@@ -100,7 +99,8 @@
                 selectable
                 title={category}
                 badge={`${scopesLength} ${scopesLength === 1 ? 'Scope' : 'Scopes'}`}
-                {checked}>
+                {checked}
+                on:change={(event) => onCategoryChange(event, category)}>
                 <Layout.Stack>
                     {#each allScopes.filter((s) => s.category === category) as scope}
                         <Selector.Checkbox
