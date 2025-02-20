@@ -22,6 +22,8 @@
 
     function close() {
         show = false;
+        expire = null;
+        isDelete = false;
         fileToken = null;
     }
 
@@ -35,8 +37,7 @@
     }
 
     $: if (!show) {
-        expire = null;
-        fileToken = null;
+        close();
     }
 </script>
 
@@ -58,7 +59,10 @@
         </p>
     </Confirm>
 {:else}
-    <Modal {show} onSubmit={handleFileToken} title={`${fileToken ? 'Edit' : 'Create'} file token`}>
+    <Modal
+        bind:show
+        onSubmit={handleFileToken}
+        title={`${fileToken ? 'Edit' : 'Create'} file token`}>
         <!-- TODO: docs link needed-->
         <svelte:fragment slot="description">
             {#if fileToken}

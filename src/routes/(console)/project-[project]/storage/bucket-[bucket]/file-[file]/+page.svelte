@@ -1,7 +1,7 @@
 <script lang="ts">
     import { CardGrid, BoxAvatar, Heading, Alert, CopyInput, Empty } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { file } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
@@ -166,90 +166,87 @@
             </svelte:fragment>
         </CardGrid>
 
-        <Form onSubmit={() => {}}>
-            <CardGrid hideOverflow>
-                <svelte:fragment slot="title">File tokens</svelte:fragment>
-                Use tokens to provide public access to the file.
-                <svelte:fragment slot="aside">
-                    {#if fileTokens.length}
-                        <Layout.Stack justifyContent="flex-end" direction="row">
-                            <Button secondary on:click={() => (showManageToken = true)}>
-                                <Icon size="s" icon={IconPlus} />
-                                <span class="text">Create token</span>
-                            </Button>
-                        </Layout.Stack>
+        <CardGrid hideOverflow>
+            <svelte:fragment slot="title">File tokens</svelte:fragment>
+            Use tokens to provide public access to the file.
+            <svelte:fragment slot="aside">
+                {#if fileTokens.length}
+                    <Layout.Stack justifyContent="flex-end" direction="row">
+                        <Button secondary on:click={() => (showManageToken = true)}>
+                            <Icon size="s" icon={IconPlus} />
+                            <span class="text">Create token</span>
+                        </Button>
+                    </Layout.Stack>
 
-                        <Table.Root>
-                            <svelte:fragment slot="header">
-                                <Table.Header.Cell width="170px">Created</Table.Header.Cell>
-                                <Table.Header.Cell width="170px">Value</Table.Header.Cell>
-                                <Table.Header.Cell width="170px">Expiry</Table.Header.Cell>
-                                <Table.Header.Cell width="170px">Last accessed</Table.Header.Cell>
-                                <Table.Header.Cell width="40px" />
-                            </svelte:fragment>
+                    <Table.Root>
+                        <svelte:fragment slot="header">
+                            <Table.Header.Cell width="170px">Created</Table.Header.Cell>
+                            <Table.Header.Cell width="170px">Value</Table.Header.Cell>
+                            <Table.Header.Cell width="170px">Expiry</Table.Header.Cell>
+                            <Table.Header.Cell width="170px">Last accessed</Table.Header.Cell>
+                            <Table.Header.Cell width="40px" />
+                        </svelte:fragment>
 
-                            {#each fileTokens as token}
-                                <Table.Row>
-                                    <Table.Cell>{toLocaleDate(token.created)}</Table.Cell>
-                                    <Table.Cell>
-                                        <HiddenText isVisible={false} text={token.value} />
-                                    </Table.Cell>
-                                    <Table.Cell
-                                        >{token.expiry
-                                            ? cleanFormattedDate(token.expiry)
-                                            : 'Never'}</Table.Cell>
-                                    <Table.Cell
-                                        >{token.lastAccessed
-                                            ? cleanFormattedDate(token.lastAccessed)
-                                            : 'Never'}</Table.Cell>
+                        {#each fileTokens as token}
+                            <Table.Row>
+                                <Table.Cell>{toLocaleDate(token.created)}</Table.Cell>
+                                <Table.Cell>
+                                    <HiddenText isVisible={false} text={token.value} />
+                                </Table.Cell>
+                                <Table.Cell
+                                    >{token.expiry
+                                        ? cleanFormattedDate(token.expiry)
+                                        : 'Never'}</Table.Cell>
+                                <Table.Cell
+                                    >{token.lastAccessed
+                                        ? cleanFormattedDate(token.lastAccessed)
+                                        : 'Never'}</Table.Cell>
 
-                                    <Table.Cell>
-                                        <Popover placement="bottom-end" let:toggle>
-                                            <Button
-                                                text
-                                                icon
-                                                on:click={(e) => {
-                                                    e.preventDefault();
-                                                    toggle(e);
-                                                }}>
-                                                <Icon size="s" icon={IconDotsHorizontal} />
-                                            </Button>
-                                            <svelte:fragment slot="tooltip" let:toggle>
-                                                <ActionMenu.Root noPadding>
-                                                    <ActionMenu.Item.Button
-                                                        leadingIcon={IconPencil}
-                                                        on:click={(e) => {
-                                                            toggle(e);
-                                                            showManageToken = true;
-                                                            selectedFileToken = token;
-                                                        }}>
-                                                        Edit expiry
-                                                    </ActionMenu.Item.Button>
-                                                    <ActionMenu.Item.Button
-                                                        status="danger"
-                                                        leadingIcon={IconTrash}
-                                                        on:click={async (e) => {
-                                                            toggle(e);
-                                                            tokenDeleteMode = true;
-                                                            showManageToken = true;
-                                                            selectedFileToken = token;
-                                                        }}>
-                                                        Delete
-                                                    </ActionMenu.Item.Button>
-                                                </ActionMenu.Root>
-                                            </svelte:fragment>
-                                        </Popover>
-                                    </Table.Cell>
-                                </Table.Row>
-                            {/each}
-                        </Table.Root>
-                    {:else}
-                        <Empty on:click={() => (showManageToken = true)}
-                            >Create new file token</Empty>
-                    {/if}
-                </svelte:fragment>
-            </CardGrid>
-        </Form>
+                                <Table.Cell>
+                                    <Popover placement="bottom-end" let:toggle>
+                                        <Button
+                                            text
+                                            icon
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                toggle(e);
+                                            }}>
+                                            <Icon size="s" icon={IconDotsHorizontal} />
+                                        </Button>
+                                        <svelte:fragment slot="tooltip" let:toggle>
+                                            <ActionMenu.Root noPadding>
+                                                <ActionMenu.Item.Button
+                                                    leadingIcon={IconPencil}
+                                                    on:click={(e) => {
+                                                        toggle(e);
+                                                        showManageToken = true;
+                                                        selectedFileToken = token;
+                                                    }}>
+                                                    Edit expiry
+                                                </ActionMenu.Item.Button>
+                                                <ActionMenu.Item.Button
+                                                    status="danger"
+                                                    leadingIcon={IconTrash}
+                                                    on:click={async (e) => {
+                                                        toggle(e);
+                                                        tokenDeleteMode = true;
+                                                        showManageToken = true;
+                                                        selectedFileToken = token;
+                                                    }}>
+                                                    Delete
+                                                </ActionMenu.Item.Button>
+                                            </ActionMenu.Root>
+                                        </svelte:fragment>
+                                    </Popover>
+                                </Table.Cell>
+                            </Table.Row>
+                        {/each}
+                    </Table.Root>
+                {:else}
+                    <Empty on:click={() => (showManageToken = true)}>Create new file token</Empty>
+                {/if}
+            </svelte:fragment>
+        </CardGrid>
 
         <CardGrid>
             <svelte:fragment slot="title">Permissions</svelte:fragment>
@@ -314,9 +311,9 @@
 <Delete bind:showDelete />
 
 <ManageFileTokenModal
-    isDelete={tokenDeleteMode}
-    fileToken={selectedFileToken}
     bind:show={showManageToken}
+    bind:isDelete={tokenDeleteMode}
+    bind:fileToken={selectedFileToken}
     on:created={({ detail: expiry }) => createFileToken(expiry)}
     on:updated={({ detail: newExpiry }) => updateFileTokenExpiry(newExpiry)}
     on:deleted={async () => await deleteFileToken(selectedFileToken)} />
