@@ -28,7 +28,6 @@
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
 
-    let showCreateDropdown = false;
     let showEmptyCreateDropdown = false;
     let showDropdown = [];
     let selectedOption: Option['name'] = null;
@@ -53,7 +52,7 @@
         <Heading tag="h2" size="5">Attributes</Heading>
 
         {#if $canWriteCollections}
-            <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
+            <CreateAttributeDropdown bind:selectedOption bind:showCreate />
         {/if}
     </div>
 
@@ -197,18 +196,8 @@
             <p class="text">Total results: {$attributes.length}</p>
         </div>
     {:else}
-        <Empty
-            allowCreate={$canWriteCollections}
-            single
-            target="attribute"
-            on:click={() => (showEmptyCreateDropdown = true)}>
-            <div class="u-text-center">
-                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
-                <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Learn more in our documentation.
-                </p>
-            </div>
-            <div class="u-flex u-gap-16 u-main-center">
+        <Empty single target="attribute">
+            <svelte:fragment slot="actions">
                 <Button
                     external
                     href="https://appwrite.io/docs/products/databases/collections#attributes"
@@ -216,21 +205,13 @@
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
                 {#if $canWriteCollections}
-                    <CreateAttributeDropdown
-                        bind:showCreateDropdown={showEmptyCreateDropdown}
-                        bind:selectedOption
-                        bind:showCreate>
-                        <Button
-                            secondary
-                            event="create_attribute"
-                            on:click={() => {
-                                showEmptyCreateDropdown = !showEmptyCreateDropdown;
-                            }}>
+                    <CreateAttributeDropdown bind:selectedOption bind:showCreate let:toggle>
+                        <Button secondary event="create_attribute" on:click={toggle}>
                             Create attribute
                         </Button>
                     </CreateAttributeDropdown>
                 {/if}
-            </div>
+            </svelte:fragment>
         </Empty>
     {/if}
 </Container>

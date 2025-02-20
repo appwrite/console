@@ -27,7 +27,7 @@
 {#if single}
     <Card.Base padding="none">
         <Empty title={`Create your first ${target}`} {description} {src}>
-            <svelte:fragment slot="actions">
+            <slot name="actions" slot="actions">
                 <Button
                     external
                     {href}
@@ -44,7 +44,7 @@
                     size="s">
                     Create {target}
                 </Button>
-            </svelte:fragment>
+            </slot>
         </Empty>
     </Card.Base>
 {:else}

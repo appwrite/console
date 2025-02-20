@@ -18,7 +18,6 @@
     import { project } from '../store';
     import Bandwidth from './bandwidth.svelte';
     import { createApiKey } from './keys/+page.svelte';
-    import Onboard from './onboard.svelte';
     import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
@@ -27,7 +26,6 @@
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
-    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -125,13 +123,6 @@
                                     </Typography.Title>
                                     <Typography.Text>Documents</Typography.Text>
                                 </div>
-
-                                <div class="grid-item-1-end-end">
-                                    <Typography.Text
-                                        >Databases: {formatNum(
-                                            $usage.databasesTotal ?? 0
-                                        )}</Typography.Text>
-                                </div>
                             </div>
                         </Card.Link>
                         <Card.Link
@@ -154,12 +145,6 @@
                                         <span class="body-text-2">{storage.unit}</span>
                                     </Typography.Title>
                                     <Typography.Text>Storage</Typography.Text>
-                                </div>
-
-                                <div class="grid-item-1-end-end">
-                                    <Typography.Text>
-                                        Buckets: {formatNum($usage.bucketsTotal ?? 0)}
-                                    </Typography.Text>
                                 </div>
                             </div>
                         </Card.Link>

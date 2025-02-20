@@ -4,10 +4,12 @@
     import { Icon } from '@appwrite.io/pink-svelte';
     import { createApiKey } from './+page.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 </script>
 
 {#if $canWriteKeys}
-    <Button on:click={createApiKey}>
+    <Button href={`${base}/project-${$page.params.project}/overview/keys/create`}>
         <Icon icon={IconPlus} slot="start" size="s" />
         Create API key
     </Button>

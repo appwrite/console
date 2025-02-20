@@ -5,6 +5,7 @@
     import { onMount } from 'svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import Checkbox from './checkbox.svelte';
+    import { Accordion, Divider, Input, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let scopes: string[];
 
@@ -81,47 +82,36 @@
     }
 </script>
 
-<ul class="buttons-list u-main-end">
-    <li class="buttons-list-item">
+<Layout.Stack>
+    <Layout.Stack direction="row-reverse" alignItems="center" gap="s">
         <Button text on:click={deselectAll}>Deselect all</Button>
-    </li>
-    <li class="buttons-list-item">
+        <span style:height="20px">
+            <Divider vertical />
+        </span>
         <Button text on:click={selectAll}>Select all</Button>
-    </li>
-</ul>
-
-<Collapsible>
-    {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Other] as category}
-        {@const checked = categoryState(category, scopes)}
-        <CollapsibleItem withIndentation>
-            <svelte:fragment slot="beforetitle">
-                <Checkbox
-                    {checked}
-                    indeterminate={checked === null ? true : false}
-                    on:change={(e) => onCategoryChange(e, category)} />
-            </svelte:fragment>
-            <svelte:fragment slot="title">
-                {category}
-            </svelte:fragment>
-            <svelte:fragment slot="subtitle">
-                {@const scopesLength = allScopes.filter(
-                    (n) => n.category === category && scopes.includes(n.scope)
-                ).length}
-                ({scopesLength}
-                {scopesLength === 1 ? 'Scope' : 'Scopes'})
-            </svelte:fragment>
-            <div class="form">
-                <FormList>
+    </Layout.Stack>
+    <Layout.Stack gap="none">
+        {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Other] as category}
+            {@const checked = categoryState(category, scopes)}
+            {@const scopesLength = allScopes.filter(
+                (n) => n.category === category && scopes.includes(n.scope)
+            ).length}
+            <Accordion
+                selectable
+                title={category}
+                badge={`${scopesLength} ${scopesLength === 1 ? 'Scope' : 'Scopes'}`}
+                {checked}>
+                <Layout.Stack>
                     {#each allScopes.filter((s) => s.category === category) as scope}
-                        <InputChoice
+                        <Selector.Checkbox
+                            size="s"
                             id={scope.scope}
                             label={scope.scope}
-                            bind:value={activeScopes[scope.scope]}>
-                            {scope.description}
-                        </InputChoice>
+                            description={scope.description}
+                            bind:checked={activeScopes[scope.scope]} />
                     {/each}
-                </FormList>
-            </div>
-        </CollapsibleItem>
-    {/each}
-</Collapsible>
+                </Layout.Stack>
+            </Accordion>
+        {/each}
+    </Layout.Stack>
+</Layout.Stack>

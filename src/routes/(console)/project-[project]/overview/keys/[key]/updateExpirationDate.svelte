@@ -62,9 +62,7 @@
                     <p>Update the expiration date to keep the key active</p>
                 </Alert>
             {/if}
-            <FormList>
-                <ExpirationInput bind:value={expiration} />
-            </FormList>
+            <ExpirationInput bind:value={expiration} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

@@ -1,36 +1,30 @@
 <script lang="ts">
-    import { DropList, DropListItem } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
     import { attributeOptions, type Option } from './store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-
-    export let showCreateDropdown = false;
 
     export let selectedOption: Option['name'] = null;
     export let showCreate = false;
 </script>
 
-<DropList bind:show={showCreateDropdown} scrollable>
-    <slot>
-        <Button
-            on:click={() => (showCreateDropdown = !showCreateDropdown)}
-            event="create_attribute">
+<Popover let:toggle padding="none">
+    <slot {toggle}>
+        <Button on:click={toggle} event="create_attribute">
             <Icon icon={IconPlus} slot="start" size="s" />
             Create attribute
         </Button>
     </slot>
-    <svelte:fragment slot="list">
+    <ActionMenu.Root slot="tooltip">
         {#each attributeOptions as attribute}
-            <DropListItem
-                icon={attribute.icon}
+            <ActionMenu.Item.Button
+                leadingIcon={attribute.icon}
                 on:click={() => {
                     selectedOption = attribute.name;
-                    showCreateDropdown = false;
                     showCreate = true;
                 }}>
                 {attribute.name}
-            </DropListItem>
+            </ActionMenu.Item.Button>
         {/each}
-    </svelte:fragment>
-</DropList>
+    </ActionMenu.Root>
+</Popover>

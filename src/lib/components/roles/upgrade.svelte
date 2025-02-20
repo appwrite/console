@@ -9,7 +9,7 @@
 </script>
 
 <Base>
-    <Layout.Stack>
+    <Layout.Stack gap="s">
         {#if isCloud}
             {#if $organization?.billingPlan !== BillingPlan.FREE}
                 <Typography.Text variant="m-600">Roles</Typography.Text>

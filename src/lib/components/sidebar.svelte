@@ -279,6 +279,7 @@
         </div>
     </Sidebar.Base>
 </div>
+
 {#if subNavigation}
     <div class="sub-navigation" class:icons={state === 'icons'}>
         <svelte:component this={subNavigation} />

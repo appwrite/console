@@ -14,7 +14,7 @@
         ValidOperators
     } from './store';
     import { createEventDispatcher } from 'svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Popover } from '@appwrite.io/pink-svelte';
     import { IconFilter } from '@appwrite.io/pink-icons-svelte';
 
     export let query = '[]';

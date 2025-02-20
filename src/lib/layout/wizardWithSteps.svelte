@@ -23,6 +23,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { createEventDispatcher, type SvelteComponent } from 'svelte';
     import WizardExitModal from './wizardExitModal.svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let title: string;
     export let steps: WizardStepsType;
@@ -192,38 +193,40 @@
         {/if}
     </div>
     <div class="wizard-main">
-        <Form noStyle onSubmit={submit}>
-            {#each sortedSteps as [step, { component }]}
-                {#if $wizard.step === step}
-                    <svelte:component this={component} />
-                {/if}
-            {/each}
-            <div class="u-z-index-5 form-footer">
-                <div class="u-flex u-main-end u-gap-12">
-                    {#if !isLastStep && currentStep?.optional}
-                        <Button text on:click={() => dispatch('finish')}>
-                            Skip optional steps
+        <Form onSubmit={submit}>
+            <Layout.Stack>
+                {#each sortedSteps as [step, { component }]}
+                    {#if $wizard.step === step}
+                        <svelte:component this={component} />
+                    {/if}
+                {/each}
+                <div class="u-z-index-5 form-footer">
+                    <div class="u-flex u-main-end u-gap-12">
+                        {#if !isLastStep && currentStep?.optional}
+                            <Button text on:click={() => dispatch('finish')}>
+                                Skip optional steps
+                            </Button>
+                        {/if}
+
+                        {#if $wizard.step === 1}
+                            <Button secondary on:click={handleExit}>Cancel</Button>
+                        {:else}
+                            <Button secondary on:click={previousStep}>Back</Button>
+                        {/if}
+
+                        {#if currentStep?.actions}
+                            {#each currentStep.actions as action}
+                                <Button secondary on:click={action.onClick}>
+                                    {action.label}</Button>
+                            {/each}
+                        {/if}
+
+                        <Button submit disabled={$wizard.nextDisabled}>
+                            {isLastStep ? finalAction : 'Next'}
                         </Button>
-                    {/if}
-
-                    {#if $wizard.step === 1}
-                        <Button secondary on:click={handleExit}>Cancel</Button>
-                    {:else}
-                        <Button secondary on:click={previousStep}>Back</Button>
-                    {/if}
-
-                    {#if currentStep?.actions}
-                        {#each currentStep.actions as action}
-                            <Button secondary on:click={action.onClick}>
-                                {action.label}</Button>
-                        {/each}
-                    {/if}
-
-                    <Button submit disabled={$wizard.nextDisabled}>
-                        {isLastStep ? finalAction : 'Next'}
-                    </Button>
+                    </div>
                 </div>
-            </div>
+            </Layout.Stack>
         </Form>
     </div>
 </section>
