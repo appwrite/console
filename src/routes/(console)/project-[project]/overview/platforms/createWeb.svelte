@@ -240,7 +240,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             <Typography.Text variant="m-500"
                                 >2. Change <InlineCode
                                     size="s"
-                                    code="src/environments/environment&#x7B;.development&#x7D;.ts" />
+                                    code="src/environments/environment.ts" />
                                 to reflect the values below:</Typography.Text>
                         {:else}
                             <Typography.Text variant="m-500"
