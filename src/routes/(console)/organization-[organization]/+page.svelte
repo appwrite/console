@@ -76,7 +76,7 @@
 
     function getIconForPlatform(platform: string): ComponentType {
         switch (platform) {
-            case 'web':
+            case 'code':
                 return IconCode;
             case 'flutter':
                 return IconFlutter;

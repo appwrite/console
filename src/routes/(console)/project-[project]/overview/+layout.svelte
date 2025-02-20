@@ -6,7 +6,7 @@
 </script>
 
 <script lang="ts">
-    import { afterNavigate } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -17,7 +17,6 @@
     import { onMount, setContext, SvelteComponent } from 'svelte';
     import { project } from '../store';
     import Bandwidth from './bandwidth.svelte';
-    import { createApiKey } from './keys/+page.svelte';
     import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
@@ -68,7 +67,7 @@
             label: 'Create API Key',
             icon: IconPlus,
             callback() {
-                createApiKey();
+                goto(`${base}/project-[project]/overview/keys/create`);
             },
             keys: ['c', 'k'],
             group: 'integrations',

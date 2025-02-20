@@ -2,7 +2,6 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { canWriteKeys } from '$lib/stores/roles';
     import { Icon } from '@appwrite.io/pink-svelte';
-    import { createApiKey } from './+page.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
