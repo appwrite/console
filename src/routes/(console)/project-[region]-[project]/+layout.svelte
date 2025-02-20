@@ -28,7 +28,6 @@
         return realtime
             .forProject($page.params.region, $page.params.project)
             .subscribe(['project', 'console'], (response) => {
-                console.log(response);
                 if (response.events.includes('stats.connections')) {
                     for (const [projectId, value] of Object.entries(response.payload)) {
                         stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
