@@ -3,7 +3,7 @@
     import { Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
 
     export let description: string;
-    export let value: string = null;
+    export let value: string | number = null;
 </script>
 
 <Card radius="s" padding="xs" isTile>

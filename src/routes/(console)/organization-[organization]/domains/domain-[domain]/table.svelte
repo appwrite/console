@@ -3,6 +3,7 @@
 
     import {
         ActionMenu,
+        Button,
         HiddenText,
         Icon,
         Layout,
@@ -13,13 +14,13 @@
     import { IconDotsHorizontal, IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { columns } from './store';
     import { timeFromNow } from '$lib/helpers/date';
-    import { Button } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
 
     export let data;
 
     let showEdit = false;
     let showDelete = false;
-    let selectedRecord; //TODO: add type
+    let selectedRecord: Models.DnsRecord = null;
 </script>
 
 <Layout.Stack>
@@ -35,7 +36,7 @@
             <Table.Header.Cell width="40" />
         </svelte:fragment>
 
-        {#each data.records.records as record}
+        {#each data.recordList.dnsRecords as record}
             <Table.Row>
                 {#each $columns as column}
                     {#if column.show}
@@ -87,15 +88,16 @@
                 <Table.Cell>
                     <Layout.Stack direction="row" justifyContent="flex-end">
                         <Popover let:toggle placement="bottom-start" padding="none">
-                            <Button
-                                text
+                            <Button.Button
+                                variant="text"
                                 icon
+                                size="s"
                                 on:click={(e) => {
                                     e.preventDefault();
                                     toggle(e);
                                 }}>
                                 <Icon icon={IconDotsHorizontal} size="s" />
-                            </Button>
+                            </Button.Button>
 
                             <svelte:fragment slot="tooltip" let:toggle>
                                 <ActionMenu.Root>
@@ -133,5 +135,5 @@
         name="Domains"
         limit={data.limit}
         offset={data.offset}
-        total={data.records.total} />
+        total={data.recordList.total} />
 </Layout.Stack>

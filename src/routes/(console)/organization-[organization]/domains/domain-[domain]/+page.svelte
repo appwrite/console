@@ -36,7 +36,7 @@
         <DomainMetrics domain={data.domain} />
 
         <Layout.Stack gap="l">
-            {#if data.records.total}
+            {#if data.recordList.total}
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <Layout.Stack direction="row" gap="s" inline>
                         <Button secondary>

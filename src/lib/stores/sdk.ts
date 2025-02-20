@@ -20,7 +20,8 @@ import {
     Teams,
     Users,
     Vcs,
-    Sites
+    Sites,
+    Domains
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
@@ -57,7 +58,8 @@ const sdkForProject = {
     vcs: new Vcs(clientProject),
     proxy: new Proxy(clientProject),
     migrations: new Migrations(clientProject),
-    sites: new Sites(clientProject)
+    sites: new Sites(clientProject),
+    domains: new Domains(clientProject)
 };
 
 export const getSdkForProject = (projectId: string) => {
@@ -83,7 +85,8 @@ export const sdk = {
         console: new Console(clientConsole),
         assistant: new Assistant(clientConsole),
         billing: new Billing(clientConsole),
-        sources: new Sources(clientConsole)
+        sources: new Sources(clientConsole),
+        domains: new Domains(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();

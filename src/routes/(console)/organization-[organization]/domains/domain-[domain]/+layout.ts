@@ -7,7 +7,7 @@ export const load = async ({ depends, params }) => {
     depends(Dependencies.SITE);
 
     return {
-        domain: await sdk.forProject.proxy.getRule(params.domain),
+        domain: await sdk.forConsole.domains.get(params.domain),
         header: Header,
         breadcrumbs: Breadcrumbs
     };

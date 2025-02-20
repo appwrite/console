@@ -8,25 +8,13 @@
     import { Confirm } from '$lib/components';
 
     export let show = false;
-    export let selectedDomain: Models.ProxyRule;
+    export let selectedDomain: Models.Domain;
 
     let error = '';
 
-    function getCorrectMessage(): string {
-        const resourceType = selectedDomain.resourceType;
-        switch (resourceType) {
-            case 'api':
-                return `access ${resourceType}`;
-            case 'function':
-                return `execute your ${resourceType}`;
-            case 'site':
-                return `view your ${resourceType} `;
-        }
-    }
-
     async function deleteDomain() {
         try {
-            await sdk.forProject.proxy.deleteRule(selectedDomain.$id);
+            await sdk.forConsole.domains.delete(selectedDomain.$id);
             await invalidate(Dependencies.DOMAINS);
             show = false;
             addNotification({
@@ -41,7 +29,10 @@
     }
 </script>
 
+<!-- TODO: fix copy -->
 <Confirm onSubmit={deleteDomain} title="Delete domain" bind:open={show} bind:error>
     <p data-private>Are you sure you want to delete <b>{selectedDomain?.domain}</b>?</p>
-    <p>You will no longer be able to {getCorrectMessage()} by visiting this domain.</p>
+    <p>
+        You will no longer be able to access any projects or services associated with this domain.
+    </p>
 </Confirm>

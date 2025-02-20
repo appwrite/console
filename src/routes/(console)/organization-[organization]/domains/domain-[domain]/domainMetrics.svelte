@@ -4,7 +4,7 @@
     import type { Models } from '@appwrite.io/console';
     import { toLocaleDate } from '$lib/helpers/date';
 
-    export let domain: Models.ProxyRule;
+    export let domain: Models.Domain;
     let metrics = [
         {
             value: domain.domain,
@@ -19,11 +19,11 @@
             description: 'Nameservers'
         },
         {
-            value: domain?.expiresAt ? toLocaleDate(domain?.expiresAt) : '-',
+            value: domain?.expiry ? toLocaleDate(domain?.expiry) : '-',
             description: 'Exipiry date'
         },
         {
-            value: domain?.autoRenewals ? 'On' : 'off',
+            value: domain?.autoRenewal ? 'On' : 'off',
             description: 'Auto renewal'
         },
         {

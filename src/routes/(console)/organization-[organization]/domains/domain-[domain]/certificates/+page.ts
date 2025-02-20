@@ -2,7 +2,7 @@ import { PAGE_LIMIT, Dependencies } from '$lib/constants';
 import { getSearch, pageToOffset, getLimit, getPage } from '$lib/helpers/load';
 
 export const load = async ({ parent, depends, url, route }) => {
-    depends(Dependencies.DOMAINS);
+    depends(Dependencies.DOMAIN);
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);

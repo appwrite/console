@@ -35,7 +35,7 @@
 
     let showDelete = false;
     let showRetry = false;
-    let selectedDomain: Models.ProxyRule = null;
+    let selectedDomain: Models.Domain = null;
 
     $: console.log(data.domains);
 
@@ -66,7 +66,7 @@
                 <Table.Header.Cell>Auto renewal</Table.Header.Cell>
                 <Table.Header.Cell />
             </svelte:fragment>
-            {#each data.domains.rules as domain}
+            {#each data.domains.domains as domain}
                 <Table.Link
                     href={`${base}/organization-${$page.params.organization}/domains/domain-${domain.$id}`}>
                     <Table.Cell>
@@ -81,24 +81,26 @@
                                     <Icon icon={IconExternalLink} size="s" />
                                 </Layout.Stack>
                             </Link>
-                            {#if domain.status === 'created'}
+                            {#if !domain.verified}
                                 <Badge
+                                    size="s"
                                     variant="secondary"
                                     content="Verification failed"
                                     type="error" />
                             {:else if domain.status === 'veryfing'}
                                 <Badge
+                                    size="s"
                                     variant="secondary"
                                     content="Pending verification"
                                     type="warning" />
                             {/if}
                         </Layout.Stack>
                     </Table.Cell>
-                    <Table.Cell>{domain?.registrar ?? '-'}</Table.Cell>
-                    <Table.Cell>{domain?.nameservers ?? '-'}</Table.Cell>
-                    <Table.Cell>{domain?.expiry ?? '-'}</Table.Cell>
+                    <Table.Cell>{domain?.registrar || '-'}</Table.Cell>
+                    <Table.Cell>{domain?.nameservers || '-'}</Table.Cell>
+                    <Table.Cell>{domain?.expiry || '-'}</Table.Cell>
                     <Table.Cell>
-                        {domain.renewAt ? toLocaleDateTime(domain.renewAt) : '-'}
+                        {domain.renewal ? toLocaleDateTime(domain.renewal) : '-'}
                     </Table.Cell>
                     <Table.Cell>{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
                     <Table.Cell>
@@ -116,7 +118,7 @@
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        {#if domain.status !== 'verified'}
+                                        <!-- {#if domain.status !== 'verified'}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconRefresh}
                                                 on:click={(e) => {
@@ -127,7 +129,7 @@
                                                 }}>
                                                 Retry
                                             </ActionMenu.Item.Button>
-                                        {/if}
+                                        {/if} -->
                                         <ActionMenu.Item.Button
                                             status="danger"
                                             leadingIcon={IconTrash}

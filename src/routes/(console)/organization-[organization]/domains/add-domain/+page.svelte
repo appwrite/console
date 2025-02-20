@@ -23,15 +23,11 @@
     const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
 
     let domain = '';
-    let domainData: Models.ProxyRule;
+    let domainData: Models.Domain;
 
     async function addDomain() {
         try {
-            domainData = await sdk.forProject.proxy.createRule(
-                domain,
-                ResourceType.Site,
-                $page.params.site
-            );
+            domainData = await sdk.forConsole.domains.create($page.params.organization, domain);
             console.log(domainData);
             invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
@@ -44,7 +40,7 @@
 
     async function verifyStatus() {
         try {
-            domainData = await sdk.forProject.proxy.updateRuleVerification(domainData.$id);
+            // domainData = await sdk.forConsole.domains.verification(domainData.$id);
             console.log(domainData);
         } catch (error) {
             addNotification({
