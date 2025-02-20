@@ -37,8 +37,15 @@
     import { AvatarGroup } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { getPlatformInfo } from '$lib/helpers/platform';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { redirect } from '@sveltejs/kit';
+    import { goto } from '$app/navigation';
 
     function createKey() {
+        trackEvent('onboarding_hub_platform', {
+            platform: 'server',
+            state: 'add'
+        });
         wizard.start(Wizard);
     }
 
@@ -386,7 +393,12 @@
                                 <Layout.Stack
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
-                                    <Card.Button on:click={() => addPlatform(0)} padding="s"
+                                    <Card.Button
+                                        on:click={() => {
+                                            trackEvent('onboarding_hub_setup_databases');
+                                            goto(`${base}/project-${projectId}/databases`);
+                                        }}
+                                        padding="s"
                                         ><Layout.Stack gap="xl"
                                             ><div
                                                 class="card-top-image database-card-image"
@@ -419,20 +431,38 @@
                                                     <Link.Anchor
                                                         variant="quiet-muted"
                                                         href="https://appwrite.io/docs/references"
+                                                        on:click={() => {
+                                                            trackEvent(
+                                                                'onboarding_hub_api_references'
+                                                            );
+                                                        }}
                                                         target="_blank">API references</Link.Anchor>
                                                     <Link.Anchor
                                                         variant="quiet-muted"
                                                         href="https://appwrite.io/docs/tutorials"
+                                                        on:click={() => {
+                                                            trackEvent('onboarding_hub_tutorials');
+                                                        }}
                                                         target="_blank">Tutorials</Link.Anchor>
                                                     <Link.Anchor
                                                         variant="quiet-muted"
                                                         href="https://appwrite.io/docs/products/storage/quick-start"
+                                                        on:click={() => {
+                                                            trackEvent(
+                                                                'onboarding_hub_storage_quick_start'
+                                                            );
+                                                        }}
                                                         target="_blank"
                                                         >Storage quick start
                                                     </Link.Anchor>
                                                     <Link.Anchor
                                                         variant="quiet-muted"
                                                         href="https://appwrite.io/docs/products/functions/quick-start"
+                                                        on:click={() => {
+                                                            trackEvent(
+                                                                'onboarding_hub_functions_quick_start'
+                                                            );
+                                                        }}
                                                         target="_blank"
                                                         >Functions quick start</Link.Anchor>
                                                 </Layout.Stack>
@@ -458,16 +488,29 @@
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
                                                                 href={`${base}/project-${projectId}/auth/settings`}
+                                                                on:click={() => {
+                                                                    trackEvent(
+                                                                        'onboarding_hub_auth_email_password'
+                                                                    );
+                                                                }}
                                                                 >E-mail and password
                                                             </Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
                                                                 href={`${base}/project-${projectId}/auth/settings`}
-                                                                >OAuth 2</Link.Anchor>
+                                                                on:click={() => {
+                                                                    trackEvent(
+                                                                        'onboarding_hub_auth_oauth2'
+                                                                    );
+                                                                }}>OAuth 2</Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
                                                                 href={`${base}/project-${projectId}/auth/settings`}
-                                                                >View all methods</Link.Anchor>
+                                                                on:click={() => {
+                                                                    trackEvent(
+                                                                        'onboarding_hub_auth_all_methods'
+                                                                    );
+                                                                }}>View all methods</Link.Anchor>
                                                         </Layout.Stack>
                                                     </Layout.Stack>
                                                     <div
@@ -481,7 +524,12 @@
                                             </div></Card.Base>
                                     </div>
 
-                                    <Card.Link href="https://appwrite.io/discord" padding="s">
+                                    <Card.Link
+                                        href="https://appwrite.io/discord"
+                                        padding="s"
+                                        on:click={() => {
+                                            trackEvent('onboarding_hub_discord');
+                                        }}>
                                         <div class="full-height-card">
                                             <Layout.Stack gap="xs" justifyContent="space-between">
                                                 <Layout.Stack direction="column" gap="xxxs">

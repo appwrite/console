@@ -55,21 +55,25 @@
     });
 
     async function fetchUsage() {
-        metrics.forEach((metric) => {
-            metric.value = null;
-        });
-        metrics = metrics;
-        try {
-            const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
-            metrics = metrics.map((metric) => {
-                metric.value = usage[metric.id] ?? '-';
-                return metric;
+        // Add timeout to make it look nicer
+        setTimeout(async () => {
+            metrics.forEach((metric) => {
+                metric.value = null;
             });
             metrics = metrics;
-            console.log(usage);
-        } catch (error) {
-            console.log(error);
-        }
+
+            try {
+                const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
+                metrics = metrics.map((metric) => {
+                    metric.value = usage[metric.id] ?? '-';
+                    return metric;
+                });
+                metrics = metrics;
+                console.log(usage);
+            } catch (error) {
+                console.log(error);
+            }
+        }, 800);
     }
 
     $: console.log(metrics);
@@ -95,9 +99,9 @@
                 on:change={fetchUsage} />
         </div>
     </Layout.Stack>
-    <Layout.GridBox gap="m" itemSize="154px">
+    <Layout.Stack gap="m" direction="row">
         {#each metrics as metric}
             <UsageCard description={metric.description} bind:value={metric.value} />
         {/each}
-    </Layout.GridBox>
+    </Layout.Stack>
 </Layout.Stack>

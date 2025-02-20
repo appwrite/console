@@ -28,7 +28,7 @@
             </Link>
         </Layout.Stack>
         <svelte:fragment slot="tooltip">
-            <ActionMenu.Root>
+            <ActionMenu.Root noPadding>
                 <ActionMenu.Item.Anchor
                     href={deployment.providerRepositoryUrl}
                     external
@@ -42,7 +42,6 @@
                     {deployment.providerBranch}
                 </ActionMenu.Item.Anchor>
                 {#if deployment?.providerCommitMessage && deployment?.providerCommitHash && deployment?.providerCommitUrl}
-                    <!-- TODO: either the Popover or this Anchor needs to correctly manage the width -->
                     <ActionMenu.Item.Anchor
                         href={deployment.providerCommitUrl}
                         external

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Button, InputCheckbox } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
@@ -10,8 +9,20 @@
 
     export let show = false;
     export let selectedDomain: Models.ProxyRule;
-    let confirm = false;
+
     let error = '';
+
+    function getCorrectMessage(): string {
+        const resourceType = selectedDomain.resourceType;
+        switch (resourceType) {
+            case 'api':
+                return `access ${resourceType}`;
+            case 'function':
+                return `execute your ${resourceType}`;
+            case 'site':
+                return `view your ${resourceType} `;
+        }
+    }
 
     async function deleteDomain() {
         try {
@@ -30,21 +41,7 @@
     }
 </script>
 
-<Confirm title="Delete domain" bind:open={show} onSubmit={deleteDomain} bind:error>
-    {#if selectedDomain}
-        <p data-private>
-            Are you sure you want to delete <b>{selectedDomain.domain}</b>? You will no longer be
-            able to execute your function by visiting this domain.
-        </p>
-    {/if}
-    <InputCheckbox
-        required
-        bind:checked={confirm}
-        id="confirm"
-        label="I understand and confirm"
-        size="s" />
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit disabled={!confirm}>Delete</Button>
-    </svelte:fragment>
+<Confirm onSubmit={deleteDomain} title="Delete domain" bind:open={show} bind:error>
+    <p data-private>Are you sure you want to delete <b>{selectedDomain?.domain}</b>?</p>
+    <p>You will no longer be able to {getCorrectMessage()} by visiting this domain.</p>
 </Confirm>

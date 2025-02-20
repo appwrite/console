@@ -44,6 +44,7 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let showSupport = false;
 
@@ -67,6 +68,10 @@
                     ? 'dark'
                     : 'light'
                 : theme;
+
+        trackEvent('select_theme', {
+            value: theme === 'auto' ? 'system' : theme
+        });
 
         app.update(() => ({
             themeInUse: themeInUse,
@@ -115,7 +120,7 @@
         </a>
         <Breadcrumbs {organizations} />
         {#if selectedProject && selectedProject.pingCount === 0}
-            <div class="only-desktop">
+            <div class="only-desktop" style:margin-inline-start="-10px">
                 <Button.Anchor
                     href={`${base}/project-${selectedProject.$id}/get-started`}
                     variant="secondary"
@@ -130,12 +135,24 @@
                     <Button.Anchor
                         size="s"
                         variant="primary"
+                        on:click={() => {
+                            trackEvent('click_organization_upgrade', {
+                                from: 'button',
+                                source: 'top_nav'
+                            });
+                        }}
                         href={`${base}/organization-${currentOrg.$id}/change-plan`}
                         >Upgrade</Button.Anchor>
                 {/if}
 
                 <DropList show={$feedback.show} class="extended-width">
-                    <Button.Button type="button" variant="compact" on:click={() => toggleFeedback()}
+                    <Button.Button
+                        type="button"
+                        variant="compact"
+                        on:click={() => {
+                            toggleFeedback();
+                            trackEvent('click_menu_feedback', { source: 'top_nav' });
+                        }}
                         >Feedback
                     </Button.Button>
                     <svelte:fragment slot="other">
@@ -152,7 +169,10 @@
                     <Button.Button
                         variant="compact"
                         type="button"
-                        on:click={() => (showSupport = !showSupport)}>
+                        on:click={() => {
+                            showSupport = !showSupport;
+                            trackEvent('click_menu_support', { source: 'top_nav' });
+                        }}>
                         Support
                     </Button.Button>
 
@@ -174,6 +194,9 @@
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
+                    if (showAccountMenu) {
+                        trackEvent('click_menu_dropdown');
+                    }
                 }}>
                 <div style:user-select="none">
                     <Avatar size="s" src={avatar} />

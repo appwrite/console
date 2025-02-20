@@ -7,23 +7,33 @@
     import { Button } from '$lib/elements/forms';
     import { protocol } from '$routes/(console)/store';
     import InstantRollbackDomain from './instantRollbackDomain.svelte';
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { app } from '$lib/stores/app';
     import EmptyDeploymentDark from './empty-deployment-dark.svg';
     import EmptyDeploymentLight from './empty-deployment-light.svg';
+    import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
 
     export let data;
     let showRollback = false;
 
-    $: console.log(data.site);
-    $: console.log(data.deployment);
-    $: console.log(data.deploymentList);
-    $: console.log(data.proxyRuleList);
+    let unsubscribe: { (): void };
 
-    // TODO: dark mode empty state
+    onMount(() => {
+        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+            if (response.events.includes(`sites.${$page.params.site}.deployments.*`)) {
+                console.log('test');
+                invalidate(Dependencies.SITE);
+            }
+        });
+    });
+
+    // $: console.log(data.site);
+    $: console.log(data.deployment);
+    // $: console.log(data.deploymentList);
+    // $: console.log(data.proxyRuleList);
 </script>
 
 <Container>
@@ -37,7 +47,7 @@
                         >Instant rollback</Button>
                 </svelte:fragment>
             </SiteCard>
-        {:else}
+        {:else if data.deployment?.status === 'building'}
             <Card.Base padding="none">
                 <Empty
                     title="Deployment is still building"
@@ -46,21 +56,17 @@
                         Your build is running. When it completes, this page will automatically
                         update with the latest deployment.
                     </span>
-                    <Layout.Stack
-                        direction="row"
-                        gap="s"
-                        alignItems="center"
-                        justifyContent="center"
-                        slot="actions">
-                        <!-- TODO: enable it after we have copy again-->
-                        <!-- <Button
-                            text
-                            href={`${base}/console/project-${$page.params.project}/sites/site-${data.site.$id}/deployments/deployment-${data.deployment.$id}`}>
-                            View logs
-                        </Button> -->
-                        <Button secondary on:click={() => invalidate(Dependencies.SITE)}
-                            >Reload</Button>
-                    </Layout.Stack>
+                </Empty>
+            </Card.Base>
+        {:else}
+            <Card.Base padding="none">
+                <Empty
+                    title="No deployments found"
+                    src={$app.themeInUse === 'dark' ? EmptyDeploymentDark : EmptyDeploymentLight}>
+                    <span slot="description">
+                        You haven't deployed any sites yet. Get started by deploying your first
+                        site.
+                    </span>
                 </Empty>
             </Card.Base>
         {/if}

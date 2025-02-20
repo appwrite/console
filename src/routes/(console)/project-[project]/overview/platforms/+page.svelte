@@ -1,6 +1,4 @@
 <script lang="ts" context="module">
-    import SearchDark from '$lib/images/search-dark.svg';
-    import SearchLight from '$lib/images/search-light.svg';
     import { wizard } from '$lib/stores/wizard';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
@@ -8,6 +6,7 @@
     import CreateReactNative from './createReactNative.svelte';
     import CreateWeb from './createWeb.svelte';
     import { createPlatform, versions } from './wizard/store';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export enum Platform {
         Web,
@@ -20,6 +19,10 @@
     export async function addPlatform(type: Platform) {
         await versions.load();
         createPlatform.reset();
+        trackEvent('onboarding_hub_platform', {
+            platform: platforms[type],
+            state: 'add'
+        });
         wizard.start(platforms[type]);
     }
 
@@ -34,6 +37,10 @@
             name: name,
             key: key,
             type: type
+        });
+        trackEvent('onboarding_hub_platform', {
+            platform: platforms[platform],
+            state: 'continue'
         });
         wizard.start(platforms[platform], null, 1, {
             isPlatformCreated: true,
