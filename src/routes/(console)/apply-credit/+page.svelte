@@ -26,6 +26,7 @@
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
+    import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
 
     export let data;
 
@@ -281,7 +282,7 @@
                     <div class="card-bg"></div>
                     <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
                         <img
-                            src={base + campaign?.image[$app.themeInUse]}
+                            src={getCampaignImageUrl(campaign?.image[$app.themeInUse])}
                             class="u-block u-image-object-fit-cover card-img"
                             alt="promo" />
                         <p class="text">

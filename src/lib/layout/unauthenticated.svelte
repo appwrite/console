@@ -8,7 +8,7 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import type { Campaign } from '$lib/stores/campaigns';
-    import { getApiEndpoint } from '$lib/stores/sdk';
+    import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
@@ -37,12 +37,6 @@
         } else {
             return campaign.description;
         }
-    }
-
-    function getImage(image: string) {
-        const endpoint = getApiEndpoint();
-        const url = new URL(image, endpoint);
-        return url.toString();
     }
 </script>
 
@@ -86,7 +80,7 @@
             <section
                 class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
                 <img
-                    src={getImage(campaign?.image[$app.themeInUse])}
+                    src={getCampaignImageUrl(campaign?.image[$app.themeInUse])}
                     class="u-block u-image-object-fit-cover side-bg-img"
                     alt="promo" />
 
@@ -151,7 +145,7 @@
                         <div class="u-margin-block-start-16 u-flex u-gap-16">
                             {#if currentReview?.image}
                                 <Avatar
-                                    src={getImage(currentReview?.image)}
+                                    src={getCampaignImageUrl(currentReview?.image)}
                                     name={currentReview.name}
                                     size={40} />
                             {:else}
@@ -170,7 +164,7 @@
                         <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
                         <img
                             style:max-block-size="2.5rem"
-                            src={getImage(campaign?.image[$app.themeInUse])}
+                            src={getCampaignImageUrl(campaign?.image[$app.themeInUse])}
                             alt={coupon?.campaign ?? campaign.$id} />
                     </div>
                 {/if}
