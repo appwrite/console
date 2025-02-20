@@ -24,7 +24,7 @@ export function getProjectId() {
     }
 
     const pathname = window.location.pathname + '/';
-    const projectMatch = pathname.match(/\/project-(?:[a-z]+-)?(.*?)\//);
+    const projectMatch = pathname.match(/\/project-(?:[a-z]{2,3}-)?([^/]+)/);
 
     return projectMatch?.[1] || null;
 }
