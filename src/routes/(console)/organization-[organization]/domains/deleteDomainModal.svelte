@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Button, InputCheckbox } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';

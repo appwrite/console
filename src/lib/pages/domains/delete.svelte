@@ -42,7 +42,6 @@
     }
 </script>
 
-a
 <Confirm onSubmit={deleteDomain} title="Delete domain" bind:open={showDelete} bind:error>
     <p data-private>Are you sure you want to delete <b>{selectedDomain?.domain}</b>?</p>
     <p>You will no longer be able to {getCorrectMessage()} by visiting this domain.</p>
