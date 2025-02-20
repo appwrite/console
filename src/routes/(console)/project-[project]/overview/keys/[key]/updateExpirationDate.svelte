@@ -1,14 +1,14 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Alert, CardGrid, Heading } from '$lib/components';
+    import { Alert, CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList } from '$lib/elements/forms';
     import { diffDays } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../../store';
-    import ExpirationInput from '../expirationInput.svelte';
+    import { ExpirationInput } from '$lib/components';
     import { key } from './store';
 
     let expiration = $key.expire;

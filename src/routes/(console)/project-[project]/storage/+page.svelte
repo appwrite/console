@@ -70,7 +70,7 @@
             single
             href="https://appwrite.io/docs/products/storage"
             target="bucket"
-            on:click={() => (showCreateBucket = true)} />
+            on:click={() => ($showCreateBucket = true)} />
     {/if}
 </Container>
 

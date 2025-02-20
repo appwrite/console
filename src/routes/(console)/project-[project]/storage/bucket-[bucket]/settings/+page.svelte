@@ -58,7 +58,7 @@
 
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { BoxAvatar, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, CardGrid } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -122,15 +122,12 @@
     });
 
     $: if (bucketPermissions) {
-        if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
-            $arePermsDisabled = false;
-        } else $arePermsDisabled = true;
+        $arePermsDisabled = !symmetricDifference(bucketPermissions, $bucket.$permissions).length;
     }
 
     $: if (extensions) {
-        if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
-            isExtensionsDisabled = false;
-        } else isExtensionsDisabled = true;
+        isExtensionsDisabled =
+            JSON.stringify(extensions) === JSON.stringify($bucket.allowedFileExtensions);
     }
 
     function toggleBucket() {
