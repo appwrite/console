@@ -29,6 +29,10 @@
     }
 </script>
 
-<Confirm onSubmit={handleDelete} title="Delete platform" bind:open={showDelete} bind:error>
+<Confirm
+    onSubmit={handleDelete}
+    title="Delete platform"
+    bind:open={showDelete}
+    bind:error>
     The Platform will be permanently deleted. This action is irreversible.
 </Confirm>

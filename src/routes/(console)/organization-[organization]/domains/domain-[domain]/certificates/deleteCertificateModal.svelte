@@ -30,11 +30,5 @@
 </script>
 
 <Confirm title="Delete certificate" bind:open={show} onSubmit={deleteCertificate} bind:error>
-    <Typography.Text>
-        Are you sure you want to delete SSL certificate? This action is irreversible.
-    </Typography.Text>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit danger>Delete</Button>
-    </svelte:fragment>
+    Are you sure you want to delete SSL certificate? This action is irreversible.
 </Confirm>

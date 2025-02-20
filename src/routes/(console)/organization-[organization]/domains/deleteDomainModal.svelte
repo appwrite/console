@@ -10,7 +10,6 @@
 
     export let show = false;
     export let selectedDomain: Models.ProxyRule;
-    let confirm = false;
     let error = '';
 
     async function deleteDomain() {
@@ -32,19 +31,7 @@
 
 <Confirm title="Delete domain" bind:open={show} onSubmit={deleteDomain} bind:error>
     {#if selectedDomain}
-        <p data-private>
-            Are you sure you want to delete <b>{selectedDomain.domain}</b>? You will no longer be
-            able to execute your function by visiting this domain.
-        </p>
+        <p data-private>Are you sure you want to delete <b>{selectedDomain.domain}</b>?</p>
+        <p>You will no longer be able to execute your function by visiting this domain.</p>
     {/if}
-    <InputCheckbox
-        required
-        bind:checked={confirm}
-        id="confirm"
-        label="I understand and confirm"
-        size="s" />
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit disabled={!confirm}>Delete</Button>
-    </svelte:fragment>
 </Confirm>
