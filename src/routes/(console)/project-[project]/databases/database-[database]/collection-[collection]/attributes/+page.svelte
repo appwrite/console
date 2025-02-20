@@ -28,7 +28,6 @@
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
 
-    let showEmptyCreateDropdown = false;
     let showDropdown = [];
     let selectedOption: Option['name'] = null;
     let selectedAttribute: Attributes = null;

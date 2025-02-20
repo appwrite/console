@@ -8,7 +8,7 @@
     export let showCreate = false;
 </script>
 
-<Popover let:toggle padding="none">
+<Popover let:toggle padding="none" placement="bottom-start">
     <slot {toggle}>
         <Button on:click={toggle} event="create_attribute">
             <Icon icon={IconPlus} slot="start" size="s" />
