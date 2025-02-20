@@ -106,7 +106,7 @@
 </CardGrid>
 
 <style lang="scss">
-    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
 
     .stats-grid-box {
         display: grid;

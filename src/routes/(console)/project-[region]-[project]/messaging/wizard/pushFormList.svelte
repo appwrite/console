@@ -173,9 +173,9 @@
                                 id={`${rowIndex}-key`}
                                 isMultiple
                                 fullWidth
-                                bind:value={
-                                    $messageParams[MessagingProviderType.Push].data[rowIndex][0]
-                                }
+                                bind:value={$messageParams[MessagingProviderType.Push].data[
+                                    rowIndex
+                                ][0]}
                                 placeholder="Enter key"
                                 label="Key"
                                 showLabel={false} />
@@ -184,9 +184,9 @@
                                 id={`${rowIndex}-value`}
                                 isMultiple
                                 fullWidth
-                                bind:value={
-                                    $messageParams[MessagingProviderType.Push].data[rowIndex][1]
-                                }
+                                bind:value={$messageParams[MessagingProviderType.Push].data[
+                                    rowIndex
+                                ][1]}
                                 placeholder="Enter value"
                                 label="Value"
                                 showLabel={false}

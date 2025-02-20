@@ -42,7 +42,7 @@
 {/await}
 
 <style lang="scss">
-    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
     // override padding for screens bigger than mobile
     @media #{devices.$break2open} {
         article.card {

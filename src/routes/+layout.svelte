@@ -104,7 +104,7 @@
 <Progress />
 
 <style lang="scss" global>
-    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
 
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);

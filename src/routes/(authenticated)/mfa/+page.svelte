@@ -70,7 +70,7 @@
 </Unauthenticated>
 
 <style lang="scss">
-    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
 
     .top {
         inset-block-start: 5.85rem;
