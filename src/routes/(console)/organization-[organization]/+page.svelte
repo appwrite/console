@@ -25,16 +25,25 @@
     import { sdk } from '$lib/stores/sdk';
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
-    import { ID, Region } from '@appwrite.io/console';
+    import { ID, Region, PlatformType } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import type { RegionList } from '$lib/sdk/billing';
-    import { onMount } from 'svelte';
+    import { onMount, type ComponentType } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import {
+        IconAndroid,
+        IconApple,
+        IconCode,
+        IconFlutter,
+        IconGlobe,
+        IconPlus,
+        IconReact,
+        IconUnity
+    } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
 
     export let data;
@@ -64,6 +73,26 @@
         if (isCloud) wizard.start(Create);
         else showCreate = true;
     }
+
+    function getIconForPlatform(platform: string): ComponentType {
+        switch (platform) {
+            case 'web':
+                return IconCode;
+            case 'flutter':
+                return IconFlutter;
+            case 'apple':
+                return IconApple;
+            case 'android':
+                return IconAndroid;
+            case 'react-native':
+                return IconReact;
+            case 'unity':
+                return IconUnity;
+            default:
+                return null;
+        }
+    }
+
     $: $registerCommands([
         {
             label: 'Create project',
@@ -170,10 +199,10 @@
 
                             {#each platforms as platform, i}
                                 {#if i < 3}
-                                    <Pill>
-                                        <span class={`icon-${platform.icon}`} aria-hidden="true" />
-                                        {platform.name}
-                                    </Pill>
+                                    {@const icon = getIconForPlatform(platform.icon)}
+                                    <Badge variant="secondary" content={platform.name}>
+                                        <Icon {icon} size="s" slot="start" />
+                                    </Badge>
                                 {/if}
                             {/each}
                             {#if platforms?.length > 3}

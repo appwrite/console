@@ -92,7 +92,7 @@
     "color-border-neutral-stronger": "var(--neutral-500)",
     "color-fgcolor-on-warning-weak": "var(--web-orange-700)",
     "color-border-neutral-strongest": "var(--neutral-900)",
-    "color-border-focus": "var(--neutral-500)",
+    "color-border-focus": "var(--neutral-300)",
     "color-border-accent": "var(--brand-pink-500)",
     "color-border-accent-secondary": "var(--brand-pink-600)",
     "color-border-success": "var(--web-green-500)",

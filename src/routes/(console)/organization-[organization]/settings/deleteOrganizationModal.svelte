@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Alert, Modal, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Modal, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
+    import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { members, organization, organizationList } from '$lib/stores/organization';
@@ -22,6 +22,7 @@
     } from '$lib/elements/table';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { tierToPlan } from '$lib/stores/billing';
+    import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
     export let invoices: InvoiceList;
@@ -102,116 +103,102 @@
     }
 </script>
 
-<div class="max-height-dialog">
-    <Modal title="Delete organization" onSubmit={deleteOrg} bind:show={showDelete} bind:error>
-        {#if upcomingInvoice}
-            <Alert type="warning">
-                <span slot="title">
-                    You have a pending {formatCurrency(upcomingInvoice.grossAmount)} invoice for your
-                    {tierToPlan(upcomingInvoice.plan).name} plan
-                </span>
-                <p>
-                    By proceeding, your invoice will be processed within the hour. Upon successful
-                    payment, your organization will be deleted.
-                </p>
-            </Alert>
-        {/if}
+<Modal title="Delete organization" onSubmit={deleteOrg} bind:show={showDelete} bind:error>
+    {#if upcomingInvoice}
+        <Alert.Inline
+            status="warning"
+            title={`You have a pending ${formatCurrency(upcomingInvoice.grossAmount)} invoice for your
+        ${tierToPlan(upcomingInvoice.plan).name} plan`}>
+            By proceeding, your invoice will be processed within the hour. Upon successful payment,
+            your organization will be deleted.
+        </Alert.Inline>
+    {/if}
 
-        <p data-private>
-            {#if $projects.total > 0}
-                The following projects and all data associated with <b>{$organization.name}</b> will
-                be permanently deleted. <b>This action is irreversible</b>.
-            {:else}
-                All data associated with <b>{$organization.name}</b> will be permanently deleted.
-                <b>This action is irreversible</b>.
-            {/if}
-        </p>
-
+    <p slot="description">
         {#if $projects.total > 0}
-            <div class="box is-only-desktop">
-                <SecondaryTabs large stretch class="u-sep-block-end u-padding-8">
-                    {#each tabs as { name, label, total }}
-                        <SecondaryTabsItem
-                            center
-                            fullWidth
-                            disabled={selectedTab === name}
-                            on:click={() => (selectedTab = name)}>
-                            {label.desktop} ({total})
-                        </SecondaryTabsItem>
-                    {/each}
-                </SecondaryTabs>
-
-                <TableScroll dense noMargin>
-                    <TableHeader>
-                        {#each tabData.headers as header}
-                            <TableCellHead width={columnWidth}>{header}</TableCellHead>
-                        {/each}
-                    </TableHeader>
-                    <TableBody>
-                        {#each tabData.rows as row}
-                            <TableRow>
-                                {#each row.cells as cell}
-                                    <TableCell width={columnWidth}>{cell}</TableCell>
-                                {/each}
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </TableScroll>
-            </div>
-            <div class="box is-not-desktop">
-                <SecondaryTabs large stretch class="u-sep-block-end u-padding-8">
-                    {#each tabs as { name, label, total }}
-                        <SecondaryTabsItem
-                            center
-                            fullWidth
-                            disabled={selectedTab === name}
-                            on:click={() => (selectedTab = name)}>
-                            {label.mobile} ({total})
-                        </SecondaryTabsItem>
-                    {/each}
-                </SecondaryTabs>
-
-                <TableScroll dense noMargin>
-                    <TableHeader>
-                        {#each tabData.headers as header, index}
-                            <TableCellHead width={index === 1 ? columnWidthSmall : columnWidth}
-                                >{header}</TableCellHead>
-                        {/each}
-                    </TableHeader>
-                    <TableBody>
-                        {#each tabData.rows as row}
-                            <TableRow>
-                                {#each row.cells as cell, index}
-                                    <TableCell width={index === 1 ? columnWidthSmall : columnWidth}
-                                        >{cell}</TableCell>
-                                {/each}
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </TableScroll>
-            </div>
+            The following projects and all data associated with <b>{$organization.name}</b> will be
+            permanently deleted. <b>This action is irreversible</b>.
+        {:else}
+            All data associated with <b>{$organization.name}</b> will be permanently deleted.
+            <b>This action is irreversible</b>.
         {/if}
+    </p>
 
-        <FormList>
-            <InputText
-                label={`Confirm the organization name to continue`}
-                placeholder="Enter {$organization.name} to continue"
-                id="organization-name"
-                required
-                bind:value={organizationName} />
-        </FormList>
+    {#if $projects.total > 0}
+        <Tabs.Root let:root stretch>
+            {#each tabs as { name, label, total }}
+                <Tabs.Item.Button
+                    {root}
+                    on:click={() => (selectedTab = name)}
+                    active={selectedTab === name}>
+                    {label.desktop} ({total})
+                </Tabs.Item.Button>
+            {/each}
+        </Tabs.Root>
 
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button
-                secondary
-                submit
-                disabled={!error && (!organizationName || organizationName !== $organization.name)}>
-                Delete
-            </Button>
-        </svelte:fragment>
-    </Modal>
-</div>
+        <Table.Root>
+            <svelte:fragment slot="header">
+                {#each tabData.headers as header}
+                    <Table.Header.Cell width={columnWidth + 'px'}>{header}</Table.Header.Cell>
+                {/each}
+            </svelte:fragment>
+            {#each tabData.rows as row}
+                <Table.Row>
+                    {#each row.cells as cell}
+                        <Table.Cell>{cell}</Table.Cell>
+                    {/each}
+                </Table.Row>
+            {/each}
+        </Table.Root>
+        <div class="box is-not-desktop">
+            <SecondaryTabs large stretch class="u-sep-block-end u-padding-8">
+                {#each tabs as { name, label, total }}
+                    <SecondaryTabsItem
+                        center
+                        fullWidth
+                        disabled={selectedTab === name}
+                        on:click={() => (selectedTab = name)}>
+                        {label.mobile} ({total})
+                    </SecondaryTabsItem>
+                {/each}
+            </SecondaryTabs>
+
+            <TableScroll dense noMargin>
+                <TableHeader>
+                    {#each tabData.headers as header, index}
+                        <TableCellHead width={index === 1 ? columnWidthSmall : columnWidth}
+                            >{header}</TableCellHead>
+                    {/each}
+                </TableHeader>
+                <TableBody>
+                    {#each tabData.rows as row}
+                        <TableRow>
+                            {#each row.cells as cell, index}
+                                <TableCell width={index === 1 ? columnWidthSmall : columnWidth}
+                                    >{cell}</TableCell>
+                            {/each}
+                        </TableRow>
+                    {/each}
+                </TableBody>
+            </TableScroll>
+        </div>
+    {/if}
+    <InputText
+        label={`Confirm the organization name to continue`}
+        placeholder="Enter {$organization.name} to continue"
+        id="organization-name"
+        required
+        bind:value={organizationName} />
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button
+            secondary
+            submit
+            disabled={!error && (!organizationName || organizationName !== $organization.name)}>
+            Delete
+        </Button>
+    </svelte:fragment>
+</Modal>
 
 <style>
     .box {

@@ -54,6 +54,7 @@
     {disabled}
     {isSearchable}
     helper={error ?? helper}
+    {required}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
     on:input

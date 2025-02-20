@@ -6,6 +6,8 @@
     import { createEventDispatcher } from 'svelte';
     import { LineChart } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
+    import { ActionMenu, Icon, Layout, Link, Popover, Typography } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown } from '@appwrite.io/pink-icons-svelte';
 
     export let period: UsagePeriods;
 
@@ -23,25 +25,31 @@
     }
 </script>
 
-<div class="u-flex u-gap-16 u-main-space-between">
+<Layout.Stack justifyContent="space-between" direction="row" alignItems="flex-start">
     <div>
-        <div class="heading-level-4">
+        <Typography.Title>
             {formatNum(totalMetrics($usage?.requests))}
-        </div>
-        <div>Requests</div>
+        </Typography.Title>
+        <Typography.Text>Requests</Typography.Text>
     </div>
-    <DropList bind:show={showPeriod} placement="bottom-start" childStart noArrow>
-        <button class="transparent-button" on:click={() => (showPeriod = !showPeriod)}>
-            <span class="text">{period}</span>
-            <span class="icon-cheveron-down" aria-hidden="true" />
-        </button>
-        <svelte:fragment slot="list">
-            <DropListItem on:click={() => dispatch('change', '24h')}>24h</DropListItem>
-            <DropListItem on:click={() => dispatch('change', '30d')}>30d</DropListItem>
-            <DropListItem on:click={() => dispatch('change', '90d')}>90d</DropListItem>
-        </svelte:fragment>
-    </DropList>
-</div>
+    <Popover let:toggle padding="none">
+        <Link.Button on:click={toggle} variant="quiet">
+            <Layout.Stack direction="row" gap="none">
+                <span>{period}</span>
+                <Icon icon={IconChevronDown} />
+            </Layout.Stack>
+        </Link.Button>
+        <ActionMenu.Root slot="tooltip">
+            <ActionMenu.Item.Button on:click={() => dispatch('change', '24h')}
+                >24h</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button on:click={() => dispatch('change', '30d')}
+                >30d</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button on:click={() => dispatch('change', '90d')}
+                >90d</ActionMenu.Item.Button>
+        </ActionMenu.Root>
+    </Popover>
+</Layout.Stack>
+
 {#if totalMetrics($usage?.requests) !== 0}
     <div style="height: 12rem;">
         <LineChart
