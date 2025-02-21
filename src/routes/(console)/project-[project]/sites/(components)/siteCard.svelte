@@ -24,6 +24,7 @@
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
+    import { getApiEndpoint } from '$lib/stores/sdk';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList = { total: 0, rules: [] };
@@ -49,7 +50,11 @@
 
     function getFilePreview(fileId: string) {
         // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
-        return `http://localhost/v1/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`;
+        const endpoint = getApiEndpoint();
+        return (
+            endpoint +
+            `/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`
+        );
     }
 </script>
 

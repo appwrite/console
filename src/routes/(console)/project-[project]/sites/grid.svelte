@@ -15,6 +15,7 @@
     import { getFrameworkIcon } from './store';
     import { SvgIcon } from '$lib/components';
     import { app } from '$lib/stores/app';
+    import { getApiEndpoint } from '$lib/stores/sdk';
 
     export let siteList: Models.SiteList;
     export let deployments: Models.Deployment[];
@@ -39,7 +40,11 @@
 
     function getFilePreview(fileId: string) {
         // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
-        return `http://localhost/v1/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`;
+        const endpoint = getApiEndpoint();
+        return (
+            endpoint +
+            `/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`
+        );
     }
 </script>
 
