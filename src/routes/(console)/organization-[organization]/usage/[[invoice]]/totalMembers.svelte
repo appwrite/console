@@ -64,7 +64,9 @@
                             <TableRow>
                                 <TableCell title="name">
                                     <div class="u-flex u-gap-12 u-cross-center">
-                                        <AvatarInitials size={32} name={member.userName} />
+                                        <AvatarInitials
+                                            size={32}
+                                            name={member.userName || member.userEmail} />
                                         <span class="text u-trim">
                                             {member.userName ? member.userName : member.userEmail}
                                         </span>
