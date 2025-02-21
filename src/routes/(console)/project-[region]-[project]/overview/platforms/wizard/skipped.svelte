@@ -27,30 +27,26 @@
     import { getProjectEndpoint } from '$lib/helpers/project';
 
     const project = $page.params.project;
-    $: {
-        console.log($showSkippedModal);
-    }
 </script>
 
-<div style:background="deeppink">
-    <Modal
-        headerDivider={false}
-        bind:show={$showSkippedModal}
-        onSubmit={skippedModalOnSubmit}
-        title="Skipping optional steps">
-        <FormList>
-            <p>
-                The platform will be added to your project. Use the Project ID and API endpoint in
-                your project to get started:
-            </p>
+<Modal
+    closable={false}
+    headerDivider={false}
+    bind:show={$showSkippedModal}
+    onSubmit={skippedModalOnSubmit}
+    title="Skipping optional steps">
+    <FormList>
+        <p>
+            The platform will be added to your project. Use the Project ID and API endpoint in your
+            project to get started:
+        </p>
 
-            <CopyInput label="Project ID" showLabel={true} value={project} />
-            <CopyInput label="Endpoint" showLabel={true} value={getProjectEndpoint()} />
-        </FormList>
+        <CopyInput label="Project ID" showLabel={true} value={project} />
+        <CopyInput label="Endpoint" showLabel={true} value={getProjectEndpoint()} />
+    </FormList>
 
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => ($showSkippedModal = false)}>Cancel</Button>
-            <Button submit>Go to dashboard</Button>
-        </svelte:fragment>
-    </Modal>
-</div>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => ($showSkippedModal = false)}>Cancel</Button>
+        <Button submit>Go to dashboard</Button>
+    </svelte:fragment>
+</Modal>
