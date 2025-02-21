@@ -25,11 +25,18 @@ export const load = async ({ url, depends, route }) => {
                 return;
             }
 
-            const deployment = await sdk.forProject.sites.getDeployment(
-                site.$id,
-                site.deploymentId
-            );
-            deployments.push(deployment);
+            // TODO: @Meldiron Tripple-check if this can ever happened
+            // It happened to me but on QA that might have corrupted data
+            try {
+                const deployment = await sdk.forProject.sites.getDeployment(
+                    site.$id,
+                    site.deploymentId
+                );
+                deployments.push(deployment);
+            } catch (err) {
+                // Active deployment no longer available (deleted?)
+                console.warn(err);
+            }
         })
     );
 
