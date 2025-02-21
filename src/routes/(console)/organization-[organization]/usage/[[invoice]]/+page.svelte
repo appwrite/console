@@ -1,6 +1,16 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { BarChart, Legend } from '$lib/charts';
     import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
+    import { formatNum } from '$lib/helpers/string';
+    import { Container } from '$lib/layout';
+    import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
+    import type { OrganizationUsage } from '$lib/sdk/billing';
     import {
         getServiceLimit,
         showUsageRatesModal,
@@ -8,18 +18,8 @@
         upgradeURL
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { Button } from '$lib/elements/forms';
-    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart, Legend } from '$lib/charts';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
-    import { formatNum } from '$lib/helpers/string';
-    import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
-    import { BillingPlan } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
-    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
 
     export let data;
 
@@ -238,6 +238,63 @@
                 </div>
 
                 <Legend {legendData} />
+
+                {#if projects?.length > 0}
+                    <ProjectBreakdown
+                        {data}
+                        {projects}
+                        databaseOperationMetric={['databasesReads', 'databasesWrites']} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <Heading tag="h6" size="7">Image Transformations</Heading>
+
+        <p class="text">
+            The total number of image transformations across all projects in your organization.
+        </p>
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.fileTransformationsTotal}
+                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
+                            }
+                        }}
+                        series={[
+                            {
+                                name: 'Transformations',
+                                data: [
+                                    ...(data.organizationUsage.fileTransformations ?? []).map(
+                                        (e) => [e.date, e.value]
+                                    )
+                                ]
+                            }
+                        ]} />
+                </div>
+
+                <Legend
+                    legendData={[
+                        {
+                            name: 'Transformations',
+                            value: data.organizationUsage.fileTransformationsTotal
+                        }
+                    ]} />
 
                 {#if projects?.length > 0}
                     <ProjectBreakdown
