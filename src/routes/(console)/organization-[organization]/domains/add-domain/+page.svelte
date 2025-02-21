@@ -40,7 +40,7 @@
 
     async function verifyStatus() {
         try {
-            // domainData = await sdk.forConsole.domains.verification(domainData.$id);
+            domainData = await sdk.forConsole.domains.updateNameservers(domainData.$id);
             console.log(domainData);
         } catch (error) {
             addNotification({
@@ -52,7 +52,7 @@
 
     async function back() {
         try {
-            await sdk.forProject.proxy.deleteRule(domainData.$id);
+            await sdk.forConsole.domains.delete(domainData.$id);
             domainData = undefined;
         } catch (error) {
             addNotification({
