@@ -1,21 +1,32 @@
 <script context="module" lang="ts">
     import { createPlatform } from './store';
     import { wizard } from '$lib/stores/wizard';
-    import { get, writable } from 'svelte/store';
+    import { writable } from 'svelte/store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
 
     const showSkippedModal = writable(false);
-    const skippedModalOnSubmit = () => wizard.hide();
+
+    async function closeWizard() {
+        wizard.hide();
+        createPlatform.reset();
+    }
+
+    /**
+     * Previously, data was updated after the wizard was closed,
+     * this sometimes caused outdated data to be visible for a brief moment.
+     */
+    export async function invalidateDependencies(): Promise<void> {
+        console.log('invalidateDependencies');
+        await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
+    }
 
     export async function onPlatformSetupFinish(event: CustomEvent): Promise<void> {
-        showSkippedModal.set(event.detail?.skipped ?? false);
+        const isSkipped = event.detail?.skipped ?? false;
+        showSkippedModal.set(isSkipped);
 
-        createPlatform.reset();
-        await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
-
-        if (!get(showSkippedModal)) {
-            wizard.hide();
+        if (!isSkipped) {
+            await closeWizard();
         }
     }
 </script>
@@ -31,9 +42,10 @@
 
 <Modal
     closable={false}
+    closeByEscape={false}
     headerDivider={false}
+    onSubmit={closeWizard}
     bind:show={$showSkippedModal}
-    onSubmit={skippedModalOnSubmit}
     title="Skipping optional steps">
     <FormList>
         <p>

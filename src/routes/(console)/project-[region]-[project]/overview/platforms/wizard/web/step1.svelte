@@ -8,6 +8,7 @@
     import { createPlatform } from '../store';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { PlatformType } from '@appwrite.io/console';
+    import { invalidateDependencies } from '../skipped.svelte';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -40,6 +41,8 @@
         });
 
         $createPlatform.$id = platform.$id;
+
+        await invalidateDependencies();
     }
 </script>
 
