@@ -68,7 +68,7 @@
                                             size={32}
                                             name={member.userName || member.userEmail} />
                                         <span class="text u-trim">
-                                            {member.userName ? member.userName : member.userEmail}
+                                            {member.userName || member.userEmail}
                                         </span>
                                     </div>
                                 </TableCell>
