@@ -122,7 +122,7 @@
                                     size={40}
                                     name={member.userName || member.userEmail} />
                                 <span class="text u-trim">
-                                    {member.userName ? member.userName : 'n/a'}
+                                    {member.userName || 'n/a'}
                                 </span>
                                 {#if member.invited && !member.joined}
                                     <Pill warning>Pending</Pill>
