@@ -27,12 +27,12 @@
             deployments.find((d) => site.deploymentId && d.$id === site.deploymentId) ?? null;
 
         if (theme === 'dark') {
-            return deployment
+            return deployment?.screenshotDark
                 ? getFilePreview(deployment.screenshotDark)
                 : `${base}/images/sites/screenshot-placeholder-dark.svg`;
         }
 
-        return deployment
+        return deployment?.screenshotLight
             ? getFilePreview(deployment.screenshotLight)
             : `${base}/images/sites/screenshot-placeholder-light.svg`;
     }
