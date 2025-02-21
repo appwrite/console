@@ -1,13 +1,10 @@
 <script lang="ts">
-    import { Alert, Code } from '$lib/components';
-    import { WizardStep } from '$lib/layout';
-    import { isCloud } from '$lib/system';
-    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
-    import Id from '$lib/components/id.svelte';
+    import { isCloud } from '$lib/system';
+    import { WizardStep } from '$lib/layout';
+    import { Alert, Code, Id } from '$lib/components';
 
-    const { endpoint, project } = sdk.forProject($page.params.region, $page.params.project).client
-        .config;
+    const project = $page.params.project;
     const code = `import 'package:appwrite/appwrite.dart';
 
 Client client = Client();
