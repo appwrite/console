@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { sdk } from '$lib/stores/sdk';
     import { Flag } from '@appwrite.io/console';
