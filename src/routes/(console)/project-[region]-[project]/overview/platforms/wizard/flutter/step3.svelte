@@ -3,19 +3,17 @@
     import { isCloud } from '$lib/system';
     import { WizardStep } from '$lib/layout';
     import { Alert, Code, Id } from '$lib/components';
+    import { getProjectEndpoint } from '$lib/helpers/project';
 
     const project = $page.params.project;
     const code = `import 'package:appwrite/appwrite.dart';
 
 Client client = Client();
-${
-    isCloud
-        ? `client.setProject('${project}');`
-        : `client
-    .setEndpoint('${endpoint}')
+client
+    .setEndpoint('${getProjectEndpoint()}')
     .setProject('${project}')
-    .setSelfSigned(status: true); // For self signed certificates, only use for development;`
-}`;
+    .setSelfSigned(status: true); // For self signed certificates, only use for development;
+`;
 
     let showAlert = true;
 </script>
