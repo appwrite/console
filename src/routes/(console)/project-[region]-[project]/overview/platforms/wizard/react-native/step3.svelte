@@ -1,22 +1,16 @@
 <script lang="ts">
-    import { Alert, Code } from '$lib/components';
-    import { WizardStep } from '$lib/layout';
-    import { isCloud } from '$lib/system';
-    import { sdk } from '$lib/stores/sdk';
-    import { createPlatform } from '../store';
     import { page } from '$app/stores';
-    import Id from '$lib/components/id.svelte';
+    import { isCloud } from '$lib/system';
+    import { WizardStep } from '$lib/layout';
+    import { createPlatform } from '../store';
+    import { Alert, Code, Id } from '$lib/components';
+    import { getProjectEndpoint } from '$lib/helpers/project';
 
-    const { endpoint, project } = sdk.forProject($page.params.region, $page.params.project).client
-        .config;
-    const code = `import { Client, Account, ID } from 'react-native-appwrite';
+    const project = $page.params.project;
+    const code = `import { Client, Account } from 'react-native-appwrite';
 
-const client = new Client()${
-        isCloud
-            ? ''
-            : `
-    .setEndpoint('${endpoint}')`
-    }
+const client = new Client()
+    .setEndpoint('${getProjectEndpoint()}')
     .setProject('${project}')
     .setPlatform('${$createPlatform.key}');
 `;

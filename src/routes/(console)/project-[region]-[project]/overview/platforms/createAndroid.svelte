@@ -1,20 +1,12 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { invalidate } from '$app/navigation';
-    import { wizard } from '$lib/stores/wizard';
-    import { createPlatform } from './wizard/store';
-    import { Dependencies } from '$lib/constants';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/android/step1.svelte';
     import Step2 from './wizard/android/step2.svelte';
     import Step3 from './wizard/android/step3.svelte';
     import Step4 from './wizard/step4.svelte';
 
-    async function onFinish() {
-        await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
-        createPlatform.reset();
-        wizard.hide();
-    }
+    import Skipped, { onPlatformSetupFinish } from './wizard/skipped.svelte';
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
@@ -41,6 +33,8 @@
 <Wizard
     title="Add an Android platform"
     steps={stepsComponents}
-    on:finish={onFinish}
-    on:exit={onFinish}
+    on:finish={onPlatformSetupFinish}
+    on:exit={onPlatformSetupFinish}
     finalAction="Go to dashboard" />
+
+<Skipped />

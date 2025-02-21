@@ -11,13 +11,13 @@
         TableRow
     } from '$lib/elements/table';
     import { domain } from './store';
-    import { page } from '$app/stores';
+    import { getProjectEndpoint } from '$lib/helpers/project';
 
     $: parts = $domain.domain.split('.');
     $: registerable = [parts[parts.length - 2], parts[parts.length - 1]].join('.');
     $: cnameValue = $domain.domain.replace('.' + registerable, '');
 
-    $: target = `${$page.params.region ?? ''}-${window?.location.hostname ?? ''}`;
+    $: target = new URL(getProjectEndpoint()).hostname;
 </script>
 
 <Table noMargin noStyles style="--p-table-bg-color: var(--transparent);">

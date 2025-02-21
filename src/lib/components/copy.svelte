@@ -8,9 +8,10 @@
     export let value: string;
     export let event: string = null;
     export let eventContext = 'click_id_tag';
+    export let copyText: string = 'Click to copy';
     export let appendTo: Parameters<typeof tooltip>['1']['appendTo'] = undefined;
 
-    let content = 'Click to copy';
+    let content = copyText;
 
     async function handleClick() {
         const success = await copy(value);
@@ -39,7 +40,7 @@
     style:cursor="pointer"
     on:click|preventDefault={handleClick}
     on:keyup={clickOnEnter}
-    on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
+    on:mouseenter={() => setTimeout(() => (content = copyText))}
     use:tooltip={{
         content,
         hideOnClick: false,

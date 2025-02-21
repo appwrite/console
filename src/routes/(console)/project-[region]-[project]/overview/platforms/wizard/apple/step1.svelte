@@ -7,6 +7,7 @@
     import { createPlatform } from '../store';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { PlatformType } from '@appwrite.io/console';
+    import { invalidateDependencies } from '../skipped.svelte';
 
     let platform: PlatformType = PlatformType.Appleios;
 
@@ -32,6 +33,8 @@
 
         $createPlatform.$id = response.$id;
         $createPlatform.type = platform;
+
+        await invalidateDependencies();
     }
 </script>
 

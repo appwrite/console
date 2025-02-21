@@ -201,7 +201,7 @@
             <div class="u-z-index-5 form-footer">
                 <div class="u-flex u-main-end u-gap-12">
                     {#if !isLastStep && currentStep?.optional}
-                        <Button text on:click={() => dispatch('finish')}>
+                        <Button text on:click={() => dispatch('finish', { skipped: true })}>
                             Skip optional steps
                         </Button>
                     {/if}

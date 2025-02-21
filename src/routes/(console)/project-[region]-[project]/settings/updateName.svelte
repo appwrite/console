@@ -11,10 +11,9 @@
     import { onMount } from 'svelte';
     import { project } from '../store';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { getProjectEndpoint } from '$lib/helpers/project';
 
-    const { project: projectId, region } = $page.params;
-    const { protocol, hostname, href } = new URL(sdk.forConsole.client.config.endpoint);
-    const endpoint = region ? `${protocol}//${region}-${hostname}/v1` : href;
+    const { project: projectId } = $page.params;
 
     let name: string = null;
 
@@ -50,7 +49,7 @@
         <svelte:fragment slot="aside">
             <FormList>
                 <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
-                <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
+                <CopyInput label="API Endpoint" showLabel={true} value={getProjectEndpoint()} />
             </FormList>
         </svelte:fragment>
         <svelte:fragment slot="actions">

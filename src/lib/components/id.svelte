@@ -1,11 +1,5 @@
-<script lang="ts">
-    import { Copy } from '.';
-
-    export let value: string;
-    export let event: string = null;
-    export let centered = true;
-
-    function truncateText(node: HTMLElement) {
+<script context="module" lang="ts">
+    export function truncateText(node: HTMLElement) {
         const MAX_TRIES = 100;
         let originalText = node.textContent;
         function checkOverflow() {
@@ -45,6 +39,14 @@
             }
         };
     }
+</script>
+
+<script lang="ts">
+    import { Copy } from '.';
+
+    export let value: string;
+    export let event: string = null;
+    export let centered = true;
 </script>
 
 <Copy {value} {event} appendTo="parent">

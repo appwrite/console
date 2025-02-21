@@ -1,5 +1,7 @@
 import { page } from '$app/stores';
 import { get } from 'svelte/store';
+import { sdk } from '$lib/stores/sdk';
+import { projectRegion } from '$routes/(console)/project-[region]-[project]/store';
 
 /**
  * Returns the current project ID.
@@ -16,7 +18,7 @@ import { get } from 'svelte/store';
  * - `/project-fra-console/` → `console`
  * - `/project-nyc-console/` → `console`
  */
-export function getProjectId() {
+export function getProjectId(): string | null {
     // safety check!
     const projectFromParams = get(page)?.params?.project;
     if (projectFromParams) {
@@ -27,4 +29,16 @@ export function getProjectId() {
     const projectMatch = pathname.match(/\/project-(?:[a-z]{2,3}-)?([^/]+)/);
 
     return projectMatch?.[1] || null;
+}
+
+/**
+ * Returns the correct API endpoint for the project based on the current project region.
+ *
+ * @returns {string} The project-specific API endpoint.
+ */
+export function getProjectEndpoint(): string {
+    const currentProjectRegion = get(projectRegion);
+    const { protocol, hostname, href } = new URL(sdk.forConsole.client.config.endpoint);
+
+    return currentProjectRegion ? `${protocol}//${currentProjectRegion.$id}-${hostname}/v1` : href;
 }
