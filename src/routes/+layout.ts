@@ -30,7 +30,9 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     if (account) {
         return {
             account: account,
-            organizations: await sdk.forConsole.teams.list()
+            organizations: !isCloud
+                ? await sdk.forConsole.teams.list()
+                : await sdk.forConsole.billing.listOrganization()
         };
     }
 

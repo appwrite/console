@@ -28,9 +28,8 @@
     import { ID, Region } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
-    import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
-    import { organization } from '$lib/stores/organization';
+    import { organization, regions } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
@@ -120,17 +119,14 @@
         }
     };
 
-    let regions: RegionList;
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions($page.params.organization);
             checkPricingRefAndRedirect($page.url.searchParams);
         }
     });
 
     function findRegion(project: Models.Project) {
-        const region = regions.regions.find((region) => region.$id === project.region);
-        return region;
+        return $regions.regions.find((region) => region.$id === project.region);
     }
 </script>
 
