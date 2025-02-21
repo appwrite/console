@@ -1,4 +1,4 @@
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
@@ -17,11 +17,28 @@ export const load = async ({ url, depends, route }) => {
         search || undefined
     );
 
+    // TODO: @Meldiron Discuss better solution for getting screnshot IDs
+    const deployments: Models.Deployment[] = [];
+    await Promise.all(
+        siteList.sites.map(async (site) => {
+            if (!site.deploymentId) {
+                return;
+            }
+
+            const deployment = await sdk.forProject.sites.getDeployment(
+                site.$id,
+                site.deploymentId
+            );
+            deployments.push(deployment);
+        })
+    );
+
     return {
         offset,
         limit,
         search,
         siteList,
+        deployments,
         view
     };
 };

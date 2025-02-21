@@ -34,6 +34,23 @@
         deployment.domain ?? (proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : undefined);
 
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
+
+    function getScreenshot(theme: string, deployment: Models.Deployment) {
+        if (theme === 'dark') {
+            return deployment.screenshotDark
+                ? getFilePreview(deployment.screenshotDark)
+                : `${base}/images/sites/screenshot-placeholder-dark.svg`;
+        }
+
+        return deployment.screenshotLight
+            ? getFilePreview(deployment.screenshotLight)
+            : `${base}/images/sites/screenshot-placeholder-light.svg`;
+    }
+
+    function getFilePreview(fileId: string) {
+        // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
+        return `http://localhost/v1/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`;
+    }
 </script>
 
 <Card padding="s" radius="m">
@@ -45,10 +62,7 @@
                 radius="s"
                 ratio="16/9"
                 style="width: 100%; align-self: start"
-                src={deployment?.preview ||
-                    ($app.themeInUse === 'dark'
-                        ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                        : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                src={getScreenshot($app.themeInUse, deployment)}
                 alt="Screenshot" />
 
             <Layout.Stack gap="xl">

@@ -17,9 +17,30 @@
     import { app } from '$lib/stores/app';
 
     export let siteList: Models.SiteList;
+    export let deployments: Models.Deployment[];
 
     let showRedeploy = false;
     let selectedSite: Models.Site = null;
+
+    function getScreenshot(theme: string, site: Models.Site) {
+        const deployment =
+            deployments.find((d) => site.deploymentId && d.$id === site.deploymentId) ?? null;
+
+        if (theme === 'dark') {
+            return deployment
+                ? getFilePreview(deployment.screenshotDark)
+                : `${base}/images/sites/screenshot-placeholder-dark.svg`;
+        }
+
+        return deployment
+            ? getFilePreview(deployment.screenshotLight)
+            : `${base}/images/sites/screenshot-placeholder-light.svg`;
+    }
+
+    function getFilePreview(fileId: string) {
+        // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
+        return `http://localhost/v1/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`;
+    }
 </script>
 
 <Layout.GridBox itemSize="274px">
@@ -30,10 +51,7 @@
             <Card.Media
                 title={site.name}
                 description={`Updated ${timeFromNow(site.$updatedAt)}`}
-                src={site?.preview ||
-                    ($app.themeInUse === 'dark'
-                        ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                        : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                src={getScreenshot($app.themeInUse, site)}
                 alt={site.name}
                 avatar>
                 <svelte:fragment slot="avatar">

@@ -65,7 +65,7 @@
     </Layout.Stack>
     {#if data.siteList.total}
         {#if data.view === View.Grid}
-            <Grid siteList={data.siteList} />
+            <Grid deployments={data.deployments} siteList={data.siteList} />
         {:else}
             <Table siteList={data.siteList} />
         {/if}
