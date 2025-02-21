@@ -11,6 +11,7 @@
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
+    export let spellcheck: boolean = undefined;
     export let maxlength: number = null;
     export let rows = 3;
     export let helper: string = '';
@@ -45,6 +46,8 @@
     autofocus={autofocus || undefined}
     helper={error || helper}
     state={error ? 'error' : 'default'}
+    {spellcheck}
+    autocorrect={spellcheck ? undefined : 'off'}
     on:invalid={handleInvalid}
     on:input
     bind:value />

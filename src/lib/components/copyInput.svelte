@@ -8,7 +8,7 @@
     export let optionalText: string | undefined = undefined;
 </script>
 
-<Input.Text readonly {value} {label} helper={optionalText}>
+<Input.Text readonly {value} {label} helper={optionalText} required>
     <Copy {value} slot="end">
         <Layout.Stack>
             <Input.Action icon={IconDuplicate} />

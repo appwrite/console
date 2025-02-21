@@ -4,6 +4,8 @@
     import { Button, InputFile } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { parse } from 'envfile';
 
     export let isGlobal: boolean;
@@ -85,7 +87,13 @@
         {/if}
     </div>
 
-    <InputFile bind:files />
+    <Upload.Dropzone bind:files>
+        <Layout.Stack alignItems="center" gap="s">
+            <Layout.Stack alignItems="center" justifyContent="center" direction="row" gap="s">
+                <Typography.Text variant="l-500">Upload a file</Typography.Text>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Upload.Dropzone>
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
