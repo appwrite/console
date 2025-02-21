@@ -19,6 +19,7 @@ export async function loadAvailableRegions(orgId: string): Promise<void> {
             return;
         }
 
+        // TODO: @itznotabug, @torstendittmann we need a better way for this!
         const availableRegions = await sdk.forConsole.billing.listRegions(orgId);
         regions.set(availableRegions);
 
