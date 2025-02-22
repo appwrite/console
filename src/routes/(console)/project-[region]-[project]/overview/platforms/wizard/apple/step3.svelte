@@ -1,23 +1,18 @@
 <script lang="ts">
-    import { Alert, Code } from '$lib/components';
-    import { WizardStep } from '$lib/layout';
-    import { isCloud } from '$lib/system';
-    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
-    import Id from '$lib/components/id.svelte';
+    import { isCloud } from '$lib/system';
+    import { WizardStep } from '$lib/layout';
+    import { Alert, Code, Id } from '$lib/components';
+    import { getProjectEndpoint } from '$lib/helpers/project';
 
-    const { endpoint, project } = sdk.forProject($page.params.region, $page.params.project).client
-        .config;
+    const project = $page.params.project;
     const code = `import Appwrite
 
-${
-    isCloud
-        ? `let client = Client().setProject("${project}")`
-        : `let client = Client()
-    .setEndpoint("${endpoint}")
+let client = Client()
+    .setEndpoint("${getProjectEndpoint()}")
     .setProject("${project}")
-    .setSelfSigned(true) // For self signed certificates, only use for development`
-}`;
+    .setSelfSigned(true) // For self signed certificates, only use for development
+`;
 
     let showAlert = true;
 </script>

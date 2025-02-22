@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate, goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
@@ -13,9 +13,9 @@
 
     onMount(() => {
         let previousStatus = null;
-        return sdk
+        return realtime
             .forProject($page.params.region, $page.params.project)
-            .client.subscribe<Models.Deployment>('console', (message) => {
+            .subscribe<Models.Deployment>('console', (message) => {
                 if (previousStatus === message.payload.status) {
                     return;
                 }

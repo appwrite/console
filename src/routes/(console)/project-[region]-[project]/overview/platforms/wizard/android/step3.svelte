@@ -1,24 +1,18 @@
 <script lang="ts">
-    import { Code } from '$lib/components';
-    import Id from '$lib/components/id.svelte';
-    import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
-    import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import { WizardStep } from '$lib/layout';
+    import { Code, Id } from '$lib/components';
+    import { getProjectEndpoint } from '$lib/helpers/project';
 
-    const { endpoint, project } = sdk.forProject($page.params.region, $page.params.project).client
-        .config;
+    const project = $page.params.project;
     const code = `import io.appwrite.Client
 import io.appwrite.services.Account
 
-${
-    isCloud
-        ? `val client = Client(context).setProject("${project}")`
-        : `val client = Client(context)
-    .setEndpoint("${endpoint}")
+val client = Client(context)
+    .setEndpoint("${getProjectEndpoint()}")
     .setProject("${project}")
-    .setSelfSigned(status: true) // For self signed certificates, only use for development`
-}`;
+    .setSelfSigned(status: true) // For self signed certificates, only use for development
+`;
 </script>
 
 <WizardStep>

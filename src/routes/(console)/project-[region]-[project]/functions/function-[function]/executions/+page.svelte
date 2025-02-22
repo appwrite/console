@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
     import { Alert, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
     import { organization } from '$lib/stores/organization';
@@ -22,7 +20,6 @@
     import QuickFilters from './quickFilters.svelte';
     import { Pill } from '$lib/elements';
     import { tags } from '$lib/components/filters/store';
-    import { page } from '$app/stores';
 
     export let data;
 
@@ -147,13 +144,6 @@
     let showMobileFilters = false;
     onMount(() => {
         data?.query ? (showMobileFilters = true) : (showMobileFilters = false);
-        return sdk
-            .forProject($page.params.region, $page.params.project)
-            .client.subscribe('functions.*.executiole', (response) => {
-                if (response.events.includes('functions.*.executions.*')) {
-                    invalidate(Dependencies.EXECUTIONS);
-                }
-            });
     });
 
     function clearAll() {

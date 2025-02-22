@@ -8,6 +8,7 @@ import { isCloud } from '$lib/system';
 import type { Organization } from '$lib/stores/organization';
 import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
+import { loadAvailableRegions } from '$routes/(console)/regions';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
@@ -15,9 +16,10 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     try {
         const project = await sdk.forConsole.projects.get(params.project);
-        const [organization, prefs] = await Promise.all([
+        const [organization, prefs, _] = await Promise.all([
             sdk.forConsole.teams.get(project.teamId) as Promise<Organization>,
-            sdk.forConsole.account.getPrefs()
+            sdk.forConsole.account.getPrefs(),
+            loadAvailableRegions(project.teamId)
         ]);
         if (prefs?.organization !== project.teamId) {
             sdk.forConsole.account.updatePrefs({

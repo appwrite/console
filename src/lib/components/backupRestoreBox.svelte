@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { type Payload } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
@@ -125,9 +125,9 @@
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
         if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
 
-        return sdk
+        return realtime
             .forProject($page.params.region, $page.params.project)
-            .client.subscribe('console', (response) => {
+            .subscribe('console', (response) => {
                 if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
                 if (

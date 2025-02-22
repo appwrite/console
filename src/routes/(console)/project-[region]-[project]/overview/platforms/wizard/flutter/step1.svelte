@@ -8,6 +8,7 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { PlatformType } from '@appwrite.io/console';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { invalidateDependencies } from '../skipped.svelte';
 
     // enum Platform {
     //     Android = 'flutter-android',
@@ -103,6 +104,8 @@
 
         $createPlatform.$id = response.$id;
         $createPlatform.type = platform;
+
+        await invalidateDependencies();
     }
 
     $: registee = {

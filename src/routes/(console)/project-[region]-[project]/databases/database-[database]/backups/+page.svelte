@@ -9,7 +9,7 @@
     import CreatePolicy from './createPolicy.svelte';
     import { Button } from '$lib/elements/forms';
     import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isCloud, isSelfHosted } from '$lib/system';
@@ -159,9 +159,9 @@
     };
 
     onMount(() => {
-        return sdk
+        return realtime
             .forProject($page.params.region, $page.params.project)
-            .client.subscribe(['project', 'console'], (response) => {
+            .subscribe(['project', 'console'], (response) => {
                 // fast path return.
                 if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 

@@ -11,9 +11,9 @@
     import { onMount } from 'svelte';
     import { project } from '../store';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { getProjectEndpoint } from '$lib/helpers/project';
 
-    const endpoint = sdk.forConsole.client.config.endpoint;
-    const projectId = $page.params.project;
+    const { project: projectId } = $page.params;
 
     let name: string = null;
 
@@ -49,7 +49,7 @@
         <svelte:fragment slot="aside">
             <FormList>
                 <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
-                <CopyInput label="API Endpoint" showLabel={true} value={endpoint} />
+                <CopyInput label="API Endpoint" showLabel={true} value={getProjectEndpoint()} />
             </FormList>
         </svelte:fragment>
         <svelte:fragment slot="actions">

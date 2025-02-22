@@ -3,7 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { func } from '../store';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
@@ -56,9 +56,9 @@
             return;
         }
 
-        const unsubscribe = sdk
+        const unsubscribe = realtime
             .forProject($page.params.region, $page.params.project)
-            .client.subscribe<Models.Deployment>('console', (message) => {
+            .subscribe<Models.Deployment>('console', (message) => {
                 if (
                     message.events.includes(
                         `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
