@@ -31,7 +31,7 @@ export function stopPolling() {
     messageIntervals.forEach((_, messageId) => clearPolling(messageId));
 }
 
-/** Starts polling message statuses, optionally marking them as processing. */
+/** Starts polling message statuses. */
 export function pollMessagesStatus(messages: Models.Message[]) {
     messages.forEach((message) => {
         clearPolling(message.$id);
