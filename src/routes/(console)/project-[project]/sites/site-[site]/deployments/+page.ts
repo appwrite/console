@@ -1,4 +1,4 @@
-import { Query } from '@appwrite.io/console';
+import { type Models, Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
@@ -25,15 +25,26 @@ export const load = async ({ params, depends, url, route, parent }) => {
         sdk.forProject.vcs.listInstallations()
     ]);
 
-    return {
-        offset,
-        limit,
-        query,
-        deploymentList,
-        activeDeployment:
+    // TODO: @Meldiron check on backend.
+    // if the only deployment of the site was deleted, the document isn't updated,
+    // and it still refers an old deployment throwing a 404 on overview & deployments page!
+    let activeDeployment: Models.Deployment | null;
+
+    try {
+        activeDeployment =
             site.deploymentId && deploymentList?.total
                 ? await sdk.forProject.sites.getDeployment(params.site, site.deploymentId)
-                : null,
-        installations
+                : null;
+    } catch (error) {
+        activeDeployment = null;
+    }
+
+    return {
+        limit,
+        query,
+        offset,
+        installations,
+        deploymentList,
+        activeDeployment,
     };
 };
