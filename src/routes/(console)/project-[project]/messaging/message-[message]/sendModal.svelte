@@ -14,7 +14,7 @@
     export let topics: Models.Topic[];
 
     const dispatch = createEventDispatcher();
-    let totalTargets = message.targets?.length ?? 0;
+    $: totalTargets = message.targets?.length ?? 0;
 
     for (const topic of topics) {
         if (message.providerType == MessagingProviderType.Push) {

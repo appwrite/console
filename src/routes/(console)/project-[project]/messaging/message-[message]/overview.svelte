@@ -9,8 +9,8 @@
     import SendModal from './sendModal.svelte';
     import ScheduleModal from './scheduleModal.svelte';
     import CancelModal from './cancelModal.svelte';
-    import { sdk } from '$lib/stores/sdk';
     import { onDestroy, onMount } from 'svelte';
+    import { stopPolling, pollMessagesStatus } from '../helper';
 
     export let message: Models.Message & { data: Record<string, string> };
     export let topics: Models.Topic[];
@@ -21,33 +21,11 @@
     let showFailed = false;
     let errors: string[] = [];
 
-    let intervalID: ReturnType<typeof setInterval>;
-
-    function checkMessageStatus() {
-        sdk.forProject.messaging
-            .getMessage(message.$id)
-            .then((msg) => {
-                if (msg.status !== 'processing') {
-                    clearInterval(intervalID);
-                    message.status = msg.status;
-                }
-            })
-            .catch(() => clearInterval(intervalID));
-    }
-
-    async function pollMessageStatus(update: boolean = true) {
-        if (update) message.status = 'processing';
-
-        checkMessageStatus();
-        clearInterval(intervalID);
-        intervalID = setInterval(checkMessageStatus, 2000);
-    }
-
-    onDestroy(() => clearInterval(intervalID));
+    onDestroy(stopPolling);
 
     onMount(() => {
         if (message.status === 'processing') {
-            pollMessageStatus(false);
+            pollMessagesStatus([message]);
         }
     });
 </script>
@@ -102,7 +80,11 @@
 
 <ScheduleModal bind:show={showSchedule} {message} {topics} />
 
-<SendModal bind:show={showSend} {message} {topics} on:update={() => pollMessageStatus()} />
+<SendModal
+    bind:show={showSend}
+    {message}
+    {topics}
+    on:update={() => pollMessagesStatus([message], true)} />
 
 <CancelModal bind:show={showCancel} {message} />
 
