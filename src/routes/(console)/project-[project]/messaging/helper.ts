@@ -36,12 +36,8 @@ export function stopPolling() {
 }
 
 /** Starts polling message statuses, optionally marking them as processing. */
-export function pollMessagesStatus(messages: Models.Message[], update: boolean = true) {
+export function pollMessagesStatus(messages: Models.Message[]) {
     messages.forEach((message) => {
-        if (update) {
-            message.status = 'processing';
-        }
-
         clearPolling(message.$id);
         checkMessageStatus(message);
 

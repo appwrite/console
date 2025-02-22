@@ -84,7 +84,7 @@
     bind:show={showSend}
     {message}
     {topics}
-    on:update={() => pollMessagesStatus([message], true)} />
+    on:update={() => pollMessagesStatus([message])} />
 
 <CancelModal bind:show={showCancel} {message} />
 
