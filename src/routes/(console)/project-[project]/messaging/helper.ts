@@ -1,7 +1,5 @@
 import { sdk } from '$lib/stores/sdk';
 import { type Models } from '@appwrite.io/console';
-import { invalidate } from '$app/navigation';
-import { Dependencies } from '$lib/constants';
 
 /** Stores active polling intervals for messages. */
 const messageIntervals = new Map<string, ReturnType<typeof setInterval>>();
@@ -14,8 +12,6 @@ function checkMessageStatus(message: Models.Message) {
             if (msg.status !== 'processing') {
                 clearPolling(message.$id);
                 message.status = msg.status;
-                // noinspection JSIgnoredPromiseFromCall
-                invalidate(Dependencies.MESSAGING_MESSAGES);
             }
         })
         .catch(() => clearPolling(message.$id));
