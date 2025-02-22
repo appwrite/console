@@ -8,7 +8,7 @@ export type WizardStore = {
     media?: string;
     component?: typeof SvelteComponent<unknown>;
     cover?: typeof SvelteComponent<unknown>;
-    interceptor?: () => Promise<void>;
+    interceptor?: () => Promise<void> | Promise<boolean>;
     finalAction?: () => Promise<void>;
     nextDisabled: boolean;
     step: number;

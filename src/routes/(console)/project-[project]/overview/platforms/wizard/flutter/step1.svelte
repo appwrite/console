@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Pill } from '$lib/elements';
-    import { FormList, InputText } from '$lib/elements/forms';
+    import { FormList, Helper, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
@@ -26,6 +26,8 @@
     let platform: PlatformType = isValueOfStringEnum(PlatformType, $createPlatform.type)
         ? $createPlatform.type
         : PlatformType.Flutterandroid;
+
+    let error = null;
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -84,10 +86,13 @@
         [PlatformType.Flutterwindows]: 'Package Name'
     };
 
-    async function beforeSubmit() {
+    async function beforeSubmit(): Promise<boolean> {
+        error = null;
+
         // double-check the hostname value.
         if (platform === PlatformType.Flutterweb && !isHostnameValid($createPlatform.hostname)) {
-            throw new Error('Please enter a valid hostname');
+            error = 'Please enter a valid hostname';
+            return false;
         }
 
         if ($createPlatform.$id) {
@@ -119,13 +124,13 @@
         [PlatformType.Flutterwindows]: 'Package name',
         [PlatformType.Flutterweb]: 'Hostname'
     }[platform];
+
+    $: if (!$createPlatform.hostname && error) {
+        error = null;
+    }
 </script>
 
-<WizardStep
-    {beforeSubmit}
-    nextDisabled={platform === PlatformType.Flutterweb
-        ? !isHostnameValid($createPlatform.hostname)
-        : false}>
+<WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">{registee} registration</svelte:fragment>
     <svelte:fragment slot="subtitle">
         <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
@@ -184,6 +189,10 @@
                     tooltip={placeholder[platform].tooltip}
                     required
                     bind:value={$createPlatform.hostname} />
+
+                {#if error}
+                    <Helper type="warning">{error}</Helper>
+                {/if}
 
                 <div class="u-flex u-gap-16 u-margin-block-start-8">
                     {#each suggestions as suggestion}

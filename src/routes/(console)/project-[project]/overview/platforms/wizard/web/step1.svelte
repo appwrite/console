@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { Alert } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { FormList, InputText } from '$lib/elements/forms';
+    import { FormList, Helper, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
@@ -10,13 +10,17 @@
     import { PlatformType } from '@appwrite.io/console';
     import { isHostnameValid } from '$lib/helpers/string';
 
+    let error = null;
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
 
-    async function beforeSubmit() {
+    async function beforeSubmit(): Promise<boolean> {
+        error = null;
+
         // double-check the hostname value.
         if (!isHostnameValid($createPlatform.hostname)) {
-            throw new Error('Please enter a valid hostname');
+            error = 'Please enter a valid hostname';
+            return false;
         }
 
         if ($createPlatform.$id) {
@@ -47,9 +51,13 @@
 
         $createPlatform.$id = platform.$id;
     }
+
+    $: if (!$createPlatform.hostname && error) {
+        error = null;
+    }
 </script>
 
-<WizardStep {beforeSubmit} nextDisabled={!isHostnameValid($createPlatform.hostname)}>
+<WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Hostname registration</svelte:fragment>
     <FormList>
         <InputText
@@ -66,6 +74,11 @@
                 tooltip="The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required."
                 required
                 bind:value={$createPlatform.hostname} />
+
+            {#if error}
+                <Helper type="warning">{error}</Helper>
+            {/if}
+
             <div class="u-flex u-gap-16 u-margin-block-start-8">
                 {#each suggestions as suggestion}
                     <Pill
