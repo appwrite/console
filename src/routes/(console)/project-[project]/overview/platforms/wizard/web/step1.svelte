@@ -14,7 +14,7 @@
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
 
-    async function beforeSubmit(): Promise<boolean> {
+    async function beforeSubmit() {
         error = null;
 
         // double-check the hostname value.

@@ -86,7 +86,7 @@
         [PlatformType.Flutterwindows]: 'Package Name'
     };
 
-    async function beforeSubmit(): Promise<boolean> {
+    async function beforeSubmit() {
         error = null;
 
         // double-check the hostname value.
