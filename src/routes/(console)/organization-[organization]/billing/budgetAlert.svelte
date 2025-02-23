@@ -20,6 +20,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
 
+    export let alertsEnabled = false;
+
     let search: string;
     let selectedAlert: number;
     let alerts: number[] = [];
@@ -74,7 +76,8 @@
         }
     }
 
-    $: isButtonDisabled = symmetricDifference(alerts, $organization.budgetAlerts).length === 0;
+    $: isButtonDisabled =
+        symmetricDifference(alerts, $organization.budgetAlerts).length === 0 || !alertsEnabled;
 </script>
 
 <Form onSubmit={updateBudget}>
@@ -107,6 +110,7 @@
 
                     <div class="u-flex u-gap-16">
                         <InputSelectSearch
+                            disabled={!alertsEnabled}
                             label="Percentage (%) of budget cap"
                             placeholder="Select a percentage"
                             id="alerts"
@@ -118,7 +122,9 @@
                         <div style="align-self: flex-end">
                             <Button
                                 secondary
-                                disabled={alerts.length > 3 || (!search && !selectedAlert)}
+                                disabled={alerts.length > 3 ||
+                                    (!search && !selectedAlert) ||
+                                    !alertsEnabled}
                                 on:click={addAlert}>
                                 Add alert
                             </Button>
