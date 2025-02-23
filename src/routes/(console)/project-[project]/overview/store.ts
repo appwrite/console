@@ -18,3 +18,5 @@ export const usage = cachedStore<
 });
 
 export const selectedTab: Writable<'platforms' | 'keys'> = writable('platforms');
+
+export const isStandardApiKey = writable(true);
