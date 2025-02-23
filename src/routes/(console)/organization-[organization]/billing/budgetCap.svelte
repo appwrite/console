@@ -16,7 +16,7 @@
 
     onMount(() => {
         budget = $organization?.billingBudget;
-        capActive = $organization?.billingBudget != null;
+        capActive = $organization?.billingBudget !== null;
     });
 
     async function updateBudget() {
