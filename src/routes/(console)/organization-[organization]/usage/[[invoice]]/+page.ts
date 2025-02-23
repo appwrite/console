@@ -27,7 +27,13 @@ export const load: PageLoad = async ({ params, parent }) => {
                 executionsTotal: null,
                 projects: null,
                 executionsMBSecondsTotal: null,
-                buildsMBSecondsTotal: null
+                buildsMBSecondsTotal: null,
+                authPhoneTotal: null,
+                authPhoneEstimate: null,
+                databasesReads: null,
+                databasesWrites: null,
+                databasesReadsTotal: null,
+                databasesWritesTotal: null
             }
         };
     }
@@ -45,7 +51,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
         sdk.forConsole.teams.listMemberships(params.organization),
-        sdk.forConsole.billing.getPlan(org.$id)
+        sdk.forConsole.billing.getOrganizationPlan(org.$id)
     ]);
 
     const projectNames: { [key: string]: Models.Project } = {};
@@ -72,12 +78,15 @@ export const load: PageLoad = async ({ params, parent }) => {
         }
     }
 
+    const usersUsageToDate = usage.users.filter((user) => new Date(user.date) < new Date());
+
     return {
         organizationUsage: usage,
         projectNames,
         invoices,
         currentInvoice,
         organizationMembers,
-        plan
+        plan,
+        usersUsageToDate
     };
 };

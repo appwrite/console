@@ -6,16 +6,17 @@
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization } from '$lib/stores/organization';
+    import { organization, currentPlan } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
+    import BudgetAlert from './budgetAlert.svelte';
 
     let capActive = false;
     let budget: number;
 
     onMount(() => {
         budget = $organization?.billingBudget;
-        capActive = !!$organization?.billingBudget;
+        capActive = $organization?.billingBudget !== null;
     });
 
     async function updateBudget() {
@@ -37,14 +38,14 @@
         } catch (error) {
             addNotification({
                 type: 'error',
-                message: `There was an error enabling your budget cap`
+                message: error.message
             });
             trackError(error, Submit.BudgetCapUpdate);
         }
     }
 
     $: if (!capActive) {
-        budget = 0;
+        budget = null;
     }
 </script>
 
@@ -53,13 +54,11 @@
         <Heading tag="h2" size="6">Budget cap</Heading>
 
         <p class="text">
-            Restrict your resource usage by setting a budget cap. <button
-                on:click={() => ($showUsageRatesModal = true)}
-                type="button"
-                class="link">Learn more about usage rates.</button>
+            Restrict your resource usage by setting a budget cap. Cap usage is reset at the
+            beginning of each billing cycle.
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if !$currentPlan.budgeting}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Budget caps are a Pro plan feature
@@ -76,14 +75,19 @@
                 <FormList>
                     <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
                         <svelte:fragment slot="description">
-                            Budget cap limits do not include the base amount of your plan. Cap usage
-                            is reset at the beginning of each billing cycle.
+                            Budget cap limits do not include the base amount of your plan. <button
+                                class="link"
+                                type="button"
+                                on:click={() => ($showUsageRatesModal = true)}
+                                >Learn more about usage rates.
+                            </button>
                         </svelte:fragment>
                     </InputSwitch>
                     {#if capActive}
                         <InputNumber
                             placeholder="Add budget cap"
                             id="cap"
+                            autofocus
                             label="Budget cap (USD)"
                             bind:value={budget} />
                     {/if}
@@ -101,10 +105,14 @@
                             from: 'button',
                             source: 'billing_budget_cap'
                         });
-                    }}>Upgrade to Pro</Button>
+                    }}
+                    >Upgrade to Pro
+                </Button>
             {:else}
                 <Button disabled={$organization?.billingBudget === budget} submit>Update</Button>
             {/if}
         </svelte:fragment>
     </CardGrid>
 </Form>
+
+<BudgetAlert alertsEnabled={capActive && budget > 0} />

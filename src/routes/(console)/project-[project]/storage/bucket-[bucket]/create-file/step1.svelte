@@ -1,43 +1,37 @@
 <script lang="ts">
     import { Alert, CustomId } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
+    import { page } from '$app/stores';
     import { Pill } from '$lib/elements';
-    import { Button, FormList, InputFile } from '$lib/elements/forms';
+    import { FormList, InputFile } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import WizardStep from '$lib/layout/wizardStep.svelte';
-    import { getServiceLimit, tierToPlan, upgradeURL } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { bucket } from '../store';
     import { createFile } from './store';
+    import { base } from '$app/paths';
 
     let showCustomId = false;
-    const service = getServiceLimit('fileSize');
+    let fileError: string = null;
+    const service = $currentPlan['fileSize'];
+    const projectId = $page.params.project;
 </script>
 
 <WizardStep>
     <svelte:fragment slot="title">File</svelte:fragment>
     <svelte:fragment slot="subtitle">Upload a file to add it to your bucket.</svelte:fragment>
 
-    {#if isCloud}
-        {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
-        {@const plan = tierToPlan($organization?.billingPlan)}
+    {#if isCloud && fileError === 'File size exceeds the limit'}
+        {@const size = humanFileSize($bucket.maximumFileSize ?? sizeToBytes(service, 'MB', 1000))}
         <Alert type="info">
             <p class="text">
-                The {plan.name} plan has a maximum upload file size limit of {Math.floor(
-                    parseInt(size.value)
-                )}{size.unit}.
-                {#if $organization?.billingPlan === BillingPlan.FREE}
-                    Upgrade to allow files of a larger size.
-                {/if}
+                The maximum file upload size for this bucket is {parseInt(size.value)}{size.unit}.
+                You can adjust it in your
+                <a
+                    href={`${base}/project-${projectId}/storage/bucket-${$bucket.$id}/settings`}
+                    style:text-decoration="underline">bucket settings</a
+                >.
             </p>
-            <svelte:fragment slot="action">
-                {#if $organization?.billingPlan === BillingPlan.FREE}
-                    <div class="alert-buttons u-flex">
-                        <Button text href={$upgradeURL}>Upgrade plan</Button>
-                    </div>
-                {/if}
-            </svelte:fragment>
         </Alert>
     {/if}
 
@@ -47,6 +41,7 @@
                 required
                 bind:files={$createFile.files}
                 allowedFileExtensions={$bucket.allowedFileExtensions}
+                bind:error={fileError}
                 maxSize={isCloud
                     ? $bucket.maximumFileSize
                     : ($bucket.maximumFileSize ?? sizeToBytes(service, 'MB', 1000))} />
@@ -62,7 +57,7 @@
             </div>
         {:else}
             <div class="custom-id-wrapper">
-                <CustomId bind:show={showCustomId} name="File" bind:id={$createFile.id} />
+                <CustomId autofocus bind:show={showCustomId} name="File" bind:id={$createFile.id} />
             </div>
         {/if}
     </FormList>

@@ -87,6 +87,9 @@
     import { readOnly } from '$lib/stores/billing';
     import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import type { PageData } from './$types';
+
+    export let data: PageData;
 
     let showDelete = false;
 
@@ -397,11 +400,11 @@
             </CardGrid>
         </Form>
 
-        <UpdateMaxFileSize />
+        <UpdateMaxFileSize currentPlan={data.currentPlan} />
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid hideOverflow>
-                <Heading tag="h6" size="7" id="extensions">Allowed file Extensions</Heading>
+                <Heading tag="h6" size="7" id="extensions">Allowed file extensions</Heading>
                 <p class="text">
                     Allowed file extensions. A maximum of 100 file extensions can be added. Leave
                     blank to allow all file types.

@@ -3,7 +3,7 @@
     import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
     import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
     import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models, MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType, type Models, Query } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { getTotal } from './wizard/store';
     import ProviderType from './providerType.svelte';
@@ -22,6 +22,8 @@
     let selected: Record<string, Models.Topic> = {};
     let hasSelection = false;
 
+    let emptyTopicsExists = false;
+
     function reset() {
         offset = 0;
         search = '';
@@ -36,15 +38,21 @@
         if (!show) return;
         const queries = [Query.limit(5), Query.offset(offset)];
 
-        if (providerType === MessagingProviderType.Email) {
-            queries.push(Query.greaterThan('emailTotal', 0));
-        } else if (providerType === MessagingProviderType.Sms) {
-            queries.push(Query.greaterThan('smsTotal', 0));
-        } else if (providerType === MessagingProviderType.Push) {
-            queries.push(Query.greaterThan('pushTotal', 0));
-        }
-
         const response = await sdk.forProject.messaging.listTopics(queries, search || undefined);
+
+        if (response.total !== 0) {
+            switch (providerType) {
+                case MessagingProviderType.Email:
+                    emptyTopicsExists = response.topics.every((topic) => topic.emailTotal === 0);
+                    break;
+                case MessagingProviderType.Sms:
+                    emptyTopicsExists = response.topics.every((topic) => topic.smsTotal === 0);
+                    break;
+                case MessagingProviderType.Push:
+                    emptyTopicsExists = response.topics.every((topic) => topic.pushTotal === 0);
+                    break;
+            }
+        }
 
         totalResults = response.total;
         topicResultsById = {};
@@ -94,7 +102,9 @@
     <div class="u-flex u-flex-vertical u-gap-32">
         <p class="text">
             Select existing topics you want to send this message to its targets. The message will be
-            sent only to <ProviderType type={providerType} noIcon /> targets.
+            sent only to
+            <ProviderType type={providerType} noIcon />
+            targets.
         </p>
         <div class="u-flex u-flex-vertical u-gap-16">
             <InputSearch
@@ -103,7 +113,7 @@
                 placeholder="Search for topics"
                 bind:value={search} />
             <div>
-                {#if Object.keys(topicResultsById).length > 0}
+                {#if Object.keys(topicResultsById).length > 0 && !emptyTopicsExists}
                     <div class="u-flex-vertical u-gap-8">
                         <FormList>
                             <Table noMargin noStyles>
@@ -155,9 +165,12 @@
                                 <Button
                                     external
                                     href="https://appwrite.io/docs/products/messaging/topics"
-                                    text>Documentation</Button>
+                                    text
+                                    >Documentation
+                                </Button>
                                 <Button secondary on:click={() => (search = '')}
-                                    >Clear search</Button>
+                                    >Clear search
+                                </Button>
                             </div>
                         </div>
                     </EmptySearch>
@@ -166,15 +179,19 @@
                         <div class="common-section">
                             <div class="u-text-center common-section">
                                 <p class="text u-line-height-1-5">
-                                    You have no topics. Create a topic to see them here.
+                                    You have no topics{emptyTopicsExists
+                                        ? ` with ${providerType.toUpperCase()} targets`
+                                        : ''}. Create a topic to see them here.
                                 </p>
                                 <p class="text u-line-height-1-5">
-                                    Need a hand? Learn more in our <Button
+                                    Need a hand? Learn more in our
+                                    <Button
                                         link
                                         external
                                         href="https://appwrite.io/docs/products/messaging/topics"
-                                        >documentation</Button
-                                    >.
+                                        >documentation
+                                    </Button>
+                                    .
                                 </p>
                             </div>
                         </div>

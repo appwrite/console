@@ -13,6 +13,7 @@ export { default as WizardStep } from './wizardStep.svelte';
 export { default as Breadcrumbs } from './breadcrumbs.svelte';
 export { default as Unauthenticated } from './unauthenticated.svelte';
 export { default as Usage, type UsagePeriods } from './usage.svelte';
+export { default as UsageMultiple } from './usageMultiple.svelte';
 export { default as Activity } from './activity.svelte';
 export { default as Progress } from './progress.svelte';
 export { default as GridHeader } from './gridHeader.svelte';

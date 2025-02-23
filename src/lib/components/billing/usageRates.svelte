@@ -67,7 +67,7 @@
             following rates. Next billing period: {toLocaleDate(nextDate)}.
         </p>
     {/if}
-    <Table noStyles>
+    <Table noStyles noMargin>
         <TableHeader>
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Limit</TableCellHead>
@@ -81,16 +81,16 @@
                     <TableRow>
                         <TableCellText title="resource">{usage.resource}</TableCellText>
                         <TableCellText title="limit">
-                            {plan[usage.id] || 'Unlimited'}
+                            {plan.addons.seats.limit || 0}
                         </TableCellText>
                         {#if !isFree}
                             <TableCellText title="rate">
-                                {formatCurrency(plan.addons.member.price)}/{usage?.unit}
+                                {formatCurrency(plan.addons.seats.price)}/{usage?.unit}
                             </TableCellText>
                         {/if}
                     </TableRow>
                 {:else}
-                    {@const addon = plan.addons[usage.id]}
+                    {@const addon = plan.usage[usage.id]}
                     <TableRow>
                         <TableCellText title="resource">{usage.resource}</TableCellText>
                         <TableCellText title="limit">
