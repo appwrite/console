@@ -1,52 +1,43 @@
-# Console 🖥️
+# 🎛️ Appwrite Console – Open-Source Backend Dashboard 🚀
 
-[![Discord](https://img.shields.io/discord/564160730845151244?label=discord&style=flat-square)](https://appwrite.io/discord)
-[![Twitter Account](https://img.shields.io/twitter/follow/appwrite?color=00acee&label=twitter&style=flat-square)](https://twitter.com/appwrite)
-[![appwrite.io](https://img.shields.io/badge/appwrite-.io-f02e65?style=flat-square)](https://appwrite.io)
+## 🌟 Overview
+**Appwrite Console** is the **powerful, open-source dashboard** for managing your **Appwrite backend**. It provides an intuitive UI for handling databases, authentication, storage, functions, and more! 💻⚡
 
-![Appwrite](github.png)
+## 🛠️ Features
+✅ **User Authentication** – Manage users and authentication 🔑
+✅ **Database Management** – Easily handle structured & document-based databases 📂
+✅ **File Storage** – Upload, organize, and retrieve files seamlessly 📁
+✅ **Serverless Functions** – Run and manage cloud functions effortlessly ⚙️
+✅ **Team Collaboration** – Assign roles, permissions, and manage access 👥
+✅ **Real-time Logs & Monitoring** – Stay on top of backend events 📊
+✅ **100% Open Source** – Built for developers, by developers 🤖
 
-[Appwrite](https://appwrite.io) Console is the Graphical User Interface that developers interact with when accessing their Appwrite instance in the web browser.
+## 🚀 Installation & Setup
+Clone the repository and install dependencies:
+```bash
+git clone https://github.com/appwrite/console.git
+cd console
+npm install
+```
 
-Appwrite Console has been built with the following frameworks:
+Start the development server:
+```bash
+npm run dev
+```
 
--   [Svelte](https://svelte.dev/)
--   [Svelte Kit](https://kit.svelte.dev/)
+For production builds:
+```bash
+npm run build
+```
 
-## Developer Experience
+## 🎯 Usage
+Simply open **localhost:3000** after running the development server to start managing your Appwrite backend via the Console UI. 🎨✨
 
-Developer experience has always been a priority for Appwrite since its inception. The web console is one of the most important pieces of the developer experience puzzle. The new web console not only looks better but serves a functional purpose.
+## 🤝 Contributing
+We ❤️ contributions! Fork, create a branch, and submit a PR. Check out **issues** for open tasks. 🚀
 
-### Simplicity
+## 👨‍💻 Maintainers
+Developed and maintained by the **Appwrite team** and an amazing community! 🌍🔥
 
-The new UI reduces visual load with more purposeful color use and more selective inclusion of information.
-
-### Consistency
-
-The new Appwrite Console uses a consistent UI library, so navigating from page to page and task to task will flow seamlessly.
-
-### Accessibility
-
-Console 2.0 is designed to be accessible, from design to code. Console 2.0 is also designed to be accessible to developers of all skill levels. Complex workflows will provide more guidance for newer developers and promote good technical decisions.
-
-### Scalability and Collaboration
-
-The new console is more maintainable and welcoming to community contributions. Console 2.0 is built using Svelte instead of our own library. It's better documented and well-known, making it easier for developers to contribute to Appwrite.
-
-## Contributing
-
-All code contributions, including those of people with commit access, must go through a pull request and be approved by a core developer before being merged. This is to ensure a proper review of all the code.
-
-We truly ❤️ pull requests! If you wish to help, you can learn more about how you can contribute to this project in the [contribution guide](CONTRIBUTING.md).
-
-## Security
-
-For security issues, kindly email us at [security@appwrite.io](mailto:security@appwrite.io) instead of posting a public issue on GitHub.
-
-## Follow Us
-
-Join our growing community around the world! See our official [Blog](https://medium.com/appwrite-io). Follow us on [Twitter](https://twitter.com/appwrite), [Facebook Page](https://www.facebook.com/appwrite.io), [Facebook Group](https://www.facebook.com/groups/appwrite.developers/), and [Dev Community](https://dev.to/appwrite) or join our live [Discord server](https://appwrite.io/discord) for more help, ideas, and discussions.
-
-## License
-
-This repository is available under the [BSD 3-Clause License](./LICENSE).
+## 📜 License
+Licensed under the **BSD-3-Clause License** – Free to use, modify, and share! 🎉
