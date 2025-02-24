@@ -62,7 +62,7 @@
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xxl">
-            <Fieldset legend="Settings">
+            <Fieldset legend="Configuration">
                 <Layout.Stack>
                     <InputText
                         id="name"
