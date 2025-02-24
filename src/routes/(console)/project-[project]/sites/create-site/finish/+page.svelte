@@ -71,7 +71,7 @@
                                             justifyContent="space-between"
                                             alignItems="center">
                                             <Typography.Title size="s">
-                                                Connect to repository
+                                                Add repository
                                             </Typography.Title>
                                             <Icon
                                                 icon={IconArrowSmRight}
@@ -101,7 +101,7 @@
                                             color="--color-fgcolor-neutral-weak" />
                                     </Layout.Stack>
                                     <Typography.Text variant="m-400">
-                                        Connect to an existing domain or purchase a new one.
+                                        Connect to an existing domain or add a new one.
                                     </Typography.Text>
                                 </Layout.Stack>
                             </Card>
@@ -111,13 +111,12 @@
                                 isButton
                                 padding="s"
                                 on:click={() => (showInviteCollaborator = true)}>
-                                <Layout.Stack gap="s">
+                                <Layout.Stack gap="s" justifyContent="flex-start">
                                     <Layout.Stack
                                         direction="row"
                                         justifyContent="space-between"
                                         alignItems="center">
-                                        <Typography.Title size="s"
-                                            >Add collaborators</Typography.Title>
+                                        <Typography.Title size="s">Share site</Typography.Title>
                                         <Icon
                                             icon={IconArrowSmRight}
                                             size="l"
