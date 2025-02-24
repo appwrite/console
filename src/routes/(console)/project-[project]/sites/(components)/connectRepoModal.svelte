@@ -29,6 +29,7 @@
     let selectedRepository = '';
     let installations = { installations: [], total: 0 };
     let hasInstallations = !!installations?.total;
+    let error = '';
 
     onMount(async () => {
         installations = await sdk.forProject.vcs.listInstallations();
@@ -54,18 +55,17 @@
                 repository.set(repo);
                 selectedRepository = repo.id;
             }
-            console.log(Object.keys(Framework));
 
             const s = await sdk.forProject.sites.update(
                 site.$id,
                 site.name,
-                Framework[site.framework],
+                site.framework as Framework,
                 site.enabled,
                 site.timeout,
                 site.installCommand,
                 site.buildCommand,
                 site.outputDirectory,
-                BuildRuntime[site.buildRuntime],
+                site.buildRuntime as BuildRuntime,
                 site.adapter,
                 site.fallbackFile,
                 selectedInstallationId,
@@ -79,20 +79,20 @@
                 type: 'success',
                 message: 'Repository connected successfully'
             });
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
+        } catch (e) {
+            error = e.message;
         }
     }
+
+    $: console.log(selectedInstallationId);
 </script>
 
 <Modal
     title="Connect repository"
     bind:show
     hideFooter={!repositoryBehaviour}
-    onSubmit={connectRepo}>
+    onSubmit={connectRepo}
+    bind:error>
     <span slot="description"> Connect to a new repository or an existing one. </span>
     {#if hasInstallations}
         <Layout.Stack gap="xl">

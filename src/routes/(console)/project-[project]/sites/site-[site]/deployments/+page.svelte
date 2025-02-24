@@ -21,6 +21,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import CreateCliModal from './createCliModal.svelte';
 
     export let data;
 
@@ -207,4 +208,7 @@
 {/if}
 {#if showConnectManual}
     <CreateManualDeploymentModal bind:show={showConnectManual} site={data.site} />
+{/if}
+{#if showConnectCLI}
+    <CreateCliModal bind:show={showConnectCLI} site={data.site} />
 {/if}

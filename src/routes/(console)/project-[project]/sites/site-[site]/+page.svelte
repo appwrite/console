@@ -43,8 +43,9 @@
                 <svelte:fragment slot="footer">
                     <Button external href={`${$protocol}${data.deployment.domain}`}>Visit</Button>
                     <!-- TODO: disable when disabled={data.hasProdReadyDeployments} -->
-                    <Button secondary on:click={() => (showRollback = true)}
-                        >Instant rollback</Button>
+                    <Button secondary on:click={() => (showRollback = true)}>
+                        Instant rollback
+                    </Button>
                 </svelte:fragment>
             </SiteCard>
         {:else if data.deployment?.status === 'building'}
@@ -61,11 +62,11 @@
         {:else}
             <Card.Base padding="none">
                 <Empty
-                    title="No deployments found"
+                    title="There is no active deployment"
                     src={$app.themeInUse === 'dark' ? EmptyDeploymentDark : EmptyDeploymentLight}>
                     <span slot="description">
-                        You haven't deployed any sites yet. Get started by deploying your first
-                        site.
+                        Deploy your site to get started. Once deployed, you'll see your latest build
+                        details here.
                     </span>
                 </Empty>
             </Card.Base>
