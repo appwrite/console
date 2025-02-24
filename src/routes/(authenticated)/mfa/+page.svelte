@@ -8,7 +8,7 @@
     import MfaChallengeFormList, { verify } from '$lib/components/mfaChallengeFormList.svelte';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications.js';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
@@ -53,11 +53,11 @@
     <title>Verify - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated align="center">
     <svelte:fragment slot="top">
         <div class="top u-flex u-position-absolute u-main-center">
             <div class="flex u-width-full-line">
-                <Button text class="u-border-width-0" on:click={back}>
+                <Button compact on:click={back}>
                     <Icon icon={IconChevronLeft} slot="start" size="s" />
                     Back
                 </Button>
@@ -65,11 +65,11 @@
         </div>
     </svelte:fragment>
     <svelte:fragment slot="title">Verify your identity</svelte:fragment>
-    <svelte:fragment>
-        <Form onSubmit={submit} class="body-text-1">
+    <Form onSubmit={submit}>
+        <Layout.Stack gap="l" justifyContent="center" alignContent="center" alignItems="center">
             <MfaChallengeFormList {factors} bind:challenge bind:code bind:disabled />
-        </Form>
-    </svelte:fragment>
+        </Layout.Stack>
+    </Form>
 </Unauthenticated>
 
 <style lang="scss">
@@ -87,7 +87,7 @@
 
     @media (max-width: 440px) {
         .top {
-            inset-block-start: 0rem;
+            inset-block-start: 1rem;
             padding-inline: 0.5rem;
         }
     }

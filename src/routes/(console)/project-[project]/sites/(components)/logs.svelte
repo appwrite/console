@@ -7,6 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { capitalize } from '$lib/helpers/string';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
@@ -102,7 +103,7 @@
         </Layout.Stack>
     </Layout.Stack>
     {#key buildLogs}
-        <Logs logs={buildLogs || 'No logs available'} />
+        <Logs logs={buildLogs || 'No logs available'} bind:theme={$app.themeInUse} />
     {/key}
     {#if ['processing', 'building'].includes(status)}
         <Layout.Stack alignItems="flex-end">

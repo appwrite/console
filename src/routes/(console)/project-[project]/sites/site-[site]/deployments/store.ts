@@ -21,7 +21,7 @@ export const columns = writable<Column[]>([
         title: 'Domains',
         type: 'string',
         show: true,
-        width: 15,
+        width: 150,
         array: true,
         format: 'string',
         filter: false

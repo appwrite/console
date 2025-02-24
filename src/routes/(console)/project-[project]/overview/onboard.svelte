@@ -1,8 +1,23 @@
 <script lang="ts">
-    import { Step, Link, Icon, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
-    import { addPlatform } from './platforms/+page.svelte';
+    import {
+        Step,
+        Link,
+        Icon,
+        Layout,
+        Card,
+        Typography,
+        Badge,
+        ProgressCircle,
+        Button
+    } from '@appwrite.io/pink-svelte';
+    import { addPlatform, continuePlatform } from './platforms/+page.svelte';
     import { app } from '$lib/stores/app';
-    import { IconArrowRight } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconArrowRight,
+        IconNodeJs,
+        IconPhp,
+        IconPython
+    } from '@appwrite.io/pink-icons-svelte';
     import DatabaseImgSource from './assets/database.png';
     import DatabaseImgSourceDark from './assets/database-dark.png';
     import UsersImgSource from './assets/users.svg';
@@ -16,22 +31,51 @@
     import PlatformFlutterImgSource from './assets/platform-flutter.svg';
     import PlatformFlutterImgSourceDark from './assets/platform-flutter-dark.svg';
     import { base } from '$app/paths';
-    import Wizard from './keys/wizard.svelte';
-    import { wizard } from '$lib/stores/wizard';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { AvatarGroup } from '$lib/components';
+    import type { Models } from '@appwrite.io/console';
+    import { getPlatformInfo } from '$lib/helpers/platform';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { goto } from '$app/navigation';
 
     function createKey() {
-        wizard.start(Wizard);
+        trackEvent('onboarding_hub_platform', {
+            platform: 'server',
+            state: 'add'
+        });
+        goto(`${base}/project-${projectId}/overview/keys/create`, {
+            replaceState: true
+        });
     }
 
     export let projectId: string;
-    export let hasPlatforms: boolean;
+    export let platforms: Models.Platform[] = [];
+    export let pingCount = 0;
+
+    function openPlatformWizard(type: number, platform?: Models.Platform) {
+        if (platform) {
+            continuePlatform(type, platform.name, platform.key, platform.type);
+        } else {
+            addPlatform(type);
+        }
+    }
+
+    let platformMap = new Map();
+
+    $: {
+        let updatedMap = new Map();
+        platforms.forEach((platform) => {
+            const platformInfo = getPlatformInfo(platform.type);
+            updatedMap.set(platformInfo.name, platform);
+        });
+        platformMap = updatedMap;
+    }
 </script>
 
 <div style:container-type="inline-size">
     <div class="console-container">
         <div class="dashboard-content">
-            {#if !hasPlatforms}
+            {#if platforms.length === 0 || pingCount === 0}
                 <Step.List>
                     <Step.Item state="previous"
                         ><div>
@@ -46,7 +90,7 @@
                                 <Layout.Stack gap="m">
                                     <Typography.Title
                                         color="--color-fgcolor-neutral-primary"
-                                        size="s">Add a platform</Typography.Title>
+                                        size="s">Connect your platform</Typography.Title>
                                     <div class="build-info">
                                         <span>
                                             Start building with your preferred web, mobile, and
@@ -59,94 +103,253 @@
                                 <Layout.Stack
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
-                                    <Card.Button on:click={() => addPlatform(0)} padding="s"
-                                        ><Layout.Stack gap="xl"
+                                    <Card.Button
+                                        on:click={() => {
+                                            openPlatformWizard(0, platformMap.get('Web'));
+                                        }}
+                                        padding="s"
+                                        ><Layout.Stack
+                                            gap={platformMap.has('Web') ? 'm' : 'xl'}
+                                            height="100%"
+                                            justifyContent="space-between"
                                             ><div class="card-top-image web-image-light"></div>
                                             <div class="card-top-image web-image-dark"></div>
+                                            {#if platformMap.has('Web')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
                                                 <Typography.Title size="s">Web</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div>
+                                                {#if platformMap.has('Web')}<Button.Button size="xs"
+                                                        >Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}
                                             </Layout.Stack>
                                         </Layout.Stack></Card.Button>
-                                    <Card.Button on:click={createKey} padding="s"
-                                        ><Layout.Stack gap="xl"
-                                            ><div class="card-top-image server-image-light"></div>
-                                            <div class="card-top-image server-image-dark"></div>
+                                    <Card.Button
+                                        on:click={() => {
+                                            openPlatformWizard(4, platformMap.get('React Native'));
+                                        }}
+                                        padding="s"
+                                        ><Layout.Stack
+                                            gap={platformMap.has('React Native') ? 'm' : 'xl'}
+                                            height="100%"
+                                            justifyContent="space-between">
+                                            <div class="card-top-image reactnative-image-light">
+                                            </div>
+                                            <div class="card-top-image reactnative-image-dark">
+                                            </div>
+                                            {#if platformMap.has('React Native')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
-                                                <Typography.Title size="s">Server</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div>
+                                                <Typography.Title size="s"
+                                                    >React Native</Typography.Title>
+                                                {#if platformMap.has('React Native')}<Button.Button
+                                                        size="xs">Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}
                                             </Layout.Stack>
                                         </Layout.Stack></Card.Button>
                                 </Layout.Stack>
                                 <Layout.Stack
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
-                                    <Card.Button on:click={() => addPlatform(3)} padding="s">
-                                        <Layout.Stack gap="xxl">
+                                    <Card.Button
+                                        on:click={() => {
+                                            openPlatformWizard(3, platformMap.get('Apple'));
+                                        }}
+                                        padding="s">
+                                        <Layout.Stack
+                                            gap={platformMap.has('Apple') ? 's' : 'xxl'}
+                                            height="100%"
+                                            justifyContent="space-between">
                                             <img
                                                 class="platform-image"
                                                 src={$app.themeInUse === 'dark'
                                                     ? PlatformIosImgSourceDark
                                                     : PlatformIosImgSource}
                                                 alt="" />
+                                            {#if platformMap.has('Apple')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
                                                 <Typography.Title size="s">Apple</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div></Layout.Stack>
+                                                {#if platformMap.has('Apple')}<Button.Button
+                                                        size="xs">Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}</Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
-                                    <Card.Button on:click={() => addPlatform(2)} padding="s">
-                                        <Layout.Stack gap="xxl">
+                                    <Card.Button
+                                        on:click={() => {
+                                            openPlatformWizard(2, platformMap.get('Android'));
+                                        }}
+                                        padding="s">
+                                        <Layout.Stack
+                                            gap={platformMap.has('Android') ? 's' : 'xxl'}
+                                            height="100%"
+                                            justifyContent="space-between">
                                             <img
                                                 class="platform-image"
                                                 src={$app.themeInUse === 'dark'
                                                     ? PlatformAndroidImgSourceDark
                                                     : PlatformAndroidImgSource}
                                                 alt="" />
+                                            {#if platformMap.has('Android')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
                                                 <Typography.Title size="s"
                                                     >Android</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div></Layout.Stack>
+                                                {#if platformMap.has('Android')}<Button.Button
+                                                        size="xs">Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}</Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
-                                    <Card.Button on:click={() => addPlatform(1)} padding="s">
-                                        <Layout.Stack gap="xxl">
+                                    <Card.Button
+                                        on:click={() => {
+                                            openPlatformWizard(1, platformMap.get('Flutter'));
+                                        }}
+                                        padding="s">
+                                        <Layout.Stack
+                                            gap={platformMap.has('Flutter') ? 's' : 'xxl'}
+                                            height="100%"
+                                            justifyContent="space-between">
                                             <img
                                                 class="platform-image"
                                                 src={$app.themeInUse === 'dark'
                                                     ? PlatformFlutterImgSourceDark
                                                     : PlatformFlutterImgSource}
                                                 alt="" />
+                                            {#if platformMap.has('Flutter')}
+                                                <Layout.Stack alignItems="flex-start">
+                                                    <Badge
+                                                        size="s"
+                                                        variant="secondary"
+                                                        content="In progress">
+                                                        <div
+                                                            slot="start"
+                                                            style:margin="-4px 4px 0 0">
+                                                            <ProgressCircle
+                                                                size="xs"
+                                                                showAnimation={false}
+                                                                backgroundStrokeColor="--progress-background-color"
+                                                                progress={33} />
+                                                        </div>
+                                                    </Badge>
+                                                </Layout.Stack>
+                                            {/if}
                                             <Layout.Stack
                                                 direction="row"
                                                 alignItems="center"
                                                 justifyContent="space-between">
                                                 <Typography.Title size="s"
                                                     >Flutter</Typography.Title>
-                                                <div class="arrow-icon">
-                                                    <Icon icon={IconArrowRight} size="s" />
-                                                </div></Layout.Stack>
+                                                {#if platformMap.has('Flutter')}<Button.Button
+                                                        size="xs">Continue</Button.Button
+                                                    >{:else}
+                                                    <div class="arrow-icon">
+                                                        <Icon icon={IconArrowRight} size="s" />
+                                                    </div>
+                                                {/if}</Layout.Stack>
                                         </Layout.Stack>
                                     </Card.Button>
+                                </Layout.Stack>
+                                <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                    <Typography.Text>Or connect</Typography.Text>
+                                    <Link.Button variant="muted" on:click={createKey}
+                                        >server side</Link.Button>
+                                    <div style:padding-inline-start="8px">
+                                        <AvatarGroup
+                                            icons={[IconPython, IconNodeJs, IconPhp]}
+                                            total={7}
+                                            size="s" />
+                                    </div>
                                 </Layout.Stack>
                             </Layout.Stack>
                         </Layout.Stack></Step.Item>
@@ -166,7 +369,7 @@
                     <Step.Item state="previous"
                         ><div>
                             <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
-                                >Add a platform</Typography.Title>
+                                >Connect your platform</Typography.Title>
                         </div></Step.Item>
                     <Step.Item state="current">
                         <Layout.Stack
@@ -189,7 +392,12 @@
                                 <Layout.Stack
                                     gap="l"
                                     direction={$isSmallViewport ? 'column' : 'row'}>
-                                    <Card.Button on:click={() => addPlatform(0)} padding="s"
+                                    <Card.Button
+                                        on:click={() => {
+                                            trackEvent('onboarding_hub_setup_databases');
+                                            goto(`${base}/project-${projectId}/databases`);
+                                        }}
+                                        padding="s"
                                         ><Layout.Stack gap="xl"
                                             ><div
                                                 class="card-top-image database-card-image"
@@ -222,20 +430,38 @@
                                                     <Link.Anchor
                                                         variant="quiet-muted"
                                                         href="https://appwrite.io/docs/references"
+                                                        on:click={() => {
+                                                            trackEvent(
+                                                                'onboarding_hub_api_references'
+                                                            );
+                                                        }}
                                                         target="_blank">API references</Link.Anchor>
                                                     <Link.Anchor
                                                         variant="quiet-muted"
                                                         href="https://appwrite.io/docs/tutorials"
+                                                        on:click={() => {
+                                                            trackEvent('onboarding_hub_tutorials');
+                                                        }}
                                                         target="_blank">Tutorials</Link.Anchor>
                                                     <Link.Anchor
                                                         variant="quiet-muted"
                                                         href="https://appwrite.io/docs/products/storage/quick-start"
+                                                        on:click={() => {
+                                                            trackEvent(
+                                                                'onboarding_hub_storage_quick_start'
+                                                            );
+                                                        }}
                                                         target="_blank"
                                                         >Storage quick start
                                                     </Link.Anchor>
                                                     <Link.Anchor
                                                         variant="quiet-muted"
                                                         href="https://appwrite.io/docs/products/functions/quick-start"
+                                                        on:click={() => {
+                                                            trackEvent(
+                                                                'onboarding_hub_functions_quick_start'
+                                                            );
+                                                        }}
                                                         target="_blank"
                                                         >Functions quick start</Link.Anchor>
                                                 </Layout.Stack>
@@ -261,16 +487,29 @@
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
                                                                 href={`${base}/project-${projectId}/auth/settings`}
+                                                                on:click={() => {
+                                                                    trackEvent(
+                                                                        'onboarding_hub_auth_email_password'
+                                                                    );
+                                                                }}
                                                                 >E-mail and password
                                                             </Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
                                                                 href={`${base}/project-${projectId}/auth/settings`}
-                                                                >OAuth 2</Link.Anchor>
+                                                                on:click={() => {
+                                                                    trackEvent(
+                                                                        'onboarding_hub_auth_oauth2'
+                                                                    );
+                                                                }}>OAuth 2</Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
                                                                 href={`${base}/project-${projectId}/auth/settings`}
-                                                                >View all methods</Link.Anchor>
+                                                                on:click={() => {
+                                                                    trackEvent(
+                                                                        'onboarding_hub_auth_all_methods'
+                                                                    );
+                                                                }}>View all methods</Link.Anchor>
                                                         </Layout.Stack>
                                                     </Layout.Stack>
                                                     <div
@@ -284,7 +523,12 @@
                                             </div></Card.Base>
                                     </div>
 
-                                    <Card.Link href="https://appwrite.io/discord" padding="s">
+                                    <Card.Link
+                                        href="https://appwrite.io/discord"
+                                        padding="s"
+                                        on:click={() => {
+                                            trackEvent('onboarding_hub_discord');
+                                        }}>
                                         <div class="full-height-card">
                                             <Layout.Stack gap="xs" justifyContent="space-between">
                                                 <Layout.Stack direction="column" gap="xxxs">
@@ -326,15 +570,17 @@
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     :global(.theme-light) {
+        --progress-background-color: var(--neutral-200);
         .web-image-dark,
-        .server-image-dark {
+        .reactnative-image-dark {
             display: none;
         }
     }
 
     :global(.theme-dark) {
+        --progress-background-color: var(--neutral-600);
         .web-image-light,
-        .server-image-light {
+        .reactnative-image-light {
             display: none;
         }
     }
@@ -361,11 +607,11 @@
             background-image: url('./assets/platform-web-dark.png');
         }
 
-        .server-image-light {
-            background-image: url('./assets/platform-server.png');
+        .reactnative-image-light {
+            background-image: url('./assets/platform-reactnative.png');
         }
-        .server-image-dark {
-            background-image: url('./assets/platform-server-dark.png');
+        .reactnative-image-dark {
+            background-image: url('./assets/platform-reactnative-dark.png');
         }
         .database-card-image {
             background-size: cover;

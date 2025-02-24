@@ -1,3 +1,13 @@
+<script lang="ts" context="module">
+    export type NavbarProject = {
+        name: string;
+        $id: string;
+        isSelected: boolean;
+        platformCount: number;
+        pingCount: number;
+    };
+</script>
+
 <script lang="ts">
     import {
         Navbar,
@@ -34,6 +44,7 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let showSupport = false;
 
@@ -45,22 +56,26 @@
             isSelected: boolean;
             showUpgrade: boolean;
             tierName: string;
-            projects: Array<{ name: string; $id: string; isSelected: boolean }>;
+            projects: Array<NavbarProject>;
         }>;
         showAccountMenu: boolean;
     };
 
-    function updateTheme(theme: 'light' | 'dark' | 'system') {
+    function updateTheme(theme: 'light' | 'dark' | 'auto') {
         const themeInUse =
-            theme === 'system'
+            theme === 'auto'
                 ? window.matchMedia('(prefers-color-scheme: dark)').matches
                     ? 'dark'
                     : 'light'
                 : theme;
 
+        trackEvent('select_theme', {
+            value: theme === 'auto' ? 'system' : theme
+        });
+
         app.update(() => ({
             themeInUse: themeInUse,
-            theme: theme === 'system' ? 'auto' : theme
+            theme: theme
         }));
     }
 
@@ -78,12 +93,15 @@
     export let sideBarIsOpen: $$Props['sideBarIsOpen'] = false;
     export let showAccountMenu = false;
 
-    let activeTheme = 'dark';
+    let activeTheme = $app.theme;
 
     $: {
-        updateTheme(activeTheme);
+        if (activeTheme) {
+            updateTheme(activeTheme);
+        }
     }
     $: currentOrg = organizations.find((org) => org.isSelected);
+    $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
 </script>
 
 <Navbar.Base {...$$props}>
@@ -101,6 +119,14 @@
             <img src={logo.src} alt={logo.alt} />
         </a>
         <Breadcrumbs {organizations} />
+        {#if selectedProject && selectedProject.pingCount === 0}
+            <div class="only-desktop" style:margin-inline-start="-10px">
+                <Button.Anchor
+                    href={`${base}/project-${selectedProject.$id}/get-started`}
+                    variant="secondary"
+                    size="xs">Connect</Button.Anchor>
+            </div>
+        {/if}
     </div>
     <div slot="right" class="only-desktop">
         <div class="right">
@@ -109,12 +135,24 @@
                     <Button.Anchor
                         size="s"
                         variant="primary"
+                        on:click={() => {
+                            trackEvent('click_organization_upgrade', {
+                                from: 'button',
+                                source: 'top_nav'
+                            });
+                        }}
                         href={`${base}/organization-${currentOrg.$id}/change-plan`}
                         >Upgrade</Button.Anchor>
                 {/if}
 
-                <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
-                    <Button.Button type="button" variant="compact" on:click={toggleFeedback}
+                <DropList show={$feedback.show} class="extended-width">
+                    <Button.Button
+                        type="button"
+                        variant="compact"
+                        on:click={() => {
+                            toggleFeedback();
+                            trackEvent('click_menu_feedback', { source: 'top_nav' });
+                        }}
                         >Feedback
                     </Button.Button>
                     <svelte:fragment slot="other">
@@ -131,7 +169,10 @@
                     <Button.Button
                         variant="compact"
                         type="button"
-                        on:click={() => (showSupport = !showSupport)}>
+                        on:click={() => {
+                            showSupport = !showSupport;
+                            trackEvent('click_menu_support', { source: 'top_nav' });
+                        }}>
                         Support
                     </Button.Button>
 
@@ -140,8 +181,8 @@
                     </svelte:fragment>
                 </DropList>
             </Layout.Stack>
-            <div class="icons">
-                <Tooltip inline={false}>
+            <Layout.Stack direction="row">
+                <Tooltip>
                     <Button.Button
                         variant="text"
                         aria-label="Toggle Command Center"
@@ -149,10 +190,13 @@
                         <Icon icon={IconSearch} />
                     </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
-            </div>
+            </Layout.Stack>
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
+                    if (showAccountMenu) {
+                        trackEvent('click_menu_dropdown');
+                    }
                 }}>
                 <div style:user-select="none">
                     <Avatar size="s" src={avatar} />
@@ -196,7 +240,7 @@
                                                     { id: 'light', label: 'Light', icon: IconSun },
                                                     { id: 'dark', label: 'Dark', icon: IconMoon },
                                                     {
-                                                        id: 'system',
+                                                        id: 'auto',
                                                         label: 'System',
                                                         icon: IconMode
                                                     }
@@ -263,7 +307,7 @@
                                         name: 'System',
                                         leadingIcon: IconMode,
                                         onClick: () => {
-                                            updateTheme('system');
+                                            updateTheme('auto');
                                         }
                                     }
                                 ]
@@ -329,10 +373,6 @@
         .only-desktop {
             display: flex;
         }
-    }
-
-    :global(.icons div:first-of-type:not(:has(.progress-card))) {
-        height: 20px;
     }
 
     .account-container {

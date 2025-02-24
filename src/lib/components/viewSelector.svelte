@@ -86,7 +86,7 @@
 
 {#if !hideColumns && view === View.Table}
     {#if $columns?.length}
-        <Popover let:toggle>
+        <Popover let:toggle placement="bottom-end">
             <Button.Button
                 size="s"
                 variant="secondary"

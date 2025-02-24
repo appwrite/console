@@ -39,10 +39,10 @@
     <svelte:fragment slot="aside">
         <!-- TODO: fix use repository name instead of id-->
         <Aside
-            framework={data.frameworks.frameworks.find((f) => f.name === data.site.framework)}
-            repositoryName={data.repository.name}
-            branch={data.site.providerBranch}
-            rootDir={data.site.providerRootDirectory}
+            framework={data.frameworks.frameworks.find((f) => f.key === data.site.framework)}
+            repositoryName={data?.repository?.name}
+            branch={data.repository?.id ? data.site.providerBranch : ''}
+            rootDir={data.repository?.id ? data.site.providerRootDirectory : ''}
             domain={data.deployment.domain} />
     </svelte:fragment>
     <svelte:fragment slot="footer">

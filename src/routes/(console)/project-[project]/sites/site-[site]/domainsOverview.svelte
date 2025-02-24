@@ -26,10 +26,10 @@
 <Layout.Stack>
     <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
         <Layout.Stack gap="xs" direction="row" alignItems="center" inline>
-            <Typography.Text variant="l-500">Domains</Typography.Text><Badge
-                variant="secondary"
-                content={proxyRuleList?.total.toString()}
-                size="s" />
+            <Typography.Text variant="l-500" color="--color-fgcolor-neutral-primary">
+                Domains
+            </Typography.Text>
+            <Badge variant="secondary" content={proxyRuleList?.total.toString()} size="s" />
         </Layout.Stack>
         <Button
             secondary
@@ -37,37 +37,68 @@
             View all
         </Button>
     </Layout.Stack>
-    <Card padding="s" isTile>
-        {#each proxyRuleList?.rules?.slice(0, 3) as rule, i}
-            <Layout.Stack alignItems="center" justifyContent="space-between" direction="row">
-                <Layout.Stack gap="xs" inline>
-                    <Link variant="quiet-muted" href={`${$protocol}${rule.domain}`} external>
-                        <Layout.Stack gap="xs" inline direction="row" alignItems="center">
-                            <Trim alternativeTrim>
-                                {rule.domain}
-                            </Trim>
-                            <Icon icon={IconExternalLink} />
-                        </Layout.Stack>
-                    </Link>
-                    <Typography.Text truncate>
-                        Added {timeFromNow(rule.$createdAt)}
-                    </Typography.Text>
+    <Card padding="xs" radius="s" isTile>
+        <Layout.Stack>
+            {#if proxyRuleList?.rules?.length <= 1}
+                <Layout.Stack gap="l">
+                    <Layout.Stack gap="xxs">
+                        <Typography.Text variant="l-500">
+                            Add your first custom domain
+                        </Typography.Text>
+                        <Typography.Caption variant="500" color="--color-fgcolor-neutral-tertiary">
+                            Personalize your site and enhance its accessibility and branding with a
+                            unique domain.
+                        </Typography.Caption>
+                    </Layout.Stack>
+                    <div>
+                        <Button
+                            secondary
+                            size="xs"
+                            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
+                            Add domain
+                        </Button>
+                    </div>
                 </Layout.Stack>
-                <Button
-                    icon
-                    secondary
-                    on:click={() => {
-                        showDomainQR = true;
-                        selectedDomainURL = rule.domain;
-                        console.log(rule.domain);
-                    }}>
-                    <Icon icon={IconQrcode} />
-                </Button>
-            </Layout.Stack>
-            {#if i < 2 && i < proxyRuleList.rules.length - 1}
-                <Divider />
+                {#if proxyRuleList?.rules?.length}
+                    <Divider />
+                {/if}
             {/if}
-        {/each}
+            {#each proxyRuleList?.rules?.slice(0, 3) as rule, i}
+                <Layout.Stack
+                    alignItems="center"
+                    justifyContent="space-between"
+                    direction="row"
+                    gap="xl">
+                    <Layout.Stack gap="xxs" inline>
+                        <Link variant="quiet" href={`${$protocol}${rule.domain}`} size="m">
+                            <Layout.Stack gap="xs" inline direction="row" alignItems="center">
+                                <Trim alternativeTrim>
+                                    {rule.domain}
+                                </Trim>
+                                <Icon icon={IconExternalLink} />
+                            </Layout.Stack>
+                        </Link>
+                        <Typography.Caption variant="400" truncate>
+                            Added {timeFromNow(rule.$createdAt)}
+                        </Typography.Caption>
+                    </Layout.Stack>
+                    <Button
+                        icon
+                        secondary
+                        size="xs"
+                        on:click={() => {
+                            showDomainQR = true;
+                            selectedDomainURL = rule.domain;
+                            console.log(rule.domain);
+                        }}>
+                        <Icon icon={IconQrcode} />
+                    </Button>
+                </Layout.Stack>
+                {#if i < 2 && i < proxyRuleList.rules.length - 1}
+                    <Divider />
+                {/if}
+            {/each}
+        </Layout.Stack>
     </Card>
 </Layout.Stack>
 

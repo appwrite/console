@@ -2,11 +2,11 @@
     import { InputSelect } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
-    import UsageCard from './usageCard.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { SiteUsageRange, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import { UsageCard } from '$lib/components';
 
     export let deploymentList: Models.DeploymentList;
     let range = SiteUsageRange.ThirtyDays;
@@ -20,32 +20,32 @@
         {
             id: 'buildsTotal',
             value: null,
-            description: 'Total build count'
+            description: 'Total builds count'
         },
         {
             id: 'buildsStorageTotal',
             value: null,
-            description: 'Total build size'
+            description: 'Total builds size'
         },
         {
             id: 'buildsTimeTotal',
             value: null,
-            description: 'Total build time'
+            description: 'Total builds time'
         },
         {
             id: 'avgTime',
             value: null,
-            description: 'Average build time'
+            description: 'Avg. builds time'
         },
         {
             id: 'success',
             value: null,
-            description: 'Successful deployment'
+            description: 'Successful'
         },
         {
             id: 'failed',
             value: null,
-            description: 'Failed deployment'
+            description: 'Failed '
         }
     ];
     onMount(async () => {
@@ -55,28 +55,32 @@
     });
 
     async function fetchUsage() {
-        metrics.forEach((metric) => {
-            metric.value = null;
-        });
-        metrics = metrics;
-        try {
-            const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
-            metrics = metrics.map((metric) => {
-                metric.value = usage[metric.id] ?? 'n/a';
-                return metric;
+        // Add timeout to make it look nicer
+        setTimeout(async () => {
+            metrics.forEach((metric) => {
+                metric.value = null;
             });
             metrics = metrics;
-            console.log(usage);
-        } catch (error) {
-            console.log(error);
-        }
+
+            try {
+                const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
+                metrics = metrics.map((metric) => {
+                    metric.value = usage[metric.id] ?? '-';
+                    return metric;
+                });
+                metrics = metrics;
+                console.log(usage);
+            } catch (error) {
+                console.log(error);
+            }
+        }, 800);
     }
 
     $: console.log(metrics);
 </script>
 
 <Layout.Stack gap="xl">
-    <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-end" wrap="wrap">
         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
             Metrics for {range !== SiteUsageRange.TwentyFourHours
                 ? `${toLocaleDate(
@@ -95,7 +99,7 @@
                 on:change={fetchUsage} />
         </div>
     </Layout.Stack>
-    <Layout.Stack direction="row">
+    <Layout.Stack gap="m" direction="row">
         {#each metrics as metric}
             <UsageCard description={metric.description} bind:value={metric.value} />
         {/each}

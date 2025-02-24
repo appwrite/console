@@ -12,6 +12,7 @@
     export let secondary = false;
     export let text = false;
     export let icon = false;
+    export let danger = false;
     export let size: Props['size'] = 's';
     export let disabled = false;
     export let external = false;
@@ -28,6 +29,7 @@
     export let submissionLoader = false;
     export let forceShowLoader = false;
     export let compact = false;
+    export let extraCompact = false;
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -46,7 +48,13 @@
         });
     }
 
-    function getVariant(): 'primary' | 'secondary' | 'text' | 'compact' {
+    function getVariant():
+        | 'primary'
+        | 'secondary'
+        | 'text'
+        | 'compact'
+        | 'danger'
+        | 'extra-compact' {
         switch (true) {
             case secondary:
                 return 'secondary';
@@ -54,6 +62,10 @@
                 return 'text';
             case compact:
                 return 'compact';
+            case extraCompact:
+                return 'extra-compact';
+            case danger:
+                return 'danger';
             default:
                 return 'primary';
         }
@@ -83,8 +95,7 @@
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
-        aria-label={ariaLabel}
-        --button-width={fullWidth ? '100%' : 'max-content'}>
+        aria-label={ariaLabel}>
         <slot name="start" slot="start" />
         <slot />
         <slot slot="end" name="end" />
@@ -101,8 +112,7 @@
         {variant}
         class={resolvedClasses}
         aria-label={ariaLabel}
-        type={submit ? 'submit' : 'button'}
-        --button-width={fullWidth ? '100%' : 'max-content'}>
+        type={submit ? 'submit' : 'button'}>
         <slot name="start" slot="start" />
         {#if ($isSubmitting && submissionLoader) || (forceShowLoader && submissionLoader)}
             <span

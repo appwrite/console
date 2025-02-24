@@ -15,11 +15,12 @@
     import Details from '../../details.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, Query, ResourceType, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
     import Domain from '../../domain.svelte';
+    import { consoleVariables } from '$routes/(console)/store';
 
     export let data;
     let showExitModal = false;
@@ -85,7 +86,6 @@
                     installCommand,
                     buildCommand,
                     outputDirectory,
-                    domain || undefined,
                     framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
                     data.installation.$id,
                     null,
@@ -94,10 +94,13 @@
                     silentMode,
                     rootDir
                 );
-                trackEvent(Submit.SiteCreate, {
-                    source: 'repository',
-                    framework: framework.key
-                });
+
+                // Add domain
+                await sdk.forProject.proxy.createRule(
+                    `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                    ResourceType.Site,
+                    site.$id
+                );
 
                 //Add variables
                 const promises = variables.map((variable) =>
@@ -110,10 +113,18 @@
                 );
                 await Promise.all(promises);
 
-                const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
-                    Query.limit(1)
-                ]);
-                const deployment = deployments[0];
+                const deployment = await sdk.forProject.sites.createVcsDeployment(
+                    site.$id,
+                    Type.Branch,
+                    branch,
+                    true
+                );
+
+                trackEvent(Submit.SiteCreate, {
+                    source: 'repository',
+                    framework: framework.key
+                });
+
                 await goto(
                     `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
                 );

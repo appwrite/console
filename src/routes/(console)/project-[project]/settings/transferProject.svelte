@@ -6,6 +6,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import { project } from '../store';
 
     export let show = false;
@@ -33,11 +34,13 @@
 </script>
 
 <Modal title="Transfer project" bind:show onSubmit={handleTransfer}>
-    <p>Are you sure you want to transfer <b>{$project.name}</b> to <b>{teamName}</b>?</p>
-    <p>
+    <Typography.Text
+        >Are you sure you want to transfer <b>{$project.name}</b> to
+        <b>{teamName}</b>?</Typography.Text>
+    <Typography.Text>
         Members who are not part of the destination organization must be invited to gain access to
         this project.
-    </p>
+    </Typography.Text>
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Box } from '$lib/components';
-    import { InputSelectSearch } from '$lib/elements/forms';
+    import { InputSelect, InputSelectSearch } from '$lib/elements/forms';
     import { localeCodes } from './store';
 
     export let value = 'en';
@@ -22,9 +22,8 @@
         <span class="icon-translate" />
         <span class="text">Template language</span>
     </div>
-    <InputSelectSearch
+    <InputSelect
         on:select
-        label="Language"
         id="language"
         placeholder="Select a language"
         name="locale"

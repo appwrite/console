@@ -16,6 +16,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Box } from '$lib/components';
     import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let loading = false;
     let openResetModal = false;
@@ -101,7 +102,7 @@
     {/if}
     <div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
         <Form onSubmit={saveEmailTemplate}>
-            <FormList gap={8}>
+            <Layout.Stack>
                 <InputText
                     id="senderName"
                     label="Sender name"
@@ -122,18 +123,16 @@
                     label="Reply to"
                     placeholder="noreply@appwrite.io" />
                 {#if $$slots.default}
-                    <li style="margin-block: 1rem;">
-                        <p class="text">
-                            Click to copy variables for the fields below. Learn more <a
-                                class="link"
-                                href="https://appwrite.io/docs/advanced/platform/message-templates"
-                                >here</a
-                            >.
-                        </p>
-                        <div class="u-margin-block-start-16 u-flex u-flex-wrap u-gap-8">
-                            <slot />
-                        </div>
-                    </li>
+                    <p class="text">
+                        Click to copy variables for the fields below. Learn more <a
+                            class="link"
+                            href="https://appwrite.io/docs/advanced/platform/message-templates"
+                            >here</a
+                        >.
+                    </p>
+                    <Layout.Stack direction="row">
+                        <slot />
+                    </Layout.Stack>
                 {/if}
                 <InputText
                     bind:value={$emailTemplate.subject}
@@ -147,7 +146,7 @@
                     placeholder="Enter your message"
                     tooltip="Set up an SMTP server to edit the message body"
                     readonly={!isSmtpEnabled} />
-            </FormList>
+            </Layout.Stack>
             <div class="u-sep-block-start u-margin-block-start-24" />
             <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
                 <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>

@@ -9,4 +9,7 @@
     <title>Console - Appwrite</title>
 </svelte:head>
 
-<Onboard {projectId} hasPlatforms={$page.data.project.platforms.length > 0} />
+<Onboard
+    {projectId}
+    platforms={$page.data.project.platforms}
+    pingCount={$page.data.project.pingCount} />

@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { BoxAvatar, CardGrid, Heading, Modal } from '$lib/components';
+    import { BoxAvatar, CardGrid } from '$lib/components';
     import { Button, FormList, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,10 +11,11 @@
     import { onMount } from 'svelte';
     import { project } from '../store';
     import type { RegionList } from '$lib/sdk/billing';
+    import Confirm from '$lib/components/confirm.svelte';
 
     let showDelete = false;
     let name: string = null;
-
+    let error: string;
     let regions: RegionList;
     onMount(async () => {
         if (isCloud) {
@@ -32,12 +33,9 @@
             });
             trackEvent(Submit.ProjectDelete);
             await goto(base);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.ProjectDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.ProjectDelete);
         }
     };
 </script>
@@ -64,13 +62,17 @@
     </svelte:fragment>
 </CardGrid>
 
-<Modal title="Delete project" bind:show={showDelete} onSubmit={handleDelete}>
-    <p>
-        <b>This project will be deleted</b>, along with all of its metadata, stats, and other
-        resources. <b>This action is irreversible</b>.
-    </p>
-
+<Confirm
+    disabled={name !== $project.name}
+    onSubmit={handleDelete}
+    title="Delete project"
+    bind:open={showDelete}
+    bind:error>
     <FormList>
+        <p>
+            <b>This project will be deleted</b>, along with all of its metadata, stats, and other
+            resources. <b>This action is irreversible</b>.
+        </p>
         <InputText
             label={`Enter "${$project.name}" to continue`}
             placeholder="Enter name"
@@ -79,8 +81,4 @@
             required
             bind:value={name} />
     </FormList>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button disabled={!name || name !== $project.name} secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+</Confirm>

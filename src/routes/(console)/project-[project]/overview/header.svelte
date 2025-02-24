@@ -10,6 +10,7 @@
     import { user } from '$lib/stores/user';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { Dependencies } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 </script>
 
 {#if !$page.url.pathname.includes('get-started')}
@@ -45,6 +46,7 @@
                             variant="secondary"
                             size="s"
                             on:click={async () => {
+                                trackEvent('onboarding_hub_platform_dismiss');
                                 await setHasOnboardingDismissed($project.$id);
                                 goto(`${base}/project-${$project.$id}/overview`);
                                 requestAnimationFrame(() => {

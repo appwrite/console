@@ -24,7 +24,9 @@
 
     {#if total > 2}
         <Avatar {size}>
-            +{total - 2}
+            <span style:font-size="10px">
+                +{total - 2}
+            </span>
         </Avatar>
     {/if}
 </AvatarGroup>

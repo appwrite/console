@@ -40,13 +40,18 @@
         <svelte:fragment slot="title">Email</svelte:fragment>
         <svelte:fragment slot="aside">
             <FormList>
-                <InputText id="email" label="Email" placeholder="Enter email" bind:value={email} />
+                <InputText
+                    id="email"
+                    label="Email"
+                    placeholder="Enter email"
+                    bind:value={email}
+                    required />
                 {#if email !== $user.email && email}
                     <InputPassword
                         id="emailPassword"
                         label="Password"
                         placeholder="Enter password"
-                        showPasswordButton={true}
+                        required
                         bind:value={emailPassword} />
                 {/if}
             </FormList>

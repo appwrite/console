@@ -33,6 +33,7 @@
         IconUpload
     } from '@appwrite.io/pink-icons-svelte';
     import Link from '$lib/elements/link.svelte';
+    import Copy from '$lib/components/copy.svelte';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
@@ -140,14 +141,28 @@
                     variable.value,
                     variable.secret
                 );
-                await sdk.forProject.functions.deleteVariable(variable.resourceId, variable.$id);
+                if (product === 'site') {
+                    await sdk.forProject.sites.deleteVariable(variable.resourceId, variable.$id);
+                } else {
+                    await sdk.forProject.functions.deleteVariable(
+                        variable.resourceId,
+                        variable.$id
+                    );
+                }
             } else {
                 await sdk.forProject.projectApi.createVariable(
                     variable.key,
                     variable.value,
                     variable.secret
                 );
-                await sdk.forProject.functions.deleteVariable(variable.resourceId, variable.$id);
+                if (product === 'site') {
+                    await sdk.forProject.sites.deleteVariable(variable.resourceId, variable.$id);
+                } else {
+                    await sdk.forProject.functions.deleteVariable(
+                        variable.resourceId,
+                        variable.$id
+                    );
+                }
             }
 
             selectedVar = null;
@@ -195,7 +210,7 @@
     <svelte:fragment slot="title"
         >{isGlobal ? 'Global variables' : 'Environment variables'}</svelte:fragment>
     {#if isGlobal}
-        Set the environment variables or secret keys that will be passed to all functions and sites
+        Set the environment variables or secret keys that will be passed to all Functions and Sites
         within your project.
     {:else}
         Set the environment variables or secret keys that will be passed to your {product}. Global
@@ -204,17 +219,7 @@
         >.
     {/if}
     <svelte:fragment slot="aside">
-        <Layout.Stack justifyContent="space-between" direction="row">
-            <Layout.Stack direction="row" gap="s">
-                <Button secondary on:click={() => (showEditorModal = true)}>
-                    <Icon size="s" icon={IconCode} />
-                    <span class="text">Editor</span>
-                </Button>
-                <Button secondary on:click={() => (showVariablesUpload = true)}>
-                    <Icon size="s" icon={IconUpload} />
-                    <span class="text">Import .env file</span>
-                </Button>
-            </Layout.Stack>
+        <Layout.Stack justifyContent="space-between" direction="row" wrap="wrap">
             <Button secondary on:click={() => (showVariablesModal = true)}>
                 <Icon size="s" icon={IconPlus} />
                 <span class="text">Create variable</span>
@@ -244,8 +249,8 @@
                 <Table.Root>
                     <svelte:fragment slot="header">
                         <Table.Header.Cell width="180px">Key</Table.Header.Cell>
-                        <Table.Header.Cell width="180px">Value</Table.Header.Cell>
-                        <Table.Header.Cell width="40px" />
+                        <Table.Header.Cell>Value</Table.Header.Cell>
+                        <Table.Header.Cell width="30px" />
                     </svelte:fragment>
                     {#each variableList.variables.slice(offset, offset + limit) as variable, i}
                         <Table.Row>
@@ -262,7 +267,7 @@
                                             class="icon-exclamation u-color-text-warning"
                                             aria-hidden="true" />
                                     {/if}
-
+                                    <Copy value={variable.key} />
                                     <Output value={variable.key} hideCopyIcon>
                                         {variable.key}
                                     </Output>
@@ -279,69 +284,78 @@
                                 </div>
                             </Table.Cell>
                             <Table.Cell>
-                                <div style="margin-inline-start: auto">
-                                    <Popover placement="bottom-end" let:toggle>
-                                        <Button
-                                            text
-                                            icon
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                toggle(e);
-                                            }}>
-                                            <Icon size="s" icon={IconDotsHorizontal} />
-                                        </Button>
-                                        <svelte:fragment slot="tooltip" let:toggle>
-                                            <ActionMenu.Root>
+                                <Popover placement="bottom-end" let:toggle padding="none">
+                                    <Button
+                                        text
+                                        icon
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            toggle(e);
+                                        }}>
+                                        <Icon size="s" icon={IconDotsHorizontal} />
+                                    </Button>
+                                    <svelte:fragment slot="tooltip" let:toggle>
+                                        <ActionMenu.Root>
+                                            <ActionMenu.Item.Button
+                                                trailingIcon={IconPencil}
+                                                on:click={(e) => {
+                                                    selectedVar = variable;
+                                                    showVariablesDropdown[i] = false;
+                                                    showVariablesModal = true;
+                                                    toggle(e);
+                                                }}>
+                                                Edit
+                                            </ActionMenu.Item.Button>
+                                            {#if !isGlobal}
                                                 <ActionMenu.Item.Button
-                                                    trailingIcon={IconPencil}
-                                                    on:click={(e) => {
+                                                    trailingIcon={IconGlobeAlt}
+                                                    on:click={async (e) => {
                                                         selectedVar = variable;
                                                         showVariablesDropdown[i] = false;
-                                                        showVariablesModal = true;
+                                                        showPromoteModal = true;
                                                         toggle(e);
                                                     }}>
-                                                    Edit
+                                                    Promote
                                                 </ActionMenu.Item.Button>
-
-                                                {#if !isGlobal}
-                                                    <ActionMenu.Item.Button
-                                                        trailingIcon={IconGlobeAlt}
-                                                        on:click={async (e) => {
-                                                            selectedVar = variable;
-                                                            showVariablesDropdown[i] = false;
-                                                            showPromoteModal = true;
-                                                            toggle(e);
-                                                        }}>
-                                                        Promote
-                                                    </ActionMenu.Item.Button>
-                                                {/if}
-                                                <ActionMenu.Item.Button
-                                                    trailingIcon={IconTrash}
-                                                    on:click={async (e) => {
-                                                        handleVariableDeleted(variable);
-                                                        showVariablesDropdown[i] = false;
-                                                        toggle(e);
-                                                    }}>
-                                                    Delete
-                                                </ActionMenu.Item.Button>
-                                            </ActionMenu.Root>
-                                        </svelte:fragment>
-                                    </Popover>
-                                </div>
+                                            {/if}
+                                            <ActionMenu.Item.Button
+                                                trailingIcon={IconTrash}
+                                                on:click={async (e) => {
+                                                    handleVariableDeleted(variable);
+                                                    showVariablesDropdown[i] = false;
+                                                    toggle(e);
+                                                }}>
+                                                Delete
+                                            </ActionMenu.Item.Button>
+                                        </ActionMenu.Root>
+                                    </svelte:fragment>
+                                </Popover>
                             </Table.Cell>
                         </Table.Row>
                     {/each}
                 </Table.Root>
-                <Layout.Stack direction="row" justifyContent="space-between">
-                    <p class="text">Total variables: {sum}</p>
-                    <PaginationInline {sum} {limit} bind:offset hidePages />
-                </Layout.Stack>
+                {#if sum > limit}
+                    <Layout.Stack direction="row" justifyContent="space-between">
+                        <p class="text">Total variables: {sum}</p>
+                        <PaginationInline {sum} {limit} bind:offset hidePages />
+                    </Layout.Stack>
+                {/if}
             </Layout.Stack>
         {:else}
             <Empty on:click={() => (showVariablesModal = true)}>
                 Create a {isGlobal ? 'global variable' : 'variable'} to get started
             </Empty>
         {/if}
+        <Layout.Stack direction="row" gap="s" wrap="wrap">
+            <Button secondary on:click={() => (showEditorModal = true)}>
+                <Icon size="s" icon={IconCode} />
+                <span class="text">Editor</span>
+            </Button>
+            <Button secondary on:click={() => (showVariablesUpload = true)}>
+                <Icon size="s" icon={IconUpload} />
+                <span class="text">Import .env file</span>
+            </Button>
+        </Layout.Stack>
     </svelte:fragment>
 </CardGrid>
 

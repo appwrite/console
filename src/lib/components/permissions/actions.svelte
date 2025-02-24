@@ -1,14 +1,13 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { DropList, DropListItem } from '..';
     import Label from './label.svelte';
     import Custom from './custom.svelte';
     import Team from './team.svelte';
     import User from './user.svelte';
     import type { Permission } from './permissions.svelte';
     import type { Writable } from 'svelte/store';
+    import { ActionMenu, Popover } from '@appwrite.io/pink-svelte';
 
-    export let showDropdown: boolean;
     export let showUser: boolean;
     export let showTeam: boolean;
     export let showLabel: boolean;
@@ -16,34 +15,43 @@
     export let groups: Writable<Map<string, Permission>>;
 
     const dispatch = createEventDispatcher();
-
-    $: if (showUser || showTeam || showCustom) {
-        showDropdown = false;
-    }
 </script>
 
-<DropList bind:show={showDropdown} placement="bottom-end" fixed>
-    <slot />
-    <svelte:fragment slot="list">
-        <DropListItem disabled={$groups.has('any')} on:click={() => dispatch('create', ['any'])}>
-            Any
-        </DropListItem>
-        <DropListItem
-            disabled={$groups.has('guests')}
-            on:click={() => dispatch('create', ['guests'])}>
-            All guests
-        </DropListItem>
-        <DropListItem
-            disabled={$groups.has('users')}
-            on:click={() => dispatch('create', ['users'])}>
-            All users
-        </DropListItem>
-        <DropListItem on:click={() => (showUser = true)}>Select users</DropListItem>
-        <DropListItem on:click={() => (showTeam = true)}>Select teams</DropListItem>
-        <DropListItem on:click={() => (showLabel = true)}>Label</DropListItem>
-        <DropListItem on:click={() => (showCustom = true)}>Custom permission</DropListItem>
+<Popover let:toggle>
+    <slot {toggle} />
+    <svelte:fragment slot="tooltip">
+        <ActionMenu.Root>
+            <ActionMenu.Item.Button
+                disabled={$groups.has('any')}
+                on:click={() => dispatch('create', ['any'])}>
+                Any
+            </ActionMenu.Item.Button>
+            <ActionMenu.Item.Button
+                disabled={$groups.has('any')}
+                on:click={() => dispatch('create', ['any'])}>
+                Any
+            </ActionMenu.Item.Button>
+            <ActionMenu.Item.Button
+                disabled={$groups.has('guests')}
+                on:click={() => dispatch('create', ['guests'])}>
+                All guests
+            </ActionMenu.Item.Button>
+            <ActionMenu.Item.Button
+                disabled={$groups.has('users')}
+                on:click={() => dispatch('create', ['users'])}>
+                All users
+            </ActionMenu.Item.Button>
+            <ActionMenu.Item.Button on:click={() => (showUser = true)}
+                >Select users</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button on:click={() => (showTeam = true)}
+                >Select teams</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button on:click={() => (showLabel = true)}
+                >Label</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button on:click={() => (showCustom = true)}
+                >Custom permission</ActionMenu.Item.Button>
+        </ActionMenu.Root>
     </svelte:fragment>
-</DropList>
+</Popover>
 
 <User bind:show={showUser} on:create {groups} />
 <Team

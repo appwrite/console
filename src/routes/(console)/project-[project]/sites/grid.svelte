@@ -10,18 +10,45 @@
         IconGlobeAlt,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Card, Icon, Popover } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Card, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import RedeployModal from './redeployModal.svelte';
     import { getFrameworkIcon } from './store';
     import { SvgIcon } from '$lib/components';
+    import { app } from '$lib/stores/app';
+    import { getApiEndpoint } from '$lib/stores/sdk';
 
     export let siteList: Models.SiteList;
+    export let deployments: Models.Deployment[];
 
     let showRedeploy = false;
     let selectedSite: Models.Site = null;
+
+    function getScreenshot(theme: string, site: Models.Site) {
+        const deployment =
+            deployments.find((d) => site.deploymentId && d.$id === site.deploymentId) ?? null;
+
+        if (theme === 'dark') {
+            return deployment?.screenshotDark
+                ? getFilePreview(deployment.screenshotDark)
+                : `${base}/images/sites/screenshot-placeholder-dark.svg`;
+        }
+
+        return deployment?.screenshotLight
+            ? getFilePreview(deployment.screenshotLight)
+            : `${base}/images/sites/screenshot-placeholder-light.svg`;
+    }
+
+    function getFilePreview(fileId: string) {
+        // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
+        const endpoint = getApiEndpoint();
+        return (
+            endpoint +
+            `/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`
+        );
+    }
 </script>
 
-<section class="sites-grid">
+<Layout.GridBox itemSize="274px">
     {#each siteList.sites as site}
         <Card.Link
             href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}
@@ -29,8 +56,7 @@
             <Card.Media
                 title={site.name}
                 description={`Updated ${timeFromNow(site.$updatedAt)}`}
-                src={site.preview ??
-                    `https://placehold.co/600x400/111/bbb?text=Screenshot+coming+soon&font=inter`}
+                src={getScreenshot($app.themeInUse, site)}
                 alt={site.name}
                 avatar>
                 <svelte:fragment slot="avatar">
@@ -74,7 +100,7 @@
             </Card.Media>
         </Card.Link>
     {/each}
-</section>
+</Layout.GridBox>
 
 {#if selectedSite?.$id && showRedeploy}
     <RedeployModal
@@ -82,11 +108,3 @@
         bind:show={showRedeploy}
         site={selectedSite} />
 {/if}
-
-<style lang="scss">
-    .sites-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(237.5px, 1fr));
-        gap: 1rem;
-    }
-</style>

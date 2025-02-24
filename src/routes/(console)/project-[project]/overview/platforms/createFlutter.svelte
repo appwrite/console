@@ -3,18 +3,10 @@
     import { invalidate } from '$app/navigation';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import {
-        Code,
-        Layout,
-        Icon,
-        Typography,
-        Fieldset,
-        InlineCode,
-    } from '@appwrite.io/pink-svelte';
+    import { Code, Layout, Icon, Typography, Fieldset, InlineCode } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconFlutter, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -42,7 +34,7 @@
 static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
         `;
 
-    let platform: PlatformType = PlatformType.Flutterandroid;
+    export let platform: PlatformType = PlatformType.Flutterandroid;
 
     let platforms: { [key: string]: PlatformType } = {
         Android: PlatformType.Flutterandroid,
@@ -124,6 +116,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
             trackEvent(Submit.PlatformCreate, {
                 type: platform
             });
+
             await Promise.all([
                 invalidate(Dependencies.PROJECT),
                 invalidate(Dependencies.PLATFORMS)
@@ -145,8 +138,10 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`) && isPlatformCreated) {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.PROJECT);
                 unsubscribe();
             }
         });
@@ -316,7 +311,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
                 fullWidthMobile
                 secondary
                 disabled={isCreatingPlatform}
-                href={`${base}/project-${projectId}/overview`}>
+                href={location.pathname}>
                 Go to dashboard
             </Button>
         {/if}

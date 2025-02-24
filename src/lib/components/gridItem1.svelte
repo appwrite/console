@@ -1,9 +1,10 @@
 <script>
     import { Heading } from '$lib/components';
+    import { Card } from '@appwrite.io/pink-svelte';
     export let href;
 </script>
 
-<a class="card" {href}>
+<Card.Link class="card" {href}>
     <div class="grid-item-1">
         <div class="grid-item-1-start-start">
             <div class="eyebrow-heading-3"><slot name="eyebrow" /></div>
@@ -26,7 +27,7 @@
             </ul>
         </div>
     </div>
-</a>
+</Card.Link>
 
 <style>
     /* TODO: remove this when ui library is updated*/

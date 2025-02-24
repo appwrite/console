@@ -1,21 +1,10 @@
-<div class="u-flex-vertical u-gap-16">
+<div>
     <slot />
 </div>
 
 <style>
     div {
-        color: hsl(var(--color-neutral-50));
-        line-height: 1.25rem;
-        &:first-child {
-            color: hsl(var(--color-neutral-70));
-        }
-    }
-
-    :global(.theme-dark) div {
-        color: hsl(var(--color-neutral-20));
-
-        &:first-child {
-            color: hsl(var(--color-neutral-10));
-        }
+        max-width: 360px;
+        text-wrap: auto;
     }
 </style>

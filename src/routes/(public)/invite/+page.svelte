@@ -9,6 +9,7 @@
     import { onMount } from 'svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert } from '$lib/components';
+    import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;
@@ -61,8 +62,10 @@
                 <Button href={`${base}/register`}>Sign up to Appwrite</Button>
             </div>
         {:else}
-            <div class="u-flex-vertical u-gap-16">
-                <p class="text">You have been invited to join an organization on Appwrite</p>
+            <Layout.Stack>
+                <Typography.Text>
+                    You have been invited to join an organization on Appwrite
+                </Typography.Text>
                 <Form onSubmit={acceptInvite}>
                     <FormList>
                         <InputChoice
@@ -71,18 +74,16 @@
                             id="terms"
                             label="terms"
                             showLabel={false}>
-                            By accepting the invitation, you agree to the <a
-                                class="link"
+                            By accepting the invitation, you agree to the <Link.Anchor
                                 href="https://appwrite.io/terms"
                                 target="_blank"
-                                rel="noopener noreferrer">Terms and Conditions</a>
+                                rel="noopener noreferrer">Terms and Conditions</Link.Anchor>
                             and
-                            <a
-                                class="link"
+                            <Link.Anchor
                                 href="https://appwrite.io/privacy"
                                 target="_blank"
                                 rel="noopener noreferrer">
-                                Privacy Policy</a
+                                Privacy Policy</Link.Anchor
                             >.</InputChoice>
 
                         <div class="u-flex u-main-end u-gap-12">
@@ -91,7 +92,7 @@
                         </div>
                     </FormList>
                 </Form>
-            </div>
+            </Layout.Stack>
         {/if}
     </svelte:fragment>
 </Unauthenticated>

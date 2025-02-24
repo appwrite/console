@@ -1,6 +1,5 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import Create from './createProjectCloud.svelte';
@@ -29,41 +28,25 @@
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import type { RegionList } from '$lib/sdk/billing';
-    import { onMount } from 'svelte';
-    import { organization } from '$lib/stores/organization';
+    import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import {
+        IconAndroid,
+        IconApple,
+        IconCode,
+        IconFlutter,
+        IconPlus,
+        IconReact,
+        IconUnity
+    } from '@appwrite.io/pink-icons-svelte';
+    import { getPlatformInfo } from '$lib/helpers/platform';
 
     export let data;
 
     let addOrganization = false;
     let showCreate = false;
-
-    const getPlatformInfo = (platform: string) => {
-        let name: string, icon: string;
-        if (platform.includes('flutter')) {
-            name = 'Flutter';
-            icon = 'flutter';
-        } else if (platform.includes('apple')) {
-            name = 'Apple';
-            icon = 'apple';
-        } else if (platform.includes('android')) {
-            name = 'Android';
-            icon = 'android';
-        } else if (platform.includes('unity')) {
-            name = 'Unity';
-            icon = 'unity';
-        } else if (platform.includes('web')) {
-            name = 'Web';
-            icon = 'code';
-        } else {
-            name = 'Unknown';
-            icon = 'unknown';
-        }
-        return { name, icon };
-    };
 
     function allServiceDisabled(project: Models.Project): boolean {
         let disabled = true;
@@ -87,6 +70,26 @@
         if (isCloud) wizard.start(Create);
         else showCreate = true;
     }
+
+    function getIconForPlatform(platform: string): ComponentType {
+        switch (platform) {
+            case 'code':
+                return IconCode;
+            case 'flutter':
+                return IconFlutter;
+            case 'apple':
+                return IconApple;
+            case 'android':
+                return IconAndroid;
+            case 'react-native':
+                return IconReact;
+            case 'unity':
+                return IconUnity;
+            default:
+                return null;
+        }
+    }
+
     $: $registerCommands([
         {
             label: 'Create project',
@@ -141,100 +144,94 @@
     }
 </script>
 
-{#if $organization?.$id}
-    <Container>
-        <div class="u-flex u-gap-12 common-section u-main-space-between">
-            <Heading tag="h2" size="5">Projects</Heading>
+<Container>
+    <div class="u-flex u-gap-12 common-section u-main-space-between">
+        <Heading tag="h2" size="5">Projects</Heading>
 
-            <DropList bind:show={showDropdown} placement="bottom-end">
-                {#if $canWriteProjects}
-                    <Button
-                        on:click={handleCreateProject}
-                        event="create_project"
-                        disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create project
-                    </Button>
-                {/if}
-                <svelte:fragment slot="list">
-                    <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
-                    <DropListItem on:click={importProject}>
-                        <div class="u-flex u-gap-8 u-cross-center">
-                            Import project <span class="tag eyebrow-heading-3">Experimental</span>
-                        </div>
-                    </DropListItem>
-                </svelte:fragment>
-            </DropList>
-        </div>
+        <DropList bind:show={showDropdown} placement="bottom-end">
+            {#if $canWriteProjects}
+                <Button
+                    on:click={handleCreateProject}
+                    event="create_project"
+                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Create project
+                </Button>
+            {/if}
+            <svelte:fragment slot="list">
+                <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
+                <DropListItem on:click={importProject}>
+                    <div class="u-flex u-gap-8 u-cross-center">
+                        Import project <span class="tag eyebrow-heading-3">Experimental</span>
+                    </div>
+                </DropListItem>
+            </svelte:fragment>
+        </DropList>
+    </div>
 
-        {#if data.projects.total}
-            <CardContainer
-                showEmpty={$canWriteProjects}
-                total={data.projects.total}
-                offset={data.offset}
-                on:click={handleCreateProject}>
-                {#each data.projects.projects as project}
-                    {@const platforms = filterPlatforms(
-                        project.platforms.map((platform) => getPlatformInfo(platform.type))
-                    )}
-                    <li>
-                        <GridItem1 href={`${base}/project-${project.$id}`}>
-                            <svelte:fragment slot="eyebrow">
-                                {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
-                            </svelte:fragment>
-                            <svelte:fragment slot="title">
-                                {project.name}
-                            </svelte:fragment>
-                            {#if allServiceDisabled(project)}
-                                <p>
-                                    <span class="icon-pause" aria-hidden="true" /> All services are disabled.
-                                </p>
-                            {/if}
-
-                            {#each platforms as platform, i}
-                                {#if i < 3}
-                                    <Pill>
-                                        <span class={`icon-${platform.icon}`} aria-hidden="true" />
-                                        {platform.name}
-                                    </Pill>
-                                {/if}
-                            {/each}
-                            {#if platforms?.length > 3}
-                                <Pill>
-                                    +{project.platforms.length - 3}
-                                </Pill>
-                            {/if}
-                            <svelte:fragment slot="icons">
-                                {#if isCloud && regions}
-                                    {@const region = findRegion(project)}
-                                    <span class="u-color-text-gray u-medium u-line-height-2">
-                                        {region?.name}
-                                    </span>
-                                {/if}
-                            </svelte:fragment>
-                        </GridItem1>
-                    </li>
-                {/each}
-                <svelte:fragment slot="empty">
-                    <p>Create a new project</p>
-                </svelte:fragment>
-            </CardContainer>
-        {:else}
-            <Empty
-                single
-                allowCreate={$canWriteProjects}
-                on:click={handleCreateProject}
-                target="project"
-                href="https://appwrite.io/docs/quick-starts"></Empty>
-        {/if}
-
-        <PaginationWithLimit
-            name="Projects"
-            limit={data.limit}
+    {#if data.projects.total}
+        <CardContainer
+            showEmpty={$canWriteProjects}
+            total={data.projects.total}
             offset={data.offset}
-            total={data.projects.total} />
-    </Container>
+            on:click={handleCreateProject}>
+            {#each data.projects.projects as project}
+                {@const platforms = filterPlatforms(
+                    project.platforms.map((platform) => getPlatformInfo(platform.type))
+                )}
+                <GridItem1 href={`${base}/project-${project.$id}`}>
+                    <svelte:fragment slot="eyebrow">
+                        {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
+                    </svelte:fragment>
+                    <svelte:fragment slot="title">
+                        {project.name}
+                    </svelte:fragment>
+                    {#if allServiceDisabled(project)}
+                        <p>
+                            <span class="icon-pause" aria-hidden="true" /> All services are disabled.
+                        </p>
+                    {/if}
 
-    <CreateOrganization bind:show={addOrganization} />
-    <CreateProject bind:show={showCreate} teamId={$page.params.organization} />
-{/if}
+                    {#each platforms as platform, i}
+                        {#if i < 3}
+                            {@const icon = getIconForPlatform(platform.icon)}
+                            <Badge variant="secondary" content={platform.name}>
+                                <Icon {icon} size="s" slot="start" />
+                            </Badge>
+                        {/if}
+                    {/each}
+                    {#if platforms?.length > 3}
+                        <Badge variant="secondary" content={`+${project.platforms.length - 3}`} />
+                    {/if}
+                    <svelte:fragment slot="icons">
+                        {#if isCloud && regions}
+                            {@const region = findRegion(project)}
+                            <span class="u-color-text-gray u-medium u-line-height-2">
+                                {region?.name}
+                            </span>
+                        {/if}
+                    </svelte:fragment>
+                </GridItem1>
+            {/each}
+            <svelte:fragment slot="empty">
+                <p>Create a new project</p>
+            </svelte:fragment>
+        </CardContainer>
+    {:else}
+        <Empty
+            single
+            allowCreate={$canWriteProjects}
+            on:click={handleCreateProject}
+            target="project"
+            href="https://appwrite.io/docs/quick-starts"></Empty>
+    {/if}
+
+    <PaginationWithLimit
+        name="Projects"
+        limit={data.limit}
+        offset={data.offset}
+        total={data.projects.total} />
+</Container>
+
+<CreateOrganization bind:show={addOrganization} />
+<CreateProject bind:show={showCreate} teamId={$page.params.organization} />

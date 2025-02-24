@@ -49,14 +49,12 @@
         <svelte:fragment slot="title">Package name</svelte:fragment>
         Your package name is generally the applicationId in your app-level build.gradle file.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="package-name"
-                    label="Package Name"
-                    bind:value={key}
-                    required
-                    placeholder="com.company.appname" />
-            </FormList>
+            <InputText
+                id="package-name"
+                label="Package name"
+                bind:value={key}
+                required
+                placeholder="com.company.appname" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

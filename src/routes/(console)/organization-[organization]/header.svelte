@@ -13,6 +13,7 @@
     import { members, newMemberModal, newOrgModal, organization } from '$lib/stores/organization';
     import {
         canSeeBilling,
+        canSeeDomains,
         canSeeProjects,
         canSeeTeams,
         isBilling,
@@ -49,6 +50,13 @@
             event: 'projects',
             hasChildren: true,
             disabled: !$canSeeProjects
+        },
+        {
+            href: `${path}/domains`,
+            event: 'domains',
+            title: 'Domains',
+            disabled: !isCloud
+            // disabled: !(isCloud && $canSeeDomains) //TODO: enable this before release
         },
         {
             href: `${path}/members`,

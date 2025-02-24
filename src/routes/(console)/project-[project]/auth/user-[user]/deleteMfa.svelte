@@ -1,13 +1,12 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { AuthenticatorType } from '@appwrite.io/console';
     import { user } from './store';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let showDelete = false;
 
@@ -34,15 +33,11 @@
     }
 </script>
 
-<Modal
-    title="Delete authentication method"
-    bind:show={showDelete}
+<Confirm
     onSubmit={deleteProvider}
+    title="Delete authentication method"
+    bind:open={showDelete}
     bind:error>
     <p>Are you sure you want to delete this authentication?</p>
     <p class="text u-bold">This action is irreversible.</p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+</Confirm>

@@ -6,7 +6,7 @@ const userPreferences = () => get(user)?.prefs;
 
 export function hasOnboardingDismissed(projectId: string) {
     const currentPrefs = userPreferences();
-    const onboardingDismissed = currentPrefs.onboardingDismissed;
+    const onboardingDismissed = currentPrefs?.onboardingDismissed;
     return (
         onboardingDismissed &&
         Array.isArray(onboardingDismissed) &&

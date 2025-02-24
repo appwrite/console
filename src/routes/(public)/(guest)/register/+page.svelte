@@ -20,6 +20,7 @@
     import { page } from '$app/stores';
     import { redirectTo } from '$routes/store';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+    import { Link, Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -107,26 +108,25 @@
                     id="password"
                     label="Password"
                     placeholder="Your password"
+                    helper="Password must be at least 8 characters long"
                     required
                     bind:value={pass} />
                 <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                    By registering, you agree that you have read, understand, and acknowledge our <a
-                        class="link"
+                    By registering, you agree that you have read, understand, and acknowledge our <Link.Anchor
                         href="https://appwrite.io/privacy"
                         target="_blank"
                         rel="noopener noreferrer">
-                        Privacy Policy</a>
+                        Privacy Policy</Link.Anchor>
                     and accept our
-                    <a
-                        class="link"
+                    <Link.Anchor
                         href="https://appwrite.io/terms"
                         target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</a
+                        rel="noopener noreferrer">General Terms of Use</Link.Anchor
                     >.</InputChoice>
                 <Button fullWidth submit {disabled}>Sign up</Button>
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button fullWidth on:click={onGithubLogin} {disabled}>
+                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
                         <span class="icon-github" aria-hidden="true" />
                         <span class="text">Sign up with GitHub</span>
                     </Button>
@@ -135,12 +135,9 @@
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <span class="text">
-                Already got an account? <a
-                    class="link"
-                    href={`${base}/login${$page?.url?.search ?? ''}`}>Sign in</a>
-            </span>
-        </li>
+        <Typography.Text variant="m-400">
+            Already got an account? <Link.Anchor href={`${base}/login${$page?.url?.search ?? ''}`}
+                >Sign in</Link.Anchor>
+        </Typography.Text>
     </svelte:fragment>
 </Unauthenticated>

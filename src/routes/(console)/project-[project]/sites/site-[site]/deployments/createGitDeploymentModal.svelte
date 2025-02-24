@@ -4,112 +4,111 @@
     import { Repositories } from '$lib/components/git';
     import { Dependencies } from '$lib/constants';
     import { Link } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
-    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
+    import { Button, InputCheckbox, InputSelect } from '$lib/elements/forms';
+    import { timeFromNow } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import type { BuildRuntime, Framework, Models } from '@appwrite.io/console';
+    import { Type, type Models } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, InlineCode, Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
+    import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let site: Models.Site;
 
     let installations = { installations: [], total: 0 };
     let hasRepository = !!site?.providerRepositoryId;
-    let selectedRepository: string = null;
+    let selectedRepository: string = site.providerRepositoryId;
     let branch: string = null;
+    let activate = true;
+    let error = '';
 
-    onMount(async () => {
-        installations = await sdk.forProject.vcs.listInstallations();
-        if (!site?.installationId && installations.total > 0) {
-            installation.set(installations.installations[0]);
-        }
-        if (!$repository?.id && hasRepository) {
-            $repository = await sdk.forProject.vcs.getRepository(
-                $installation.$id,
-                site.providerRepositoryId
+    async function loadInstallations() {
+        try {
+            installations = await sdk.forProject.vcs.listInstallations();
+            if (!site?.installationId && installations.total > 0) {
+                installation.set(installations.installations[0]);
+            }
+            $installation = installations.installations.find(
+                (installation) => installation.$id === site.installationId
             );
+            if (!$installation?.$id) {
+                $installation = installations.installations[0];
+            }
+        } catch (error) {
+            console.log(error);
         }
-        console.log(installations);
-    });
+    }
 
-    async function loadBranches() {
-        const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            $installation.$id,
-            selectedRepository
-        );
-        const sorted = sortBranches(branches);
-        branch = sorted[0]?.name ?? null;
+    async function load() {
+        try {
+            await loadInstallations();
+            if (!$repository?.id && hasRepository) {
+                $repository = await sdk.forProject.vcs.getRepository(
+                    $installation.$id,
+                    site.providerRepositoryId
+                );
+            }
+            const branchList = await sdk.forProject.vcs.listRepositoryBranches(
+                $installation.$id,
+                selectedRepository
+            );
 
-        if (!branch) {
-            branch = 'main';
+            console.log(branchList);
+
+            const sorted = sortBranches(branchList.branches);
+            branch = sorted[0]?.name ?? null;
+
+            if (!branch) {
+                branch = 'main';
+            }
+
+            return sorted;
+        } catch (error) {
+            console.log(installations);
+            console.log(error);
         }
-
-        return sorted;
     }
 
     async function createDeployment() {
         try {
-            if (!site.installationId || !site.providerRepositoryId || !branch) {
-                await sdk.forProject.sites.update(
-                    site.$id,
-                    site.name,
-                    site?.framework as Framework,
-                    site.enabled || undefined,
-                    site.timeout || undefined,
-                    site.installCommand || undefined,
-                    site.buildCommand || undefined,
-                    site.outputDirectory || undefined,
-                    (site?.buildRuntime as BuildRuntime) || undefined,
-                    site.adapter || undefined,
-                    site.fallbackFile || undefined,
-                    site.installationId || $installation.$id || undefined,
-                    site.providerRepositoryId || $repository.id || undefined,
-                    branch,
-                    site.providerSilentMode || undefined,
-                    undefined //TODO: add dir?
-                );
-            }
+            await sdk.forProject.sites.createVcsDeployment(site.$id, Type.Branch, branch, activate);
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);
             addNotification({
-                message: 'Deployment has been created successfully',
+                message: activate
+                    ? 'Deployment is in progress. It will be automatically activated after build step completes.'
+                    : 'Deployment is in progress. You can activate it after build step completes.',
                 type: 'success'
             });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
+        } catch (e) {
+            error = e.message;
         }
     }
 </script>
 
-<Modal title="Create Git deployment" bind:show onSubmit={createDeployment}>
+<Modal title="Create Git deployment" bind:show onSubmit={createDeployment} bind:error>
     <span slot="description">
-        Enter a valid commit reference to create a new deployment from <InlineCode code="test" /> or
-        use the CLI to deploy. <Link href="#">Learn more</Link>
+        Enter a valid commit reference to create a new deployment. <Link href="#">Learn more</Link>
     </span>
-    {#if installations && hasRepository}
-        <Card isTile padding="s" radius="s">
-            <Layout.Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                gap="xs">
-                <Layout.Stack direction="row" alignItems="center" gap="s">
-                    <Icon size="s" icon={IconGithub} />
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
-                        {$repository?.organization}/{$repository?.name}
-                    </Typography.Text>
+    {#if hasRepository}
+        {#await load()}
+            <Card isTile padding="xs" radius="s" variant="secondary">
+                <Layout.Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap="xs">
+                    <Layout.Stack direction="row" alignItems="center" gap="s">
+                        <Icon size="s" icon={IconGithub} />
+                        <Skeleton variant="line" width={100} height={19.6} />
+                    </Layout.Stack>
                 </Layout.Stack>
+            </Card>
+            <Layout.Stack gap="s">
+                <Skeleton variant="line" width={100} height={19.6} />
+                <Skeleton variant="line" width={350} height={31} />
             </Layout.Stack>
-        </Card>
-        {#await loadBranches()}
-            <Spinner size="s" />
         {:then branches}
             {@const options =
                 branches
@@ -122,24 +121,48 @@
                     ?.sort((a, b) => {
                         return a.label > b.label ? 1 : -1;
                     }) ?? []}
-
-            <InputSelectSearch
+            <Card isTile padding="xs" radius="s" variant="secondary">
+                <Layout.Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap="xs">
+                    <Layout.Stack direction="row" alignItems="center" gap="s" inline>
+                        <Icon icon={IconGithub} />
+                        <Link
+                            external
+                            href={`https://github.com/${$repository?.organization}/${$repository?.name}`}>
+                            <Layout.Stack direction="row" alignItems="center" gap="s" inline>
+                                {$repository?.organization}/{$repository?.name}
+                            </Layout.Stack>
+                        </Link>
+                    </Layout.Stack>
+                    <Typography.Caption variant="400" color="--color-fgcolor-neutral-tertiary">
+                        Last updated {timeFromNow($repository?.pushedAt)}
+                    </Typography.Caption>
+                </Layout.Stack>
+            </Card>
+            <InputSelect
                 required={true}
                 id="branch"
                 label="Production branch"
                 placeholder="Select branch"
-                hideRequired
                 bind:value={branch}
-                bind:search={branch}
+                isSearchable
                 on:select={(event) => {
                     branch = event.detail.value;
                 }}
-                interactiveOutput
-                name="branch"
                 {options} />
+            {#if branch}
+                <InputCheckbox
+                    label="Activate deployment after build"
+                    id="activate"
+                    description="This deployment will automatically activate after the build completes. If
+                unchecked, it will remain inactive, and you can activate it manually later."
+                    bind:checked={activate} />
+            {/if}
         {/await}
-    {/if}
-    {#if !hasRepository}
+    {:else}
         <Repositories
             bind:selectedRepository
             installationList={installations}
@@ -155,7 +178,8 @@
     {/if}
     <svelte:fragment slot="footer">
         <Button text size="s" on:click={() => (show = false)}>Cancel</Button>
-        <Button size="s" disabled={!$installation?.$id || !selectedRepository || !branch}
-            >Create</Button>
+        <Button submit size="s" disabled={!$installation?.$id || !selectedRepository || !branch}>
+            Create
+        </Button>
     </svelte:fragment>
 </Modal>

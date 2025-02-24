@@ -3,14 +3,13 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
     const functionId = $page.params.function;
-
+    let error: string;
     const handleSubmit = async () => {
         try {
             await sdk.forProject.functions.delete(functionId);
@@ -21,23 +20,13 @@
             });
             await goto(`${base}/project-${$page.params.project}/functions`);
             trackEvent(Submit.FunctionDelete);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.FunctionDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.FunctionDelete);
         }
     };
 </script>
 
-<Modal title="Delete function" bind:show={showDelete} onSubmit={handleSubmit}>
-    <p data-private>
-        Are you sure you want to delete this function and all associated deployments from your
-        project?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+<Confirm onSubmit={handleSubmit} title="Delete function" bind:open={showDelete} bind:error>
+    Are you sure you want to delete this function and all associated deployments from your project?
+</Confirm>

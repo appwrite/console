@@ -8,7 +8,7 @@ export const load = async ({ params, depends, parent }) => {
     const { site, proxyRuleList } = await parent();
 
     const [deploymentList, prodReadyDeployments] = await Promise.all([
-        sdk.forProject.sites.listDeployments(params.site, [Query.limit(5), Query.orderDesc('')]),
+        sdk.forProject.sites.listDeployments(params.site, [Query.limit(4), Query.orderDesc('')]),
         sdk.forProject.sites.listDeployments(params.site, [
             Query.limit(1)
             // Query.equal('status', 'ready')

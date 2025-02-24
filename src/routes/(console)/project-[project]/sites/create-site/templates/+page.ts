@@ -1,9 +1,8 @@
 import { sdk } from '$lib/stores/sdk';
 import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
-import { CARD_LIMIT } from '$lib/constants';
 
 export const load = async ({ url, route }) => {
-    const limit = CARD_LIMIT;
+    const limit = 12;
     const page = getPage(url);
     const search = getSearch(url);
     const view = getView(url, route, View.Grid);

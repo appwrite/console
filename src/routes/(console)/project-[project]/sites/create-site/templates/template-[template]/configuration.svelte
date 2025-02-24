@@ -64,28 +64,25 @@
                 return InputPassword;
         }
     }
-
-    $: console.log(variables);
 </script>
 
-<Fieldset legend="Settings">
+<Fieldset legend="Environment variables">
     <Layout.Stack gap="l">
         <Layout.Stack>
             {#if requiredVariables?.length}
-                <Accordion
-                    title="Required environment variables"
-                    open
-                    hideDivider={!!optionalVariables?.length}>
+                <Accordion title="Required variables" open hideDivider={!optionalVariables?.length}>
                     <Layout.Stack>
-                        Provide the values for the required environment variables to run this
-                        application.
-
-                        {#each requiredVariables as variable}
+                        {#each requiredVariables as variable, i}
                             <Layout.Stack gap="s" direction="row">
-                                <Layout.Stack gap="s" direction="row">
-                                    <InputText id={variable.name} value={variable.name} readonly />
+                                <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                                    <InputText
+                                        id={variable.name}
+                                        value={variable.name}
+                                        readonly
+                                        label={i === 0 ? 'Key' : null} />
                                     <svelte:component
                                         this={selectComponent(variable.type)}
+                                        label={i === 0 ? 'Value' : null}
                                         id={variable.name}
                                         placeholder={variable.placeholder ?? 'Enter value'}
                                         required={variable.required}
@@ -94,34 +91,38 @@
                                         showPasswordButton={variable.type === 'password'}
                                         bind:value={variable.value} />
                                 </Layout.Stack>
-                                <Popover placement="bottom-end" let:toggle>
-                                    <Button
-                                        secondary
-                                        icon
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            toggle(e);
-                                        }}>
-                                        <Icon size="s" icon={IconInfo} /></Button>
-                                    <p slot="tooltip">{variable.description}</p>
-                                </Popover>
+                                <Layout.Stack gap="s" justifyContent="flex-end" inline>
+                                    <Popover let:toggle>
+                                        <Button
+                                            secondary
+                                            icon
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                toggle(e);
+                                            }}>
+                                            <Icon size="s" icon={IconInfo} /></Button>
+                                        <p slot="tooltip">{variable.description}</p>
+                                    </Popover>
+                                </Layout.Stack>
                             </Layout.Stack>
                         {/each}
                     </Layout.Stack>
                 </Accordion>
             {/if}
             {#if optionalVariables?.length}
-                <Accordion title="Environment variables" badge="Optional" hideDivider>
+                <Accordion title="Optional variables" hideDivider>
                     <Layout.Stack>
-                        Set up environment variables to securely manage keys and settings for your
-                        project.
-
-                        {#each optionalVariables as variable}
+                        {#each optionalVariables as variable, i}
                             <Layout.Stack gap="s" direction="row">
                                 <Layout.Stack gap="s" direction="row">
-                                    <InputText id={variable.name} value={variable.name} readonly />
+                                    <InputText
+                                        id={variable.name}
+                                        value={variable.name}
+                                        readonly
+                                        label={i === 0 ? 'Key' : null} />
                                     <svelte:component
                                         this={selectComponent(variable.type)}
+                                        label={i === 0 ? 'Value' : null}
                                         id={variable.name}
                                         placeholder={variable.placeholder ?? 'Enter value'}
                                         required={variable.required}
@@ -130,17 +131,19 @@
                                         showPasswordButton={variable.type === 'password'}
                                         bind:value={variable.value} />
                                 </Layout.Stack>
-                                <Popover placement="bottom-end" let:toggle>
-                                    <Button
-                                        secondary
-                                        icon
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            toggle(e);
-                                        }}>
-                                        <Icon size="s" icon={IconInfo} /></Button>
-                                    <p slot="tooltip">{variable.description}</p>
-                                </Popover>
+                                <Layout.Stack gap="s" justifyContent="flex-end" inline>
+                                    <Popover let:toggle>
+                                        <Button
+                                            secondary
+                                            icon
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                toggle(e);
+                                            }}>
+                                            <Icon size="s" icon={IconInfo} /></Button>
+                                        <p slot="tooltip">{variable.description}</p>
+                                    </Popover>
+                                </Layout.Stack>
                             </Layout.Stack>
                         {/each}
                     </Layout.Stack>

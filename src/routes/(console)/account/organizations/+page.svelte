@@ -65,7 +65,8 @@
                 {@const avatarList = getMemberships(organization.$id)}
                 <GridItem1 href={`${base}/organization-${organization.$id}`}>
                     <svelte:fragment slot="eyebrow">
-                        {organization?.total ? organization?.total : 'No'} members
+                        {organization?.total}
+                        {organization?.total > 1 ? 'members' : 'member'}
                     </svelte:fragment>
                     <svelte:fragment slot="title">
                         {organization.name}

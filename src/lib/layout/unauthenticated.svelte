@@ -9,12 +9,14 @@
     import { app } from '$lib/stores/app';
     import type { Campaign } from '$lib/stores/campaigns';
     import { getApiEndpoint } from '$lib/stores/sdk';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
 
     export let campaign: Campaign = null;
     export let coupon: Coupon = null;
+    export let align: 'start' | 'center' | 'end' = 'start';
 
     $: variation = ((coupon?.campaign ?? campaign) ? campaign?.template : 'default') as
         | 'default'
@@ -181,14 +183,9 @@
         <slot name="top" />
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center">
             <div class="auth-container u-width-full-line">
-                <h1 class="heading-level-4 u-margin-block-start-auto is-not-mobile">
+                <Typography.Title size="m" {align}>
                     <slot name="title" />
-                </h1>
-                <h1
-                    class="heading-level-5 u-margin-block-start-auto is-only-mobile"
-                    class:u-padding-block-start-24={variation !== 'default'}>
-                    <slot name="title" />
-                </h1>
+                </Typography.Title>
                 <div class="u-margin-block-start-24">
                     <slot />
                 </div>

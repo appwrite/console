@@ -14,32 +14,41 @@
     export let showEditor = false;
     export let variableList: Models.VariableList;
 
-    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
+    const editableVariables = variableList.variables.filter((variable) => !variable.secret);
+    const secretVariables = variableList.variables.filter((variable) => variable.secret);
+
+    export let sdkCreateVariable: (
+        key: string,
+        value: string,
+        secret?: boolean
+    ) => Promise<unknown>;
     export let sdkUpdateVariable: (
         variableId: string,
         key: string,
-        value: string
+        value: string,
+        secret?: boolean
     ) => Promise<unknown>;
     export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
 
     let error = '';
-    let envCode = variableList.variables
+    let envCode = editableVariables
         .map((variable) => `${variable.key}=${variable.value}`)
         .join('\n');
     let jsonCode = JSON.stringify(
         JSON.parse(
-            `{${variableList.variables
+            `{${editableVariables
                 .map((variable) => `"${variable.key}":"${variable.value.split('"').join('\\"')}"`)
                 .join(',')}}`
         ),
         null,
         2
     );
-    const baseEnvCode = envCode;
-    const baseJsonCode = jsonCode;
+    let baseEnvCode = envCode;
+    let baseJsonCode = jsonCode;
 
     if (jsonCode === '{}') {
         jsonCode = '';
+        baseJsonCode = '';
     }
 
     let tab: 'env' | 'json' = 'env';
@@ -57,24 +66,31 @@
             }
 
             await Promise.all(
-                variableList.variables.map(async (variable) => {
+                editableVariables.map(async (variable) => {
                     const newValue = vars[variable.key] ?? null;
 
                     if (newValue === null) {
                         await sdkDeleteVariable(variable.$id);
                     } else if (newValue !== variable.value) {
-                        await sdkUpdateVariable(variable.$id, variable.key, newValue);
+                        await sdkUpdateVariable(variable.$id, variable.key, newValue, false);
                     }
-
                     delete vars[variable.key];
                 })
             );
 
+            // Add new variables, skipping keys that exist in secret variables
             await Promise.all(
                 Object.keys(vars).map(async (key) => {
-                    await sdkCreateVariable(key, vars[key]);
+                    if (!secretVariables.some((v) => v.key === key)) {
+                        await sdkCreateVariable(key, vars[key], false);
+                    }
                 })
             );
+            // Ensure secret variables are preserved
+            variableList.variables = [
+                ...secretVariables,
+                ...variableList.variables.filter((v) => !v.secret)
+            ];
 
             showEditor = false;
 
@@ -120,7 +136,6 @@
             }
         }
     }
-
     $: isButtonDisabled =
         (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
 </script>
@@ -147,29 +162,30 @@
             </Tabs.Item.Button>
         </Tabs.Root>
 
-        <Layout.Stack gap="xxs">
+        <Layout.Stack gap="xs">
             {#if tab === 'env'}
                 <InputTextarea
+                    spellcheck={false}
                     id="variables"
                     bind:value={envCode}
                     rows={10}
                     placeholder={`SECRET_KEY=dQw4w9WgXcQ...`} />
             {:else if tab === 'json'}
                 <InputTextarea
+                    spellcheck={false}
                     id="variables"
                     bind:value={jsonCode}
                     rows={10}
                     placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`} />
             {/if}
-            <Layout.Stack direction="row">
-                <Button size="xs" on:click={() => downloadVariables()} compact>
-                    <Icon slot="start" icon={IconDownload} />
+            <Layout.Stack direction="row" gap="xs">
+                <Button size="xs" on:click={() => downloadVariables()} secondary>
+                    <Icon size="s" slot="start" icon={IconDownload} />
                     Download
                 </Button>
-
                 <Copy value={tab == 'json' ? jsonCode : envCode}>
-                    <Button size="xs" compact>
-                        <Icon slot="start" icon={IconDuplicate} />
+                    <Button size="xs" secondary>
+                        <Icon size="s" slot="start" icon={IconDuplicate} />
                         Copy
                     </Button>
                 </Copy>

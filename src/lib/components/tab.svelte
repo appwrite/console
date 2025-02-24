@@ -10,6 +10,7 @@
     export let selected = false;
     export let href: string = null;
     export let event: string = null;
+    export let noscroll = false;
     export let root: { variant: Variant; stretch: boolean } = {
         variant: 'primary',
         stretch: false
@@ -87,6 +88,7 @@
 
 {#if href}
     <Tabs.Item.Link
+        {noscroll}
         {root}
         {href}
         bind:active={selected}

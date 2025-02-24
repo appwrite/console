@@ -24,6 +24,7 @@
                 <Image
                     alt="repositories"
                     radius="xxs"
+                    ratio="16/9"
                     src={$app?.themeInUse === 'dark' ? TemplateDark : TemplateLight} />
                 <Layout.Stack gap="s">
                     <Typography.Text variant="m-600">Clone a template</Typography.Text>
@@ -42,6 +43,7 @@
                 <Image
                     alt="repositories"
                     radius="xxs"
+                    ratio="16/9"
                     src={$app?.themeInUse === 'dark' ? RepoDark : RepoLight} />
 
                 <Layout.Stack gap="s">

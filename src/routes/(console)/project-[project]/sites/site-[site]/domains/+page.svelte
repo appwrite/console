@@ -18,6 +18,7 @@
     import {
         ActionMenu,
         Badge,
+        Card,
         Empty,
         Icon,
         Layout,
@@ -27,8 +28,8 @@
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
     import { queries } from '$lib/components/filters';
-    import Card from '$lib/components/card.svelte';
     import SearchQuery from '$lib/components/searchQuery.svelte';
+    import { app } from '$lib/stores/app';
 
     export let data;
 
@@ -72,8 +73,10 @@
                                 href={`${$protocol}${domain.domain}`}
                                 size="s"
                                 variant="quiet">
-                                {domain.domain}
-                                <Icon icon={IconExternalLink} size="s" />
+                                <Layout.Stack direction="row" alignItems="center" gap="xs">
+                                    {domain.domain}
+                                    <Icon icon={IconExternalLink} size="s" />
+                                </Layout.Stack>
                             </Link>
                             {#if domain.status === 'created'}
                                 <Badge
@@ -153,10 +156,13 @@
             </svelte:fragment>
         </EmptySearch>
     {:else}
-        <Card isDashed isTile>
+        <Card.Base padding="none">
             <Empty
+                src={$app.themeInUse === 'dark'
+                    ? `${base}/images/domains/empty-domain-dark.svg`
+                    : `${base}/images/domains/empty-domain-light.svg`}
                 title="Add your first domain"
-                description="Need a hand? Learn more in our documentation.">
+                description="Connect a domain you own to get your project up and running.">
                 <svelte:fragment slot="actions">
                     <Button
                         external
@@ -174,7 +180,7 @@
                     </Button>
                 </svelte:fragment>
             </Empty>
-        </Card>
+        </Card.Base>
     {/if}
 </Container>
 

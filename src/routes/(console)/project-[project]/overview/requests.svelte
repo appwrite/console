@@ -1,15 +1,22 @@
 <script lang="ts">
-    import { Card, DropList, DropListItem } from '$lib/components';
+    import { Card } from '$lib/components';
     import { totalMetrics } from './+layout.svelte';
     import { usage } from './store';
     import type { UsagePeriods } from '$lib/layout';
     import { createEventDispatcher } from 'svelte';
     import { LineChart } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
+    import {
+        ActionMenu,
+        Icon,
+        Layout,
+        Button,
+        Popover,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
 
     export let period: UsagePeriods;
-
-    let showPeriod = false;
 
     const dispatch = createEventDispatcher();
 
@@ -17,31 +24,31 @@
         date: number;
         value: number;
     }>;
-
-    $: if (period) {
-        showPeriod = false;
-    }
 </script>
 
-<div class="u-flex u-gap-16 u-main-space-between">
+<Layout.Stack justifyContent="space-between" direction="row" alignItems="flex-start">
     <div>
-        <div class="heading-level-4">
+        <Typography.Title>
             {formatNum(totalMetrics($usage?.requests))}
-        </div>
-        <div>Requests</div>
+        </Typography.Title>
+        <Typography.Text>Requests</Typography.Text>
     </div>
-    <DropList bind:show={showPeriod} placement="bottom-start" childStart noArrow>
-        <button class="transparent-button" on:click={() => (showPeriod = !showPeriod)}>
-            <span class="text">{period}</span>
-            <span class="icon-cheveron-down" aria-hidden="true" />
-        </button>
-        <svelte:fragment slot="list">
-            <DropListItem on:click={() => dispatch('change', '24h')}>24h</DropListItem>
-            <DropListItem on:click={() => dispatch('change', '30d')}>30d</DropListItem>
-            <DropListItem on:click={() => dispatch('change', '90d')}>90d</DropListItem>
-        </svelte:fragment>
-    </DropList>
-</div>
+    <Popover let:toggle padding="none" let:showing>
+        <Button.Button on:click={toggle} variant="extra-compact">
+            {period}
+            <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" />
+        </Button.Button>
+        <ActionMenu.Root slot="tooltip">
+            <ActionMenu.Item.Button on:click={() => dispatch('change', '24h')}
+                >24h</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button on:click={() => dispatch('change', '30d')}
+                >30d</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button on:click={() => dispatch('change', '90d')}
+                >90d</ActionMenu.Item.Button>
+        </ActionMenu.Root>
+    </Popover>
+</Layout.Stack>
+
 {#if totalMetrics($usage?.requests) !== 0}
     <div style="height: 12rem;">
         <LineChart

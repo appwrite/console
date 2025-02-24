@@ -3,18 +3,10 @@
     import { invalidate } from '$app/navigation';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import {
-        Code,
-        Layout,
-        Icon,
-        Typography,
-        Fieldset,
-        InlineCode,
-    } from '@appwrite.io/pink-svelte';
+    import { Code, Layout, Icon, Typography, Fieldset, InlineCode } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconAndroid, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -78,8 +70,10 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`) && isPlatformCreated) {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.PROJECT);
                 unsubscribe();
             }
         });
@@ -234,7 +228,7 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                 fullWidthMobile
                 secondary
                 disabled={isCreatingPlatform}
-                href={`${base}/project-${projectId}/overview`}>
+                href={location.pathname}>
                 Go to dashboard
             </Button>
         {/if}

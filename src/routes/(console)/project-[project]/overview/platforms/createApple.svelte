@@ -3,18 +3,10 @@
     import { invalidate } from '$app/navigation';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import {
-        Code,
-        Layout,
-        Icon,
-        Typography,
-        Fieldset,
-        InlineCode,
-    } from '@appwrite.io/pink-svelte';
+    import { Code, Layout, Icon, Typography, Fieldset, InlineCode } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconApple, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -43,7 +35,7 @@
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
         `;
 
-    let platform: PlatformType = PlatformType.Appleios;
+    export let platform: PlatformType = PlatformType.Appleios;
 
     let platforms: { [key: string]: PlatformType } = {
         iOS: PlatformType.Appleios,
@@ -89,8 +81,10 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`projects.${projectId}.ping`) && isPlatformCreated) {
+            if (response.events.includes(`projects.${projectId}.ping`)) {
                 connectionSuccessful = true;
+                invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.PROJECT);
                 unsubscribe();
             }
         });
@@ -129,7 +123,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                             <InputText
                                 id="name"
                                 label="Name"
-                                placeholder="My Apple app"
+                                placeholder="My Apple App"
                                 required
                                 bind:value={$createPlatform.name} />
 
@@ -259,7 +253,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                 fullWidthMobile
                 secondary
                 disabled={isCreatingPlatform}
-                href={`${base}/project-${projectId}/overview`}>
+                href={location.pathname}>
                 Go to dashboard
             </Button>
         {/if}

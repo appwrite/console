@@ -28,12 +28,13 @@
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import { feedback } from '$lib/stores/feedback';
     import { DropList } from '$lib/components/index';
-    import { Feedback } from '$lib/components/feedback';
     import type { ComponentType } from 'svelte';
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import MobileSupportModal from '$routes/(console)/wizard/support/mobileSupportModal.svelte';
+    import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
+    import { trackEvent } from '$lib/actions/analytics';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -66,6 +67,7 @@
 
     $: state = $isTabletViewport ? 'closed' : getSidebarState();
     $: pathname = $page.url.pathname;
+    $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(pathname);
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth' },
@@ -106,11 +108,12 @@
         </div>
         <div slot="middle" class:icons={state === 'icons'}>
             {#if progressCard}
-                <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
+                <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"
                         href={`/console/project-${project.$id}/get-started`}
                         on:click={() => {
+                            trackEvent('click_menu_get_started');
                             sideBarIsOpen = false;
                         }}>
                         <div class="progressCircle">
@@ -132,12 +135,13 @@
             {/if}
             {#if project}
                 <Layout.Stack direction="column" gap="s">
-                    <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
+                    <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
                             href={`/console/project-${project.$id}/overview`}
                             class="link"
-                            class:active={pathname.includes('platforms')}
+                            class:active={pathname.includes('overview')}
                             on:click={() => {
+                                trackEvent('click_menu_overview');
                                 sideBarIsOpen = false;
                             }}
                             ><span class="link-icon"
@@ -159,12 +163,13 @@
                         ></span>
                     </div>
                     {#each projectOptions as projectOption}
-                        <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
+                        <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={pathname.includes(projectOption.slug)}
                                 on:click={() => {
+                                    trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
                                 }}
                                 ><span class="link-icon"
@@ -181,8 +186,13 @@
                         <Divider />
                     </div>
                     <div class="only-mobile">
-                        <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
-                            <a href={`/console/project-${project.$id}/settings`} class="link"
+                        <Tooltip placement="right" disabled={state !== 'icons'}>
+                            <a
+                                href={`/console/project-${project.$id}/settings`}
+                                on:click={() => {
+                                    trackEvent('click_menu_settings');
+                                }}
+                                class="link"
                                 ><span class="link-icon"><Icon icon={IconCog} size="s" /></span
                                 ><span
                                     class:no-text={state === 'icons'}
@@ -196,12 +206,18 @@
             {:else}
                 <div class="action-buttons">
                     <Layout.Stack direction="column" gap="s">
-                        <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
-                            <Button.Button variant="secondary" size="s" on:click={toggleFeedback}
-                                ><span>Feedback</span>
+                        <DropList show={$feedback.show} scrollable>
+                            <Button.Button
+                                variant="secondary"
+                                size="s"
+                                on:click={() => {
+                                    toggleFeedback();
+                                    trackEvent('click_menu_feedback', { source: 'side_nav' });
+                                }}
+                                >Feedback
                             </Button.Button>
                             <svelte:fragment slot="other">
-                                <Feedback />
+                                <MobileFeedbackModal />
                             </svelte:fragment>
                         </DropList>
 
@@ -209,7 +225,10 @@
                             <Button.Button
                                 variant="secondary"
                                 size="s"
-                                on:click={() => ($showSupportModal = true)}>
+                                on:click={() => {
+                                    $showSupportModal = true;
+                                    trackEvent('click_menu_support', { source: 'side_nav' });
+                                }}>
                                 <span>Support</span>
 
                                 <svelte:fragment slot="other">
@@ -225,11 +244,14 @@
         <div slot="bottom" class="bottom" class:icons={state === 'icons'}>
             {#if project}
                 <div class="only-desktop">
-                    <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
+                    <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
                             href={`/console/project-${project.$id}/settings`}
                             class="link"
-                            class:active={pathname.includes('settings')}
+                            on:click={() => {
+                                trackEvent('click_menu_settings');
+                            }}
+                            class:active={isOnProjectSettings}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
@@ -244,15 +266,18 @@
                 <div class="only-mobile">
                     <div class="action-buttons">
                         <Layout.Stack direction="column" gap="s">
-                            <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
+                            <DropList show={$feedback.show} scrollable>
                                 <Button.Button
                                     variant="secondary"
                                     size="s"
-                                    on:click={toggleFeedback}
+                                    on:click={() => {
+                                        toggleFeedback();
+                                        trackEvent('click_menu_feedback', { source: 'side_nav' });
+                                    }}
                                     ><span>Feedback</span>
                                 </Button.Button>
                                 <svelte:fragment slot="other">
-                                    <Feedback />
+                                    <MobileFeedbackModal />
                                 </svelte:fragment>
                             </DropList>
 
@@ -260,7 +285,10 @@
                                 <Button.Button
                                     variant="secondary"
                                     size="s"
-                                    on:click={() => ($showSupportModal = true)}>
+                                    on:click={() => {
+                                        $showSupportModal = true;
+                                        trackEvent('click_menu_support', { source: 'side_nav' });
+                                    }}>
                                     <span>Support</span>
 
                                     <svelte:fragment slot="other">
@@ -276,6 +304,7 @@
         </div>
     </Sidebar.Base>
 </div>
+
 {#if subNavigation}
     <div class="sub-navigation" class:icons={state === 'icons'}>
         <svelte:component this={subNavigation} />
