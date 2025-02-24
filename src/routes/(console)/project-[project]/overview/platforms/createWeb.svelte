@@ -40,6 +40,7 @@
     import VueFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/VueFrameworkIcon.svelte';
     import NoFrameworkIcon from './components/NoFrameworkIcon.svelte';
     import AngularFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/AngularFrameworkIcon.svelte';
+    import GlowCard from './components/GlowCard.svelte';
 
     export let key;
 
@@ -293,7 +294,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Card.Base>
+        <Card.Base class="u-position-relative">
             <Layout.Stack gap="xxl">
                 <Layout.Stack direction="row" justifyContent="center" gap="none">
                     <OnboardingPlatformCard iconSize={2.526} icon={selectedFrameworkIcon} />
@@ -329,6 +330,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                     </Layout.Stack>
                 {/if}
             </Layout.Stack>
+            <GlowCard />
         </Card.Base>
     </svelte:fragment>
 
