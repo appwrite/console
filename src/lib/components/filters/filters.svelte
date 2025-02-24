@@ -1,6 +1,6 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
-    import { Drop, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';

@@ -57,7 +57,7 @@
             <div style="margin-block-start: var(--gap-xxl);">
                 <Step.List>
                     <Step.Item state="current" shortLine={true}>
-                        <Layout.Stack direction="row" gap="l">
+                        <Layout.Stack direction="row" gap="l" wrap="wrap">
                             {#if !data.site.installationId && !data.site.providerRepositoryId}
                                 <Card
                                     isTile

@@ -12,20 +12,13 @@
     import RedeployModal from '../../redeployModal.svelte';
     import Cancel from './cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
-    import { ActionMenu, Icon, Layout, Popover, Status, Table } from '@appwrite.io/pink-svelte';
-    import {
-        IconDotsHorizontal,
-        IconLightningBolt,
-        IconRefresh,
-        IconTerminal,
-        IconTrash,
-        IconXCircle
-    } from '@appwrite.io/pink-icons-svelte';
+    import { Layout, Status, Table } from '@appwrite.io/pink-svelte';
+
     import { columns } from './store';
     import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
     import { deploymentStatusConverter } from '../store';
     import { capitalize } from '$lib/helpers/string';
-    import { Button } from '$lib/elements/forms';
+    import DeploymentActionMenu from '../../(components)/deploymentActionMenu.svelte';
 
     export let data: PageData;
 
@@ -107,80 +100,14 @@
             {/each}
             <Table.Cell>
                 <Layout.Stack alignItems="flex-end">
-                    <Popover placement="bottom-end" let:toggle>
-                        <Button
-                            text
-                            icon
-                            size="s"
-                            on:click={(e) => {
-                                e.preventDefault();
-                                toggle(e);
-                            }}>
-                            <Icon size="s" icon={IconDotsHorizontal} />
-                        </Button>
-                        <svelte:fragment slot="tooltip" let:toggle>
-                            <ActionMenu.Root>
-                                <ActionMenu.Item.Button
-                                    leadingIcon={IconRefresh}
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        selectedDeployment = deployment;
-                                        showRedeploy = true;
-                                        toggle(e);
-                                    }}>
-                                    Redeploy
-                                </ActionMenu.Item.Button>
-                                <ActionMenu.Item.Anchor
-                                    leadingIcon={IconTerminal}
-                                    href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        toggle(e);
-                                    }}>
-                                    View details
-                                </ActionMenu.Item.Anchor>
-                                {#if deployment?.status === 'ready' && deployment?.$id !== data.site.deploymentId}
-                                    <ActionMenu.Item.Button
-                                        leadingIcon={IconLightningBolt}
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            selectedDeployment = deployment;
-                                            showActivate = true;
-                                            toggle(e);
-                                        }}>
-                                        Activate
-                                    </ActionMenu.Item.Button>
-                                {/if}
-
-                                {#if deployment?.status === 'processing' || deployment?.status === 'building' || deployment.status === 'waiting'}
-                                    <ActionMenu.Item.Button
-                                        leadingIcon={IconXCircle}
-                                        status="danger"
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            selectedDeployment = deployment;
-                                            showCancel = true;
-                                            toggle(e);
-                                        }}>
-                                        Cancel
-                                    </ActionMenu.Item.Button>
-                                {/if}
-                                {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment?.status !== 'waiting'}
-                                    <ActionMenu.Item.Button
-                                        status="danger"
-                                        leadingIcon={IconTrash}
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            selectedDeployment = deployment;
-                                            showDelete = true;
-                                            toggle(e);
-                                        }}>
-                                        Delete
-                                    </ActionMenu.Item.Button>
-                                {/if}
-                            </ActionMenu.Root>
-                        </svelte:fragment>
-                    </Popover>
+                    <DeploymentActionMenu
+                        {deployment}
+                        bind:selectedDeployment
+                        bind:showRedeploy
+                        bind:showActivate
+                        bind:showDelete
+                        bind:showCancel
+                        activeDeployment={data.site.deploymentId} />
                 </Layout.Stack>
             </Table.Cell>
         </Table.Link>

@@ -1,15 +1,5 @@
 <script lang="ts">
-    import {
-        ActionMenu,
-        Badge,
-        Empty,
-        Icon,
-        Layout,
-        Popover,
-        Status,
-        Table,
-        Typography
-    } from '@appwrite.io/pink-svelte';
+    import { Badge, Empty, Layout, Status, Table, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -17,18 +7,15 @@
     import DeploymentCreatedBy from '../(components)/deploymentCreatedBy.svelte';
     import DeploymentSource from '../(components)/deploymentSource.svelte';
     import Id from '$lib/components/id.svelte';
-    import {
-        IconDotsHorizontal,
-        IconLightningBolt,
-        IconRefresh,
-        IconXCircle
-    } from '@appwrite.io/pink-icons-svelte';
+
     import RedeployModal from '../redeployModal.svelte';
     import { Card } from '$lib/components';
     import ActivateDeploymentModal from '../activateDeploymentModal.svelte';
     import CancelDeploymentModal from './deployments/cancelDeploymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { deploymentStatusConverter } from './store';
+    import DeleteDeploymentModal from './deployments/deleteDeploymentModal.svelte';
+    import DeploymentActionMenu from '../(components)/deploymentActionMenu.svelte';
 
     export let site: Models.Site;
     export let activeDeployment: Models.Deployment;
@@ -37,6 +24,7 @@
     let showActivate = false;
     let showRedeploy = false;
     let showCancel = false;
+    let showDelete = false;
     let selectedDeployment: Models.Deployment = null;
 </script>
 
@@ -90,57 +78,14 @@
                     </Table.Cell>
                     <Table.Cell>
                         <Layout.Stack alignItems="flex-end">
-                            <Popover placement="bottom-end" let:toggle>
-                                <Button
-                                    text
-                                    icon
-                                    size="s"
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        toggle(e);
-                                    }}>
-                                    <Icon size="s" icon={IconDotsHorizontal} />
-                                </Button>
-                                <svelte:fragment slot="tooltip" let:toggle>
-                                    <ActionMenu.Root>
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconRefresh}
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                selectedDeployment = deployment;
-                                                showRedeploy = true;
-                                                toggle(e);
-                                            }}>
-                                            Redeploy
-                                        </ActionMenu.Item.Button>
-                                        {#if deployment?.status === 'ready' && deployment?.$id !== site.deploymentId}
-                                            <ActionMenu.Item.Button
-                                                leadingIcon={IconLightningBolt}
-                                                on:click={(e) => {
-                                                    e.preventDefault();
-                                                    selectedDeployment = deployment;
-                                                    showActivate = true;
-                                                    toggle(e);
-                                                }}>
-                                                Activate
-                                            </ActionMenu.Item.Button>
-                                        {/if}
-                                        {#if deployment?.status === 'processing' || deployment?.status === 'building' || deployment.status === 'waiting'}
-                                            <ActionMenu.Item.Button
-                                                leadingIcon={IconXCircle}
-                                                status="danger"
-                                                on:click={(e) => {
-                                                    e.preventDefault();
-                                                    selectedDeployment = deployment;
-                                                    showCancel = true;
-                                                    toggle(e);
-                                                }}>
-                                                Cancel
-                                            </ActionMenu.Item.Button>
-                                        {/if}
-                                    </ActionMenu.Root>
-                                </svelte:fragment>
-                            </Popover>
+                            <DeploymentActionMenu
+                                {deployment}
+                                bind:selectedDeployment
+                                bind:showRedeploy
+                                bind:showActivate
+                                bind:showDelete
+                                bind:showCancel
+                                activeDeployment={site.deploymentId} />
                         </Layout.Stack>
                     </Table.Cell>
                 </Table.Link>
@@ -171,4 +116,7 @@
 
 {#if selectedDeployment && showCancel}
     <CancelDeploymentModal {selectedDeployment} bind:showCancel />
+{/if}
+{#if selectedDeployment && showDelete}
+    <DeleteDeploymentModal {selectedDeployment} bind:showDelete />
 {/if}
