@@ -16,11 +16,12 @@
     import { columns } from './store';
     import CreateManualDeploymentModal from './createManualDeploymentModal.svelte';
     import DeploymentMetrics from './deploymentMetrics.svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconFilterLine, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import CreateCliModal from './createCliModal.svelte';
 
     export let data;
 
@@ -49,13 +50,13 @@
 </script>
 
 <Container>
-    <Layout.Stack gap="xxl">
+    <Layout.Stack gap="xxxl">
         {#if data.deploymentList.total}
             <DeploymentMetrics deploymentList={data.deploymentList} />
         {/if}
         <Layout.Stack gap="l">
             <Layout.Stack justifyContent="space-between" direction="row">
-                <Layout.Stack alignItems="center" direction="row" gap="s">
+                <Layout.Stack alignItems="center" direction="row">
                     {#if data.deploymentList.total}
                         <QuickFilters {columns} />
                         <Filters
@@ -66,13 +67,13 @@
                             singleCondition>
                             <Layout.Stack alignItems="center" direction="row" gap="xs">
                                 <Button
-                                    text
+                                    compact
                                     on:click={toggle}
                                     {disabled}
                                     size="s"
                                     ariaLabel="open filter">
-                                    <span class="icon-filter-line" />
-                                    <span class="text">More filters</span>
+                                    <Icon icon={IconFilterLine} size="s" slot="start" />
+                                    More filters
                                 </Button>
                                 {#if $tags?.length}
                                     <!-- TODO: add vertical divider to pink 2 -->
@@ -94,11 +95,12 @@
                             <Icon size="s" icon={IconPlus} />
                             Create deployment
                         </Button>
-                        <svelte:fragment slot="tooltip">
-                            <ActionMenu.Root>
+                        <svelte:fragment slot="tooltip" let:toggle>
+                            <ActionMenu.Root noPadding>
                                 <ActionMenu.Item.Button
                                     badge="Recommended"
-                                    on:click={() => {
+                                    on:click={(e) => {
+                                        toggle(e);
                                         if (!hasInstallation) {
                                             showConnectRepo = true;
                                         } else {
@@ -108,13 +110,15 @@
                                     Git
                                 </ActionMenu.Item.Button>
                                 <ActionMenu.Item.Button
-                                    on:click={() => {
+                                    on:click={(e) => {
+                                        toggle(e);
                                         showConnectCLI = true;
                                     }}>
                                     CLI
                                 </ActionMenu.Item.Button>
                                 <ActionMenu.Item.Button
-                                    on:click={() => {
+                                    on:click={(e) => {
+                                        toggle(e);
                                         showConnectManual = true;
                                     }}>
                                     Manual
@@ -204,4 +208,7 @@
 {/if}
 {#if showConnectManual}
     <CreateManualDeploymentModal bind:show={showConnectManual} site={data.site} />
+{/if}
+{#if showConnectCLI}
+    <CreateCliModal bind:show={showConnectCLI} site={data.site} />
 {/if}

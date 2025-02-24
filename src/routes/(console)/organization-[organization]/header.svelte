@@ -54,7 +54,8 @@
         {
             href: `${path}/domains`,
             event: 'domains',
-            title: 'Domains'
+            title: 'Domains',
+            disabled: !isCloud
             // disabled: !(isCloud && $canSeeDomains) //TODO: enable this before release
         },
         {

@@ -22,13 +22,13 @@
                     e.preventDefault();
                     toggle(e);
                 }}>
-                <Layout.Stack direction="row" gap="xs">
+                <Layout.Stack direction="row" gap="xs" alignItems="center">
                     <Icon icon={IconGithub} size="s" /> GitHub
                 </Layout.Stack>
             </Link>
         </Layout.Stack>
         <svelte:fragment slot="tooltip">
-            <ActionMenu.Root>
+            <ActionMenu.Root noPadding>
                 <ActionMenu.Item.Anchor
                     href={deployment.providerRepositoryUrl}
                     external
@@ -42,7 +42,6 @@
                     {deployment.providerBranch}
                 </ActionMenu.Item.Anchor>
                 {#if deployment?.providerCommitMessage && deployment?.providerCommitHash && deployment?.providerCommitUrl}
-                    <!-- TODO: either the Popover or this Anchor needs to correctly manage the width -->
                     <ActionMenu.Item.Anchor
                         href={deployment.providerCommitUrl}
                         external

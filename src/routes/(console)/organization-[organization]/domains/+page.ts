@@ -20,14 +20,11 @@ export const load = async ({ depends, url, route }) => {
         limit,
         query,
         search,
-        domains: await sdk.forProject.proxy.listRules(
-            [
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc(''),
-                ...parsedQueries.values()
-            ],
-            search || undefined
-        )
+        domains: await sdk.forConsole.domains.list([
+            Query.limit(limit),
+            Query.offset(offset),
+            Query.orderDesc(''),
+            ...parsedQueries.values()
+        ])
     };
 };

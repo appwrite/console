@@ -5,6 +5,7 @@
     import { onMount } from 'svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import Checkbox from './checkbox.svelte';
+    import { Accordion, Divider, Input, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let scopes: string[];
 
@@ -40,7 +41,7 @@
         }
     }
 
-    function categoryState(category: string, s: string[]): boolean | null {
+    function categoryState(category: string, s: string[]): boolean | 'indeterminate' {
         const scopesByCategory = allScopes.filter((n) => n.category === category);
         const filtered = scopesByCategory.filter((n) => s.includes(n.scope));
         if (filtered.length === 0) {
@@ -48,16 +49,15 @@
         } else if (filtered.length === scopesByCategory.length) {
             return true;
         } else {
-            return null;
+            return 'indeterminate';
         }
     }
 
-    function onCategoryChange(event: Event, category: Category) {
+    function onCategoryChange(event: CustomEvent<boolean | 'indeterminate'>, category: Category) {
+        if (event.detail === 'indeterminate') return;
         allScopes.forEach((s) => {
             if (s.category === category) {
-                activeScopes[s.scope] = (
-                    event.currentTarget as EventTarget & HTMLInputElement
-                ).checked;
+                activeScopes[s.scope] = event.detail;
             }
         });
     }
@@ -81,47 +81,39 @@
     }
 </script>
 
-<ul class="buttons-list u-main-end">
-    <li class="buttons-list-item">
-        <Button text on:click={deselectAll}>Deselect all</Button>
-    </li>
-    <li class="buttons-list-item">
-        <Button text on:click={selectAll}>Select all</Button>
-    </li>
-</ul>
+<Layout.Stack>
+    <Layout.Stack direction="row" alignItems="center" gap="s">
+        <Button compact on:click={selectAll}>Select all</Button>
+        <span style:height="20px">
+            <Divider vertical />
+        </span>
+        <Button compact on:click={deselectAll}>Deselect all</Button>
+    </Layout.Stack>
+    <Layout.Stack gap="none">
+        <Divider />
 
-<Collapsible>
-    {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Other] as category}
-        {@const checked = categoryState(category, scopes)}
-        <CollapsibleItem withIndentation>
-            <svelte:fragment slot="beforetitle">
-                <Checkbox
-                    {checked}
-                    indeterminate={checked === null ? true : false}
-                    on:change={(e) => onCategoryChange(e, category)} />
-            </svelte:fragment>
-            <svelte:fragment slot="title">
-                {category}
-            </svelte:fragment>
-            <svelte:fragment slot="subtitle">
-                {@const scopesLength = allScopes.filter(
-                    (n) => n.category === category && scopes.includes(n.scope)
-                ).length}
-                ({scopesLength}
-                {scopesLength === 1 ? 'Scope' : 'Scopes'})
-            </svelte:fragment>
-            <div class="form">
-                <FormList>
+        {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Other] as category}
+            {@const checked = categoryState(category, scopes)}
+            {@const scopesLength = allScopes.filter(
+                (n) => n.category === category && scopes.includes(n.scope)
+            ).length}
+            <Accordion
+                selectable
+                title={category}
+                badge={`${scopesLength} ${scopesLength === 1 ? 'Scope' : 'Scopes'}`}
+                {checked}
+                on:change={(event) => onCategoryChange(event, category)}>
+                <Layout.Stack>
                     {#each allScopes.filter((s) => s.category === category) as scope}
-                        <InputChoice
+                        <Selector.Checkbox
+                            size="s"
                             id={scope.scope}
                             label={scope.scope}
-                            bind:value={activeScopes[scope.scope]}>
-                            {scope.description}
-                        </InputChoice>
+                            description={scope.description}
+                            bind:checked={activeScopes[scope.scope]} />
                     {/each}
-                </FormList>
-            </div>
-        </CollapsibleItem>
-    {/each}
-</Collapsible>
+                </Layout.Stack>
+            </Accordion>
+        {/each}
+    </Layout.Stack>
+</Layout.Stack>

@@ -34,7 +34,6 @@
     let showTeam = false;
     let showLabel = false;
     let showCustom = false;
-    let showDropdown = false;
 
     const groups = writable<Map<string, Permission>>(new Map());
 
@@ -71,8 +70,6 @@
 
             return n;
         });
-
-        showDropdown = false;
     }
 
     function fromPermissionString(permission: string): void {
@@ -212,12 +209,12 @@
     <Actions
         bind:showLabel
         bind:showCustom
-        bind:showDropdown
         bind:showTeam
         bind:showUser
         {groups}
-        on:create={create}>
-        <Button text on:click={() => (showDropdown = !showDropdown)}>
+        on:create={create}
+        let:toggle>
+        <Button text on:click={toggle}>
             <Icon icon={IconPlus} slot="start" size="s" />
             Add role
         </Button>
@@ -229,12 +226,12 @@
                 <Actions
                     bind:showLabel
                     bind:showCustom
-                    bind:showDropdown
                     bind:showTeam
                     bind:showUser
                     {groups}
-                    on:create={create}>
-                    <Button secondary icon on:click={() => (showDropdown = !showDropdown)}>
+                    on:create={create}
+                    let:toggle>
+                    <Button secondary icon on:click={toggle}>
                         <Icon icon={IconPlus} size="s" />
                     </Button>
                 </Actions>

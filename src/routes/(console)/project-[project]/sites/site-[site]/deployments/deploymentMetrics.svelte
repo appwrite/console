@@ -35,17 +35,17 @@
         {
             id: 'avgTime',
             value: null,
-            description: 'Average builds time'
+            description: 'Avg. builds time'
         },
         {
             id: 'success',
             value: null,
-            description: 'Successful deployments'
+            description: 'Successful'
         },
         {
             id: 'failed',
             value: null,
-            description: 'Failed deployments'
+            description: 'Failed '
         }
     ];
     onMount(async () => {
@@ -55,28 +55,32 @@
     });
 
     async function fetchUsage() {
-        metrics.forEach((metric) => {
-            metric.value = null;
-        });
-        metrics = metrics;
-        try {
-            const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
-            metrics = metrics.map((metric) => {
-                metric.value = usage[metric.id] ?? 'n/a';
-                return metric;
+        // Add timeout to make it look nicer
+        setTimeout(async () => {
+            metrics.forEach((metric) => {
+                metric.value = null;
             });
             metrics = metrics;
-            console.log(usage);
-        } catch (error) {
-            console.log(error);
-        }
+
+            try {
+                const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
+                metrics = metrics.map((metric) => {
+                    metric.value = usage[metric.id] ?? '-';
+                    return metric;
+                });
+                metrics = metrics;
+                console.log(usage);
+            } catch (error) {
+                console.log(error);
+            }
+        }, 800);
     }
 
     $: console.log(metrics);
 </script>
 
 <Layout.Stack gap="xl">
-    <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-end" wrap="wrap">
         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
             Metrics for {range !== SiteUsageRange.TwentyFourHours
                 ? `${toLocaleDate(
@@ -95,7 +99,7 @@
                 on:change={fetchUsage} />
         </div>
     </Layout.Stack>
-    <Layout.Stack direction="row">
+    <Layout.Stack gap="m" direction="row">
         {#each metrics as metric}
             <UsageCard description={metric.description} bind:value={metric.value} />
         {/each}

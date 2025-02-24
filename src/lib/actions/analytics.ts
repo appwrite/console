@@ -343,5 +343,6 @@ export enum Submit {
     SiteDisconnectRepo = 'submit_site_disconnect_repo',
     SiteActivateDeployment = 'submit_site_activate_deployment',
     RecordCreate = 'submit_dns_record_create',
+    RecordUpdate = 'submit_dns_record_update',
     RecordDelete = 'submit_dns_record_delete'
 }

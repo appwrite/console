@@ -6,7 +6,7 @@
 </script>
 
 <script lang="ts">
-    import { afterNavigate } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
@@ -15,10 +15,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { onMount, setContext, SvelteComponent } from 'svelte';
-    import { project } from '../store';
     import Bandwidth from './bandwidth.svelte';
-    import { createApiKey } from './keys/+page.svelte';
-    import Onboard from './onboard.svelte';
     import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
@@ -27,8 +24,7 @@
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
-    import { hasOnboardingDismissed } from '$lib/helpers/onboarding';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -70,7 +66,7 @@
             label: 'Create API Key',
             icon: IconPlus,
             callback() {
-                createApiKey();
+                goto(`${base}/project-[project]/overview/keys/create`);
             },
             keys: ['c', 'k'],
             group: 'integrations',
@@ -87,21 +83,27 @@
     <title>Console - Appwrite</title>
 </svelte:head>
 
-{#if $project}
-    <Container overlapCover>
+<Container overlapCover>
+    <!-- TODO: fix with nicer solution -->
+    <div class="flex-container">
         {#if $usage}
             {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
             <section class="common-section">
-                <div class="grid-dashboard-1s-2m-6l">
-                    <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
+                <div class="grid-dashboard-1s-2m-6l" style:gap="1rem">
+                    <Card.Base
+                        class="is-2-columns-medium-screen is-3-columns-large-screen"
+                        padding="s">
                         <Bandwidth {period} on:change={(e) => changePeriod(e.detail)} />
-                    </div>
-                    <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
+                    </Card.Base>
+                    <Card.Base
+                        class="is-2-columns-medium-screen is-3-columns-large-screen"
+                        padding="s">
                         <Requests {period} on:change={(e) => changePeriod(e.detail)} />
-                    </div>
-                    <a
+                    </Card.Base>
+                    <Card.Link
+                        padding="s"
                         href={`${base}/project-${projectId}/databases`}
-                        class="card is-2-columns-large-screen">
+                        class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -113,22 +115,17 @@
                             <div class="grid-item-1-start-end" />
 
                             <div class="grid-item-1-end-start">
-                                <div class="heading-level-4">
+                                <Typography.Title>
                                     {formatNum($usage.documentsTotal ?? 0)}
-                                </div>
-                                <div>Documents</div>
-                            </div>
-
-                            <div class="grid-item-1-end-end">
-                                <div class="text">
-                                    Databases: {formatNum($usage.databasesTotal ?? 0)}
-                                </div>
+                                </Typography.Title>
+                                <Typography.Text>Documents</Typography.Text>
                             </div>
                         </div>
-                    </a>
-                    <a
+                    </Card.Link>
+                    <Card.Link
+                        padding="s"
                         href={`${base}/project-${projectId}/storage`}
-                        class="card is-2-columns-large-screen">
+                        class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -140,23 +137,18 @@
                             <div class="grid-item-1-start-end" />
 
                             <div class="grid-item-1-end-start">
-                                <div class="heading-level-4">
+                                <Typography.Title>
                                     {storage.value}
                                     <span class="body-text-2">{storage.unit}</span>
-                                </div>
-                                <div>Storage</div>
-                            </div>
-
-                            <div class="grid-item-1-end-end">
-                                <div class="text">
-                                    Buckets: {formatNum($usage.bucketsTotal ?? 0)}
-                                </div>
+                                </Typography.Title>
+                                <Typography.Text>Storage</Typography.Text>
                             </div>
                         </div>
-                    </a>
-                    <a
+                    </Card.Link>
+                    <Card.Link
+                        padding="s"
                         href={`${base}/project-${projectId}/auth`}
-                        class="card is-2-columns-large-screen">
+                        class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -168,16 +160,17 @@
                             <div class="grid-item-1-start-end" />
 
                             <div class="grid-item-1-end-start">
-                                <div class="heading-level-4">
+                                <Typography.Title>
                                     {formatNum($usage.usersTotal ?? 0)}
-                                </div>
-                                <div>Users</div>
+                                </Typography.Title>
+                                <Typography.Text>Users</Typography.Text>
                             </div>
                         </div>
-                    </a>
-                    <a
+                    </Card.Link>
+                    <Card.Link
+                        padding="s"
                         href={`${base}/project-${projectId}/functions`}
-                        class="card is-2-columns-large-screen">
+                        class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
@@ -189,21 +182,22 @@
                             <div class="grid-item-1-start-end" />
 
                             <div class="grid-item-1-end-start">
-                                <div class="heading-level-4">
+                                <Typography.Title>
                                     {formatNum($usage.executionsTotal ?? 0)}
-                                </div>
-                                <div>Executions</div>
+                                </Typography.Title>
+                                <Typography.Text>Executions</Typography.Text>
                             </div>
 
                             <div class="grid-item-1-end-end">
                                 <div class="text" />
                             </div>
                         </div>
-                    </a>
-                    <div
-                        class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
+                    </Card.Link>
+                    <Card.Base
+                        padding="s"
+                        class="is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
                         <Realtime />
-                    </div>
+                    </Card.Base>
                 </div>
             </section>
         {/if}
@@ -213,10 +207,12 @@
             <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
                 <Tabs>
                     <Tab
+                        noscroll
                         href={`${path}/platforms`}
                         selected={$page.url.pathname === `${path}/platforms`}
                         event="platforms">Platforms</Tab>
                     <Tab
+                        noscroll
                         href={`${path}/keys`}
                         selected={$page.url.pathname === `${path}/keys`}
                         event="keys">API keys</Tab>
@@ -227,5 +223,13 @@
             </Layout.Stack>
             <slot />
         </Layout.Stack>
-    </Container>
-{/if}
+    </div>
+</Container>
+
+<style>
+    .flex-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-12);
+    }
+</style>

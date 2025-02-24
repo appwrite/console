@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, Helper, InputTags } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';

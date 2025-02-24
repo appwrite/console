@@ -25,7 +25,7 @@
     let slotTitle: HTMLSpanElement;
 </script>
 
-<Tooltip disabled={!tooltipText || !tooltipShow} inline={false}>
+<Tooltip disabled={!tooltipText || !tooltipShow}>
     <Card.Selector
         {src}
         {alt}

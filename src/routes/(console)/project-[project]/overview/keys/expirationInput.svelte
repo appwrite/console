@@ -73,7 +73,7 @@
     }
 </script>
 
-<InputSelect bind:value={expirationSelect} {options} id="preset" label="Expiration Date">
+<InputSelect bind:value={expirationSelect} {options} id="preset" label="Expiration date">
     <svelte:fragment slot="helper">
         {#if expirationSelect !== 'custom' && expirationSelect !== null}
             <Helper type="neutral">Your key will expire in {toLocaleDate(value)}</Helper>

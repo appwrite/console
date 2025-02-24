@@ -78,7 +78,7 @@
                                 <Table.Cell width={column.width + 'px'}>
                                     <Copy value={user.$id} event="user">
                                         <Tag size="xs" variant="code">
-                                            <Icon size="s" icon={IconDuplicate} />
+                                            <Icon size="s" icon={IconDuplicate} slot="start" />
                                             {user.$id}
                                         </Tag>
                                     </Copy>

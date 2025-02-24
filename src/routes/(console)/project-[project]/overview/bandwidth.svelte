@@ -1,15 +1,23 @@
 <script lang="ts">
-    import { Card, DropList, DropListItem } from '$lib/components';
+    import { Card } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { totalMetrics } from './+layout.svelte';
     import { usage } from './store';
     import type { UsagePeriods } from '$lib/layout';
     import { createEventDispatcher } from 'svelte';
     import { BarChart } from '$lib/charts';
+    import {
+        Popover,
+        Typography,
+        Icon,
+        ActionMenu,
+        Link,
+        Layout,
+        Button
+    } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
 
     export let period: UsagePeriods;
-
-    let showPeriod = false;
 
     const dispatch = createEventDispatcher();
 
@@ -19,32 +27,33 @@
     }>;
 
     $: bandwidth = humanFileSize(totalMetrics($usage?.network));
-
-    $: if (period) {
-        showPeriod = false;
-    }
 </script>
 
-<div class="u-flex u-gap-16 u-main-space-between">
+<Layout.Stack justifyContent="space-between" direction="row" alignItems="flex-start">
     <div>
-        <div class="heading-level-4">
+        <Typography.Title>
             {bandwidth.value}
             <span class="body-text-2">{bandwidth.unit}</span>
-        </div>
-        <div>Bandwidth</div>
+        </Typography.Title>
+        <Typography.Text>Bandwidth</Typography.Text>
     </div>
-    <DropList bind:show={showPeriod} placement="bottom-start" childStart noArrow>
-        <button class="transparent-button" on:click={() => (showPeriod = !showPeriod)}>
-            <span class="text">{period}</span>
-            <span class="icon-cheveron-down" aria-hidden="true" />
-        </button>
-        <svelte:fragment slot="list">
-            <DropListItem on:click={() => dispatch('change', '24h')}>24h</DropListItem>
-            <DropListItem on:click={() => dispatch('change', '30d')}>30d</DropListItem>
-            <DropListItem on:click={() => dispatch('change', '90d')}>90d</DropListItem>
+    <Popover let:toggle padding="none" let:showing>
+        <Button.Button on:click={toggle} variant="extra-compact">
+            {period}
+            <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" />
+        </Button.Button>
+        <svelte:fragment slot="tooltip">
+            <ActionMenu.Root>
+                <ActionMenu.Item.Button on:click={() => dispatch('change', '24h')}
+                    >24h</ActionMenu.Item.Button>
+                <ActionMenu.Item.Button on:click={() => dispatch('change', '30d')}
+                    >30d</ActionMenu.Item.Button>
+                <ActionMenu.Item.Button on:click={() => dispatch('change', '90d')}
+                    >90d</ActionMenu.Item.Button>
+            </ActionMenu.Root>
         </svelte:fragment>
-    </DropList>
-</div>
+    </Popover>
+</Layout.Stack>
 {#if bandwidth.value !== '0'}
     <div style="height: 12rem;">
         <BarChart

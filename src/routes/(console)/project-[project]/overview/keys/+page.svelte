@@ -1,23 +1,14 @@
-<script lang="ts" context="module">
-    export function createApiKey() {
-        if (!get(canWriteKeys)) {
-            return;
-        }
-        wizard.start(Wizard);
-    }
-</script>
-
 <script lang="ts">
     import { Empty } from '$lib/components';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { canWriteKeys } from '$lib/stores/roles';
-    import { wizard } from '$lib/stores/wizard';
-    import { get } from 'svelte/store';
     import type { PageData } from './$types';
-    import Wizard from './wizard.svelte';
     import Action from './action.svelte';
     import { setOverviewAction } from '../context';
     import { Table } from '@appwrite.io/pink-svelte';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     export let data: PageData;
 
@@ -55,5 +46,5 @@
         allowCreate={$canWriteKeys}
         href="https://appwrite.io/docs/advanced/platform/api-keys"
         target="API key"
-        on:click={createApiKey} />
+        on:click={() => goto(`${base}/project-${$page.params.project}/overview/keys/create`)} />
 {/if}

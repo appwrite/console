@@ -3,8 +3,10 @@
     import type { AvatarProps } from '@appwrite.io/pink-svelte/dist/avatar/Avatar.svelte';
 
     export let size: AvatarProps['size'] = 'm';
-    export let src: AvatarProps['src'];
+    export let src: AvatarProps['src'] = undefined;
     export let alt: AvatarProps['alt'];
 </script>
 
-<Avatar {alt} {src} {size} />
+<Avatar {alt} {src} {size}>
+    <slot />
+</Avatar>
