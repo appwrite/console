@@ -50,12 +50,14 @@
                             unique domain.
                         </Typography.Caption>
                     </Layout.Stack>
-                    <Button
-                        secondary
-                        size="xs"
-                        href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
-                        Add domain
-                    </Button>
+                    <div>
+                        <Button
+                            secondary
+                            size="xs"
+                            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
+                            Add domain
+                        </Button>
+                    </div>
                 </Layout.Stack>
                 {#if proxyRuleList?.rules?.length}
                     <Divider />
@@ -68,7 +70,7 @@
                     direction="row"
                     gap="xl">
                     <Layout.Stack gap="xxs" inline>
-                        <Link variant="quiet" href={`${$protocol}${rule.domain}`} size="m">
+                        <Link variant="quiet" href={`${$protocol}${rule.domain}`} size="m" external>
                             <Layout.Stack gap="xs" inline direction="row" alignItems="center">
                                 <Trim alternativeTrim>
                                     {rule.domain}

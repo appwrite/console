@@ -41,11 +41,11 @@
             return deployment.screenshotDark
                 ? getFilePreview(deployment.screenshotDark)
                 : `${base}/images/sites/screenshot-placeholder-dark.svg`;
+        } else {
+            return deployment.screenshotLight
+                ? getFilePreview(deployment.screenshotLight)
+                : `${base}/images/sites/screenshot-placeholder-light.svg`;
         }
-
-        return deployment.screenshotLight
-            ? getFilePreview(deployment.screenshotLight)
-            : `${base}/images/sites/screenshot-placeholder-light.svg`;
     }
 
     function getFilePreview(fileId: string) {

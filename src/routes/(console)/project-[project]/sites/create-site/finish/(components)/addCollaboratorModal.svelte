@@ -63,7 +63,7 @@
     // TODO: fix design
 </script>
 
-<Modal title="Add collaborators" {error} bind:show onSubmit={create}>
+<Modal title="Share site" {error} bind:show onSubmit={create}>
     <span slot="description">
         Share your progress and start collaborating by adding members to your organization.
     </span>

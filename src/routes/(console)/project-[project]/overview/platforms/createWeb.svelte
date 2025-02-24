@@ -21,7 +21,8 @@
         IconReact,
         IconNuxt,
         IconInfo,
-        IconExternalLink
+        IconExternalLink,
+        IconAngular
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/stores';
     import { type ComponentType, onMount } from 'svelte';
@@ -38,6 +39,7 @@
     import NextjsFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/NextjsFrameworkIcon.svelte';
     import VueFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/VueFrameworkIcon.svelte';
     import NoFrameworkIcon from './components/NoFrameworkIcon.svelte';
+    import AngularFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/AngularFrameworkIcon.svelte';
 
     export let key;
 
@@ -97,6 +99,13 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
             icon: VueFrameworkIcon,
             smallIcon: IconVue,
             portNumber: 5173
+        },
+        {
+            key: 'angular',
+            label: 'Angular',
+            icon: AngularFrameworkIcon,
+            smallIcon: IconAngular,
+            portNumber: 4200
         }
     ];
 
@@ -225,10 +234,18 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                                 code={`\ngit clone https://github.com/appwrite/starter-for-${selectedFramework.key}\ncd starter-for--${selectedFramework.key}`} />
                         </div>
 
-                        <Typography.Text variant="m-500"
-                            >2. Rename <InlineCode size="s" code=".env.example" /> into <InlineCode
-                                size="s"
-                                code=".env" /> and update the values.</Typography.Text>
+                        {#if selectedFramework.key === 'angular'}
+                            <Typography.Text variant="m-500"
+                                >2. Change <InlineCode
+                                    size="s"
+                                    code="src/environments/environment.ts" />
+                                to reflect the values below:</Typography.Text>
+                        {:else}
+                            <Typography.Text variant="m-500"
+                                >2. Rename <InlineCode size="s" code=".env.example" /> into <InlineCode
+                                    size="s"
+                                    code=".env" /> and update the values.</Typography.Text>
+                        {/if}
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                         <div class="pink2-code-margin-fix">
