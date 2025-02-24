@@ -6,7 +6,6 @@
     import { Filters } from '$lib/components/filters';
     import { queries, tags } from '$lib/components/filters/store';
     import { View } from '$lib/helpers/load';
-    import { Pill } from '$lib/elements';
     import { ActionMenu, Icon, Layout, Popover, Tag } from '@appwrite.io/pink-svelte';
     import Table from './table.svelte';
     import QuickFilters from './quickFilters.svelte';

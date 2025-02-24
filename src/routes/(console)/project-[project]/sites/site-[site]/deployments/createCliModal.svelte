@@ -3,8 +3,6 @@
     import { Modal, Alert } from '$lib/components';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import SecondaryTabs from '$lib/components/secondaryTabs.svelte';
-    import SecondaryTabsItem from '$lib/components/secondaryTabsItem.svelte';
     import { Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
 
     export let show = false;
