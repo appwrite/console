@@ -90,16 +90,18 @@
                 <svelte:fragment slot="title">Transfer project</svelte:fragment>
                 Transfer your project to another organization that you own.
                 <svelte:fragment slot="aside">
-                    <FormList>
-                        <InputSelect
-                            id="organization"
-                            label="Available organizations"
-                            bind:value={teamId}
-                            options={$organizationList.teams.map((team) => ({
+                    <InputSelect
+                        required
+                        id="organization"
+                        placeholder="Select an organization"
+                        label="Available organizations"
+                        bind:value={teamId}
+                        options={$organizationList.teams
+                            .filter((team) => team.$id !== $project.teamId)
+                            .map((team) => ({
                                 value: team.$id,
                                 label: team.name
                             }))} />
-                    </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">

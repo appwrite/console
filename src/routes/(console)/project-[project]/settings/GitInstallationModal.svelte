@@ -21,20 +21,20 @@
 <Modal title="Install" bind:show={showGitInstall}>
     <p>Select a provider to import an existing git repository.</p>
 
-    <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
-        <Button href={connectGitHub().toString()} fullWidth secondary>
+    <div class="u-flex u-cross-center u-flex-vertical u-gap-16" style:--button-width="100%">
+        <Button href={connectGitHub().toString()} secondary>
             <span class="icon-github" aria-hidden="true" />
             <span class="text">GitHub</span>
         </Button>
-        <Button disabled fullWidth secondary>
+        <Button disabled secondary>
             <span class="icon-gitlab" aria-hidden="true" />
             <span class="text">GitLab (coming soon)</span>
         </Button>
-        <Button disabled fullWidth secondary>
+        <Button disabled secondary>
             <span class="icon-bitBucket" aria-hidden="true" />
             <span class="text">BitBucket (coming soon)</span>
         </Button>
-        <Button disabled fullWidth secondary>
+        <Button disabled secondary>
             <span class="icon-azure" aria-hidden="true" />
             <span class="text">Azure (coming soon)</span>
         </Button>

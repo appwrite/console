@@ -50,10 +50,8 @@
 {:else}
     <Card.Button on:click on:click={track} aria-label="create">
         <Layout.Stack justifyContent="center" alignItems="center" gap="m">
-            <Avatar>
-                <Icon icon={IconPlus} />
-            </Avatar>
-            <Typography.Text variation="m-400"><slot /></Typography.Text>
+            <Avatar size="s"><Icon icon={IconPlus} size="s" /></Avatar>
+            <Typography.Text variation="m-400" align="center"><slot /></Typography.Text>
         </Layout.Stack>
     </Card.Button>
 {/if}

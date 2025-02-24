@@ -29,6 +29,7 @@
     export let submissionLoader = false;
     export let forceShowLoader = false;
     export let compact = false;
+    export let extraCompact = false;
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -47,7 +48,13 @@
         });
     }
 
-    function getVariant(): 'primary' | 'secondary' | 'text' | 'compact' | 'danger' {
+    function getVariant():
+        | 'primary'
+        | 'secondary'
+        | 'text'
+        | 'compact'
+        | 'danger'
+        | 'extra-compact' {
         switch (true) {
             case secondary:
                 return 'secondary';
@@ -55,6 +62,8 @@
                 return 'text';
             case compact:
                 return 'compact';
+            case extraCompact:
+                return 'extra-compact';
             case danger:
                 return 'danger';
             default:

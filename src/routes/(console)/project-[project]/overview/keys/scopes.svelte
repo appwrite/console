@@ -82,14 +82,16 @@
 </script>
 
 <Layout.Stack>
-    <Layout.Stack direction="row-reverse" alignItems="center" gap="s">
-        <Button text on:click={deselectAll}>Deselect all</Button>
+    <Layout.Stack direction="row" alignItems="center" gap="s">
+        <Button compact on:click={selectAll}>Select all</Button>
         <span style:height="20px">
             <Divider vertical />
         </span>
-        <Button text on:click={selectAll}>Select all</Button>
+        <Button compact on:click={deselectAll}>Deselect all</Button>
     </Layout.Stack>
     <Layout.Stack gap="none">
+        <Divider />
+
         {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Other] as category}
             {@const checked = categoryState(category, scopes)}
             {@const scopesLength = allScopes.filter(
