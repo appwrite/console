@@ -188,11 +188,11 @@ export type UsageBuckets = {
     /**
      * Aggregated statistics of bucket file transformations per period.
      */
-    fileTransformations: Metric[];
+    imageTransformations: Metric[];
     /**
      * Total aggregated number of file transformations.
      */
-    fileTransformationsTotal: number;
+    imageTransformationsTotal: number;
 };
 /**
  * UsageFunctions

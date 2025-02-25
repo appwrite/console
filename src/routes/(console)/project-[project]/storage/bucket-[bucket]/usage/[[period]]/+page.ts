@@ -16,7 +16,7 @@ export const load: PageLoad = async ({ params }) => {
     return {
         filesTotal: response.filesTotal,
         files: response.files as Metric[],
-        fileTransformationsTotal: response.fileTransformationsTotal,
-        fileTransformations: response.fileTransformations as Metric[]
+        imageTransformationsTotal: response.imageTransformationsTotal,
+        imageTransformations: response.imageTransformations as Metric[]
     };
 };

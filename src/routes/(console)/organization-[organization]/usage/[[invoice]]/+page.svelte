@@ -266,7 +266,7 @@
             The total number of image transformations across all projects in your organization.
         </p>
         <svelte:fragment slot="aside">
-            {#if data.organizationUsage.fileTransformationsTotal}
+            {#if data.organizationUsage.imageTransformationsTotal}
                 <div style:margin-top="-1.5em" style:margin-bottom="-1em">
                     <BarChart
                         options={{
@@ -280,7 +280,7 @@
                             {
                                 name: 'Transformations',
                                 data: [
-                                    ...(data.organizationUsage.fileTransformations ?? []).map(
+                                    ...(data.organizationUsage.imageTransformations ?? []).map(
                                         (e) => [e.date, e.value]
                                     )
                                 ]
@@ -292,7 +292,7 @@
                     legendData={[
                         {
                             name: 'Transformations',
-                            value: data.organizationUsage.fileTransformationsTotal
+                            value: data.organizationUsage.imageTransformationsTotal
                         }
                     ]} />
 

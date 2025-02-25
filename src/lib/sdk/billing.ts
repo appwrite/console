@@ -213,13 +213,13 @@ export type OrganizationUsage = {
     executions: Array<Models.Metric>;
     databasesReads: Array<Models.Metric>;
     databasesWrites: Array<Models.Metric>;
-    fileTransformations: Array<Models.Metric>;
+    imageTransformations: Array<Models.Metric>;
     executionsTotal: number;
     filesStorageTotal: number;
     buildsStorageTotal: number;
     databasesReadsTotal: number;
     databasesWritesTotal: number;
-    fileTransformationsTotal: number;
+    imageTransformationsTotal: number;
     deploymentsStorageTotal: number;
     executionsMBSecondsTotal: number;
     buildsMBSecondsTotal: number;
@@ -237,7 +237,6 @@ export type OrganizationUsage = {
         users: number;
         authPhoneTotal: number;
         authPhoneEstimate: number;
-        fileTransformations: number;
     }>;
     authPhoneTotal: number;
     authPhoneEstimate: number;

@@ -7,8 +7,8 @@
     export let data: PageData;
     $: filesTotal = data.filesTotal;
     $: files = data.files;
-    $: transformationsTotal = data.fileTransformationsTotal;
-    $: transformations = data.fileTransformations;
+    $: transformationsTotal = data.imageTransformationsTotal;
+    $: transformations = data.imageTransformations;
 
     console.log(data);
 </script>
