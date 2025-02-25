@@ -12,7 +12,6 @@
         Tab,
         Tabs
     } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -21,6 +20,8 @@
     import {
         daysLeftInTrial,
         getServiceLimit,
+        isFreeTier,
+        isGithubEducationTier,
         plansInfo,
         readOnly,
         tierToPlan
@@ -110,15 +111,15 @@
                             <span class="u-trim">
                                 {$organization.name}
                             </span>
-                            {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                            {#if isCloud && isGithubEducationTier($organization?.billingPlan)}
                                 <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem">
                                     <span class="icon-github" aria-hidden="true" />EDUCATION
                                 </Pill>
-                            {:else if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+                            {:else if isCloud && isFreeTier($organization?.billingPlan)}
                                 <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem"
                                     >FREE</Pill>
                             {/if}
-                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
+                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && !isFreeTier($organization.billingPlan) && $plansInfo.get($organization.billingPlan)?.trialDays}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -162,12 +163,11 @@
                     </a>
                     <div
                         use:tooltip={{
-                            content:
-                                $organization?.billingPlan === BillingPlan.FREE
-                                    ? `Upgrade to add more members`
-                                    : `You've reached the members limit for the ${
-                                          tierToPlan($organization?.billingPlan)?.name
-                                      } plan`,
+                            content: isFreeTier($organization?.billingPlan)
+                                ? `Upgrade to add more members`
+                                : `You've reached the members limit for the ${
+                                      tierToPlan($organization?.billingPlan)?.name
+                                  } plan`,
                             disabled: !areMembersLimited
                         }}>
                         {#if $isOwner}

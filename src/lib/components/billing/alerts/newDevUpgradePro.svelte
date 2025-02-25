@@ -2,11 +2,12 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
-    import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
+    import { NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import GradientBanner from '../gradientBanner.svelte';
+    import { isFreeTier } from '$lib/stores/billing';
 
     let show = true;
 
@@ -21,7 +22,7 @@
     }
 </script>
 
-{#if show && $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && !$page.url.pathname.includes('/console/account')}
+{#if show && $organization?.$id && isFreeTier($organization?.billingPlan) && !$page.url.pathname.includes('/console/account')}
     <GradientBanner on:close={handleClose}>
         <div class="u-flex u-gap-24 u-main-center u-cross-center u-flex-vertical-mobile">
             <span class="body-text-1">Get $50 Cloud credits for Appwrite Pro.</span>

@@ -1,19 +1,18 @@
 <script>
     import Base from './base.svelte';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { isFreeTier, upgradeURL } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
     import Button from '$lib/elements/forms/button.svelte';
 </script>
 
 <Base>
     {#if isCloud}
-        {#if $organization?.billingPlan !== BillingPlan.FREE}
+        {#if !isFreeTier($organization?.billingPlan)}
             <div class="u-flex-vertical u-gap-8">
                 <p>
                     <span class="u-bold">Roles</span>
-                    {#if $organization?.billingPlan === BillingPlan.FREE}
+                    {#if isFreeTier($organization?.billingPlan)}
                         <span class="inline-tag u-normal u-x-small">Pro plan</span>
                     {/if}
                 </p>
@@ -27,7 +26,7 @@
             <div class="u-flex-vertical u-gap-8">
                 <p>
                     <span class="u-bold">Roles</span>
-                    {#if $organization?.billingPlan === BillingPlan.FREE}
+                    {#if isFreeTier($organization?.billingPlan)}
                         <span class="inline-tag u-normal u-x-small">Pro plan</span>
                     {/if}
                 </p>

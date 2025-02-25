@@ -11,7 +11,7 @@
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { isFreeTier, upgradeURL } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[project]/store';
     import { page } from '$app/stores';
@@ -74,11 +74,9 @@
             case 'free':
                 return false;
             case 'pro':
-                return organizationPlan === BillingPlan.FREE;
+                return isFreeTier(organizationPlan);
             case 'scale':
-                return (
-                    organizationPlan === BillingPlan.FREE || organizationPlan === BillingPlan.PRO
-                );
+                return isFreeTier(organizationPlan) || organizationPlan === BillingPlan.PRO;
         }
     }
 

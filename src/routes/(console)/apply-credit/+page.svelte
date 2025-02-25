@@ -14,7 +14,7 @@
     } from '$lib/layout';
     import { type PaymentList } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
-    import { isOrganization } from '$lib/stores/billing.js';
+    import { isFreeTier, isGithubEducationTier, isOrganization } from '$lib/stores/billing.js';
     import { addNotification } from '$lib/stores/notifications';
     import {
         organizationList,
@@ -236,7 +236,7 @@
                         placeholder="Select organization"
                         id="organization" />
                 {/if}
-                {#if selectedOrgId && (selectedOrg?.billingPlan === BillingPlan.FREE || !selectedOrg?.paymentMethodId)}
+                {#if selectedOrgId && (isFreeTier(selectedOrg?.billingPlan) || !selectedOrg?.paymentMethodId)}
                     {#if selectedOrgId === newOrgId}
                         <InputText
                             label="Organization name"
@@ -295,7 +295,7 @@
                     </div>
                 </div>
             {/if}
-            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+            {#if selectedOrg?.$id && !isFreeTier(selectedOrg?.billingPlan) && !isGithubEducationTier(selectedOrg?.billingPlan)}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"

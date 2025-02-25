@@ -15,7 +15,7 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { isFreeTier, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { newMemberModal, organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
 
@@ -30,7 +30,7 @@
 
     <p class="text">The number of members in your organization.</p>
     <svelte:fragment slot="aside">
-        {#if $organization.billingPlan !== BillingPlan.FREE}
+        {#if !isFreeTier($organization.billingPlan)}
             <div class="u-flex u-flex-vertical">
                 <div class="u-flex u-main-space-between">
                     <p>

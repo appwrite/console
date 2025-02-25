@@ -11,7 +11,7 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { organization, type Organization } from '$lib/stores/organization';
-    import { plansInfo } from '$lib/stores/billing';
+    import { isFreeTier, plansInfo } from '$lib/stores/billing';
     import { abbreviateNumber, formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
 
@@ -49,7 +49,7 @@
         }
     ];
 
-    $: isFree = org.billingPlan === BillingPlan.FREE;
+    $: isFree = isFreeTier(org.billingPlan);
 </script>
 
 <Modal bind:show size="big" headerDivider={false} title="Usage rates">

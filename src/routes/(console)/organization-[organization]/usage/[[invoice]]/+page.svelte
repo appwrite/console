@@ -3,6 +3,7 @@
     import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
     import {
         getServiceLimit,
+        isFreeTier,
         showUsageRatesModal,
         type Tier,
         upgradeURL
@@ -40,7 +41,7 @@
     <div class="u-flex u-cross-center u-main-space-between">
         <Heading tag="h2" size="5">Usage</Heading>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isFreeTier($organization?.billingPlan)}
             <Button
                 href={$upgradeURL}
                 on:click={() => {
@@ -70,7 +71,7 @@
                     class="link"
                     type="button">Learn more about plan usage limits.</button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.FREE}
+        {:else if isFreeTier($organization.billingPlan)}
             <p class="text">
                 If you exceed the limits of the Free plan, services for your organization's projects
                 may be disrupted.

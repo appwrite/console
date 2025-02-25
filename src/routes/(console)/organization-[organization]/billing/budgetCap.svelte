@@ -2,9 +2,9 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
-    import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
+    import { isFreeTier, showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, currentPlan } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -96,7 +96,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if isFreeTier($organization?.billingPlan)}
                 <Button
                     secondary
                     href={$upgradeURL}

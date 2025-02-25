@@ -12,7 +12,13 @@
     import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { tierToPlan, type Tier, plansInfo, isOrganization } from '$lib/stores/billing';
+    import {
+        tierToPlan,
+        type Tier,
+        plansInfo,
+        isOrganization,
+        isFreeTier
+    } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -46,7 +52,7 @@
     async function handleSubmit() {
         const orgName = name?.length ? name : 'Personal Projects';
         if (isCloud) {
-            if (plan === BillingPlan.FREE) {
+            if (isFreeTier(plan)) {
                 try {
                     const org = await sdk.forConsole.billing.createOrganization(
                         ID.unique(),

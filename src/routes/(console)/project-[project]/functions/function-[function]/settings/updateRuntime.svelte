@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -17,6 +17,7 @@
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import SpecificationsTooltip from '$lib/wizards/functions/components/specificationsTooltip.svelte';
+    import { isFreeTier } from '$lib/stores/billing';
 
     const functionId = $page.params.function;
     let runtime: string = null;
@@ -108,7 +109,7 @@
                     placeholder="Select runtime specification"
                     bind:value={specification}
                     options={specificationOptions}
-                    popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
+                    popover={isCloud && isFreeTier($organization?.billingPlan)
                         ? SpecificationsTooltip
                         : null}
                     required

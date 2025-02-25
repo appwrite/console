@@ -4,7 +4,7 @@
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
     import { goto, invalidate } from '$app/navigation';
     import { page } from '$app/stores';
@@ -12,6 +12,7 @@
     import { base } from '$app/paths';
     import { getProjectId } from '$lib/helpers/project';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { isFreeTier } from '$lib/stores/billing';
 
     const backupRestoreItems: {
         archives: Map<string, BackupArchive>;
@@ -120,7 +121,7 @@
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
-        if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
+        if (isSelfHosted || (isCloud && isFreeTier($organization.billingPlan))) return;
 
         return sdk.forConsole.client.subscribe('console', (response) => {
             if (!response.channels.includes(`projects.${getProjectId()}`)) return;

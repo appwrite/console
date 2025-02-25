@@ -28,7 +28,13 @@
         WizardSecondaryFooter
     } from '$lib/layout';
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { isOrganization, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import {
+        isOrganization,
+        plansInfo,
+        tierToPlan,
+        type Tier,
+        isFreeTier
+    } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
         currentPlan,
@@ -45,8 +51,8 @@
 
     export let data;
 
-    $: anyOrgFree = $organizationList.teams?.find(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
+    $: anyOrgFree = $organizationList.teams?.find((org) =>
+        isFreeTier((org as Organization)?.billingPlan)
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = base;
@@ -276,7 +282,7 @@
 
     $: isUpgrade = $plansInfo.get(billingPlan).order > $currentPlan.order;
     $: isDowngrade = $plansInfo.get(billingPlan).order < $currentPlan.order;
-    $: if (billingPlan !== BillingPlan.FREE) {
+    $: if (isFreeTier(billingPlan)) {
         loadPaymentMethods();
     }
     $: isButtonDisabled = ($currentPlan?.$id as Tier) === billingPlan;
@@ -303,7 +309,7 @@
             <SelectPlan bind:billingPlan anyOrgFree={!!anyOrgFree} class="u-margin-block-16" />
 
             {#if isDowngrade}
-                {#if billingPlan === BillingPlan.FREE}
+                {#if isFreeTier(billingPlan)}
                     <PlanExcess
                         tier={BillingPlan.FREE}
                         class="u-margin-block-start-24"
@@ -328,7 +334,7 @@
                 {/if}
             {/if}
             <!-- Show email input if upgrading from free plan -->
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
+            {#if $organization.billingPlan !== billingPlan && tierToPlan(billingPlan)?.addons.seats?.supported && isUpgrade}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
                         bind:tags={collaborators}
@@ -350,7 +356,8 @@
                     </Button>
                 {/if}
             {/if}
-            {#if isDowngrade && billingPlan === BillingPlan.FREE}
+            <!-- TODO: how do we check against the free plan -->
+            {#if isDowngrade && isFreeTier(billingPlan)}
                 <FormList class="u-margin-block-start-24">
                     <InputSelect
                         id="reason"
@@ -369,13 +376,16 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
+            <!-- TODO: we need a way to check for custom plans -->
+            {#if $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <EstimatedTotal
                     bind:billingBudget
                     bind:couponData
                     organizationId={$organization.$id}
                     {billingPlan}
                     {collaborators} />
+
+                <!-- TODO: we need a way to check for custom plans -->
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}

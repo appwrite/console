@@ -15,7 +15,7 @@
     <p class="text">Enable or disable Appwrite branding in your email template signature.</p>
 
     <svelte:fragment slot="aside">
-        <EmptyCardImageCloud source="email_signature_card" let:nextTier noAspectRatio>
+        <EmptyCardImageCloud source="email_signature_card" noAspectRatio>
             <svelte:fragment slot="image">
                 <div class=" is-only-mobile u-width-full-line u-height-100-percent">
                     {#if $app.themeInUse === 'dark'}
@@ -51,7 +51,8 @@
                 </div>
             </svelte:fragment>
             <svelte:fragment slot="title">Upgrade to edit email signature</svelte:fragment>
-            Upgrade to a {nextTier} plan to enable or disable Appwrite branding in your emails.
+            <!-- Confirm copy of paid plan -->
+            Upgrade to a paid plan to enable or disable Appwrite branding in your emails.
 
             <svelte:fragment let:source slot="cta">
                 <Button

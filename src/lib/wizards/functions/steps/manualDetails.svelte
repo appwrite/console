@@ -9,8 +9,8 @@
     import { specificationsList } from '$lib/stores/specifications';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
     import SpecificationsTooltip from '../components/specificationsTooltip.svelte';
+    import { isFreeTier } from '$lib/stores/billing';
 
     let showCustomId = false;
 
@@ -60,7 +60,7 @@
             required
             disabled={specificationOptions.length < 1}
             options={specificationOptions}
-            popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
+            popover={isCloud && isFreeTier($organization?.billingPlan)
                 ? SpecificationsTooltip
                 : null}
             bind:value={$createFunction.specification} />

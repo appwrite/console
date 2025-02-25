@@ -15,7 +15,7 @@
         WizardSecondaryFooter
     } from '$lib/layout';
     import type { Coupon, PaymentList } from '$lib/sdk/billing';
-    import { isOrganization, tierToPlan } from '$lib/stores/billing';
+    import { isFreeTier, isOrganization, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
         organizationList,
@@ -28,8 +28,8 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
-    $: anyOrgFree = $organizationList.teams?.some(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
+    $: anyOrgFree = $organizationList.teams?.some((org) =>
+        isFreeTier((org as Organization)?.billingPlan)
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = base;
@@ -126,7 +126,7 @@
         try {
             let org: Organization | OrganizationError;
 
-            if (billingPlan === BillingPlan.FREE) {
+            if (isFreeTier(billingPlan)) {
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
@@ -192,7 +192,7 @@
         }
     }
 
-    $: if (billingPlan !== BillingPlan.FREE) {
+    $: if (!isFreeTier(billingPlan)) {
         loadPaymentMethods();
     }
 </script>
@@ -219,7 +219,7 @@
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
             <SelectPlan bind:billingPlan {anyOrgFree} isNewOrg />
-            {#if billingPlan !== BillingPlan.FREE}
+            {#if !isFreeTier(billingPlan)}
                 <FormList class="u-margin-block-start-24">
                     <InputTags
                         bind:tags={collaborators}
@@ -244,7 +244,7 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE}
+            {#if !isFreeTier(billingPlan)}
                 <EstimatedTotal bind:billingBudget {billingPlan} {collaborators} bind:couponData />
             {:else}
                 <PlanComparisonBox />

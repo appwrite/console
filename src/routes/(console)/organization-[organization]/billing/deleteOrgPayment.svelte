@@ -6,7 +6,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
+    import { isFreeTier } from '$lib/stores/billing.js';
 
     export let showDelete = false;
     export let isBackup = false;
@@ -16,7 +17,7 @@
     let error: string;
 
     async function removeDefaultMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if (!isFreeTier($organization?.billingPlan) && !hasOtherMethod) return;
 
         try {
             await sdk.forConsole.billing.removeOrganizationPaymentMethod($organization.$id);
@@ -35,7 +36,7 @@
         }
     }
     async function removeBackuptMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if (!isFreeTier($organization?.billingPlan) && !hasOtherMethod) return;
         showDelete = false;
 
         try {
