@@ -189,10 +189,8 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             {#if isChangingFramework}
                                 <Button.Button
                                     disabled={!selectedFramework}
-                                    on:click={() => {
-                                        isChangingFramework = false;
-                                    }}>
-                                    Change framework instructions</Button.Button>
+                                    on:click={() => (isChangingFramework = false)}>
+                                    Save</Button.Button>
                             {:else}
                                 <Button.Button type="submit" disabled={!selectedFramework}
                                     >Create platform</Button.Button>

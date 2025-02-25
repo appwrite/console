@@ -355,7 +355,7 @@
             }
 
             .link-icon {
-                color: var(--color-fgcolor-neutral-primary);
+                color: var(--color-fgcolor-neutral-tertiary);
             }
         }
     }
@@ -365,7 +365,7 @@
             color: var(--color-fgcolor-neutral-primary);
         }
         .link-icon {
-            color: var(--color-fgcolor-neutral-primary);
+            color: var(--color-fgcolor-neutral-tertiary);
         }
     }
 

@@ -1,44 +1,36 @@
 <script lang="ts">
     import { Copy } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
-    import { domain } from './store';
+    import { Table } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
+
+    export let domain: Models.ProxyRule;
 
     const target = window?.location.hostname ?? '';
-    $: parts = $domain.domain.split('.');
+    $: parts = domain.domain.split('.');
     $: registerable = [parts[parts.length - 2], parts[parts.length - 1]].join('.');
-    $: cnameValue = $domain.domain.replace('.' + registerable, '');
+    $: cnameValue = domain.domain.replace('.' + registerable, '');
 </script>
 
-<Table noMargin noStyles style="--p-table-bg-color: var(--transparent);">
-    <TableHeader>
-        <TableCellHead>Type</TableCellHead>
-        <TableCellHead>Name</TableCellHead>
-        <TableCellHead>Value</TableCellHead>
-        <TableCellHead width={50} />
-    </TableHeader>
-    <TableBody>
-        <TableRow>
-            <TableCellText title="Type">CNAME</TableCellText>
-            <TableCellText title="Name">{cnameValue}</TableCellText>
-            <TableCellText title="Value">
-                {target}
-            </TableCellText>
-            <TableCell>
-                <Button text>
-                    <Copy value={target}>
-                        <span class="icon-duplicate" aria-hidden="true" />
-                    </Copy>
-                </Button>
-            </TableCell>
-        </TableRow>
-    </TableBody>
-</Table>
+<Table.Root>
+    <svelte:fragment slot="header">
+        <Table.Header.Cell>Type</Table.Header.Cell>
+        <Table.Header.Cell>Name</Table.Header.Cell>
+        <Table.Header.Cell>Value</Table.Header.Cell>
+        <Table.Header.Cell width="40px" />
+    </svelte:fragment>
+    <Table.Row>
+        <Table.Cell>CNAME</Table.Cell>
+        <Table.Cell>{cnameValue}</Table.Cell>
+        <Table.Cell>
+            {target}
+        </Table.Cell>
+        <Table.Cell>
+            <Button text>
+                <Copy value={target}>
+                    <span class="icon-duplicate" aria-hidden="true" />
+                </Copy>
+            </Button>
+        </Table.Cell>
+    </Table.Row>
+</Table.Root>

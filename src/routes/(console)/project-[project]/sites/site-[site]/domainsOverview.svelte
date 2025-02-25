@@ -70,7 +70,7 @@
                     direction="row"
                     gap="xl">
                     <Layout.Stack gap="xxs" inline>
-                        <Link variant="quiet" href={`${$protocol}${rule.domain}`} size="m">
+                        <Link variant="quiet" href={`${$protocol}${rule.domain}`} size="m" external>
                             <Layout.Stack gap="xs" inline direction="row" alignItems="center">
                                 <Trim alternativeTrim>
                                     {rule.domain}

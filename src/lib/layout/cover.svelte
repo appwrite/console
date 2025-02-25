@@ -36,22 +36,23 @@
         justify-content: space-between;
         block-size: 100%;
 
-        @container (min-width: 360px) {
-            margin-inline: 2.5rem;
+        @media (min-width: 360px) {
+            margin-inline: 1rem;
         }
-        @container (min-width: 1024px) {
-            margin: 0 auto;
+        @media (min-width: 1024px) {
+            margin-inline: 2.5rem;
             max-width: 944px;
         }
-        @container (min-width: 1280px) {
+        @media (min-width: 1280px) {
+            margin-inline: auto;
             max-width: 1000px;
         }
-
-        @container (min-width: 1440px) {
+        @media (min-width: 1440px) {
+            margin-inline: auto;
             max-width: 1144px;
         }
-
-        @container (min-width: 1728px) {
+        @media (min-width: 1728px) {
+            margin-inline: auto;
             max-width: 1200px;
         }
     }

@@ -9,7 +9,11 @@
 </script>
 
 <Container>
-    <ProxyRulesPage rules={data.rules} type={ResourceType.Api} dependency={Dependencies.DOMAINS}>
+    <ProxyRulesPage
+        search={data.search}
+        rules={data.rules}
+        type={ResourceType.Api}
+        dependency={Dependencies.DOMAINS}>
         <svelte:fragment slot="heading">Custom domains</svelte:fragment>
     </ProxyRulesPage>
 </Container>

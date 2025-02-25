@@ -75,8 +75,6 @@
             }
         }, 800);
     }
-
-    $: console.log(metrics);
 </script>
 
 <Layout.Stack gap="xl">
@@ -99,9 +97,16 @@
                 on:change={fetchUsage} />
         </div>
     </Layout.Stack>
-    <Layout.Stack gap="m" direction="row">
-        {#each metrics as metric}
-            <UsageCard description={metric.description} bind:value={metric.value} />
-        {/each}
-    </Layout.Stack>
+    <Layout.Grid gap="m" columnsL={2} columns={1}>
+        <Layout.Stack direction="row" gap="m">
+            {#each metrics.slice(0, 3) as metric}
+                <UsageCard description={metric.description} bind:value={metric.value} />
+            {/each}
+        </Layout.Stack>
+        <Layout.Stack direction="row" gap="m">
+            {#each metrics.slice(3) as metric}
+                <UsageCard description={metric.description} bind:value={metric.value} />
+            {/each}
+        </Layout.Stack>
+    </Layout.Grid>
 </Layout.Stack>

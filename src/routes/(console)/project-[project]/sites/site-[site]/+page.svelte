@@ -6,7 +6,7 @@
     import DeploymentsOverview from './deploymentsOverview.svelte';
     import { Button } from '$lib/elements/forms';
     import { protocol } from '$routes/(console)/store';
-    import InstantRollbackDomain from './instantRollbackDomain.svelte';
+    import InstantRollbackDomain from './instantRollbackModal.svelte';
     import { app } from '$lib/stores/app';
     import EmptyDeploymentDark from './empty-deployment-dark.svg';
     import EmptyDeploymentLight from './empty-deployment-light.svg';
