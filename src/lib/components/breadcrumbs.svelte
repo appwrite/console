@@ -405,7 +405,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: var(--space-1, 2px) var(--space-1, 2px) var(--space-1, 2px) var(--space-3, 6px);
+        padding: var(--space-1, 2px) var(--space-2, 4px) var(--space-1, 2px) var(--space-3, 6px);
         gap: var(--space-2, 4px);
         margin: 0 var(--space-5, 10px) 0 var(--space-5, 10px);
 
