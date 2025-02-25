@@ -27,4 +27,4 @@
     </svelte:fragment>
 </CardGrid>
 
-<Delete bind:showDelete />
+<Delete projectFunction={$func} bind:showDelete />

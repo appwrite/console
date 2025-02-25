@@ -6,13 +6,15 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { type Models } from '@appwrite.io/console';
 
+    export let site: Models.Site;
     export let showDelete = false;
-    const siteId = $page.params.site;
+
     let error: string;
     const handleSubmit = async () => {
         try {
-            await sdk.forProject.sites.delete(siteId);
+            await sdk.forProject.sites.delete(site.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
