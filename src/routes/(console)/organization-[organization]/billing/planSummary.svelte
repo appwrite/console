@@ -3,7 +3,7 @@
     import { Card, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo, upgradeURL } from '$lib/stores/billing';
+    import { isFreeTier, isGithubEducationTier, plansInfo, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import type { Aggregation, CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -46,8 +46,7 @@
                         <div class="u-flex">
                             <span class="body-text-2">{currentPlan.name} plan</span>
                             <div class="body-text-2 u-margin-inline-start-auto">
-                                {isTrial ||
-                                $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                                {isTrial || isGithubEducationTier($organization?.billingPlan)
                                     ? formatCurrency(0)
                                     : currentPlan
                                       ? formatCurrency(currentPlan?.price)
@@ -173,7 +172,7 @@
                             </CollapsibleItem>
                         {/if}
 
-                        {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+                        {#if !isFreeTier($organization?.billingPlan) && !isGithubEducationTier($organization?.billingPlan)}
                             <CollapsibleItem
                                 noContent
                                 gap={4}
@@ -208,7 +207,7 @@
             </Card>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if isFreeTier($organization?.billingPlan) || isGithubEducationTier($organization?.billingPlan)}
                 <div
                     class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
                     <Button text href={`${base}/organization-${$organization?.$id}/usage`}>

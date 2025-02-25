@@ -1,6 +1,4 @@
 <script>
-    import { getNextTier, tierToPlan } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
     import Card from './card.svelte';
 
     export let source = 'empty_state_card';
@@ -22,7 +20,7 @@
         <div class="u-stretch u-flex-vertical u-main-center">
             <h3 class="body-text-2 u-bold"><slot name="title" /></h3>
             <p class="u-margin-block-start-8">
-                <slot nextTier={tierToPlan(getNextTier($organization.billingPlan)).name} />
+                <slot />
             </p>
             <slot name="cta" {source} />
         </div>

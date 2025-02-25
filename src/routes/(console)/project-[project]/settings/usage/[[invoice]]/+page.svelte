@@ -10,7 +10,7 @@
         Table,
         TableRowLink
     } from '$lib/elements/table';
-    import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { isFreeTier, showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
@@ -66,7 +66,7 @@
     <div class="u-flex u-cross-center u-main-space-between">
         <Heading tag="h2" size="5">Usage</Heading>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isFreeTier($organization?.billingPlan)}
             <Button href={$upgradeURL}>
                 <span class="text">Upgrade</span>
             </Button>
@@ -87,7 +87,7 @@
                     on:click={() => ($showUsageRatesModal = true)}
                     link>Learn more about plan usage limits.</Button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.FREE}
+        {:else if isFreeTier($organization.billingPlan)}
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
                 <a href={$upgradeURL} class="link">Upgrade for greater capacity</a>.

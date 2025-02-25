@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { plansInfo } from '$lib/stores/billing';
+    import { isFreeTier, plansInfo } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { LabelCard } from '..';
 
@@ -14,15 +13,15 @@
 
 {#if billingPlan}
     <ul class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-8 {classes}">
-        {#each $plansInfo.values() as plan}
+        {#each $plansInfo.entries() as [tier, plan]}
             <li>
                 <LabelCard
                     name="plan"
                     bind:group={billingPlan}
-                    disabled={(plan.$id === BillingPlan.FREE && anyOrgFree) || !plan.selfService}
-                    value={plan.$id}
-                    tooltipShow={plan.$id === BillingPlan.FREE && anyOrgFree}
-                    tooltipText={plan.$id === BillingPlan.FREE
+                    disabled={(isFreeTier(tier) && anyOrgFree) || !plan.selfService}
+                    value={tier}
+                    tooltipShow={isFreeTier(tier) && anyOrgFree}
+                    tooltipText={isFreeTier(tier)
                         ? 'You are limited to 1 Free organization per account.'
                         : ''}
                     padding={1.5}>

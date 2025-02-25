@@ -20,9 +20,8 @@
     import { slide } from 'svelte/transition';
     import { isCloud } from '$lib/system';
     import { Feedback } from '$lib/components/feedback';
-    import { BillingPlan } from '$lib/constants';
     import { logout } from '$lib/helpers/logout';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { isFreeTier, upgradeURL } from '$lib/stores/billing';
 
     let showDropdown = false;
     let showSupport = false;
@@ -93,7 +92,7 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop u-cross-center">
-        {#if isCloud && $organization?.billingPlan === BillingPlan.FREE && !$page.url.pathname.startsWith('/console/account')}
+        {#if isCloud && isFreeTier($organization?.billingPlan) && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
                 href={$upgradeURL}

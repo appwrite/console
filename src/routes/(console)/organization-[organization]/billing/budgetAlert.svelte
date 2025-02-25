@@ -2,8 +2,8 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
-    import { tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import {  Dependencies } from '$lib/constants';
+    import { isFreeTier, isGithubEducationTier, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { Button, Form, FormList, InputSelectSearch } from '$lib/elements/forms';
     import {
         Table,
@@ -163,7 +163,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+            {#if isFreeTier($organization?.billingPlan) || isGithubEducationTier($organization?.billingPlan)}
                 <Button
                     secondary
                     href={$upgradeURL}

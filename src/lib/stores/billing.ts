@@ -68,45 +68,16 @@ export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
 }
 
-export function tierToPlan(tier: Tier) {
-    switch (tier) {
-        case BillingPlan.FREE:
-            return tierFree;
-        case BillingPlan.PRO:
-            return tierPro;
-        case BillingPlan.SCALE:
-            return tierScale;
-        case BillingPlan.GITHUB_EDUCATION:
-            return tierGitHubEducation;
-        case BillingPlan.CUSTOM:
-            return tierCustom;
-        case BillingPlan.ENTERPRISE:
-            return tierEnterprise;
-        default:
-            return tierFree;
-    }
+export function tierToPlan(tier: Tier): Plan {
+    return get(plansInfo).get(tier);
 }
 
-export function getNextTier(tier: Tier) {
-    switch (tier) {
-        case BillingPlan.FREE:
-            return BillingPlan.PRO;
-        case BillingPlan.PRO:
-            return BillingPlan.SCALE;
-        default:
-            return BillingPlan.PRO;
-    }
+export function isFreeTier(tier: Tier) {
+    return get(plansInfo).get(tier).order === 0;
 }
 
-export function getPreviousTier(tier: Tier) {
-    switch (tier) {
-        case BillingPlan.PRO:
-            return BillingPlan.FREE;
-        case BillingPlan.SCALE:
-            return BillingPlan.PRO;
-        default:
-            return BillingPlan.FREE;
-    }
+export function isGithubEducationTier(tier: Tier) {
+    return get(plansInfo).get(tier).order === 1;
 }
 
 export type PlanServices =
@@ -170,42 +141,6 @@ export const failedInvoice = cachedStore<
 
 export const actionRequiredInvoices = writable<InvoiceList>(null);
 
-export type TierData = {
-    name: string;
-    description: string;
-};
-
-export const tierFree: TierData = {
-    name: 'Free',
-    description: 'A great fit for passion projects and small applications.'
-};
-
-export const tierGitHubEducation: TierData = {
-    name: 'GitHub Education',
-    description: 'For members of GitHub student developers program.'
-};
-
-export const tierPro: TierData = {
-    name: 'Pro',
-    description:
-        'For production applications that need powerful functionality and resources to scale.'
-};
-export const tierScale: TierData = {
-    name: 'Scale',
-    description:
-        'For teams that handle more complex and large projects and need more control and support.'
-};
-
-export const tierCustom: TierData = {
-    name: 'Custom',
-    description: 'Team on a custom contract'
-};
-
-export const tierEnterprise: TierData = {
-    name: 'Enterprise',
-    description: 'For enterprises that need more power and premium support.'
-};
-
 export const showUsageRatesModal = writable<boolean>(false);
 
 export function checkForUsageFees(plan: Tier, id: PlanServices) {
@@ -249,7 +184,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function calculateTrialDay(org: Organization) {
-    if (org?.billingPlan === BillingPlan.FREE) return false;
+    if (isFreeTier(org?.billingPlan)) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
 
@@ -263,7 +198,7 @@ export function calculateTrialDay(org: Organization) {
 }
 
 export async function checkForUsageLimit(org: Organization) {
-    if (org?.billingPlan !== BillingPlan.FREE) {
+    if (!isFreeTier(org?.billingPlan)) {
         readOnly.set(false);
         return;
     }
@@ -334,7 +269,7 @@ export async function checkForUsageLimit(org: Organization) {
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
-    if (org.billingPlan === BillingPlan.FREE) return;
+    if (isFreeTier(org.billingPlan)) return;
 
     const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')
@@ -450,7 +385,7 @@ export async function checkForMissingPaymentMethod() {
 
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Organization) {
-    if (org?.billingPlan !== BillingPlan.FREE || !browser) return;
+    if (!isFreeTier(org?.billingPlan) || !browser) return;
 
     const orgs = await sdk.forConsole.billing.listOrganization([
         Query.notEqual('billingPlan', BillingPlan.FREE)
