@@ -1,9 +1,8 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import Card from '$lib/components/card.svelte';
     import { Wizard } from '$lib/layout';
-    import { Layout, Typography, Icon, Lights, Step } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Icon, Lights, Step, Card } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import Check from './(components)/check.svelte';
     import type { PageData } from './$types';
@@ -54,18 +53,20 @@
                     </svelte:fragment>
                 </SiteCard>
             </Layout.Stack>
-            <div style="margin-block-start: var(--gap-xxl);">
-                <Step.List>
-                    <Step.Item state="current" shortLine={true}>
-                        <Layout.Stack direction="row" gap="l" wrap="wrap">
-                            {#if !data.site.installationId && !data.site.providerRepositoryId}
-                                <Card
-                                    isTile
+
+            <!-- To add spacing -->
+            <div></div>
+
+            <Step.List>
+                <Step.Item state="current" shortLine={true}>
+                    <Layout.Stack>
+                        <Layout.Grid columns={!data.site.providerRepositoryId ? 4 : 3} columnsS={1}>
+                            {#if !data.site.providerRepositoryId}
+                                <Card.Button
                                     radius="s"
                                     padding="s"
-                                    isButton
                                     on:click={() => (showConnectRepositry = true)}>
-                                    <Layout.Stack gap="s">
+                                    <Layout.Stack gap="s" style="height: 100%">
                                         <Layout.Stack
                                             direction="row"
                                             justifyContent="space-between"
@@ -82,14 +83,13 @@
                                             Connect to a new repository or an existing one.
                                         </Typography.Text>
                                     </Layout.Stack>
-                                </Card>
+                                </Card.Button>
                             {/if}
-                            <Card
-                                isTile
+                            <Card.Link
                                 radius="s"
                                 padding="s"
                                 href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}/domains`}>
-                                <Layout.Stack gap="s">
+                                <Layout.Stack gap="s" style="height: 100%">
                                     <Layout.Stack
                                         direction="row"
                                         justifyContent="space-between"
@@ -104,14 +104,12 @@
                                         Connect to an existing domain or add a new one.
                                     </Typography.Text>
                                 </Layout.Stack>
-                            </Card>
-                            <Card
-                                isTile
+                            </Card.Link>
+                            <Card.Button
                                 radius="s"
-                                isButton
                                 padding="s"
                                 on:click={() => (showInviteCollaborator = true)}>
-                                <Layout.Stack gap="s" justifyContent="flex-start">
+                                <Layout.Stack gap="s" style="height: 100%">
                                     <Layout.Stack
                                         direction="row"
                                         justifyContent="space-between"
@@ -126,14 +124,12 @@
                                         Share your progress and start collaborating with your team.
                                     </Typography.Text>
                                 </Layout.Stack>
-                            </Card>
-                            <Card
-                                isTile
+                            </Card.Button>
+                            <Card.Button
                                 radius="s"
-                                isButton
                                 padding="s"
                                 on:click={() => (showOpenOnMobile = true)}>
-                                <Layout.Stack gap="s">
+                                <Layout.Stack gap="s" style="height: 100%">
                                     <Layout.Stack
                                         direction="row"
                                         justifyContent="space-between"
@@ -149,11 +145,11 @@
                                         device.
                                     </Typography.Text>
                                 </Layout.Stack>
-                            </Card>
-                        </Layout.Stack>
-                    </Step.Item>
-                </Step.List>
-            </div>
+                            </Card.Button>
+                        </Layout.Grid>
+                    </Layout.Stack>
+                </Step.Item>
+            </Step.List>
         </Layout.Stack>
     </div>
 
