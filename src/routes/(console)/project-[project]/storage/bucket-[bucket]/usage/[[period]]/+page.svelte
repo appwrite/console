@@ -9,8 +9,6 @@
     $: files = data.files;
     $: transformationsTotal = data.imageTransformationsTotal;
     $: transformations = data.imageTransformations;
-
-    console.log(data);
 </script>
 
 <Usage
@@ -31,4 +29,5 @@
     countMetadata={{
         legend: 'Image Transformations',
         title: 'Total transformations'
-    }} />
+    }}
+    hideSelectPeriod />
