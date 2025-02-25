@@ -5,7 +5,7 @@
     import type { Models } from '@appwrite.io/console';
     import Delete from '../../deleteDomainModal.svelte';
 
-    export let domain: Models.ProxyRule;
+    export let domain: Models.Domain;
     let show = false;
 </script>
 

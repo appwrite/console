@@ -1,6 +1,6 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
-    import { Drop, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
@@ -14,7 +14,7 @@
         ValidOperators
     } from './store';
     import { createEventDispatcher } from 'svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Popover } from '@appwrite.io/pink-svelte';
     import { IconFilter } from '@appwrite.io/pink-icons-svelte';
 
     export let query = '[]';
@@ -117,19 +117,17 @@
 </script>
 
 <div class="is-not-mobile">
-    <Drop bind:show={showFiltersDesktop} noArrow>
-        <slot {disabled} toggle={toggleDropdown}>
-            <Button secondary on:click={toggleDropdown} {disabled}>
-                <Icon icon={IconFilter} slot="start" size="s" />
-                Filters
-                {#if applied > 0}
-                    <span class="inline-tag">
-                        {applied}
-                    </span>
-                {/if}
-            </Button>
-        </slot>
-        <svelte:fragment slot="list">
+    <Popover let:toggle placement="bottom-start">
+        <Button secondary on:click={toggle} {disabled}>
+            <Icon icon={IconFilter} slot="start" size="s" />
+            Filters
+            {#if applied > 0}
+                <span class="inline-tag">
+                    {applied}
+                </span>
+            {/if}
+        </Button>
+        <svelte:fragment slot="tooltip">
             <div class="dropped card">
                 {#if displayQuickFilters}
                     <slot name="quick" />
@@ -171,7 +169,7 @@
                 </div>
             </div>
         </svelte:fragment>
-    </Drop>
+    </Popover>
 </div>
 
 <div class="is-only-mobile">

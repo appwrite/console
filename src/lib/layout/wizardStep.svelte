@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Heading } from '$lib/components';
     import { wizard } from '$lib/stores/wizard';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import { onDestroy } from 'svelte';
 
     /**
@@ -20,18 +21,20 @@
     }
 </script>
 
-<header class="form-header" class:hide-divider={!$$slots.subtitle}>
-    <Heading tag="h1" size="6">
-        <slot name="title" />
-    </Heading>
-    {#if $$slots.subtitle}
-        <p>
-            <slot name="subtitle" />
-        </p>
-    {/if}
-</header>
+<Layout.Stack>
+    <header class="form-header" class:hide-divider={!$$slots.subtitle}>
+        <Heading tag="h1" size="6">
+            <slot name="title" />
+        </Heading>
+        {#if $$slots.subtitle}
+            <p>
+                <slot name="subtitle" />
+            </p>
+        {/if}
+    </header>
 
-<slot />
+    <slot />
+</Layout.Stack>
 
 <style>
     .hide-divider {

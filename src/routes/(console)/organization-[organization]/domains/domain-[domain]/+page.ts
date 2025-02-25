@@ -3,6 +3,7 @@ import { Dependencies } from '$lib/constants';
 import { pageToOffset } from '$lib/helpers/load';
 import { getLimit } from '$lib/helpers/load';
 import { getPage } from '$lib/helpers/load';
+import { sdk } from '$lib/stores/sdk.js';
 
 export const load = async ({ parent, depends, url, route }) => {
     depends(Dependencies.DOMAIN);
@@ -14,47 +15,8 @@ export const load = async ({ parent, depends, url, route }) => {
 
     return {
         domain,
-        records: mockDNSRecords,
+        recordList: await sdk.forConsole.domains.listRecords(domain.$id),
         offset,
         limit
     };
-};
-
-const mockDNSRecords = {
-    total: 4,
-    records: [
-        {
-            type: 'A',
-            name: '@',
-            value: '192.0.2.1',
-            ttl: 3600,
-            proxied: true,
-            $createdAt: '2023-01-15T10:30:00Z'
-        },
-        {
-            type: 'CNAME',
-            name: 'www',
-            value: 'example.com',
-            ttl: 3600,
-            proxied: true,
-            $createdAt: '2023-01-15T10:30:00Z'
-        },
-        {
-            type: 'MX',
-            name: '@',
-            value: 'mail.example.com',
-            priority: 10,
-            ttl: 3600,
-            proxied: false,
-            $createdAt: '2023-01-15T10:30:00Z'
-        },
-        {
-            type: 'TXT',
-            name: '@',
-            value: 'v=spf1 include:_spf.example.com ~all',
-            ttl: 3600,
-            proxied: false,
-            $createdAt: '2023-01-15T10:30:00Z'
-        }
-    ]
 };

@@ -2,7 +2,7 @@
     import { Id, Trim } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
-    import { calculateTime } from '$lib/helpers/timeConversion';
+    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import DeploymentSource from '../../(components)/deploymentSource.svelte';
     import DeploymentCreatedBy from '../../(components)/deploymentCreatedBy.svelte';
     import { timer } from '$lib/actions/timer';
@@ -12,18 +12,13 @@
     import RedeployModal from '../../redeployModal.svelte';
     import Cancel from './cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
-    import { ActionMenu, Popover, Status, Table } from '@appwrite.io/pink-svelte';
-    import {
-        IconLightningBolt,
-        IconRefresh,
-        IconTerminal,
-        IconTrash,
-        IconXCircle
-    } from '@appwrite.io/pink-icons-svelte';
+    import { Layout, Status, Table } from '@appwrite.io/pink-svelte';
+
     import { columns } from './store';
     import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
     import { deploymentStatusConverter } from '../store';
     import { capitalize } from '$lib/helpers/string';
+    import DeploymentActionMenu from '../../(components)/deploymentActionMenu.svelte';
 
     export let data: PageData;
 
@@ -61,7 +56,7 @@
                         <Table.Cell width={column?.width?.toString() ?? ''}>
                             {@const status = deployment.status}
                             {#if data?.activeDeployment?.$id === deployment?.$id}
-                                <Status status="complete" label="active" />
+                                <Status status="complete" label="Active" />
                             {:else}
                                 <Status
                                     status={deploymentStatusConverter(status)}
@@ -70,7 +65,7 @@
                         </Table.Cell>
                     {:else if column.id === 'domains'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
-                            <div style="max-width: 50px">
+                            <div style="max-width: 150px">
                                 <Trim>
                                     {deployment.domain}
                                 </Trim>
@@ -89,7 +84,7 @@
                             {#if ['processing', 'building'].includes(deployment.status)}
                                 <span use:timer={{ start: deployment.$createdAt }} />
                             {:else}
-                                {calculateTime(deployment.buildTime)}
+                                {formatTimeDetailed(deployment.buildTime)}
                             {/if}
                         </Table.Cell>
                     {:else if column.id === 'size'}
@@ -104,76 +99,16 @@
                 {/if}
             {/each}
             <Table.Cell>
-                <Popover let:toggle placement="bottom-start" padding="none">
-                    <button
-                        class="button is-only-icon is-text"
-                        aria-label="More options"
-                        on:click|preventDefault={toggle}>
-                        <span class="icon-dots-horizontal" aria-hidden="true" />
-                    </button>
-                    <svelte:fragment slot="tooltip" let:toggle>
-                        <ActionMenu.Root>
-                            <ActionMenu.Item.Button
-                                leadingIcon={IconRefresh}
-                                on:click={(e) => {
-                                    e.preventDefault();
-                                    selectedDeployment = deployment;
-                                    showRedeploy = true;
-                                    toggle(e);
-                                }}>
-                                Redeploy
-                            </ActionMenu.Item.Button>
-                            <ActionMenu.Item.Anchor
-                                leadingIcon={IconTerminal}
-                                href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}
-                                on:click={(e) => {
-                                    e.preventDefault();
-                                    toggle(e);
-                                }}>
-                                View details
-                            </ActionMenu.Item.Anchor>
-                            {#if deployment?.status === 'ready' && deployment?.$id !== data.site.deploymentId}
-                                <ActionMenu.Item.Button
-                                    leadingIcon={IconLightningBolt}
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        selectedDeployment = deployment;
-                                        showActivate = true;
-                                        toggle(e);
-                                    }}>
-                                    Activate
-                                </ActionMenu.Item.Button>
-                            {/if}
-
-                            {#if deployment?.status === 'processing' || deployment?.status === 'building' || deployment.status === 'waiting'}
-                                <ActionMenu.Item.Button
-                                    leadingIcon={IconXCircle}
-                                    status="danger"
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        selectedDeployment = deployment;
-                                        showCancel = true;
-                                        toggle(e);
-                                    }}>
-                                    Cancel
-                                </ActionMenu.Item.Button>
-                            {/if}
-                            {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment?.status !== 'waiting'}
-                                <ActionMenu.Item.Button
-                                    status="danger"
-                                    leadingIcon={IconTrash}
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        selectedDeployment = deployment;
-                                        showDelete = true;
-                                        toggle(e);
-                                    }}>
-                                    Delete
-                                </ActionMenu.Item.Button>
-                            {/if}
-                        </ActionMenu.Root>
-                    </svelte:fragment>
-                </Popover>
+                <Layout.Stack alignItems="flex-end">
+                    <DeploymentActionMenu
+                        {deployment}
+                        bind:selectedDeployment
+                        bind:showRedeploy
+                        bind:showActivate
+                        bind:showDelete
+                        bind:showCancel
+                        activeDeployment={data.site.deploymentId} />
+                </Layout.Stack>
             </Table.Cell>
         </Table.Link>
     {/each}

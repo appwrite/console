@@ -3,6 +3,7 @@
     import { BarChart } from '$lib/charts';
     import { Card } from '$lib/components';
     import { formatNum } from '$lib/helpers/string';
+    import { Link, Typography } from '@appwrite.io/pink-svelte';
     import { stats } from '../store';
 
     $: projectId = $page.params.project;
@@ -34,12 +35,11 @@
                 class="icon-chart-square-bar text-large"
                 aria-hidden="true"
                 style="font-size: 32px;" />
-            <p class="u-bold">No data to show</p>
-            <a
-                class="link"
+            <Typography.Text variant="m-600">No data to show</Typography.Text>
+            <Link.Anchor
                 href="https://appwrite.io/docs/apis/realtime"
                 target="_blank"
-                rel="noopener noreferrer">Get started with Realtime</a>
+                rel="noopener noreferrer">Get started with Realtime</Link.Anchor>
         </div>
     </Card>
 {/if}

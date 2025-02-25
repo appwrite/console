@@ -59,24 +59,24 @@
     }
 </script>
 
-<Modal title="Invite member" {error} size="big" bind:show={showCreate} onSubmit={create}>
-    <FormList>
-        <InputEmail
+<Modal title="Invite member" {error} bind:show={showCreate} onSubmit={create}>
+    <InputEmail
+        required
+        id="email"
+        label="Email"
+        placeholder="Enter email"
+        autofocus={true}
+        bind:value={email} />
+    <InputText id="member-name" label="Name" placeholder="Enter name" bind:value={name} />
+    {#if isCloud}
+        <InputSelect
             required
-            id="email"
-            label="Email"
-            placeholder="Enter email"
-            autofocus={true}
-            bind:value={email} />
-        <InputText
-            id="member-name"
-            label="Name (optional)"
-            placeholder="Enter name"
-            bind:value={name} />
-        {#if isCloud}
-            <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
-        {/if}
-    </FormList>
+            popover={Roles}
+            id="role"
+            label="Role"
+            options={roles}
+            bind:value={role} />
+    {/if}
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
         <Button submit submissionLoader>Send invite</Button>

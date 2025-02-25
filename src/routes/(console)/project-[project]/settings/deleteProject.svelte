@@ -62,7 +62,12 @@
     </svelte:fragment>
 </CardGrid>
 
-<Confirm onSubmit={handleDelete} title="Delete project" bind:open={showDelete} bind:error>
+<Confirm
+    disabled={name !== $project.name}
+    onSubmit={handleDelete}
+    title="Delete project"
+    bind:open={showDelete}
+    bind:error>
     <FormList>
         <p>
             <b>This project will be deleted</b>, along with all of its metadata, stats, and other

@@ -52,6 +52,7 @@
     {placeholder}
     {disabled}
     {isSearchable}
+    {required}
     helper={error}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}

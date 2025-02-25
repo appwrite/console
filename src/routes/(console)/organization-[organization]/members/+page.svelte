@@ -14,9 +14,24 @@
     import { isOwner } from '$lib/stores/roles';
     import Edit from './edit.svelte';
     import { getRoleLabel } from '$lib/stores/billing';
-    import { Drop } from '$lib/components';
-    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Layout, Table, Badge, Button, Icon } from '@appwrite.io/pink-svelte';
+    import {
+        IconDotsHorizontal,
+        IconInfo,
+        IconPencil,
+        IconPlus,
+        IconRefresh,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Layout,
+        Table,
+        Badge,
+        Button,
+        Icon,
+        Typography,
+        Popover,
+        ActionMenu
+    } from '@appwrite.io/pink-svelte';
     import Upgrade from '$lib/components/roles/upgrade.svelte';
 
     export let data: PageData;
@@ -25,7 +40,6 @@
     let showDelete = false;
     let showEdit = false;
     let showDropdown = [];
-    let showPopover = false;
 
     const resend = async (member: Models.Membership) => {
         try {
@@ -54,7 +68,8 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Typography.Title>Members</Typography.Title>
         <ConsoleButton on:mousedown={() => newMemberModal.set(true)} event="create_user" size="s">
             <Icon size="s" icon={IconPlus} slot="start" />
             <span class="text">Invite</span>
@@ -65,28 +80,16 @@
         <svelte:fragment slot="header">
             <Table.Header.Cell>Name</Table.Header.Cell>
             <Table.Header.Cell>Email</Table.Header.Cell>
-            <Table.Header.Cell
-                >Roles
-                <Drop isPopover bind:show={showPopover} display="inline-block">
-                    &nbsp;<button
-                        type="button"
-                        on:click={() => (showPopover = !showPopover)}
-                        aria-label="input tooltip">
-                        <span
-                            class="icon-info"
-                            aria-hidden="true"
-                            style="font-size: var(--icon-size-small)" />
-                    </button>
-                    <svelte:fragment slot="list">
-                        <div
-                            class="dropped card u-max-width-300 u-break-word"
-                            style:--card-border-radius="var(--border-radius-small)"
-                            style:--p-card-padding=".75rem"
-                            style:box-shadow="var(--shadow-large)">
-                            <svelte:component this={Upgrade} />
-                        </div>
-                    </svelte:fragment>
-                </Drop>
+            <Table.Header.Cell>
+                <Layout.Stack direction="row" gap="xxxs" alignItems="center">
+                    Roles
+                    <Popover let:toggle>
+                        <Button.Button icon variant="extra-compact" size="s" on:click={toggle}>
+                            <Icon size="s" icon={IconInfo} />
+                        </Button.Button>
+                        <svelte:component this={Upgrade} slot="tooltip" />
+                    </Popover>
+                </Layout.Stack>
             </Table.Header.Cell>
             <Table.Header.Cell>2FA</Table.Header.Cell>
             {#if $isOwner}
@@ -102,7 +105,7 @@
                             {member.userName ? member.userName : 'n/a'}
                         </span>
                         {#if member.invited && !member.joined}
-                            <Badge type="warning" variant="secondary" content="Pending" />
+                            <Badge type="warning" variant="secondary" content="Pending" size="xs" />
                         {/if}
                     </Layout.Stack>
                 </Table.Cell>
@@ -121,49 +124,41 @@
                 </Table.Cell>
                 {#if $isOwner}
                     <Table.Cell>
-                        <DropList bind:show={showDropdown[index]} placement="bottom-end" noArrow>
-                            <Button.Button
-                                icon
-                                variant="text"
-                                size="s"
-                                aria-label="More options"
-                                on:click={(e) => {
-                                    e.preventDefault();
-                                    showDropdown[index] = !showDropdown[index];
-                                }}>
-                                <Icon icon={IconDotsHorizontal} size="m" />
+                        <Popover let:toggle padding="none" placement="bottom-end">
+                            <Button.Button icon variant="ghost" size="s" on:click={toggle}>
+                                <Icon size="s" icon={IconDotsHorizontal} />
                             </Button.Button>
-                            <svelte:fragment slot="list">
-                                <DropListItem
-                                    icon="pencil"
-                                    on:click={() => {
-                                        selectedMember = member;
-                                        showEdit = true;
-                                        showDropdown[index] = false;
-                                    }}>
-                                    Edit role
-                                </DropListItem>
-                                {#if member.invited && !member.joined}
-                                    <DropListItem
-                                        icon="refresh"
+                            <div style:min-width="232px" slot="tooltip">
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Button
+                                        trailingIcon={IconPencil}
                                         on:click={() => {
-                                            resend(member);
+                                            selectedMember = member;
+                                            showEdit = true;
                                             showDropdown[index] = false;
                                         }}>
-                                        Resend
-                                    </DropListItem>
-                                {/if}
-                                <DropListItem
-                                    icon="trash"
-                                    on:click={() => {
-                                        selectedMember = member;
-                                        showDelete = true;
-                                        showDropdown[index] = false;
-                                    }}>
-                                    Remove
-                                </DropListItem>
-                            </svelte:fragment>
-                        </DropList>
+                                        Edit role
+                                    </ActionMenu.Item.Button>
+                                    {#if member.invited && !member.joined}
+                                        <ActionMenu.Item.Button
+                                            trailingIcon={IconRefresh}
+                                            on:click={() => {
+                                                resend(member);
+                                            }}>
+                                            Resend
+                                        </ActionMenu.Item.Button>
+                                    {/if}
+                                    <ActionMenu.Item.Button
+                                        trailingIcon={IconTrash}
+                                        on:click={() => {
+                                            selectedMember = member;
+                                            showDelete = true;
+                                        }}>
+                                        Remove
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </div>
+                        </Popover>
                     </Table.Cell>
                 {/if}
             </Table.Row>

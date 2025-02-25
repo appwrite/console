@@ -1,31 +1,30 @@
 <script lang="ts">
-    import { DropList, DropListItem } from '$lib/components';
     import { createEventDispatcher } from 'svelte';
     import { targetsById } from './wizard/store';
     import UserTargetsModal from './userTargetsModal.svelte';
     import TopicsModal from './topicsModal.svelte';
     import { topicsById } from './store';
     import type { MessagingProviderType } from '@appwrite.io/console';
+    import { ActionMenu, Popover } from '@appwrite.io/pink-svelte';
 
-    export let showDropdown: boolean;
     export let showUserTargets: boolean;
     export let showTopics: boolean;
     export let providerType: MessagingProviderType = null;
 
     const dispatch = createEventDispatcher();
-
-    $: if (showUserTargets || showTopics) {
-        showDropdown = false;
-    }
 </script>
 
-<DropList bind:show={showDropdown} placement="bottom-end" fixed>
-    <slot />
-    <svelte:fragment slot="list">
-        <DropListItem on:click={() => (showTopics = true)}>Select topics</DropListItem>
-        <DropListItem on:click={() => (showUserTargets = true)}>Select targets</DropListItem>
+<Popover let:toggle placement="bottom-end">
+    <slot {toggle} />
+    <svelte:fragment slot="tooltip">
+        <ActionMenu.Root>
+            <ActionMenu.Item.Button on:click={() => (showTopics = true)}
+                >Select topics</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button on:click={() => (showUserTargets = true)}
+                >Select targets</ActionMenu.Item.Button>
+        </ActionMenu.Root>
     </svelte:fragment>
-</DropList>
+</Popover>
 
 <TopicsModal
     {providerType}

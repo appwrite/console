@@ -99,12 +99,14 @@
                     </PinkButton.Button>
                 </Layout.Stack>
             {/each}
-            <Button
-                text
-                compact
-                disabled={newVariables.some((pair) => !pair.key)}
-                on:click={() => (newVariables = [...newVariables, { key: '', value: '' }])}>
-                <Icon slot="start" icon={IconPlus} />Add variable</Button>
+            <div>
+                <Button
+                    text
+                    compact
+                    disabled={newVariables.some((pair) => !pair.key)}
+                    on:click={() => (newVariables = [...newVariables, { key: '', value: '' }])}>
+                    <Icon slot="start" icon={IconPlus} />Add variable</Button>
+            </div>
         </Layout.Stack>
         <Selector.Checkbox
             size="s"

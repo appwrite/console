@@ -55,10 +55,6 @@
                 $templateConfig.repositoryBehaviour === 'manual'
                     ? undefined
                     : $choices.rootDir || undefined,
-                $template.providerRepositoryId || undefined,
-                $template.providerOwner || undefined,
-                runtimeDetail.providerRootDirectory || undefined,
-                $template.providerVersion || undefined,
                 $templateConfig.specification || undefined
             );
 

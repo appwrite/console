@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { DropList, DropListItem, Empty, Heading, Modal } from '$lib/components';
+    import { Empty, Modal, SearchQuery } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { dependencyStore, domain, typeStore } from './wizard/store';
@@ -10,16 +10,32 @@
     import Create from './create.svelte';
     import Delete from './delete.svelte';
     import Retry from './wizard/retry.svelte';
-    import { Pill } from '$lib/elements';
     import { canWriteRules } from '$lib/stores/roles';
-    import { Layout, Table, Link, Icon } from '@appwrite.io/pink-svelte';
-    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Layout,
+        Table,
+        Link,
+        Icon,
+        Badge,
+        Popover,
+        ActionMenu
+    } from '@appwrite.io/pink-svelte';
+    import {
+        IconCheckCircle,
+        IconDotsHorizontal,
+        IconExclamationCircle,
+        IconPlus,
+        IconRefresh,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/stores';
+    import { base } from '$app/paths';
 
+    export let search: string;
     export let rules: Models.ProxyRuleList;
     export let type: ResourceType;
     export let dependency: Dependencies;
 
-    let showDomainsDropdown = [];
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Models.ProxyRule;
@@ -34,32 +50,37 @@
         wizard.start(Create);
     }
 
-    function openRetry(rule: Models.ProxyRule, index?: number) {
+    function openRetry(rule: Models.ProxyRule) {
         retryError = null;
-        if (index !== undefined) {
-            showDomainsDropdown[index] = false;
-        }
-        domain.set(rule);
+        selectedDomain = rule;
         showRetry = true;
     }
 </script>
 
 {#if $canWriteRules}
-    <Layout.Stack alignItems="flex-end">
-        <Button on:click={openWizard}>
-            <Icon icon={IconPlus} slot="start" size="s" />
-            Create domain
-        </Button>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Layout.Stack direction="row" alignItems="center">
+            <SearchQuery {search} placeholder="Search by name" />
+        </Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Button
+                href={`${base}/project-${$page.params.project}/settings/domains/create`}
+                event="create_user"
+                size="s">
+                <Icon size="s" icon={IconPlus} slot="start" />
+                <span class="text">Create domain</span>
+            </Button>
+        </Layout.Stack>
     </Layout.Stack>
 {/if}
 {#if rules.total}
     <Table.Root>
         <svelte:fragment slot="header">
             <Table.Header.Cell>Name</Table.Header.Cell>
-            <Table.Header.Cell>Verification Status</Table.Header.Cell>
-            <Table.Header.Cell>Certificate Status</Table.Header.Cell>
+            <Table.Header.Cell>Verification status</Table.Header.Cell>
+            <Table.Header.Cell>Certificate status</Table.Header.Cell>
             {#if $canWriteRules}
-                <Table.Header.Cell width="40" />
+                <Table.Header.Cell width="20px" />
             {/if}
         </svelte:fragment>
         {#each rules.rules as domain, index}
@@ -74,46 +95,34 @@
                 <Table.Cell>
                     {#if domain.status === 'created'}
                         <Layout.Stack direction="row" alignItems="center">
-                            <Pill danger>
-                                <span
-                                    class="icon-exclamation-circle u-color-text-danger"
-                                    aria-hidden="true" />
-                                <span class="u-text">failed</span>
-                            </Pill>
-                            <button type="button" on:click={() => openRetry(domain)}>
-                                <span class="link">Retry</span>
-                            </button>
+                            <Badge variant="secondary" content="failed" type="error">
+                                <Icon slot="start" size="s" icon={IconExclamationCircle} />
+                            </Badge>
+                            <Link.Button variant="muted" on:click={() => openRetry(domain)}>
+                                Retry
+                            </Link.Button>
                         </Layout.Stack>
                     {:else}
-                        <Pill success>
-                            <span
-                                class="icon-check-circle u-color-text-success"
-                                aria-hidden="true" />
-                            <p class="text">verified</p>
-                        </Pill>
+                        <Badge content="verified" variant="secondary" type="success">
+                            <Icon slot="start" size="s" icon={IconCheckCircle} />
+                        </Badge>
                     {/if}
                 </Table.Cell>
                 <Table.Cell>
                     {#if domain.status === 'unverified'}
                         <Layout.Stack direction="row" alignItems="center">
-                            <Pill danger>
-                                <span
-                                    class="icon-exclamation-circle u-color-text-danger"
-                                    aria-hidden="true" />
-                                <span class="u-text">failed</span>
-                            </Pill>
-                            <button type="button" on:click={() => openRetry(domain)}>
-                                <span class="link">Retry</span>
-                            </button>
+                            <Badge variant="secondary" content="failed" type="error">
+                                <Icon slot="start" size="s" icon={IconExclamationCircle} />
+                            </Badge>
+                            <Link.Button variant="muted" on:click={() => openRetry(domain)}>
+                                Retry
+                            </Link.Button>
                         </Layout.Stack>
                     {:else if domain.status === 'verified'}
                         <Layout.Stack direction="row" alignItems="center">
-                            <Pill success>
-                                <span
-                                    class="icon-check-circle u-color-text-success"
-                                    aria-hidden="true" />
-                                <span>generated</span>
-                            </Pill>
+                            <Badge content="generated" variant="secondary" type="success">
+                                <Icon slot="start" size="s" icon={IconCheckCircle} />
+                            </Badge>
                             {#if domain.renewAt}
                                 <span class="u-text-color-gray">
                                     Auto-renewal: {toLocaleDate(domain.renewAt)}
@@ -121,47 +130,37 @@
                             {/if}
                         </Layout.Stack>
                     {:else}
-                        <Pill warning>
-                            <span class="icon-clock u-text-color-gray" aria-hidden="true" />
-                            <p class="text">blocked by verification</p>
-                        </Pill>
+                        <Badge content="blocked by verification" variant="secondary" type="warning">
+                            <Icon slot="start" size="s" icon={IconExclamationCircle} />
+                        </Badge>
                     {/if}
                 </Table.Cell>
                 {#if $canWriteRules}
                     <Table.Cell>
-                        <DropList
-                            bind:show={showDomainsDropdown[index]}
-                            placement="bottom-start"
-                            noArrow>
-                            <Button
-                                text
-                                icon
-                                ariaLabel="more options"
-                                on:click={() =>
-                                    (showDomainsDropdown[index] = !showDomainsDropdown[index])}>
+                        <Popover let:toggle placement="bottom-start" padding="none">
+                            <Button text icon ariaLabel="more options" on:click={toggle}>
                                 <Icon icon={IconDotsHorizontal} size="s" />
                             </Button>
-                            <svelte:fragment slot="list">
+                            <ActionMenu.Root slot="tooltip">
                                 {#if domain.status !== 'verified'}
-                                    <DropListItem
-                                        icon="refresh"
-                                        on:click={() => openRetry(domain, index)}>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconRefresh}
+                                        on:click={() => openRetry(domain)}>
                                         {domain.status === 'unverified'
                                             ? 'Retry generation'
                                             : 'Retry verification'}
-                                    </DropListItem>
+                                    </ActionMenu.Item.Button>
                                 {/if}
-                                <DropListItem
-                                    icon="trash"
+                                <ActionMenu.Item.Button
+                                    leadingIcon={IconTrash}
                                     on:click={() => {
                                         selectedDomain = domain;
                                         showDelete = true;
-                                        showDomainsDropdown[index] = false;
                                     }}>
                                     Delete
-                                </DropListItem>
-                            </svelte:fragment>
-                        </DropList>
+                                </ActionMenu.Item.Button>
+                            </ActionMenu.Root>
+                        </Popover>
                     </Table.Cell>
                 {/if}
             </Table.Row>
@@ -176,11 +175,11 @@
 {/if}
 
 <Delete bind:showDelete bind:selectedDomain {dependency} />
-<Modal bind:show={showRetry} bind:error={retryError}>
-    <svelte:fragment slot="title">
-        Retry {$domain.status === 'unverified' ? 'certificate generation' : 'verification'}
-    </svelte:fragment>
-    <Retry on:error={(e) => (retryError = e.detail)} />
+<Modal
+    bind:show={showRetry}
+    bind:error={retryError}
+    title={`Retry ${selectedDomain?.status === 'unverified' ? 'certificate generation' : 'verification'}`}>
+    <Retry domain={selectedDomain} on:error={(e) => (retryError = e.detail)} />
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showRetry = false)}>Close</Button>
     </svelte:fragment>

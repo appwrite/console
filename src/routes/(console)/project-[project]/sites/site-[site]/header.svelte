@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Tab, Tabs } from '$lib/components';
+    import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { site } from './store';
@@ -45,6 +45,7 @@
 <Cover>
     <svelte:fragment slot="header">
         <CoverTitle href={`${base}/project-${projectId}/sites`}>{$site.name}</CoverTitle>
+        <Id value={$site?.$id} event="team">{$site?.$id}</Id>
     </svelte:fragment>
 
     <Tabs let:root>

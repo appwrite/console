@@ -1,12 +1,12 @@
 <script lang="ts" context="module">
-    import SearchDark from '$lib/images/search-dark.svg';
-    import SearchLight from '$lib/images/search-light.svg';
     import { wizard } from '$lib/stores/wizard';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateReactNative from './createReactNative.svelte';
+    import CreateWeb from './createWeb.svelte';
     import { createPlatform, versions } from './wizard/store';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export enum Platform {
         Web,
@@ -19,6 +19,10 @@
     export async function addPlatform(type: Platform) {
         await versions.load();
         createPlatform.reset();
+        trackEvent('onboarding_hub_platform', {
+            platform: platforms[type],
+            state: 'add'
+        });
         wizard.start(platforms[type]);
     }
 
@@ -34,13 +38,19 @@
             key: key,
             type: type
         });
+        trackEvent('onboarding_hub_platform', {
+            platform: platforms[platform],
+            state: 'continue'
+        });
         wizard.start(platforms[platform], null, 1, {
             isPlatformCreated: true,
-            platform: type
+            platform: type,
+            key: key
         });
     }
 
     const platforms = {
+        [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
         [Platform.Apple]: CreateApple,
@@ -51,15 +61,29 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { canWritePlatforms } from '$lib/stores/roles';
     import { setOverviewAction } from '../context';
-    import { Table } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Card,
+        Empty,
+        Icon,
+        Layout,
+        Popover,
+        Table
+    } from '@appwrite.io/pink-svelte';
     import Action from './action.svelte';
+    import {
+        IconAndroid,
+        IconApple,
+        IconCode,
+        IconFlutter,
+        IconReact
+    } from '@appwrite.io/pink-icons-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let data: PageData;
 
@@ -79,22 +103,21 @@
         'react-native-ios' = 'iOS',
         'web' = 'Web'
     }
-    let showDropdownEmpty = false;
     const path = `${base}/project-${$page.params.project}/overview/platforms`;
 
-    const getPlatformInfo = (platform: string) => {
+    function getPlatformInfo(platform: string): ComponentType {
         if (platform.includes('flutter')) {
-            return 'color/flutter';
+            return IconFlutter;
         } else if (platform.includes('react-native')) {
-            return 'color/react';
+            return IconReact;
         } else if (platform.includes('apple')) {
-            return 'color/apple';
+            return IconApple;
         } else if (platform.includes('android')) {
-            return 'color/android';
+            return IconAndroid;
         } else {
-            return 'unknown';
+            return IconCode;
         }
-    };
+    }
 
     setOverviewAction(Action);
 </script>
@@ -112,7 +135,10 @@
                     {platform.name}
                 </Table.Cell>
                 <Table.Cell>
-                    {PlatformTypes[platform.type]}
+                    <Layout.Stack direction="row" gap="s" alignItems="center">
+                        <Icon icon={getPlatformInfo(platform.type)} />
+                        {PlatformTypes[platform.type]}
+                    </Layout.Stack>
                 </Table.Cell>
                 <Table.Cell>
                     {platform.$updatedAt ? toLocaleDate(platform.$updatedAt) : 'never'}
@@ -121,49 +147,49 @@
         {/each}
     </Table.Root>
 {:else}
-    <article class="card u-grid u-cross-center u-width-full-line common-section">
-        <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
-            {#if $app.themeInUse === 'dark'}
-                <img src={SearchDark} alt="empty" aria-hidden="true" />
-            {:else}
-                <img src={SearchLight} alt="empty" aria-hidden="true" />
-            {/if}
-            <slot>
-                <div class="u-text-center">
-                    <Heading size="7" tag="h4">Create a platform to get started.</Heading>
-                    <p class="body-text-2 u-bold u-margin-block-start-4">
-                        Need a hand? Learn more in our documentation.
-                    </p>
-                </div>
-                <div class="u-flex u-gap-16 u-main-center">
-                    <Button external href="https://appwrite.io/docs/sdks" text>
-                        Documentation
-                    </Button>
-                    <DropList bind:show={showDropdownEmpty} placement="bottom-start">
-                        {#if $canWritePlatforms}
-                            <Button
-                                secondary
-                                on:click={() => (showDropdownEmpty = !showDropdownEmpty)}>
-                                <span class="text">Add platform</span>
-                            </Button>
-                        {/if}
-                        <svelte:fragment slot="list">
-                            <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
+    <Card.Base padding="none">
+        <Empty
+            title="Add a platform to get started."
+            description="Need a hand? Learn more in our documentation.">
+            <svelte:fragment slot="actions">
+                <Button external href="https://appwrite.io/docs/sdks" text>Documentation</Button>
+                <Popover let:toggle padding="none" placement="bottom-end">
+                    {#if $canWritePlatforms}
+                        <Button secondary on:click={toggle}>
+                            <span class="text">Add platform</span>
+                        </Button>
+                    {/if}
+                    <svelte:fragment slot="tooltip">
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.Web)}
+                                leadingIcon={IconCode}>
+                                Web
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.Flutter)}
+                                leadingIcon={IconFlutter}>
                                 Flutter
-                            </DropListItem>
-                            <DropListItem on:click={() => addPlatform(Platform.Android)}>
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.Android)}
+                                leadingIcon={IconAndroid}>
                                 Android
-                            </DropListItem>
-                            <DropListItem on:click={() => addPlatform(Platform.Apple)}>
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.Apple)}
+                                leadingIcon={IconApple}>
                                 Apple
-                            </DropListItem>
-                            <DropListItem on:click={() => addPlatform(Platform.ReactNative)}>
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={() => addPlatform(Platform.ReactNative)}
+                                leadingIcon={IconReact}>
                                 React Native
-                            </DropListItem>
-                        </svelte:fragment>
-                    </DropList>
-                </div>
-            </slot>
-        </div>
-    </article>
+                            </ActionMenu.Item.Button>
+                        </ActionMenu.Root>
+                    </svelte:fragment>
+                </Popover>
+            </svelte:fragment>
+        </Empty>
+    </Card.Base>
 {/if}

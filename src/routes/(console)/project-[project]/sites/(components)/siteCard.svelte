@@ -24,6 +24,7 @@
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
+    import { getApiEndpoint } from '$lib/stores/sdk';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList = { total: 0, rules: [] };
@@ -34,6 +35,27 @@
         deployment.domain ?? (proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : undefined);
 
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
+
+    function getScreenshot(theme: string, deployment: Models.Deployment) {
+        if (theme === 'dark') {
+            return deployment.screenshotDark
+                ? getFilePreview(deployment.screenshotDark)
+                : `${base}/images/sites/screenshot-placeholder-dark.svg`;
+        } else {
+            return deployment.screenshotLight
+                ? getFilePreview(deployment.screenshotLight)
+                : `${base}/images/sites/screenshot-placeholder-light.svg`;
+        }
+    }
+
+    function getFilePreview(fileId: string) {
+        // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
+        const endpoint = getApiEndpoint();
+        return (
+            endpoint +
+            `/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`
+        );
+    }
 </script>
 
 <Card padding="s" radius="m">
@@ -45,10 +67,7 @@
                 radius="s"
                 ratio="16/9"
                 style="width: 100%; align-self: start"
-                src={deployment?.preview ||
-                    ($app.themeInUse === 'dark'
-                        ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                        : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                src={getScreenshot($app.themeInUse, deployment)}
                 alt="Screenshot" />
 
             <Layout.Stack gap="xl">
@@ -84,7 +103,7 @@
                     </Layout.Stack>
                     {#if siteUrl && !hideQRCode}
                         <Button icon secondary on:click={() => (show = true)}>
-                            <Icon icon={IconQrcode} />
+                            <Icon icon={IconQrcode} size="l" />
                         </Button>
                     {/if}
                 </Layout.Stack>
@@ -114,7 +133,7 @@
                         </Link>
                     </Layout.Stack>
                 {/if}
-                <Layout.Stack gap="xl" direction="row" wrap="wrap">
+                <Layout.Stack gap="xxl" direction="row" wrap="wrap">
                     {#if deployment?.buildTime}
                         <Layout.Stack gap="xxs" inline>
                             <Typography.Text
@@ -208,7 +227,7 @@
 <style lang="scss">
     .card-grid {
         display: grid;
-        grid-template-columns: 45% 55%;
+        grid-template-columns: 45% auto;
         // justify-content: center;
         align-items: center;
         gap: var(--gap-xl);

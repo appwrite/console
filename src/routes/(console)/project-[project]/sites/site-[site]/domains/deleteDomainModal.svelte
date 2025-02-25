@@ -34,7 +34,7 @@
     {#if selectedDomain}
         <p data-private>
             Are you sure you want to delete <b>{selectedDomain.domain}</b>? You will no longer be
-            able to execute your function by visiting this domain.
+            able to view your site by visiting this domain.
         </p>
     {/if}
     <InputCheckbox
