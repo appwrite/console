@@ -58,7 +58,7 @@
             <div></div>
 
             <Step.List>
-                <Step.Item state="current" shortLine={true}>
+                <Step.Item state="current" shortLine={true} badgeText="Next steps">
                     <Layout.Stack>
                         <Layout.Grid columns={!data.site.providerRepositoryId ? 4 : 3} columnsS={1}>
                             {#if !data.site.providerRepositoryId}
