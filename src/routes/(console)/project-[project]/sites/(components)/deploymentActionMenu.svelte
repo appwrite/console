@@ -43,7 +43,7 @@
         <Icon size="s" icon={IconDotsHorizontal} />
     </Button>
     <svelte:fragment slot="tooltip" let:toggle>
-        <ActionMenu.Root>
+        <ActionMenu.Root noPadding>
             <ActionMenu.Item.Button
                 leadingIcon={IconRefresh}
                 on:click={(e) => {
