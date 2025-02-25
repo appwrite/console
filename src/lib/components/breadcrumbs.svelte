@@ -186,7 +186,7 @@
                 >{#if selectedOrg?.tierName}<Badge
                         variant="secondary"
                         content={selectedOrg?.tierName} />{/if}</span>
-            <Icon icon={IconChevronDown} size="s" />
+            <Icon icon={IconChevronDown} size="s" color="--color-fgcolor-neutral-secondary" />
         </button>
     {:else}
         <button
@@ -200,7 +200,7 @@
                 >{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
-            <Icon icon={IconChevronDown} size="s" />
+            <Icon icon={IconChevronDown} size="s" color="--color-fgcolor-neutral-secondary" />
         </button>
     {/if}
 

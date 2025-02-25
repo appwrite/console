@@ -43,4 +43,19 @@
             max-width: 1200px;
         }
     }
+
+    :global(main:has(.sub-navigation) .console-container) {
+        @media (min-width: 1280px) {
+            margin-inline: auto;
+            max-width: 833px;
+        }
+        @media (min-width: 1440px) {
+            margin-inline: auto;
+            max-width: 977px;
+        }
+        @media (min-width: 1728px) {
+            margin-inline: auto;
+            max-width: 1033px;
+        }
+    }
 </style>

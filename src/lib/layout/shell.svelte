@@ -212,7 +212,7 @@
     :global(main:has(.sub-navigation)) {
         .main-content {
             @media (min-width: 1024px) {
-                padding-left: 200px;
+                padding-left: 255px;
             }
         }
     }
