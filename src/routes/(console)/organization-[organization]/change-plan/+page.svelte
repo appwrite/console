@@ -108,11 +108,6 @@
                 await validate(organizationId, invites);
             }
         }
-        if ($currentPlan?.$id === BillingPlan.SCALE) {
-            billingPlan = BillingPlan.SCALE;
-        } else {
-            billingPlan = BillingPlan.PRO;
-        }
 
         selfService = $currentPlan?.selfService ?? true;
     });

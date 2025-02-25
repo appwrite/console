@@ -14,7 +14,7 @@
     let isCurrentPlanShown: boolean = false;
 
     function currentPlanExists() {
-        let planFound = $plansInfo.values().find((plan) => plan.$id == $currentPlan.$id);
+        let planFound = $plansInfo.values().find((plan) => plan.$id == $currentPlan?.$id);
         if (planFound) {
             return true;
         }
@@ -26,13 +26,13 @@
 
 {#if billingPlan}
     <ul class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-8 {classes}">
-        {#if !isCurrentPlanShown}
+        {#if !isCurrentPlanShown && $currentPlan}
             <li>
                 <LabelCard
                     name="plan"
                     bind:group={billingPlan}
                     disabled={($currentPlan.$id === BillingPlan.FREE && anyOrgFree) ||
-                        !$currentPlan.selfService}
+                        (!$currentPlan?.selfService && !isNewOrg)}
                     value={$currentPlan.$id}
                     tooltipShow={$currentPlan.$id === BillingPlan.FREE && anyOrgFree}
                     tooltipText={$currentPlan.$id === BillingPlan.FREE
@@ -64,7 +64,7 @@
                     name="plan"
                     bind:group={billingPlan}
                     disabled={(plan.$id === BillingPlan.FREE && anyOrgFree) ||
-                        !$currentPlan.selfService}
+                        (!$currentPlan?.selfService && !isNewOrg)}
                     value={plan.$id}
                     tooltipShow={plan.$id === BillingPlan.FREE && anyOrgFree}
                     tooltipText={plan.$id === BillingPlan.FREE
