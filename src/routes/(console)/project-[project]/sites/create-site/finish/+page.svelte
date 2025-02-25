@@ -5,7 +5,6 @@
     import { Layout, Typography, Icon, Lights, Step, Card } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import Check from './(components)/check.svelte';
-    import type { PageData } from './$types';
     import Button from '$lib/elements/forms/button.svelte';
     import OpenOnMobileModal from '../../(components)/openOnMobileModal.svelte';
     import SiteCard from '../../(components)/siteCard.svelte';
@@ -14,7 +13,7 @@
     import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
     import { protocol } from '$routes/(console)/store';
 
-    export let data: PageData;
+    export let data;
 
     let showConnectRepositry = false;
     let showOpenOnMobile = false;
@@ -45,9 +44,12 @@
                     </Layout.Stack>
                 </Layout.Stack>
                 <Lights style="top: -100px; height:200px; width: 50%" />
-                <SiteCard deployment={data.deployment} hideQRCode>
+                <SiteCard
+                    deployment={data.deployment}
+                    proxyRuleList={data.proxyRuleList}
+                    hideQRCode>
                     <svelte:fragment slot="footer">
-                        <Button href={`${$protocol}${data.deployment.domain}`} external>
+                        <Button href={`${$protocol}${data.proxyRuleList.rules[0].domain}`} external>
                             Visit site
                         </Button>
                     </svelte:fragment>

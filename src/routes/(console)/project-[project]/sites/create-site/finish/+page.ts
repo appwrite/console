@@ -7,16 +7,16 @@ export const load = async ({ url, depends }) => {
     depends(Dependencies.SITE);
     if (!url.searchParams.has('site')) error(404, 'Deployment is not optional');
     const siteId = url.searchParams.get('site');
-    const site = await sdk.forProject.sites.get(siteId);
-    const deployment = await sdk.forProject.sites.getDeployment(siteId, site.deploymentId);
-    const { rules } = await sdk.forProject.proxy.listRules([
-        Query.equal('resourceId', site.$id),
-        Query.equal('resourceType', 'site'),
-        Query.limit(1)
+    const [site, proxyRuleList] = await Promise.all([
+        sdk.forProject.sites.get(siteId),
+        sdk.forProject.proxy.listRules([
+            Query.equal('resourceId', siteId),
+            Query.equal('resourceType', 'site')
+        ])
     ]);
     return {
         site,
-        deployment,
-        rule: rules[0]
+        deployment: await sdk.forProject.sites.getDeployment(siteId, site.deploymentId),
+        proxyRuleList
     };
 };

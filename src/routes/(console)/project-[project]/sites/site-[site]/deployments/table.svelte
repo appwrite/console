@@ -13,7 +13,6 @@
     import Cancel from './cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
     import { Layout, Status, Table } from '@appwrite.io/pink-svelte';
-
     import { columns } from './store';
     import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
     import { deploymentStatusConverter } from '../store';
