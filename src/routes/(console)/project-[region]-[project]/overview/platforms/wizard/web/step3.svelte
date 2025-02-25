@@ -15,12 +15,8 @@ client
 <WizardStep>
     <svelte:fragment slot="title">Initialize SDK</svelte:fragment>
 
-    <h2 class="heading-level-7">Initialize your SDK</h2>
-    <p>
-        Initialize your SDK by pointing the client to your Appwrite project using your <Id
-            value={project}>Project ID</Id
-        >.
-    </p>
+    <p>Initialize your SDK by pointing the client to your Appwrite project.</p>
+
     <div class="u-margin-block-start-16">
         <Code
             label="Web SDK"

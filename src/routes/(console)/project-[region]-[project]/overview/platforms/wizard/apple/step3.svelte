@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { isCloud } from '$lib/system';
     import { WizardStep } from '$lib/layout';
-    import { Alert, Code, Id } from '$lib/components';
+    import { Alert, Code } from '$lib/components';
     import { getProjectEndpoint } from '$lib/helpers/project';
 
     const project = $page.params.project;
@@ -20,12 +20,8 @@ let client = Client()
 <WizardStep>
     <svelte:fragment slot="title">Initialize</svelte:fragment>
 
-    <h2 class="heading-level-7">Initialize your SDK</h2>
-    <p>
-        Initialize your SDK by pointing the client to your Appwrite project using your
-        <Id value={project}>Project ID</Id>
-        .
-    </p>
+    <p>Initialize your SDK by pointing the client to your Appwrite project.</p>
+
     <Code label="Apple SDK" labelIcon="apple" language="swift" {code} withCopy withLineNumbers />
     <p class="u-margin-block-start-24">
         Before sending any API calls to your new Appwrite project, make sure your device or emulator

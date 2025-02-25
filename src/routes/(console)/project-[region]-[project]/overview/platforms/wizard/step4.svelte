@@ -6,20 +6,14 @@
     import { getProjectEndpoint } from '$lib/helpers/project';
 
     const project = $page.params.project;
-    $: isFirstProject = $page.data.platforms.total === 0;
 </script>
 
 <WizardStep>
     <svelte:fragment slot="title">All set! Your project is ready to go</svelte:fragment>
     <FormList gap={16}>
         <p>
-            {#if isFirstProject}
-                Congratulations on adding the first platform to your project!
-            {:else}
-                Congratulations on adding another platform to your project!
-            {/if}
-
-            Use the Project ID and API endpoint in your project to get started:
+            You've successfully added a platform to your project. Access Appwrite services using
+            this project's API Endpoint and Project ID:
         </p>
 
         <CopyInput label="Project ID" showLabel={true} value={project} />

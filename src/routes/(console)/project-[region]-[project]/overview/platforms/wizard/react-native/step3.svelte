@@ -3,7 +3,7 @@
     import { isCloud } from '$lib/system';
     import { WizardStep } from '$lib/layout';
     import { createPlatform } from '../store';
-    import { Alert, Code, Id } from '$lib/components';
+    import { Alert, Code } from '$lib/components';
     import { getProjectEndpoint } from '$lib/helpers/project';
 
     const project = $page.params.project;
@@ -21,11 +21,8 @@ const client = new Client()
 <WizardStep>
     <svelte:fragment slot="title">Initialize</svelte:fragment>
 
-    <h2 class="heading-level-7">Initialize your SDK</h2>
-    <p data-private>
-        Initialize your SDK by pointing the client to your Appwrite project using your <Id
-            value={project}>Project ID</Id>
-    </p>
+    <p>Initialize your SDK by pointing the client to your Appwrite project.</p>
+
     <div class="u-margin-block-start-16">
         <Code
             label="React Native"

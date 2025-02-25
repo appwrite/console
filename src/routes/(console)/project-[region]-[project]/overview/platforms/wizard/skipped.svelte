@@ -22,8 +22,8 @@
 
     export async function onPlatformSetupFinish(event: CustomEvent): Promise<void> {
         const type = event.type;
-        const skipped = event.detail.skipped ?? false;
-        const optional = event.detail.optional ?? false;
+        const skipped = event.detail?.skipped ?? false;
+        const optional = event.detail?.optional ?? false;
 
         const isSkipped = type === 'finish' ? skipped : type === 'exit' ? optional : false;
 
@@ -53,8 +53,8 @@
     title="Skipping optional steps">
     <FormList>
         <p>
-            The platform will be added to your project. Use the Project ID and API endpoint in your
-            project to get started:
+            The platform will be added to your project. Access Appwrite services using this
+            project's API Endpoint and Project ID:
         </p>
 
         <CopyInput label="Project ID" showLabel={true} value={project} />
