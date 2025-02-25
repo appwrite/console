@@ -4,8 +4,10 @@
     import { showCreate } from '../store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { Icon, Sidebar } from '@appwrite.io/pink-svelte';
-    import { IconDatabase, IconTable } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Sidebar, Navbar, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconDatabase, IconTable } from '@appwrite.io/pink-icons-svelte';
+    import { isTabletViewport } from '$lib/stores/viewport';
+    import { BottomSheet } from '$lib/components';
 
     $: data = $page.data as PageData;
     $: project = $page.params.project;
@@ -15,52 +17,89 @@
     $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
         a.$createdAt > b.$createdAt ? -1 : 1
     );
+
+    $: selectedCollection = sortedCollections.find((collection) => collection.$id === collectionId);
+
+    let openBottomSheet = false;
 </script>
 
-<Sidebar.Base state="open" resizable={false}>
-    <section class="list-container" slot="top" style:width="100%">
-        <a
-            class="u-flex u-cross-center u-sep-block-end u-padding-block-12 is-not-desktop"
-            href={`${base}/project-${project}/databases/database-${databaseId}?openNavbar=true`}>
-            <span class="icon-cheveron-left" aria-hidden="true" />
-            <h5 class="eyebrow-heading-3 u-margin-inline-auto">Collections</h5>
-        </a>
-        <h5
-            class="u-flex u-cross-center body-text-2 u-gap-8 u-padding-inline-12 u-padding-block-8 is-not-mobile is-selected">
-            <Icon icon={IconDatabase} size="s" color="light-neutral" />
-            {data.database.name}
-        </h5>
-        <div class="collection-content">
-            {#if data?.allCollections?.total}
-                <ul
-                    class="drop-list u-padding-inline-8 u-margin-inline-start-20 u-margin-block-start-8">
-                    {#each sortedCollections as collection}
-                        {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
-                        {@const isSelected = collectionId === collection.$id}
-                        <li class:is-selected={isSelected}>
-                            <a
-                                class="u-padding-block-4 u-padding-inline-12 u-flex u-cross-center u-gap-8"
-                                {href}>
-                                <Icon icon={IconTable} size="s" />
-                                <span class="text collection-name" data-private
-                                    >{collection.name}</span>
-                            </a>
-                        </li>
-                    {/each}
-                </ul>
-            {/if}
+{#if !$isTabletViewport}
+    <Sidebar.Base state="open" resizable={false}>
+        <section class="list-container" slot="top" style:width="100%">
+            <h5
+                class="u-flex u-cross-center body-text-2 u-gap-8 u-padding-inline-12 u-padding-block-8 is-not-mobile is-selected">
+                <Icon icon={IconDatabase} size="s" color="light-neutral" />
+                {data.database.name}
+            </h5>
+            <div class="collection-content">
+                {#if data?.allCollections?.total}
+                    <ul
+                        class="drop-list u-padding-inline-8 u-margin-inline-start-20 u-margin-block-start-8">
+                        {#each sortedCollections as collection}
+                            {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
+                            {@const isSelected = collectionId === collection.$id}
+                            <li class:is-selected={isSelected}>
+                                <a
+                                    class="u-padding-block-4 u-padding-inline-12 u-flex u-cross-center u-gap-8"
+                                    {href}>
+                                    <Icon icon={IconTable} size="s" />
+                                    <span class="text collection-name" data-private
+                                        >{collection.name}</span>
+                                </a>
+                            </li>
+                        {/each}
+                    </ul>
+                {/if}
+            </div>
+            <button
+                class="new-button body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-8 is-full-width"
+                on:click={() => {
+                    $showCreate = true;
+                    $showSubNavigation = false;
+                }}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create collection</span>
+            </button>
+        </section>
+    </Sidebar.Base>
+{:else}
+    <Navbar.Base>
+        <div slot="left">
+            <Layout.Stack direction="row" alignItems="center" gap="s">
+                <Icon icon={IconDatabase} size="s" color="--neutral-300" />
+                <Typography.Text color="--color-fgcolor-neutral-secondary"
+                    >{data.database.name}</Typography.Text>
+                <span style:margin-left="8px">/</span>
+                <button
+                    type="button"
+                    class="trigger"
+                    aria-label="Open collections"
+                    on:click={() => {
+                        openBottomSheet = !openBottomSheet;
+                    }}>
+                    <span class="orgName">{selectedCollection.name}</span>
+                    <Icon icon={IconChevronDown} size="s" />
+                </button>
+            </Layout.Stack>
         </div>
-        <button
-            class="new-button body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-8 is-full-width"
-            on:click={() => {
-                $showCreate = true;
-                $showSubNavigation = false;
-            }}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create collection</span>
-        </button>
-    </section>
-</Sidebar.Base>
+    </Navbar.Base>
+{/if}
+{#if openBottomSheet}
+    <BottomSheet.Menu
+        bind:isOpen={openBottomSheet}
+        menu={{
+            top: {
+                items: sortedCollections.slice(0, 10).map((collection) => {
+                    return {
+                        name: collection.name,
+                        leadingIcon: IconTable,
+                        href: `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`
+                    };
+                })
+            },
+            bottom: undefined
+        }}></BottomSheet.Menu>
+{/if}
 
 <style lang="scss">
     .list-container {
@@ -119,5 +158,28 @@
 
     .new-button {
         flex-shrink: 0;
+    }
+
+    :global(.sub-navigation header) {
+        top: 48px !important;
+    }
+    .trigger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-1, 2px) var(--space-2, 4px) var(--space-1, 2px) var(--space-3, 6px);
+        gap: var(--space-2, 4px);
+        transition: color 0.2s ease;
+
+        color: var(--color-fgcolor-neutral-secondary);
+        border-radius: var(--corner-radius-medium, 8px);
+
+        cursor: default;
+        /* Body text/level 2 Regular */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 21px */
     }
 </style>

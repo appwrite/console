@@ -323,10 +323,14 @@
 <style lang="scss">
     .left {
         display: flex;
-        gap: 17px;
+        gap: 8px;
         align-items: center;
         flex-shrink: 0;
         max-width: 100%;
+
+        @media (min-width: 1024px) {
+            gap: 17px;
+        }
     }
 
     .right {

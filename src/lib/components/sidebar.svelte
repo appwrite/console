@@ -551,19 +551,23 @@
     }
 
     .sub-navigation {
-        width: 400px;
-        height: calc(100vh - 48px);
-        display: flex;
-        justify-content: flex-end;
-        background-color: var(--color-bgcolor-neutral-primary, #fff);
-        z-index: 14;
-        position: fixed;
-        top: 48px;
-        transition: width 0.2s linear;
+        margin-top: 48px;
+        @media (min-width: 1024px) {
+            margin-top: 0;
+            width: 400px;
+            height: calc(100vh - 48px);
+            display: flex;
+            justify-content: flex-end;
+            background-color: var(--color-bgcolor-neutral-primary, #fff);
+            z-index: 14;
+            position: fixed;
+            top: 48px;
+            transition: width 0.2s linear;
 
-        &.icons {
-            width: 266px;
-            transition: width 0.3s linear;
+            &.icons {
+                width: 266px;
+                transition: width 0.3s linear;
+            }
         }
     }
 </style>
