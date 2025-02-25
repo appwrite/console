@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Id, Trim } from '$lib/components';
+    import { Id } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
@@ -61,14 +61,6 @@
                                     status={deploymentStatusConverter(status)}
                                     label={capitalize(status)} />
                             {/if}
-                        </Table.Cell>
-                    {:else if column.id === 'domains'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            <div style="max-width: 150px">
-                                <Trim>
-                                    {deployment.domain}
-                                </Trim>
-                            </div>
                         </Table.Cell>
                     {:else if column.id === 'type'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>

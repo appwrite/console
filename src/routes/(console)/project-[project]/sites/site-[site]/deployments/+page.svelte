@@ -104,7 +104,7 @@
 
                         <Filters query={data.query} {columns} clearOnClick>
                             <svelte:fragment slot="mobile" let:disabled let:toggle>
-                                <Tag on:click={toggle} {disabled}>
+                                <Tag size="m" on:click={toggle} {disabled}>
                                     <span class="text">More filters</span>
                                     <span class="icon-cheveron-down" />
                                 </Tag>

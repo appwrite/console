@@ -16,16 +16,7 @@ export const columns = writable<Column[]>([
         elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed'],
         filter: false
     },
-    {
-        id: 'domains',
-        title: 'Domains',
-        type: 'string',
-        show: true,
-        width: 150,
-        array: true,
-        format: 'string',
-        filter: false
-    },
+
     {
         id: 'buildTime',
         title: 'Build time',

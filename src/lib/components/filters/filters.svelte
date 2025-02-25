@@ -14,8 +14,8 @@
         ValidOperators
     } from './store';
     import { createEventDispatcher } from 'svelte';
-    import { Icon, Popover } from '@appwrite.io/pink-svelte';
-    import { IconFilter } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
+    import { IconFilter, IconFilterLine } from '@appwrite.io/pink-icons-svelte';
 
     export let query = '[]';
     export let columns: Writable<Column[]>;
@@ -119,7 +119,7 @@
 <div class="is-not-mobile">
     <Popover let:toggle placement="bottom-start">
         <Button secondary on:click={toggle} {disabled}>
-            <Icon icon={IconFilter} slot="start" size="s" />
+            <Icon icon={IconFilterLine} slot="start" size="s" />
             Filters
             {#if applied > 0}
                 <span class="inline-tag">
@@ -128,7 +128,7 @@
             {/if}
         </Button>
         <svelte:fragment slot="tooltip">
-            <div class="dropped card">
+            <Layout.Stack gap="s">
                 {#if displayQuickFilters}
                     <slot name="quick" />
                 {:else}
@@ -143,7 +143,6 @@
                         on:apply={afterApply}
                         on:clear={() => (applied = 0)} />
                 {/if}
-                <hr />
                 <div
                     class="u-flex u-cross-center u-margin-block-start-16"
                     class:u-main-end={!quickFilters}
@@ -167,7 +166,7 @@
                         <Button size="s" on:click={apply} disabled={isButtonDisabled}>Apply</Button>
                     </div>
                 </div>
-            </div>
+            </Layout.Stack>
         </svelte:fragment>
     </Popover>
 </div>

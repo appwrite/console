@@ -16,6 +16,7 @@
 
     export let site: Models.Site;
     export let deployment: Models.Deployment;
+    export let hideTitle = false;
 
     let { status, buildLogs } = deployment;
 
@@ -76,32 +77,34 @@
 </script>
 
 <Layout.Stack gap="xl">
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center" gap="s" inline>
-            <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
-                Deployment logs
-            </Typography.Text>
-            <Badge
-                content={capitalize(status)}
-                size="xs"
-                variant="secondary"
-                type={badgeType(status)} />
+    {#if !hideTitle}
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Layout.Stack direction="row" alignItems="center" gap="s" inline>
+                <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                    Deployment logs
+                </Typography.Text>
+                <Badge
+                    content={capitalize(status)}
+                    size="xs"
+                    variant="secondary"
+                    type={badgeType(status)} />
+            </Layout.Stack>
+            <Layout.Stack direction="row" alignItems="center" inline>
+                {#if ['processing', 'building'].includes(status)}
+                    <Typography.Code color="--color-fgcolor-neutral-secondary">
+                        <Layout.Stack direction="row" alignItems="center" inline>
+                            <p use:timer={{ start: deployment.$createdAt }} />
+                            <Spinner size="s" />
+                        </Layout.Stack>
+                    </Typography.Code>
+                {:else}
+                    <Typography.Code color="--color-fgcolor-neutral-secondary">
+                        {formatTimeDetailed(deployment.buildTime)}
+                    </Typography.Code>
+                {/if}
+            </Layout.Stack>
         </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" inline>
-            {#if ['processing', 'building'].includes(status)}
-                <Typography.Code color="--color-fgcolor-neutral-secondary">
-                    <Layout.Stack direction="row" alignItems="center" inline>
-                        <p use:timer={{ start: deployment.$createdAt }} />
-                        <Spinner size="s" />
-                    </Layout.Stack>
-                </Typography.Code>
-            {:else}
-                <Typography.Code color="--color-fgcolor-neutral-secondary">
-                    {formatTimeDetailed(deployment.buildTime)}
-                </Typography.Code>
-            {/if}
-        </Layout.Stack>
-    </Layout.Stack>
+    {/if}
     {#key buildLogs}
         <Logs logs={buildLogs || 'No logs available'} bind:theme={$app.themeInUse} />
     {/key}

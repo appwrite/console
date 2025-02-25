@@ -14,7 +14,7 @@
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { TagList } from '.';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     // We cast to any to not cause type errors in the input components
@@ -71,7 +71,7 @@
 
 <div>
     <form on:submit|preventDefault={addFilterAndReset}>
-        <ul class="selects u-flex u-gap-8 u-margin-block-start-16 u-flex-vertical-mobile">
+        <Layout.Stack gap="s" direction="row" alignItems="flex-start">
             <InputSelect
                 id="column"
                 options={$columns
@@ -88,7 +88,7 @@
                 options={operatorsForColumn}
                 placeholder="Select operator"
                 bind:value={operatorKey} />
-        </ul>
+        </Layout.Stack>
         {#if column && operator && !operator?.hideInput}
             {#if column?.array}
                 <FormList class="u-margin-block-start-8">

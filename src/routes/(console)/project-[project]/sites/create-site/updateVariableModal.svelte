@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, InputPassword } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
     import { InputText } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
@@ -40,14 +40,13 @@
 
 <Modal bind:show onSubmit={handleVariable} title="Update variable">
     <span slot="description">
-        Set the environment variables or secret that will be passed to your site. Global variables
-        can be set in <Link
+        Update the environment variable for your site. Global variables can be set in <Link
             variant="muted"
             href={`${base}/project-${$page.params.project}/settings`}>project settings</Link
         >.
     </span>
     <Layout.Stack gap="xxl">
-        <Layout.Stack>
+        <Layout.Stack direction="row">
             <InputText
                 id="key"
                 label="Key"
@@ -56,12 +55,7 @@
                 required
                 autofocus
                 autocomplete={false} />
-            <InputPassword
-                id="value"
-                label="Value"
-                placeholder="Enter value"
-                bind:value={pair.value}
-                minlength={0} />
+            <InputText id="value" label="Value" placeholder="Enter value" bind:value={pair.value} />
         </Layout.Stack>
         <Selector.Checkbox
             size="s"

@@ -12,7 +12,8 @@
     } from '$lib/components/filters/store';
     import { SelectSearchCheckbox } from '$lib/elements';
     import type { Column } from '$lib/helpers/types';
-    import { ActionMenu, Popover, Tag } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
+    import { ActionMenu, Icon, Popover, Tag } from '@appwrite.io/pink-svelte';
     import { type Writable } from 'svelte/store';
 
     export let columns: Writable<Column[]>;
@@ -184,13 +185,13 @@
 {#each [typeFilter] as filter}
     <Popover let:toggle let:showing>
         <!--TODO: add tracking back event="apply_quick_filter" -->
-        <Tag size="s" on:click={toggle}>
+        <Tag on:click={toggle}>
             {#key filter.tag}
                 <span use:tagFormat>
                     {filter?.tag ?? filter.title}
                 </span>
             {/key}
-            <span class:icon-cheveron-down={!showing} class:icon-cheveron-up={showing}> </span>
+            <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" size="s" />
         </Tag>
         <svelte:fragment slot="tooltip" let:toggle>
             <ActionMenu.Root noPadding>
@@ -233,14 +234,14 @@
     <Popover let:toggle let:showing>
         <!--TODO: add tracking back event="apply_quick_filter" -->
 
-        <Tag size="s" on:click={toggle}>
+        <Tag on:click={toggle}>
             {#key filter.tag}
                 <span use:tagFormat>
                     {filter?.tag ?? filter.title}
                 </span>
             {/key}
 
-            <span class:icon-cheveron-down={!showing} class:icon-cheveron-up={showing}> </span>
+            <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" size="s" />
         </Tag>
         <svelte:fragment slot="tooltip" let:toggle>
             <ActionMenu.Root noPadding>

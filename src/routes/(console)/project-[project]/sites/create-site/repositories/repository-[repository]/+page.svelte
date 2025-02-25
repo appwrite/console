@@ -15,7 +15,7 @@
     import Details from '../../details.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Query, ResourceType, Type } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, ResourceType, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
