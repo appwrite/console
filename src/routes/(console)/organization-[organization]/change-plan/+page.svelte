@@ -274,8 +274,8 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(billingPlan).order > $currentPlan.order;
-    $: isDowngrade = $plansInfo.get(billingPlan).order < $currentPlan.order;
+    $: isUpgrade = $plansInfo.get(billingPlan)?.order > $currentPlan.order;
+    $: isDowngrade = $plansInfo.get(billingPlan)?.order < $currentPlan.order;
     $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
