@@ -233,7 +233,7 @@
                     {:else}
                         <Button
                             text
-                            disabled={$organization?.markedForDeletion}
+                            disabled={$organization?.markedForDeletion || !currentPlan.selfService}
                             href={$upgradeURL}
                             on:click={() =>
                                 trackEvent('click_organization_plan_update', {
