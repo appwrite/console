@@ -267,7 +267,17 @@
         </p>
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.imageTransformationsTotal}
+                {@const current = data.organizationUsage.imageTransformationsTotal}
+                {@const max = getServiceLimit('imageTransformations', tier, plan)}
                 <div style:margin-top="-1.5em" style:margin-bottom="-1em">
+                    <ProgressBarBig
+                        currentUnit="Transformations"
+                        currentValue={formatNum(current)}
+                        maxUnit="Transformations"
+                        maxValue={`out of ${formatNum(max)}`}
+                        progressValue={current}
+                        progressMax={max}
+                        showBar={false} />
                     <BarChart
                         options={{
                             yAxis: {
@@ -278,7 +288,7 @@
                         }}
                         series={[
                             {
-                                name: 'Transformations',
+                                name: 'Image Transformations',
                                 data: [
                                     ...(data.organizationUsage.imageTransformations ?? []).map(
                                         (e) => [e.date, e.value]
@@ -287,21 +297,6 @@
                             }
                         ]} />
                 </div>
-
-                <Legend
-                    legendData={[
-                        {
-                            name: 'Transformations',
-                            value: data.organizationUsage.imageTransformationsTotal
-                        }
-                    ]} />
-
-                {#if projects?.length > 0}
-                    <ProjectBreakdown
-                        {data}
-                        {projects}
-                        databaseOperationMetric={['databasesReads', 'databasesWrites']} />
-                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

@@ -1,37 +1,37 @@
-import { page } from '$app/stores';
-import { derived, get, writable } from 'svelte/store';
-import { sdk } from './sdk';
-import { organization, type Organization, type OrganizationError } from './organization';
-import type {
-    InvoiceList,
-    AddressesList,
-    Invoice,
-    PaymentList,
-    PlansMap,
-    PaymentMethodData,
-    Plan,
-    Aggregation
-} from '$lib/sdk/billing';
-import { isCloud } from '$lib/system';
-import { cachedStore } from '$lib/helpers/cache';
-import { Query } from '@appwrite.io/console';
-import { headerAlert } from './headerAlert';
-import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
-import { addNotification, notifications } from './notifications';
+import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
-import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
-import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
-import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
-import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
+import { page } from '$app/stores';
 import { trackEvent } from '$lib/actions/analytics';
+import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
+import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
+import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
+import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
+import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
+import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
+import { cachedStore } from '$lib/helpers/cache';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
-import { user } from './user';
-import { browser } from '$app/environment';
+import type {
+    AddressesList,
+    Aggregation,
+    Invoice,
+    InvoiceList,
+    PaymentList,
+    PaymentMethodData,
+    Plan,
+    PlansMap
+} from '$lib/sdk/billing';
+import { isCloud } from '$lib/system';
+import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
+import { Query } from '@appwrite.io/console';
+import { derived, get, writable } from 'svelte/store';
+import { headerAlert } from './headerAlert';
+import { addNotification, notifications } from './notifications';
+import { organization, type Organization, type OrganizationError } from './organization';
 import { canSeeBilling } from './roles';
+import { sdk } from './sdk';
+import { user } from './user';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -130,7 +130,8 @@ export type PlanServices =
     | 'users'
     | 'usersAddon'
     | 'webhooks'
-    | 'authPhone';
+    | 'authPhone'
+    | 'imageTransformations';
 
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
     if (!isCloud) return 0;

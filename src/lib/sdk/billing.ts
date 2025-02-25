@@ -315,6 +315,7 @@ export type Plan = {
     order: number;
     bandwidth: number;
     storage: number;
+    imageTransformations: number;
     webhooks: number;
     users: number;
     teams: number;
