@@ -14,10 +14,9 @@
     let isCurrentPlanShown: boolean = false;
 
     function currentPlanExists() {
-        for (let plan in $plansInfo.values()) {
-            if (plan.$id === $currentPlan.$id) {
-                return true;
-            }
+        let planFound = $plansInfo.values().find((plan) => plan.$id == $currentPlan.$id);
+        if (planFound) {
+            return true;
         }
         return false;
     }
