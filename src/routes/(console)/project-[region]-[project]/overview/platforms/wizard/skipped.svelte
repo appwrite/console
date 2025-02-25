@@ -17,12 +17,16 @@
      * this sometimes caused outdated data to be visible for a brief moment.
      */
     export async function invalidateDependencies(): Promise<void> {
-        console.log('invalidateDependencies');
         await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
     }
 
     export async function onPlatformSetupFinish(event: CustomEvent): Promise<void> {
-        const isSkipped = event.detail?.skipped ?? false;
+        const type = event.type;
+        const skipped = event.detail.skipped ?? false;
+        const optional = event.detail.optional ?? false;
+
+        const isSkipped = type === 'finish' ? skipped : type === 'exit' ? optional : false;
+
         showSkippedModal.set(isSkipped);
 
         if (!isSkipped) {

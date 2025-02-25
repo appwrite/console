@@ -15,7 +15,7 @@
 
 <Copy value={getProjectEndpoint()} appendTo="parent" copyText="Copy endpoint">
     <div
-        class="flex u-gap-12 u-cross-center interactive-text-output is-buttons-on-top u-text-center"
+        class="flex u-gap-8 u-cross-center interactive-text-output is-buttons-on-top u-text-center"
         style:min-inline-size="0"
         style:display="inline-flex">
         <span
@@ -23,7 +23,8 @@
             class="text u-line-height-1-5"
             style:overflow="hidden"
             style:word-break="break-all"
-            use:truncateText>
+            use:truncateText
+            style:font-family="Inter, arial, sans-serif">
             {$projectRegion?.name}
         </span>
 
@@ -35,11 +36,5 @@
                 width={16}
                 height={12} />
         {/if}
-
-        <div class="interactive-text-output-buttons">
-            <button class="interactive-text-output-button is-hidden" aria-label="copy text">
-                <span class="icon-duplicate" aria-hidden="true" />
-            </button>
-        </div>
     </div>
 </Copy>

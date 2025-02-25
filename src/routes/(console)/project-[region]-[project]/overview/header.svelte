@@ -9,8 +9,11 @@
         <CoverTitle>
             {$project?.name}
         </CoverTitle>
-        <Id value={$project.$id}>{$project.$id}</Id>
 
-        <RegionEndpoint />
+        <div class="u-flex u-gap-8 u-cross-center">
+            <Id value={$project.$id}>{$project.$id}</Id>
+
+            <RegionEndpoint />
+        </div>
     </svelte:fragment>
 </Cover>

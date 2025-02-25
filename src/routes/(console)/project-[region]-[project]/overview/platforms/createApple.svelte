@@ -33,6 +33,7 @@
 <Wizard
     title="Add an Apple platform"
     steps={stepsComponents}
+    manualExitControl
     on:finish={onPlatformSetupFinish}
     on:exit={onPlatformSetupFinish}
     finalAction="Go to dashboard" />
