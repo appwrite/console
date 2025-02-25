@@ -4,7 +4,7 @@
     import { showCreate } from '../store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { Icon, Sidebar, Navbar, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Sidebar, Navbar, Layout, Link } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconDatabase, IconTable } from '@appwrite.io/pink-icons-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
@@ -67,8 +67,9 @@
         <div slot="left">
             <Layout.Stack direction="row" alignItems="center" gap="s">
                 <Icon icon={IconDatabase} size="s" color="--neutral-300" />
-                <Typography.Text color="--color-fgcolor-neutral-secondary"
-                    >{data.database.name}</Typography.Text>
+                <Link.Anchor
+                    href={`${base}/project-${project}/databases/database-${databaseId}`}
+                    variant="quiet-muted">{data.database.name}</Link.Anchor>
                 <span style:margin-left="8px">/</span>
                 <button
                     type="button"
@@ -97,7 +98,18 @@
                     };
                 })
             },
-            bottom: undefined
+            bottom:
+                sortedCollections.length > 10
+                    ? {
+                          items: [
+                              {
+                                  name: 'All collections',
+                                  leadingIcon: IconTable,
+                                  href: `${base}/project-${project}/databases/database-${databaseId}`
+                              }
+                          ]
+                      }
+                    : undefined
         }}></BottomSheet.Menu>
 {/if}
 
