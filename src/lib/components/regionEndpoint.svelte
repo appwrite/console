@@ -24,7 +24,7 @@
             style:overflow="hidden"
             style:word-break="break-all"
             use:truncateText
-            style:font-family="Inter, arial, sans-serif">
+            style:font-family="unset">
             {$projectRegion?.name}
         </span>
 
