@@ -3,8 +3,9 @@
     import { timeFromNow } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
-    import { Badge, InlineCode, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, InlineCode, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
     import Sheet from './sheet.svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let columns: Column[];
     export let logs: Models.ExecutionList;
@@ -37,7 +38,7 @@
                         {/key}
                     {:else if column.id === '$createdAt'}
                         <Table.Cell>
-                            {timeFromNow(log.$createdAt)}
+                            {capitalize(timeFromNow(log.$createdAt))}
                         </Table.Cell>
                     {:else if column.id === 'responseStatusCode'}
                         <Table.Cell>
@@ -50,8 +51,12 @@
                                     variant="secondary"
                                     type={log.responseStatusCode >= 400 ? 'error' : 'success'}
                                     content={log.responseStatusCode.toString()} />
-                                <InlineCode code={log.requestMethod} />
-                                <InlineCode code={log.requestPath} />
+                                <Typography.Code size="m">
+                                    {log.requestMethod}
+                                </Typography.Code>
+                                <Typography.Code size="m">
+                                    {log.requestPath}
+                                </Typography.Code>
                             </Layout.Stack>
                         </Table.Cell>
                     {/if}

@@ -15,6 +15,7 @@
     import { timeFromNow } from '$lib/helpers/date';
     import LogsRequest from './(components)/LogsRequest.svelte';
     import LogsResponse from './(components)/LogsResponse.svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let open = false;
     export let selectedLogId: string;
@@ -47,14 +48,14 @@
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Layout.Stack direction="row" gap="m" alignItems="center">
                 <Typography.Text variant="m-400">Log ID</Typography.Text>
-                <Tag size="s">{selectedLog?.$id}</Tag>
+                <Tag size="s" variant="code">{selectedLog?.$id}</Tag>
             </Layout.Stack>
-            <Layout.Stack direction="row" gap="s" alignItems="center" inline>
-                <Button icon text size="s" on:click={previousLog} disabled={isFirstLog}>
-                    <Icon icon={IconChevronUp}></Icon>
+            <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                <Button icon text size="xs" on:click={previousLog} disabled={isFirstLog}>
+                    <Icon icon={IconChevronUp} />
                 </Button>
-                <Button icon text size="s" on:click={nextLog} disabled={isLastLog}>
-                    <Icon icon={IconChevronDown}></Icon>
+                <Button icon text size="xs" on:click={nextLog} disabled={isLastLog}>
+                    <Icon icon={IconChevronDown} />
                 </Button>
             </Layout.Stack>
         </Layout.Stack>
@@ -106,7 +107,7 @@
                                 Created
                             </Typography.Text>
                             <Typography.Text variant="m-400">
-                                {timeFromNow(selectedLog.$createdAt)}
+                                {capitalize(timeFromNow(selectedLog.$createdAt))}
                             </Typography.Text>
                         </Layout.Stack>
                     </Layout.Stack>
@@ -123,7 +124,7 @@
             <Accordion title="Request" open>
                 <LogsRequest {selectedLog} />
             </Accordion>
-            <Accordion title="Response" open>
+            <Accordion title="Response" open hideDivider>
                 <LogsResponse {selectedLog} />
             </Accordion>
         </Layout.Stack>
