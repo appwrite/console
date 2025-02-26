@@ -21,6 +21,7 @@
     $: selectedCollection = sortedCollections.find((collection) => collection.$id === collectionId);
 
     let openBottomSheet = false;
+    console.log('isTabletViewport', $isTabletViewport);
 </script>
 
 {#if !$isTabletViewport}
