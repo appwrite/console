@@ -7,21 +7,11 @@
     import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellCheck,
-        TableCellHead,
-        TableCellHeadCheck,
-        TableCellText,
-        TableHeader,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { canWriteCollections } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
+    import { Badge, Selector, Table } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import { columns } from './store';
 
@@ -60,69 +50,63 @@
     }
 </script>
 
-<TableScroll>
-    <TableHeader>
+<Table.Root>
+    <svelte:fragment slot="header">
         {#if $canWriteCollections}
-            <TableCellHeadCheck
-                bind:selected
-                pageItemsIds={data.collections.collections.map((c) => c.$id)} />
+            <Table.Header.Selector width="20px" />
         {/if}
         {#each $columns as column}
             {#if column.show}
-                <TableCellHead width={column.width}>{column.title}</TableCellHead>
+                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
             {/if}
         {/each}
-    </TableHeader>
-    <TableBody>
-        {#each data.collections.collections as collection (collection.$id)}
-            <TableRowLink
-                href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
-                {#if $canWriteCollections}
-                    <TableCellCheck bind:selectedIds={selected} id={collection.$id} />
-                {/if}
-                {#each $columns as column}
-                    {#if column.show}
-                        {#if column.id === '$id'}
-                            {#key $columns}
-                                <TableCell title={column.title} width={column.width}>
-                                    <Id value={collection.$id}>{collection.$id}</Id>
-                                </TableCell>
-                            {/key}
-                        {:else if column.id === 'name'}
-                            <TableCellText title={column.title} width={column.width}>
-                                {collection.name}
-                            </TableCellText>
-                        {:else}
-                            <TableCellText title={column.title} width={column.width}>
-                                {toLocaleDateTime(collection[column.id])}
-                            </TableCellText>
-                        {/if}
+    </svelte:fragment>
+    {#each data.collections.collections as collection (collection.$id)}
+        <Table.Link
+            href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
+            {#if $canWriteCollections}
+                <Table.Cell>
+                    <Selector.Checkbox size="s" />
+                </Table.Cell>
+            {/if}
+
+            {#each $columns as column}
+                {#if column.show}
+                    {#if column.id === '$id'}
+                        {#key $columns}
+                            <Table.Cell>
+                                <Id value={collection.$id}>{collection.$id}</Id>
+                            </Table.Cell>
+                        {/key}
+                    {:else if column.id === 'name'}
+                        <Table.Cell>
+                            {collection.name}
+                        </Table.Cell>
+                    {:else}
+                        <Table.Cell>
+                            {toLocaleDateTime(collection[column.id])}
+                        </Table.Cell>
                     {/if}
-                {/each}
-            </TableRowLink>
-        {/each}
-    </TableBody>
-</TableScroll>
+                {/if}
+            {/each}
+        </Table.Link>
+    {/each}
+</Table.Root>
 
 <FloatingActionBar show={selected.length > 0}>
-    <div class="u-flex u-cross-center u-main-space-between actions">
-        <div class="u-flex u-cross-center u-gap-8">
-            <span class="indicator body-text-2 u-bold">{selected.length}</span>
-            <p>
-                <span class="is-only-desktop">
-                    {selected.length > 1 ? 'collections' : 'collection'}
-                </span>
-                selected
-            </p>
-        </div>
-
-        <div class="u-flex u-cross-center u-gap-8">
-            <Button text on:click={() => (selected = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>
-                <p>Delete</p>
-            </Button>
-        </div>
-    </div>
+    <svelte:fragment slot="start">
+        <Badge content={selected.length.toString()} />
+        <span>
+            <span class="is-only-desktop">
+                {selected.length > 1 ? 'collections' : 'collection'}
+            </span>
+            selected
+        </span>
+    </svelte:fragment>
+    <svelte:fragment slot="end">
+        <Button text on:click={() => (selected = [])}>Cancel</Button>
+        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+    </svelte:fragment>
 </FloatingActionBar>
 
 <Modal
@@ -139,16 +123,3 @@
         <Button secondary submit disabled={deleting}>Delete</Button>
     </svelte:fragment>
 </Modal>
-
-<style lang="scss">
-    .actions {
-        .indicator {
-            border-radius: 0.25rem;
-            background: hsl(var(--color-information-100));
-            color: hsl(var(--color-neutral-0));
-
-            padding: 0rem 0.375rem;
-            display: inline-block;
-        }
-    }
-</style>

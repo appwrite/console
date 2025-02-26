@@ -58,7 +58,12 @@
             Roles are used to manage access permissions. You can create any role you want.
         </Alert.Inline>
 
-        <InputTags id="tags" label="Roles" placeholder="Add roles" bind:tags={roles} helper="Roles are used to manage access permissions. You can create any role you want." />
+        <InputTags
+            id="tags"
+            label="Roles"
+            placeholder="Add roles"
+            bind:tags={roles}
+            helper="Roles are used to manage access permissions. You can create any role you want." />
     </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showCreate = false)}>Cancel</Button>

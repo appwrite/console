@@ -8,6 +8,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -64,19 +66,14 @@
 
         {#if !showCustomId}
             <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Collection ID
-                    </span></Pill>
+                <Tag
+                    size="s"
+                    on:click={() => {
+                        showCustomId = true;
+                    }}><Icon icon={IconPencil} /> Collection ID</Tag>
             </div>
-        {:else}
-            <CustomId
-                autofocus
-                bind:show={showCustomId}
-                name="Collection"
-                bind:id
-                fullWidth={true} />
         {/if}
+        <CustomId autofocus bind:show={showCustomId} name="Collection" bind:id fullWidth={true} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

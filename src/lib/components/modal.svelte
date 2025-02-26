@@ -45,9 +45,7 @@
 
 <Form isModal {onSubmit} bind:this={formComponent}>
     <Modal {title} bind:open={show} {hideFooter} {dismissible}>
-        <svelte:fragment slot="description">
-            <slot name="description" />
-        </svelte:fragment>
+        <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>
                 <Alert

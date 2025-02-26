@@ -61,10 +61,10 @@
     import { Container } from '$lib/layout';
     import { BarChart } from '$lib/charts';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { Card, SecondaryTabs, SecondaryTabsItem, Heading } from '$lib/components';
+    import { Card } from '$lib/components';
     import { ProjectUsageRange, type Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
-    import { Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import { InputSelect } from '$lib/elements/forms';
 

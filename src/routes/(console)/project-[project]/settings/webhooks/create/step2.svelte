@@ -7,7 +7,7 @@
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
     let showCreate = false;
-    
+
     export let events: string[];
 
     let eventSet = new Set<string>();

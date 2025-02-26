@@ -157,65 +157,6 @@
                             {/if}
                         {/if}
                     {/each}
-                    <!-- <Table.Cell>
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
-                            {#if user.email || user.phone}
-                                {#if user.name}
-                                    <AvatarInitials size="xs" name={user.name} />
-                                    <span class="text u-trim">{user.name}</span>
-                                {:else}
-                                    <div class="avatar is-size-small">
-                                        <span class="icon-minus-sm" aria-hidden="true" />
-                                    </div>
-                                {/if}
-                            {:else}
-                                <div class="avatar is-size-small">
-                                    <span class="icon-anonymous" aria-hidden="true" />
-                                </div>
-                                <span class="text u-trim">{user.name}</span>
-                            {/if}
-                        </Layout.Stack>
-                    </Table.Cell>
-                    <Table.Cell>
-                        {user.email && user.phone
-                            ? [user.email, user.phone].join(',')
-                            : user.email || user.phone}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {#if user.status}
-                            {@const success = user.emailVerification || user.phoneVerification}
-                            <Badge
-                                size="xs"
-                                variant="secondary"
-                                type={success ? 'success' : undefined}
-                                content={user.emailVerification && user.phoneVerification
-                                    ? 'verified'
-                                    : user.emailVerification
-                                      ? 'verified email'
-                                      : user.phoneVerification
-                                        ? 'verified phone'
-                                        : 'unverified'} />
-                        {:else}
-                            <Badge size="xs" variant="secondary" type="error" content="blocked" />
-                        {/if}
-                    </Table.Cell>
-                    <Table.Cell>
-                        <Copy value={user.$id} event="user">
-                            <Tag size="xs" variant="code">
-                                <Icon size="s" icon={IconDuplicate} />
-                                {user.$id}
-                            </Tag>
-                        </Copy>
-                    </Table.Cell>
-                    <Table.Cell>
-                        {user.labels.join(', ')}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {toLocaleDateTime(user.registration)}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
-                    </Table.Cell> -->
                 </Table.Link>
             {/each}
         </Table.Root>
