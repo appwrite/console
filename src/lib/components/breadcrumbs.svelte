@@ -186,7 +186,7 @@
                 >{#if selectedOrg?.tierName}<Badge
                         variant="secondary"
                         content={selectedOrg?.tierName} />{/if}</span>
-            <Icon icon={IconChevronDown} size="s" />
+            <Icon icon={IconChevronDown} size="s" color="--color-fgcolor-neutral-secondary" />
         </button>
     {:else}
         <button
@@ -200,7 +200,7 @@
                 >{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
-            <Icon icon={IconChevronDown} size="s" />
+            <Icon icon={IconChevronDown} size="s" color="--color-fgcolor-neutral-secondary" />
         </button>
     {/if}
 
@@ -340,19 +340,8 @@
 
 <style lang="scss">
     .menu {
-        //display: flex;
-        //flex-direction: column;
-        //outline: none !important;
         min-width: 220px;
-        //border-radius: var(--border-radius-m, 12px);
-        //border: 1px solid var(--color-border-neutral, #ededf0);
-        //background: var(--color-bgcolor-neutral-primary, #fff);
         z-index: 20;
-        //
-        ///* box-shadow/neutral/L */
-        //box-shadow:
-        //    -2px 8px 16px 0px rgba(0, 0, 0, 0.02),
-        //    -2px 20px 24px 0px rgba(0, 0, 0, 0.02);
     }
 
     .not-mobile {
@@ -375,6 +364,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 60px;
+        color: var(--color-fgcolor-neutral-secondary);
 
         @media (min-width: 390px) {
             max-width: 95px;

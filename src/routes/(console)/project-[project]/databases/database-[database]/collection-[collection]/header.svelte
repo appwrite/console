@@ -6,6 +6,7 @@
     import { Cover, CoverTitle } from '$lib/layout';
     import { canWriteCollections } from '$lib/stores/roles';
     import { collection } from './store';
+    import { isTabletViewport } from '$lib/stores/viewport';
 
     $: projectId = $page.params.project;
     $: databaseId = $page.params.database;
@@ -49,24 +50,26 @@
     ].filter((tab) => !tab.disabled);
 </script>
 
-<Cover>
-    <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/databases/database-${databaseId}`}>
-            {$collection?.name}
-        </CoverTitle>
-        {#key $collection?.$id}
-            <Id value={$collection?.$id}>{$collection?.$id}</Id>
-        {/key}
-    </svelte:fragment>
+<div style:margin-top={$isTabletViewport ? '48px' : 0}>
+    <Cover>
+        <svelte:fragment slot="header">
+            <CoverTitle href={`${base}/project-${projectId}/databases/database-${databaseId}`}>
+                {$collection?.name}
+            </CoverTitle>
+            {#key $collection?.$id}
+                <Id value={$collection?.$id}>{$collection?.$id}</Id>
+            {/key}
+        </svelte:fragment>
 
-    <Tabs>
-        {#each tabs as tab}
-            <Tab
-                href={tab.href}
-                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
-                event={tab.event}>
-                {tab.title}
-            </Tab>
-        {/each}
-    </Tabs>
-</Cover>
+        <Tabs>
+            {#each tabs as tab}
+                <Tab
+                    href={tab.href}
+                    selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                    event={tab.event}>
+                    {tab.title}
+                </Tab>
+            {/each}
+        </Tabs>
+    </Cover>
+</div>
