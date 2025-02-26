@@ -204,23 +204,26 @@
                                                                 size="s" />
                                                         </PinkButton.Button>
 
-                                                        <svelte:fragment slot="tooltip">
+                                                        <svelte:fragment slot="tooltip" let:toggle>
                                                             <ActionMenu.Root noPadding>
                                                                 {#if !variable?.secret}
                                                                     <ActionMenu.Item.Button
                                                                         leadingIcon={IconPencil}
-                                                                        on:click={() => {
+                                                                        on:click={(e) => {
+                                                                            toggle(e);
                                                                             currentVariable =
                                                                                 variable;
                                                                             showUpdate = true;
                                                                         }}>
-                                                                        Edit
+                                                                        Update
                                                                     </ActionMenu.Item.Button>
                                                                 {/if}
                                                                 {#if !variable?.secret}
                                                                     <ActionMenu.Item.Button
                                                                         leadingIcon={IconEyeOff}
-                                                                        on:click={() => {
+                                                                        on:click={(e) => {
+                                                                            toggle(e);
+
                                                                             currentVariable =
                                                                                 variable;
                                                                             showSecretModal = true;
@@ -231,7 +234,8 @@
                                                                 <ActionMenu.Item.Button
                                                                     status="danger"
                                                                     leadingIcon={IconTrash}
-                                                                    on:click={() => {
+                                                                    on:click={(e) => {
+                                                                        toggle(e);
                                                                         currentVariable = variable;
                                                                         showDelete = true;
                                                                     }}>

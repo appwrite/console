@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { EmptySearch, Pagination, PaginationWithLimit } from '$lib/components';
+    import { EmptySearch, PaginationWithLimit } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import Wizard from '$lib/layout/wizard.svelte';
@@ -116,7 +116,7 @@
     </svelte:fragment>
     <Layout.Stack gap="l">
         {#if data.templates?.length > 0}
-            <Layout.GridBox>
+            <Layout.Grid columns={3} columnsXS={2} columnsXXS={1}>
                 {#each data.templates as template}
                     {@const templateFrameworks = template.frameworks.map((t) => t.name)}
 
@@ -135,7 +135,7 @@
                         </Card.Media>
                     </Card.Link>
                 {/each}
-            </Layout.GridBox>
+            </Layout.Grid>
         {:else}
             <EmptySearch
                 hidePagination

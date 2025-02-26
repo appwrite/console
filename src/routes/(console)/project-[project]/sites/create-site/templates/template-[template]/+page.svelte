@@ -134,7 +134,7 @@
                     framework.buildCommand,
                     framework.outputDirectory,
                     framework.adapter,
-                    selectedInstallationId || undefined,
+                    connectBehaviour === 'later' ? undefined : selectedInstallationId || undefined,
                     framework.fallbackFile,
                     selectedRepository || undefined,
                     branch || undefined,

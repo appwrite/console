@@ -93,7 +93,9 @@
     hideFooter={!repositoryBehaviour}
     onSubmit={connectRepo}
     bind:error>
-    <span slot="description"> Connect to a new repository or an existing one. </span>
+    <span slot="description">
+        Connect your site to an existing repository or create a new one.
+    </span>
     {#if hasInstallations}
         <Layout.Stack gap="xl">
             <RepositoryBehaviour bind:repositoryBehaviour />
@@ -127,7 +129,10 @@
         {#if repositoryBehaviour === 'existing'}
             <Layout.Stack>
                 <Link variant="quiet" href="#/">
-                    Missing a repository? check your permissions <Icon icon={IconArrowSmRight} />
+                    <Layout.Stack direction="row" gap="xs">
+                        Missing a repository? check your permissions <Icon
+                            icon={IconArrowSmRight} />
+                    </Layout.Stack>
                 </Link>
             </Layout.Stack>
         {:else if repositoryBehaviour === 'new'}

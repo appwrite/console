@@ -6,13 +6,18 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { type Models } from '@appwrite.io/console';
+    import { FormList, InputCheckbox } from '$lib/elements/forms';
 
     export let showDelete = false;
-    const functionId = $page.params.function;
+    export let projectFunction: Models.Function;
+
     let error: string;
+    let confirmedDeletion = false;
+
     const handleSubmit = async () => {
         try {
-            await sdk.forProject.functions.delete(functionId);
+            await sdk.forProject.functions.delete(projectFunction.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -27,6 +32,25 @@
     };
 </script>
 
-<Confirm onSubmit={handleSubmit} title="Delete function" bind:open={showDelete} bind:error>
-    Are you sure you want to delete this function and all associated deployments from your project?
+<Confirm
+    onSubmit={handleSubmit}
+    disabled={!confirmedDeletion}
+    title="Delete function"
+    bind:open={showDelete}
+    bind:error>
+    <FormList>
+        <p data-private>Are you sure you want to delete <strong>{projectFunction.name}</strong>?</p>
+
+        <p data-private>
+            The function and all associated deployments will be permanently deleted. This action is
+            irreversible.
+        </p>
+
+        <InputCheckbox
+            size="s"
+            required
+            id="delete_function"
+            bind:checked={confirmedDeletion}
+            label="I understand and confirm" />
+    </FormList>
 </Confirm>

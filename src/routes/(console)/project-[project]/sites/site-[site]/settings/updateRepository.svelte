@@ -116,7 +116,7 @@
 
 <Form onSubmit={updateConfiguration}>
     <CardGrid>
-        <svelte:fragment slot="title">Repository</svelte:fragment>
+        <svelte:fragment slot="title">Git repository</svelte:fragment>
         Automatically deploy changes for every commit pushed to your Git repository.
         <svelte:fragment slot="aside">
             {#if repository === false}
@@ -204,12 +204,13 @@
             {:else if site.installationId || installations?.total}
                 <PinkCard.Base padding="none" border="dashed">
                     <Empty
+                        type="secondary"
                         title="No repository is connected to this site yet"
                         description="Connect to enable automatic deployments">
                         <svelte:fragment slot="actions">
                             <Button secondary on:click={() => showConnectRepo.set(true)}>
-                                <Icon icon={IconGithub} size="s" />
-                                Connect repository
+                                <Icon icon={IconGithub} size="s" slot="start" />
+                                Connect Git repository
                             </Button>
                         </svelte:fragment>
                     </Empty>

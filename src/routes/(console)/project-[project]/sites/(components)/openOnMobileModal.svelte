@@ -23,7 +23,7 @@
 <Modal title="Open on mobile" bind:show>
     <span slot="description">Open the preview of your site on any mobile or tablet device.</span>
     <Layout.Stack gap="l">
-        <Card>
+        <Card padding="l" radius="l">
             <Layout.Stack justifyContent="center" alignItems="center">
                 <Image src={image} height={176} width={176} alt="QR code" />
             </Layout.Stack>
