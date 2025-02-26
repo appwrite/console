@@ -34,8 +34,14 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
         }, new Map<Tier, Plan>());
     }
 
+    const organizations = await sdk.forConsole.teams.list();
+
     let projects = [];
-    const currentOrgId = params.organization ? params.organization : prefs.organization;
+    let currentOrgId = params.organization ? params.organization : prefs.organization;
+
+    if (!currentOrgId && organizations.teams.length > 0) {
+        currentOrgId = organizations.teams[0].$id;
+    }
     if (currentOrgId) {
         const orgProjects = await sdk.forConsole.projects.list([
             Query.equal('teamId', currentOrgId),
@@ -53,6 +59,6 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
         scopes: [],
         projects: projects,
         currentProjectId: params.project ?? '',
-        organizations: await sdk.forConsole.teams.list()
+        organizations: organizations
     };
 };
