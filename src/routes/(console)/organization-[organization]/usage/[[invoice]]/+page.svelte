@@ -265,6 +265,9 @@
         <p class="text">
             The total number of image transformations across all projects in your organization.
         </p>
+        {#if $organization.billingPlan === BillingPlan.FREE}
+            <p>This feature is not available on the Free plan.</p>
+        {/if}
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.imageTransformationsTotal}
                 {@const current = data.organizationUsage.imageTransformationsTotal}
@@ -273,7 +276,7 @@
                     <ProgressBarBig
                         currentUnit="Transformations"
                         currentValue={formatNum(current)}
-                        maxUnit="Transformations"
+                        maxUnit="transformations"
                         maxValue={`out of ${formatNum(max)}`}
                         progressValue={current}
                         progressMax={max}
@@ -297,6 +300,9 @@
                             }
                         ]} />
                 </div>
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="imageTransformations" {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
