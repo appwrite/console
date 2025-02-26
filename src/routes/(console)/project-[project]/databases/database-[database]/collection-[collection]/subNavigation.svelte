@@ -28,7 +28,7 @@
         <section class="list-container" slot="top" style:width="100%">
             <h5
                 class="u-flex u-cross-center body-text-2 u-gap-8 u-padding-inline-12 u-padding-block-8 is-not-mobile is-selected">
-                <Icon icon={IconDatabase} size="s" color="light-neutral" />
+                <Icon icon={IconDatabase} size="s" color="--color-fgcolor-neutral-weak" />
                 {data.database.name}
             </h5>
             <div class="collection-content">
@@ -42,7 +42,10 @@
                                 <a
                                     class="u-padding-block-4 u-padding-inline-12 u-flex u-cross-center u-gap-8"
                                     {href}>
-                                    <Icon icon={IconTable} size="s" />
+                                    <Icon
+                                        icon={IconTable}
+                                        size="s"
+                                        color="--color-fgcolor-neutral-weak" />
                                     <span class="text collection-name" data-private
                                         >{collection.name}</span>
                                 </a>
@@ -129,6 +132,7 @@
         padding-bottom: 16px;
         scrollbar-width: thin;
         scrollbar-color: var(--color-border-neutral, #ededf0) transparent;
+        color: var(--color-fgcolor-neutral-secondary, #56565c);
 
         &::-webkit-scrollbar {
             width: 4px;
@@ -165,6 +169,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             line-clamp: 1;
+            color: var(--color-fgcolor-neutral-secondary, #56565c);
         }
     }
 
