@@ -19,6 +19,7 @@
     import { protocol } from '$routes/(console)/store';
     import { Accordion } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
+    import LogsTimer from '../../../(components)/logsTimer.svelte';
 
     export let data;
 
@@ -78,6 +79,9 @@
             badgeType={badgeTypeDeployment(data.deployment.status)}
             hideDivider>
             <Logs site={data.site} deployment={data.deployment} hideTitle />
+            <svelte:fragment slot="end">
+                <LogsTimer status={data.deployment.status} deployment={data.deployment} />
+            </svelte:fragment>
         </Accordion>
     </Card>
 </Container>
