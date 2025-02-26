@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
     export let selectedMembership: Models.Membership;
@@ -38,5 +39,8 @@
 </script>
 
 <Confirm onSubmit={deleteMembership} title="Delete member" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{selectedMembership.userName}</b> from '{selectedMembership.teamName}'?
+    <Typography.Text>
+        Are you sure you want to delete <b>{selectedMembership.userName}</b> from
+        <b>{selectedMembership.teamName}</b>?
+    </Typography.Text>
 </Confirm>

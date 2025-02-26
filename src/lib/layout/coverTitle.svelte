@@ -13,6 +13,6 @@
         </Button.Anchor>
     </span>
 {/if}
-<Typography.Title color="--color-fgcolor-neutral-primary" size={$isSmallViewport ? 'm' : 'l'}>
+<Typography.Title truncate color="--color-fgcolor-neutral-primary" size={$isSmallViewport ? 'm' : 'l'}>
     <slot />
 </Typography.Title>

@@ -80,5 +80,10 @@
         "vitest": "^1.6.0"
     },
     "type": "module",
-    "packageManager": "pnpm@10.4.1"
+    "packageManager": "pnpm@10.4.1",
+    "pnpm": {
+        "overrides": {
+            "@appwrite.io/pink-svelte": "link:../../../../Library/pnpm/global/5/node_modules/@appwrite.io/pink-svelte"
+        }
+    }
 }

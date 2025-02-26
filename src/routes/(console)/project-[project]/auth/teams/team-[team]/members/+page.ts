@@ -6,6 +6,7 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, depends, url, route }) => {
     depends(Dependencies.MEMBERSHIPS);
+
     const teamId = params.team;
     const page = getPage(url);
     const search = getSearch(url);

@@ -6,6 +6,7 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
     export let team: Models.Team<Record<string, unknown>>;
@@ -26,5 +27,7 @@
 </script>
 
 <Confirm onSubmit={deleteTeam} title="Delete team" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{team.name}</b>?
+    <Typography.Text>
+        Are you sure you want to delete <b>{team.name}</b>?
+    </Typography.Text>
 </Confirm>

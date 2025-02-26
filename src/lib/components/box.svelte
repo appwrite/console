@@ -1,20 +1,12 @@
 <script lang="ts">
-    export let radius: keyof typeof radiuses = 'small';
-    export let padding = 24;
-    let classes = '';
-    export { classes as class };
+    import { Card } from '@appwrite.io/pink-svelte';
+    import type Base from '@appwrite.io/pink-svelte/dist/card/Base.svelte';
+    import type { ComponentProps } from 'svelte';
 
-    enum radiuses {
-        xsmall = '--border-radius-xsmall',
-        small = '--border-radius-small',
-        medium = '--border-radius-medium',
-        large = '--border-radius-large'
-    }
+    export let radius: ComponentProps<Base>['radius'] = 'm';
+    export let padding: ComponentProps<Base>['padding'] = 's';
 </script>
 
-<div
-    class="box {classes}"
-    style:--box-border-radius={`var(${radiuses[radius]})`}
-    style:--box-padding={`${padding / 16}rem`}>
+<Card.Base variant="secondary" {radius} {padding}>
     <slot />
-</div>
+</Card.Base>

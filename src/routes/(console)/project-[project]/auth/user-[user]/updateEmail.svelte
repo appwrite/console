@@ -36,17 +36,13 @@
 <Form onSubmit={updateEmail}>
     <CardGrid>
         <svelte:fragment slot="title">Email</svelte:fragment>
-        Update user's email. An Email should be formatted as:
-        <span class="inline-code">name@example.com</span>.
         <svelte:fragment slot="aside">
-            <ul>
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Enter email"
-                    autocomplete={false}
-                    bind:value={userEmail} />
-            </ul>
+            <InputEmail
+                id="email"
+                label="Email"
+                placeholder="Enter email"
+                autocomplete={false}
+                bind:value={userEmail} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

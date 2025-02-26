@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
-    import { Pill } from '$lib/elements';
+    import { Tag, Input, Layout } from '@appwrite.io/pink-svelte';
 
     const alphaNumericRegExp = /^[a-zA-Z0-9]+$/;
     let suggestedLabels = ['admin', 'premium', 'mvp'];
@@ -67,17 +67,17 @@
         Categorize and manage your users based on specific criteria by assigning them customizable labels.
         New label-based roles will be assigned.
         <svelte:fragment slot="aside">
-            <ul class="common-section">
+            <Layout.Stack gap="s">
                 <InputTags
                     id="user-labels"
                     label="Labels"
                     placeholder="Select or type user labels"
                     bind:tags={labels} />
-                <li class="u-flex u-gap-12 u-margin-block-start-8">
+                <Layout.Stack direction="row">
                     {#each suggestedLabels as suggestedLabel}
-                        <Pill
+                        <Tag
+                            size="s"
                             selected={labels.includes(suggestedLabel)}
-                            button
                             on:click={() => {
                                 if (!labels.includes(suggestedLabel)) {
                                     labels = [...labels, suggestedLabel];
@@ -87,14 +87,12 @@
                             }}>
                             <span class="icon-plus" aria-hidden="true" />
                             {suggestedLabel}
-                        </Pill>
+                        </Tag>
                     {/each}
-                </li>
-                <li>
-                    <Helper type={error ? 'warning' : 'neutral'}
-                        >{error ? error : 'Only alphanumeric characters are allowed'}</Helper>
-                </li>
-            </ul>
+                </Layout.Stack>
+                <Input.Helper state={error ? 'warning' : 'default'}
+                    >{error ? error : 'Only alphanumeric characters are allowed'}</Input.Helper>
+            </Layout.Stack>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

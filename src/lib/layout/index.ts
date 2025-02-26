@@ -3,7 +3,6 @@ export { default as Cover } from './cover.svelte';
 export { default as CoverTitle } from './coverTitle.svelte';
 export { default as Footer } from './footer.svelte';
 export { default as Navigation } from './navigation.svelte';
-export { default as Notification } from './notification.svelte';
 export { default as Notifications } from './notifications.svelte';
 export { default as Shell } from './shell.svelte';
 export { default as Logs } from './logs.svelte';

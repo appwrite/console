@@ -8,6 +8,7 @@
     import { project } from '../../store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
     let error: string;
@@ -29,5 +30,7 @@
 </script>
 
 <Confirm onSubmit={deleteUser} title="Delete user" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{$user.name || 'User'}</b> from '{$project.name}'?
+    <Typography.Text>
+        Are you sure you want to delete <b>{$user.name || 'User'}</b> from <b>{$project.name}</b>?
+    </Typography.Text>
 </Confirm>
