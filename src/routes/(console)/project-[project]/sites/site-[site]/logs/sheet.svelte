@@ -6,6 +6,7 @@
     import {
         Accordion,
         Badge,
+        HiddenText,
         Icon,
         Layout,
         Sheet,
@@ -64,7 +65,7 @@
         <Layout.Stack gap="xl">
             <Accordion title="Details" open>
                 <Layout.Stack gap="xl">
-                    <Layout.Stack direction="row" gap="xxl">
+                    <Layout.Stack direction="row" gap="xxxl">
                         <Layout.Stack gap="xs" inline>
                             <Typography.Text
                                 variant="m-400"
@@ -111,13 +112,13 @@
                             </Typography.Text>
                         </Layout.Stack>
                     </Layout.Stack>
-                    <Layout.Stack gap="xs" inline>
+                    <Layout.Stack gap="xs" inline alignItems="flex-start">
                         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
                             Path
                         </Typography.Text>
-                        <Typography.Text variant="m-400">
-                            {selectedLog.requestPath}
-                        </Typography.Text>
+                        <div>
+                            <HiddenText text={selectedLog.requestPath} variant="public" isVisible />
+                        </div>
                     </Layout.Stack>
                 </Layout.Stack>
             </Accordion>
