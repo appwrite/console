@@ -27,8 +27,8 @@
             margin-inline: 1rem;
         }
         @media (min-width: 1024px) {
-            margin-inline: 2.5rem;
-            max-width: 944px;
+            margin-inline: auto;
+            max-width: min(944px, calc(944px - 5rem));
         }
         @media (min-width: 1280px) {
             margin-inline: auto;
