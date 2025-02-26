@@ -1,26 +1,20 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Button } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
-    import {
-        IconCog,
-        IconDotsHorizontal,
-        IconGlobeAlt,
-        IconRefresh
-    } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Card, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
-    import RedeployModal from './redeployModal.svelte';
+    import { Card, Layout } from '@appwrite.io/pink-svelte';
     import { getFrameworkIcon } from './store';
     import { SvgIcon } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { getApiEndpoint } from '$lib/stores/sdk';
+    import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
+    import SitesActionMenu from './sitesActionMenu.svelte';
 
     export let siteList: Models.SiteList;
     export let deployments: Models.Deployment[];
 
-    let showRedeploy = false;
+    let showAddCollaborator = false;
     let selectedSite: Models.Site = null;
 
     function getScreenshot(theme: string, site: Models.Site) {
@@ -48,7 +42,7 @@
     }
 </script>
 
-<Layout.GridBox itemSize="274px">
+<Layout.Grid columns={3} columnsXS={1} columnsXXS={1}>
     {#each siteList.sites as site}
         <Card.Link
             href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}
@@ -62,49 +56,12 @@
                 <svelte:fragment slot="avatar">
                     <SvgIcon name={getFrameworkIcon(site.framework)} iconSize="small" />
                 </svelte:fragment>
-                <Popover placement="bottom-end" let:toggle>
-                    <Button
-                        text
-                        icon
-                        size="s"
-                        on:click={(e) => {
-                            e.preventDefault();
-                            toggle(e);
-                        }}>
-                        <Icon size="s" icon={IconDotsHorizontal} /></Button>
-                    <svelte:fragment slot="tooltip" let:toggle>
-                        <ActionMenu.Root>
-                            <ActionMenu.Item.Button
-                                leadingIcon={IconRefresh}
-                                on:click={(e) => {
-                                    e.preventDefault();
-                                    selectedSite = site;
-                                    showRedeploy = true;
-                                    toggle(e);
-                                }}>
-                                Redeploy
-                            </ActionMenu.Item.Button>
-                            <ActionMenu.Item.Anchor
-                                href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/domains`}
-                                leadingIcon={IconGlobeAlt}>
-                                Domains
-                            </ActionMenu.Item.Anchor>
-                            <ActionMenu.Item.Anchor
-                                href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/settings`}
-                                leadingIcon={IconCog}>
-                                Settings
-                            </ActionMenu.Item.Anchor>
-                        </ActionMenu.Root>
-                    </svelte:fragment>
-                </Popover>
+                <SitesActionMenu {site} bind:showAddCollaborator bind:selectedSite />
             </Card.Media>
         </Card.Link>
     {/each}
-</Layout.GridBox>
+</Layout.Grid>
 
-{#if selectedSite?.$id && showRedeploy}
-    <RedeployModal
-        selectedDeploymentId={selectedSite.deploymentId}
-        bind:show={showRedeploy}
-        site={selectedSite} />
+{#if selectedSite?.$id && showAddCollaborator}
+    <AddCollaboratorModal bind:show={showAddCollaborator} />
 {/if}

@@ -10,7 +10,7 @@
     import SiteCard from '../../(components)/siteCard.svelte';
     import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
     import { onMount } from 'svelte';
-    import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
+    import AddCollaboratorModal from '../../(components)/addCollaboratorModal.svelte';
     import { protocol } from '$routes/(console)/store';
 
     export let data;
@@ -45,6 +45,7 @@
                 </Layout.Stack>
                 <Lights style="top: -100px; height:200px; width: 50%" />
                 <SiteCard
+                    variant="secondary"
                     deployment={data.deployment}
                     proxyRuleList={data.proxyRuleList}
                     hideQRCode>

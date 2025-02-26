@@ -27,6 +27,7 @@
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList;
     export let hideQRCode = false;
+    export let variant: 'primary' | 'secondary' = 'primary';
 
     let show = false;
     const siteUrl = proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : deployment.domain;
@@ -55,7 +56,7 @@
     }
 </script>
 
-<Card padding="s" radius="m">
+<Card padding="s" radius="m" {variant}>
     <Layout.Stack gap="l">
         <div class="card-grid">
             <Image

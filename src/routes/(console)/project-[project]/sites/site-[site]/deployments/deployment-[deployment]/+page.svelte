@@ -73,7 +73,7 @@
     </SiteCard>
     <Card isTile padding="s">
         <Accordion
-            title="Deployment Actions"
+            title="Deployment logs"
             badge={capitalize(data.deployment.status)}
             open={data.deployment.status !== 'ready'}
             badgeType={badgeTypeDeployment(data.deployment.status)}

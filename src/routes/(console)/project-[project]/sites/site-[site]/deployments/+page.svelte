@@ -50,9 +50,7 @@
 
 <Container>
     <Layout.Stack gap="xxxl">
-        {#if data.deploymentList.total}
-            <DeploymentMetrics deploymentList={data.deploymentList} />
-        {/if}
+        <DeploymentMetrics deploymentList={data.deploymentList} />
         <Layout.Stack gap="l">
             <Layout.Stack justifyContent="space-between" direction="row">
                 <div class="is-not-mobile">

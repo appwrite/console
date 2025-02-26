@@ -49,9 +49,7 @@
         }
     ];
     onMount(async () => {
-        if (deploymentList.total) {
-            await fetchUsage();
-        }
+        await fetchUsage();
     });
 
     async function fetchUsage() {
