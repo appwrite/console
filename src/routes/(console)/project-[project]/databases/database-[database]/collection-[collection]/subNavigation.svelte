@@ -15,7 +15,7 @@
     $: collectionId = $page.params.collection;
 
     $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
-        a.$createdAt > b.$createdAt ? -1 : 1
+        a.$updatedAt > b.$updatedAt ? -1 : 1
     );
 
     $: selectedCollection = sortedCollections.find((collection) => collection.$id === collectionId);
