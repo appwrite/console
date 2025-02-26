@@ -18,10 +18,11 @@
         a.$updatedAt > b.$updatedAt ? -1 : 1
     );
 
-    $: selectedCollection = sortedCollections.find((collection) => collection.$id === collectionId);
+    $: selectedCollection = sortedCollections?.find(
+        (collection) => collection.$id === collectionId
+    );
 
     let openBottomSheet = false;
-    console.log('isTabletViewport', $isTabletViewport);
 </script>
 
 {#if !$isTabletViewport}

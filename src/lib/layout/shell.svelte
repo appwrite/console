@@ -109,7 +109,7 @@
     };
 
     let showAccountMenu = false;
-    let subNavigation: undefined | ComponentType = $page.data.subNavigation;
+    $: subNavigation = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
