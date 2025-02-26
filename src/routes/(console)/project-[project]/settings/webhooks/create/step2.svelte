@@ -2,12 +2,13 @@
     import { WizardStep } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { Empty } from '$lib/components';
-    import { createWebhook } from './store';
     import { EventModal } from '$lib/components';
     import { Icon, Typography, Link, Table, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
     let showCreate = false;
+    
+    export let events: string[];
 
     let eventSet = new Set<string>();
 

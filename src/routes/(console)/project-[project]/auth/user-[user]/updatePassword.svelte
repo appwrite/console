@@ -30,18 +30,14 @@
 <Form onSubmit={updatePassword}>
     <CardGrid>
         <svelte:fragment slot="title">Password</svelte:fragment>
-        Enter a new password. A password must contain at least 8 characters.
+        A password must contain at least 8 characters.
         <svelte:fragment slot="aside">
-            <ul>
-                <InputPassword
-                    id="newPassword"
-                    label="New Password"
-                    placeholder="Enter new password"
-                    autocomplete={false}
-                    meter={false}
-                    showPasswordButton={true}
-                    bind:value={newPassword} />
-            </ul>
+            <InputPassword
+                id="newPassword"
+                label="New password"
+                placeholder="Enter new password"
+                autocomplete={false}
+                bind:value={newPassword} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

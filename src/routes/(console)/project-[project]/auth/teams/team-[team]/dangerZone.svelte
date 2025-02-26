@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AvatarInitials, BoxAvatar, CardGrid, Heading } from '$lib/components';
+    import { AvatarInitials, BoxAvatar, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import DeleteTeam from './deleteTeam.svelte';
     import { team } from './store';
@@ -14,7 +14,7 @@
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="image">
-                <AvatarInitials size="l" name={$team.name} />
+                <AvatarInitials name={$team.name} />
             </svelte:fragment>
             <svelte:fragment slot="title">
                 <h6 class="u-bold u-trim-1">{$team.name}</h6>

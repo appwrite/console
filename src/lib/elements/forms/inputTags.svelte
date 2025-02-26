@@ -6,6 +6,7 @@
     export let tags: string[] = [];
     export let placeholder = '';
     export let disabled = false;
+    export let helper: string | undefined = undefined;
 
     let value = '';
     let error: string;
@@ -31,6 +32,6 @@
     {placeholder}
     {disabled}
     bind:value={tags}
-    helper={error}
+    helper={error || helper}
     on:invalid={handleInvalid}
     state={error ? 'error' : 'default'} />

@@ -8,7 +8,10 @@
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Badge, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { user } from './store';
+    import Avatar from '$lib/components/avatar.svelte';
+    import { IconAnonymous, IconUser } from '@appwrite.io/pink-icons-svelte';
 
     let showVerificationDropdown = false;
 
@@ -80,17 +83,17 @@
     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
         {#if $user.email || $user.phone}
             {#if $user.name}
-                <AvatarInitials size="l" name={$user.name} />
-                <Heading tag="h6" size="7">{$user.name}</Heading>
+                <AvatarInitials name={$user.name} />
+                <Typography.Title size="s" truncate>{$user.name}</Typography.Title>
             {:else}
-                <div class="avatar">
-                    <span class="icon-minus-sm" aria-hidden="true" />
-                </div>
+                <Avatar alt="avatar">
+                    <Icon icon={IconUser} size="s" />
+                </Avatar>
             {/if}
         {:else}
-            <div class="avatar">
-                <span class="icon-anonymous" aria-hidden="true" />
-            </div>
+            <Avatar alt="avatar">
+                <Icon icon={IconAnonymous} size="s" />
+            </Avatar>
         {/if}
     </div>
     <svelte:fragment slot="aside">
@@ -105,27 +108,35 @@
                 <p>Joined: {toLocaleDateTime($user.registration)}</p>
                 <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
             </div>
-            {#if !$user.status}
-                <Pill danger>blocked</Pill>
-            {:else if $user.email && $user.phone}
-                <Pill success={$user.emailVerification || $user.phoneVerification}>
-                    {$user.emailVerification && $user.phoneVerification
-                        ? 'verified'
-                        : $user.emailVerification
-                          ? 'verified email'
-                          : $user.phoneVerification
-                            ? 'verified phone'
-                            : 'unverified'}
-                </Pill>
-            {:else}
-                <Pill success={$user.emailVerification || $user.phoneVerification}>
-                    {$user.emailVerification
-                        ? 'verified '
-                        : $user.phoneVerification
-                          ? 'verified '
-                          : 'unverified'}
-                </Pill>
-            {/if}
+            <div>
+                {#if !$user.status}
+                    <Badge content="blocked" variant="secondary" type="warning" />
+                {:else if $user.email && $user.phone}
+                    <Badge
+                        variant="secondary"
+                        type={$user.emailVerification || $user.phoneVerification
+                            ? 'success'
+                            : undefined}
+                        content={$user.emailVerification && $user.phoneVerification
+                            ? 'verified'
+                            : $user.emailVerification
+                              ? 'verified email'
+                              : $user.phoneVerification
+                                ? 'verified phone'
+                                : 'unverified'} />
+                {:else}
+                    <Badge
+                        variant="secondary"
+                        type={$user.emailVerification || $user.phoneVerification
+                            ? 'success'
+                            : undefined}
+                        content={$user.emailVerification
+                            ? 'verified '
+                            : $user.phoneVerification
+                              ? 'verified '
+                              : 'unverified'} />
+                {/if}
+            </div>
         </div>
     </svelte:fragment>
 

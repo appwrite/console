@@ -1,7 +1,6 @@
 <script lang="ts">
     import { InputText, InputURL, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { createWebhook } from './store';
 </script>
 
 <WizardStep>

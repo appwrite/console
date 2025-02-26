@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { InputPhone, InputOTP } from '$lib/elements/forms';
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -18,7 +18,7 @@
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
     import { Icon, Input, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
-    import { IconPlus, IconRefresh, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { IconPlus, IconRefresh } from '@appwrite.io/pink-icons-svelte';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -161,32 +161,34 @@
                                 <span slot="tooltip">Regenerate</span>
                             </Tooltip>
                         </InputPhone>
-                        <InputOTP
-                            id={`value-${index}`}
-                            bind:value={number.otp}
-                            fullWidth
-                            placeholder="Enter value"
-                            label={index === 0 ? 'Verification code' : undefined}
-                            maxlength={6}
-                            pattern={'^[0-9]{6}$'}
-                            patternError="The value must contain 6 digits"
-                            required>
-                            <Tooltip slot="end">
-                                <Input.Action
-                                    icon={IconRefresh}
-                                    on:click={() => (number.otp = generateOTP())} />
-                                <span slot="tooltip">Regenerate</span>
-                            </Tooltip>
-                        </InputOTP>
-                        <Button
-                            compact
-                            size="s"
-                            disabled={numbers.length === 0}
-                            on:click={() => {
-                                deletePhoneNumber(index);
-                            }}>
-                            <Icon icon={IconX} size="s" />
-                        </Button>
+                        <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                            <InputOTP
+                                id={`value-${index}`}
+                                bind:value={number.otp}
+                                fullWidth
+                                placeholder="Enter value"
+                                label={index === 0 ? 'Verification code' : undefined}
+                                maxlength={6}
+                                pattern={'^[0-9]{6}$'}
+                                patternError="The value must contain 6 digits"
+                                required>
+                                <Tooltip slot="end">
+                                    <Input.Action
+                                        icon={IconRefresh}
+                                        on:click={() => (number.otp = generateOTP())} />
+                                    <span slot="tooltip">Regenerate</span>
+                                </Tooltip>
+                            </InputOTP>
+                            <Button
+                                icon
+                                compact
+                                disabled={numbers.length === 0}
+                                on:click={() => {
+                                    deletePhoneNumber(index);
+                                }}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </Button>
+                        </Layout.Stack>
                     </Layout.Stack>
                 {/each}
                 {#if numbers?.length < 10}

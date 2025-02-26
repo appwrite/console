@@ -1,17 +1,6 @@
 <script lang="ts">
-    import { FloatingActionBar, Id, Modal } from '$lib/components';
+    import { FloatingActionBar, Id } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellCheck,
-        TableCellHead,
-        TableCellHeadCheck,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
     import type { PageData } from './$types';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
@@ -23,6 +12,8 @@
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
+    import { Badge, Selector, Table, Typography } from '@appwrite.io/pink-svelte';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let columns: Column[];
     export let data: PageData;
@@ -59,95 +50,84 @@
     }
 </script>
 
-<TableScroll>
-    <TableHeader>
-        <TableCellHeadCheck
-            bind:selected={selectedIds}
-            pageItemsIds={data.identities.identities.map((d) => d.$id)} />
+<Table.Root>
+    <svelte:fragment slot="header">
+        <Table.Header.Selector width="40px" />
         {#each columns as column}
             {#if column.show}
-                <TableCellHead width={column.width}>{column.title}</TableCellHead>
+                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
             {/if}
         {/each}
-    </TableHeader>
-    <TableBody>
-        {#each data.identities.identities as identity (identity.$id)}
-            <TableRow>
-                <TableCellCheck bind:selectedIds id={identity.$id} />
+    </svelte:fragment>
+    {#each data.identities.identities as identity (identity.$id)}
+        <Table.Row>
+            <Table.Cell>
+                <Selector.Checkbox size="s" />
+            </Table.Cell>
 
-                {#each columns as column}
-                    {#if column.show}
-                        {#if column.id === '$id'}
-                            {#key columns}
-                                <TableCell title={column.title}>
-                                    <Id value={identity[column.id]}>
-                                        {identity[column.id]}
-                                    </Id>
-                                </TableCell>
-                            {/key}
-                        {:else if column.id === 'provider'}
-                            {@const provider = oAuthProviders[identity[column.id]]}
-                            <TableCellText title={column.title} width={column.width}>
-                                <div class="u-inline-flex u-cross-center u-gap-8">
-                                    <div class="avatar is-size-small">
-                                        <img
-                                            style="--p-text-size: 1rem"
-                                            height="20"
-                                            width="20"
-                                            src={`${base}/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
-                                            alt={provider.name} />
-                                    </div>
-                                    {provider.name}
+            {#each columns as column}
+                {#if column.show}
+                    {#if column.id === '$id'}
+                        {#key columns}
+                            <Table.Cell>
+                                <Id value={identity[column.id]}>
+                                    {identity[column.id]}
+                                </Id>
+                            </Table.Cell>
+                        {/key}
+                    {:else if column.id === 'provider'}
+                        {@const provider = oAuthProviders[identity[column.id]]}
+                        <Table.Cell width={column.width + 'px'}>
+                            <div class="u-inline-flex u-cross-center u-gap-8">
+                                <div class="avatar is-size-small">
+                                    <img
+                                        style="--p-text-size: 1rem"
+                                        height="20"
+                                        width="20"
+                                        src={`${base}/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
+                                        alt={provider.name} />
                                 </div>
-                            </TableCellText>
-                        {:else if column.type === 'datetime'}
-                            <TableCellText title={column.title} width={column.width}>
-                                {#if !identity[column.id]}
-                                    -
-                                {:else}
-                                    {toLocaleDateTime(identity[column.id])}
-                                {/if}
-                            </TableCellText>
-                        {:else}
-                            <TableCellText title={column.title} width={column.width}>
-                                {identity[column.id]}
-                            </TableCellText>
-                        {/if}
+                                {provider.name}
+                            </div>
+                        </Table.Cell>
+                    {:else if column.type === 'datetime'}
+                        <Table.Cell width={column.width + 'px'}>
+                            {#if !identity[column.id]}
+                                -
+                            {:else}
+                                {toLocaleDateTime(identity[column.id])}
+                            {/if}
+                        </Table.Cell>
+                    {:else}
+                        <Table.Cell width={column.width + 'px'}>
+                            {identity[column.id]}
+                        </Table.Cell>
                     {/if}
-                {/each}
-            </TableRow>
-        {/each}
-    </TableBody>
-</TableScroll>
+                {/if}
+            {/each}
+        </Table.Row>
+    {/each}
+</Table.Root>
 
 <FloatingActionBar show={selectedIds.length > 0}>
-    <div class="u-flex u-cross-center u-main-space-between actions">
-        <div class="u-flex u-cross-center u-gap-8">
-            <span class="indicator body-text-2 u-bold">{selectedIds.length}</span>
-            <p>
-                <span class="is-only-desktop">
-                    {selectedIds.length > 1 ? 'identities' : 'identity'}
-                </span>
-                selected
-            </p>
-        </div>
-
-        <div class="u-flex u-cross-center u-gap-8">
-            <Button text on:click={() => (selectedIds = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>
-                <p>Delete</p>
-            </Button>
-        </div>
-    </div>
+    <svelte:fragment slot="start">
+        <Badge content={selectedIds.length.toString()} />
+        <span>
+            <span class="is-only-desktop">
+                {selectedIds.length > 1 ? 'identities' : 'identity'}
+            </span>
+            selected
+        </span>
+    </svelte:fragment>
+    <svelte:fragment slot="end">
+        <Button text on:click={() => (selectedIds = [])}>Cancel</Button>
+        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+    </svelte:fragment>
 </FloatingActionBar>
 
-<Modal title="Delete identity" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
-    <p class="text" data-private>
+<Confirm title="Delete Identity" bind:open={showDelete} onSubmit={handleDelete}>
+    <Typography.Text>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'identities' : 'identity'}?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    </Typography.Text>
+</Confirm>

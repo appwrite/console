@@ -64,45 +64,51 @@
                             id={`key-${index}`}
                             bind:value={key}
                             placeholder="Enter key"
-                            label="Key"
+                            label={index === 0 ? 'Key' : undefined}
                             required />
-                        <InputText
-                            id={`value-${index}`}
-                            bind:value
-                            placeholder="Enter value"
-                            label="Value"
-                            required />
-                        <Button
-                            text
-                            icon
-                            disabled={(!key || !value) && index === 0}
-                            on:click={() => {
-                                if (index === 0 && prefs?.length === 1) {
-                                    prefs = [['', '']];
-                                } else {
-                                    prefs.splice(index, 1);
-                                    prefs = prefs;
-                                }
-                            }}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </Button>
+                        <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                            <InputText
+                                id={`value-${index}`}
+                                bind:value
+                                placeholder="Enter value"
+                                label={index === 0 ? 'Value' : undefined}
+                                required />
+                            <Button
+                                icon
+                                compact
+                                disabled={(!key || !value) && index === 0}
+                                on:click={() => {
+                                    if (index === 0 && prefs?.length === 1) {
+                                        prefs = [['', '']];
+                                    } else {
+                                        prefs.splice(index, 1);
+                                        prefs = prefs;
+                                    }
+                                }}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </Button>
+                        </Layout.Stack>
                     </Layout.Stack>
                 {/each}
             {/if}
-            <Button
-                text
-                disabled={prefs?.length && prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]
-                    ? false
-                    : true}
-                on:click={() => {
-                    if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
-                        prefs.push(['', '']);
-                        prefs = prefs;
-                    }
-                }}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Add preference
-            </Button>
+            <div>
+                <Button
+                    secondary
+                    disabled={prefs?.length &&
+                    prefs[prefs.length - 1][0] &&
+                    prefs[prefs.length - 1][1]
+                        ? false
+                        : true}
+                    on:click={() => {
+                        if (prefs[prefs.length - 1][0] && prefs[prefs.length - 1][1]) {
+                            prefs.push(['', '']);
+                            prefs = prefs;
+                        }
+                    }}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add preference
+                </Button>
+            </div>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
