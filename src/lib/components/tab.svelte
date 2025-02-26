@@ -100,6 +100,7 @@
     <Tabs.Item.Button
         {root}
         bind:active={selected}
+        on:click
         on:click={handleClick}
         on:keydown={handleKeyDown}>
         <slot />

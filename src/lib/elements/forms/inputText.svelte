@@ -48,11 +48,7 @@
     on:invalid={handleInvalid}
     on:input
     bind:value>
-    <svelte:fragment slot="info">
-        <slot name="info" slot="info" />
-    </svelte:fragment>
-
-    <svelte:fragment slot="end">
-        <slot name="end" />
-    </svelte:fragment>
+    <slot name="start" slot="start" />
+    <slot name="info" slot="info" />
+    <slot name="end" slot="end" />
 </Input.Text>

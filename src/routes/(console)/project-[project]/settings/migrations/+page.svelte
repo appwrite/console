@@ -1,17 +1,9 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { Arrow, CardGrid, Heading } from '$lib/components';
+    import { Arrow, Avatar, AvatarGroup, CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
-    import Table from '$lib/elements/table/table.svelte';
     import { isSameDay, toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
@@ -21,11 +13,21 @@
     import { openImportWizard } from './(import)';
     import Details from './details.svelte';
     import ExportModal from './exportModal.svelte';
-    import Status from '$lib/components/status.svelte';
-    import { capitalize } from '$lib/helpers/string';
     import { readOnly } from '$lib/stores/billing';
     import type { Models } from '@appwrite.io/console';
     import { canWriteProjects } from '$lib/stores/roles';
+    import {
+        IconCloud,
+        IconDatabase,
+        IconDownload,
+        IconFolder,
+        IconLightningBolt,
+        IconServer,
+        IconUpload,
+        IconUserGroup
+    } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Link, Status, Table } from '@appwrite.io/pink-svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let data;
     let migration: Models.Migration = null;
@@ -55,7 +57,7 @@
     $: $registerCommands([
         {
             label: 'Import data',
-            icon: 'download',
+            icon: IconDownload,
             keys: ['i', 'd'],
             callback: openImportWizard,
             group: 'migrations',
@@ -64,14 +66,14 @@
         isSelfHosted
             ? {
                   label: 'Deploy to cloud',
-                  icon: 'cloud',
+                  icon: IconCloud,
                   keys: ['d', 'c'],
                   callback: deployToCloud,
                   group: 'migrations'
               }
             : {
                   label: 'Export data',
-                  icon: 'upload',
+                  icon: IconUpload,
                   keys: ['e', 'd'],
                   callback: () => (showExport = true),
                   group: 'migrations'
@@ -136,13 +138,11 @@
     <CardGrid>
         <svelte:fragment slot="title">Import project data</svelte:fragment>
         Import data from another platform or from a different Appwrite instance.
-        <a
-            class="link"
+        <Link.Anchor
             href="https://appwrite.io/docs/advanced/migrations"
             target="_blank"
             rel="noopener noreferrer">
-            Learn about which platforms are supported</a
-        >.
+            Learn more</Link.Anchor>
         <svelte:fragment slot="aside">
             {#if data.migrations.length}
                 <div class="u-flex">
@@ -151,79 +151,56 @@
                     </div>
                 </div>
 
-                <Table noStyles>
-                    <TableHeader>
-                        <TableCellHead>Date</TableCellHead>
-                        <TableCellHead>Source</TableCellHead>
-                        <TableCellHead>Status</TableCellHead>
-                        <TableCellHead />
-                    </TableHeader>
-                    <TableBody>
-                        {#each data.migrations as entry}
-                            <TableRow>
-                                {@const status = getStatus(entry.status)}
-                                <TableCell title="Data">
-                                    {isSameDay(new Date(), new Date(entry.$createdAt))
-                                        ? 'Today'
-                                        : toLocaleDate(entry.$createdAt)}
-                                </TableCell>
-                                <TableCell title="Source">{entry.source}</TableCell>
-                                <TableCell title="Status">
-                                    <Status {status}>
-                                        {capitalize(status)}
-                                    </Status>
-                                </TableCell>
-                                <TableCell title="" showOverflow>
-                                    <div class="u-flex u-main-end">
-                                        <Button secondary on:click={() => showDetails(entry)}
-                                            >Details</Button>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </Table>
+                <Table.Root>
+                    <svelte:fragment slot="header">
+                        <Table.Header.Cell>Date</Table.Header.Cell>
+                        <Table.Header.Cell>Source</Table.Header.Cell>
+                        <Table.Header.Cell>Status</Table.Header.Cell>
+                        <Table.Header.Cell />
+                    </svelte:fragment>
+                    {#each data.migrations as entry}
+                        <Table.Row>
+                            {@const status = getStatus(entry.status)}
+                            <Table.Cell>
+                                {isSameDay(new Date(), new Date(entry.$createdAt))
+                                    ? 'Today'
+                                    : toLocaleDate(entry.$createdAt)}
+                            </Table.Cell>
+                            <Table.Cell>{entry.source}</Table.Cell>
+                            <Table.Cell>
+                                <Status label={capitalize(status)} {status} />
+                            </Table.Cell>
+                            <Table.Cell>
+                                <div class="u-flex u-main-end">
+                                    <Button secondary on:click={() => showDetails(entry)}
+                                        >Details</Button>
+                                </div>
+                            </Table.Cell>
+                        </Table.Row>
+                    {/each}
+                </Table.Root>
             {:else}
-                <div class="import-box">
-                    <ul class="avatars-group is-with-border">
-                        <li class="avatars-group-item">
-                            <div class="avatar">
-                                <i class="icon-user-group" />
-                            </div>
-                        </li>
-
-                        <li class="avatars-group-item">
-                            <div class="avatar">
-                                <i class="icon-database" />
-                            </div>
-                        </li>
-
-                        <li class="avatars-group-item">
-                            <div class="avatar">
-                                <i class="icon-lightning-bolt" />
-                            </div>
-                        </li>
-
-                        <li class="avatars-group-item">
-                            <div class="avatar">
-                                <i class="icon-folder" />
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="u-margin-block-start-8">
+                <Layout.Stack alignItems="center" gap="xl">
+                    <Layout.Stack alignItems="center">
+                        <AvatarGroup
+                            --icon-fill="var(--color-fgcolor-neutral-tertiary)"
+                            icons={[IconUserGroup, IconDatabase, IconLightningBolt, IconFolder]}
+                            size="s" />
                         <Arrow direction="down" />
-                    </div>
-                    <div class="avatar u-margin-block-start-8" style="--size: {48 / 16}rem">
-                        <span class="icon-cloud" />
-                    </div>
+                        <Avatar alt="appwrite" size="s">
+                            <Icon
+                                icon={IconCloud}
+                                size="s"
+                                color="--color-fgcolor-neutral-tertiary" />
+                        </Avatar>
+                    </Layout.Stack>
                     <Button
-                        class="u-margin-block-start-20"
                         secondary
                         on:click={openImportWizard}
                         disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
                         Import data
                     </Button>
-                </div>
+                </Layout.Stack>
             {/if}
         </svelte:fragment>
     </CardGrid>
@@ -231,55 +208,65 @@
         <CardGrid>
             <svelte:fragment slot="title">Deploy to Cloud</svelte:fragment>
             Export data from your project to Appwrite Cloud.
-            <a
-                class="link"
+            <Link.Anchor
                 href="https://appwrite.io/docs/advanced/migrations/self-hosted"
                 target="_blank"
                 rel="noopener noreferrer">
-                Learn more in our documentation.</a>
+                Learn more</Link.Anchor>
             <svelte:fragment slot="aside">
-                <div class="import-box">
-                    <div class="u-flex u-cross-center u-gap-8">
-                        <div class="avatar" style="--size: {48 / 16}rem">
-                            <span class="icon-server" />
-                        </div>
+                <Layout.Stack alignItems="center" gap="xl">
+                    <Layout.Stack direction="row" justifyContent="center" alignItems="center">
+                        <Avatar alt="appwrite" size="s">
+                            <Icon
+                                icon={IconServer}
+                                size="s"
+                                color="--color-fgcolor-neutral-tertiary" />
+                        </Avatar>
                         <Arrow direction="right" />
-                        <div class="avatar" style="--size: {48 / 16}rem">
-                            <span class="icon-cloud" />
-                        </div>
+                        <Avatar alt="appwrite" size="s">
+                            <Icon
+                                icon={IconCloud}
+                                size="s"
+                                color="--color-fgcolor-neutral-tertiary" />
+                        </Avatar>
+                    </Layout.Stack>
+                    <div>
+                        <Button secondary on:click={deployToCloud}>Deploy to Cloud</Button>
                     </div>
-                    <Button class="u-margin-block-start-48" secondary on:click={deployToCloud}>
-                        Deploy to Cloud
-                    </Button>
-                </div>
+                </Layout.Stack>
             </svelte:fragment>
         </CardGrid>
     {:else}
         <CardGrid>
             <svelte:fragment slot="title">Export to self-hosted instance</svelte:fragment>
             Export data from your project to a self-hosted instance.
-            <a
+            <Link.Anchor
                 class="link"
                 href="https://appwrite.io/docs/advanced/migrations/self-hosted"
                 target="_blank"
                 rel="noopener noreferrer">
-                Learn more in our documentation.</a>
+                Learn more</Link.Anchor>
             <svelte:fragment slot="aside">
-                <div class="import-box">
-                    <div class="u-flex u-cross-center u-gap-8">
-                        <div class="avatar" style="--size: {48 / 16}rem">
-                            <span class="icon-cloud" />
-                        </div>
+                <Layout.Stack alignItems="center" gap="xl">
+                    <Layout.Stack direction="row" justifyContent="center" alignItems="center">
+                        <Avatar alt="appwrite" size="s">
+                            <Icon
+                                icon={IconCloud}
+                                size="s"
+                                color="--color-fgcolor-neutral-tertiary" />
+                        </Avatar>
                         <Arrow direction="right" />
-                        <div class="avatar" style="--size: {48 / 16}rem">
-                            <span class="icon-server" />
-                        </div>
+                        <Avatar alt="appwrite" size="s">
+                            <Icon
+                                icon={IconServer}
+                                size="s"
+                                color="--color-fgcolor-neutral-tertiary" />
+                        </Avatar>
+                    </Layout.Stack>
+                    <div>
+                        <Button secondary on:click={() => (showExport = true)}>Export data</Button>
                     </div>
-                    <Button
-                        class="u-margin-block-start-48"
-                        secondary
-                        on:click={() => (showExport = true)}>Export data</Button>
-                </div>
+                </Layout.Stack>
             </svelte:fragment>
         </CardGrid>
     {/if}
@@ -287,18 +274,6 @@
 
 <ExportModal bind:show={showExport} />
 
-<Details {migration} bind:show={showMigration} />
-
-<style lang="scss">
-    .import-box {
-        display: grid;
-        place-items: center;
-
-        border: 1px dashed hsl(var(--color-border));
-        border-radius: 1rem;
-
-        height: 100%;
-
-        padding: 1.5rem;
-    }
-</style>
+{#if showMigration}
+    <Details {migration} bind:show={showMigration} />
+{/if}

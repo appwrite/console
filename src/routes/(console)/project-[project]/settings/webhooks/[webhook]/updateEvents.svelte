@@ -12,8 +12,8 @@
     import { onMount } from 'svelte';
     import { writable, type Writable } from 'svelte/store';
     import { webhook } from './store';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
     const projectId = $page.params.project;
     const eventSet: Writable<Set<string>> = writable(new Set());
@@ -73,28 +73,31 @@
         Set the events that will trigger your webhook. Maximum 100 events allowed.
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
-                <TableList>
+                <Table.Root>
                     {#each Array.from($eventSet) as event}
-                        <li class="table-row">
-                            <TableCellText title="id">
-                                {event}
-                            </TableCellText>
-                            <TableCell showOverflow title="options" width={40}>
-                                <button
-                                    class="button is-text is-only-icon"
-                                    aria-label="delete id"
-                                    on:click|preventDefault={() => {
-                                        $eventSet.delete(event);
-                                        eventSet.set($eventSet);
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </button>
-                            </TableCell>
-                        </li>
+                        <Table.Row>
+                            <Table.Cell>
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    {event}
+                                    <Button
+                                        extraCompact
+                                        ariaLabel="delete event"
+                                        on:click={() => {
+                                            $eventSet.delete(event);
+                                            eventSet.set($eventSet);
+                                        }}>
+                                        <Icon icon={IconX} size="s" />
+                                    </Button>
+                                </Layout.Stack>
+                            </Table.Cell>
+                        </Table.Row>
                     {/each}
-                </TableList>
-                <div class="u-flex u-margin-block-start-16">
-                    <Button text on:click={() => (showCreateEvent = true)}>
+                </Table.Root>
+                <div>
+                    <Button secondary on:click={() => (showCreateEvent = true)}>
                         <Icon icon={IconPlus} slot="start" size="s" />
                         Add event
                     </Button>
@@ -111,12 +114,11 @@
 </Form>
 
 <EventModal bind:show={showCreateEvent} on:created={handleEvent}>
-    <p class="text">
-        Select events in your Appwrite project that will trigger your webhook. <a
+    <Typography.Text>
+        Select events in your Appwrite project that will trigger your webhook. <Link.Anchor
             href="https://appwrite.io/docs/advanced/platform/events"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Learn more about Appwrite Events</a
-        >.
-    </p>
+            class="link">Learn more</Link.Anchor>
+    </Typography.Text>
 </EventModal>

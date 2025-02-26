@@ -33,9 +33,10 @@
     import MessageStatusPill from './messageStatusPill.svelte';
     import { canWriteWebhooks } from '$lib/stores/roles';
     import { get } from 'svelte/store';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Layout, Link, Status, Table } from '@appwrite.io/pink-svelte';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { View } from '$lib/helpers/load';
 
     export let data: PageData;
 
@@ -60,74 +61,75 @@
 
 <Container>
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-        <ViewSelector {columns} view={data.view} hideView />
+        <ViewSelector {columns} view={View.Table} hideView />
         {#if $canWriteWebhooks}
             <Button on:click={openWizard} event="create_webhook">
                 <Icon icon={IconPlus} slot="start" size="s" />
-                Create database
+                Create webhook
             </Button>
         {/if}
     </Layout.Stack>
 
     {#if data.webhooks.total}
-        <TableScroll>
-            <TableHeader>
+        <Table.Root>
+            <svelte:fragment slot="header">
                 {#each $columns as column}
                     {#if column.show}
-                        <TableCellHead width={column.width}>{column.title}</TableCellHead>
+                        <Table.Header.Cell width={column.width + 'px'}
+                            >{column.title}</Table.Header.Cell>
                     {/if}
                 {/each}
-            </TableHeader>
-            <TableBody service="webhooks" total={data.webhooks.total}>
-                {#each data.webhooks.webhooks as webhook}
-                    <TableRowLink
-                        href={`${base}/project-${projectId}/settings/webhooks/${webhook.$id}`}>
-                        {#each $columns as column (column.id)}
-                            {#if column.show}
-                                {#if column.id === '$id'}
-                                    {#key $columns}
-                                        <TableCell title={column.title} width={column.width}>
-                                            <Id value={webhook.$id}>{webhook.$id}</Id>
-                                        </TableCell>
-                                    {/key}
-                                {:else if column.id === 'events'}
-                                    <TableCellText title={column.title} width={column.width}>
-                                        {webhook.events.length}
-                                    </TableCellText>
-                                {:else if column.type === 'datetime'}
-                                    <TableCellText title={column.title} width={column.width}>
-                                        {#if !webhook[column.id]}
-                                            -
-                                        {:else}
-                                            {toLocaleDateTime(webhook[column.id])}
-                                        {/if}
-                                    </TableCellText>
-                                {:else if column.id === 'enabled'}
-                                    <TableCellText title={column.title} width={column.width}>
-                                        <MessageStatusPill enabled={webhook.enabled} />
-
-                                        &nbsp;
+            </svelte:fragment>
+            {#each data.webhooks.webhooks as webhook}
+                <Table.Link href={`${base}/project-${projectId}/settings/webhooks/${webhook.$id}`}>
+                    {#each $columns as column (column.id)}
+                        {#if column.show}
+                            {#if column.id === '$id'}
+                                {#key $columns}
+                                    <Table.Cell>
+                                        <Id value={webhook.$id}>{webhook.$id}</Id>
+                                    </Table.Cell>
+                                {/key}
+                            {:else if column.id === 'events'}
+                                <Table.Cell>
+                                    {webhook.events.length}
+                                </Table.Cell>
+                            {:else if column.type === 'datetime'}
+                                <Table.Cell>
+                                    {#if !webhook[column.id]}
+                                        -
+                                    {:else}
+                                        {toLocaleDateTime(webhook[column.id])}
+                                    {/if}
+                                </Table.Cell>
+                            {:else if column.id === 'enabled'}
+                                <Table.Cell>
+                                    <Layout.Stack direction="row" gap="s" alignItems="normal">
+                                        <Status
+                                            label={webhook.enabled ? 'Enabled' : 'Disabled'}
+                                            status={webhook.enabled ? 'complete' : 'failed'} />
 
                                         {#if webhook.enabled === false}
-                                            <Button
+                                            <Link.Button
+                                                variant="muted"
                                                 on:click={(e) => {
                                                     e.preventDefault();
                                                     selectedWebhook = webhook;
                                                     showFailed = true;
-                                                }}>Details</Button>
+                                                }}>Details</Link.Button>
                                         {/if}
-                                    </TableCellText>
-                                {:else}
-                                    <TableCellText title={column.title} width={column.width}>
-                                        {webhook[column.id]}
-                                    </TableCellText>
-                                {/if}
+                                    </Layout.Stack>
+                                </Table.Cell>
+                            {:else}
+                                <Table.Cell>
+                                    {webhook[column.id]}
+                                </Table.Cell>
                             {/if}
-                        {/each}
-                    </TableRowLink>
-                {/each}
-            </TableBody>
-        </TableScroll>
+                        {/if}
+                    {/each}
+                </Table.Link>
+            {/each}
+        </Table.Root>
     {:else}
         <Empty
             single

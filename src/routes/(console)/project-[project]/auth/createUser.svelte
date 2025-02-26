@@ -13,6 +13,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -72,20 +74,18 @@
             id="password"
             label="Password"
             placeholder="Enter password"
-            showPasswordButton={true}
             bind:value={pass} />
 
         {#if !showDropdown}
             <div>
-                <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                    <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        User ID
-                    </span>
-                </Pill>
+                <Tag
+                    size="s"
+                    on:click={() => {
+                        showDropdown = true;
+                    }}><Icon icon={IconPencil} /> User ID</Tag>
             </div>
-        {:else}
-            <CustomId autofocus bind:show={showDropdown} name="User" bind:id />
         {/if}
+        <CustomId bind:show={showDropdown} name="User" bind:id fullWidth={true} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button text on:mousedown={() => (showCreate = false)}>Cancel</Button>

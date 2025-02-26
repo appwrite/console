@@ -33,7 +33,7 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Alert, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -59,7 +59,7 @@
         EmailTemplateType,
         EmailTemplateLocale
     } from '@appwrite.io/console';
-    import { Accordion, Layout } from '@appwrite.io/pink-svelte';
+    import { Accordion, Layout, Alert, Tag, Badge, Link } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -96,41 +96,29 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-8 u-cross-center">
-        <Heading tag="h2" size="5">Templates</Heading>
-        <div class="tag eyebrow-heading-3">
-            <span class="text u-x-small">Experimental</span>
-        </div>
-    </div>
-
     {#if !data.project.smtpEnabled}
-        <div class="u-margin-block-start-24">
-            <Alert
-                isStandalone
-                dismissible={false}
-                type="info"
-                buttons={[
-                    {
-                        slot: 'SMTP settings',
-                        href: `${base}/project-${data.project.$id}/settings/smtp`
-                    }
-                ]}>
-                <svelte:fragment slot="title">
-                    Custom SMTP server is required for customizing emails
-                </svelte:fragment>
-                Configure a custom SMTP server to enable custom email templates and prevent emails from
-                being labeled as spam.
-            </Alert>
-        </div>
+        <Alert.Inline
+            dismissible={false}
+            status="info"
+            title="Custom SMTP server is required for customizing emails">
+            Configure a custom SMTP server to enable custom email templates and prevent emails from
+            being labeled as spam.
+            <Button
+                compact
+                slot="actions"
+                href={`${base}/project-${data.project.$id}/settings/smtp`}>
+                SMTP settings
+            </Button>
+        </Alert.Inline>
     {/if}
 
     <CardGrid>
-        <svelte:fragment slot="title">Email templates</svelte:fragment>
+        <svelte:fragment slot="title"
+            >Email templates <Badge variant="secondary" content="Experimental" /></svelte:fragment>
         Use templates to send and process account management emails.
-        <a href="https://appwrite.io/docs/advanced/platform/message-templates" class="link">
-            Learn more about email templates.
-        </a>
-
+        <Link.Anchor href="https://appwrite.io/docs/advanced/platform/message-templates">
+            Learn more
+        </Link.Anchor>
         <svelte:fragment slot="aside">
             <Layout.Stack>
                 <Accordion

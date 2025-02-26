@@ -34,12 +34,16 @@
 <Form onSubmit={updateSessionsLimit}>
     <CardGrid>
         <svelte:fragment slot="title">Sessions limit</svelte:fragment>
-        <Typography.Text>
-            <p>Maximum number of active sessions allowed per user.</p>
-        </Typography.Text>
+        <Typography.Text>Maximum number of active sessions allowed per user</Typography.Text>
 
         <svelte:fragment slot="aside">
-            <InputNumber id="max-session" label="Limit" bind:value={maxSessions} />
+            <InputNumber
+                required
+                min={1}
+                max={100}
+                id="max-session"
+                label="Limit"
+                bind:value={maxSessions} />
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button disabled={maxSessions === $project?.authSessionsLimit} submit>Update</Button>

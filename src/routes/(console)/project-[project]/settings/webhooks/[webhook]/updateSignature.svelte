@@ -1,6 +1,7 @@
 <script lang="ts">
     import { CardGrid, Heading, Secret } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { Link } from '@appwrite.io/pink-svelte';
     import Regenerate from './regenerate.svelte';
     import { webhook } from './store';
 
@@ -10,19 +11,18 @@
 <CardGrid>
     <svelte:fragment slot="title">Signature key</svelte:fragment>
     Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your webhooks.
-    <a
+    <Link.Anchor
         href="https://appwrite.io/docs/advanced/platform/webhooks#verification"
         target="_blank"
         rel="noopener noreferrer"
-        class="link">Learn more about webhook validation.</a>
+        class="link">Learn more</Link.Anchor>
     <svelte:fragment slot="aside">
         <div>
-            <p>Key</p>
-            <Secret copyEvent="signature" bind:value={$webhook.signatureKey} />
+            <Secret label="Key" copyEvent="signature" bind:value={$webhook.signatureKey} />
         </div>
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <Button on:click={() => (showRegenerate = true)} secondary submit>Regenerate Key</Button>
+        <Button on:click={() => (showRegenerate = true)} secondary submit>Regenerate key</Button>
     </svelte:fragment>
 </CardGrid>
 

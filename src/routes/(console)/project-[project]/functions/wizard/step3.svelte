@@ -65,7 +65,7 @@
 {#if showCreate}
     <EventModal bind:show={showCreate} on:created={handleCreated}>
         <p class="text">
-            Select events in your Appwrite project that will trigger your function. <a
+            Select events in your Appwrite project that will trigger your function<a
                 href="https://appwrite.io/docs/advanced/platform/events"
                 target="_blank"
                 rel="noopener noreferrer"

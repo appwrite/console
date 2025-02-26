@@ -17,8 +17,8 @@
     import { app } from '$lib/stores/app';
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Input, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconPlus, IconRefresh, IconX } from '@appwrite.io/pink-icons-svelte';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -85,12 +85,11 @@
         <svelte:fragment slot="title">Mock phone numbers</svelte:fragment>
         Generate <b>fictional</b> numbers to simulate phone verification when testing demo accounts
         for submitting your application to the App Store or Google Play.
-        <a
+        <Link.Anchor
             href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
             target="_blank"
-            class="u-underline"
             rel="noopener noreferrer">
-            Learn more</a>
+            Learn more</Link.Anchor>
         <svelte:fragment slot="aside">
             {#if isComponentDisabled}
                 <EmptyCardImageCloud source="email_signature_card" noAspectRatio>
@@ -132,7 +131,6 @@
                     {emptyStateDescription}
                     <svelte:fragment let:source slot="cta">
                         <Button
-                            class="u-margin-block-start-32"
                             secondary
                             fullWidth
                             external={isSelfHosted}
@@ -146,79 +144,65 @@
                     </svelte:fragment>
                 </EmptyCardImageCloud>
             {:else if numbers?.length > 0}
-                <ul class="form-list u-gap-8">
-                    {#each numbers as number, index}
+                {#each numbers as number, index}
+                    <Layout.Stack direction="row" alignItems="flex-end">
                         <InputPhone
                             id={`key-${index}`}
                             bind:value={number.phone}
-                            fullWidth
                             placeholder="Enter phone number"
-                            label="Phone number"
-                            showLabel={index === 0}
+                            label={index === 0 ? 'Phone number' : undefined}
                             minlength={9}
                             maxlength={16}
                             required>
-                            <button
-                                slot="options"
-                                on:click={() => (number.phone = generateNumber())}
-                                class="options-list-button"
-                                aria-label="regenerate text"
-                                type="button">
-                                <Tooltip>
-                                    <span class="icon-refresh" aria-hidden="true"></span>
-                                    <span slot="tooltip">Regenerate</span>
-                                </Tooltip>
-                            </button>
+                            <Tooltip slot="end">
+                                <Input.Action
+                                    icon={IconRefresh}
+                                    on:click={() => (number.phone = generateNumber())} />
+                                <span slot="tooltip">Regenerate</span>
+                            </Tooltip>
                         </InputPhone>
                         <InputOTP
                             id={`value-${index}`}
                             bind:value={number.otp}
                             fullWidth
                             placeholder="Enter value"
-                            label="Verification code"
+                            label={index === 0 ? 'Verification code' : undefined}
                             maxlength={6}
                             pattern={'^[0-9]{6}$'}
                             patternError="The value must contain 6 digits"
-                            showLabel={index === 0}
                             required>
-                            <button
-                                slot="options"
-                                on:click={() => (number.otp = generateOTP())}
-                                class="options-list-button"
-                                aria-label="regenerate text"
-                                type="button">
-                                <Tooltip
-                                    ><span class="icon-refresh" aria-hidden="true"></span><span
-                                        slot="tooltip">Regenerate</span
-                                    ></Tooltip>
-                            </button>
+                            <Tooltip slot="end">
+                                <Input.Action
+                                    icon={IconRefresh}
+                                    on:click={() => (number.otp = generateOTP())} />
+                                <span slot="tooltip">Regenerate</span>
+                            </Tooltip>
                         </InputOTP>
                         <Button
-                            text
+                            compact
+                            size="s"
                             disabled={numbers.length === 0}
-                            class={'u-padding-4 ' + (index === 0 ? 'u-margin-block-start-24' : '')}
                             on:click={() => {
                                 deletePhoneNumber(index);
                             }}>
-                            <Tooltip
-                                ><span class="icon-refresh" aria-hidden="true"></span><span
-                                    slot="tooltip">Regenerate</span
-                                ></Tooltip>
+                            <Icon icon={IconX} size="s" />
                         </Button>
-                    {/each}
-                </ul>
+                    </Layout.Stack>
+                {/each}
                 {#if numbers?.length < 10}
-                    <Button
-                        text
-                        on:click={() =>
-                            addPhoneNumber({
-                                phone: generateNumber(),
-                                otp: generateOTP()
-                            })}
-                        disabled={numbers.length >= 10}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Add number
-                    </Button>
+                    <div>
+                        <Button
+                            secondary
+                            on:click={() =>
+                                addPhoneNumber({
+                                    phone: generateNumber(),
+                                    otp: generateOTP()
+                                })}
+                            disabled={numbers.length >= 10}>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add number
+                        </Button>
+                    </div>
                 {/if}
             {:else}
                 <Empty

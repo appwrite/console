@@ -38,8 +38,8 @@
     If you reduce the limit, users who are currently logged in will be logged out of the application.
     <svelte:fragment slot="aside">
         <Layout.Stack direction="row">
-            <InputNumber id="length" label="Length" bind:value={$value} min={0} />
-            <InputSelect id="period" label="Time period" bind:value={$unit} {options} />
+            <InputNumber required id="length" label="Length" bind:value={$value} min={0} />
+            <InputSelect required id="period" label="Time period" bind:value={$unit} {options} />
         </Layout.Stack>
     </svelte:fragment>
     <svelte:fragment slot="actions">

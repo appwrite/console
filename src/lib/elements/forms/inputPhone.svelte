@@ -62,4 +62,7 @@
     state={error ? 'error' : 'default'}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
-    bind:value />
+    bind:value>
+    <slot name="start" slot="start" />
+    <slot name="end" slot="end" />
+</Input.Text>

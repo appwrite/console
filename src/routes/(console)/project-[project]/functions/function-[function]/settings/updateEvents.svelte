@@ -22,7 +22,7 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Link, Typography } from '@appwrite.io/pink-svelte';
 
     const functionId = $page.params.function;
     const eventSet: Writable<Set<string>> = writable(new Set($func.events));
@@ -160,12 +160,11 @@
 </Form>
 
 <EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent}>
-    <p class="text">
-        Select events in your Appwrite project that will trigger your function. <a
+    <Typography.Text
+        >Select events in your Appwrite project that will trigger your function<Link.Anchor
             href="https://appwrite.io/docs/advanced/platform/events"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Learn more about Appwrite Events</a
-        >.
-    </p>
+            class="link">Learn more about Appwrite Events</Link.Anchor
+        >.</Typography.Text>
 </EventModal>

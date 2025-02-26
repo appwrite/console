@@ -3,6 +3,7 @@
 
     export let value = '';
     export let autofocus = true;
+    export let required = false;
 
     let error = false;
     const pattern = String.raw`^[a-zA-Z0-9][a-zA-Z0-9._\-]*$`;
@@ -24,6 +25,7 @@
 <Input.Text
     {pattern}
     {autofocus}
+    {required}
     id="id"
     placeholder="Enter ID"
     maxlength={36}

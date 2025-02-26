@@ -16,6 +16,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
+    import { Selector } from '@appwrite.io/pink-svelte';
 
     const projectId = $page.params.project;
     let httpUser: string = null;
@@ -63,37 +64,31 @@
         Set an optional basic HTTP authentication username and password to protect your endpoint from
         unauthorized access.
         <svelte:fragment slot="aside">
-            <FormList>
-                <div>
-                    <Heading tag="h3" size="7">HTTP Authentication</Heading>
-                    <p class="text">Use to secure your endpoint from untrusted sources.</p>
-                </div>
-                <InputText
-                    label="User"
-                    id="user"
-                    placeholder="Enter username"
-                    bind:value={httpUser} />
-                <InputPassword
-                    label="Password"
-                    id="password"
-                    minlength={0}
-                    placeholder="Enter password"
-                    bind:value={httpPass} />
+            <div>
+                <Heading tag="h3" size="7">HTTP Authentication</Heading>
+                <p class="text">Use to secure your endpoint from untrusted sources.</p>
+            </div>
+            <InputText label="User" id="user" placeholder="Enter username" bind:value={httpUser} />
+            <InputPassword
+                label="Password"
+                id="password"
+                minlength={0}
+                placeholder="Enter password"
+                bind:value={httpPass} />
 
-                <InputChoice
-                    id="Security"
-                    label="Certificate verification (SSL/TLS)"
-                    bind:value={security}>
-                    <span class="u-color-text-danger">Warning:</span> Untrusted or self-signed
-                    certificates may not be secure.
-                    <a
-                        href="https://appwrite.io/docs/advanced/self-hosting/tls-certificates"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="link">
-                        Learn more</a>
-                </InputChoice>
-            </FormList>
+            <Selector.Checkbox
+                id="security"
+                label="Certificate verification (SSL/TLS)"
+                bind:checked={security}
+                description="Placeholder" />
+            <!-- <span class="u-color-text-danger">Warning:</span> Untrusted or self-signed certificates
+            may not be secure.
+            <a
+                href="https://appwrite.io/docs/advanced/self-hosting/tls-certificates"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">
+                Learn more</a> -->
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

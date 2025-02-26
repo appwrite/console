@@ -5,8 +5,8 @@
     import { createWebhook } from './store';
     import { EventModal } from '$lib/components';
     import { TableList, TableCellText, TableCell } from '$lib/elements/table';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Typography, Link, Table, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
     let showCreate = false;
 
@@ -25,28 +25,31 @@
     </svelte:fragment>
 
     {#if $createWebhook?.events?.length}
-        <TableList>
-            {#each $createWebhook.events as event}
-                <li class="table-row">
-                    <TableCellText title="id">
-                        {event}
-                    </TableCellText>
-                    <TableCell showOverflow title="options" width={40}>
-                        <button
-                            class="button is-text is-only-icon"
-                            aria-label="delete id"
-                            on:click|preventDefault={() => {
-                                eventSet.delete(event);
-                                $createWebhook.events = Array.from(eventSet);
-                            }}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
-                    </TableCell>
-                </li>
-            {/each}
-        </TableList>
-        <div class="u-flex u-margin-block-start-16">
-            <Button text on:click={() => (showCreate = !showCreate)}>
+        {#each $createWebhook.events as event}
+            <Table.Root>
+                <Table.Row>
+                    <Table.Cell>
+                        <Layout.Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center">
+                            {event}
+                            <Button
+                                extraCompact
+                                ariaLabel="delete event"
+                                on:click={() => {
+                                    eventSet.delete(event);
+                                    $createWebhook.events = Array.from(eventSet);
+                                }}>
+                                <Icon icon={IconX} size="s" />
+                            </Button>
+                        </Layout.Stack>
+                    </Table.Cell>
+                </Table.Row>
+            </Table.Root>
+        {/each}
+        <div>
+            <Button secondary on:click={() => (showCreate = !showCreate)}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add event
             </Button>
@@ -58,13 +61,12 @@
 
 {#if showCreate}
     <EventModal bind:show={showCreate} on:created={handleCreated}>
-        <p class="text">
-            Select events in your Appwrite project that will trigger your webhook. <a
+        <Typography.Text>
+            Select events in your Appwrite project that will trigger your webhook. <Link.Anchor
                 href="https://appwrite.io/docs/advanced/platform/events"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="link">Learn more about Appwrite Events</a
-            >.
-        </p>
+                class="link">Learn more</Link.Anchor>
+        </Typography.Text>
     </EventModal>
 {/if}

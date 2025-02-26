@@ -14,6 +14,7 @@
     export let min: number = null;
     export let max: number = null;
     export let step: number | 'any' = 1;
+    export let helper: string = undefined;
 
     let error: string;
 
@@ -57,7 +58,7 @@
     {nullable}
     bind:value
     autofocus={autofocus || undefined}
-    helper={error}
+    helper={error || helper}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
     on:input>

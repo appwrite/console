@@ -30,11 +30,13 @@
             });
         }
     }
+    //TODO: remove this component
 </script>
 
 <Tooltip disabled={tooltipDisabled}>
     <span
         data-private
+        style:display="inline-flex"
         role="button"
         tabindex="0"
         style:cursor="pointer"

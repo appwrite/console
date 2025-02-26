@@ -7,7 +7,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Typography, Layout, Selector, Input } from '@appwrite.io/pink-svelte';
+    import { Typography, Layout, Selector, Input, Badge } from '@appwrite.io/pink-svelte';
     import { project } from '../../store';
     import { tick } from 'svelte';
 
@@ -67,7 +67,7 @@
                     id="unlimited"
                     label="Unlimited"
                     value="unlimited" />
-                <Pill>recommended</Pill>
+                <Badge variant="secondary" content="Recommended" />
             </Layout.Stack>
             <Layout.Stack direction="row" alignItems="center">
                 <Selector.Radio

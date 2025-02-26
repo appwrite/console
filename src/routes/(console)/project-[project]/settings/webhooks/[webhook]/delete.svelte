@@ -6,6 +6,7 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import { project } from '../../../store';
     import { webhook } from './store';
 
@@ -30,5 +31,7 @@
 </script>
 
 <Confirm onSubmit={handleDelete} title="Delete webhook" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{$webhook.name}</b> from '{$project.name}'?
+    <Typography.Text>
+        Are you sure you want to delete <b>{$webhook.name}</b> from '{$project.name}'?
+    </Typography.Text>
 </Confirm>

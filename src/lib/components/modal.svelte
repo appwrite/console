@@ -25,7 +25,7 @@
     });
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' && submitOnEnter) {
+        if (show && event.key === 'Enter' && submitOnEnter) {
             event.preventDefault();
             if (show) {
                 formComponent.triggerSubmit();
