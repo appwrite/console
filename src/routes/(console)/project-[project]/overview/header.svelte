@@ -48,10 +48,8 @@
                             on:click={async () => {
                                 trackEvent('onboarding_hub_platform_dismiss');
                                 await setHasOnboardingDismissed($project.$id);
+                                await invalidate(Dependencies.ORGANIZATION);
                                 goto(`${base}/project-${$project.$id}/overview`);
-                                requestAnimationFrame(() => {
-                                    invalidate(Dependencies.ORGANIZATION);
-                                });
                             }}>Dismiss this page</Button.Button>
                     {/if}
                 </div>
