@@ -419,15 +419,6 @@
 
         border-bottom: var(--border-width-s, 1px) solid var(--color-border-neutral, #ededf0);
         background: var(--color-bgcolor-neutral-primary, #fff);
-
-        .icon {
-            display: flex;
-            padding: var(--space-3, 6px);
-            justify-content: center;
-            align-items: center;
-
-            color: var(--color-fgcolor-neutral-weak);
-        }
     }
 
     .products-label-container {
@@ -440,7 +431,7 @@
     }
 
     .icons .products-label-container {
-        margin-block-start: var(--base-32, 32px);
+        margin-block-start: var(--base-20, 20px);
         margin-block-end: var(--base-8, 8px);
     }
 
