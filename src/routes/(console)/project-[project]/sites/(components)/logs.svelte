@@ -1,3 +1,20 @@
+<script context="module" lang="ts">
+    export function badgeTypeDeployment(status: string) {
+        switch (status) {
+            case 'failed':
+                return 'error';
+            case 'ready':
+                return 'success';
+            case 'building':
+                return undefined;
+            case 'processing':
+                return 'warning';
+            default:
+                return undefined;
+        }
+    }
+</script>
+
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
@@ -59,21 +76,6 @@
             });
         }
     }
-
-    function badgeType(status: string) {
-        switch (status) {
-            case 'failed':
-                return 'error';
-            case 'ready':
-                return 'success';
-            case 'building':
-                return undefined;
-            case 'processing':
-                return 'warning';
-            default:
-                return undefined;
-        }
-    }
 </script>
 
 <Layout.Stack gap="xl">
@@ -87,7 +89,7 @@
                     content={capitalize(status)}
                     size="xs"
                     variant="secondary"
-                    type={badgeType(status)} />
+                    type={badgeTypeDeployment(status)} />
             </Layout.Stack>
             <Layout.Stack direction="row" alignItems="center" inline>
                 {#if ['processing', 'building'].includes(status)}

@@ -8,7 +8,7 @@
     import { Dependencies } from '$lib/constants';
     import { deployment } from './store';
     import SiteCard from '../../../(components)/siteCard.svelte';
-    import Logs from '../../../(components)/logs.svelte';
+    import Logs, { badgeTypeDeployment } from '../../../(components)/logs.svelte';
     import Card from '$lib/components/card.svelte';
     import { Button } from '$lib/elements/forms';
     import DeploymentActionMenu from '../../../(components)/deploymentActionMenu.svelte';
@@ -75,6 +75,7 @@
             title="Deployment Actions"
             badge={capitalize(data.deployment.status)}
             open={data.deployment.status !== 'ready'}
+            badgeType={badgeTypeDeployment(data.deployment.status)}
             hideDivider>
             <Logs site={data.site} deployment={data.deployment} hideTitle />
         </Accordion>
