@@ -1,18 +1,34 @@
+<script context="module" lang="ts">
+    export function badgeTypeDeployment(status: string) {
+        switch (status) {
+            case 'failed':
+                return 'error';
+            case 'ready':
+                return 'success';
+            case 'building':
+                return undefined;
+            case 'processing':
+                return 'warning';
+            default:
+                return undefined;
+        }
+    }
+</script>
+
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { timer } from '$lib/actions/timer';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { capitalize } from '$lib/helpers/string';
-    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { Badge, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Logs, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import LogsTimer from './logsTimer.svelte';
 
     export let site: Models.Site;
     export let deployment: Models.Deployment;
@@ -59,21 +75,6 @@
             });
         }
     }
-
-    function badgeType(status: string) {
-        switch (status) {
-            case 'failed':
-                return 'error';
-            case 'ready':
-                return 'success';
-            case 'building':
-                return undefined;
-            case 'processing':
-                return 'warning';
-            default:
-                return undefined;
-        }
-    }
 </script>
 
 <Layout.Stack gap="xl">
@@ -87,22 +88,9 @@
                     content={capitalize(status)}
                     size="xs"
                     variant="secondary"
-                    type={badgeType(status)} />
+                    type={badgeTypeDeployment(status)} />
             </Layout.Stack>
-            <Layout.Stack direction="row" alignItems="center" inline>
-                {#if ['processing', 'building'].includes(status)}
-                    <Typography.Code color="--color-fgcolor-neutral-secondary">
-                        <Layout.Stack direction="row" alignItems="center" inline>
-                            <p use:timer={{ start: deployment.$createdAt }} />
-                            <Spinner size="s" />
-                        </Layout.Stack>
-                    </Typography.Code>
-                {:else}
-                    <Typography.Code color="--color-fgcolor-neutral-secondary">
-                        {formatTimeDetailed(deployment.buildTime)}
-                    </Typography.Code>
-                {/if}
-            </Layout.Stack>
+            <LogsTimer {status} {deployment} />
         </Layout.Stack>
     {/if}
     {#key buildLogs}

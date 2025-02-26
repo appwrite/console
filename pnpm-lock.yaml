@@ -18,8 +18,8 @@ importers:
         specifier: 0.25.0
         version: 0.25.0
       '@appwrite.io/pink-icons-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@67808bca
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@67808bca(svelte@4.2.19)
+        specifier: 'https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@f0532207 '
+        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@f0532207(svelte@4.2.19)
       '@appwrite.io/pink-legacy':
         specifier: ^1.0.2
         version: 1.0.2
@@ -218,8 +218,8 @@ packages:
     resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@08ec153}
     version: 1.2.1
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@67808bca':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@67808bca}
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@f0532207':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@f0532207}
     version: 1.0.0-next.7
     peerDependencies:
       svelte: ^4.0.0
@@ -3917,7 +3917,7 @@ snapshots:
 
   '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@08ec153': {}
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@67808bca(svelte@4.2.19)':
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@f0532207(svelte@4.2.19)':
     dependencies:
       svelte: 4.2.19
 

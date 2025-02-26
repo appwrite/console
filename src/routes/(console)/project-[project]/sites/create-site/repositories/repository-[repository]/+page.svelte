@@ -42,11 +42,41 @@
     let domain = id;
     let domainIsValid = true;
 
-    onMount(() => {
+    onMount(async () => {
         installation.set(data.installation);
         repository.set(data.repository);
         name = data.repository.name;
+
+        // Format repository name by removing spaces and slashes
+        const formattedRepoName = data.repository.name.replace(/[\s\/]/g, '-');
+        const formattedOrgName = data.repository.organization.replace(/[\s\/]/g, '-');
+
+        domain = formattedRepoName;
+        const isFirstDomainAvailable = !(await checkDomain(domain));
+
+        // If first option is not available, try repo-org
+        if (!isFirstDomainAvailable) {
+            domain = `${formattedRepoName}-${formattedOrgName}`;
+            const isSecondDomainAvailable = !(await checkDomain(domain));
+
+            // If second option is not available, use repo-org-uniqueID
+            if (!isSecondDomainAvailable) {
+                domain = `${formattedRepoName}-${formattedOrgName}-${ID.unique()}`;
+            }
+        }
     });
+
+    async function checkDomain(domain: string) {
+        try {
+            await sdk.forConsole.console.getResource(
+                `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                'rules' as unknown as Type //TODO: fix after Matej fixes backend
+            );
+            return true;
+        } catch {
+            return false;
+        }
+    }
 
     async function loadBranches() {
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(

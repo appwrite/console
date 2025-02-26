@@ -109,7 +109,7 @@
     };
 
     let showAccountMenu = false;
-    let subNavigation: undefined | ComponentType = $page.data.subNavigation;
+    $: subNavigation = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
@@ -211,7 +211,7 @@
     :global(main:has(.sub-navigation)) {
         .main-content {
             @media (min-width: 1024px) {
-                padding-left: 200px;
+                padding-left: 255px;
             }
         }
     }

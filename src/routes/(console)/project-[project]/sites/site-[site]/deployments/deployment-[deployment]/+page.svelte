@@ -8,7 +8,7 @@
     import { Dependencies } from '$lib/constants';
     import { deployment } from './store';
     import SiteCard from '../../../(components)/siteCard.svelte';
-    import Logs from '../../../(components)/logs.svelte';
+    import Logs, { badgeTypeDeployment } from '../../../(components)/logs.svelte';
     import Card from '$lib/components/card.svelte';
     import { Button } from '$lib/elements/forms';
     import DeploymentActionMenu from '../../../(components)/deploymentActionMenu.svelte';
@@ -19,6 +19,7 @@
     import { protocol } from '$routes/(console)/store';
     import { Accordion } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
+    import LogsTimer from '../../../(components)/logsTimer.svelte';
 
     export let data;
 
@@ -72,11 +73,15 @@
     </SiteCard>
     <Card isTile padding="s">
         <Accordion
-            title="Deployment Actions"
+            title="Deployment logs"
             badge={capitalize(data.deployment.status)}
             open={data.deployment.status !== 'ready'}
+            badgeType={badgeTypeDeployment(data.deployment.status)}
             hideDivider>
             <Logs site={data.site} deployment={data.deployment} hideTitle />
+            <svelte:fragment slot="end">
+                <LogsTimer status={data.deployment.status} deployment={data.deployment} />
+            </svelte:fragment>
         </Accordion>
     </Card>
 </Container>
