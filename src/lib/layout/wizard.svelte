@@ -68,12 +68,10 @@
     }
 
     async function submit() {
-        let interceptorResponse = null;
-
         if ($wizard.interceptor) {
             $wizard.nextDisabled = true;
             try {
-                interceptorResponse = await $wizard.interceptor();
+                await $wizard.interceptor();
             } catch (error) {
                 if (!$wizard.interceptorNotificationEnabled) return;
                 addNotification({
@@ -85,10 +83,6 @@
                 $wizard.nextDisabled = false;
             }
         }
-
-        // maintains backward compatibility.
-        // explicit boolean check as the return type can be undefined/void too!
-        if (typeof interceptorResponse === 'boolean' && interceptorResponse === false) return;
 
         wizard.setInterceptor(null);
         if (isLastStep) {

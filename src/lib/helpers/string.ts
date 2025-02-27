@@ -50,19 +50,6 @@ export function formatNum(number: number): string {
 }
 
 /**
- * Validates a hostname, optionally allowing wildcards.
- *
- * @param {string} hostname - The hostname to validate.
- * @param {boolean} [wildcard=true] - Whether to allow wildcard hostnames (e.g., `*.example.com`).
+ * Returns a regex to check hostname validity. Supports wildcards too!
  */
-export function isHostnameValid(hostname: string, wildcard: boolean = true): boolean {
-    if (!hostname) return false;
-
-    if (!wildcard && hostname.startsWith('*.')) return false;
-
-    const hostnameRegex = wildcard
-        ? /^(\*\.)?([a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,63}$/
-        : /^([a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,63}$/;
-
-    return hostnameRegex.test(hostname);
-}
+export const hostnameRegex = String.raw`(\*)|(\*\.)?(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}`;

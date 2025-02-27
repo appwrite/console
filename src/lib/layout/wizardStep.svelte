@@ -4,14 +4,9 @@
     import { onDestroy } from 'svelte';
 
     /**
-     * Pass callback that is run before the Form submit,
-     * can be canceled by throwing an `Exception` or returning `false`.
-     *
-     * Example -
-     * 1. validate > throw Error > notification is shown
-     * 2. validate > return False > show your UI as no notification is shown.
+     * Pass callback that is run before the Form submit, can be canceled with throwing an exception.
      */
-    export let beforeSubmit: () => Promise<void> | Promise<boolean> = null;
+    export let beforeSubmit: () => Promise<void> = null;
     export let nextDisabled = false;
 
     $: wizard.setNextDisabled(nextDisabled);

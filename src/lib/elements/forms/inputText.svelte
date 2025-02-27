@@ -11,6 +11,8 @@
     export let id: string;
     export let name: string = id;
     export let value = '';
+    export let pattern: string = null;
+    export let patternError: string = '';
     export let placeholder = '';
     export let required = false;
     export let hideRequired = false;
@@ -42,6 +44,11 @@
 
         if (element.validity.valueMissing) {
             error = 'This field is required';
+            return;
+        }
+
+        if (patternError && element.validity.patternMismatch) {
+            error = patternError;
             return;
         }
 
@@ -118,6 +125,7 @@
             {disabled}
             {readonly}
             {required}
+            {pattern}
             {maxlength}
             autocomplete={autocomplete ? 'on' : 'off'}
             type="text"

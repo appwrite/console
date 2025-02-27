@@ -1,14 +1,14 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Pill } from '$lib/elements';
-    import { FormList, Helper, InputText } from '$lib/elements/forms';
+    import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { PlatformType } from '@appwrite.io/console';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { isHostnameValid } from '$lib/helpers/string';
+    import { hostnameRegex } from '$lib/helpers/string';
 
     // enum Platform {
     //     Android = 'flutter-android',
@@ -26,8 +26,6 @@
     let platform: PlatformType = isValueOfStringEnum(PlatformType, $createPlatform.type)
         ? $createPlatform.type
         : PlatformType.Flutterandroid;
-
-    let error = null;
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -87,14 +85,6 @@
     };
 
     async function beforeSubmit() {
-        error = null;
-
-        // double-check the hostname value.
-        if (platform === PlatformType.Flutterweb && !isHostnameValid($createPlatform.hostname)) {
-            error = 'Please enter a valid hostname';
-            return false;
-        }
-
         if ($createPlatform.$id) {
             await sdk.forConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
@@ -124,10 +114,6 @@
         [PlatformType.Flutterwindows]: 'Package name',
         [PlatformType.Flutterweb]: 'Hostname'
     }[platform];
-
-    $: if (!$createPlatform.hostname && error) {
-        error = null;
-    }
 </script>
 
 <WizardStep {beforeSubmit}>
@@ -188,11 +174,9 @@
                     placeholder={placeholder[platform].hostname}
                     tooltip={placeholder[platform].tooltip}
                     required
+                    pattern={hostnameRegex}
+                    patternError="Please enter a valid hostname"
                     bind:value={$createPlatform.hostname} />
-
-                {#if error}
-                    <Helper type="warning">{error}</Helper>
-                {/if}
 
                 <div class="u-flex u-gap-16 u-margin-block-start-8">
                     {#each suggestions as suggestion}
