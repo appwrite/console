@@ -6,9 +6,9 @@
             case 'ready':
                 return 'success';
             case 'building':
-                return undefined;
-            case 'processing':
                 return 'warning';
+            case 'processing':
+                return undefined;
             default:
                 return undefined;
         }

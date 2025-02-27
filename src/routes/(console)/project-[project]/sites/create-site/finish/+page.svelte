@@ -19,6 +19,8 @@
     let showOpenOnMobile = false;
     let showInviteCollaborator = false;
 
+    const siteURL = data.proxyRuleList.rules[0].domain;
+
     onMount(() => {
         if (
             $page.url.searchParams.has('connectRepo') &&
@@ -50,9 +52,7 @@
                     proxyRuleList={data.proxyRuleList}
                     hideQRCode>
                     <svelte:fragment slot="footer">
-                        <Button href={`${$protocol}${data.proxyRuleList.rules[0].domain}`} external>
-                            Visit site
-                        </Button>
+                        <Button href={`${$protocol}${siteURL}`} external>Visit site</Button>
                     </svelte:fragment>
                 </SiteCard>
             </Layout.Stack>
@@ -173,8 +173,8 @@
         site={data.site}
         callbackState={{ connectRepo: 'true' }} />
 {/if}
-{#if showOpenOnMobile && data.deployment.domain}
-    <OpenOnMobileModal bind:show={showOpenOnMobile} siteURL={data.deployment.domain} />
+{#if showOpenOnMobile}
+    <OpenOnMobileModal bind:show={showOpenOnMobile} {siteURL} />
 {/if}
 
 {#if showInviteCollaborator}
