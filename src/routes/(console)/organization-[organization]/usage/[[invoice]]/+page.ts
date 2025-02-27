@@ -1,8 +1,8 @@
+import type { Invoice } from '$lib/sdk/billing';
+import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import { type Organization } from '$lib/stores/organization';
-import type { Invoice } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
@@ -33,7 +33,9 @@ export const load: PageLoad = async ({ params, parent }) => {
                 databasesReads: null,
                 databasesWrites: null,
                 databasesReadsTotal: null,
-                databasesWritesTotal: null
+                databasesWritesTotal: null,
+                imageTransformations: null,
+                imageTransformationsTotal: null
             }
         };
     }

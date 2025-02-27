@@ -1,6 +1,16 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { BarChart, Legend } from '$lib/charts';
     import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
+    import { formatNum } from '$lib/helpers/string';
+    import { Container } from '$lib/layout';
+    import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
+    import type { OrganizationUsage } from '$lib/sdk/billing';
     import {
         getServiceLimit,
         showUsageRatesModal,
@@ -8,18 +18,8 @@
         upgradeURL
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { Button } from '$lib/elements/forms';
-    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart, Legend } from '$lib/charts';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
-    import { formatNum } from '$lib/helpers/string';
-    import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
-    import { BillingPlan } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
-    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
 
     export let data;
 
@@ -244,6 +244,64 @@
                         {data}
                         {projects}
                         databaseOperationMetric={['databasesReads', 'databasesWrites']} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid>
+        <Heading tag="h6" size="7">Image Transformations</Heading>
+
+        <p class="text">
+            The total number of image transformations across all projects in your organization.
+        </p>
+        {#if $organization.billingPlan === BillingPlan.FREE}
+            <p>This feature is not available on the Free plan.</p>
+        {/if}
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.imageTransformationsTotal}
+                {@const current = data.organizationUsage.imageTransformationsTotal}
+                {@const max = getServiceLimit('imageTransformations', tier, plan)}
+                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
+                    <ProgressBarBig
+                        currentUnit="Transformations"
+                        currentValue={formatNum(current)}
+                        maxUnit="transformations"
+                        maxValue={`out of ${formatNum(max)}`}
+                        progressValue={current}
+                        progressMax={max}
+                        showBar={false} />
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
+                            }
+                        }}
+                        series={[
+                            {
+                                name: 'Image Transformations',
+                                data: [
+                                    ...(data.organizationUsage.imageTransformations ?? []).map(
+                                        (e) => [e.date, e.value]
+                                    )
+                                ]
+                            }
+                        ]} />
+                </div>
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="imageTransformations" {data} />
                 {/if}
             {:else}
                 <Card isDashed>

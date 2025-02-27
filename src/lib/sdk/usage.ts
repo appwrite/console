@@ -185,6 +185,14 @@ export type UsageBuckets = {
      * Aggregated statistics of bucket storage files per period.
      */
     storage: Metric[];
+    /**
+     * Aggregated statistics of bucket image transformations per period.
+     */
+    imageTransformations: Metric[];
+    /**
+     * Total aggregated number of bucket image transformations.
+     */
+    imageTransformationsTotal: number;
 };
 /**
  * UsageFunctions
