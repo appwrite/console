@@ -26,7 +26,6 @@
     import { PlatformType } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import { LabelCard } from '$lib/components';
-    import GlowCard from './components/GlowCard.svelte';
 
     let showExitModal = false;
     export let isPlatformCreated = false;
@@ -278,7 +277,6 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
                     </Layout.Stack>
                 {/if}
             </Layout.Stack>
-            <GlowCard />
         </Card>
     </svelte:fragment>
 

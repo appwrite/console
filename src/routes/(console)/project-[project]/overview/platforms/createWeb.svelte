@@ -40,7 +40,6 @@
     import VueFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/VueFrameworkIcon.svelte';
     import NoFrameworkIcon from './components/NoFrameworkIcon.svelte';
     import AngularFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/AngularFrameworkIcon.svelte';
-    import GlowCard from './components/GlowCard.svelte';
 
     export let key;
 
@@ -330,7 +329,6 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                     </Layout.Stack>
                 {/if}
             </Layout.Stack>
-            <GlowCard />
         </Card.Base>
     </svelte:fragment>
 

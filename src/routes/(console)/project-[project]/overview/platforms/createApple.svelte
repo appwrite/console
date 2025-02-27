@@ -27,14 +27,13 @@
     import { isCloud } from '$lib/system';
     import { app } from '$lib/stores/app';
     import { LabelCard } from '$lib/components';
-    import GlowCard from './components/GlowCard.svelte';
 
     let showExitModal = false;
     let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
     const projectId = $page.params.project;
-
+    
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';
 
@@ -254,7 +253,6 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                     </Layout.Stack>
                 {/if}
             </Layout.Stack>
-            <GlowCard />
         </Card>
     </svelte:fragment>
 

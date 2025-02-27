@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconCheck } from '@appwrite.io/pink-icons-svelte';
+    import Checkmark from './Checkmark.svelte';
 
     export let status: boolean = false;
 </script>
@@ -14,11 +13,11 @@
 
     <div
         class="tick-container"
-        style={`opacity: ${status ? 1 : 0.15}; transition: opacity 2.5s;`}
+        style:opacity={status ? 1 : 0.15}
+        style:transition="opacity 2.5s"
         data-status={status}>
         {#if status}
-            <!-- todo: xs missing atm, need to test -->
-            <Icon icon={IconCheck} size="s" color="#fd366e" />
+            <Checkmark />
         {/if}
     </div>
 
