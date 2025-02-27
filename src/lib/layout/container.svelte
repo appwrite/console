@@ -45,17 +45,8 @@
     }
 
     :global(main:has(.sub-navigation) .console-container) {
-        @media (min-width: 1280px) {
-            margin-inline: auto;
-            max-width: 800px;
-        }
-        @media (min-width: 1440px) {
-            margin-inline: auto;
-            max-width: 944px;
-        }
-        @media (min-width: 1728px) {
-            margin-inline: auto;
-            max-width: 1000px;
+        @media (min-width: 1024px) {
+            padding-inline-end: var(--base-32, 32px);
         }
     }
 </style>
