@@ -35,7 +35,7 @@
 </script>
 
 <div class="boxes-wrapper u-margin-block-start-16">
-    <LocaleOptions on:select={onLocaleChange} bind:value={locale} />
+    <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
     <EmailTemplate bind:loading>
         <Id value={'{{team}}'}>{'{{team}}'}</Id>
         <Id value={'{{user}}'}>{'{{user}}'}</Id>

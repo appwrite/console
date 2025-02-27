@@ -1,54 +1,26 @@
-<script lang="ts" context="module">
-    export function openWebhooksWizard() {
-        if (!get(canWriteWebhooks)) {
-            return;
-        }
-        wizard.start(Create);
-    }
-</script>
-
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Empty, Id } from '$lib/components';
-    import {
-        TableBody,
-        TableRowLink,
-        TableCellHead,
-        TableCell,
-        TableCellText,
-        TableHeader,
-        TableScroll
-    } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
     import { columns } from './store';
     import { updateCommandGroupRanks } from '$lib/commandCenter';
     import { type Models } from '@appwrite.io/console';
-    import Create from './createWebhook.svelte';
     import FailedModal from './failedModal.svelte';
-    import MessageStatusPill from './messageStatusPill.svelte';
     import { canWriteWebhooks } from '$lib/stores/roles';
-    import { get } from 'svelte/store';
-    import { Badge, Icon, Layout, Link, Status, Table } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Link, Status, Table } from '@appwrite.io/pink-svelte';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { View } from '$lib/helpers/load';
+    import { goto } from '$app/navigation';
 
     export let data: PageData;
 
     let showFailed = false;
     let selectedWebhook: Models.Webhook;
-
-    function openWizard() {
-        if (!$canWriteWebhooks) {
-            return;
-        }
-        wizard.start(Create);
-    }
 
     const projectId = $page.params.project;
 
@@ -63,7 +35,9 @@
     <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
         <ViewSelector {columns} view={View.Table} hideView />
         {#if $canWriteWebhooks}
-            <Button on:click={openWizard} event="create_webhook">
+            <Button
+                href={`${base}/project-${projectId}/settings/webhooks/create`}
+                event="create_webhook">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create webhook
             </Button>
@@ -135,7 +109,7 @@
             single
             href="https://appwrite.io/docs/advanced/platform/webhooks"
             target="webhook"
-            on:click={openWizard} />
+            on:click={() => goto(`${base}/projects-${projectId}/settings/webhooks/create`)} />
     {/if}
 </Container>
 

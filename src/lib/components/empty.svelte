@@ -7,7 +7,6 @@
     export let single = false;
     export let target: string = null;
     export let href: string = null;
-    export let marginTop = false;
     export let allowCreate = true;
     export let description = 'Need a hand? Learn more in our documentation.';
     export let src: string = null;
