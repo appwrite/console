@@ -23,8 +23,15 @@
     );
 
     let openBottomSheet = false;
+
+    function onResize() {
+        if (openBottomSheet && !$isTabletViewport) {
+            openBottomSheet = false;
+        }
+    }
 </script>
 
+<svelte:window on:resize={onResize} />
 {#if !$isTabletViewport}
     <Sidebar.Base state="open" resizable={false}>
         <section class="list-container" slot="top" style:width="100%">

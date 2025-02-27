@@ -171,8 +171,16 @@
                   }
                 : undefined
     };
+
+    function onResize() {
+        if ((organisationBottomSheetOpen || projectsBottomSheetOpen) && !$isSmallViewport) {
+            organisationBottomSheetOpen = false;
+            projectsBottomSheetOpen = false;
+        }
+    }
 </script>
 
+<svelte:window on:resize={onResize} />
 <div use:melt={$menubar}>
     {#if !$isSmallViewport}
         <span class="breadcrumb-separator">/</span>
