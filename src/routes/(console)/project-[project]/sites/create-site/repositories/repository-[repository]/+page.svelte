@@ -15,12 +15,13 @@
     import Details from '../../details.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, ConsoleResourceType, Framework, ID, Type } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
-    import Domain from '../../domain.svelte';
+    // import Domain from '../../domain.svelte';
     import { consoleVariables } from '$routes/(console)/store';
+    import { buildVerboseDomain } from '../../store';
 
     export let data;
     let showExitModal = false;
@@ -40,43 +41,15 @@
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
     let domain = id;
-    let domainIsValid = true;
+    // let domainIsValid = true;
 
     onMount(async () => {
         installation.set(data.installation);
         repository.set(data.repository);
         name = data.repository.name;
 
-        // Format repository name by removing spaces and slashes
-        const formattedRepoName = data.repository.name.replace(/[\s\/]/g, '-');
-        const formattedOrgName = data.repository.organization.replace(/[\s\/]/g, '-');
-
-        domain = formattedRepoName;
-        const isFirstDomainAvailable = !(await checkDomain(domain));
-
-        // If first option is not available, try repo-org
-        if (!isFirstDomainAvailable) {
-            domain = `${formattedRepoName}-${formattedOrgName}`;
-            const isSecondDomainAvailable = !(await checkDomain(domain));
-
-            // If second option is not available, use repo-org-uniqueID
-            if (!isSecondDomainAvailable) {
-                domain = `${formattedRepoName}-${formattedOrgName}-${ID.unique()}`;
-            }
-        }
+        // domain = await buildVerboseDomain(data.repository.name, data.repository.organization, id);
     });
-
-    async function checkDomain(domain: string) {
-        try {
-            await sdk.forConsole.console.getResource(
-                `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                ConsoleResourceType.Rules
-            );
-            return true;
-        } catch {
-            return false;
-        }
-    }
 
     async function loadBranches() {
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
@@ -94,76 +67,81 @@
     }
 
     async function create() {
-        if (!domainIsValid) {
+        // if (!domainIsValid) {
+        //     addNotification({
+        //         type: 'error',
+        //         message: 'Please enter a valid domain'
+        //     });
+        //     return;
+        // } else {}
+
+        try {
+            domain = await buildVerboseDomain(
+                data.repository.name,
+                data.repository.organization,
+                id
+            );
+            const fr = Object.values(Framework).find((f) => f === framework.key);
+            const buildRuntime = Object.values(BuildRuntime).find(
+                (f) => f === framework.buildRuntime
+            );
+            let site = await sdk.forProject.sites.create(
+                id || ID.unique(),
+                name,
+                fr,
+                buildRuntime,
+                undefined,
+                undefined,
+                installCommand,
+                buildCommand,
+                outputDirectory,
+                framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
+                data.installation.$id,
+                null,
+                data.repository.id,
+                branch,
+                silentMode,
+                rootDir
+            );
+
+            // Add domain
+            await sdk.forProject.proxy.createSiteRule(
+                `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                site.$id
+            );
+
+            //Add variables
+            const promises = variables.map((variable) =>
+                sdk.forProject.sites.createVariable(
+                    site.$id,
+                    variable.key,
+                    variable.value,
+                    variable?.secret ?? false
+                )
+            );
+            await Promise.all(promises);
+
+            const deployment = await sdk.forProject.sites.createVcsDeployment(
+                site.$id,
+                Type.Branch,
+                branch,
+                true
+            );
+
+            trackEvent(Submit.SiteCreate, {
+                source: 'repository',
+                framework: framework.key
+            });
+
+            await goto(
+                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+            );
+        } catch (e) {
             addNotification({
                 type: 'error',
-                message: 'Please enter a valid domain'
+                message: e.message
             });
-            return;
-        } else {
-            try {
-                const fr = Object.values(Framework).find((f) => f === framework.key);
-                const buildRuntime = Object.values(BuildRuntime).find(
-                    (f) => f === framework.buildRuntime
-                );
-                let site = await sdk.forProject.sites.create(
-                    id || ID.unique(),
-                    name,
-                    fr,
-                    buildRuntime,
-                    undefined,
-                    undefined,
-                    installCommand,
-                    buildCommand,
-                    outputDirectory,
-                    framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
-                    data.installation.$id,
-                    null,
-                    data.repository.id,
-                    branch,
-                    silentMode,
-                    rootDir
-                );
-
-                // Add domain
-                await sdk.forProject.proxy.createSiteRule(
-                    `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                    site.$id
-                );
-
-                //Add variables
-                const promises = variables.map((variable) =>
-                    sdk.forProject.sites.createVariable(
-                        site.$id,
-                        variable.key,
-                        variable.value,
-                        variable?.secret ?? false
-                    )
-                );
-                await Promise.all(promises);
-
-                const deployment = await sdk.forProject.sites.createVcsDeployment(
-                    site.$id,
-                    Type.Branch,
-                    branch,
-                    true
-                );
-
-                trackEvent(Submit.SiteCreate, {
-                    source: 'repository',
-                    framework: framework.key
-                });
-
-                await goto(
-                    `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
-                );
-            } catch (e) {
-                addNotification({
-                    type: 'error',
-                    message: e.message
-                });
-                trackError(e, Submit.SiteCreate);
-            }
+            trackError(e, Submit.SiteCreate);
         }
     }
 </script>
@@ -227,7 +205,7 @@
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
 
-            <Domain bind:domain bind:domainIsValid />
+            <!-- <Domain bind:domain bind:domainIsValid /> -->
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

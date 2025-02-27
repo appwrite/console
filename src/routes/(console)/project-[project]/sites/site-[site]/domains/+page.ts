@@ -23,7 +23,7 @@ export const load = async ({ params, depends, url, route }) => {
         search,
         domains: await sdk.forProject.proxy.listRules(
             [
-                Query.equal('type', RuleType.DEPLOYMENT),
+                Query.equal('type', [RuleType.DEPLOYMENT, RuleType.REDIRECT]),
                 Query.equal('automation', `site=${params.site}`),
                 Query.limit(limit),
                 Query.offset(offset),
