@@ -1,17 +1,22 @@
 <script lang="ts">
-    import { Card, DropList, DropListItem } from '$lib/components';
+    import { Card } from '$lib/components';
     import { totalMetrics } from './+layout.svelte';
     import { usage } from './store';
     import type { UsagePeriods } from '$lib/layout';
     import { createEventDispatcher } from 'svelte';
     import { LineChart } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
-    import { ActionMenu, Icon, Layout, Link, Popover, Typography } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown } from '@appwrite.io/pink-icons-svelte';
+    import {
+        ActionMenu,
+        Icon,
+        Layout,
+        Button,
+        Popover,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
 
     export let period: UsagePeriods;
-
-    let showPeriod = false;
 
     const dispatch = createEventDispatcher();
 
@@ -19,10 +24,6 @@
         date: number;
         value: number;
     }>;
-
-    $: if (period) {
-        showPeriod = false;
-    }
 </script>
 
 <Layout.Stack justifyContent="space-between" direction="row" alignItems="flex-start">
@@ -32,13 +33,11 @@
         </Typography.Title>
         <Typography.Text>Requests</Typography.Text>
     </div>
-    <Popover let:toggle padding="none">
-        <Link.Button on:click={toggle} variant="quiet">
-            <Layout.Stack direction="row" gap="none">
-                <span>{period}</span>
-                <Icon icon={IconChevronDown} />
-            </Layout.Stack>
-        </Link.Button>
+    <Popover let:toggle padding="none" let:showing>
+        <Button.Button on:click={toggle} variant="extra-compact">
+            {period}
+            <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" />
+        </Button.Button>
         <ActionMenu.Root slot="tooltip">
             <ActionMenu.Item.Button on:click={() => dispatch('change', '24h')}
                 >24h</ActionMenu.Item.Button>

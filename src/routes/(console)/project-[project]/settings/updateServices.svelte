@@ -85,22 +85,27 @@
     Choose services you wish to enable or disable for the client API. When disabled, the services are
     not accessible to client SDKs but remain accessible to server SDKs.
     <svelte:fragment slot="aside">
-        <Layout.Stack>
-            <Layout.Stack direction="row" justifyContent="flex-end">
-                <Button text={true} on:click={() => toggleAllServices(true)}>Enable all</Button>
-                <Button text={true} on:click={() => toggleAllServices(false)}>Disable all</Button>
+        <Layout.Stack gap="m">
+            <Layout.Stack direction="row" alignItems="center" gap="s">
+                <Button extraCompact on:click={() => toggleAllServices(true)}>Enable all</Button>
+                <span style:height="20px">
+                    <Divider vertical />
+                </span>
+                <Button extraCompact on:click={() => toggleAllServices(false)}>Disable all</Button>
             </Layout.Stack>
-            <Divider />
-            <Layout.Stack direction="row" wrap="wrap">
-                {#each $services.list as service}
-                    <InputSwitch
-                        label={service.label}
-                        id={service.method}
-                        bind:value={service.value}
-                        on:change={() => {
-                            serviceUpdate(service);
-                        }} />
-                {/each}
+            <Layout.Stack gap="l">
+                <Divider />
+                <Layout.Stack direction="row" wrap="wrap">
+                    {#each $services.list as service}
+                        <span style:flex-basis="30%">
+                            <InputSwitch
+                                label={service.label}
+                                id={service.method}
+                                bind:value={service.value}
+                                on:change={() => serviceUpdate(service)} />
+                        </span>
+                    {/each}
+                </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
     </svelte:fragment>

@@ -81,10 +81,10 @@
             <Table.Header.Cell>Name</Table.Header.Cell>
             <Table.Header.Cell>Email</Table.Header.Cell>
             <Table.Header.Cell>
-                <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                <Layout.Stack direction="row" gap="xxxs" alignItems="center">
                     Roles
                     <Popover let:toggle>
-                        <Button.Button icon variant="compact" size="s" on:click={toggle}>
+                        <Button.Button icon variant="extra-compact" size="s" on:click={toggle}>
                             <Icon size="s" icon={IconInfo} />
                         </Button.Button>
                         <svelte:component this={Upgrade} slot="tooltip" />

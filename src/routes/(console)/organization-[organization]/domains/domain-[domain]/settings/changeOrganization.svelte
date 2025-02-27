@@ -3,14 +3,17 @@
     import { CardGrid } from '$lib/components';
     import { Button, InputSelect } from '$lib/elements/forms';
     import type { OrganizationList } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
-    export let domain: Models.ProxyRule;
+    export let domain: Models.Domain;
     export let organizations: OrganizationList;
     let selectedOrg: string = null;
 
     async function moveDomain() {
-        console.log(selectedOrg);
+        try {
+            await sdk.forConsole.domains.updateTeam(domain.$id, selectedOrg);
+        } catch (error) {}
     }
 
     $: options = organizations.total
@@ -27,6 +30,7 @@
         <InputSelect
             id="orgs"
             label="Move to"
+            required
             placeholder="Select destination"
             disabled={options?.length === 0}
             {options}

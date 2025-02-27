@@ -50,7 +50,7 @@
 
 <Copy {value} {event}>
     <Tag size="xs" variant="code">
-        <Icon icon={IconDuplicate} size="s" />
+        <Icon icon={IconDuplicate} size="s" slot="start" />
         <span
             style:white-space="nowrap"
             style:overflow="hidden"

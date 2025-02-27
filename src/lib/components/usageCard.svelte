@@ -3,7 +3,7 @@
     import { Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
 
     export let description: string;
-    export let value: string = null;
+    export let value: string | number = null;
 </script>
 
 <Card radius="s" padding="xs" isTile>
@@ -16,7 +16,7 @@
                 <Typography.Text size="s" truncate color="--color-fgcolor-neutral-primary"
                     >{value}</Typography.Text>
             {:else}
-                <Skeleton variant="line" width={100} height={20} />
+                <Skeleton variant="line" width={100} height={19.5} />
             {/if}
         </slot>
     </Layout.Stack>

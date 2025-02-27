@@ -108,7 +108,7 @@
         </div>
         <div slot="middle" class:icons={state === 'icons'}>
             {#if progressCard}
-                <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
+                <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"
                         href={`/console/project-${project.$id}/get-started`}
@@ -135,7 +135,7 @@
             {/if}
             {#if project}
                 <Layout.Stack direction="column" gap="s">
-                    <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
+                    <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
                             href={`/console/project-${project.$id}/overview`}
                             class="link"
@@ -163,7 +163,7 @@
                         ></span>
                     </div>
                     {#each projectOptions as projectOption}
-                        <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
+                        <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
                                 class="link"
@@ -186,7 +186,7 @@
                         <Divider />
                     </div>
                     <div class="only-mobile">
-                        <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
+                        <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
                                 href={`/console/project-${project.$id}/settings`}
                                 on:click={() => {
@@ -244,7 +244,7 @@
         <div slot="bottom" class="bottom" class:icons={state === 'icons'}>
             {#if project}
                 <div class="only-desktop">
-                    <Tooltip inline={false} placement="right" disabled={state !== 'icons'}>
+                    <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
                             href={`/console/project-${project.$id}/settings`}
                             class="link"
@@ -304,6 +304,7 @@
         </div>
     </Sidebar.Base>
 </div>
+
 {#if subNavigation}
     <div class="sub-navigation" class:icons={state === 'icons'}>
         <svelte:component this={subNavigation} />

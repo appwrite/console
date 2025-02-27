@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import type { Models } from '@appwrite.io/console';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import type { Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
 
@@ -14,6 +12,18 @@
     export let dependency: Dependencies;
 
     let error: string;
+
+    function getCorrectMessage(): string {
+        const resourceType = selectedDomain.resourceType;
+        switch (resourceType) {
+            case 'api':
+                return `access ${resourceType}`;
+            case 'function':
+                return `execute your ${resourceType}`;
+            case 'site':
+                return `view your ${resourceType} `;
+        }
+    }
 
     async function deleteDomain() {
         try {
@@ -32,8 +42,7 @@
     }
 </script>
 
-a
 <Confirm onSubmit={deleteDomain} title="Delete domain" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{selectedDomain?.domain}</b>? You will no longer be able to
-    execute your function by visiting this domain.
+    <p data-private>Are you sure you want to delete <b>{selectedDomain?.domain}</b>?</p>
+    <p>You will no longer be able to {getCorrectMessage()} by visiting this domain.</p>
 </Confirm>

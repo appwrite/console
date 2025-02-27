@@ -4,7 +4,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Skeleton, Table } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
     import { capitalize } from '$lib/helpers/string';
 
     export let show = false;

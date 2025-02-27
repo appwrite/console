@@ -356,8 +356,7 @@
                             ? `${base}/images/sites/screenshot-placeholder-dark.svg`
                             : `${base}/images/sites/screenshot-placeholder-light.svg`)}
                     alt={data.template.name}
-                    width={357}
-                    height={200} />
+                    ratio="16/9" />
             </Layout.Stack>
         </Aside>
     </svelte:fragment>

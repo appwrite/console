@@ -6,8 +6,16 @@
     import type { UsagePeriods } from '$lib/layout';
     import { createEventDispatcher } from 'svelte';
     import { BarChart } from '$lib/charts';
-    import { Popover, Typography, Icon, ActionMenu, Link, Layout } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Popover,
+        Typography,
+        Icon,
+        ActionMenu,
+        Link,
+        Layout,
+        Button
+    } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
 
     export let period: UsagePeriods;
 
@@ -29,13 +37,11 @@
         </Typography.Title>
         <Typography.Text>Bandwidth</Typography.Text>
     </div>
-    <Popover let:toggle padding="none">
-        <Link.Button on:click={toggle} variant="quiet">
-            <Layout.Stack direction="row" gap="none">
-                <span>{period}</span>
-                <Icon icon={IconChevronDown} />
-            </Layout.Stack>
-        </Link.Button>
+    <Popover let:toggle padding="none" let:showing>
+        <Button.Button on:click={toggle} variant="extra-compact">
+            {period}
+            <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" />
+        </Button.Button>
         <svelte:fragment slot="tooltip">
             <ActionMenu.Root>
                 <ActionMenu.Item.Button on:click={() => dispatch('change', '24h')}

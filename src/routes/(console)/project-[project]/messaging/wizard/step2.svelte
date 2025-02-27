@@ -17,7 +17,6 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Icon } from '@appwrite.io/pink-svelte';
 
-    let showDropdown = false;
     let showTopics = false;
     let showUserTargets = false;
     let targetIdsLength = 0;
@@ -65,12 +64,12 @@
             <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
                 <Actions
                     providerType={$providerType}
-                    bind:showDropdown
                     bind:showUserTargets
                     bind:showTopics
                     on:addTargets={addTargets}
-                    on:addTopics={addTopics}>
-                    <Button secondary icon on:click={() => (showDropdown = !showDropdown)}>
+                    on:addTopics={addTopics}
+                    let:toggle>
+                    <Button secondary icon on:click={toggle}>
                         <Icon icon={IconPlus} size="s" />
                     </Button>
                 </Actions>
@@ -143,12 +142,12 @@
         </div>
         <Actions
             providerType={$providerType}
-            bind:showDropdown
             bind:showUserTargets
             bind:showTopics
             on:addTargets={addTargets}
-            on:addTopics={addTopics}>
-            <Button text on:click={() => (showDropdown = !showDropdown)}>
+            on:addTopics={addTopics}
+            let:toggle>
+            <Button text on:click={toggle}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add
             </Button>

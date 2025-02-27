@@ -38,6 +38,6 @@
     title="Delete authentication method"
     bind:open={showDelete}
     bind:error>
-    Are you sure you want to delete this authentication method? You will no longer be able to use
-    this method to authenticate your account.
+    <p>Are you sure you want to delete this authentication method?</p>
+    <p>You will no longer be able to use this method to authenticate your account.</p>
 </Confirm>

@@ -55,24 +55,26 @@
     });
 
     async function fetchUsage() {
-        metrics.forEach((metric) => {
-            metric.value = null;
-        });
-        metrics = metrics;
-        try {
-            const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
-            metrics = metrics.map((metric) => {
-                metric.value = usage[metric.id] ?? '-';
-                return metric;
+        // Add timeout to make it look nicer
+        setTimeout(async () => {
+            metrics.forEach((metric) => {
+                metric.value = null;
             });
             metrics = metrics;
-            console.log(usage);
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
-    $: console.log(metrics);
+            try {
+                const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
+                metrics = metrics.map((metric) => {
+                    metric.value = usage[metric.id] ?? '-';
+                    return metric;
+                });
+                metrics = metrics;
+                console.log(usage);
+            } catch (error) {
+                console.log(error);
+            }
+        }, 800);
+    }
 </script>
 
 <Layout.Stack gap="xl">
@@ -95,9 +97,16 @@
                 on:change={fetchUsage} />
         </div>
     </Layout.Stack>
-    <Layout.GridBox gap="m" itemSize="154px">
-        {#each metrics as metric}
-            <UsageCard description={metric.description} bind:value={metric.value} />
-        {/each}
-    </Layout.GridBox>
+    <Layout.Grid gap="m" columnsL={2} columns={1}>
+        <Layout.Stack direction="row" gap="m">
+            {#each metrics.slice(0, 3) as metric}
+                <UsageCard description={metric.description} bind:value={metric.value} />
+            {/each}
+        </Layout.Stack>
+        <Layout.Stack direction="row" gap="m">
+            {#each metrics.slice(3) as metric}
+                <UsageCard description={metric.description} bind:value={metric.value} />
+            {/each}
+        </Layout.Stack>
+    </Layout.Grid>
 </Layout.Stack>

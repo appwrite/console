@@ -1,6 +1,4 @@
 <script lang="ts" context="module">
-    import SearchDark from '$lib/images/search-dark.svg';
-    import SearchLight from '$lib/images/search-light.svg';
     import { wizard } from '$lib/stores/wizard';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
@@ -63,14 +61,20 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { canWritePlatforms } from '$lib/stores/roles';
     import { setOverviewAction } from '../context';
-    import { ActionMenu, Card, Empty, Popover, Table } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Card,
+        Empty,
+        Icon,
+        Layout,
+        Popover,
+        Table
+    } from '@appwrite.io/pink-svelte';
     import Action from './action.svelte';
     import {
         IconAndroid,
@@ -79,6 +83,7 @@
         IconFlutter,
         IconReact
     } from '@appwrite.io/pink-icons-svelte';
+    import type { ComponentType } from 'svelte';
 
     export let data: PageData;
 
@@ -98,22 +103,21 @@
         'react-native-ios' = 'iOS',
         'web' = 'Web'
     }
-    let showDropdownEmpty = false;
     const path = `${base}/project-${$page.params.project}/overview/platforms`;
 
-    const getPlatformInfo = (platform: string) => {
+    function getPlatformInfo(platform: string): ComponentType {
         if (platform.includes('flutter')) {
-            return 'color/flutter';
+            return IconFlutter;
         } else if (platform.includes('react-native')) {
-            return 'color/react';
+            return IconReact;
         } else if (platform.includes('apple')) {
-            return 'color/apple';
+            return IconApple;
         } else if (platform.includes('android')) {
-            return 'color/android';
+            return IconAndroid;
         } else {
-            return 'unknown';
+            return IconCode;
         }
-    };
+    }
 
     setOverviewAction(Action);
 </script>
@@ -131,7 +135,10 @@
                     {platform.name}
                 </Table.Cell>
                 <Table.Cell>
-                    {PlatformTypes[platform.type]}
+                    <Layout.Stack direction="row" gap="s" alignItems="center">
+                        <Icon icon={getPlatformInfo(platform.type)} />
+                        {PlatformTypes[platform.type]}
+                    </Layout.Stack>
                 </Table.Cell>
                 <Table.Cell>
                     {platform.$updatedAt ? toLocaleDate(platform.$updatedAt) : 'never'}
@@ -152,7 +159,7 @@
                             <span class="text">Add platform</span>
                         </Button>
                     {/if}
-                    <div style:min-width="232px" slot="tooltip">
+                    <svelte:fragment slot="tooltip">
                         <ActionMenu.Root>
                             <ActionMenu.Item.Button
                                 on:click={() => addPlatform(Platform.Web)}
@@ -180,7 +187,7 @@
                                 React Native
                             </ActionMenu.Item.Button>
                         </ActionMenu.Root>
-                    </div>
+                    </svelte:fragment>
                 </Popover>
             </svelte:fragment>
         </Empty>
