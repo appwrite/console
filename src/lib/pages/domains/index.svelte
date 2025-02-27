@@ -2,11 +2,11 @@
     import { Empty, Modal, SearchQuery } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { dependencyStore, domain, typeStore } from './wizard/store';
+    import { dependencyStore } from './wizard/store';
     import { toLocaleDate } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import type { Dependencies } from '$lib/constants';
-    import type { Models, ResourceType } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
     import Create from './create.svelte';
     import Delete from './delete.svelte';
     import Retry from './wizard/retry.svelte';
@@ -31,9 +31,8 @@
     import { page } from '$app/stores';
     import { base } from '$app/paths';
 
-    export let search: string;
+    export let search: string = null;
     export let rules: Models.ProxyRuleList;
-    export let type: ResourceType;
     export let dependency: Dependencies;
 
     let showDelete = false;
@@ -42,7 +41,6 @@
     let retryError = null;
 
     onMount(() => {
-        typeStore.set(type);
         dependencyStore.set(dependency);
     });
 
@@ -83,7 +81,7 @@
                 <Table.Header.Cell width="20px" />
             {/if}
         </svelte:fragment>
-        {#each rules.rules as domain, index}
+        {#each rules.rules as domain}
             <Table.Row>
                 <Table.Cell>
                     <Layout.Stack direction="row" alignItems="center">

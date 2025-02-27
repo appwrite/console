@@ -14,13 +14,13 @@
     let error: string;
 
     function getCorrectMessage(): string {
-        const resourceType = selectedDomain.resourceType;
+        const resourceType = selectedDomain.type;
         switch (resourceType) {
             case 'api':
                 return `access ${resourceType}`;
-            case 'function':
-                return `execute your ${resourceType}`;
-            case 'site':
+            case 'deployment':
+                return `view your ${resourceType}`;
+            case 'redirect':
                 return `view your ${resourceType} `;
         }
     }

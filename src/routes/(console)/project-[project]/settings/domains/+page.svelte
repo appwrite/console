@@ -3,17 +3,12 @@
     import type { PageData } from './$types';
     import { ProxyRulesPage } from '$lib/pages/domains';
     import { Dependencies } from '$lib/constants';
-    import { ResourceType } from '@appwrite.io/console';
 
     export let data: PageData;
 </script>
 
 <Container>
-    <ProxyRulesPage
-        search={data.search}
-        rules={data.rules}
-        type={ResourceType.Api}
-        dependency={Dependencies.DOMAINS}>
+    <ProxyRulesPage search={data.search} rules={data.rules} dependency={Dependencies.DOMAINS}>
         <svelte:fragment slot="heading">Custom domains</svelte:fragment>
     </ProxyRulesPage>
 </Container>
