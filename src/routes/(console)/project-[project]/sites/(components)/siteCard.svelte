@@ -30,7 +30,7 @@
     export let variant: 'primary' | 'secondary' = 'primary';
 
     let show = false;
-    const siteUrl = proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : deployment.domain;
+    const siteUrl = proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : undefined;
 
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
 

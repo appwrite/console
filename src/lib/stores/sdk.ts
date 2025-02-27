@@ -90,3 +90,9 @@ export const sdk = {
         return getSdkForProject(projectId);
     }
 };
+
+export enum RuleType {
+    DEPLOYMENT = 'deployment',
+    API = 'api',
+    REDIRECT = 'redirect'
+}

@@ -5,6 +5,7 @@ import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
 import { error } from '@sveltejs/kit';
 import { Query } from '@appwrite.io/console';
+import { RuleType } from '$lib/stores/sdk';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.FUNCTION);
@@ -14,8 +15,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         const [func, proxyRuleList] = await Promise.all([
             sdk.forProject.functions.get(params.function),
             sdk.forProject.proxy.listRules([
-                Query.equal('resourceType', 'function'),
-                Query.equal('resourceId', params.function),
+                Query.equal('type', RuleType.DEPLOYMENT),
+                Query.equal('automation', `function=${params.function}`),
                 Query.limit(1)
             ])
         ]);

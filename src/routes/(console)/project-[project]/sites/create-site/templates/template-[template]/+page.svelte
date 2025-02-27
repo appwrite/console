@@ -26,7 +26,7 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, ResourceType } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
     import { getFrameworkIcon } from '../../../store';
@@ -133,7 +133,7 @@
                     framework.installCommand,
                     framework.buildCommand,
                     framework.outputDirectory,
-                    framework.adapter,
+                    framework.adapter as unknown as Adapter,
                     connectBehaviour === 'later' ? undefined : selectedInstallationId || undefined,
                     framework.fallbackFile,
                     selectedRepository || undefined,
@@ -143,9 +143,8 @@
                 );
 
                 // Add domain
-                await sdk.forProject.proxy.createRule(
+                await sdk.forProject.proxy.createSiteRule(
                     `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                    ResourceType.Site,
                     site.$id
                 );
 

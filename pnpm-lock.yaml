@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@08ec153
-        version: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@08ec153
+        specifier: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb
+        version: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -214,8 +214,8 @@ packages:
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@08ec153':
-    resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@08ec153}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb':
+    resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb}
     version: 1.2.1
 
   '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@317beac01fca89faa03f4fd8897f01b9d49170e3':
@@ -4100,7 +4100,11 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@08ec153': {}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb': {}
+
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@317beac01fca89faa03f4fd8897f01b9d49170e3(svelte@4.2.19)':
+    dependencies:
+      svelte: 4.2.19
 
   '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@317beac01fca89faa03f4fd8897f01b9d49170e3(svelte@4.2.19)':
     dependencies:

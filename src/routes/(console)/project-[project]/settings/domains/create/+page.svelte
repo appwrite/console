@@ -9,7 +9,6 @@
     import { InputDomain } from '$lib/elements/forms';
     import { goto } from '$app/navigation';
     import { sdk } from '$lib/stores/sdk';
-    import { ResourceType } from '@appwrite.io/console';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     let showExitModal = false;
@@ -26,7 +25,7 @@
                 await sdk.forProject.proxy.deleteRule(data.$id);
             }
 
-            const value = await sdk.forProject.proxy.createRule(domain, ResourceType.Api);
+            const value = await sdk.forProject.proxy.createAPIRule(domain);
 
             trackEvent(Submit.DomainCreate);
             goto(`${base}/project-${$page.params.project}/settings/domains/create/${value.$id}`);

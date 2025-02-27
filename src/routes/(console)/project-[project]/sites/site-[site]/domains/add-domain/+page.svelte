@@ -7,7 +7,7 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ResourceType, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import {
         Badge,
         Divider,
@@ -27,11 +27,7 @@
 
     async function addDomain() {
         try {
-            domainData = await sdk.forProject.proxy.createRule(
-                domain,
-                ResourceType.Site,
-                $page.params.site
-            );
+            domainData = await sdk.forProject.proxy.createSiteRule(domain, $page.params.site);
             console.log(domainData);
             invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {

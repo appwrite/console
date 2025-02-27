@@ -1,4 +1,4 @@
-import { sdk } from '$lib/stores/sdk';
+import { RuleType, sdk } from '$lib/stores/sdk';
 import { error } from '@sveltejs/kit';
 import { Query } from '@appwrite.io/console';
 import { Dependencies } from '$lib/constants';
@@ -10,8 +10,8 @@ export const load = async ({ url, depends }) => {
     const [site, proxyRuleList] = await Promise.all([
         sdk.forProject.sites.get(siteId),
         sdk.forProject.proxy.listRules([
-            Query.equal('resourceId', siteId),
-            Query.equal('resourceType', 'site')
+            Query.equal('type', RuleType.DEPLOYMENT),
+            Query.equal('automation', `site=${siteId}`)
         ])
     ]);
     return {

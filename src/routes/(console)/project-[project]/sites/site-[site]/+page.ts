@@ -1,6 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import { Query } from '@appwrite.io/console';
+import { RuleType } from '$lib/stores/sdk';
 
 export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.SITE);
@@ -16,8 +17,8 @@ export const load = async ({ params, depends, parent }) => {
             // Query.equal('live', true)
         ]),
         sdk.forProject.proxy.listRules([
-            Query.equal('resourceType', 'site'),
-            Query.equal('resourceId', params.site),
+            Query.equal('type', RuleType.DEPLOYMENT),
+            Query.equal('automation', `site=${params.site}`),
             Query.orderDesc('')
         ])
     ]);

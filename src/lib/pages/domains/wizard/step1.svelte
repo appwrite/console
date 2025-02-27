@@ -19,6 +19,7 @@
                 await sdk.forProject.proxy.deleteRule($domain.$id);
             }
 
+            // TODO: move to new api methods
             $domain = await sdk.forProject.proxy.createRule(
                 $domain.domain,
                 $typeStore,
