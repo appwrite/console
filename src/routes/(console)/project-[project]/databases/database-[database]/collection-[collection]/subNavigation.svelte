@@ -35,7 +35,8 @@
 {#if !$isTabletViewport}
     <Sidebar.Base state="open" resizable={false}>
         <section class="list-container" slot="top" style:width="100%">
-            <h5 class="u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
+            <h5
+                class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
                 <Icon icon={IconDatabase} size="s" color="--color-fgcolor-neutral-weak" />
                 {data.database.name}
             </h5>
@@ -131,6 +132,12 @@
         min-height: 0;
     }
 
+    .database-name {
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        color: var(--color-fgcolor-neutral-secondary);
+    }
+
     .collection-content {
         flex: 1;
         overflow-y: auto;
@@ -164,9 +171,14 @@
     .drop-list {
         border-left: 1px solid var(--color-border-neutral, #ededf0);
         flex: 1;
+        padding-left: 4px;
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        color: var(--color-fgcolor-neutral-secondary);
 
         .is-selected,
         li:hover {
+            color: var(--color-fgcolor-neutral-primary);
             border-radius: var(--border-radius-xs, 4px);
             background: var(--color-bgcolor-neutral-tertiary, #fafafb);
         }
