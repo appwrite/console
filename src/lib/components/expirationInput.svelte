@@ -83,11 +83,5 @@
 <InputSelect bind:value={expirationSelect} {options} id="preset" label={selectorLabel} {helper}>
 </InputSelect>
 {#if expirationSelect === 'custom'}
-    <!-- NOTE: this isn't migrated to Pink2 yet, as there's no component -->
-    <InputDateTime
-        required
-        id="expire"
-        label={dateSelectorLabel}
-        bind:value={expirationCustom}
-        showLabel={typeof dateSelectorLabel !== 'undefined' && dateSelectorLabel !== ''} />
+    <InputDateTime required id="expire" label={dateSelectorLabel} bind:value={expirationCustom} />
 {/if}

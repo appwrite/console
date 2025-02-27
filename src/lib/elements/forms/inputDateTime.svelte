@@ -1,12 +1,9 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { Helper, Label } from '.';
-    import NullCheckbox from './nullCheckbox.svelte';
+    import { Input, Layout, Selector } from '@appwrite.io/pink-svelte';
 
-    export let label: string;
-    export let showLabel = true;
-    export let optionalText: string | undefined = undefined;
     export let id: string;
+    export let label: string;
     export let value: string;
     export let required = false;
     export let nullable = false;
@@ -24,22 +21,6 @@
             element.focus();
         }
     });
-
-    function handleInvalid(event: Event) {
-        event.preventDefault();
-
-        if (element.validity.valueMissing) {
-            error = 'This field is required';
-            return;
-        }
-
-        error = element.validationMessage;
-    }
-
-    function handleInput(event: Event) {
-        const { value: currentValue } = event.currentTarget as HTMLInputElement;
-        value = currentValue || null;
-    }
 
     let prevValue = '';
     function handleNullChange(e: CustomEvent<boolean>) {
@@ -59,35 +40,24 @@
     $: isNullable = nullable && !required;
 </script>
 
-<Label {required} {optionalText} hide={!showLabel} for={id}>
-    {label}
-</Label>
-
-<div class="input-text-wrapper">
-    <input
+<Layout.Stack gap="s" direction="row">
+    <Input.DateTime
         {id}
+        {label}
         {disabled}
         {readonly}
         {required}
         {value}
         {step}
-        autocomplete={autocomplete ? 'on' : 'off'}
-        type="datetime-local"
-        class="input-text"
-        bind:this={element}
-        on:input={handleInput}
-        on:invalid={handleInvalid}
-        style:--amount-of-buttons={isNullable ? 2.75 : 1}
-        style:--button-size={isNullable ? '2rem' : '1rem'} />
-    {#if isNullable}
-        <ul
-            class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
-            <li class="buttons-list-item">
-                <NullCheckbox checked={value === null} on:change={handleNullChange} />
-            </li>
-        </ul>
-    {/if}
-</div>
-{#if error}
-    <Helper type="warning">{error}</Helper>
-{/if}
+        helper={error}
+        autocomplete={autocomplete ? 'on' : 'off'}>
+        {#if isNullable}
+            <Selector.Checkbox
+                size="s"
+                slot="end"
+                label="NULL"
+                checked={value === null}
+                on:change={handleNullChange} />
+        {/if}
+    </Input.DateTime>
+</Layout.Stack>

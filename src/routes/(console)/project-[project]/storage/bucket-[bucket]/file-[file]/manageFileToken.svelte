@@ -8,9 +8,8 @@
 
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { ExpirationInput, Modal } from '$lib/components';
     import { createEventDispatcher } from 'svelte';
-    import { Confirm } from '$lib/components/index.js';
+    import { Confirm, ExpirationInput, Modal } from '$lib/components';
 
     export let show = false;
     export let isDelete = false;

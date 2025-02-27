@@ -15,7 +15,15 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { bucket } from '../store';
-    import { ActionMenu, HiddenText, Layout, Icon, Popover, Table } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Button as PinkButton,
+        InteractiveText,
+        Layout,
+        Icon,
+        Popover,
+        Table
+    } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
         IconPencil,
@@ -191,7 +199,7 @@
                             <Table.Row>
                                 <Table.Cell>{toLocaleDate(token.created)}</Table.Cell>
                                 <Table.Cell>
-                                    <HiddenText isVisible={false} text={token.value} />
+                                    <InteractiveText isVisible={false} text={token.value} />
                                 </Table.Cell>
                                 <Table.Cell
                                     >{token.expiry
@@ -203,18 +211,18 @@
                                         : 'Never'}</Table.Cell>
 
                                 <Table.Cell>
-                                    <Popover placement="bottom-end" let:toggle>
-                                        <Button
-                                            text
+                                    <Popover placement="bottom-end" padding="none" let:toggle>
+                                        <PinkButton.Button
                                             icon
+                                            variant="ghost"
                                             on:click={(e) => {
                                                 e.preventDefault();
                                                 toggle(e);
                                             }}>
                                             <Icon size="s" icon={IconDotsHorizontal} />
-                                        </Button>
+                                        </PinkButton.Button>
                                         <svelte:fragment slot="tooltip" let:toggle>
-                                            <ActionMenu.Root noPadding>
+                                            <ActionMenu.Root>
                                                 <ActionMenu.Item.Button
                                                     leadingIcon={IconPencil}
                                                     on:click={(e) => {
