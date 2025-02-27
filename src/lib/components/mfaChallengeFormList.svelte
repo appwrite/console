@@ -112,7 +112,6 @@
                 fullWidth
                 {disabled}
                 on:click={() => createChallenge(AuthenticationFactor.Email)}>
-                <span class="icon-mail u-font-size-20" aria-hidden="true" />
                 <Icon icon={IconMail} slot="start" size="s" />
                 Email verification
             </Button>
