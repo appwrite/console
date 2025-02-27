@@ -42,6 +42,7 @@ jobs:
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
                       "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
+                      "SENTRY_RELEASE=${{ github.event.release.tag_name }}"
     publish-cloud-stage:
         runs-on: ubuntu-latest
         steps:
