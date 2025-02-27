@@ -9,6 +9,8 @@
     import SendModal from './sendModal.svelte';
     import ScheduleModal from './scheduleModal.svelte';
     import CancelModal from './cancelModal.svelte';
+    import { onDestroy, onMount } from 'svelte';
+    import { stopPolling, pollMessagesStatus } from '../helper';
 
     export let message: Models.Message & { data: Record<string, string> };
     export let topics: Models.Topic[];
@@ -18,6 +20,14 @@
     let showCancel = false;
     let showFailed = false;
     let errors: string[] = [];
+
+    onDestroy(stopPolling);
+
+    onMount(() => {
+        if (message.status === 'processing') {
+            pollMessagesStatus([message]);
+        }
+    });
 </script>
 
 <CardGrid hideFooter={['processing', 'sent'].includes(message.status)}>
@@ -70,7 +80,11 @@
 
 <ScheduleModal bind:show={showSchedule} {message} {topics} />
 
-<SendModal bind:show={showSend} {message} {topics} />
+<SendModal
+    bind:show={showSend}
+    {message}
+    {topics}
+    on:update={() => pollMessagesStatus([message])} />
 
 <CancelModal bind:show={showCancel} {message} />
 
