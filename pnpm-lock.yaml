@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@appwrite.io/pink-svelte': link:../../../../Library/pnpm/global/5/node_modules/@appwrite.io/pink-svelte
-
 importers:
 
   .:
