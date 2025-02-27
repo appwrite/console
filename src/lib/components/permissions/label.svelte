@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, FormList, Helper, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { Modal } from '..';
     import type { Writable } from 'svelte/store';
@@ -12,7 +12,6 @@
 
     const pattern = String.raw`^[a-zA-Z0-9]+$`;
     let value = '';
-    let isError = false;
 
     function reset() {
         value = '';
@@ -21,7 +20,6 @@
 
     function create() {
         if (!value || !value.match(pattern)) {
-            isError = true;
             return;
         }
 
@@ -33,14 +31,16 @@
 </script>
 
 <Modal title="Label" bind:show on:close={reset} onSubmit={create}>
-    <span slot="description">
+    <svelte:fragment slot="description">
         Labels allow you to grant access to users with the specified label.
-    </span>
-    <FormList>
-        <InputText id="label" label="Label" placeholder="Enter label" bind:value />
-        <Helper type={isError ? 'warning' : 'neutral'}
-            >Only alphanumeric characters are allowed.</Helper>
-    </FormList>
+    </svelte:fragment>
+    <InputText
+        required
+        id="label"
+        label="Label"
+        placeholder="Enter label"
+        bind:value
+        helper="Only alphanumeric characters are allowed." />
 
     <svelte:fragment slot="footer">
         <Button submit {disabled}>Add</Button>

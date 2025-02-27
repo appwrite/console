@@ -1,15 +1,6 @@
 <script lang="ts">
     import { Empty, DropList, DropListItem, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import {
-        Table,
-        TableHeader,
-        TableBody,
-        TableCellHead,
-        TableCell,
-        TableCellText,
-        TableRow
-    } from '$lib/elements/table';
     import { Container } from '$lib/layout';
     import { collection, indexes } from '../store';
     import Delete from './deleteIndex.svelte';
@@ -22,8 +13,24 @@
     import type { Option } from '../attributes/store';
     import FailedModal from '../failedModal.svelte';
     import { canWriteCollections } from '$lib/stores/roles';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        ActionMenu,
+        Badge,
+        Icon,
+        Layout,
+        Link,
+        Popover,
+        Table,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import {
+        IconDotsHorizontal,
+        IconEye,
+        IconPencil,
+        IconPlus,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
+    import type { ComponentProps } from 'svelte';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -35,12 +42,24 @@
     let selectedAttribute: Option['name'] = null;
     let showFailed = false;
     let error = '';
+
+    function getAttributeStatusBadge(status: string): ComponentProps<Badge>['type'] {
+        switch (status) {
+            case 'processing':
+                return 'warning';
+            case 'deleting':
+            case 'stuck':
+            case 'failed':
+                return 'error';
+            default:
+                return undefined;
+        }
+    }
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Indexes</Heading>
-
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <Typography.Title>Indexes</Typography.Title>
         {#if $canWriteCollections}
             <Button
                 event="create_index"
@@ -50,89 +69,72 @@
                 Create index
             </Button>
         {/if}
-    </div>
+    </Layout.Stack>
+
     {#if $collection?.attributes?.length}
         {#if $indexes.length}
-            <Table>
-                <TableHeader>
-                    <TableCellHead>Key</TableCellHead>
-                    <TableCellHead onlyDesktop>Type</TableCellHead>
-                    <TableCellHead onlyDesktop>Attributes</TableCellHead>
-                    <TableCellHead onlyDesktop>Asc/Desc</TableCellHead>
-                    <TableCellHead width={30} />
-                </TableHeader>
-                <TableBody>
-                    {#each $indexes as index, i}
-                        <TableRow>
-                            <TableCell title="Key">
-                                <div class="u-flex u-main-space-between">
-                                    <span class="text u-trim"> {index.key}</span>
-                                    {#if index.status !== 'available'}
-                                        <div class="u-inline-flex u-gap-12 u-cross-center">
-                                            <Pill
-                                                warning={index.status === 'processing'}
-                                                danger={['deleting', 'stuck', 'failed'].includes(
-                                                    index.status
-                                                )}>
-                                                {index.status}
-                                            </Pill>
-                                            {#if index.error}
-                                                <Button
-                                                    link
-                                                    on:click={(e) => {
-                                                        e.preventDefault();
-                                                        error = index.error;
-                                                        showFailed = true;
-                                                    }}>Details</Button>
-                                            {/if}
-                                        </div>
+            <Table.Root>
+                <svelte:fragment slot="header">
+                    <Table.Header.Cell>Key</Table.Header.Cell>
+                    <Table.Header.Cell>Type</Table.Header.Cell>
+                    <Table.Header.Cell>Attributes</Table.Header.Cell>
+                    <Table.Header.Cell>Asc/Desc</Table.Header.Cell>
+                    <Table.Header.Cell width="40px" />
+                </svelte:fragment>
+                {#each $indexes as index, i}
+                    <Table.Row>
+                        <Table.Cell>
+                            <Layout.Stack direction="row" alignItems="center">
+                                {index.key}
+                                {#if index.status !== 'available'}
+                                    <Badge
+                                        size="s"
+                                        variant="secondary"
+                                        content={index.status}
+                                        type={getAttributeStatusBadge(index.status)} />
+                                    {#if index.error}
+                                        <Link.Button
+                                            variant="muted"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                error = index.error;
+                                                showFailed = true;
+                                            }}>Details</Link.Button>
                                     {/if}
-                                </div>
-                            </TableCell>
-                            <TableCellText title="Type" onlyDesktop>{index.type}</TableCellText>
-                            <TableCellText title="Attributes" onlyDesktop>
-                                {index.attributes}
-                            </TableCellText>
-                            <TableCellText title="ASC/DESC" onlyDesktop>
-                                {index.orders}
-                            </TableCellText>
-                            <TableCell showOverflow>
-                                <DropList
-                                    bind:show={showDropdown[i]}
-                                    placement="bottom-start"
-                                    noArrow>
-                                    <button
-                                        class="button is-only-icon is-text"
-                                        aria-label="More options"
-                                        on:click|preventDefault={() => {
-                                            showDropdown[i] = !showDropdown[i];
-                                        }}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
-                                    </button>
-                                    <svelte:fragment slot="list">
-                                        <DropListItem
-                                            icon="eye"
-                                            on:click={() => {
-                                                selectedIndex = index;
-                                                showOverview = true;
-                                            }}>Overview</DropListItem>
-
-                                        <DropListItem
-                                            icon="trash"
-                                            on:click={() => {
-                                                selectedIndex = index;
-                                                showDelete = true;
-                                            }}>Delete</DropListItem>
-                                    </svelte:fragment>
-                                </DropList>
-                            </TableCell>
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </Table>
-            <div class="u-flex u-margin-block-start-32 u-main-space-between">
-                <p class="text">Total results: {$indexes.length}</p>
-            </div>
+                                {/if}
+                            </Layout.Stack>
+                        </Table.Cell>
+                        <Table.Cell>{index.type}</Table.Cell>
+                        <Table.Cell>
+                            {index.attributes}
+                        </Table.Cell>
+                        <Table.Cell>
+                            {index.orders}
+                        </Table.Cell>
+                        <Table.Cell>
+                            <Popover let:toggle padding="none" placement="bottom-end">
+                                <Button text icon ariaLabel="more options" on:click={toggle}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                                <ActionMenu.Root slot="tooltip">
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconEye}
+                                        on:click={() => {
+                                            selectedIndex = index;
+                                            showOverview = true;
+                                        }}>Overview</ActionMenu.Item.Button>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconTrash}
+                                        on:click={() => {
+                                            selectedIndex = index;
+                                            showDelete = true;
+                                        }}>Delete</ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </Popover>
+                        </Table.Cell>
+                    </Table.Row>
+                {/each}
+            </Table.Root>
         {:else}
             <Empty
                 allowCreate={$canWriteCollections}

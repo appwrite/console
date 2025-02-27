@@ -30,16 +30,13 @@
         Custom permissions allow you to grant access to specific users or teams using their ID and
         role.
     </span>
-    <FormList>
-        <InputText
-            id="custom-permission"
-            label="Role"
-            placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
-            bind:value />
-        <Helper type="neutral">
-            A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸
-        </Helper>
-    </FormList>
+    <InputText
+        required
+        id="custom-permission"
+        label="Role"
+        placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
+        helper="A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸"
+        bind:value />
 
     <svelte:fragment slot="footer">
         <Button submit {disabled}>Add</Button>

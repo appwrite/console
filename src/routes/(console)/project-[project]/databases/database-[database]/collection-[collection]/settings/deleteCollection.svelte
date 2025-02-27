@@ -3,12 +3,11 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import { collection } from '../store';
 
     export let showDelete = false;
@@ -37,5 +36,7 @@
 </script>
 
 <Confirm onSubmit={handleDelete} title="Delete collection" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{$collection.name}</b>?
+    <Typography.Text>
+        Are you sure you want to delete <b>{$collection.name}</b>?
+    </Typography.Text>
 </Confirm>

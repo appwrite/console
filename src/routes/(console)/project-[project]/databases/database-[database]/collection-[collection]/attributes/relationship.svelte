@@ -57,6 +57,8 @@
     import { camelize } from '$lib/helpers/string';
     import { SelectSearchItem } from '$lib/elements';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { Card, Layout } from '@appwrite.io/pink-svelte';
+    import { IconArrowSmRight, IconSwitchHorizontal } from '@appwrite.io/pink-icons-svelte';
 
     // Props
     export let data: Models.AttributeRelationship;
@@ -130,99 +132,68 @@
     }
 </script>
 
-<li>
-    <ul
-        class="grid-box"
-        style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 0.5rem;">
-        <li>
-            <LabelCard
-                name="relationship"
-                bind:group={way}
-                value="one"
-                icon="arrow-sm-right"
-                disabled={editing}>
-                <svelte:fragment slot="title">One-way relationship</svelte:fragment>
-                One Relation attribute within this collection
-            </LabelCard>
-        </li>
-        <li>
-            <LabelCard
-                name="relationship"
-                bind:group={way}
-                value="two"
-                icon="switch-horizontal"
-                disabled={editing}>
-                <svelte:fragment slot="title">Two-way relationship</svelte:fragment>
-                One Relation attribute within this collection and another within the related collection
-            </LabelCard>
-        </li>
-    </ul>
-</li>
+<Layout.Stack direction="row" wrap="wrap">
+    <Card.Selector
+        title="One-way relationship"
+        bind:group={way}
+        name="one"
+        value="one"
+        icon={IconArrowSmRight}>
+        <p>One Relation attribute within this collection</p>
+    </Card.Selector>
+    <Card.Selector
+        title="Two-way relationship"
+        bind:group={way}
+        name="two"
+        value="two"
+        icon={IconSwitchHorizontal}>
+        <p>
+            One Relation attribute within this collection and another within the related collection
+        </p>
+    </Card.Selector>
+</Layout.Stack>
 
-<div>
+<InputSelect
+    required
+    id="related"
+    label="Related collection"
+    placeholder="Select a collection"
+    bind:value={data.relatedCollection}
+    on:change={updateKeyName}
+    options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
+
+<!-- <div>
     <InputSelectSearch
         id="related"
         label="Related Collection"
-        name="collections"
-        bind:search
         bind:value={data.relatedCollection}
         required
-        interactiveOutput={!editing}
         placeholder="Select a collection"
         disabled={editing}
         options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
-        on:select={updateKeyName}
-        let:option={o}>
-        <SelectSearchItem data={o.data}>
-            {o.label}
-        </SelectSearchItem>
-        <svelte:fragment slot="output" let:option={o}>
-            <output class="input-text" class:is-read-only={editing}>
-                <SelectSearchItem data={o.data}>
-                    {o.label}
-                </SelectSearchItem>
-            </output>
-        </svelte:fragment>
+        on:select={updateKeyName}>
     </InputSelectSearch>
-</div>
+</div> -->
 
 {#if data?.relatedCollection}
-    <div>
-        <InputText
-            id="key"
-            label="Attribute Key"
-            placeholder="Enter Key"
-            bind:value={data.key}
-            autofocus
-            required />
-
-        <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-            <span
-                class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-                aria-hidden="true" />
-            <span class="text u-line-height-1-5">Allowed characters: a-z, A-Z, 0-9, -, .</span>
-        </div>
-    </div>
+    <InputText
+        id="key"
+        label="Attribute key"
+        placeholder="Enter key"
+        bind:value={data.key}
+        autofocus
+        helper="Allowed characters: a-z, A-Z, 0-9, -, ."
+        required />
     {#if way === 'two'}
-        <div>
-            <InputText
-                id="keyRelated"
-                label="Attribute Key (related collection)"
-                placeholder="Enter Key"
-                bind:value={data.twoWayKey}
-                required
-                readonly={editing} />
-
-            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-                <span
-                    class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-                    aria-hidden="true" />
-                <span class="text u-line-height-1-5">
-                    Allowed characters: a-z, A-Z, 0-9, -, . Once created, attribute key cannot be
-                    adjusted to maintain data integrity.
-                </span>
-            </div>
-        </div>
+        <InputText
+            id="keyRelated"
+            label="Attribute key (related collection)"
+            placeholder="Enter key"
+            bind:value={data.twoWayKey}
+            required
+            helper="Allowed characters: a-z, A-Z, 0-9, -, . Once created, attribute key cannot be
+                adjusted to maintain data integrity."
+            readonly={editing} />
     {/if}
 
     <InputSelect

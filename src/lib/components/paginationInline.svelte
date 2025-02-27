@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { IconChevronLeft, IconChevronRight } from '@appwrite.io/pink-icons-svelte';
+    import { Button, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let sum: number;
@@ -51,16 +53,15 @@
 </script>
 
 {#if totalPages > 1}
-    <nav class="pagination">
-        <button
-            type="button"
+    <Layout.Stack direction="row">
+        <Button.Button
+            size="s"
+            variant="compact"
             on:click={() => handleButtonPage('prev')}
-            class:is-disabled={currentPage <= 1}
-            class="button is-text"
-            aria-label="prev page">
-            <span class="icon-cheveron-left" aria-hidden="true" />
-            <span class="text">Prev</span>
-        </button>
+            disabled={currentPage <= 1}>
+            <Icon icon={IconChevronLeft} slot="start" />
+            Prev
+        </Button.Button>
         {#if !hidePages}
             <ol class="pagination-list is-only-desktop">
                 {#each pages as page}
@@ -84,16 +85,15 @@
                 {/each}
             </ol>
         {/if}
-        <button
+        <Button.Button
+            size="s"
+            variant="compact"
             on:click={() => handleButtonPage('next')}
-            class:is-disabled={currentPage === totalPages}
-            class="button is-text"
-            type="button"
-            aria-label="next page">
-            <span class="text">Next</span>
-            <span class="icon-cheveron-right" aria-hidden="true" />
-        </button>
-    </nav>
+            disabled={currentPage === totalPages}>
+            <Icon icon={IconChevronRight} slot="end" />
+            Next
+        </Button.Button>
+    </Layout.Stack>
 {:else}
     <nav class="pagination">
         <button type="button" class="button is-text is-disabled" aria-label="prev page">

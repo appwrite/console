@@ -5,19 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, FloatingActionBar, Id, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, InputChoice } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellCheck,
-        TableCellHead,
-        TableCellHeadCheck,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
+    import { Button as ConsoleButton, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
@@ -27,10 +15,9 @@
     import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
-    import { clickOnEnter } from '$lib/helpers/a11y';
     import type { ColumnType } from '$lib/helpers/types';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Table, Selector, Button, Link } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -159,110 +146,105 @@
     let checked = false;
 </script>
 
-<TableScroll isSticky>
-    <TableHeader>
-        <TableCellHeadCheck
-            bind:selected={selectedDb}
-            pageItemsIds={data.documents.documents.map((d) => d.$id)} />
-        <TableCellHead width={150} eyebrow={false}>Document ID</TableCellHead>
+<Table.Root>
+    <svelte:fragment slot="header">
+        <Table.Header.Selector width="40px" />
+        <Table.Header.Cell width="150px">Document ID</Table.Header.Cell>
         {#each $columns.filter((n) => n.show) as column}
             {#if column.show}
-                <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
+                <Table.Header.Cell>{column.title}</Table.Header.Cell>
             {/if}
         {/each}
-        <TableCellHead eyebrow={false}>Created</TableCellHead>
-        <TableCellHead eyebrow={false}>Updated</TableCellHead>
-    </TableHeader>
-    <TableBody>
-        {#each data.documents.documents as document}
-            <TableRowLink
-                href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
-                <TableCellCheck bind:selectedIds={selectedDb} id={document.$id} />
+        <Table.Header.Cell>Created</Table.Header.Cell>
+        <Table.Header.Cell>Updated</Table.Header.Cell>
+    </svelte:fragment>
+    {#each data.documents.documents as document}
+        <Table.Link
+            href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
+            <Table.Cell>
+                <Selector.Checkbox size="s" />
+            </Table.Cell>
+            <Table.Cell width="150px">
+                {#key document.$id}
+                    <Id value={document.$id}>
+                        {document.$id}
+                    </Id>
+                {/key}
+            </Table.Cell>
 
-                <TableCell width={150}>
-                    {#key document.$id}
-                        <Id value={document.$id}>
-                            {document.$id}
-                        </Id>
-                    {/key}
-                </TableCell>
-
-                {#each $columns as column}
-                    {#if column.show}
-                        {@const attr = $attributes.find((n) => n.key === column.id)}
-                        {#if isRelationship(attr)}
-                            {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
-                            <TableCell title={column.title}>
-                                {#if !isRelationshipToMany(attr)}
-                                    {#if document[column.id]}
-                                        {@const related = document[column.id]}
-                                        <div
-                                            tabindex="0"
-                                            class="link is-5px-offset u-trim-1 u-break-word"
-                                            role="button"
-                                            on:keyup={clickOnEnter}
-                                            on:click|preventDefault|stopPropagation={() =>
-                                                goto(
-                                                    `${base}/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
-                                                )}>
-                                            {#each args as arg, i}
-                                                {#if arg !== undefined}
-                                                    {#if i}
-                                                        &nbsp;|
-                                                    {/if}
-                                                    <span class="text" data-private>
-                                                        {related?.[arg]}
-                                                    </span>
+            {#each $columns as column}
+                {#if column.show}
+                    {@const attr = $attributes.find((n) => n.key === column.id)}
+                    {#if isRelationship(attr)}
+                        {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
+                        <Table.Cell>
+                            {#if !isRelationshipToMany(attr)}
+                                {#if document[column.id]}
+                                    {@const related = document[column.id]}
+                                    <Link.Button
+                                        variant="muted"
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            goto(
+                                                `${base}/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                            );
+                                        }}>
+                                        {#each args as arg, i}
+                                            {#if arg !== undefined}
+                                                {#if i}
+                                                    &nbsp;|
                                                 {/if}
-                                            {/each}
-                                        </div>
-                                    {:else}
-                                        <span class="text">n/a</span>
-                                    {/if}
+                                                <span class="text" data-private>
+                                                    {related?.[arg]}
+                                                </span>
+                                            {/if}
+                                        {/each}
+                                    </Link.Button>
                                 {:else}
-                                    {@const itemsNum = document[column.id]?.length}
-                                    <button
-                                        class="button is-text"
-                                        on:click|preventDefault|stopPropagation={() => {
-                                            relationshipData = document[column.id];
-                                            showRelationships = true;
-                                            selectedRelationship = attr;
-                                        }}
-                                        disabled={!itemsNum}>
-                                        Items <span class="inline-tag">{itemsNum ?? 0}</span>
-                                    </button>
+                                    <span class="text">n/a</span>
                                 {/if}
-                            </TableCell>
-                        {:else}
-                            {@const formatted = formatColumn(document[column.id])}
-                            <TableCell>
-                                <Tooltip disabled={!formatted.truncated}>
-                                    <div
-                                        class="u-width-fit-content"
-                                        data-private
-                                        class:truncated={formatted.whole.length >
-                                            formatted.value.length}
-                                        class:less-width-truncated={$columns.filter(
-                                            (col) => col.show
-                                        ).length > 1}>
-                                        {formatted.value}
-                                    </div>
-                                    <span>{formatted.whole}</span>
-                                </Tooltip>
-                            </TableCell>
-                        {/if}
+                            {:else}
+                                {@const itemsNum = document[column.id]?.length}
+                                <Button.Button
+                                    variant="extra-compact"
+                                    disabled={!itemsNum}
+                                    badge={itemsNum ?? 0}
+                                    on:click={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        relationshipData = document[column.id];
+                                        showRelationships = true;
+                                        selectedRelationship = attr;
+                                    }}>
+                                    Items
+                                </Button.Button>
+                            {/if}
+                        </Table.Cell>
+                    {:else}
+                        {@const formatted = formatColumn(document[column.id])}
+                        <Table.Cell>
+                            <Tooltip disabled={!formatted.truncated} placement="bottom">
+                                <span>
+                                    {formatted.value}
+                                </span>
+                                <span style:white-space="pre-wrap" slot="tooltip">
+                                    {formatted.whole}
+                                </span>
+                            </Tooltip>
+                        </Table.Cell>
                     {/if}
-                {/each}
-                <TableCellText>
-                    {toLocaleDateTime(document.$createdAt)}
-                </TableCellText>
-                <TableCellText>
-                    {toLocaleDateTime(document.$updatedAt)}
-                </TableCellText>
-            </TableRowLink>
-        {/each}
-    </TableBody>
-</TableScroll>
+                {/if}
+            {/each}
+            <Table.Cell>
+                {toLocaleDateTime(document.$createdAt)}
+            </Table.Cell>
+            <Table.Cell>
+                {toLocaleDateTime(document.$updatedAt)}
+            </Table.Cell>
+        </Table.Link>
+    {/each}
+</Table.Root>
 
 <RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
 
@@ -279,10 +261,10 @@
         </div>
 
         <div class="u-flex u-cross-center u-gap-8">
-            <Button text on:click={() => (selectedDb = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>
+            <ConsoleButton text on:click={() => (selectedDb = [])}>Cancel</ConsoleButton>
+            <ConsoleButton secondary on:click={() => (showDelete = true)}>
                 <p>Delete</p>
-            </Button>
+            </ConsoleButton>
         </div>
     </div>
 </FloatingActionBar>
@@ -339,10 +321,11 @@
     </div>
 
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting || (relAttributes?.length && !checked)}>
+        <ConsoleButton text on:click={() => (showDelete = false)} disabled={deleting}
+            >Cancel</ConsoleButton>
+        <ConsoleButton secondary submit disabled={deleting || (relAttributes?.length && !checked)}>
             Delete
-        </Button>
+        </ConsoleButton>
     </svelte:fragment>
 </Modal>
 

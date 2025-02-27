@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -11,6 +11,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
+    import { Link } from '@appwrite.io/pink-svelte';
 
     const databaseId = $page.params.database;
 
@@ -58,13 +59,12 @@
 <CardGrid>
     <svelte:fragment slot="title">Permissions</svelte:fragment>
     Choose who can access your collection and documents. For more about
-    <a
+    <Link.Anchor
         href="https://appwrite.io/docs/products/databases/permissions"
         target="_blank"
-        rel="noopener noreferrer"
-        class="link">
+        rel="noopener noreferrer">
         Permissions
-    </a>.
+    </Link.Anchor>.
     <svelte:fragment slot="aside">
         {#if collectionPermissions}
             <Permissions bind:permissions={collectionPermissions} withCreate />

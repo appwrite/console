@@ -1,13 +1,13 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { Helper, Label } from '.';
-    import NullCheckbox from './nullCheckbox.svelte';
+    import { Input } from '@appwrite.io/pink-svelte';
 
-    export let label: string;
-    export let showLabel = true;
-    export let optionalText: string | undefined = undefined;
+    export let label: string = undefined;
     export let id: string;
-    export let value: string;
+    export let name: string = id;
+    export let helper: string = undefined;
+    export let value = '';
+    export let placeholder = '';
     export let required = false;
     export let nullable = false;
     export let disabled = false;
@@ -16,78 +16,42 @@
     export let autocomplete = false;
     export let step: number | 'any' = 0.001;
 
-    let element: HTMLInputElement;
     let error: string;
-
-    onMount(() => {
-        if (element && autofocus) {
-            element.focus();
-        }
-    });
 
     function handleInvalid(event: Event) {
         event.preventDefault();
 
-        if (element.validity.valueMissing) {
+        if (event.currentTarget.validity.valueMissing) {
             error = 'This field is required';
             return;
         }
 
-        error = element.validationMessage;
-    }
-
-    function handleInput(event: Event) {
-        const { value: currentValue } = event.currentTarget as HTMLInputElement;
-        value = currentValue || null;
-    }
-
-    let prevValue = '';
-    function handleNullChange(e: CustomEvent<boolean>) {
-        const isNull = e.detail;
-        if (isNull) {
-            prevValue = value;
-            value = null;
-        } else {
-            value = prevValue;
-        }
+        error = event.currentTarget.validationMessage;
     }
 
     $: if (value) {
         error = null;
     }
-
-    $: isNullable = nullable && !required;
 </script>
 
-<Label {required} {optionalText} hide={!showLabel} for={id}>
+<Input.DateTime
+    {id}
+    {name}
+    {placeholder}
+    {disabled}
+    {required}
     {label}
-</Label>
-
-<div class="input-text-wrapper">
-    <input
-        {id}
-        {disabled}
-        {readonly}
-        {required}
-        {value}
-        {step}
-        autocomplete={autocomplete ? 'on' : 'off'}
-        type="datetime-local"
-        class="input-text"
-        bind:this={element}
-        on:input={handleInput}
-        on:invalid={handleInvalid}
-        style:--amount-of-buttons={isNullable ? 2.75 : 1}
-        style:--button-size={isNullable ? '2rem' : '1rem'} />
-    {#if isNullable}
-        <ul
-            class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
-            <li class="buttons-list-item">
-                <NullCheckbox checked={value === null} on:change={handleNullChange} />
-            </li>
-        </ul>
-    {/if}
-</div>
-{#if error}
-    <Helper type="warning">{error}</Helper>
-{/if}
+    {step}
+    {nullable}
+    {readonly}
+    autofocus={autofocus || undefined}
+    autocomplete={autocomplete ? 'on' : 'off'}
+    helper={error || helper}
+    state={error ? 'error' : 'default'}
+    on:invalid={handleInvalid}
+    on:input
+    bind:value>
+    <slot name="start" slot="start" />
+    <slot name="info" slot="info" />
+    <slot name="end" slot="end" />
+</Input.DateTime>

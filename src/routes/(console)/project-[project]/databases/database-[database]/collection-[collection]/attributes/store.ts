@@ -35,6 +35,7 @@ export type Option = {
         | 'URL'
         | 'Enum'
         | 'Relationship';
+    sentenceName: string;
     component: typeof SvelteComponent<unknown>;
     type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship';
     create: (
@@ -56,6 +57,7 @@ export type Option = {
 export const attributeOptions: Option[] = [
     {
         name: 'String',
+        sentenceName: 'string',
         component: String,
         type: 'string',
         create: submitString,
@@ -64,6 +66,7 @@ export const attributeOptions: Option[] = [
     },
     {
         name: 'Integer',
+        sentenceName: 'integer',
         component: Integer,
         type: 'integer',
         create: submitInteger,
@@ -72,6 +75,7 @@ export const attributeOptions: Option[] = [
     },
     {
         name: 'Float',
+        sentenceName: 'float',
         component: Float,
         type: 'double',
         create: submitFloat,
@@ -80,6 +84,7 @@ export const attributeOptions: Option[] = [
     },
     {
         name: 'Boolean',
+        sentenceName: 'boolean',
         component: Boolean,
         type: 'boolean',
         create: submitBoolean,
@@ -88,6 +93,7 @@ export const attributeOptions: Option[] = [
     },
     {
         name: 'Datetime',
+        sentenceName: 'datetime',
         component: Datetime,
         type: 'datetime',
         create: submitDatetime,
@@ -96,6 +102,7 @@ export const attributeOptions: Option[] = [
     },
     {
         name: 'Email',
+        sentenceName: 'email',
         component: Email,
         type: 'string',
         format: 'email',
@@ -105,6 +112,7 @@ export const attributeOptions: Option[] = [
     },
     {
         name: 'IP',
+        sentenceName: 'IP',
         component: Ip,
         type: 'string',
         format: 'ip',
@@ -114,6 +122,7 @@ export const attributeOptions: Option[] = [
     },
     {
         name: 'URL',
+        sentenceName: 'URL',
         component: Url,
         type: 'string',
         format: 'url',
@@ -123,6 +132,7 @@ export const attributeOptions: Option[] = [
     },
     {
         name: 'Enum',
+        sentenceName: 'enum',
         component: Enum,
         type: 'string',
         format: 'enum',
@@ -132,6 +142,7 @@ export const attributeOptions: Option[] = [
     },
     {
         name: 'Relationship',
+        sentenceName: 'relationship',
         component: Relationship,
         type: 'relationship',
         create: submitRelationship,

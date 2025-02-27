@@ -53,6 +53,7 @@
     }
 
     $: onShow(showEdit);
+    $: title = `Update ${attributeOptions.find((v) => v.name === option.name)?.sentenceName ?? ''} attribute`;
 
     function onShow(show: boolean) {
         if (show) {
@@ -65,13 +66,7 @@
     }
 </script>
 
-<Modal
-    {error}
-    size="big"
-    bind:show={showEdit}
-    onSubmit={submit}
-    icon={option?.icon}
-    iconNotMobile={option?.type === 'relationship'}>
+<Modal {error} bind:show={showEdit} onSubmit={submit} {title}>
     <svelte:fragment slot="title">
         <div class="u-flex u-cross-center u-gap-8">
             {option?.name}

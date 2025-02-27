@@ -3,6 +3,7 @@
     export let label: string = undefined;
     export let id: string;
     export let name: string = id;
+    export let helper: string = undefined;
     export let value = '';
     export let placeholder = '';
     export let required = false;
@@ -43,7 +44,7 @@
     {readonly}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
-    helper={error}
+    helper={error || helper}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
     on:input
