@@ -8,7 +8,7 @@
         Icon,
         Table,
         Badge,
-        HiddenText,
+        InteractiveText,
         ActionMenu,
         Accordion,
         Tooltip,
@@ -181,7 +181,7 @@
                                                             </svelte:fragment>
                                                         </Tooltip>
                                                     {:else}
-                                                        <HiddenText
+                                                        <InteractiveText
                                                             isVisible={false}
                                                             text={variable.value} />
                                                     {/if}

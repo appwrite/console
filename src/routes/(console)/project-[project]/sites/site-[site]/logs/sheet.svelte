@@ -6,7 +6,7 @@
     import {
         Accordion,
         Badge,
-        HiddenText,
+        InteractiveText,
         Icon,
         Layout,
         Sheet,
@@ -117,7 +117,10 @@
                             Path
                         </Typography.Text>
                         <div>
-                            <HiddenText text={selectedLog.requestPath} variant="public" isVisible />
+                            <InteractiveText
+                                text={selectedLog.requestPath}
+                                variant="copy"
+                                isVisible />
                         </div>
                     </Layout.Stack>
                 </Layout.Stack>

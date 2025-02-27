@@ -4,7 +4,7 @@
     import {
         ActionMenu,
         Button,
-        HiddenText,
+        InteractiveText,
         Icon,
         Layout,
         Popover,
@@ -58,7 +58,10 @@
                         {:else if column.id === 'value'}
                             <Table.Cell>
                                 <div>
-                                    <HiddenText text={record.value} isVisible />
+                                    <InteractiveText
+                                        variant="secret"
+                                        text={record.value}
+                                        isVisible />
                                 </div>
                             </Table.Cell>
                         {:else if column.id === 'ttl'}

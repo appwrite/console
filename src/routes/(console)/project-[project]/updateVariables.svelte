@@ -17,7 +17,7 @@
     import {
         ActionMenu,
         Badge,
-        HiddenText,
+        InteractiveText,
         Icon,
         Layout,
         Popover,
@@ -279,7 +279,10 @@
                                     {#if variable.secret}
                                         <Badge content="Secret" variant="secondary" />
                                     {:else}
-                                        <HiddenText isVisible={false} text={variable.value} />
+                                        <InteractiveText
+                                            variant="secret"
+                                            isVisible={false}
+                                            text={variable.value} />
                                     {/if}
                                 </div>
                             </Table.Cell>
