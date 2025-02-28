@@ -319,7 +319,12 @@ export type UsageProject = {
     authPhoneEstimate: number;
 
     /**
-     * Aggregated statistics of total number SMS by country
+     * Aggregated statistics of total number SMS by country.
      */
     authPhoneCountriesBreakdown: Models.MetricBreakdown[];
+
+    /**
+     * Aggregated statistics of total number of image transformations.
+     */
+    imageTransformations: number;
 };

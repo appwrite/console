@@ -237,6 +237,7 @@ export type OrganizationUsage = {
         users: number;
         authPhoneTotal: number;
         authPhoneEstimate: number;
+        imageTransformations: number;
     }>;
     authPhoneTotal: number;
     authPhoneEstimate: number;
