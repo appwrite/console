@@ -1,11 +1,13 @@
 <script lang="ts">
     import { BillingPlan } from '$lib/constants';
     import { formatNum } from '$lib/helpers/string';
-    import { plansInfo, tierFree, tierPro, tierScale, type Tier } from '$lib/stores/billing';
+    import { isFreeTier, plansInfo, type Tier } from '$lib/stores/billing';
     import { Card, SecondaryTabs, SecondaryTabsItem } from '..';
 
-    let selectedTab: Tier = BillingPlan.FREE;
     export let downgrade = false;
+
+    // get the first available tier as default.
+    let selectedTab: Tier = $plansInfo.keys().next().value;
 
     $: plan = $plansInfo.get(selectedTab);
 </script>
@@ -13,26 +15,18 @@
 <Card style="--card-padding: 1.5rem">
     <div class="comparison-box">
         <SecondaryTabs stretch>
-            <SecondaryTabsItem
-                disabled={selectedTab === BillingPlan.FREE}
-                on:click={() => (selectedTab = BillingPlan.FREE)}>
-                {tierFree.name}
-            </SecondaryTabsItem>
-            <SecondaryTabsItem
-                disabled={selectedTab === BillingPlan.PRO}
-                on:click={() => (selectedTab = BillingPlan.PRO)}>
-                {tierPro.name}
-            </SecondaryTabsItem>
-            <SecondaryTabsItem
-                disabled={selectedTab === BillingPlan.SCALE}
-                on:click={() => (selectedTab = BillingPlan.SCALE)}>
-                {tierScale.name}
-            </SecondaryTabsItem>
+            {#each $plansInfo.entries() as [tier, plan] (tier)}
+                <SecondaryTabsItem
+                    disabled={selectedTab === tier}
+                    on:click={() => (selectedTab = tier)}>
+                    {plan.name}
+                </SecondaryTabsItem>
+            {/each}
         </SecondaryTabs>
     </div>
 
     <div class="u-margin-block-start-24">
-        {#if selectedTab === BillingPlan.FREE}
+        {#if isFreeTier(selectedTab)}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
             {#if downgrade}
                 <ul class="u-margin-block-start-8 list u-gap-4 u-small">

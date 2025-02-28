@@ -1,11 +1,10 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { HeaderAlert } from '$lib/layout';
     import { isCloud } from '$lib/system';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { isFreeTier, upgradeURL } from '$lib/stores/billing';
     import { hideNotification } from '$lib/helpers/notifications';
     import { backupsBannerId, showPolicyAlert } from '$lib/stores/database';
 
@@ -16,7 +15,7 @@
 </script>
 
 {#if $showPolicyAlert && isCloud && $organization?.$id && $page.url.pathname.match(/\/databases\/database-[^/]+$/)}
-    {@const isFreePlan = $organization?.billingPlan === BillingPlan.FREE}
+    {@const isFreePlan = isFreeTier($organization?.billingPlan)}
 
     {@const subtitle = isFreePlan
         ? 'Upgrade your plan to ensure your data stays safe and backed up'

@@ -19,9 +19,8 @@
     import { Button } from '$lib/elements/forms';
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import { upgradeURL } from '$lib/stores/billing';
+    import { isFreeTier, upgradeURL } from '$lib/stores/billing';
     import { Pill } from '$lib/elements';
     import { tooltip } from '$lib/actions/tooltip';
 
@@ -89,14 +88,14 @@
     }
 </script>
 
-<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
+<CardGrid hideFooter={!isFreeTier($organization?.billingPlan)}>
     <Heading tag="h2" size="6">
-        {$organization?.billingPlan === BillingPlan.FREE ? 'Credits' : 'Available credit'}
+        {isFreeTier($organization?.billingPlan) ? 'Credits' : 'Available credit'}
     </Heading>
 
     <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
     <svelte:fragment slot="aside">
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isFreeTier($organization?.billingPlan)}
             <Alert type="info">
                 <svelte:fragment slot="title">Upgrade to Pro to add credits</svelte:fragment>
                 Upgrade to a Pro plan to add credits to your organization. For more information on what
@@ -173,7 +172,7 @@
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if isFreeTier($organization?.billingPlan)}
             <Button
                 secondary
                 href={$upgradeURL}

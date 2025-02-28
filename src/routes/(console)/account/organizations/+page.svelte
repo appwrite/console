@@ -17,10 +17,15 @@
     import { Pill } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
+    import {
+        daysLeftInTrial,
+        isFreeTier,
+        isGithubEducationTier,
+        plansInfo,
+        tierToPlan
+    } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
 
     export let data: PageData;
@@ -71,7 +76,7 @@
                     </svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
-                            {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                            {#if isFreeTier(organization?.billingPlan) || isGithubEducationTier(organization?.billingPlan)}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -82,7 +87,7 @@
                                         >{tierToPlan(organization?.billingPlan)?.name}</Pill>
                                 </div>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && !isFreeTier(organization.billingPlan) && $plansInfo.get(organization.billingPlan)?.trialDays}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

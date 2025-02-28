@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Alert, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
@@ -9,7 +9,7 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import { organization } from '$lib/stores/organization';
-    import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
+    import { getServiceLimit, isFreeTier, showUsageRatesModal } from '$lib/stores/billing';
     import { project } from '$routes/(console)/project-[project]/store';
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
@@ -171,7 +171,7 @@
                     {hoursToDays(logs)} of logs
                 </li>
             </ul>
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if isFreeTier($organization?.billingPlan)}
                 <p class="text">
                     <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>

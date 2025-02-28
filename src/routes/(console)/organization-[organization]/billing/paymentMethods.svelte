@@ -10,12 +10,12 @@
         DropListItem,
         Heading
     } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import { paymentMethods } from '$lib/stores/billing';
+    import { isFreeTier, isGithubEducationTier, paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
@@ -195,7 +195,7 @@
                 </article>
             {/if}
         </div>
-        {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+        {#if !isFreeTier($organization?.billingPlan) && !isGithubEducationTier($organization?.billingPlan)}
             <div class="u-flex u-flex-vertical u-gap-8">
                 {#if $organization?.backupPaymentMethodId}
                     <h4 class="u-bold body-text-2">Backup</h4>
@@ -330,5 +330,5 @@
         bind:showDelete
         {hasOtherMethod}
         isBackup={isSelectedBackup}
-        disabled={$organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
+        disabled={!isFreeTier($organization?.billingPlan) && !hasOtherMethod} />
 {/if}
