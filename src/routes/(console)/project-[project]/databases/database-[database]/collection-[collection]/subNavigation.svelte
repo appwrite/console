@@ -49,7 +49,7 @@
                             {@const isSelected = collectionId === collection.$id}
                             <li class:is-selected={isSelected}>
                                 <a
-                                    class="u-padding-block-4 u-padding-inline-12 u-flex u-cross-center u-gap-8"
+                                    class="u-padding-block-4 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
                                     {href}>
                                     <Icon
                                         icon={IconTable}
