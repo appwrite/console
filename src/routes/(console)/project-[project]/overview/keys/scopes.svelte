@@ -4,7 +4,7 @@
     import { scopes as allScopes } from '$lib/constants';
     import { onMount } from 'svelte';
     import { symmetricDifference } from '$lib/helpers/array';
-    import Checkbox from './checkbox.svelte';
+    import Checkbox from '../components/checkbox.svelte';
 
     export let scopes: string[];
 
@@ -96,7 +96,7 @@
             <svelte:fragment slot="beforetitle">
                 <Checkbox
                     {checked}
-                    indeterminate={checked === null ? true : false}
+                    indeterminate={checked === null}
                     on:change={(e) => onCategoryChange(e, category)} />
             </svelte:fragment>
             <svelte:fragment slot="title">

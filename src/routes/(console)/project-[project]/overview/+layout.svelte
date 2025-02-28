@@ -21,24 +21,17 @@
     import Onboard from './onboard.svelte';
     import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
-    import { isStandardApiKey, usage } from './store';
+    import { usage } from './store';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/helpers/array';
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { createDevKey } from '$routes/(console)/project-[project]/overview/dev-keys/+page.svelte';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
     let period: UsagePeriods = '30d';
-
-    $: currentKeyType = $page.url.searchParams.get('mode') || 'standard';
-
-    $: isSelected = (mode: string): boolean => {
-        return $page.url.pathname === `${path}/keys` && currentKeyType === mode;
-    };
-
-    $: isStandardApiKey.set(isSelected('standard'));
 
     onMount(handle);
     afterNavigate(handle);
@@ -82,9 +75,9 @@
             label: 'Create Dev Key',
             icon: 'plus',
             callback() {
-                createApiKey();
+                createDevKey();
             },
-            keys: ['c', 'd'],
+            keys: ['c', 'd', 'k'],
             group: 'integrations',
             disabled: !$canWriteProjects
         }
@@ -240,21 +233,15 @@
                         <Tab
                             href={`${path}/platforms`}
                             selected={$page.url.pathname === `${path}/platforms`}
-                            event="platforms"
-                            >Platforms
-                        </Tab>
+                            event="platforms">Platforms</Tab>
                         <Tab
-                            href={`${path}/keys?mode=standard`}
-                            selected={isSelected('standard')}
-                            event="keys"
-                            >API keys
-                        </Tab>
+                            href={`${path}/keys`}
+                            selected={$page.url.pathname === `${path}/keys`}
+                            event="keys">API keys</Tab>
                         <Tab
-                            href={`${path}/keys?mode=dev`}
-                            selected={isSelected('dev')}
-                            event="dev-keys"
-                            >Dev keys
-                        </Tab>
+                            href={`${path}/dev-keys`}
+                            selected={$page.url.pathname === `${path}/dev-keys`}
+                            event="keys">Dev keys</Tab>
                     </ul>
                 </div>
 

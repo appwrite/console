@@ -3,11 +3,11 @@ import { sdk } from '$lib/stores/sdk';
 import { selectedTab } from '../store';
 import type { PageLoad } from './$types';
 
-selectedTab.set('keys');
+selectedTab.set('dev-keys');
 
 export const load: PageLoad = async ({ params, depends }) => {
-    depends(Dependencies.KEYS);
+    depends(Dependencies.DEV_KEYS);
     return {
-        keys: await sdk.forConsole.projects.listKeys(params.project)
+        devKeys: await sdk.forConsole.projects.listDevKeys(params.project)
     };
 };

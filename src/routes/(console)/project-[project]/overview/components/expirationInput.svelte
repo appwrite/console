@@ -62,10 +62,9 @@
     ];
 
     export let value: string | null = null;
+    export let resourceType: 'API' | 'Dev' = 'API';
 
-    export let isStandardApiKey: boolean = false;
-
-    const options = isStandardApiKey ? defaultOptions : limitedOptions;
+    const options = resourceType === 'API' ? defaultOptions : limitedOptions;
 
     function initExpirationSelect() {
         if (value === null || !isValidDate(value)) {

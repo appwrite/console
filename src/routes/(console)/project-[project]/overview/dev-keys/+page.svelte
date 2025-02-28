@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-    export function createApiKey() {
+    export function createDevKey() {
         if (!get(canWriteKeys)) {
             return;
         }
@@ -29,28 +29,27 @@
 </script>
 
 <div class="common-section u-flex u-gap-12">
-    <Heading tag="h3" size="7">API keys</Heading>
+    <Heading tag="h3" size="7">Dev keys</Heading>
     {#if $canWriteKeys}
         <span class="u-margin-inline-start-auto">
-            <Button on:click={createApiKey}>
+            <Button on:click={createDevKey}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create API key</span>
+                <span class="text"> Create Dev key </span>
             </Button>
         </span>
     {/if}
 </div>
 
-{#if data.keys.total}
+{#if data.devKeys.total}
     <Table>
         <TableHeader>
             <TableCellHead>Name</TableCellHead>
             <TableCellHead onlyDesktop>last accessed</TableCellHead>
             <TableCellHead onlyDesktop>expiration date</TableCellHead>
-            <TableCellHead onlyDesktop>scopes</TableCellHead>
         </TableHeader>
         <TableBody>
-            {#each data.keys.keys as key}
-                <TableRowLink href={`keys/${key.$id}`}>
+            {#each data.devKeys.keys as key}
+                <TableRowLink href={`dev-keys/${key.$id}`}>
                     <TableCellText title="Name">
                         {key.name}
                     </TableCellText>
@@ -60,18 +59,16 @@
                     <TableCellText onlyDesktop title="Expiration Date">
                         {key.expire ? toLocaleDateTime(key.expire) : 'never'}
                     </TableCellText>
-                    <TableCellText onlyDesktop title="Expiration Date">
-                        {key.scopes.length} Scopes
-                    </TableCellText>
                 </TableRowLink>
             {/each}
         </TableBody>
     </Table>
 {:else}
+    <!-- TODO: create correct links method -->
     <Empty
         single
         allowCreate={$canWriteKeys}
-        href="https://appwrite.io/docs/advanced/platform/api-keys"
-        target="API key"
-        on:click={createApiKey} />
+        href="https://appwrite.io/docs/advanced/platform/dev-keys"
+        target="Dev key"
+        on:click={createDevKey} />
 {/if}

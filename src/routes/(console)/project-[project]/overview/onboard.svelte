@@ -10,10 +10,11 @@
     import OnboardLight2Mobile from './onboard-2-light-mobile.svg';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import Wizard from './keys/wizard.svelte';
+    import ApiKeyWizard from './keys/wizard.svelte';
+    import DevKeyWizard from './dev-keys/wizard.svelte';
     import { canWriteKeys, canWritePlatforms } from '$lib/stores/roles';
     import { base } from '$app/paths';
-    import { isStandardApiKey } from './store';
+    import { keyType } from './store';
 
     export let projectId: string;
 
@@ -45,9 +46,9 @@
         }
     ];
 
-    function createKey(isDevKey: boolean = false) {
-        wizard.start(Wizard);
-        isStandardApiKey.set(!isDevKey);
+    function createKey(isDev: boolean = false) {
+        keyType.set(!isDev ? 'api' : 'dev');
+        wizard.start(!isDev ? ApiKeyWizard : DevKeyWizard);
     }
 
     $: onBoardImage1Mobile = $app.themeInUse === 'dark' ? OnboardDark1Mobile : OnboardLight1Mobile;

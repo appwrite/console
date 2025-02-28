@@ -1,30 +1,20 @@
 <script lang="ts">
-    import { FormList, InputText } from '$lib/elements/forms';
+    import { apiKey } from '../../store';
     import { WizardStep } from '$lib/layout';
-    import ExpirationInput from '../expirationInput.svelte';
-    import { key } from './store';
-    import { isStandardApiKey } from '../../store';
-
-    const keyTypeName = $isStandardApiKey ? 'API' : 'Dev';
+    import { FormList, InputText } from '$lib/elements/forms';
+    import ExpirationInput from '../../components/expirationInput.svelte';
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">{keyTypeName} key</svelte:fragment>
-    <svelte:fragment slot="subtitle">
-        {#if $isStandardApiKey}
-            Generate API keys to authenticate your application. While still in development, use Dev
-            keys instead, as they're better suited for debugging.
-        {:else}
-            Test your app without rate limits and more detailed error messages.
-        {/if}
-    </svelte:fragment>
+    <svelte:fragment slot="title">API key</svelte:fragment>
+    <svelte:fragment slot="subtitle">Let's create an API key.</svelte:fragment>
     <FormList>
         <InputText
             id="name"
             label="Name"
-            placeholder="{keyTypeName} key name"
+            placeholder="API key name"
             required
-            bind:value={$key.name} />
-        <ExpirationInput bind:value={$key.expire} isStandardApiKey={$isStandardApiKey} />
+            bind:value={$apiKey.name} />
+        <ExpirationInput bind:value={$apiKey.expire} />
     </FormList>
 </WizardStep>
