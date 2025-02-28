@@ -35,14 +35,15 @@
 {#if !$isTabletViewport}
     <Sidebar.Base state="open" resizable={false}>
         <section class="list-container" slot="top" style:width="100%">
-            <h5
+            <a
+                href={`${base}/project-${project}/databases/database-${databaseId}`}
                 class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
                 <Icon icon={IconDatabase} size="s" color="--color-fgcolor-neutral-weak" />
                 {data.database.name}
-            </h5>
+            </a>
             <div class="collection-content">
                 {#if data?.allCollections?.total}
-                    <ul class="drop-list u-margin-inline-start-20 u-margin-block-start-8">
+                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
                         {#each sortedCollections as collection}
                             {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                             {@const isSelected = collectionId === collection.$id}
