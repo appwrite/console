@@ -1,14 +1,25 @@
 <script lang="ts">
     import { Copy } from '$lib/components';
     import { Link } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import type { Domain } from '$lib/sdk/domains';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
     import { consoleVariables } from '$routes/(console)/store';
     import { IconDuplicate, IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Layout, Typography, Table, Fieldset, Icon } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Layout,
+        Typography,
+        Table,
+        Fieldset,
+        Icon,
+        Divider
+    } from '@appwrite.io/pink-svelte';
 
     export let domain: Domain;
 
-    $: console.log($consoleVariables._APP_DOMAINS_NAMESERVERS);
+    let verified = undefined;
 
     // TODO: split _APP_DOMAINS_NAMESERVERS?
     let nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS ?? [
@@ -16,7 +27,32 @@
         'ns2.appwrite.io'
     ];
 
-    $: verified = domain.nameservers === nameservers;
+    async function verifyStatus() {
+        try {
+            domain = await sdk.forConsole.domains.updateNameservers(domain.$id);
+            verified = domain.nameservers === nameservers;
+            console.log(domain);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
+    async function back() {
+        try {
+            await sdk.forConsole.domains.delete(domain.$id);
+            domain = undefined;
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
+    $: console.log($consoleVariables._APP_DOMAINS_NAMESERVERS);
 </script>
 
 <Fieldset legend="Verification">
@@ -26,6 +62,9 @@
                 <Layout.Stack gap="s" direction="row" alignItems="center">
                     <Typography.Text variant="l-500">{domain.domain}</Typography.Text>
 
+                    {#if verified === false}
+                        <Badge variant="secondary" type="error" content="Verification failed" />
+                    {/if}
                     <Badge variant="secondary" type="warning" content="Pending verification" />
                 </Layout.Stack>
                 <Typography.Text variant="m-400">
@@ -64,6 +103,10 @@
                 </Typography.Text>
             </Layout.Stack>
         </Layout.Stack>
-        <slot />
+        <Divider />
+        <Layout.Stack direction="row" justifyContent="flex-end">
+            <Button text on:click={back}>Back</Button>
+            <Button secondary on:click={verifyStatus}>Verify</Button>
+        </Layout.Stack>
     </Layout.Stack>
 </Fieldset>
