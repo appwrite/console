@@ -1,35 +1,27 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import Card from '$lib/components/card.svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { InputDomain } from '$lib/elements/forms/index.js';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { type Models } from '@appwrite.io/console';
-    import {
-        Badge,
-        Divider,
-        Fieldset,
-        Layout,
-        Typography,
-        Spinner
-    } from '@appwrite.io/pink-svelte';
+    import { Divider, Fieldset, Layout } from '@appwrite.io/pink-svelte';
     import RecordsCard from '../recordsCard.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import type { Domain } from '$lib/sdk/domains';
 
-    const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
+    const backPage = `${base}/project-${$page.params.organization}/domains`;
 
     let domain = '';
-    let domainData: Models.Domain;
+    let domainData: Domain;
 
     async function addDomain() {
         try {
             domainData = await sdk.forConsole.domains.create($page.params.organization, domain);
             console.log(domainData);
-            invalidate(Dependencies.SITES_DOMAINS);
+            invalidate(Dependencies.DOMAINS);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -65,35 +57,13 @@
 
 <Wizard title="Add domain" href={backPage} column columnSize="s" hideFooter={!domainData}>
     {#if domainData}
-        {#if domainData.status === 'created'}
-            <RecordsCard domain={domainData}>
-                <Divider />
-                <Layout.Stack direction="row" justifyContent="flex-end">
-                    <Button text on:click={back}>Back</Button>
-                    <Button secondary on:click={verifyStatus}>Verify</Button>
-                </Layout.Stack>
-            </RecordsCard>
-        {:else if domainData.status === 'verifying'}
-            <Card radius="s">
-                <Layout.Stack gap="s" direction="row" alignItems="center">
-                    <Typography.Text variant="l-500">{domainData.domain}</Typography.Text>
-                    <Badge variant="secondary" type="success" content="Verified" />
-                    <Badge variant="secondary" content="Generating certificate...">
-                        <svelte:fragment slot="start">
-                            <Spinner size="s" />
-                        </svelte:fragment>
-                    </Badge>
-                </Layout.Stack>
-            </Card>
-        {:else if domainData.status === 'verified'}
-            <Card radius="s">
-                <Layout.Stack gap="s" direction="row" alignItems="center">
-                    <Typography.Text variant="l-500">{domainData.domain}</Typography.Text>
-                    <Badge variant="secondary" type="success" content="Verified" />
-                    <Badge variant="secondary" type="success" content="Generated certificate" />
-                </Layout.Stack>
-            </Card>
-        {/if}
+        <RecordsCard domain={domainData}>
+            <Divider />
+            <Layout.Stack direction="row" justifyContent="flex-end">
+                <Button text on:click={back}>Back</Button>
+                <Button secondary on:click={verifyStatus}>Verify</Button>
+            </Layout.Stack>
+        </RecordsCard>
     {:else}
         <Fieldset legend="Configuration">
             <Form onSubmit={addDomain}>
@@ -104,7 +74,7 @@
                         name="domain"
                         bind:value={domain}
                         required
-                        placeholder="appwrite.example.com" />
+                        placeholder="example.com" />
 
                     <Divider />
                     <Layout.Stack alignItems="flex-end">

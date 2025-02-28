@@ -14,11 +14,11 @@
             title: 'DNS records',
             event: 'dns-records'
         },
-        {
-            href: `${path}/certificates`,
-            title: 'Certificates',
-            event: 'certificates'
-        },
+        // {
+        //     href: `${path}/certificates`,
+        //     title: 'Certificates',
+        //     event: 'certificates'
+        // },
         {
             href: `${path}/settings`,
             title: 'Settings',

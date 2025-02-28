@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
@@ -17,6 +19,9 @@
                 selectedDeployment.$id
             );
             await invalidate(Dependencies.SITE);
+            await goto(
+                `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments`
+            );
             showDelete = false;
             addNotification({
                 type: 'success',
