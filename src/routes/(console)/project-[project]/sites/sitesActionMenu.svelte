@@ -17,7 +17,7 @@
     export let selectedSite: Models.Site = null;
 </script>
 
-<Popover placement="bottom-end" let:toggle>
+<Popover padding="none" placement="bottom-end" let:toggle>
     <Button
         text
         icon
@@ -28,7 +28,7 @@
         }}>
         <Icon size="s" icon={IconDotsHorizontal} /></Button>
     <svelte:fragment slot="tooltip" let:toggle>
-        <ActionMenu.Root noPadding>
+        <ActionMenu.Root>
             <ActionMenu.Item.Button
                 leadingIcon={IconUserAdd}
                 on:click={(e) => {

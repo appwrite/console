@@ -183,7 +183,7 @@
 </script>
 
 {#each [typeFilter] as filter}
-    <Popover let:toggle let:showing>
+    <Popover padding="none" let:toggle let:showing>
         <!--TODO: add tracking back event="apply_quick_filter" -->
         <Tag on:click={toggle}>
             {#key filter.tag}
@@ -194,7 +194,7 @@
             <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" size="s" />
         </Tag>
         <svelte:fragment slot="tooltip" let:toggle>
-            <ActionMenu.Root noPadding>
+            <ActionMenu.Root>
                 {#each filter.options as option (option.value + option.checked)}
                     <SelectSearchCheckbox
                         padding={8}
@@ -231,7 +231,7 @@
     </Popover>
 {/each}
 {#each [sizeFilter] as filter}
-    <Popover let:toggle let:showing>
+    <Popover padding="none" let:toggle let:showing>
         <!--TODO: add tracking back event="apply_quick_filter" -->
 
         <Tag on:click={toggle}>
@@ -244,7 +244,7 @@
             <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" size="s" />
         </Tag>
         <svelte:fragment slot="tooltip" let:toggle>
-            <ActionMenu.Root noPadding>
+            <ActionMenu.Root>
                 {#each filter.options as option (option.value + option.checked)}
                     <ActionMenu.Item.Button
                         on:click={(e) => {

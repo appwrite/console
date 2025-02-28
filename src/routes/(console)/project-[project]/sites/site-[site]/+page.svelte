@@ -80,17 +80,14 @@
 
         <Divider />
 
-        <Layout.Stack direction="row" gap="xxl" wrap="wrap">
-            <div style:flex="1">
-                <DomainsOverview proxyRuleList={data.proxyRuleList} />
-            </div>
-            <div style:flex="2">
-                <DeploymentsOverview
-                    site={data.site}
-                    activeDeployment={data.deployment}
-                    deploymentList={data.deploymentList} />
-            </div>
-        </Layout.Stack>
+        <!-- TODO: mobile view table doesn't shrink -->
+        <Layout.GridFraction gap="xxl" start={1} end={2} breakpoint="m">
+            <DomainsOverview proxyRuleList={data.proxyRuleList} />
+            <DeploymentsOverview
+                site={data.site}
+                activeDeployment={data.deployment}
+                deploymentList={data.deploymentList} />
+        </Layout.GridFraction>
     </Layout.Stack>
 </Container>
 

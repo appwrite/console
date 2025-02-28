@@ -30,7 +30,7 @@
     }
 </script>
 
-<Popover placement="bottom-end" let:toggle>
+<Popover padding="none" placement="bottom-end" let:toggle>
     <Button
         text={!inCard}
         secondary={inCard}
@@ -43,7 +43,7 @@
         <Icon size="s" icon={IconDotsHorizontal} />
     </Button>
     <svelte:fragment slot="tooltip" let:toggle>
-        <ActionMenu.Root noPadding>
+        <ActionMenu.Root>
             {#if !inCard}
                 <ActionMenu.Item.Button
                     leadingIcon={IconRefresh}

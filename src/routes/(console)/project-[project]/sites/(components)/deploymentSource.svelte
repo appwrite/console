@@ -15,7 +15,7 @@
 </script>
 
 {#if deployment.type === 'vcs'}
-    <Popover let:toggle>
+    <Popover padding="none" let:toggle>
         <Layout.Stack>
             <Link
                 on:click={(e) => {
@@ -28,7 +28,7 @@
             </Link>
         </Layout.Stack>
         <svelte:fragment slot="tooltip">
-            <ActionMenu.Root noPadding>
+            <ActionMenu.Root>
                 <ActionMenu.Item.Anchor
                     href={deployment.providerRepositoryUrl}
                     external

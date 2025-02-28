@@ -189,7 +189,10 @@
                                             </Table.Cell>
                                             <Table.Cell>
                                                 <div style="margin-inline-start: auto">
-                                                    <Popover placement="bottom-end" let:toggle>
+                                                    <Popover
+                                                        padding="none"
+                                                        placement="bottom-end"
+                                                        let:toggle>
                                                         <PinkButton.Button
                                                             icon
                                                             variant="text"
@@ -205,7 +208,7 @@
                                                         </PinkButton.Button>
 
                                                         <svelte:fragment slot="tooltip" let:toggle>
-                                                            <ActionMenu.Root noPadding>
+                                                            <ActionMenu.Root>
                                                                 {#if !variable?.secret}
                                                                     <ActionMenu.Item.Button
                                                                         leadingIcon={IconPencil}

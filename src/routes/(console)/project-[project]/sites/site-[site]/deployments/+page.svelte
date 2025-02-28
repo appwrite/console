@@ -115,13 +115,13 @@
                         {#if data.deploymentList.total}
                             <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
                         {/if}
-                        <Popover let:toggle>
+                        <Popover padding="none" let:toggle>
                             <Button size="s" on:click={toggle}>
                                 <Icon size="s" icon={IconPlus} />
                                 Create deployment
                             </Button>
                             <svelte:fragment slot="tooltip" let:toggle>
-                                <ActionMenu.Root noPadding>
+                                <ActionMenu.Root>
                                     <ActionMenu.Item.Button
                                         badge="Recommended"
                                         on:click={(e) => {
