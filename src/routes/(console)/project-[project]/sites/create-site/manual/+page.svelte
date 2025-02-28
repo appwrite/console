@@ -51,7 +51,6 @@
                 installCommand || undefined,
                 buildCommand || undefined,
                 outputDirectory || undefined,
-                undefined,
                 framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
                 undefined,
                 undefined,
