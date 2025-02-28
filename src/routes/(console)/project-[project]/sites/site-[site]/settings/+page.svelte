@@ -6,7 +6,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { Heading } from '$lib/components';
     import { page } from '$app/stores';
     import UpdateBuildSettings from './updateBuildSettings.svelte';
     import UpdateTimeout from './updateTimeout.svelte';
@@ -57,7 +56,6 @@
 </script>
 
 <Container>
-    <Heading tag="h2" size="5">Settings</Heading>
     <UpdateName site={data.site} />
     <UpdateRepository site={data.site} installations={data.installations} />
     <UpdateBuildSettings site={data.site} frameworks={data.frameworks.frameworks} />

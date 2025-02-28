@@ -4,7 +4,10 @@
     import { showCreate } from '../store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { Sidebar } from '@appwrite.io/pink-svelte';
+    import { Icon, Sidebar, Navbar, Layout, Link } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconDatabase, IconTable } from '@appwrite.io/pink-icons-svelte';
+    import { isTabletViewport } from '$lib/stores/viewport';
+    import { BottomSheet } from '$lib/components';
 
     $: data = $page.data as PageData;
     $: project = $page.params.project;
@@ -12,40 +15,197 @@
     $: collectionId = $page.params.collection;
 
     $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
-        a.name.localeCompare(b.name)
+        a.$updatedAt > b.$updatedAt ? -1 : 1
     );
+
+    $: selectedCollection = sortedCollections?.find(
+        (collection) => collection.$id === collectionId
+    );
+
+    let openBottomSheet = false;
+
+    function onResize() {
+        if (openBottomSheet && !$isTabletViewport) {
+            openBottomSheet = false;
+        }
+    }
 </script>
 
-<Sidebar.Base state="open" resizable={false}>
-    <section slot="top" style:width="100%">
-        <a
-            class="u-flex u-cross-center u-sep-block-end u-padding-block-12 is-not-desktop"
-            href={`${base}/project-${project}/databases/database-${databaseId}?openNavbar=true`}>
-            <span class="icon-cheveron-left" aria-hidden="true" />
-            <h5 class="eyebrow-heading-3 u-margin-inline-auto">Collections</h5>
-        </a>
-        <h5 class="eyebrow-heading-3 u-padding-block-12 is-not-mobile">Collections</h5>
-        <button
-            class="button is-text is-full-width u-main-start u-padding-inline-0"
-            on:click={() => {
-                $showCreate = true;
-                $showSubNavigation = false;
-            }}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create collection</span>
-        </button>
-        {#if data?.allCollections?.total}
-            <ul class="drop-list">
-                {#each sortedCollections as collection}
-                    {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
-                    {@const isSelected = collectionId === collection.$id}
-                    <li class="drop-list-item">
-                        <a class="drop-button" class:is-selected={isSelected} {href}>
-                            <span class="text" data-private>{collection.name}</span>
-                        </a>
-                    </li>
-                {/each}
-            </ul>
-        {/if}
-    </section>
-</Sidebar.Base>
+<svelte:window on:resize={onResize} />
+{#if !$isTabletViewport}
+    <Sidebar.Base state="open" resizable={false}>
+        <section class="list-container" slot="top" style:width="100%">
+            <h5
+                class="u-flex u-cross-center body-text-2 u-gap-8 u-padding-inline-12 u-padding-block-8 is-not-mobile is-selected">
+                <Icon icon={IconDatabase} size="s" color="--color-fgcolor-neutral-weak" />
+                {data.database.name}
+            </h5>
+            <div class="collection-content">
+                {#if data?.allCollections?.total}
+                    <ul
+                        class="drop-list u-padding-inline-8 u-margin-inline-start-20 u-margin-block-start-8">
+                        {#each sortedCollections as collection}
+                            {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
+                            {@const isSelected = collectionId === collection.$id}
+                            <li class:is-selected={isSelected}>
+                                <a
+                                    class="u-padding-block-4 u-padding-inline-12 u-flex u-cross-center u-gap-8"
+                                    {href}>
+                                    <Icon
+                                        icon={IconTable}
+                                        size="s"
+                                        color="--color-fgcolor-neutral-weak" />
+                                    <span class="text collection-name" data-private
+                                        >{collection.name}</span>
+                                </a>
+                            </li>
+                        {/each}
+                    </ul>
+                {/if}
+            </div>
+            <button
+                class="new-button body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-8 is-full-width"
+                on:click={() => {
+                    $showCreate = true;
+                    $showSubNavigation = false;
+                }}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create collection</span>
+            </button>
+        </section>
+    </Sidebar.Base>
+{:else}
+    <Navbar.Base>
+        <div slot="left">
+            <Layout.Stack direction="row" alignItems="center" gap="s">
+                <Icon icon={IconDatabase} size="s" color="--neutral-300" />
+                <Link.Anchor
+                    href={`${base}/project-${project}/databases/database-${databaseId}`}
+                    variant="quiet-muted">{data.database.name}</Link.Anchor>
+                <span style:margin-left="8px">/</span>
+                <button
+                    type="button"
+                    class="trigger"
+                    aria-label="Open collections"
+                    on:click={() => {
+                        openBottomSheet = !openBottomSheet;
+                    }}>
+                    <span class="orgName">{selectedCollection.name}</span>
+                    <Icon icon={IconChevronDown} size="s" />
+                </button>
+            </Layout.Stack>
+        </div>
+    </Navbar.Base>
+{/if}
+{#if openBottomSheet}
+    <BottomSheet.Menu
+        bind:isOpen={openBottomSheet}
+        menu={{
+            top: {
+                items: sortedCollections.slice(0, 10).map((collection) => {
+                    return {
+                        name: collection.name,
+                        leadingIcon: IconTable,
+                        href: `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`
+                    };
+                })
+            },
+            bottom:
+                sortedCollections.length > 10
+                    ? {
+                          items: [
+                              {
+                                  name: 'All collections',
+                                  leadingIcon: IconTable,
+                                  href: `${base}/project-${project}/databases/database-${databaseId}`
+                              }
+                          ]
+                      }
+                    : undefined
+        }}></BottomSheet.Menu>
+{/if}
+
+<style lang="scss">
+    .list-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+    }
+
+    .collection-content {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+        margin-bottom: auto;
+        padding-bottom: 16px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-border-neutral, #ededf0) transparent;
+        color: var(--color-fgcolor-neutral-secondary, #56565c);
+
+        &::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 2px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: var(--color-border-neutral, #ededf0);
+            border-radius: 2px;
+
+            &:hover {
+                background: var(--color-border-neutral-emphasis, #dbdbdf);
+            }
+        }
+    }
+
+    .drop-list {
+        border-left: 1px solid var(--color-border-neutral, #ededf0);
+        flex: 1;
+
+        .is-selected,
+        li:hover {
+            border-radius: var(--border-radius-xs, 4px);
+            background: var(--color-bgcolor-neutral-tertiary, #fafafb);
+        }
+
+        .collection-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-clamp: 1;
+            color: var(--color-fgcolor-neutral-secondary, #56565c);
+        }
+    }
+
+    .new-button {
+        flex-shrink: 0;
+    }
+
+    :global(.sub-navigation header) {
+        top: 48px !important;
+    }
+    .trigger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-1, 2px) var(--space-2, 4px) var(--space-1, 2px) var(--space-3, 6px);
+        gap: var(--space-2, 4px);
+        transition: color 0.2s ease;
+
+        color: var(--color-fgcolor-neutral-secondary);
+        border-radius: var(--corner-radius-medium, 8px);
+
+        cursor: default;
+        /* Body text/level 2 Regular */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 150%; /* 21px */
+    }
+</style>

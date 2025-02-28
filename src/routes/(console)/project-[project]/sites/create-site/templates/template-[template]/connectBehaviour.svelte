@@ -1,12 +1,13 @@
 <script lang="ts">
     import { LabelCard } from '$lib/components';
     import { consoleVariables } from '$routes/(console)/store';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let connectBehaviour: 'now' | 'later' = 'now';
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
-<div style="display: grid; gap: 1rem; grid-template-columns: 1fr 1fr;">
+<Layout.Grid columns={2} columnsXS={1}>
     <LabelCard
         value="now"
         bind:group={connectBehaviour}
@@ -18,4 +19,4 @@
         <svelte:fragment slot="title">Connect later</svelte:fragment>
         Deploy now and connect your version control later via CLI or Git integration in your settings.
     </LabelCard>
-</div>
+</Layout.Grid>

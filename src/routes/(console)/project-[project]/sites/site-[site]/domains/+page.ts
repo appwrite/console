@@ -1,8 +1,9 @@
-import { Query, ResourceType } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queries, queryParamToMap } from '$lib/components/filters';
+import { RuleType } from '$lib/stores/sdk';
 
 export const load = async ({ params, depends, url, route }) => {
     depends(Dependencies.SITES_DOMAINS);
@@ -22,8 +23,8 @@ export const load = async ({ params, depends, url, route }) => {
         search,
         domains: await sdk.forProject.proxy.listRules(
             [
-                Query.equal('resourceType', ResourceType.Site),
-                Query.equal('resourceId', params.site),
+                Query.equal('type', [RuleType.DEPLOYMENT, RuleType.REDIRECT]),
+                Query.equal('automation', `site=${params.site}`),
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),

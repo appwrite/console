@@ -17,9 +17,12 @@
 
     {#if !hideFooter}
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography.Text variant="m-400" color="--color-fgcolor-neutral-secondary"
-                >Total results: {total}</Typography.Text>
-            <PaginationInline {limit} bind:offset sum={total} hidePages />
+            <Typography.Text variant="m-400" color="--color-fgcolor-neutral-secondary">
+                Total results: {total}
+            </Typography.Text>
+            <div>
+                <PaginationInline {limit} bind:offset sum={total} hidePages />
+            </div>
         </Layout.Stack>
     {/if}
 </Layout.Stack>

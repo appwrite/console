@@ -21,7 +21,7 @@
         </Layout.Stack>
     </Link>
     {#if domains.rules.length > 1}
-        <Popover let:toggle>
+        <Popover padding="none" let:toggle>
             <Tag size="s" on:click={toggle}>
                 +{domains.rules.length - 1}
             </Tag>

@@ -6,9 +6,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
     import { func } from '$routes/(console)/project-[project]/functions/function-[function]/store';
-    import { domain, typeStore } from './store';
+    import { domain } from './store';
     import { consoleVariables } from '$routes/(console)/store';
-    import { ResourceType } from '@appwrite.io/console';
 
     let error = null;
     const isDomainsEnabled = $consoleVariables?._APP_DOMAIN_ENABLED === true;
@@ -19,11 +18,8 @@
                 await sdk.forProject.proxy.deleteRule($domain.$id);
             }
 
-            $domain = await sdk.forProject.proxy.createRule(
-                $domain.domain,
-                $typeStore,
-                $typeStore === ResourceType.Function ? $func.$id : undefined
-            );
+            // TODO: move to new api methods
+            $domain = await sdk.forProject.proxy.createFunctionRule($domain.domain, $func.$id);
 
             trackEvent(Submit.DomainCreate);
         } catch (e) {

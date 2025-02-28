@@ -6,7 +6,7 @@
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { type ComponentType, onDestroy, setContext } from 'svelte';
+    import { type ComponentType, setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -109,7 +109,7 @@
     };
 
     let showAccountMenu = false;
-    let subNavigation: undefined | ComponentType = $page.data.subNavigation;
+    $: subNavigation = $page.data.subNavigation;
     let state: undefined | 'open' | 'closed' | 'icons' = 'closed';
     $: state = $isSidebarOpen ? 'open' : 'closed';
 
@@ -135,7 +135,6 @@
 <svelte:window on:resize={handleResize} />
 <svelte:body use:style={$bodyStyle} />
 <main
-    class:grid-with-side={showSideNavigation}
     class:is-open={$showSubNavigation}
     class:u-hide={$wizard.show || $log.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
@@ -212,7 +211,7 @@
     :global(main:has(.sub-navigation)) {
         .main-content {
             @media (min-width: 1024px) {
-                padding-left: 200px;
+                padding-left: 255px;
             }
         }
     }

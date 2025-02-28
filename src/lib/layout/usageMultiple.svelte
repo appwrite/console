@@ -6,6 +6,7 @@
     import { page } from '$app/stores';
     import { type Models } from '@appwrite.io/console';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let title: string;
     export let total: number[];
@@ -17,35 +18,40 @@
 </script>
 
 <Container overlapCover={overlapContainerCover}>
-    <div class="u-flex u-main-space-between common-section">
-        {#if showHeader}
+    {#if showHeader}
+        <div class="u-flex u-main-space-between common-section">
             <Heading tag="h2" size="5">{title}</Heading>
-        {/if}
 
-        {#if path}
-            <SecondaryTabs>
-                <SecondaryTabsItem href={`${path}/24h`} disabled={$page.params.period === '24h'}>
-                    24h
-                </SecondaryTabsItem>
-                <SecondaryTabsItem
-                    href={`${path}/30d`}
-                    disabled={!$page.params.period || $page.params.period === '30d'}>
-                    30d
-                </SecondaryTabsItem>
-                <SecondaryTabsItem href={`${path}/90d`} disabled={$page.params.period === '90d'}>
-                    90d
-                </SecondaryTabsItem>
-            </SecondaryTabs>
-        {/if}
-    </div>
+            {#if path}
+                <SecondaryTabs>
+                    <SecondaryTabsItem
+                        href={`${path}/24h`}
+                        disabled={$page.params.period === '24h'}>
+                        24h
+                    </SecondaryTabsItem>
+                    <SecondaryTabsItem
+                        href={`${path}/30d`}
+                        disabled={!$page.params.period || $page.params.period === '30d'}>
+                        30d
+                    </SecondaryTabsItem>
+                    <SecondaryTabsItem
+                        href={`${path}/90d`}
+                        disabled={$page.params.period === '90d'}>
+                        90d
+                    </SecondaryTabsItem>
+                </SecondaryTabs>
+            {/if}
+        </div>
+    {/if}
+
     <Card>
         {#if count}
             {@const totalCount = total.reduce((a, b) => a + b, 0)}
 
-            <Heading tag="h6" size="6">{formatNumberWithCommas(totalCount)}</Heading>
-            <p>Total {title.toLocaleLowerCase()}</p>
-            <div class="u-margin-block-start-16" />
-
+            <Layout.Stack gap="xs">
+                <Typography.Title>{formatNumberWithCommas(totalCount)}</Typography.Title>
+                <Typography.Text>Total {title.toLocaleLowerCase()}</Typography.Text>
+            </Layout.Stack>
             <div class="multiple-chart-container u-flex-vertical u-gap-16">
                 <BarChart
                     formatted={$page.params.period === '24h' ? 'hours' : 'days'}

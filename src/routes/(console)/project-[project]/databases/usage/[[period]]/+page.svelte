@@ -15,25 +15,23 @@
     $: writesTotal = data.databasesWritesTotal;
 </script>
 
-<div class="u-flex u-flex-vertical u-gap-16">
-    <Usage
-        title="Usage"
-        path={`${base}/project-${$page.params.project}/databases/usage`}
-        {total}
-        {count}
-        countMetadata={{
-            legend: 'Databases',
-            title: 'Total databases'
-        }} />
+<Usage
+    title="Usage"
+    path={`${base}/project-${$page.params.project}/databases/usage`}
+    {total}
+    {count}
+    countMetadata={{
+        legend: 'Databases',
+        title: 'Total databases'
+    }} />
 
-    <UsageMultiple
-        title="Reads and writes"
-        showHeader={false}
-        overlapContainerCover
-        total={[readsTotal, writesTotal]}
-        count={[reads, writes]}
-        legendData={[
-            { name: 'Reads', value: readsTotal },
-            { name: 'Writes', value: writesTotal }
-        ]} />
-</div>
+<UsageMultiple
+    title="Reads and writes"
+    showHeader={false}
+    overlapContainerCover
+    total={[readsTotal, writesTotal]}
+    count={[reads, writes]}
+    legendData={[
+        { name: 'Reads', value: readsTotal },
+        { name: 'Writes', value: writesTotal }
+    ]} />

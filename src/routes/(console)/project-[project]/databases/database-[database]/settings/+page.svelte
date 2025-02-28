@@ -55,19 +55,15 @@
 
 {#if $database}
     <Container>
-        <Card>
-            <div class="common-section grid-1-2">
-                <div class="grid-1-2-col-1">
-                    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-                        <Heading tag="h6" size="7">{$database.name}</Heading>
-                    </div>
-                </div>
+        <CardGrid>
+            <svelte:fragment slot="title">{$database.name}</svelte:fragment>
+            <svelte:fragment slot="aside">
                 <div class="grid-1-2-col-2">
                     <p>Created: {toLocaleDateTime($database.$createdAt)}</p>
                     <p>Last updated: {toLocaleDateTime($database.$updatedAt)}</p>
                 </div>
-            </div>
-        </Card>
+            </svelte:fragment>
+        </CardGrid>
 
         <Form onSubmit={updateName}>
             <CardGrid>

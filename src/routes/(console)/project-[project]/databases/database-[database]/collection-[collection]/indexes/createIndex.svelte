@@ -13,7 +13,7 @@
     import { isRelationship } from '../document-[document]/attributes/store';
     import { type Attributes, collection, indexes } from '../store';
     import Select from './select.svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let showCreateIndex = false;
@@ -110,59 +110,61 @@
     }
 </script>
 
-<Modal title="Create index" bind:error size="big" onSubmit={create} bind:show={showCreateIndex}>
-    <FormList>
-        <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
-        <InputSelect options={types} id="type" label="Index type" bind:value={selectedType} />
+<Modal title="Create index" bind:error onSubmit={create} bind:show={showCreateIndex}>
+    <InputText
+        required
+        id="key"
+        label="Index Key"
+        placeholder="Enter Key"
+        bind:value={key}
+        autofocus />
+    <InputSelect required options={types} id="type" label="Index type" bind:value={selectedType} />
 
+    <Layout.Stack gap="s">
         {#each attributeList as attribute, i}
-            <li class="form-item is-multiple">
-                <div class="form-item-part u-stretch">
-                    <Select id={`attribute-${i}`} label="Attribute" bind:value={attribute.value}>
-                        <option value="" disabled hidden>Select Attribute</option>
-
-                        <optgroup label="Internal">
-                            <option value="$id">$id</option>
-                            <option value="$createdAt">$createdAt</option>
-                            <option value="$updatedAt">$updatedAt</option>
-                        </optgroup>
-                        <optgroup label="Attributes">
-                            {#each attributeOptions as option}
-                                <option value={option.value}>
-                                    {option.label}
-                                </option>
-                            {/each}
-                        </optgroup>
-                    </Select>
-                </div>
-                <div class="form-item-part u-stretch">
-                    <Select id={`order-${i}`} label="Order" bind:value={attribute.order}>
-                        <option value="" disabled hidden>Select Order</option>
-
-                        <option value="ASC"> ASC </option>
-                        <option value="DESC"> DESC </option>
-                    </Select>
-                </div>
-
-                <div class="form-item-part u-cross-child-end">
+            <Layout.Stack direction="row">
+                <InputSelect
+                    required
+                    options={[
+                        { value: '$id', label: '$id' },
+                        { value: '$createdAt', label: '$createdAt' },
+                        { value: '$updatedAt', label: '$updatedAt' },
+                        ...attributeOptions
+                    ]}
+                    id={`attribute-${i}`}
+                    label={i === 0 ? 'Attribute' : undefined}
+                    placeholder="Select Attribute"
+                    bind:value={attribute.value} />
+                <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                    <InputSelect
+                        options={[
+                            { value: 'ASC', label: 'ASC' },
+                            { value: 'DESC', label: 'DESC' }
+                        ]}
+                        required
+                        id={`order-${i}`}
+                        label={i === 0 ? 'Order' : undefined}
+                        bind:value={attribute.order}
+                        placeholder="Select Order" />
                     <Button
-                        noMargin
-                        text
+                        icon
+                        compact
                         disabled={attributeList.length <= 1}
                         on:click={() => {
                             attributeList = remove(attributeList, i);
                         }}>
                         <span class="icon-x" aria-hidden="true" />
                     </Button>
-                </div>
-            </li>
+                </Layout.Stack>
+            </Layout.Stack>
         {/each}
-
-        <Button text on:click={addAttribute} disabled={addAttributeDisabled}>
-            <Icon icon={IconPlus} slot="start" size="s" />
-            Add attribute
-        </Button>
-    </FormList>
+        <div>
+            <Button secondary on:click={addAttribute} disabled={addAttributeDisabled}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add attribute
+            </Button>
+        </div>
+    </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreateIndex = false)}>Cancel</Button>
         <Button submit>Create</Button>

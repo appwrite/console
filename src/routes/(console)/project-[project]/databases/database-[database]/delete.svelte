@@ -8,17 +8,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { database } from './store';
-
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { type Models, Query } from '@appwrite.io/console';
+    import { Table } from '@appwrite.io/pink-svelte';
 
     const databaseId = $page.params.database;
 
@@ -27,9 +19,6 @@
 
     let error = null;
     let isLoadingDocumentsCount = false;
-
-    /* enable overflow-x */
-    const columnWidth = 135;
 
     $: collectionItems = [];
     let collections: Models.CollectionList = null;
@@ -100,99 +89,84 @@
     }
 </script>
 
-<div class="max-height-dialog">
-    <Modal title="Delete database" bind:show={showDelete} onSubmit={handleDelete}>
-        {#await listCollections()}
-            <div class="u-flex u-main-center">
-                <div class="loader" />
-            </div>
-        {:then}
-            {#if error}
-                <p class="text" data-private>
-                    Are you sure you want to delete <b>{$database.name}</b>?
-                </p>
-            {:else if collectionItems.length > 0}
-                <p class="text" data-private>
-                    The following collections and all data associated with <b>{$database.name}</b>,
-                    will be permanently deleted.
-                </p>
-
-                <div class="u-flex-vertical u-gap-16">
-                    <TableScroll dense noMargin class="table">
-                        <TableHeader>
-                            <TableCellHead width={columnWidth}>Collection</TableCellHead>
-                            <!-- small spacer placeholder -->
-                            <TableCellHead width={columnWidth / 4} />
-                            <TableCellHead width={columnWidth}>Last Updated</TableCellHead>
-                        </TableHeader>
-                        <TableBody>
-                            {#each collectionItems as collection}
-                                <TableRow>
-                                    <TableCell title="Collection">{collection.name}</TableCell>
-                                    <TableCell />
-                                    <TableCell title="Last Updated"
-                                        >{toLocaleDate(collection.updatedAt)}</TableCell>
-                                </TableRow>
-                            {/each}
-                        </TableBody>
-                    </TableScroll>
-
-                    {#if collectionItems.length < collections.total}
-                        <div class="u-flex u-gap-16 u-cross-center">
-                            <button class="u-underline" on:click={listCollections} type="button">
-                                Show more
-                            </button>
-
-                            {#if isLoadingDocumentsCount}
-                                <div class="loader is-small" />
-                            {/if}
-                        </div>
-                    {:else if collectionItems.length > 25}
-                        <button
-                            class="u-underline"
-                            on:click={() => {
-                                collectionItems = collectionItems.slice(0, 3);
-                            }}
-                            type="button">
-                            Show less
-                        </button>
-                    {/if}
-                </div>
-            {:else}
-                <p class="text" data-private>
-                    Are you sure you want to delete <b>{$database.name}</b>?
-                </p>
-            {/if}
-        {/await}
-
-        {#if !isLoadingDocumentsCount}
-            <p class="text" data-private>
-                <b>
-                    Once deleted, this database and its backups cannot be restored. This action is
-                    irreversible.
-                </b>
-            </p>
-
-            <FormList>
-                <div class="input-check-box-friction">
-                    <InputCheckbox
-                        required
-                        id="delete_policy"
-                        bind:checked={confirmedDeletion}
-                        label="I understand and confirm" />
-                </div>
-            </FormList>
+<Modal title="Delete database" bind:show={showDelete} onSubmit={handleDelete}>
+    <p class="text" slot="description">
+        {#if collectionItems.length > 0}
+            The following collections and all data associated with <b>{$database.name}</b>, will be
+            permanently deleted.
+        {:else}
+            Are you sure you want to delete <b>{$database.name}</b>?
         {/if}
+    </p>
+    {#await listCollections()}
+        <div class="u-flex u-main-center">
+            <div class="loader" />
+        </div>
+    {:then}
+        {#if error}
+            <p class="text">
+                Are you sure you want to delete <b>{$database.name}</b>?
+            </p>
+        {:else if collectionItems.length > 0}
+            <div class="u-flex-vertical u-gap-16">
+                <Table.Root>
+                    <svelte:fragment slot="header">
+                        <Table.Header.Cell>Collection</Table.Header.Cell>
+                        <Table.Header.Cell>Last Updated</Table.Header.Cell>
+                    </svelte:fragment>
+                    {#each collectionItems as collection}
+                        <Table.Row>
+                            <Table.Cell>{collection.name}</Table.Cell>
+                            <Table.Cell>{toLocaleDate(collection.updatedAt)}</Table.Cell>
+                        </Table.Row>
+                    {/each}
+                </Table.Root>
 
-        <svelte:fragment slot="footer">
-            <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit disabled={!confirmedDeletion}>Delete</Button>
-        </svelte:fragment>
-    </Modal>
-</div>
+                {#if collectionItems.length < collections.total}
+                    <div class="u-flex u-gap-16 u-cross-center">
+                        <button class="u-underline" on:click={listCollections} type="button">
+                            Show more
+                        </button>
 
-<style>
-    :global(.max-height-dialog dialog) {
-        max-height: 650px;
-    }
-</style>
+                        {#if isLoadingDocumentsCount}
+                            <div class="loader is-small" />
+                        {/if}
+                    </div>
+                {:else if collectionItems.length > 25}
+                    <button
+                        class="u-underline"
+                        on:click={() => {
+                            collectionItems = collectionItems.slice(0, 3);
+                        }}
+                        type="button">
+                        Show less
+                    </button>
+                {/if}
+            </div>
+        {/if}
+    {/await}
+
+    {#if !isLoadingDocumentsCount}
+        <p class="text" data-private>
+            <b>
+                Once deleted, this database and its backups cannot be restored. This action is
+                irreversible.
+            </b>
+        </p>
+
+        <FormList>
+            <div class="input-check-box-friction">
+                <InputCheckbox
+                    required
+                    id="delete_policy"
+                    bind:checked={confirmedDeletion}
+                    label="I understand and confirm" />
+            </div>
+        </FormList>
+    {/if}
+
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
+        <Button danger submit disabled={!confirmedDeletion}>Delete</Button>
+    </svelte:fragment>
+</Modal>

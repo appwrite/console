@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
     import { InputSwitch } from '$lib/elements/forms';
     import { webhook } from './store';
@@ -12,7 +12,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import MessageStatusPill from '../messageStatusPill.svelte';
     import FormList from '$lib/elements/forms/formList.svelte';
 
     const projectId = $page.params.project;
@@ -55,7 +54,7 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">{$webhook.url}</svelte:fragment>
+    <svelte:fragment slot="title">{$webhook.name}</svelte:fragment>
     <svelte:fragment slot="aside">
         <div class="u-flex u-gap-16">
             <ul class="u-stretch">
@@ -69,7 +68,6 @@
                 <li style="margin-top:16px">Created: {toLocaleDateTime($webhook.$createdAt)}</li>
                 <li>Last updated: {toLocaleDateTime($webhook.$updatedAt)}</li>
             </ul>
-            <MessageStatusPill enabled={$webhook.enabled} />
         </div>
     </svelte:fragment>
 

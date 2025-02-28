@@ -61,9 +61,12 @@
     import { Container } from '$lib/layout';
     import { BarChart } from '$lib/charts';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { Card, SecondaryTabs, SecondaryTabsItem, Heading } from '$lib/components';
+    import { Card } from '$lib/components';
     import { ProjectUsageRange, type Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { goto } from '$app/navigation';
+    import { InputSelect } from '$lib/elements/forms';
 
     type MetricMetadata = {
         title: string;
@@ -78,39 +81,48 @@
 </script>
 
 <Container>
-    <div class="u-flex u-main-space-between common-section">
-        <Heading tag="h2" size="5">{title}</Heading>
-        <SecondaryTabs>
-            <SecondaryTabsItem href={`${path}/24h`} disabled={$page.params.period === '24h'}>
-                24h
-            </SecondaryTabsItem>
-            <SecondaryTabsItem
-                href={`${path}/30d`}
-                disabled={!$page.params.period || $page.params.period === '30d'}>
-                30d
-            </SecondaryTabsItem>
-            <SecondaryTabsItem href={`${path}/90d`} disabled={$page.params.period === '90d'}>
-                90d
-            </SecondaryTabsItem>
-        </SecondaryTabs>
-    </div>
-    <Card>
-        {#if count}
-            <Heading tag="h6" size="6">{formatNumberWithCommas(total)}</Heading>
-            <p>{countMetadata.title}</p>
-            <div class="u-margin-block-start-16" />
-            <div class="chart-container">
-                <BarChart
-                    formatted={$page.params.period === '24h' ? 'hours' : 'days'}
-                    series={[
-                        {
-                            name: countMetadata.legend,
-                            data: accumulateFromEndingTotal(count, total)
-                        }
-                    ]} />
-            </div>
-        {/if}
-    </Card>
+    <Layout.Stack gap="s">
+        <div
+            style:max-width="250px"
+            style:--input-background-color="var(--color-bgcolor-neutral-primary)">
+            <InputSelect
+                on:change={(e) => goto(`${path}/${e.detail}`)}
+                id="period"
+                options={[
+                    {
+                        label: '24 hours',
+                        value: '24h'
+                    },
+                    {
+                        label: '30 days',
+                        value: '30d'
+                    },
+                    {
+                        label: '90 days',
+                        value: '90d'
+                    }
+                ]}
+                value={$page.params.period ?? '30d'} />
+        </div>
+        <Card>
+            {#if count}
+                <Layout.Stack gap="xs">
+                    <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
+                    <Typography.Text>{countMetadata.title}</Typography.Text>
+                </Layout.Stack>
+                <div class="chart-container">
+                    <BarChart
+                        formatted={$page.params.period === '24h' ? 'hours' : 'days'}
+                        series={[
+                            {
+                                name: countMetadata.legend,
+                                data: accumulateFromEndingTotal(count, total)
+                            }
+                        ]} />
+                </div>
+            {/if}
+        </Card>
+    </Layout.Stack>
 </Container>
 
 <style lang="scss">

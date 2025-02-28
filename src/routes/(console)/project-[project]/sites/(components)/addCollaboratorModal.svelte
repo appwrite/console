@@ -60,10 +60,10 @@
         name = null;
     }
 
-    // TODO: fix design
+    //TODO: fix popover
 </script>
 
-<Modal title="Share site" {error} bind:show onSubmit={create}>
+<Modal title="Add collaborator" {error} bind:show onSubmit={create}>
     <span slot="description">
         Share your progress and start collaborating by adding members to your organization.
     </span>
@@ -75,7 +75,14 @@
             placeholder="Enter email"
             autofocus={true}
             bind:value={email} />
-        <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
+        <InputSelect
+            popover={Roles}
+            id="role"
+            label="Role"
+            placeholder="Select role"
+            required
+            options={roles}
+            bind:value={role} />
     </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>

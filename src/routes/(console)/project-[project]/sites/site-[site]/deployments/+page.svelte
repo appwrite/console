@@ -50,9 +50,7 @@
 
 <Container>
     <Layout.Stack gap="xxxl">
-        {#if data.deploymentList.total}
-            <DeploymentMetrics deploymentList={data.deploymentList} />
-        {/if}
+        <DeploymentMetrics deploymentList={data.deploymentList} />
         <Layout.Stack gap="l">
             <Layout.Stack justifyContent="space-between" direction="row">
                 <div class="is-not-mobile">
@@ -104,7 +102,7 @@
 
                         <Filters query={data.query} {columns} clearOnClick>
                             <svelte:fragment slot="mobile" let:disabled let:toggle>
-                                <Tag on:click={toggle} {disabled}>
+                                <Tag size="m" on:click={toggle} {disabled}>
                                     <span class="text">More filters</span>
                                     <span class="icon-cheveron-down" />
                                 </Tag>
@@ -117,13 +115,13 @@
                         {#if data.deploymentList.total}
                             <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
                         {/if}
-                        <Popover let:toggle>
+                        <Popover padding="none" let:toggle>
                             <Button size="s" on:click={toggle}>
                                 <Icon size="s" icon={IconPlus} />
                                 Create deployment
                             </Button>
                             <svelte:fragment slot="tooltip" let:toggle>
-                                <ActionMenu.Root noPadding>
+                                <ActionMenu.Root>
                                     <ActionMenu.Item.Button
                                         badge="Recommended"
                                         on:click={(e) => {

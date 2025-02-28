@@ -8,7 +8,7 @@
         Icon,
         Table,
         Badge,
-        HiddenText,
+        InteractiveText,
         ActionMenu,
         Accordion,
         Tooltip,
@@ -181,7 +181,7 @@
                                                             </svelte:fragment>
                                                         </Tooltip>
                                                     {:else}
-                                                        <HiddenText
+                                                        <InteractiveText
                                                             isVisible={false}
                                                             text={variable.value} />
                                                     {/if}
@@ -189,7 +189,10 @@
                                             </Table.Cell>
                                             <Table.Cell>
                                                 <div style="margin-inline-start: auto">
-                                                    <Popover placement="bottom-end" let:toggle>
+                                                    <Popover
+                                                        padding="none"
+                                                        placement="bottom-end"
+                                                        let:toggle>
                                                         <PinkButton.Button
                                                             icon
                                                             variant="text"
@@ -204,23 +207,26 @@
                                                                 size="s" />
                                                         </PinkButton.Button>
 
-                                                        <svelte:fragment slot="tooltip">
-                                                            <ActionMenu.Root noPadding>
+                                                        <svelte:fragment slot="tooltip" let:toggle>
+                                                            <ActionMenu.Root>
                                                                 {#if !variable?.secret}
                                                                     <ActionMenu.Item.Button
                                                                         leadingIcon={IconPencil}
-                                                                        on:click={() => {
+                                                                        on:click={(e) => {
+                                                                            toggle(e);
                                                                             currentVariable =
                                                                                 variable;
                                                                             showUpdate = true;
                                                                         }}>
-                                                                        Edit
+                                                                        Update
                                                                     </ActionMenu.Item.Button>
                                                                 {/if}
                                                                 {#if !variable?.secret}
                                                                     <ActionMenu.Item.Button
                                                                         leadingIcon={IconEyeOff}
-                                                                        on:click={() => {
+                                                                        on:click={(e) => {
+                                                                            toggle(e);
+
                                                                             currentVariable =
                                                                                 variable;
                                                                             showSecretModal = true;
@@ -231,7 +237,8 @@
                                                                 <ActionMenu.Item.Button
                                                                     status="danger"
                                                                     leadingIcon={IconTrash}
-                                                                    on:click={() => {
+                                                                    on:click={(e) => {
+                                                                        toggle(e);
                                                                         currentVariable = variable;
                                                                         showDelete = true;
                                                                     }}>

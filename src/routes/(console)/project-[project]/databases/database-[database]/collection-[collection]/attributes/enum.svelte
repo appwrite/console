@@ -44,6 +44,7 @@
     export let data: Partial<Models.AttributeEnum>;
 
     import { createConservative } from '$lib/helpers/stores';
+    import { Selector } from '@appwrite.io/pink-svelte';
 
     let savedDefault = data.default;
 
@@ -99,10 +100,18 @@
     placeholder="Select a value"
     {options}
     bind:value={data.default} />
-<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
-    Indicate whether this is a required attribute
-</InputChoice>
-<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array, with the default value set as an empty
-    array.
-</InputChoice>
+<Selector.Checkbox
+    size="s"
+    id="required"
+    label="Required"
+    bind:checked={data.required}
+    disabled={data.array}
+    description="Indicate whether this attribute is required" />
+<Selector.Checkbox
+    size="s"
+    id="array"
+    label="Array"
+    bind:checked={data.array}
+    disabled={data.required || editing}
+    description="Indicate whether this attribute should act as an array, with the default value set as an empty
+    array." />

@@ -1,21 +1,38 @@
+<script context="module" lang="ts">
+    export function badgeTypeDeployment(status: string) {
+        switch (status) {
+            case 'failed':
+                return 'error';
+            case 'ready':
+                return 'success';
+            case 'building':
+                return 'warning';
+            case 'processing':
+                return undefined;
+            default:
+                return undefined;
+        }
+    }
+</script>
+
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { timer } from '$lib/actions/timer';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { capitalize } from '$lib/helpers/string';
-    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { Badge, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Logs, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import LogsTimer from './logsTimer.svelte';
 
     export let site: Models.Site;
     export let deployment: Models.Deployment;
+    export let hideTitle = false;
 
     let { status, buildLogs } = deployment;
 
@@ -58,50 +75,24 @@
             });
         }
     }
-
-    function badgeType(status: string) {
-        switch (status) {
-            case 'failed':
-                return 'error';
-            case 'ready':
-                return 'success';
-            case 'building':
-                return undefined;
-            case 'processing':
-                return 'warning';
-            default:
-                return undefined;
-        }
-    }
 </script>
 
 <Layout.Stack gap="xl">
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row" alignItems="center" gap="s" inline>
-            <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
-                Deployment logs
-            </Typography.Text>
-            <Badge
-                content={capitalize(status)}
-                size="xs"
-                variant="secondary"
-                type={badgeType(status)} />
+    {#if !hideTitle}
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Layout.Stack direction="row" alignItems="center" gap="s" inline>
+                <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                    Deployment logs
+                </Typography.Text>
+                <Badge
+                    content={capitalize(status)}
+                    size="xs"
+                    variant="secondary"
+                    type={badgeTypeDeployment(status)} />
+            </Layout.Stack>
+            <LogsTimer {status} {deployment} />
         </Layout.Stack>
-        <Layout.Stack direction="row" alignItems="center" inline>
-            {#if ['processing', 'building'].includes(status)}
-                <Typography.Code color="--color-fgcolor-neutral-secondary">
-                    <Layout.Stack direction="row" alignItems="center" inline>
-                        <p use:timer={{ start: deployment.$createdAt }} />
-                        <Spinner size="s" />
-                    </Layout.Stack>
-                </Typography.Code>
-            {:else}
-                <Typography.Code color="--color-fgcolor-neutral-secondary">
-                    {formatTimeDetailed(deployment.buildTime)}
-                </Typography.Code>
-            {/if}
-        </Layout.Stack>
-    </Layout.Stack>
+    {/if}
     {#key buildLogs}
         <Logs logs={buildLogs || 'No logs available'} bind:theme={$app.themeInUse} />
     {/key}

@@ -5,12 +5,13 @@
 
     export let value: string;
     export let copyEvent: string = null;
+    export let label: string = undefined;
 </script>
 
-<Input.Password {value}>
-    <div slot="end">
+<Input.Password {value} {label} required>
+    <svelte:fragment slot="end">
         <Copy {value} event={copyEvent} eventContext="click_secret_copy">
             <Input.Action icon={IconDuplicate} />
         </Copy>
-    </div>
+    </svelte:fragment>
 </Input.Password>

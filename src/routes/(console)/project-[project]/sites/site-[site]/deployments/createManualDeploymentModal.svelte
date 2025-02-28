@@ -36,7 +36,7 @@
     <span slot="description"> Manually deploy a site by uploading any file(s) or folder. </span>
 
     <InputFile
-        label="Upload a zip file (tar.gz) containing your function source code"
+        label="Upload a zip file (tar.gz) containing your sites source code"
         allowedFileExtensions={['gz']}
         bind:files
         required />

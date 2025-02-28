@@ -99,7 +99,7 @@
         return ['INPUT', 'TEXTAREA', 'SELECT'].includes((event.target as HTMLElement).tagName);
     }
 
-    const handleKeydown = (e) => {
+    const handleKeydown = (e: KeyboardEvent) => {
         if (!$subPanels.length) {
             if (isInputEvent(e)) return;
             keys = [...keys, e.key].slice(-10);

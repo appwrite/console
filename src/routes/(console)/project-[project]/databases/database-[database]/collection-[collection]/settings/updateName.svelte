@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -48,14 +48,13 @@
     <CardGrid>
         <svelte:fragment slot="title">Name</svelte:fragment>
         <svelte:fragment slot="aside">
-            <ul>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Enter name"
-                    autocomplete={false}
-                    bind:value={collectionName} />
-            </ul>
+            <InputText
+                required
+                id="name"
+                label="Name"
+                placeholder="Enter name"
+                autocomplete={false}
+                bind:value={collectionName} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

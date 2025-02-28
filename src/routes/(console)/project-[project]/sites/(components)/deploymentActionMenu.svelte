@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -9,7 +8,6 @@
         IconDownload,
         IconLightningBolt,
         IconRefresh,
-        IconTerminal,
         IconTrash,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
@@ -22,6 +20,7 @@
     export let showRedeploy = false;
     export let showCancel = false;
     export let activeDeployment: string;
+    export let inCard = false;
 
     function getDownload(deploymentId: string) {
         return (
@@ -31,9 +30,10 @@
     }
 </script>
 
-<Popover placement="bottom-end" let:toggle>
+<Popover padding="none" placement="bottom-end" let:toggle>
     <Button
-        text
+        text={!inCard}
+        secondary={inCard}
         icon
         size="s"
         on:click={(e) => {
@@ -44,25 +44,18 @@
     </Button>
     <svelte:fragment slot="tooltip" let:toggle>
         <ActionMenu.Root>
-            <ActionMenu.Item.Button
-                leadingIcon={IconRefresh}
-                on:click={(e) => {
-                    e.preventDefault();
-                    selectedDeployment = deployment;
-                    showRedeploy = true;
-                    toggle(e);
-                }}>
-                Redeploy
-            </ActionMenu.Item.Button>
-            <ActionMenu.Item.Anchor
-                leadingIcon={IconTerminal}
-                href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}
-                on:click={(e) => {
-                    e.preventDefault();
-                    toggle(e);
-                }}>
-                View details
-            </ActionMenu.Item.Anchor>
+            {#if !inCard}
+                <ActionMenu.Item.Button
+                    leadingIcon={IconRefresh}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        selectedDeployment = deployment;
+                        showRedeploy = true;
+                        toggle(e);
+                    }}>
+                    Redeploy
+                </ActionMenu.Item.Button>
+            {/if}
             {#if deployment?.status === 'ready' && deployment?.$id !== activeDeployment}
                 <ActionMenu.Item.Button
                     leadingIcon={IconLightningBolt}
@@ -75,7 +68,7 @@
                     Activate
                 </ActionMenu.Item.Button>
             {/if}
-            {#if deployment?.status === 'ready'}
+            {#if deployment?.status === 'ready' || deployment?.status === 'failed'}
                 <ActionMenu.Item.Anchor
                     href={getDownload(deployment.$id)}
                     external

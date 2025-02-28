@@ -13,7 +13,7 @@
     import type { Models } from '@appwrite.io/console';
     import { project } from '../../store';
     import { base } from '$app/paths';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Avatar, Badge, Card, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     const projectId = $page.params.project;
     let showProvider = false;
@@ -46,34 +46,34 @@
 
 {#if $authMethods && $project}
     <Container>
-        <CardGrid>
-            <svelte:fragment slot="title">Auth methods</svelte:fragment>
-            Enable the authentication methods you wish to use.
-            <svelte:fragment slot="aside">
-                <Layout.Stack gap="l" direction="row" wrap="wrap">
-                    {#each $authMethods.list as box}
-                        <div style="flex-basis: 45%;">
-                            <InputSwitch
-                                label={box.label}
-                                id={box.method}
-                                bind:value={box.value}
-                                on:change={() => authUpdate(box)} />
-                        </div>
-                    {/each}
-                </Layout.Stack>
-            </svelte:fragment>
-        </CardGrid>
-        <section class="common-section">
-            <h2 class="heading-level-6 common-section">OAuth2 Providers</h2>
-            <ul class="grid-box common-section">
-                {#each $project.oAuthProviders
-                    .filter((p) => p.name !== 'Mock')
-                    .sort((a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1)) as provider}
-                    {@const oAuthProvider = oAuthProviders[provider.key]}
-                    {#if oAuthProvider}
-                        <li class="grid-box-item">
-                            <button
-                                class="card u-flex u-flex-vertical u-cross-center u-width-full-line"
+        <Layout.Stack gap="xxl">
+            <CardGrid>
+                <svelte:fragment slot="title">Auth methods</svelte:fragment>
+                Enable the authentication methods you wish to use.
+                <svelte:fragment slot="aside">
+                    <Layout.Stack gap="l" direction="row" wrap="wrap">
+                        {#each $authMethods.list as box}
+                            <div style="flex-basis: 45%;">
+                                <InputSwitch
+                                    label={box.label}
+                                    id={box.method}
+                                    bind:value={box.value}
+                                    on:change={() => authUpdate(box)} />
+                            </div>
+                        {/each}
+                    </Layout.Stack>
+                </svelte:fragment>
+            </CardGrid>
+            <Layout.Stack>
+                <Typography.Title size="s">OAuth2 Providers</Typography.Title>
+                <ul class="grid-box" style:--grid-gap="1rem" style:--grid-item-size="15rem">
+                    {#each $project.oAuthProviders
+                        .filter((p) => p.name !== 'Mock')
+                        .sort( (a, b) => (a.enabled === b.enabled ? 0 : a.enabled ? -1 : 1) ) as provider}
+                        {@const oAuthProvider = oAuthProviders[provider.key]}
+                        {#if oAuthProvider}
+                            <Card.Button
+                                padding="s"
                                 on:click={() => {
                                     selectedProvider = provider;
                                     showProvider = true;
@@ -81,25 +81,31 @@
                                         provider: provider.key.toLowerCase()
                                     });
                                 }}>
-                                <div class="avatar">
-                                    <img
-                                        height="20"
-                                        width="20"
-                                        src={`${base}/icons/${$app.themeInUse}/color/${oAuthProvider.icon}.svg`}
-                                        alt={provider.name} />
-                                </div>
-                                <p class="u-margin-block-start-8">{provider.name}</p>
-                                <div class="u-margin-block-start-24">
-                                    <Pill success={provider.enabled}>
-                                        {provider.enabled ? 'enabled' : 'disabled'}
-                                    </Pill>
-                                </div>
-                            </button>
-                        </li>
-                    {/if}
-                {/each}
-            </ul>
-        </section>
+                                <Layout.Stack alignItems="flex-start" gap="xxl">
+                                    <Layout.Stack
+                                        direction="row"
+                                        justifyContent="flex-start"
+                                        alignItems="center">
+                                        <Avatar size="s">
+                                            <img
+                                                height="20"
+                                                width="20"
+                                                src={`${base}/icons/${$app.themeInUse}/color/${oAuthProvider.icon}.svg`}
+                                                alt={provider.name} />
+                                        </Avatar>
+                                        <Typography.Text>{provider.name}</Typography.Text>
+                                    </Layout.Stack>
+                                    <Badge
+                                        type={provider.enabled ? 'success' : undefined}
+                                        variant="secondary"
+                                        content={provider.enabled ? 'enabled' : 'disabled'} />
+                                </Layout.Stack>
+                            </Card.Button>
+                        {/if}
+                    {/each}
+                </ul>
+            </Layout.Stack>
+        </Layout.Stack>
     </Container>
 {/if}
 

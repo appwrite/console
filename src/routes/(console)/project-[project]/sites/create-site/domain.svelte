@@ -4,7 +4,7 @@
     import { debounce } from '$lib/helpers/debounce';
     import { sdk } from '$lib/stores/sdk';
     import { consoleVariables } from '$routes/(console)/store';
-    import { Type } from '@appwrite.io/console';
+    import { ConsoleResourceType } from '@appwrite.io/console';
     import { Fieldset, Layout, Divider, Status, Typography } from '@appwrite.io/pink-svelte';
 
     export let domain: string;
@@ -16,7 +16,7 @@
         try {
             await sdk.forConsole.console.getResource(
                 `${value}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                'rules' as unknown as Type //TODO: fix after Matej fixes backend
+                ConsoleResourceType.Rules
             );
 
             domainIsValid = true;

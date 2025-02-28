@@ -18,7 +18,7 @@
     export let external = false;
     export let href: string = null;
     export let download: string = undefined;
-    export let badge: string = null;
+    export let badge: string = undefined;
     export let fullWidth = false;
     export let fullWidthMobile = false;
     export let ariaLabel: string = null;

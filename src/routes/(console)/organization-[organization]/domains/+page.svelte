@@ -7,7 +7,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
     import { protocol } from '$routes/(console)/store.js';
-    import type { Models } from '@appwrite.io/console';
     import {
         IconDotsHorizontal,
         IconExternalLink,
@@ -17,7 +16,6 @@
     } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
-        Badge,
         Card,
         Empty,
         Icon,
@@ -30,20 +28,15 @@
     import { queries } from '$lib/components/filters';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
+    import type { Domain } from '$lib/sdk/domains';
 
     export let data;
 
     let showDelete = false;
     let showRetry = false;
-    let selectedDomain: Models.Domain = null;
+    let selectedDomain: Domain = null;
 
     $: console.log(data.domains);
-
-    // TODO: replace status once backend is fixed
-    // created - Verification Failed
-    // verified - Verification OK , Certificate OK
-    // verifying - Verifiacitok OK
-    // unverified - Verificaiton OK , Certificate Failed
 </script>
 
 <Container>
@@ -81,24 +74,12 @@
                                     <Icon icon={IconExternalLink} size="s" />
                                 </Layout.Stack>
                             </Link>
-                            {#if !domain.verified}
-                                <Badge
-                                    size="s"
-                                    variant="secondary"
-                                    content="Verification failed"
-                                    type="error" />
-                            {:else if domain.status === 'veryfing'}
-                                <Badge
-                                    size="s"
-                                    variant="secondary"
-                                    content="Pending verification"
-                                    type="warning" />
-                            {/if}
                         </Layout.Stack>
                     </Table.Cell>
                     <Table.Cell>{domain?.registrar || '-'}</Table.Cell>
                     <Table.Cell>{domain?.nameservers || '-'}</Table.Cell>
-                    <Table.Cell>{domain?.expiry || '-'}</Table.Cell>
+                    <Table.Cell>
+                        {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}</Table.Cell>
                     <Table.Cell>
                         {domain.renewal ? toLocaleDateTime(domain.renewal) : '-'}
                     </Table.Cell>
@@ -199,6 +180,6 @@
     <DeleteDomainModal show={showDelete} {selectedDomain} />
 {/if}
 
-{#if showRetry}
+<!-- {#if showRetry}
     <RetryDomainModal show={showRetry} {selectedDomain} />
-{/if}
+{/if} -->

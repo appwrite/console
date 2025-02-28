@@ -3,15 +3,15 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputSelectSearch, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputSelect, InputSelectSearch, InputText } from '$lib/elements/forms';
     import { last, symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { attributes } from '../store';
     import { preferences } from '$lib/stores/preferences';
     import { page } from '$app/stores';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
     const collectionId = $page.params.collection;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
@@ -63,75 +63,50 @@
         You can specify up to 5 names.
 
         <svelte:fragment slot="aside">
-            <div class="u-flex u-flex-vertical u-gap-4">
-                <ul class="u-flex-vertical u-gap-8">
-                    <li class="u-flex u-gap-8">
-                        <InputText
-                            id="id"
-                            label="Document ID"
-                            showLabel={false}
-                            placeholder="Document ID"
-                            readonly
-                            fullWidth />
-                        <div class="form-item-part u-cross-child-end u-opacity-0">
-                            <Button text noMargin disabled>
-                                <span class="icon-x" aria-hidden="true" />
+            <Layout.Stack gap="s">
+                <Layout.Stack direction="row" gap="xxs">
+                    <InputText id="id" value="Document ID" readonly />
+                    <span style:visibility="hidden">
+                        <Button icon extraCompact>
+                            <Icon icon={IconX} />
+                        </Button>
+                    </span>
+                </Layout.Stack>
+                {#if names?.length}
+                    {#each names as name, i}
+                        <Layout.Stack direction="row" gap="xxs">
+                            <InputSelect
+                                id={name}
+                                placeholder="Select attribute"
+                                bind:value={names[i]}
+                                disabled={!!names[i] && names.length > i + 1}
+                                {options} />
+                            <Button
+                                icon
+                                extraCompact
+                                on:click={() => {
+                                    names.splice(i, 1);
+                                    names = names;
+                                }}>
+                                <Icon icon={IconX} />
                             </Button>
-                        </div>
-                    </li>
-                    {#if names?.length}
-                        {#each names as name, i}
-                            <div class="u-flex u-gap-8">
-                                {#if names[i]}
-                                    <InputSelectSearch
-                                        id={name}
-                                        label={name}
-                                        showLabel={false}
-                                        interactiveOutput
-                                        placeholder="Select attribute"
-                                        bind:value={names[i]}
-                                        bind:search={names[i]}
-                                        name="attributes"
-                                        disabled
-                                        {options} />
-                                {:else}
-                                    <InputSelectSearch
-                                        id={name}
-                                        label={name}
-                                        showLabel={false}
-                                        placeholder="Select attribute"
-                                        bind:value={names[i]}
-                                        bind:search
-                                        name="attributes"
-                                        {options} />
-                                {/if}
-                                <div class="form-item-part u-cross-child-end">
-                                    <Button
-                                        text
-                                        noMargin
-                                        on:click={() => {
-                                            names.splice(i, 1);
-                                            names = names;
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </div>
-                            </div>
-                        {/each}
-                    {/if}
-                </ul>
-                <Button
-                    text
-                    disabled={addAttributeDisabled}
-                    on:click={() => {
-                        names[names.length] = null;
-                        search = null;
-                        names = names;
-                    }}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Add attribute
-                </Button>
-            </div>
+                        </Layout.Stack>
+                    {/each}
+                {/if}
+                <div>
+                    <Button
+                        secondary
+                        disabled={addAttributeDisabled}
+                        on:click={() => {
+                            names[names.length] = null;
+                            search = null;
+                            names = names;
+                        }}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add attribute
+                    </Button>
+                </div>
+            </Layout.Stack>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

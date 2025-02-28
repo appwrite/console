@@ -26,12 +26,14 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, ResourceType } from '@appwrite.io/console';
-    import Domain from '../../domain.svelte';
+    import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
+    // import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
     import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
     import { consoleVariables } from '$routes/(console)/store';
+    import { project } from '$routes/(console)/project-[project]/store';
+    import { buildVerboseDomain } from '../../store';
 
     export let data;
 
@@ -45,7 +47,7 @@
     let name = data.template.name;
     let id = ID.unique();
     let domain = id;
-    let domainIsValid = true;
+    // let domainIsValid = true;
     let framework = data?.template?.frameworks[0];
     let branch = 'main';
     let rootDir = './';
@@ -59,7 +61,7 @@
     let variables = [];
     let silentMode = false;
 
-    onMount(() => {
+    onMount(async () => {
         if (!$installation?.$id) {
             $installation = data.installations.installations[0];
         }
@@ -111,14 +113,18 @@
                 message: 'Please select a repository'
             });
             return;
-        } else if (!domainIsValid) {
-            addNotification({
-                type: 'error',
-                message: 'Please enter a valid domain'
-            });
-            return;
-        } else {
+        }
+        // else if (!domainIsValid) {
+        //     addNotification({
+        //         type: 'error',
+        //         message: 'Please enter a valid domain'
+        //     });
+        //     return;
+        // }
+        else {
             try {
+                domain = await buildVerboseDomain(data.template.name, $project.name, id);
+
                 const fr = Object.values(Framework).find((f) => f === framework.key);
                 const buildRuntime = Object.values(BuildRuntime).find(
                     (f) => f === framework.buildRuntime
@@ -133,8 +139,8 @@
                     framework.installCommand,
                     framework.buildCommand,
                     framework.outputDirectory,
-                    framework.adapter,
-                    selectedInstallationId || undefined,
+                    framework.adapter as unknown as Adapter,
+                    connectBehaviour === 'later' ? undefined : selectedInstallationId || undefined,
                     framework.fallbackFile,
                     selectedRepository || undefined,
                     branch || undefined,
@@ -143,9 +149,8 @@
                 );
 
                 // Add domain
-                await sdk.forProject.proxy.createRule(
+                await sdk.forProject.proxy.createSiteRule(
                     `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                    ResourceType.Site,
                     site.$id
                 );
 
@@ -243,7 +248,7 @@
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <Domain bind:domain bind:domainIsValid />
+                    <!-- <Domain bind:domain bind:domainIsValid /> -->
                 </Layout.Stack>
             {:else}
                 {@const options = data.template.frameworks.map((framework) => {
@@ -325,7 +330,7 @@
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <Domain bind:domain bind:domainIsValid />
+                    <!-- <Domain bind:domain bind:domainIsValid /> -->
                 {/if}
             {/if}
         </Layout.Stack>

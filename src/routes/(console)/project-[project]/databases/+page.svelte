@@ -16,6 +16,7 @@
     import { canWriteDatabases } from '$lib/stores/roles';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import EmptySearch from '$lib/components/emptySearch.svelte';
 
     export let data: PageData;
 
@@ -78,6 +79,11 @@
             limit={data.limit}
             offset={data.offset}
             total={data.databases.total} />
+    {:else if data.search}
+        <EmptySearch target="databases" hidePagination>
+            <Button href={`${base}/project-${$page.params.project}/databases`} size="s" secondary
+                >Clear Search</Button>
+        </EmptySearch>
     {:else}
         <Empty
             single

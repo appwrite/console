@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { EmptySearch, PaginationWithLimit } from '$lib/components';
+    import { EmptySearch, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -11,7 +11,8 @@
     import type { Column } from '$lib/helpers/types';
     import Table from './table.svelte';
     import { queries } from '$lib/components/filters';
-    import { Card, Empty } from '@appwrite.io/pink-svelte';
+    import { Card, Empty, Layout } from '@appwrite.io/pink-svelte';
+    import { View } from '$lib/helpers/load';
 
     export let data;
 
@@ -63,49 +64,13 @@
 </script>
 
 <Container>
-    <!-- <SearchQuery search={data.search} placeholder="Search by path"></SearchQuery> -->
-    <!-- <ContainerHeader title="Executions">
-        <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
-            <p class="u-bold">The {tier} plan has limits</p>
-            <ul>
-                <li>
-                    {abbreviateNumber(limit)} sites logs
-                </li>
-                <li>
-                    {hoursToDays(logs)} of logs
-                </li>
-            </ul>
-            {#if $organization?.billingPlan === BillingPlan.FREE}
-                <p class="text">
-                    <Link on:click={upgradeMethod}>Upgrade</Link>
-                    to increase your resource limits.
-                </p>
-            {:else}
-                <p class="text">
-                    After this amount, <button
-                        class="link"
-                        type="button"
-                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
-                        >usage fees will apply</button
-                    >.
-                </p>
-            {/if}
-        </svelte:fragment>
-    </ContainerHeader> -->
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <SearchQuery search={data.search} placeholder="Search by ID"></SearchQuery>
+        {#if data.logs.total}
+            <ViewSelector view={View.Table} {columns} hideView />
+        {/if}
+    </Layout.Stack>
 
-    <!-- {#if !data.site?.logging}
-        <div class="common-section">
-            <Alert type="info" isStandalone>
-                <svelte:fragment slot="title">Your execution logs are disabled</svelte:fragment>
-                To view execution logs and errors, enable them in your
-                <a
-                    href={`${base}/project-${$project.$id}/functions/function-${data.site.$id}/settings`}
-                    class="link">
-                    Function settings</a
-                >.
-            </Alert>
-        </div>
-    {/if} -->
     {#if data?.logs?.total}
         <Table columns={$columns} logs={data.logs} />
 

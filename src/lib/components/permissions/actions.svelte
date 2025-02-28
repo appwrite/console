@@ -17,15 +17,10 @@
     const dispatch = createEventDispatcher();
 </script>
 
-<Popover let:toggle>
+<Popover let:toggle padding="none" placement="bottom-start">
     <slot {toggle} />
     <svelte:fragment slot="tooltip">
         <ActionMenu.Root>
-            <ActionMenu.Item.Button
-                disabled={$groups.has('any')}
-                on:click={() => dispatch('create', ['any'])}>
-                Any
-            </ActionMenu.Item.Button>
             <ActionMenu.Item.Button
                 disabled={$groups.has('any')}
                 on:click={() => dispatch('create', ['any'])}>
@@ -53,14 +48,22 @@
     </svelte:fragment>
 </Popover>
 
-<User bind:show={showUser} on:create {groups} />
-<Team
-    bind:show={showTeam}
-    on:create
-    on:custom={() => {
-        showTeam = false;
-        showCustom = true;
-    }}
-    {groups} />
-<Label bind:show={showLabel} on:create {groups} />
-<Custom bind:show={showCustom} on:create {groups} />
+{#if showUser}
+    <User bind:show={showUser} on:create {groups} />
+{/if}
+{#if showTeam}
+    <Team
+        bind:show={showTeam}
+        on:create
+        on:custom={() => {
+            showTeam = false;
+            showCustom = true;
+        }}
+        {groups} />
+{/if}
+{#if showLabel}
+    <Label bind:show={showLabel} on:create {groups} />
+{/if}
+{#if showCustom}
+    <Custom bind:show={showCustom} on:create {groups} />
+{/if}

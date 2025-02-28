@@ -1,10 +1,9 @@
 <script lang="ts">
     import { PaginationWithLimit } from '$lib/components';
-
     import {
         ActionMenu,
         Button,
-        HiddenText,
+        InteractiveText,
         Icon,
         Layout,
         Popover,
@@ -14,16 +13,16 @@
     import { IconDotsHorizontal, IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { columns } from './store';
     import { timeFromNow } from '$lib/helpers/date';
-    import type { Models } from '@appwrite.io/console';
     import DeleteRecordModal from './deleteRecordModal.svelte';
     import { capitalize } from '$lib/helpers/string';
     import EditRecordModal from './editRecordModal.svelte';
+    import type { DnsRecord } from '$lib/sdk/domains';
 
     export let data;
 
     let showEdit = false;
     let showDelete = false;
-    let selectedRecord: Models.DnsRecord = null;
+    let selectedRecord: DnsRecord = null;
 </script>
 
 <Layout.Stack>
@@ -57,9 +56,7 @@
                             </Table.Cell>
                         {:else if column.id === 'value'}
                             <Table.Cell>
-                                <div>
-                                    <HiddenText text={record.value} isVisible />
-                                </div>
+                                <InteractiveText variant="secret" text={record.value} isVisible />
                             </Table.Cell>
                         {:else if column.id === 'ttl'}
                             <Table.Cell>

@@ -33,7 +33,7 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Alert, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -59,11 +59,11 @@
         EmailTemplateType,
         EmailTemplateLocale
     } from '@appwrite.io/console';
-    import { Accordion, Layout } from '@appwrite.io/pink-svelte';
+    import { Accordion, Layout, Alert, Badge, Link, Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
-    let emailOpen = 'verification';
+    let emailOpen = null;
     $: emailVerificationOpen = emailOpen === 'verification';
     $: emailMagicSessionOpen = emailOpen === 'magicSession';
     $: emailOtpSessionOpen = emailOpen === 'otpSession';
@@ -72,80 +72,55 @@
     $: email2FAVerificationOpen = emailOpen === 'mfaChallenge';
     $: emailSessionAlertOpen = emailOpen === 'sessionAlert';
 
-    // let smsOpen = 'verification';
-    // $: smsVerificationOpen = smsOpen === 'verification';
-    // $: smsLoginOpen = smsOpen === 'login';
-    // $: smsInvitationOpen = smsOpen === 'invitation';
-
-    onMount(async () => {
-        openEmail('verification');
-        // openSms('verification');
-    });
+    openEmail('verification');
 
     async function openEmail(type: string) {
         type === emailOpen ? (emailOpen = null) : (emailOpen = type);
         $emailTemplate = await loadEmailTemplate(data.project.$id, type, 'en');
         $baseEmailTemplate = { ...$emailTemplate };
     }
-
-    // async function openSms(type: string) {
-    //     type === smsOpen ? (smsOpen = null) : (smsOpen = type);
-    //     $smsTemplate = await loadSmsTemplate(projectId, type, 'en');
-    //     $baseSmsTemplate = { ...$smsTemplate };
-    // }
 </script>
 
 <Container>
-    <div class="u-flex u-gap-8 u-cross-center">
-        <Heading tag="h2" size="5">Templates</Heading>
-        <div class="tag eyebrow-heading-3">
-            <span class="text u-x-small">Experimental</span>
-        </div>
-    </div>
-
     {#if !data.project.smtpEnabled}
-        <div class="u-margin-block-start-24">
-            <Alert
-                isStandalone
-                dismissible={false}
-                type="info"
-                buttons={[
-                    {
-                        slot: 'SMTP settings',
-                        href: `${base}/project-${data.project.$id}/settings/smtp`
-                    }
-                ]}>
-                <svelte:fragment slot="title">
-                    Custom SMTP server is required for customizing emails
-                </svelte:fragment>
-                Configure a custom SMTP server to enable custom email templates and prevent emails from
-                being labeled as spam.
-            </Alert>
-        </div>
+        <Alert.Inline
+            dismissible={false}
+            status="info"
+            title="Custom SMTP server is required for customizing emails">
+            Configure a custom SMTP server to enable custom email templates and prevent emails from
+            being labeled as spam.
+            <Button
+                compact
+                slot="actions"
+                href={`${base}/project-${data.project.$id}/settings/smtp`}>
+                SMTP settings
+            </Button>
+        </Alert.Inline>
     {/if}
 
     <CardGrid>
-        <svelte:fragment slot="title">Email templates</svelte:fragment>
+        <svelte:fragment slot="title">
+            Email templates <Badge variant="secondary" content="Experimental" />
+        </svelte:fragment>
         Use templates to send and process account management emails.
-        <a href="https://appwrite.io/docs/advanced/platform/message-templates" class="link">
-            Learn more about email templates.
-        </a>
-
+        <Link.Anchor href="https://appwrite.io/docs/advanced/platform/message-templates">
+            Learn more
+        </Link.Anchor>
         <svelte:fragment slot="aside">
             <Layout.Stack>
                 <Accordion
                     title="Verification"
                     bind:open={emailVerificationOpen}
-                    on:click={(e) => {
-                        // preventing default and propagation to open the collapsible correctly
-                        e.preventDefault();
-                        e.stopImmediatePropagation();
-                        openEmail('verification');
-                    }}>
-                    Send a verification email to users that sign in with their email and password.
-                    <EmailVerificationTemplate />
+                    on:click={() => openEmail('verification')}>
+                    <Layout.Stack>
+                        <Typography.Text>
+                            Send a verification email to users that sign in with their email and
+                            password.
+                        </Typography.Text>
+                        <EmailVerificationTemplate />
+                    </Layout.Stack>
                 </Accordion>
-                <Accordion
+                <!-- <Accordion
                     title="Magic URL"
                     bind:open={emailMagicSessionOpen}
                     on:click={(e) => {
@@ -204,7 +179,7 @@
                     }}>
                     Send an email to users when a new session is created.
                     <EmailSessionAlertTemplate />
-                </Accordion>
+                </Accordion> -->
             </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">
@@ -213,55 +188,6 @@
             </Button>
         </svelte:fragment>
     </CardGrid>
-
-    <!-- <CardGrid>
-        <Heading size="7" tag="h3">SMS templates</Heading>
-        <p class="text">
-            Use templates to send and process account management mobile messages. <a
-                href="https://appwrite.io/docs/advanced/platform/message-templates"
-                class="link">
-                Learn more about SMS templates</a
-        </p>
-
-        <svelte:fragment slot="aside">
-            <Collapsible>
-                <CollapsibleItem
-                    bind:open={smsVerificationOpen}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        openSms('verification');
-                    }}>
-                    <svelte:fragment slot="title">Verification</svelte:fragment>
-                    <p class="text">
-                        Send a verification SMS to users that sign in with their phone
-                    </p>
-                    <SmsVerificationTemplate />
-                </CollapsibleItem>
-                <CollapsibleItem
-                    bind:open={smsLoginOpen}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        openSms('login');
-                    }}>
-                    <svelte:fragment slot="title">Login</svelte:fragment>
-                    <p class="text">
-                        Send a one-time passcode to users' mobile phones to allow them to sign in.
-                    </p>
-                    <SmsLoginTemplate />
-                </CollapsibleItem>
-                <CollapsibleItem
-                    bind:open={smsInvitationOpen}
-                    on:click={(e) => {
-                        e.preventDefault();
-                        openSms('invitation');
-                    }}>
-                    <svelte:fragment slot="title">Invitation</svelte:fragment>
-                    <p class="text">Send an invitation SMS to become a member of your project.</p>
-                    <SmsLoginTemplate />
-                </CollapsibleItem>
-            </Collapsible>
-        </svelte:fragment>
-    </CardGrid>-->
     {#if isCloud && $currentPlan.emailBranding}
         <EmailSignature />
     {/if}

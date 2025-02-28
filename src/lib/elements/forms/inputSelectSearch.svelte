@@ -1,113 +1,19 @@
 <script lang="ts">
-    import { DropList } from '$lib/components';
-    import { clickOnEnter } from '$lib/helpers/a11y';
-    import { createEventDispatcher, onMount } from 'svelte';
-    import { Helper, Label } from '.';
+    import { Input } from '@appwrite.io/pink-svelte';
+    import type ComboBox from '@appwrite.io/pink-svelte/dist/input/ComboBox.svelte';
+    import type { ComponentProps } from 'svelte';
 
-    /* eslint no-undef: "off" */
-    type Option = $$Generic<{
-        value: string | boolean | number;
-        label: string;
-        data?: unknown[];
-    }>;
-    type OptionArray = Option[];
-
-    export let options: OptionArray;
+    export let options: ComponentProps<ComboBox>['options'];
     export let id: string;
     export let label: string;
-    export let name = 'elements';
-    export let optionalText: string | undefined = undefined;
-    export let tooltip: string | undefined = undefined;
-    export let showLabel = true;
     export let placeholder = '';
     export let required = false;
     export let hideRequired = false;
     export let disabled = false;
-    export let fullWidth = false;
-    export let autofocus = false;
-    export let interactiveOutput = false;
-    export let interactiveEmpty = false;
-    export let hideEmpty = false;
-    // stretch is used inside of a flex container to give the element flex:1
-    export let stretch = true;
-    export let search = '';
-    // The actual selected value
-    export let value: Option['value'];
-    $: selectedOption = options.find((option) => option.value === value);
+    export let value: ComponentProps<ComboBox>['value'];
 
     let element: HTMLInputElement;
-    let hasFocus = false;
-    let selected: number = null;
-    let error: string;
-
-    $: if (!hasFocus) {
-        selected = null;
-    }
-
-    const dispatch = createEventDispatcher();
-
-    onMount(() => {
-        if (element && autofocus) {
-            element.focus();
-        }
-    });
-
-    function handleInput() {
-        if (hideEmpty && !options?.length) hasFocus = false;
-        else hasFocus = true;
-    }
-
-    function handleKeydown(event: KeyboardEvent) {
-        event.stopImmediatePropagation();
-
-        switch (event.key) {
-            case 'Escape':
-                hasFocus = false;
-                break;
-            case 'ArrowDown':
-                if (selected === null) {
-                    selected = 0;
-                } else {
-                    selected = (selected + 1) % options.length;
-                }
-                break;
-            case 'ArrowUp':
-                if (selected === null) {
-                    selected = options.length - 1;
-                } else {
-                    selected = (selected - 1 + options.length) % options.length;
-                }
-                break;
-            case 'Enter':
-                if (selected !== null) {
-                    event.preventDefault();
-                    selectOption(options[selected]);
-                }
-                break;
-        }
-    }
-
-    function selectOption(option: Option) {
-        value = option.value;
-        search = option.label;
-        // It's not working without this line.
-        if (!$$slots.output) {
-            element.value = search;
-        } else {
-            search = '';
-        }
-
-        hasFocus = false;
-        dispatch('select', option);
-    }
-
-    function clearOption() {
-        search = '';
-        value = null;
-        !$$slots.output && (element.value = search);
-        hasFocus = false;
-        dispatch('reset');
-    }
+    let error: string | null;
 
     function handleInvalid(event: Event) {
         event.preventDefault();
@@ -119,10 +25,12 @@
         error = element.validationMessage;
     }
 
-    $: showClearBtn = (hasFocus && search) || value;
-    $: if (value || search) error = null;
+    $: if (value) error = null;
 </script>
 
+<!-- <Input.ComboBox {label} {id} {placeholder} {disabled} {name} bind:value {required} {options} /> -->
+
+<!-- 
 <div
     class="u-position-relative form-item"
     class:u-width-full-line={fullWidth}
@@ -235,7 +143,7 @@
     {#if error}
         <Helper class="u-position-relative" type="warning">{error}</Helper>
     {/if}
-</div>
+</div> -->
 
 <style>
     .form-item :global(.drop) {

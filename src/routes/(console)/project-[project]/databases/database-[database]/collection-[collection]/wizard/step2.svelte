@@ -3,7 +3,7 @@
     import { WizardStep } from '$lib/layout';
     import { createDocument } from './store';
     import { collection } from '../store';
-    import { Alert } from '$lib/components';
+    import { Alert } from '@appwrite.io/pink-svelte';
 </script>
 
 <WizardStep>
@@ -18,21 +18,17 @@
         </a>.
     </svelte:fragment>
     {#if $collection.documentSecurity}
-        <div class="common-section">
-            <Alert type="info">
-                <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
-                Users will be able to access this document if they have been granted
-                <b>either document or collection permissions</b>.
-            </Alert>
-        </div>
-        <div class="common-section">
-            <Permissions bind:permissions={$createDocument.permissions} />
-        </div>
+        <Alert.Inline status="info">
+            <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
+            Users will be able to access this document if they have been granted
+            <b>either document or collection permissions</b>.
+        </Alert.Inline>
+        <Permissions bind:permissions={$createDocument.permissions} />
     {:else}
-        <Alert type="info">
+        <Alert.Inline status="info">
             <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
             If you want to assign document permissions, navigate to Collection settings and enable document
             security. Otherwise, only collection permissions will be used.
-        </Alert>
+        </Alert.Inline>
     {/if}
 </WizardStep>

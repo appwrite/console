@@ -12,8 +12,8 @@
     import UpdateInstallations from './updateInstallations.svelte';
     import UpdateVariables from '../updateVariables.svelte';
     import DeleteProject from './deleteProject.svelte';
-    import { CardGrid, Heading } from '$lib/components';
-    import { Button, FormList, InputSelect } from '$lib/elements/forms';
+    import { CardGrid } from '$lib/components';
+    import { Button, InputSelect } from '$lib/elements/forms';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import Transfer from './transferProject.svelte';
     import { canWriteProjects } from '$lib/stores/roles';

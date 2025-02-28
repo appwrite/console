@@ -39,6 +39,7 @@
 <Form onSubmit={updatePasswordHistoryLimit}>
     <CardGrid>
         <svelte:fragment slot="title">Password history</svelte:fragment>
+        Set the maximum number of passwords saved per user.
         <svelte:fragment slot="aside">
             <InputSwitch
                 bind:value={passwordHistoryEnabled}
@@ -48,16 +49,15 @@
                 Enabling this option prevents users from reusing recent passwords by comparing the
                 new password with their password history.
             </Typography.Text>
-            <Typography.Text>
-                Set the maximum number of passwords saved per user. Maximum 20 passwords.
-            </Typography.Text>
             <InputNumber
+                required
                 max={20}
                 min={1}
                 id="password-history"
                 label="Limit"
                 disabled={!passwordHistoryEnabled}
-                bind:value={passwordHistory} />
+                bind:value={passwordHistory}
+                helper="Maximum 20 passwords." />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

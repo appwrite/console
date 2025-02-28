@@ -41,7 +41,13 @@
         {#if data?.deployment && data.deployment.status === 'ready'}
             <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
                 <svelte:fragment slot="footer">
-                    <Button external href={`${$protocol}${data.deployment.domain}`}>Visit</Button>
+                    {#if data.proxyRuleList.total}
+                        <Button
+                            external
+                            href={`${$protocol}${data.proxyRuleList.rules[0]?.domain}`}>
+                            Visit
+                        </Button>
+                    {/if}
                     <!-- TODO: disable when disabled={data.hasProdReadyDeployments} -->
                     <Button secondary on:click={() => (showRollback = true)}>
                         Instant rollback
@@ -74,17 +80,14 @@
 
         <Divider />
 
-        <Layout.Stack direction="row" gap="xxl" wrap="wrap">
-            <div style:flex="1">
-                <DomainsOverview proxyRuleList={data.proxyRuleList} />
-            </div>
-            <div style:flex="2">
-                <DeploymentsOverview
-                    site={data.site}
-                    activeDeployment={data.deployment}
-                    deploymentList={data.deploymentList} />
-            </div>
-        </Layout.Stack>
+        <!-- TODO: mobile view table doesn't shrink -->
+        <Layout.GridFraction gap="xxl" start={1} end={2} breakpoint="m">
+            <DomainsOverview proxyRuleList={data.proxyRuleList} />
+            <DeploymentsOverview
+                site={data.site}
+                activeDeployment={data.deployment}
+                deploymentList={data.deploymentList} />
+        </Layout.GridFraction>
     </Layout.Stack>
 </Container>
 

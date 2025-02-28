@@ -34,7 +34,7 @@
     export let radius: $$Props['radius'] = 'm';
     export let variant: $$Props['variant'] = 'primary';
 
-    $: resolvedClasses = [!isTile && 'common-section', classes].filter(Boolean).join(' ');
+    $: resolvedClasses = [classes].filter(Boolean).join(' ');
 </script>
 
 {#if href}

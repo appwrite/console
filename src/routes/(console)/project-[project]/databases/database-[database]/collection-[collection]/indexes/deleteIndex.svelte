@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
     import { sdk } from '$lib/stores/sdk';
@@ -10,6 +8,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
     export let selectedIndex: Models.Index;
@@ -39,5 +38,7 @@
 </script>
 
 <Confirm onSubmit={handleDelete} title="Delete index" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>'{selectedIndex.key}' from {$collection.name}</b>?
+    <Typography.Text>
+        Are you sure you want to delete <b>{selectedIndex.key}</b> from <b>{$collection.name}</b>?
+    </Typography.Text>
 </Confirm>

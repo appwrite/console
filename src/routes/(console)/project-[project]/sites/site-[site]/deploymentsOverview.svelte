@@ -28,7 +28,7 @@
     let selectedDeployment: Models.Deployment = null;
 </script>
 
-<Layout.Stack>
+<Layout.Stack style="overflow-x: auto;">
     <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
         <Layout.Stack gap="xs" direction="row" alignItems="center" inline>
             <Typography.Text variant="l-500" color="--color-fgcolor-neutral-primary">

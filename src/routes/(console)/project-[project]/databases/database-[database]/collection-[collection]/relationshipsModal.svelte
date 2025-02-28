@@ -1,9 +1,11 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { ClickableList, ClickableListItem, Modal, Paginator } from '$lib/components';
+    import { Modal, Paginator } from '$lib/components';
+    import Id from '$lib/components/id.svelte';
     import { preferences } from '$lib/stores/preferences';
     import type { Models } from '@appwrite.io/console';
+    import { Table } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let data: [];
@@ -23,35 +25,33 @@
     }
 </script>
 
-<Modal bind:show>
-    <svelte:fragment slot="title">
-        <span data-private>
-            {selectedRelationship.key}
-        </span>
-    </svelte:fragment>
-
+<Modal bind:show title={selectedRelationship?.key} hideFooter>
     {#if data?.length}
         <Paginator items={data} {limit} let:paginatedItems>
-            <ClickableList>
+            <Table.Root>
+                <svelte:fragment slot="header">
+                    <Table.Header.Cell width="150px">Document ID</Table.Header.Cell>
+                    {#if args?.length}
+                        {#each args as arg}
+                            <Table.Header.Cell>{arg}</Table.Header.Cell>
+                        {/each}
+                    {/if}
+                </svelte:fragment>
                 {#each paginatedItems as doc}
-                    <ClickableListItem
+                    <Table.Link
                         href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}/document-${doc.$id}`}
                         on:click={() => (show = false)}>
+                        <Table.Cell>
+                            <Id value={doc.$id}>{doc.$id}</Id>
+                        </Table.Cell>
                         {#if args?.length}
-                            {#each args as arg, i}
-                                {#if i}
-                                    <span class="clickable-list-title-sep">|</span>
-                                {/if}
-                                <span data-private>{doc[arg]}</span>
+                            {#each args as arg}
+                                <Table.Cell>{doc[arg]}</Table.Cell>
                             {/each}
                         {/if}
-                        <svelte:fragment slot="desc">
-                            {doc.$id}
-                        </svelte:fragment>
-                    </ClickableListItem>
+                    </Table.Link>
                 {/each}
-            </ClickableList>
+            </Table.Root>
         </Paginator>
     {/if}
-    <svelte:fragment slot="footer" />
 </Modal>

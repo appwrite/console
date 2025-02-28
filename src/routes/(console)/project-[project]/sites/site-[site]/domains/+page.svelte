@@ -4,7 +4,6 @@
     import { EmptySearch, PaginationWithLimit } from '$lib/components/index.js';
     import { Button } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
     import { protocol } from '$routes/(console)/store.js';
     import type { Models } from '@appwrite.io/console';
@@ -17,7 +16,6 @@
     } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
-        Badge,
         Card,
         Empty,
         Icon,
@@ -30,6 +28,7 @@
     import { queries } from '$lib/components/filters';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
+    import { RuleType } from '$lib/stores/sdk';
 
     export let data;
 
@@ -38,12 +37,6 @@
     let selectedDomain: Models.ProxyRule = null;
 
     $: console.log(data.domains);
-
-    // TODO: replace status once backend is fixed
-    // created - Verification Failed
-    // verified - Verification OK , Certificate OK
-    // verifying - Verifiacitok OK
-    // unverified - Verificaiton OK , Certificate Failed
 </script>
 
 <Container>
@@ -60,38 +53,32 @@
         <Table.Root>
             <svelte:fragment slot="header">
                 <Table.Header.Cell>Domain</Table.Header.Cell>
-                <Table.Header.Cell>Updated</Table.Header.Cell>
+                <Table.Header.Cell>Redirect to</Table.Header.Cell>
+                <Table.Header.Cell>Production branch</Table.Header.Cell>
                 <Table.Header.Cell />
             </svelte:fragment>
             {#each data.domains.rules as domain}
-                <Table.Link
-                    href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/domain-${domain.$id}`}>
+                <Table.Row>
                     <Table.Cell>
-                        <Layout.Stack direction="row" alignItems="center" gap="xs">
-                            <Link
-                                external
-                                href={`${$protocol}${domain.domain}`}
-                                size="s"
-                                variant="quiet">
-                                <Layout.Stack direction="row" alignItems="center" gap="xs">
-                                    {domain.domain}
-                                    <Icon icon={IconExternalLink} size="s" />
-                                </Layout.Stack>
-                            </Link>
-                            {#if domain.status === 'created'}
-                                <Badge
-                                    variant="secondary"
-                                    content="Verification failed"
-                                    type="error" />
-                            {:else if domain.status === 'veryfing'}
-                                <Badge
-                                    variant="secondary"
-                                    content="Pending verification"
-                                    type="warning" />
-                            {/if}
-                        </Layout.Stack>
+                        <Link
+                            external
+                            href={`${$protocol}${domain.domain}`}
+                            size="s"
+                            variant="quiet">
+                            <Layout.Stack direction="row" alignItems="center" gap="xs">
+                                {domain.domain}
+                                <Icon icon={IconExternalLink} size="s" />
+                            </Layout.Stack>
+                        </Link>
                     </Table.Cell>
-                    <Table.Cell>{toLocaleDateTime(domain.$updatedAt)}</Table.Cell>
+                    <Table.Cell>
+                        {domain.type === RuleType.REDIRECT ? (domain?.value ?? '-') : 'No redirect'}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {domain.automation.includes('branch')
+                            ? domain.automation.split('branch=')[1]
+                            : '-'}
+                    </Table.Cell>
                     <Table.Cell>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-start" padding="none">
@@ -135,7 +122,7 @@
                             </Popover>
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Link>
+                </Table.Row>
             {/each}
         </Table.Root>
 

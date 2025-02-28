@@ -24,6 +24,7 @@ import {
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
+import { Domains } from '$lib/sdk/domains';
 import { Sources } from '$lib/sdk/sources';
 
 export function getApiEndpoint(): string {
@@ -83,10 +84,17 @@ export const sdk = {
         console: new Console(clientConsole),
         assistant: new Assistant(clientConsole),
         billing: new Billing(clientConsole),
-        sources: new Sources(clientConsole)
+        sources: new Sources(clientConsole),
+        domains: new Domains(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();
         return getSdkForProject(projectId);
     }
 };
+
+export enum RuleType {
+    DEPLOYMENT = 'deployment',
+    API = 'api',
+    REDIRECT = 'redirect'
+}

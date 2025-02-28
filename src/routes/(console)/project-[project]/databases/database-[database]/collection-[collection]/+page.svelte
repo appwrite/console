@@ -9,7 +9,7 @@
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
@@ -22,7 +22,6 @@
     export let data: PageData;
 
     let showCreateAttribute = false;
-    let showCreateDropdown = false;
     let selectedAttribute: Option['name'] = null;
 
     $: selected = preferences.getCustomCollectionColumns($page.params.collection);
@@ -50,9 +49,13 @@
 
 {#key $page.params.collection}
     <Container>
-        <div class="heading-grid u-main-justify-between u-cross-center">
-            <Heading tag="h2" size="5">Documents</Heading>
-            <div class="u-flex u-main-end is-only-mobile">
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Filters
+                query={data.query}
+                {columns}
+                disabled={!(hasAttributes && hasValidAttributes)} />
+            <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                <ViewSelector view={data.view} {columns} hideView allowNoColumns />
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
                     on:click={openWizard}
@@ -60,32 +63,8 @@
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
                 </Button>
-            </div>
-
-            <Filters
-                query={data.query}
-                {columns}
-                disabled={!(hasAttributes && hasValidAttributes)} />
-
-            <div class="u-flex u-main-end u-gap-16">
-                <ViewSelector
-                    view={data.view}
-                    {columns}
-                    isCustomCollection
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile />
-                <div class="is-not-mobile">
-                    <Button
-                        disabled={!(hasAttributes && hasValidAttributes)}
-                        on:click={openWizard}
-                        event="create_document">
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Create document
-                    </Button>
-                </div>
-            </div>
-        </div>
+            </Layout.Stack>
+        </Layout.Stack>
 
         {#if hasAttributes && hasValidAttributes}
             {#if data.documents.total}
@@ -124,57 +103,36 @@
                     on:click={openWizard} />
             {/if}
         {:else}
-            <Empty
-                allowCreate={$canWriteCollections}
-                single
-                target="attribute"
-                on:click={() => (showCreateDropdown = true)}>
-                <div class="u-text-center">
-                    <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
-                    <p class="body-text-2 u-bold u-margin-block-start-4">
-                        Need a hand? Learn more in our documentation.
-                    </p>
-                </div>
-                <div class="u-flex u-gap-16 u-main-center">
-                    <Button
-                        external
-                        href="https://appwrite.io/docs/products/databases/collections#attributes"
-                        text
-                        event="empty_documentation"
-                        ariaLabel={`create {target}`}>Documentation</Button>
-                    {#if $canWriteCollections}
-                        <CreateAttributeDropdown
-                            bind:showCreateDropdown
-                            bind:showCreate={showCreateAttribute}
-                            bind:selectedOption={selectedAttribute}>
-                            <Button
-                                secondary
-                                event="create_attribute"
-                                on:click={() => {
-                                    showCreateDropdown = !showCreateDropdown;
-                                }}>
-                                Create attribute
-                            </Button>
-                        </CreateAttributeDropdown>
-                    {/if}
-                </div>
-            </Empty>
+            <Card.Base padding="none">
+                <PinkEmpty
+                    title="Create an attribute to get started."
+                    description="Need a hand? Learn more in our documentation.">
+                    <slot name="actions" slot="actions">
+                        <Button
+                            external
+                            href="https://appwrite.io/docs/products/databases/collections#attributes"
+                            text
+                            event="empty_documentation"
+                            size="s">Documentation</Button>
+                        {#if $canWriteCollections}
+                            <CreateAttributeDropdown
+                                bind:selectedOption={selectedAttribute}
+                                bind:showCreate={showCreateAttribute}
+                                let:toggle>
+                                <Button secondary event="create_attribute" on:click={toggle}>
+                                    Create attribute
+                                </Button>
+                            </CreateAttributeDropdown>
+                        {/if}
+                    </slot>
+                </PinkEmpty>
+            </Card.Base>
         {/if}
     </Container>
 {/key}
 
-<CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />
-
-<style lang="scss">
-    .heading-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-
-        @media (min-width: 768px) {
-            :global(h2) {
-                grid-column: span 2;
-            }
-        }
-    }
-</style>
+{#if showCreateAttribute}
+    <CreateAttribute
+        bind:showCreate={showCreateAttribute}
+        bind:selectedOption={selectedAttribute} />
+{/if}

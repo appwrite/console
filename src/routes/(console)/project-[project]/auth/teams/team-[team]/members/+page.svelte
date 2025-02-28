@@ -45,11 +45,12 @@
                 <Table.Header.Cell width="40px" />
             </svelte:fragment>
             {#each data.memberships.memberships as membership}
+                {@const username = membership.userName ? membership.userName : '-'}
                 <Table.Link href={`${base}/project-${project}/auth/user-${membership.userId}`}>
                     <Table.Cell>
                         <Layout.Stack direction="row" alignItems="center">
-                            <AvatarInitials size="xs" name={membership.teamName} />
-                            <span>{membership.teamName ? membership.teamName : 'n/a'}</span>
+                            <AvatarInitials size="xs" name={username} />
+                            <span>{username}</span>
                         </Layout.Stack>
                     </Table.Cell>
                     <Table.Cell>

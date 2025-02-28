@@ -13,6 +13,7 @@ Sentry.init({
 
 export const handleError: HandleClientError = Sentry.handleErrorWithSentry(
     async ({ error, message, status }) => {
+        console.error(error);
         if (error instanceof AppwriteException) {
             status = error.code === 0 ? undefined : error.code;
             message = error.message;

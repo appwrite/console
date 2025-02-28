@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -32,13 +33,7 @@
     }
 </script>
 
-<Modal title="Regenerate Key" bind:show onSubmit={regenerate}>
-    <p class="u-text">
-        Are you sure you want to generate a new Signature Key?
-        <b>You will not be able to recover the current key.</b>
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit>Regenerate</Button>
-    </svelte:fragment>
-</Modal>
+<Confirm title="Regenerate Key" bind:open={show} onSubmit={regenerate} action="Regenerate">
+    Are you sure you want to generate a new Signature key?
+    <b>You will not be able to recover the current key.</b>
+</Confirm>

@@ -3,6 +3,7 @@
     export let label: string = undefined;
     export let id: string;
     export let name: string = id;
+    export let helper: string = undefined;
     export let value = '';
     export let placeholder = '';
     export let required = false;
@@ -43,16 +44,12 @@
     {readonly}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
-    helper={error}
+    helper={error || helper}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
     on:input
     bind:value>
-    <svelte:fragment slot="info">
-        <slot name="info" slot="info" />
-    </svelte:fragment>
-
-    <svelte:fragment slot="end">
-        <slot name="end" />
-    </svelte:fragment>
+    <slot name="start" slot="start" />
+    <slot name="info" slot="info" />
+    <slot name="end" slot="end" />
 </Input.Text>

@@ -25,7 +25,7 @@
     });
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' && submitOnEnter) {
+        if (show && event.key === 'Enter' && submitOnEnter) {
             event.preventDefault();
             if (show) {
                 formComponent.triggerSubmit();
@@ -45,9 +45,7 @@
 
 <Form isModal {onSubmit} bind:this={formComponent}>
     <Modal {title} bind:open={show} {hideFooter} {dismissible}>
-        <svelte:fragment slot="description">
-            <slot name="description" />
-        </svelte:fragment>
+        <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>
                 <Alert

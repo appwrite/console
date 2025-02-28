@@ -12,7 +12,7 @@
 
     export let noStyle = false;
     export let isModal = false;
-    export let onSubmit: (e: SubmitEvent) => Promise<void> | void;
+    export let onSubmit: (e: SubmitEvent) => Promise<unknown> | unknown;
     let classes = '';
     export { classes as class };
 

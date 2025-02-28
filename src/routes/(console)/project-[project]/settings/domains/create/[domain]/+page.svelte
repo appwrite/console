@@ -3,7 +3,6 @@
     import { page } from '$app/stores';
     import { Wizard } from '$lib/layout';
     import {
-        Alert,
         Card,
         Fieldset,
         Icon,
@@ -15,14 +14,12 @@
     import Button from '$lib/elements/forms/button.svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { onboarding } from '$routes/(console)/project-[project]/store';
-    import { goto, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
     import Retry from '$lib/pages/domains/wizard/retry.svelte';
-    import Box from '$lib/components/box.svelte';
     import { IconClock } from '@appwrite.io/pink-icons-svelte';
 
     let retrying = false;
@@ -67,17 +64,16 @@
     column>
     <Form {onSubmit} bind:isSubmitting>
         <Layout.Stack gap="xxl">
-            <Card.Base padding="s"
-                ><Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Layout.Stack gap="xxs" direction="row">
-                        <Typography.Text variant="m-500">{data.domain.domain}</Typography.Text>
-                    </Layout.Stack>
+            <Card.Base padding="s">
+                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography.Text variant="m-500">{data.domain.domain}</Typography.Text>
                     <Button
                         secondary
                         size="s"
                         href={`${base}/project-${$page.params.project}/settings/domains/create?domain=${data.domain.domain}&$id=${data.domain.$id}`}
                         >Change</Button>
-                </Layout.Stack></Card.Base>
+                </Layout.Stack>
+            </Card.Base>
             <Fieldset legend="DNS">
                 <Layout.Stack gap="l" alignItems="flex-end">
                     <Layout.Stack>

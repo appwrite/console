@@ -12,9 +12,6 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <Typography.Title>Activity</Typography.Title>
-    </Layout.Stack>
     {#if logs.total}
         <Table.Root>
             <svelte:fragment slot="header">

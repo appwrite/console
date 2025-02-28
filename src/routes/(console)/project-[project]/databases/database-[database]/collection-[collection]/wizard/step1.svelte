@@ -13,6 +13,5 @@
     <AttributeForm
         bind:formValues={$createDocument.document}
         attributes={$createDocument.attributes}
-        bind:customId={$createDocument.id}
-        gap="24" />
+        bind:customId={$createDocument.id} />
 </WizardStep>

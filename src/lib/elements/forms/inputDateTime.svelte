@@ -13,7 +13,6 @@
     export let autocomplete = false;
     export let step: number | 'any' = 0.001;
 
-    let element: HTMLInputElement;
     let error: string;
 
     onMount(() => {
@@ -31,13 +30,10 @@
         } else {
             value = prevValue;
         }
-    }
 
     $: if (value) {
         error = null;
     }
-
-    $: isNullable = nullable && !required;
 </script>
 
 <Layout.Stack gap="s" direction="row">

@@ -2,19 +2,9 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Id } from '$lib/components';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { PageData } from './$types';
     import { columns } from './store';
-    import Cell from '$lib/elements/table/cell.svelte';
     import { Tooltip, Table } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
