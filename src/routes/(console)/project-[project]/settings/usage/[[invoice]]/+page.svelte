@@ -36,10 +36,10 @@
         data.usage.filesStorageTotal +
         data.usage.deploymentsStorageTotal +
         data.usage.buildsStorageTotal;
-
+    $: imageTransformations = data.usage.imageTransformations;
+    $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
     $: dbReads = data.usage.databasesReads;
     $: dbWrites = data.usage.databasesWrites;
-    $: imageTransformations = data.usage.imageTransformations;
 
     $: legendData = [
         { name: 'Reads', value: data.usage.databasesReadsTotal },
@@ -254,22 +254,29 @@
 
         <svelte:fragment slot="aside">
             {#if imageTransformations}
-                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
-                    <BarChart
-                        options={{
-                            yAxis: {
-                                axisLabel: {
-                                    formatter: formatNum
-                                }
-                            }
-                        }}
-                        series={[
-                            {
-                                name: 'Image transformations',
-                                data: [...imageTransformations.map((e) => [e.date, e.value])]
-                            }
-                        ]} />
+                {@const current = formatNum(imageTransformationsTotal)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{current}</span>
+                            <span class="body-text-1 u-bold">Transformations</span>
+                        </p>
+                    </div>
                 </div>
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Image transformations',
+                            data: [...imageTransformations.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

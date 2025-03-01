@@ -272,34 +272,33 @@
             {#if data.organizationUsage.imageTransformationsTotal}
                 {@const current = data.organizationUsage.imageTransformationsTotal}
                 {@const max = getServiceLimit('imageTransformations', tier, plan)}
-                <div style:margin-top="-1.5em" style:margin-bottom="-1em">
-                    <ProgressBarBig
-                        currentUnit="Transformations"
-                        currentValue={formatNum(current)}
-                        maxUnit="transformations"
-                        maxValue={`out of ${formatNum(max)}`}
-                        progressValue={current}
-                        progressMax={max}
-                        showBar={false} />
-                    <BarChart
-                        options={{
-                            yAxis: {
-                                axisLabel: {
-                                    formatter: formatNum
-                                }
+                <ProgressBarBig
+                    currentUnit="Transformations"
+                    currentValue={formatNum(current)}
+                    maxUnit="transformations"
+                    maxValue={`out of ${formatNum(max)}`}
+                    progressValue={current}
+                    progressMax={max}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
                             }
-                        }}
-                        series={[
-                            {
-                                name: 'Image Transformations',
-                                data: [
-                                    ...(data.organizationUsage.imageTransformations ?? []).map(
-                                        (e) => [e.date, e.value]
-                                    )
-                                ]
-                            }
-                        ]} />
-                </div>
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Image Transformations',
+                            data: [
+                                ...(data.organizationUsage.imageTransformations ?? []).map((e) => [
+                                    e.date,
+                                    e.value
+                                ])
+                            ]
+                        }
+                    ]} />
                 {#if projects?.length > 0}
                     <ProjectBreakdown {projects} metric="imageTransformations" {data} />
                 {/if}

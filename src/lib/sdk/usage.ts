@@ -324,7 +324,12 @@ export type UsageProject = {
     authPhoneCountriesBreakdown: Models.MetricBreakdown[];
 
     /**
+     * Array of image transformations per period.
+     */
+    imageTransformations: Metric[];
+
+    /**
      * Aggregated statistics of total number of image transformations.
      */
-    imageTransformations: number;
+    imageTransformationsTotal: number;
 };
