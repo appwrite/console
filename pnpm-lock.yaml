@@ -65,9 +65,6 @@ importers:
       nanotar:
         specifier: ^0.1.1
         version: 0.1.1
-      pink-svelte:
-        specifier: link:../../../Library/pnpm/global/5/node_modules/@appwrite.io/pink-svelte
-        version: link:../../../Library/pnpm/global/5/node_modules/@appwrite.io/pink-svelte
       plausible-tracker:
         specifier: ^0.3.9
         version: 0.3.9
