@@ -60,6 +60,6 @@
         height: 100%;
         max-height: 100vh;
         overflow-y: auto;
-        background: var(--color-bgcolor-neutral-primary);
+        background: var(--bgcolor-neutral-primary);
     }
 </style>

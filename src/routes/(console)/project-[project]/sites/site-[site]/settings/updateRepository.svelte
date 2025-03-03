@@ -129,7 +129,7 @@
                             alignItems="center"
                             gap="xs">
                             <Layout.Stack direction="row" gap="s">
-                                <Icon icon={IconGithub} color="--color-fgcolor-neutral-primary" />
+                                <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
                                 <Layout.Stack gap="xxxs">
                                     <Skeleton variant="line" width={100} height={20} />
                                     <Skeleton variant="line" width={200} height={15} />
@@ -161,16 +161,16 @@
                     <Card isTile padding="xs" radius="s" variant="secondary">
                         <Layout.Stack direction="row" gap="s">
                             <Layout.Stack direction="row" gap="s">
-                                <Icon icon={IconGithub} color="--color-fgcolor-neutral-primary" />
+                                <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
                                 <Layout.Stack gap="xxxs">
                                     <Typography.Text
                                         variant="m-400"
-                                        color="--color-fgcolor-neutral-primary">
+                                        color="--fgcolor-neutral-primary">
                                         {repository.name}
                                     </Typography.Text>
                                     <Typography.Caption
                                         variant="400"
-                                        color="--color-fgcolor-neutral-tertiary">
+                                        color="--fgcolor-neutral-tertiary">
                                         Last updated: {toLocaleDateTime(repository.pushedAt)}
                                     </Typography.Caption>
                                 </Layout.Stack>

@@ -25,7 +25,7 @@
                         iconSize="small"
                         size={16}
                         name={getFrameworkIcon(data.site.framework)} />
-                    <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                         {data.site.name}
                     </Typography.Text>
                     <Tag variant="code" size="xs">{data.site.$id}</Tag>
@@ -47,7 +47,7 @@
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             {#if ['processing', 'building'].includes(data.deployment.status)}
-                <Typography.Text variant="m-400" color="--color-fgColor-neutral-tertiary">
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                     Deployment will continue in the background
                 </Typography.Text>
             {/if}

@@ -81,7 +81,7 @@
     {#if !hideTitle}
         <Layout.Stack direction="row" justifyContent="space-between">
             <Layout.Stack direction="row" alignItems="center" gap="s" inline>
-                <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                     Deployment logs
                 </Typography.Text>
                 <Badge

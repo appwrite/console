@@ -271,9 +271,9 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                         ><Layout.Stack direction="row" alignItems="center">
                             <Icon
                                 icon={IconInfo}
-                                color="--color-fgcolor-neutral-tertiary" /><Typography.Text
+                                color="--fgcolor-neutral-tertiary" /><Typography.Text
                                 variant="m-500"
-                                color="--color-fgcolor-neutral-primary">
+                                color="--fgcolor-neutral-primary">
                                 Demo app runs on http://localhost:{selectedFramework.portNumber}</Typography.Text
                             ></Layout.Stack>
                         <Button.Anchor
@@ -283,7 +283,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             ><Layout.Stack direction="row" gap="xs"
                                 >Open <Icon
                                     icon={IconExternalLink}
-                                    color="--color-fgcolor-neutral-tertiary" /></Layout.Stack
+                                    color="--fgcolor-neutral-tertiary" /></Layout.Stack
                             ></Button.Anchor
                         ></Layout.Stack
                     ></Card.Base>

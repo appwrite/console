@@ -38,8 +38,8 @@
                 </Table.Row>
             </Table.Root>
             <Layout.Stack gap="s" direction="row" alignItems="center">
-                <Icon icon={IconInfo} size="s" color="--color-fgcolor-neutral-secondary" />
-                <Typography.Text variant="m-400" color="--color-fgcolor-neutral-secondary">
+                <Icon icon={IconInfo} size="s" color="--fgcolor-neutral-secondary" />
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
                     A list of all domain providers and their DNS setting is available <Link
                         variant="muted"
                         href="#">here</Link

@@ -28,7 +28,7 @@
     <Card.Base
         variant="secondary"
         padding="s"
-        --input-background-color="var(--color-bgcolor-neutral-primary)">
+        --input-background-color="var(--bgcolor-neutral-primary)">
         <Layout.Stack gap="xl">
             <Layout.Stack gap="s">
                 <Layout.Stack direction="row" justifyContent="space-between" alignContent="center">

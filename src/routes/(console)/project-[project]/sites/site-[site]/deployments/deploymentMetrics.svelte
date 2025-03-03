@@ -77,7 +77,7 @@
 
 <Layout.Stack gap="xl">
     <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-end" wrap="wrap">
-        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
             Metrics for {range !== SiteUsageRange.TwentyFourHours
                 ? `${toLocaleDate(
                       new Date(

@@ -105,7 +105,7 @@
                                             >{user.name}</Typography.Caption>
                                         <Typography.Caption
                                             variant="400"
-                                            color="--color-fgcolor-neutral-tertiary">
+                                            color="--fgcolor-neutral-tertiary">
                                             {user.$id}
                                         </Typography.Caption>
                                     </Layout.Stack>
@@ -120,7 +120,7 @@
                                                 : user.phone}</Typography.Caption>
                                         <Typography.Caption
                                             variant="400"
-                                            color="--color-fgcolor-neutral-tertiary">
+                                            color="--fgcolor-neutral-tertiary">
                                             {user.$id}
                                         </Typography.Caption>
                                     </Layout.Stack>
@@ -134,7 +134,7 @@
                                         >{user.name ? user.name : '-'}</Typography.Caption>
                                     <Typography.Caption
                                         variant="400"
-                                        color="--color-fgcolor-neutral-tertiary">
+                                        color="--fgcolor-neutral-tertiary">
                                         {user.$id}
                                     </Typography.Caption>
                                 </Layout.Stack>

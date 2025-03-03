@@ -57,7 +57,7 @@
 
         & .inner-card {
             border: 0.54px solid rgba(237, 237, 240, 0.08);
-            background: var(--color-bgColor-neutral-primary, #1d1d21);
+            background: var(--bgcolor-neutral-primary, #1d1d21);
         }
     }
 </style>

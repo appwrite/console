@@ -16,7 +16,7 @@
 {#if !$page.url.pathname.includes('get-started')}
     <Cover>
         <svelte:fragment slot="header">
-            <Typography.Title color="--color-fgcolor-neutral-primary" size="xl">
+            <Typography.Title color="--fgcolor-neutral-primary" size="xl">
                 {$project?.name}
             </Typography.Title>
             <Id value={$project.$id}>{$project.$id}</Id>
@@ -31,13 +31,13 @@
                 alignItems={$isSmallViewport ? 'flex-start' : 'center'}
                 gap="xl">
                 <Layout.Stack direction="column" gap={$isSmallViewport ? 's' : 'xs'}>
-                    <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
+                    <Typography.Title color="--fgcolor-neutral-primary" size="xl"
                         >{#if $user.name === $user.email}
                             Welcome to Appwrite
                         {:else}
                             Welcome, {$user.name}
                         {/if}</Typography.Title>
-                    <Typography.Text size="m" color="--color-fgcolor-neutral-secondary"
+                    <Typography.Text size="m" color="--fgcolor-neutral-secondary"
                         >Follow a few quick steps to get started with Appwrite</Typography.Text>
                 </Layout.Stack>
                 <div class="dashboard-header-button">

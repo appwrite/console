@@ -80,7 +80,7 @@
                                             <Icon
                                                 icon={IconArrowSmRight}
                                                 size="l"
-                                                color="--color-fgcolor-neutral-weak" />
+                                                color="--fgcolor-neutral-weak" />
                                         </Layout.Stack>
                                         <Typography.Text variant="m-400">
                                             Connect to a new repository or an existing one.
@@ -101,7 +101,7 @@
                                         <Icon
                                             icon={IconArrowSmRight}
                                             size="l"
-                                            color="--color-fgcolor-neutral-weak" />
+                                            color="--fgcolor-neutral-weak" />
                                     </Layout.Stack>
                                     <Typography.Text variant="m-400">
                                         Connect to an existing domain or add a new one.
@@ -121,7 +121,7 @@
                                         <Icon
                                             icon={IconArrowSmRight}
                                             size="l"
-                                            color="--color-fgcolor-neutral-weak" />
+                                            color="--fgcolor-neutral-weak" />
                                     </Layout.Stack>
                                     <Typography.Text variant="m-400">
                                         Share your progress and start collaborating with your team.
@@ -141,7 +141,7 @@
                                         <Icon
                                             icon={IconArrowSmRight}
                                             size="l"
-                                            color="--color-fgcolor-neutral-weak" />
+                                            color="--fgcolor-neutral-weak" />
                                     </Layout.Stack>
                                     <Typography.Text variant="m-400">
                                         Open the preview of your site on any mobile or tablet

@@ -50,7 +50,7 @@
         <Layout.Stack direction="row" alignContent="space-between">
             <Layout.Stack gap="xxs" direction="row" alignItems="center">
                 <Typography.Text variant="m-500">{label}</Typography.Text>
-                <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                     {getAttributeType(attribute)}
                 </Typography.Text>
             </Layout.Stack>

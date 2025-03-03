@@ -137,7 +137,7 @@
                             </Layout.Stack>
                         </Link>
                     </Layout.Stack>
-                    <Typography.Caption variant="400" color="--color-fgcolor-neutral-tertiary">
+                    <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                         Last updated {timeFromNow($repository?.pushedAt)}
                     </Typography.Caption>
                 </Layout.Stack>

@@ -15,7 +15,7 @@
                 cx="10"
                 cy="10"
                 r="8"
-                fill="var(--color-bgcolor-accent)"
+                fill="var(--bgcolor-accent)"
                 fill-opacity=".08"
                 in:fade={{ duration: 250, delay: 1000 }} />
             <circle
@@ -25,7 +25,7 @@
                 cx="10"
                 cy="10"
                 r="8"
-                stroke="var(--color-bgcolor-accent)"
+                stroke="var(--bgcolor-accent)"
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-opacity=".32"
@@ -33,7 +33,7 @@
         </g>
         <path
             in:draw={{ duration: 1000 }}
-            stroke="var(--color-fgcolor-accent)"
+            stroke="var(--fgcolor-accent)"
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="1.2"

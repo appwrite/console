@@ -38,7 +38,7 @@
             <a
                 href={`${base}/project-${project}/databases/database-${databaseId}`}
                 class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
-                <Icon icon={IconDatabase} size="s" color="--color-fgcolor-neutral-weak" />
+                <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
                 {data.database.name}
             </a>
             <div class="collection-content">
@@ -54,7 +54,7 @@
                                     <Icon
                                         icon={IconTable}
                                         size="s"
-                                        color="--color-fgcolor-neutral-weak" />
+                                        color="--fgcolor-neutral-weak" />
                                     <span class="text collection-name" data-private
                                         >{collection.name}</span>
                                 </a>
@@ -136,7 +136,7 @@
     .database-name {
         font-size: var(--font-size-sm);
         font-weight: 500;
-        color: var(--color-fgcolor-neutral-secondary);
+        color: var(--fgcolor-neutral-secondary);
     }
 
     .collection-content {
@@ -146,8 +146,8 @@
         margin-bottom: auto;
         padding-bottom: 16px;
         scrollbar-width: thin;
-        scrollbar-color: var(--color-border-neutral, #ededf0) transparent;
-        color: var(--color-fgcolor-neutral-secondary, #56565c);
+        scrollbar-color: var(--border-neutral, #ededf0) transparent;
+        color: var(--fgcolor-neutral-secondary, #56565c);
 
         &::-webkit-scrollbar {
             width: 4px;
@@ -160,28 +160,28 @@
         }
 
         &::-webkit-scrollbar-thumb {
-            background: var(--color-border-neutral, #ededf0);
+            background: var(--border-neutral, #ededf0);
             border-radius: 2px;
 
             &:hover {
-                background: var(--color-border-neutral-emphasis, #dbdbdf);
+                background: var(--border-neutral-emphasis, #dbdbdf);
             }
         }
     }
 
     .drop-list {
-        border-left: 1px solid var(--color-border-neutral, #ededf0);
+        border-left: 1px solid var(--border-neutral, #ededf0);
         flex: 1;
         padding-left: 4px;
         font-size: var(--font-size-sm);
         font-weight: 500;
-        color: var(--color-fgcolor-neutral-secondary);
+        color: var(--fgcolor-neutral-secondary);
 
         .is-selected,
         li:hover {
-            color: var(--color-fgcolor-neutral-primary);
+            color: var(--fgcolor-neutral-primary);
             border-radius: var(--border-radius-xs, 4px);
-            background: var(--color-bgcolor-neutral-tertiary, #fafafb);
+            background: var(--bgcolor-neutral-tertiary, #fafafb);
         }
 
         .collection-name {
@@ -189,7 +189,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             line-clamp: 1;
-            color: var(--color-fgcolor-neutral-secondary, #56565c);
+            color: var(--fgcolor-neutral-secondary, #56565c);
         }
     }
 
@@ -208,7 +208,7 @@
         gap: var(--space-2, 4px);
         transition: color 0.2s ease;
 
-        color: var(--color-fgcolor-neutral-secondary);
+        color: var(--fgcolor-neutral-secondary);
         border-radius: var(--corner-radius-medium, 8px);
 
         cursor: default;

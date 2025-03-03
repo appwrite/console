@@ -239,7 +239,7 @@
         hr {
             height: 1px;
             width: calc(100% + 2rem);
-            background-color: hsl(var(--color-border));
+            background-color: hsl(var(--border));
 
             margin-block-start: 1rem;
             margin-inline: -1rem;

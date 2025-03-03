@@ -158,11 +158,11 @@
         }
 
         :global(.clickable-list) {
-            --color-border: var(--color-neutral-5);
-            --p-clickable-button-bg-color-hover: var(--color-border);
+            --border: var(--color-neutral-5);
+            --p-clickable-button-bg-color-hover: var(--border);
 
             :global(.theme-dark) & {
-                --color-border: var(--color-neutral-85);
+                --border: var(--color-neutral-85);
             }
         }
 

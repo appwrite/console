@@ -204,13 +204,13 @@
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     :global(body) {
-        background: var(--color-bgcolor-neutral-default, #19191c);
+        background: var(--bgcolor-neutral-default, #19191c);
     }
     .page-container {
         width: calc(100% - 2rem);
         margin: 0 1rem;
         gap: 4.5rem;
-        background: var(--color-bgcolor-neutral-default, #19191c);
+        background: var(--bgcolor-neutral-default, #19191c);
 
         @media #{devices.$break2open} {
             width: 700px;

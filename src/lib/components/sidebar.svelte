@@ -95,7 +95,7 @@
                             state = 'closed';
                             sideBarIsOpen = false;
                         }}>
-                        <Icon icon={IconSearch} color="--color-fgcolor-neutral-tertiary" />
+                        <Icon icon={IconSearch} color="--fgcolor-neutral-tertiary" />
                     </Button.Button>
                 </div>
                 <Link.Button
@@ -121,11 +121,9 @@
                         </div>
                         {#if state !== 'icons'}
                             <div class="info" in:fade={{ delay: 200, duration: 200 }}>
-                                <Typography.Text
-                                    variant="m-500"
-                                    color="--color-fgcolor-neutral-secondary"
+                                <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary"
                                     >{progressCard.title}</Typography.Text>
-                                <Typography.Text color="--color-fgcolor-neutral-secondary"
+                                <Typography.Text color="--fgcolor-neutral-secondary"
                                     >{progressCard.percentage}% complete</Typography.Text>
                             </div>
                         {/if}
@@ -325,47 +323,47 @@
 
         .link-icon {
             height: 16px;
-            color: var(--color-fgcolor-neutral-weak);
+            color: var(--fgcolor-neutral-weak);
             transition: color 0.2s ease-in-out;
         }
 
         &:hover {
-            background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
+            background: var(--bgcolor-neutral-secondary);
 
             .link-icon {
-                color: var(--color-fgcolor-neutral-tertiary);
+                color: var(--fgcolor-neutral-tertiary);
             }
         }
 
         &:focus-visible {
-            background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
+            background: var(--bgcolor-neutral-secondary);
 
             /* box-shadow/state/focus */
             box-shadow:
                 var(--shadow-offsetx-0, 0px) var(--shadow-offsety-0, 0px) 0 2px
-                    var(--color-bgcolor-neutral-default, #fafafb),
-                0px 0px 0px 4px var(--color-border-focus, #818186);
+                    var(--bgcolor-neutral-default, #fafafb),
+                0px 0px 0px 4px var(--border-focus, #818186);
         }
 
         &:active {
-            background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
+            background: var(--bgcolor-neutral-secondary, #f4f4f7);
 
             .link-text {
-                color: var(--color-fgcolor-neutral-primary);
+                color: var(--fgcolor-neutral-primary);
             }
 
             .link-icon {
-                color: var(--color-fgcolor-neutral-tertiary);
+                color: var(--fgcolor-neutral-tertiary);
             }
         }
     }
     .active {
-        background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
+        background: var(--bgcolor-neutral-secondary, #f4f4f7);
         .link-text {
-            color: var(--color-fgcolor-neutral-primary);
+            color: var(--fgcolor-neutral-primary);
         }
         .link-icon {
-            color: var(--color-fgcolor-neutral-tertiary);
+            color: var(--fgcolor-neutral-tertiary);
         }
     }
 
@@ -384,7 +382,7 @@
         transition-behavior: allow-discrete;
         opacity: 1;
         visibility: visible;
-        color: var(--color-fgcolor-neutral-secondary, #56565c);
+        color: var(--fgcolor-neutral-secondary, #56565c);
         filter: blur(0);
 
         &.has-text {
@@ -424,8 +422,8 @@
         align-items: center;
         margin-bottom: var(--gap-s, 8px);
 
-        border-bottom: var(--border-width-s, 1px) solid var(--color-border-neutral, #ededf0);
-        background: var(--color-bgcolor-neutral-primary, #fff);
+        border-bottom: var(--border-width-s, 1px) solid var(--border-neutral, #ededf0);
+        background: var(--bgcolor-neutral-primary, #fff);
     }
 
     .products-label-container {
@@ -444,11 +442,11 @@
 
     .products-label {
         font-size: var(--font-size-xs);
-        color: var(--color-fgcolor-neutral-tertiary);
+        color: var(--fgcolor-neutral-tertiary);
     }
 
     .products-label-indicator {
-        border-bottom: 1px solid var(--color-border-neutral);
+        border-bottom: 1px solid var(--border-neutral);
         height: 1px;
         width: 18px;
         align-self: center;
@@ -493,8 +491,8 @@
         margin-block-end: var(--space-6, 12px);
         align-self: stretch;
         border-radius: var(--border-radius-s, 8px);
-        border: 1px solid var(--color-border-neutral, #ededf0);
-        background: var(--color-bgcolor-neutral-default, #fafafb);
+        border: 1px solid var(--border-neutral, #ededf0);
+        background: var(--bgcolor-neutral-default, #fafafb);
         transition: all 0.2s ease-in-out;
 
         @media (min-width: 1024px) {
@@ -549,7 +547,7 @@
             height: calc(100vh - 48px);
             display: flex;
             justify-content: flex-end;
-            background-color: var(--color-bgcolor-neutral-primary, #fff);
+            background-color: var(--bgcolor-neutral-primary, #fff);
             z-index: 14;
             position: fixed;
             top: 48px;

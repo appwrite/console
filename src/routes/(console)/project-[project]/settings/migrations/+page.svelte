@@ -183,15 +183,12 @@
                 <Layout.Stack alignItems="center" gap="xl">
                     <Layout.Stack alignItems="center">
                         <AvatarGroup
-                            --icon-fill="var(--color-fgcolor-neutral-tertiary)"
+                            --icon-fill="var(--fgcolor-neutral-tertiary)"
                             icons={[IconUserGroup, IconDatabase, IconLightningBolt, IconFolder]}
                             size="s" />
                         <Arrow direction="down" />
                         <Avatar alt="appwrite" size="s">
-                            <Icon
-                                icon={IconCloud}
-                                size="s"
-                                color="--color-fgcolor-neutral-tertiary" />
+                            <Icon icon={IconCloud} size="s" color="--fgcolor-neutral-tertiary" />
                         </Avatar>
                     </Layout.Stack>
                     <Button
@@ -217,17 +214,11 @@
                 <Layout.Stack alignItems="center" gap="xl">
                     <Layout.Stack direction="row" justifyContent="center" alignItems="center">
                         <Avatar alt="appwrite" size="s">
-                            <Icon
-                                icon={IconServer}
-                                size="s"
-                                color="--color-fgcolor-neutral-tertiary" />
+                            <Icon icon={IconServer} size="s" color="--fgcolor-neutral-tertiary" />
                         </Avatar>
                         <Arrow direction="right" />
                         <Avatar alt="appwrite" size="s">
-                            <Icon
-                                icon={IconCloud}
-                                size="s"
-                                color="--color-fgcolor-neutral-tertiary" />
+                            <Icon icon={IconCloud} size="s" color="--fgcolor-neutral-tertiary" />
                         </Avatar>
                     </Layout.Stack>
                     <div>
@@ -250,17 +241,11 @@
                 <Layout.Stack alignItems="center" gap="xl">
                     <Layout.Stack direction="row" justifyContent="center" alignItems="center">
                         <Avatar alt="appwrite" size="s">
-                            <Icon
-                                icon={IconCloud}
-                                size="s"
-                                color="--color-fgcolor-neutral-tertiary" />
+                            <Icon icon={IconCloud} size="s" color="--fgcolor-neutral-tertiary" />
                         </Avatar>
                         <Arrow direction="right" />
                         <Avatar alt="appwrite" size="s">
-                            <Icon
-                                icon={IconServer}
-                                size="s"
-                                color="--color-fgcolor-neutral-tertiary" />
+                            <Icon icon={IconServer} size="s" color="--fgcolor-neutral-tertiary" />
                         </Avatar>
                     </Layout.Stack>
                     <div>
