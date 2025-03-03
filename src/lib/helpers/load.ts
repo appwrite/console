@@ -18,10 +18,10 @@ export enum View {
     Grid = 'grid'
 }
 
-export function getView(url: URL, route: Page['route'], fallback: View): View {
+export function getView(url: URL, route: Page['route'], fallback: View, overwrite?: View): View {
     return (url.searchParams.get('view') ?? preferences.get(route).view) === View.Grid
         ? View.Grid
-        : (View.Table ?? fallback);
+        : (overwrite ?? View.Table ?? fallback);
 }
 
 export function getColumns(route: Page['route'], fallback: string[]): string[] {
