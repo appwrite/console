@@ -189,7 +189,7 @@
                         variant="text"
                         aria-label="Toggle Command Center"
                         on:click={toggleCommandCenter}
-                        icon={true}>
+                        icon>
                         <Icon icon={IconSearch} />
                     </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
