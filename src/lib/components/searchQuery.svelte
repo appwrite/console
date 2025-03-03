@@ -63,7 +63,6 @@
         {placeholder}
         {disabled}
         {required}
-        type="search"
         bind:value={search}
         --color-bgcolor-neutral-default="var(--color-bgcolor-neutral-primary)">
         <svelte:fragment slot="start">
