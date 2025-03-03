@@ -209,7 +209,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} {domain} />
+        <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">

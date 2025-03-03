@@ -35,21 +35,21 @@
 {#if !$isTabletViewport}
     <Sidebar.Base state="open" resizable={false}>
         <section class="list-container" slot="top" style:width="100%">
-            <h5
-                class="u-flex u-cross-center body-text-2 u-gap-8 u-padding-inline-12 u-padding-block-8 is-not-mobile is-selected">
+            <a
+                href={`${base}/project-${project}/databases/database-${databaseId}`}
+                class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
                 <Icon icon={IconDatabase} size="s" color="--color-fgcolor-neutral-weak" />
                 {data.database.name}
-            </h5>
+            </a>
             <div class="collection-content">
                 {#if data?.allCollections?.total}
-                    <ul
-                        class="drop-list u-padding-inline-8 u-margin-inline-start-20 u-margin-block-start-8">
+                    <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
                         {#each sortedCollections as collection}
                             {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                             {@const isSelected = collectionId === collection.$id}
                             <li class:is-selected={isSelected}>
                                 <a
-                                    class="u-padding-block-4 u-padding-inline-12 u-flex u-cross-center u-gap-8"
+                                    class="u-padding-block-4 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
                                     {href}>
                                     <Icon
                                         icon={IconTable}
@@ -133,6 +133,12 @@
         min-height: 0;
     }
 
+    .database-name {
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        color: var(--color-fgcolor-neutral-secondary);
+    }
+
     .collection-content {
         flex: 1;
         overflow-y: auto;
@@ -166,9 +172,14 @@
     .drop-list {
         border-left: 1px solid var(--color-border-neutral, #ededf0);
         flex: 1;
+        padding-left: 4px;
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        color: var(--color-fgcolor-neutral-secondary);
 
         .is-selected,
         li:hover {
+            color: var(--color-fgcolor-neutral-primary);
             border-radius: var(--border-radius-xs, 4px);
             background: var(--color-bgcolor-neutral-tertiary, #fafafb);
         }
