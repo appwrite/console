@@ -121,7 +121,7 @@
                                                         content="In progress">
                                                         <div
                                                             slot="start"
-                                                            style:margin="-4px 4px 0 0">
+                                                            style:margin="-4px 0 0 2px">
                                                             <ProgressCircle
                                                                 size="xs"
                                                                 showAnimation={false}
@@ -166,7 +166,7 @@
                                                         content="In progress">
                                                         <div
                                                             slot="start"
-                                                            style:margin="-4px 4px 0 0">
+                                                            style:margin="-4px 0 0 2px">
                                                             <ProgressCircle
                                                                 size="xs"
                                                                 showAnimation={false}
@@ -218,7 +218,7 @@
                                                         content="In progress">
                                                         <div
                                                             slot="start"
-                                                            style:margin="-4px 4px 0 0">
+                                                            style:margin="-4px 0 0 2px">
                                                             <ProgressCircle
                                                                 size="xs"
                                                                 showAnimation={false}
@@ -265,7 +265,7 @@
                                                         content="In progress">
                                                         <div
                                                             slot="start"
-                                                            style:margin="-4px 4px 0 0">
+                                                            style:margin="-4px 0 0 2px">
                                                             <ProgressCircle
                                                                 size="xs"
                                                                 showAnimation={false}
@@ -313,7 +313,7 @@
                                                         content="In progress">
                                                         <div
                                                             slot="start"
-                                                            style:margin="-4px 4px 0 0">
+                                                            style:margin="-4px 0 0 2px">
                                                             <ProgressCircle
                                                                 size="xs"
                                                                 showAnimation={false}
