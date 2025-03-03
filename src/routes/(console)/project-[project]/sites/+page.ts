@@ -10,7 +10,7 @@ export const load = async ({ url, depends, route }) => {
     const search = getSearch(url);
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
-    const view = getView(url, route, View.Grid);
+    const view = getView(url, route, View.Grid, View.Grid);
 
     const siteList = await sdk.forProject.sites.list(
         [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],

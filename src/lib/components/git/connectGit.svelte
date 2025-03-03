@@ -45,8 +45,8 @@
         title="No installation was added to the project yet"
         description="Add an installation to connect repositories">
         <svelte:fragment slot="actions">
-            <Button size="m" secondary href={connectGitHub().toString()} disabled={!isVcsEnabled}>
-                <Icon slot="start" icon={IconGithub} size="m" />
+            <Button secondary href={connectGitHub().toString()} disabled={!isVcsEnabled}>
+                <Icon slot="start" icon={IconGithub} />
                 Connect to GitHub
             </Button>
         </svelte:fragment>
