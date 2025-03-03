@@ -398,8 +398,6 @@
 
 {#if showVariablesUpload}
     <UploadVariables
-        {product}
-        {isGlobal}
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {variableList}
