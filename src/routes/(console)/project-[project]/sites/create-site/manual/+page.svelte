@@ -17,6 +17,7 @@
     import InputFile from '$lib/elements/forms/inputFile.svelte';
     import { buildVerboseDomain } from '../store';
     import { project } from '$routes/(console)/project-[project]/store';
+    import { organization } from '$lib/stores/organization';
 
     export let data;
     let showExitModal = false;
@@ -27,7 +28,9 @@
     let name = 'My website';
     let id = ID.unique();
     let domain = id;
-    let framework: Models.Framework = data.frameworks.frameworks[0];
+    let framework: Models.Framework =
+        data.frameworks.frameworks?.find((f) => f.key === 'other') ??
+        data.frameworks.frameworks?.[0];
     let adapter = framework?.adapters[0];
     let installCommand = adapter?.installCommand;
     let buildCommand = adapter?.buildCommand;
@@ -37,7 +40,7 @@
 
     async function create() {
         try {
-            domain = await buildVerboseDomain(name, $project.name, id);
+            domain = await buildVerboseDomain(name, $project.name, $organization.name, id);
 
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(

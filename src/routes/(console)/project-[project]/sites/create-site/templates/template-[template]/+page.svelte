@@ -34,6 +34,7 @@
     import { consoleVariables } from '$routes/(console)/store';
     import { project } from '$routes/(console)/project-[project]/store';
     import { buildVerboseDomain } from '../../store';
+    import { organization } from '$lib/stores/organization';
 
     export let data;
 
@@ -123,7 +124,12 @@
         // }
         else {
             try {
-                domain = await buildVerboseDomain(data.template.name, $project.name, id);
+                domain = await buildVerboseDomain(
+                    data.template.name,
+                    $project.name,
+                    $organization.name,
+                    id
+                );
 
                 const fr = Object.values(Framework).find((f) => f === framework.key);
                 const buildRuntime = Object.values(BuildRuntime).find(

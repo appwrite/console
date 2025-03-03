@@ -22,6 +22,7 @@
     // import Domain from '../../domain.svelte';
     import { consoleVariables } from '$routes/(console)/store';
     import { buildVerboseDomain } from '../../store';
+    import { project } from '$routes/(console)/project-[project]/store';
 
     export let data;
     let showExitModal = false;
@@ -47,8 +48,6 @@
         installation.set(data.installation);
         repository.set(data.repository);
         name = data.repository.name;
-
-        // domain = await buildVerboseDomain(data.repository.name, data.repository.organization, id);
     });
 
     async function loadBranches() {
@@ -79,6 +78,7 @@
             domain = await buildVerboseDomain(
                 data.repository.name,
                 data.repository.organization,
+                $project.name,
                 id
             );
             const fr = Object.values(Framework).find((f) => f === framework.key);

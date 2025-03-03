@@ -19,19 +19,33 @@ export async function checkDomain(domain: string) {
     }
 }
 
-export async function buildVerboseDomain(name: string, specifier: string, unique?: string) {
+export async function buildVerboseDomain(
+    name: string,
+    specifier: string,
+    secondarySpecifier?: string,
+    unique?: string
+) {
     const safeName = toURLSafe(name).toLowerCase();
     const safeSpecifier = toURLSafe(specifier).toLowerCase();
+    const safeSecondarySpecifier = secondarySpecifier
+        ? toURLSafe(secondarySpecifier).toLowerCase()
+        : '';
     const safeUnique = unique ? toURLSafe(unique).toLowerCase() : ID.unique();
     let domain = `${safeName}`;
     if (await checkDomain(domain)) {
         return domain;
     }
-    domain = `${safeName}-${safeSpecifier}`;
+    domain += '-' + safeSpecifier;
     if (await checkDomain(domain)) {
         return domain;
     }
-    domain = `${safeName}-${safeSpecifier}-${safeUnique}`;
+    if (secondarySpecifier) {
+        domain += '-' + safeSecondarySpecifier;
+        if (await checkDomain(domain)) {
+            return domain;
+        }
+    }
+    domain += '-' + safeUnique;
     if (await checkDomain(domain)) {
         return domain;
     }
