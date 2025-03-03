@@ -1,11 +1,12 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Card, SecondaryTabsItem, SecondaryTabs, Heading } from '$lib/components';
+    import { Card, SecondaryTabsItem, SecondaryTabs } from '$lib/components';
     import { BarChart } from '$lib/charts';
     import { page } from '$app/stores';
     import type { PageData } from './$types';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
     $: total = data.executionsTotal;
@@ -16,7 +17,7 @@
 
 <Container>
     <div class="u-flex u-main-space-between common-section">
-        <Heading tag="h2" size="5">Functions</Heading>
+        <Typography.Title>Functions</Typography.Title>
         <SecondaryTabs>
             <SecondaryTabsItem
                 href={`${base}/project-${data.project.$id}/functions/function-${data.function.$id}/usage/24h`}
@@ -37,7 +38,7 @@
     </div>
     {#if count}
         <Card>
-            <Heading tag="h6" size="6">{formatNumberWithCommas(total)}</Heading>
+            <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
             <p>Executions</p>
             <div class="u-margin-block-start-16" />
             <BarChart
@@ -52,7 +53,7 @@
 
     {#if mbSecondsCount}
         <Card>
-            <Heading tag="h6" size="6">{formatNumberWithCommas(gbHoursTotal)}</Heading>
+            <Typography.Title>{formatNumberWithCommas(gbHoursTotal)}</Typography.Title>
             <p>GB Hours</p>
             <div class="u-margin-block-start-16" />
             <BarChart

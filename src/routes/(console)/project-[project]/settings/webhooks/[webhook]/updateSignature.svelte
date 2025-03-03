@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Heading, Secret } from '$lib/components';
+    import { CardGrid, Secret } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Link } from '@appwrite.io/pink-svelte';
     import Regenerate from './regenerate.svelte';

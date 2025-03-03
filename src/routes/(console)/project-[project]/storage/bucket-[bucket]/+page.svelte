@@ -19,7 +19,7 @@
         PaginationWithLimit,
         SearchQuery
     } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -29,17 +29,17 @@
         humanFileSize,
         sizeToBytes
     } from '$lib/helpers/sizeConvertion';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
-    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
+    import { getServiceLimit } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
-    import { Layout, Tooltip, Table, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Icon } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 

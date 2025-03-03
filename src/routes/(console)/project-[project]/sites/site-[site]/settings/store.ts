@@ -1,3 +1,3 @@
 import { writable } from 'svelte/store';
 
-export let showConnectRepo = writable(false);
+export const showConnectRepo = writable(false);

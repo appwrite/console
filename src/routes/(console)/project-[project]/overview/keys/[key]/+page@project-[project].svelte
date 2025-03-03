@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Box, CardGrid, Heading, Secret } from '$lib/components';
+    import { Box, CardGrid, Secret } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';

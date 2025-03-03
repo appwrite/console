@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Card, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
+    import { Card, CardGrid, Collapsible, CollapsibleItem } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';

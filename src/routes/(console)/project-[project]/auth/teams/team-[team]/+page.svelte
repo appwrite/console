@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Heading, AvatarInitials } from '$lib/components';
+    import { CardGrid, AvatarInitials } from '$lib/components';
     import { Container } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { team } from './store';

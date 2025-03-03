@@ -7,7 +7,7 @@
     import { Button, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import DeploymentDomains from '../(components)/deploymentDomains.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';

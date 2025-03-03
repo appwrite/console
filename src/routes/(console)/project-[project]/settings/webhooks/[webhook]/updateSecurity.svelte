@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import {
         Button,
@@ -16,7 +16,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
-    import { Selector } from '@appwrite.io/pink-svelte';
+    import { Selector, Typography } from '@appwrite.io/pink-svelte';
 
     const projectId = $page.params.project;
     let httpUser: string = null;
@@ -65,7 +65,7 @@
         unauthorized access.
         <svelte:fragment slot="aside">
             <div>
-                <Heading tag="h3" size="7">HTTP Authentication</Heading>
+                <Typography.Title size="s">HTTP Authentication</Typography.Title>
                 <p class="text">Use to secure your endpoint from untrusted sources.</p>
             </div>
             <InputText label="User" id="user" placeholder="Enter username" bind:value={httpUser} />

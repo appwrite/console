@@ -10,7 +10,7 @@
 </script>
 
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Heading, AvatarInitials } from '$lib/components';
+    import { CardGrid, BoxAvatar, AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { writable } from 'svelte/store';
     import DeleteUser from './deleteUser.svelte';

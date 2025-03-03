@@ -10,7 +10,6 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { deployment } from './store';
-    import Heading from '$lib/components/heading.svelte';
     import BoxAvatar from '$lib/components/boxAvatar.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Delete from '../delete.svelte';

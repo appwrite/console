@@ -1,11 +1,10 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import Alert from '$lib/components/alert.svelte';
-    import { Button, InputFile } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { parse } from 'envfile';
 
     export let isGlobal: boolean;

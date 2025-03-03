@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, DropList, DropListItem, Heading } from '$lib/components';
+    import { Empty, DropList, DropListItem } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Container } from '$lib/layout';
     import { collection, indexes } from '../store';
@@ -150,7 +150,7 @@
             allowCreate={$canWriteCollections}
             on:click={() => (showCreateDropdown = true)}>
             <div class="u-text-center">
-                <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
+                <Typography.Title size="s">Create an attribute to get started.</Typography.Title>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
                     Need a hand? Learn more in our documentation.
                 </p>

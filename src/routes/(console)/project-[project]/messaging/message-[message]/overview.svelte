@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import ProviderType from '../providerType.svelte';
     import MessageStatusPill from '../messageStatusPill.svelte';
@@ -9,6 +9,7 @@
     import SendModal from './sendModal.svelte';
     import ScheduleModal from './scheduleModal.svelte';
     import CancelModal from './cancelModal.svelte';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let message: Models.Message & { data: Record<string, string> };
     export let topics: Models.Topic[];
@@ -23,9 +24,9 @@
 <CardGrid hideFooter={['processing', 'sent'].includes(message.status)}>
     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
         <ProviderType type={message.providerType} size="l">
-            <Heading tag="h6" size="7">
+            <Typography.Title size="s">
                 <ProviderType type={message.providerType} noIcon />
-            </Heading>
+            </Typography.Title>
         </ProviderType>
     </div>
     <svelte:fragment slot="aside">

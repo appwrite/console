@@ -29,7 +29,6 @@
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
     import Avatar from '$lib/components/avatar.svelte';
-    import { iconPath } from '$lib/stores/app';
 
     export let total: number;
     export let limit: number;
