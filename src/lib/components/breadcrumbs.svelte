@@ -348,7 +348,7 @@
 
 <style lang="scss">
     .menu {
-        min-width: 220px;
+        min-width: 244px;
         z-index: 20;
     }
 
@@ -361,7 +361,7 @@
     }
 
     .subMenu {
-        min-width: 220px;
+        min-width: 244px;
         margin-inline: -4px;
         margin-block: -4px;
     }

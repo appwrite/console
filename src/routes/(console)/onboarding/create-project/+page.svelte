@@ -147,9 +147,7 @@
         <Card.Base variant="primary" padding="l"
             ><form>
                 <Layout.Stack direction="column" gap="xxl">
-                    <div style:margin-top="20px">
-                        <Typography.Title size="l">Create your project</Typography.Title>
-                    </div>
+                    <Typography.Title size="l">Create your project</Typography.Title>
 
                     <Layout.Stack direction="column" gap="xxl">
                         <Layout.Stack direction="column" gap="xxl">
@@ -191,7 +189,7 @@
                         ><Button.Button
                             type="button"
                             variant="primary"
-                            size="m"
+                            size="s"
                             on:click={createProject}>
                             Create</Button.Button>
                     </Layout.Stack>

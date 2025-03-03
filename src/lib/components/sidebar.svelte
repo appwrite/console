@@ -70,12 +70,12 @@
     $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(pathname);
 
     const projectOptions = [
-        { name: 'Auth', icon: IconUserGroup, slug: 'auth' },
-        { name: 'Databases', icon: IconDatabase, slug: 'databases' },
-        { name: 'Functions', icon: IconLightningBolt, slug: 'functions' },
-        { name: 'Messaging', icon: IconChatBubble, slug: 'messaging' },
-        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites' },
-        { name: 'Storage', icon: IconFolder, slug: 'storage' }
+        { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
+        { name: 'Databases', icon: IconDatabase, slug: 'databases', category: 'build' },
+        { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
+        { name: 'Messaging', icon: IconChatBubble, slug: 'messaging', category: 'build' },
+        { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
+        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy' }
     ];
 </script>
 
@@ -155,12 +155,45 @@
                         <Divider />
                     </div>
                     <div class="products-label-container">
-                        <span class="products-label" class:hidden={state === 'icons'}
-                            >Products</span>
+                        <span class="products-label" class:hidden={state === 'icons'}>Build</span>
                         <span class="products-label-indicator" class:hidden={state !== 'icons'}
                         ></span>
                     </div>
-                    {#each projectOptions as projectOption}
+                    {@const buildProjectOptions = projectOptions.filter(
+                        (projectOption) => projectOption.category === 'build'
+                    )}
+                    {#each buildProjectOptions as projectOption}
+                        <Tooltip placement="right" disabled={state !== 'icons'}>
+                            <a
+                                href={`/console/project-${project.$id}/${projectOption.slug}`}
+                                class="link"
+                                class:active={pathname.includes(projectOption.slug)}
+                                on:click={() => {
+                                    trackEvent(`click_menu_${projectOption.slug}`);
+                                    sideBarIsOpen = false;
+                                }}
+                                ><span class="link-icon"
+                                    ><Icon icon={projectOption.icon} size="s" />
+                                </span><span
+                                    class:no-text={state === 'icons'}
+                                    class:has-text={state === 'open'}
+                                    class="link-text">{projectOption.name}</span
+                                ></a>
+                            <span slot="tooltip">{projectOption.name}</span>
+                        </Tooltip>
+                    {/each}
+                    <div class="only-mobile divider">
+                        <Divider />
+                    </div>
+                    <div class="products-label-container">
+                        <span class="products-label" class:hidden={state === 'icons'}>Deploy</span>
+                        <span class="products-label-indicator" class:hidden={state !== 'icons'}
+                        ></span>
+                    </div>
+                    {@const deployProjectOptions = projectOptions.filter(
+                        (projectOption) => projectOption.category === 'deploy'
+                    )}
+                    {#each deployProjectOptions as projectOption}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
