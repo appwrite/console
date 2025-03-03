@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
     import { Fieldset, Layout, Selector } from '@appwrite.io/pink-svelte';
-    import SelectRootModal from '../(components)/selectRootModal.svelte';
+    import SelectRootModal from '../../../routes/(console)/project-[project]/sites/(components)/selectRootModal.svelte';
 
     export let branch: string;
     export let rootDir: string;

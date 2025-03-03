@@ -1,22 +1,14 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
+
     import { symmetricDifference } from '$lib/helpers/array';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Actions from './actions.svelte';
     import type { Permission } from './permissions.svelte';
     import Row from './row.svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { IconPlus, IconTable, IconX } from '@appwrite.io/pink-icons-svelte';
 
     export let roles: string[] = [];
 
@@ -88,32 +80,26 @@
 </script>
 
 {#if [...$groups.keys()]?.length}
-    <Table noMargin noStyles>
-        <TableHeader>
-            <TableCellHead width={70}>Role</TableCellHead>
-            <TableCellHead width={40} />
-        </TableHeader>
-        <TableBody>
-            {#each [...$groups.keys()].sort(sortRoles) as role}
-                <TableRow>
-                    <TableCell title="Role">
-                        <Row {role} />
-                    </TableCell>
-                    <TableCellText title="Remove">
-                        <div class="u-flex u-main-end">
-                            <button
-                                class="button is-text is-only-icon"
-                                type="button"
-                                aria-label="delete"
-                                on:click={() => deleteRole(role)}>
-                                <span class="icon-x" aria-hidden="true" />
-                            </button>
-                        </div>
-                    </TableCellText>
-                </TableRow>
-            {/each}
-        </TableBody>
-    </Table>
+    <Table.Root>
+        <svelte:fragment slot="header">
+            <Table.Header.Cell>Role</Table.Header.Cell>
+            <Table.Header.Cell width="40px" />
+        </svelte:fragment>
+        {#each [...$groups.keys()].sort(sortRoles) as role}
+            <Table.Row>
+                <Table.Cell>
+                    <Row {role} />
+                </Table.Cell>
+                <Table.Cell>
+                    <Layout.Stack justifyContent="flex-end">
+                        <Button icon on:click={() => deleteRole(role)}>
+                            <Icon icon={IconX} size="s" />
+                        </Button>
+                    </Layout.Stack>
+                </Table.Cell>
+            </Table.Row>
+        {/each}
+    </Table.Root>
     <Actions
         bind:showLabel
         bind:showCustom

@@ -12,17 +12,14 @@
     import { Layout, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
-    import Details from '../../details.svelte';
-    import ProductionBranch from '../../../../../../../lib/components/git/productionBranchFieldset.svelte';
-    import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Type } from '@appwrite.io/console';
+    import { ID, Runtime, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import Configuration from '../../configuration.svelte';
-    // import Domain from '../../domain.svelte';
     import { consoleVariables } from '$routes/(console)/store';
-    import { buildVerboseDomain } from '../../store';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import Details from '../(components)/details.svelte';
+    import ProductionBranchFieldset from '$lib/components/git/productionBranchFieldset.svelte';
+    import Configuration from './configuration.svelte';
+    import Aside from '../(components)/aside.svelte';
 
     export let data;
     let showExitModal = false;
@@ -32,17 +29,15 @@
 
     let name = '';
     let id = ID.unique();
-    let framework: Models.Framework = data.frameworks.frameworks[0];
-    let adapter = framework?.adapters[0];
+    let runtime: Models.Runtime = data.runtimesList.runtimes[0];
+    let entrypoint = '';
+    let buildCommand = '';
+    let scopes: string[] = [];
     let branch: string;
     let rootDir = './';
-    let installCommand = adapter?.installCommand;
-    let buildCommand = adapter?.buildCommand;
-    let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
     let domain = id;
-    // let domainIsValid = true;
 
     onMount(async () => {
         installation.set(data.installation);
@@ -66,54 +61,39 @@
     }
 
     async function create() {
-        // if (!domainIsValid) {
-        //     addNotification({
-        //         type: 'error',
-        //         message: 'Please enter a valid domain'
-        //     });
-        //     return;
-        // } else {}
-
         try {
-            domain = await buildVerboseDomain(
-                data.repository.name,
-                data.repository.organization,
-                $project.name,
-                id
-            );
-            const fr = Object.values(Framework).find((f) => f === framework.key);
-            const buildRuntime = Object.values(BuildRuntime).find(
-                (f) => f === framework.buildRuntime
-            );
-            let site = await sdk.forProject.sites.create(
-                id || ID.unique(),
+            const rt = Object.values(Runtime).find((r) => r === runtime.key);
+            const func = await sdk.forProject.functions.create(
+                id,
                 name,
-                fr,
-                buildRuntime,
+                rt,
                 undefined,
                 undefined,
-                installCommand,
-                buildCommand,
-                outputDirectory,
-                framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
-                data.installation.$id,
-                null,
-                data.repository.id,
+                undefined,
+                undefined,
+                true,
+                undefined,
+                entrypoint,
+                undefined,
+                scopes,
+                $installation.$id,
+                $repository.id,
                 branch,
                 silentMode,
-                rootDir
+                rootDir,
+                undefined //TODO: specs
             );
 
             // Add domain
-            await sdk.forProject.proxy.createSiteRule(
-                `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                site.$id
+            await sdk.forProject.proxy.createFunctionRule(
+                `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                func.$id
             );
 
             //Add variables
             const promises = variables.map((variable) =>
-                sdk.forProject.sites.createVariable(
-                    site.$id,
+                sdk.forProject.functions.createVariable(
+                    func.$id,
                     variable.key,
                     variable.value,
                     variable?.secret ?? false
@@ -121,39 +101,39 @@
             );
             await Promise.all(promises);
 
-            const deployment = await sdk.forProject.sites.createVcsDeployment(
-                site.$id,
+            const deployment = await sdk.forProject.functions.createVcsDeployment(
+                func.$id,
                 Type.Branch,
                 branch,
                 true
             );
 
-            trackEvent(Submit.SiteCreate, {
+            trackEvent(Submit.FunctionCreate, {
                 source: 'repository',
-                framework: framework.key
+                framework: runtime.key
             });
 
             await goto(
-                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                `${base}/project-${$page.params.project}/functions/create-function/deploying?function=${func.$id}&deployment=${deployment.$id}`
             );
         } catch (e) {
             addNotification({
                 type: 'error',
                 message: e.message
             });
-            trackError(e, Submit.SiteCreate);
+            trackError(e, Submit.FunctionCreate);
         }
     }
 </script>
 
 <svelte:head>
-    <title>Create site - Appwrite</title>
+    <title>Create function - Appwrite</title>
 </svelte:head>
 
 <Wizard
-    title="Create site"
+    title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/sites/`}
+    href={`${base}/project-${$page.params.project}/functions/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -176,7 +156,7 @@
                     </Button>
                 </Layout.Stack>
             </Card>
-            <Details bind:name bind:id />
+            <Details bind:name bind:entrypoint bind:id />
 
             {#await loadBranches()}
                 <Layout.Stack justifyContent="center" alignItems="center">
@@ -194,22 +174,14 @@
                         ?.sort((a, b) => {
                             return a.label > b.label ? 1 : -1;
                         }) ?? []}
-                <ProductionBranch bind:branch bind:rootDir {options} bind:silentMode />
+                <ProductionBranchFieldset bind:branch bind:rootDir {options} bind:silentMode />
             {/await}
 
-            <Configuration
-                bind:installCommand
-                bind:buildCommand
-                bind:outputDirectory
-                bind:selectedFramework={framework}
-                bind:variables
-                frameworks={data.frameworks.frameworks} />
-
-            <!-- <Domain bind:domain bind:domainIsValid /> -->
+            <Configuration bind:buildCommand bind:scopes />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} />
+        <Aside {runtime} repositoryName={data.repository.name} {branch} {rootDir} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">

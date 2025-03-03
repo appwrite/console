@@ -197,7 +197,7 @@
                             placeholder="Select status code" />
                     {/if}
 
-                    {#if data.branches.total}
+                    {#if data.branches?.total}
                         {@const sortedBranches = sortBranches(data.branches.branches)}
                         {@const options = sortedBranches.map((branch) => ({
                             label: branch.name,

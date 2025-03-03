@@ -23,7 +23,7 @@
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
     import ConnectBehaviour from './connectBehaviour.svelte';
-    import ProductionBranch from '../../productionBranch.svelte';
+    import ProductionBranch from '../../../../../../../lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';

@@ -8,8 +8,9 @@
 
     export let name: string;
     export let id: string;
-    export let showFramework = false;
-    export let framework: Models.TemplateFramework | undefined = undefined;
+    export let entrypoint: string;
+    export let showEntrypoint = false;
+    export let runtime: Models.TemplateRuntime | undefined = undefined;
     export let options: {
         value: string;
         label: string;
@@ -17,8 +18,6 @@
     }[] = [];
 
     let showCustomId = false;
-
-    $: console.log(options);
 </script>
 
 <Fieldset legend="Details">
@@ -32,23 +31,30 @@
                 required
                 placeholder="Enter name" />
             {#if showCustomId}
-                <CustomId bind:id bind:show={showCustomId} name="Site" fullWidth />
+                <CustomId bind:id bind:show={showCustomId} name="Function" fullWidth />
             {:else}
                 <div>
                     <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
                         <Icon icon={IconPencil} size="s" />
-                        Site ID
+                        Function ID
                     </Tag>
                 </div>
             {/if}
         </Layout.Stack>
-        {#if showFramework}
-            <InputSelect
-                id="framework"
-                label="Framework"
-                placeholder="Select framework"
-                bind:value={framework.name}
-                {options} />
+        <InputSelect
+            id="runtime"
+            label="Runtime"
+            placeholder="Select runtime"
+            bind:value={runtime.name}
+            required
+            {options} />
+        {#if showEntrypoint}
+            <InputText
+                label="Entrypoint"
+                id="entrypoint"
+                bind:value={entrypoint}
+                required
+                placeholder="Enter entrypoint" />
         {/if}
     </Layout.Stack>
 </Fieldset>

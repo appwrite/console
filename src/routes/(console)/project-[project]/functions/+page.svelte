@@ -90,7 +90,7 @@
         title="Functions"
         buttonText={$canWriteFunctions ? 'Create function' : ''}
         buttonEvent="create_function"
-        buttonMethod={openWizard}
+        buttonHref={`${base}/project-${project}/functions/create-function`}
         total={data.functions.total} />
 
     {#if data.functions.total}
@@ -99,7 +99,6 @@
             showEmpty={$canWriteFunctions}
             event="functions"
             total={data.functions.total}
-            on:click={openWizard}
             service="functions">
             {#each data.functions.functions as func}
                 <GridItem1 href={`${base}/project-${project}/functions/function-${func.$id}`}>
