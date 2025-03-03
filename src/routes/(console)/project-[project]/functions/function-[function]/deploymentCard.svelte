@@ -5,7 +5,7 @@
     import { Pill } from '$lib/elements';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
+    import DeploymentBy from './deploymentBy.svelte';
     import DeploymentSource from './deploymentSource.svelte';
 
     import DeploymentDomains from './deploymentDomains.svelte';
@@ -80,7 +80,7 @@
             <li class="u-flex-vertical u-gap-4">
                 <p class="u-color-text-offline">Updated</p>
                 <p class="u-line-height-2">
-                    <DeploymentCreatedBy {deployment} />
+                    <DeploymentBy {deployment} type="update" />
                 </p>
             </li>
         </ul>
