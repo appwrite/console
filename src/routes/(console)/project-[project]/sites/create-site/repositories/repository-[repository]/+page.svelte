@@ -164,8 +164,8 @@
                     alignItems="center"
                     gap="xs">
                     <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Icon icon={IconGithub} color="--color-fgcolor-neutral-primary" />
-                        <Typography.Text variation="m-500" color="--color-fgcolor-neutral-primary">
+                        <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
+                        <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
                             {data.repository?.organization}/{data.repository?.name}
                         </Typography.Text>
                     </Layout.Stack>

@@ -26,7 +26,7 @@
 <Layout.Stack>
     <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
         <Layout.Stack gap="xs" direction="row" alignItems="center" inline>
-            <Typography.Text variant="l-500" color="--color-fgcolor-neutral-primary">
+            <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
                 Domains
             </Typography.Text>
             <Badge variant="secondary" content={proxyRuleList?.total.toString()} size="s" />
@@ -45,7 +45,7 @@
                         <Typography.Text variant="m-500">
                             Add your first custom domain
                         </Typography.Text>
-                        <Typography.Caption variant="500" color="--color-fgcolor-neutral-tertiary">
+                        <Typography.Caption variant="500" color="--fgcolor-neutral-tertiary">
                             Personalize your site and enhance its accessibility and branding with a
                             unique domain.
                         </Typography.Caption>

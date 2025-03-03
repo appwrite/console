@@ -183,20 +183,20 @@
                                         <Layout.Stack gap="s" direction="row" alignItems="center">
                                             <Typography.Text
                                                 truncate
-                                                color="--color-fgcolor-neutral-secondary">
+                                                color="--fgcolor-neutral-secondary">
                                                 {repo.name}
                                             </Typography.Text>
                                             {#if repo.private}
                                                 <Icon
                                                     size="s"
                                                     icon={IconLockClosed}
-                                                    color="--color-fgcolor-neutral-tertiary" />
+                                                    color="--fgcolor-neutral-tertiary" />
                                             {/if}
                                             <time datetime={repo.pushedAt}>
                                                 <Typography.Caption
                                                     variant="400"
                                                     truncate
-                                                    color="--color-fgcolor-neutral-tertiary">
+                                                    color="--fgcolor-neutral-tertiary">
                                                     {timeFromNow(repo.pushedAt)}
                                                 </Typography.Caption>
                                             </time>

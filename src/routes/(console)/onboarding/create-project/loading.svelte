@@ -196,7 +196,7 @@
 
 <style lang="scss">
     :global(.theme-dark) {
-        --icon-content-background-color: var(--color-bgcolor-neutral-primary, #1d1d21);
+        --icon-content-background-color: var(--bgcolor-neutral-primary, #1d1d21);
         --icon-content-border-color: var(--color-overlay-skeleton);
         --icon-container-background-color: #242427;
         --icon-container-border-color: rgba(255, 255, 255, 0.02);
@@ -216,7 +216,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        color: var(--color-fgcolor-neutral-primary, #2d2d31);
+        color: var(--fgcolor-neutral-primary, #2d2d31);
 
         --animation-type: cubic-bezier(0.77, 0, 0.175, 1);
         --icon-colorize-animation-duration: 0.3s; // duration of icons going from gray to colorized
@@ -393,10 +393,10 @@
     }
 
     .border-right {
-        border-right: 1px solid var(--color-border-neutral);
+        border-right: 1px solid var(--border-neutral);
     }
     .border-bottom {
-        border-bottom: 1px solid var(--color-border-neutral);
+        border-bottom: 1px solid var(--border-neutral);
         grid-column: 1/8;
         @media (min-width: 768px) {
             grid-column: 1/10;
@@ -406,7 +406,7 @@
     .vertical-fade-top {
         background: linear-gradient(
             to bottom,
-            var(--color-bgcolor-neutral-default, #19191c) 0%,
+            var(--bgcolor-neutral-default, #19191c) 0%,
             transparent 100%
         );
         grid-column: 1/8;
@@ -417,7 +417,7 @@
     .vertical-fade-bottom {
         background: linear-gradient(
             to top,
-            var(--color-bgcolor-neutral-default, #19191c) 0%,
+            var(--bgcolor-neutral-default, #19191c) 0%,
             transparent 100%
         );
         grid-column: 1/8;
@@ -428,14 +428,14 @@
     .horizontal-fade-left {
         background: linear-gradient(
             to right,
-            var(--color-bgcolor-neutral-default, #19191c) 0%,
+            var(--bgcolor-neutral-default, #19191c) 0%,
             transparent 100%
         );
     }
     .horizontal-fade-right {
         background: linear-gradient(
             to left,
-            var(--color-bgcolor-neutral-default, #19191c) 0%,
+            var(--bgcolor-neutral-default, #19191c) 0%,
             transparent 100%
         );
         grid-column-start: 7;

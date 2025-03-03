@@ -59,7 +59,7 @@
                         secondary>View templates</Button>
                 {:else}
                     <Layout.Stack gap="s">
-                        <Typography.Text variation="m-500" color="--color-fgcolor-neutral-primary">
+                        <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
                             Missing a repository?
                         </Typography.Text>
                         <Typography.Text variation="m-400">

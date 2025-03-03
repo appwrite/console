@@ -131,7 +131,7 @@
             padding: 1.25rem;
 
             &:not(:last-child) {
-                border-bottom: 1px solid hsl(var(--color-border));
+                border-bottom: 1px solid hsl(var(--border));
             }
         }
     }

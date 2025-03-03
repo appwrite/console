@@ -96,7 +96,7 @@
                                 <Typography.Caption variant="400">Text</Typography.Caption>
                                 <Typography.Caption
                                     variant="400"
-                                    color="--color-fgcolor-neutral-tertiary">
+                                    color="--fgcolor-neutral-tertiary">
                                     Secondary Text
                                 </Typography.Caption>
                             </Layout.Stack>

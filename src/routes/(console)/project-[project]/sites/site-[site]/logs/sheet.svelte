@@ -67,9 +67,7 @@
                 <Layout.Stack gap="xl">
                     <Layout.Stack direction="row" gap="xxxl">
                         <Layout.Stack gap="xs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Method
                             </Typography.Text>
                             <Typography.Text variant="m-400">
@@ -77,9 +75,7 @@
                             </Typography.Text>
                         </Layout.Stack>
                         <Layout.Stack gap="xs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Status code
                             </Typography.Text>
                             <span>
@@ -92,9 +88,7 @@
                             </span>
                         </Layout.Stack>
                         <Layout.Stack gap="xs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Duration
                             </Typography.Text>
                             <Typography.Text variant="m-400">
@@ -102,9 +96,7 @@
                             </Typography.Text>
                         </Layout.Stack>
                         <Layout.Stack gap="xs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Created
                             </Typography.Text>
                             <Typography.Text variant="m-400">
@@ -113,7 +105,7 @@
                         </Layout.Stack>
                     </Layout.Stack>
                     <Layout.Stack gap="xs" inline alignItems="flex-start">
-                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                             Path
                         </Typography.Text>
                         <div>

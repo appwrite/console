@@ -256,7 +256,7 @@
                             </Button>
                             {#if $tags?.length}
                                 <div
-                                    style="flex-basis:1px; background-color:hsl(var(--color-border)); width: 1px">
+                                    style="flex-basis:1px; background-color:hsl(var(--border)); width: 1px">
                                 </div>
                                 <Button text on:click={clearAll}>Clear all</Button>
                             {/if}

@@ -86,7 +86,7 @@
                     </Layout.Stack>
 
                     <Layout.Stack direction="row" alignItems="center" gap="s">
-                        <Typography.Caption variant="400" color="--color-fgcolor-neutral-secondary">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
                             <Status status="ready">{capitalize(deployment.status)}</Status>
                         </Typography.Caption>
                         <svg
@@ -97,7 +97,7 @@
                             fill="none">
                             <circle cx="1" cy="1.5" r="1" fill="currentColor" />
                         </svg>
-                        <Typography.Caption variant="400" color="--color-fgcolor-neutral-secondary">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
                             {calculateSize(deployment.size)}
                         </Typography.Caption>
                         <svg
@@ -108,7 +108,7 @@
                             fill="none">
                             <circle cx="1" cy="1.5" r="1" fill="currentColor" />
                         </svg>
-                        <Typography.Caption variant="400" color="--color-fgcolor-neutral-secondary">
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
                             Created {timeFromNow(deployment.$createdAt)}
                             {#if deployment?.providerCommitAuthorUrl && deployment?.providerCommitAuthor}
                                 by <Link href={deployment.providerCommitAuthorUrl} external
@@ -130,9 +130,7 @@
                         bind:group={selectedDeploymentId}
                         value={prodDeployment.$id}>
                         <Layout.Stack gap="s">
-                            <Typography.Caption
-                                variant="400"
-                                color="--color-fgcolor-neutral-secondary">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
                                 Created {timeFromNow(prodDeployment.$createdAt)}
                                 {#if prodDeployment?.providerCommitAuthorUrl && prodDeployment?.providerCommitAuthor}
                                     by <Link href={prodDeployment.providerCommitAuthorUrl} external

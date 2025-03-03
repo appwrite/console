@@ -14,7 +14,7 @@
         <Link external href={`${$protocol}${domains.rules[0]?.domain}`} variant="muted">
             <Layout.Stack gap="xxs" direction="row" alignItems="center">
                 <Trim alternativeTrim>
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                         {domains.rules[0]?.domain}
                     </Typography.Text>
                 </Trim>
@@ -45,7 +45,7 @@
             </Popover>
         {/if}
     {:else}
-        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
+        <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
             No domains available
         </Typography.Text>
     {/if}

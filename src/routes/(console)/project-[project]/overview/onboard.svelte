@@ -79,7 +79,7 @@
                 <Step.List>
                     <Step.Item state="previous"
                         ><div>
-                            <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
+                            <Typography.Title color="--fgcolor-neutral-tertiary" size="s"
                                 >Create project</Typography.Title>
                         </div></Step.Item>
                     <Step.Item state="current">
@@ -88,9 +88,8 @@
                             gap={$isSmallViewport ? 'xl' : 'xxl'}>
                             <div class="step-info">
                                 <Layout.Stack gap="m">
-                                    <Typography.Title
-                                        color="--color-fgcolor-neutral-primary"
-                                        size="s">Connect your platform</Typography.Title>
+                                    <Typography.Title color="--fgcolor-neutral-primary" size="s"
+                                        >Connect your platform</Typography.Title>
                                     <div class="build-info">
                                         <span>
                                             Start building with your preferred web, mobile, and
@@ -355,7 +354,7 @@
                         </Layout.Stack></Step.Item>
                     <Step.Item state="next"
                         ><div>
-                            <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
+                            <Typography.Title color="--fgcolor-neutral-tertiary" size="s"
                                 >Build your app</Typography.Title>
                         </div></Step.Item>
                 </Step.List>
@@ -363,12 +362,12 @@
                 <Step.List>
                     <Step.Item state="previous"
                         ><div>
-                            <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
+                            <Typography.Title color="--fgcolor-neutral-tertiary" size="s"
                                 >Create project</Typography.Title>
                         </div></Step.Item>
                     <Step.Item state="previous"
                         ><div>
-                            <Typography.Title color="--color-fgcolor-neutral-tertiary" size="s"
+                            <Typography.Title color="--fgcolor-neutral-tertiary" size="s"
                                 >Connect your platform</Typography.Title>
                         </div></Step.Item>
                     <Step.Item state="current">
@@ -377,9 +376,8 @@
                             gap={$isSmallViewport ? 'xl' : 'xxl'}>
                             <div class="step-info">
                                 <Layout.Stack gap="m">
-                                    <Typography.Title
-                                        color="--color-fgcolor-neutral-primary"
-                                        size="s">Build your app</Typography.Title>
+                                    <Typography.Title color="--fgcolor-neutral-primary" size="s"
+                                        >Build your app</Typography.Title>
                                     <div class="build-info">
                                         <span>
                                             Continue building your app by setting up services such
@@ -547,7 +545,7 @@
                                                     justifyContent="space-between">
                                                     <Typography.Text
                                                         size="m"
-                                                        color="--color-fgcolor-neutral-secondary">
+                                                        color="--fgcolor-neutral-secondary">
                                                         Join our Discord for support, tips and
                                                         product updates</Typography.Text>
                                                     <div class="arrow-icon arrow-icon-discord">
@@ -643,7 +641,7 @@
         }
 
         .arrow-icon {
-            color: var(--color-border-neutral-strong);
+            color: var(--border-neutral-strong);
             display: none;
             @media (min-width: 768px) {
                 display: flex;

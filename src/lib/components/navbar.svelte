@@ -374,8 +374,8 @@
         align-items: center;
         gap: var(--space-4, 8px);
         border-radius: var(--border-radius-xs, 6px);
-        border: var(--border-width-s, 1px) solid var(--color-border-neutral-strong, #d8d8db);
-        background: var(--color-bgcolor-neutral-primary, #fff);
+        border: var(--border-width-s, 1px) solid var(--border-neutral-strong, #d8d8db);
+        background: var(--bgcolor-neutral-primary, #fff);
         cursor: pointer;
     }
 

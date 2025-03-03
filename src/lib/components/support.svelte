@@ -175,12 +175,12 @@
 
     :global(.theme-dark .support-option-card) {
         /* override required due to the card's background color */
-        background: var(--color-bgcolor-neutral-default, #19191c) !important;
+        background: var(--bgcolor-neutral-default, #19191c) !important;
     }
 
     :global(.theme-light .support-option-card) {
-        border: 1px solid var(--color-border-neutral, #ededf0);
+        border: 1px solid var(--border-neutral, #ededf0);
         /* override required due to the card's background color */
-        background: var(--color-bgcolor-neutral-default, #fafafb) !important;
+        background: var(--bgcolor-neutral-default, #fafafb) !important;
     }
 </style>

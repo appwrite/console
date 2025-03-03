@@ -228,9 +228,7 @@
                             gap="xs">
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Icon size="s" icon={IconGithub} />
-                                <Typography.Text
-                                    variant="m-400"
-                                    color="--color-fgcolor-neutral-primary">
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                     {$repository.name}
                                 </Typography.Text>
                             </Layout.Stack>
@@ -339,10 +337,7 @@
         <Aside {framework} {repositoryName} {branch} {rootDir} showAfter={showSiteConfig}>
             <Layout.Stack>
                 <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography.Text
-                        variant="m-500"
-                        truncate
-                        color="--color-fgcolor-neutral-primary">
+                    <Typography.Text variant="m-500" truncate color="--fgcolor-neutral-primary">
                         {name || data.template.name}
                     </Typography.Text>
                     {#if data?.template?.demoUrl}

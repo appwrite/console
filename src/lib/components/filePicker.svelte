@@ -446,7 +446,7 @@
                                                 <article
                                                     style:--card-bg-color="transparent"
                                                     style:--shadow-small="none"
-                                                    style:--color-border="var(--color-neutral-15)"
+                                                    style:--border="var(--color-neutral-15)"
                                                     class="card u-grid u-cross-center u-width-full-line common-section is-border-dashed">
                                                     <div
                                                         class="u-flex u-flex-vertical u-cross-center u-gap-24 u-overflow-hidden">
@@ -476,7 +476,7 @@
                                                     noMedia
                                                     --card-bg-color="transparent"
                                                     --shadow-small="none"
-                                                    --color-border="var(--color-neutral-15)">
+                                                    --border="var(--color-neutral-15)">
                                                     <div class="common-section">
                                                         <div class="u-text-center common-section">
                                                             <Typography.Title size="s">
@@ -505,7 +505,7 @@
                                 noMedia
                                 --card-bg-color="transparent"
                                 --shadow-small="none"
-                                --color-border="var(--color-neutral-15)">
+                                --border="var(--color-neutral-15)">
                                 <div class="u-text-center u-flex-vertical u-cross-center u-gap-24">
                                     <Typography.Title size="s">No buckets found</Typography.Title>
                                     <Button

@@ -66,8 +66,8 @@
             </Table.Root>
             <p>
                 <Layout.Stack direction="row" gap="xs" alignItems="center">
-                    <Icon icon={IconInfo} size="s" color="--color-fgcolor-neutral-secondary" /> Missing
-                    headers? Check our docs to see the supported data and how to log it.
+                    <Icon icon={IconInfo} size="s" color="--fgcolor-neutral-secondary" /> Missing headers?
+                    Check our docs to see the supported data and how to log it.
                 </Layout.Stack>
             </p>
         {:else}

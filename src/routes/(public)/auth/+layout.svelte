@@ -15,9 +15,7 @@
     </div>
     <footer>
         <!-- TODO: change text style to eyebrow -->
-        <Typography.Text size="s" color="--color-fgColor-neutral-secondary">
-            POWERED BY
-        </Typography.Text>
+        <Typography.Text size="s" color="--fgcolor-neutral-secondary">POWERED BY</Typography.Text>
         {#if $app.themeInUse === 'dark'}
             <img
                 src="/console/images/appwrite-logo-dark.svg"
@@ -37,7 +35,7 @@
 <style lang="scss">
     .auth-bg {
         position: fixed;
-        background: var(--color-bgcolor-neutral-primary, #fff);
+        background: var(--bgcolor-neutral-primary, #fff);
         background-size: cover;
         top: 0;
         left: 0;

@@ -64,7 +64,7 @@
         {disabled}
         {required}
         bind:value={search}
-        --color-bgcolor-neutral-default="var(--color-bgcolor-neutral-primary)">
+        --bgcolor-neutral-default="var(--bgcolor-neutral-primary)">
         <svelte:fragment slot="start">
             <Icon icon={IconSearch} />
         </svelte:fragment>

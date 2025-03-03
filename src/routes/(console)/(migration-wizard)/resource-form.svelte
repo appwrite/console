@@ -418,7 +418,7 @@
         height: 1.5rem;
         flex-shrink: 0;
         border-radius: 100%;
-        border: 1px solid hsl(var(--color-border));
+        border: 1px solid hsl(var(--border));
         position: relative;
 
         i {
@@ -431,7 +431,7 @@
     }
 
     .buttons-list {
-        border-block-end: 1px solid hsl(var(--color-border));
+        border-block-end: 1px solid hsl(var(--border));
         padding-block-end: 0.625rem;
     }
 

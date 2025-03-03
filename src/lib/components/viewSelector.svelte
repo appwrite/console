@@ -115,7 +115,7 @@
 
 {#if !hideView}
     <ToggleButton
-        --color-bgcolor-neutral-default="var(--color-bgcolor-neutral-primary)"
+        --bgcolor-neutral-default="var(--bgcolor-neutral-primary)"
         on:change={onViewChange}
         active={view}
         buttons={[
