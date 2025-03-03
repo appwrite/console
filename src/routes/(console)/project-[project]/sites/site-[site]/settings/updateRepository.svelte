@@ -3,14 +3,13 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputChoice, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
-    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { sortBranches } from '$lib/stores/vcs';
     import {
         Empty,
@@ -19,7 +18,9 @@
         Layout,
         Skeleton,
         Typography,
-        Card as PinkCard
+        Card as PinkCard,
+        Input,
+        Selector
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
@@ -121,43 +122,57 @@
         <svelte:fragment slot="aside">
             {#if repository === false}
                 <Layout.Stack gap="xl">
-                    <Card isTile padding="s" radius="s">
+                    <Card isTile padding="xs" radius="s" variant="secondary">
                         <Layout.Stack
                             direction="row"
                             justifyContent="space-between"
                             alignItems="center"
                             gap="xs">
                             <Layout.Stack direction="row" gap="s">
-                                <Icon size="s" icon={IconGithub} />
-                                <Layout.Stack gap="xxs">
+                                <Icon icon={IconGithub} color="--color-fgcolor-neutral-primary" />
+                                <Layout.Stack gap="xxxs">
                                     <Skeleton variant="line" width={100} height={20} />
-                                    <Skeleton variant="line" width={100} height={15} />
+                                    <Skeleton variant="line" width={200} height={15} />
                                 </Layout.Stack>
                             </Layout.Stack>
                         </Layout.Stack>
                     </Card>
 
                     <Fieldset legend="Branch">
-                        <Layout.Stack gap="l">
-                            <Skeleton variant="line" width={300} height={45} />
-                            <Skeleton variant="line" width={300} height={45} />
-                            <Skeleton variant="line" width={300} height={45} />
+                        <Layout.Stack gap="xl">
+                            <Layout.Stack gap="xs">
+                                <Skeleton variant="line" width={100} height={20} />
+                                <Skeleton variant="line" width={300} height={32} />
+                            </Layout.Stack>
+                            <Layout.Stack gap="xs">
+                                <Skeleton variant="line" width={100} height={20} />
+                                <Skeleton variant="line" width={300} height={32} />
+                            </Layout.Stack>
+                            <Layout.Stack gap="xs">
+                                <Skeleton variant="line" width={100} height={20} />
+                                <Skeleton variant="line" width={300} height={15} />
+                                <Skeleton variant="line" width={300} height={15} />
+                            </Layout.Stack>
                         </Layout.Stack>
                     </Fieldset>
                 </Layout.Stack>
             {:else if repository}
                 <Layout.Stack gap="xl">
-                    <Card isTile padding="s" radius="s">
+                    <Card isTile padding="xs" radius="s" variant="secondary">
                         <Layout.Stack direction="row" gap="s">
                             <Layout.Stack direction="row" gap="s">
-                                <Icon size="s" icon={IconGithub} />
-                                <Layout.Stack gap="none">
+                                <Icon icon={IconGithub} color="--color-fgcolor-neutral-primary" />
+                                <Layout.Stack gap="xxxs">
                                     <Typography.Text
                                         variant="m-400"
-                                        color="--color-fgcolor-accent-neutral">
+                                        color="--color-fgcolor-neutral-primary">
                                         {repository.name}
                                     </Typography.Text>
-                                    Last updated: {toLocaleDateTime(repository.pushedAt)}
+                                    <Typography.Caption
+                                        variant="400"
+                                        color="--color-fgcolor-neutral-tertiary">
+                                        Last updated: {toLocaleDateTime(repository.pushedAt)}
+                                    </Typography.Caption>
                                 </Layout.Stack>
                             </Layout.Stack>
                             <Button secondary on:click={() => (showDisconnect = true)}>
@@ -167,8 +182,8 @@
                     </Card>
 
                     <Fieldset legend="Branch">
-                        <Layout.Stack gap="l">
-                            <InputSelectSearch
+                        <Layout.Stack gap="xl">
+                            <Input.ComboBox
                                 required={true}
                                 id="branch"
                                 label="Production branch"
@@ -194,10 +209,13 @@
                                     bind:value={selectedDir} />
                                 <Button secondary size="s">Select</Button>
                             </Layout.Stack>
-                            <InputChoice
+
+                            <Selector.Checkbox
+                                size="s"
                                 id="silentMode"
                                 label="Silent mode"
-                                bind:value={silentMode} />
+                                description="If selected, comments will not be created when pushing changes to this repository."
+                                bind:checked={silentMode} />
                         </Layout.Stack>
                     </Fieldset>
                 </Layout.Stack>
