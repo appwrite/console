@@ -94,7 +94,7 @@
         </Layout.Stack>
     {/if}
     {#key buildLogs}
-        <Logs logs={buildLogs || 'No logs available'} bind:theme={$app.themeInUse} />
+        <Logs logs={buildLogs || 'Waiting for build to start...'} bind:theme={$app.themeInUse} />
     {/key}
     {#if ['processing', 'building'].includes(status)}
         <Layout.Stack alignItems="flex-end">

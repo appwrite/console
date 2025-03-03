@@ -42,7 +42,8 @@
             framework={data.frameworks.frameworks.find((f) => f.key === data.site.framework)}
             repositoryName={data?.repository?.name}
             branch={data.repository?.id ? data.site.providerBranch : ''}
-            rootDir={data.repository?.id ? data.site.providerRootDirectory : ''} />
+            rootDir={data.repository?.id ? data.site.providerRootDirectory : ''}
+            domain={data.proxyRuleList.rules[0]?.domain} />
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">

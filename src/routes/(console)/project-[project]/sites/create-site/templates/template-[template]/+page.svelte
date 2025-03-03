@@ -336,7 +336,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {framework} {repositoryName} {branch} {rootDir} {domain} showAfter={showSiteConfig}>
+        <Aside {framework} {repositoryName} {branch} {rootDir} showAfter={showSiteConfig}>
             <Layout.Stack>
                 <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                     <Typography.Text
