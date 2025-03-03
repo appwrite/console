@@ -79,7 +79,9 @@
     on:cancel|preventDefault
     {style}>
     {#if show}
-        <slot close={closeModal} />
+        <div class="content">
+            <slot close={closeModal} />
+        </div>
     {/if}
 </dialog>
 

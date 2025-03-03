@@ -514,7 +514,6 @@
                 class="link">pricing page</a
             >.
         </p>
-        <p>You will not be charged for Phone OTPs before February 10th.</p>
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.authPhoneTotal}
                 <div class="u-flex u-main-space-between">

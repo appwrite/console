@@ -12,7 +12,7 @@
     let name: string = null;
 
     onMount(async () => {
-        name ??= $user.name;
+        name ??= $user.name ?? '';
     });
 
     async function updateName() {

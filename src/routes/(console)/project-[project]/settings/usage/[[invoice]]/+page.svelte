@@ -485,7 +485,6 @@
             Calculated for all Phone OTP sent across your project. Resets at the start of each
             billing cycle.
         </p>
-        <p>You will not be charged for Phone OTPs before February 10th.</p>
         <svelte:fragment slot="aside">
             {#if data.usage.authPhoneTotal}
                 <div class="u-flex u-main-space-between">
