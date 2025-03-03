@@ -61,7 +61,7 @@
                             Drag and drop files here or click to upload
                         </Typography.Text>
                         <Tooltip>
-                            <Layout.Stack alignItems="center" justifyContent="center">
+                            <Layout.Stack alignItems="center" justifyContent="center" inline>
                                 <Icon icon={IconInfo} size="s" />
                             </Layout.Stack>
                             <svelte:fragment slot="tooltip">
@@ -69,8 +69,9 @@
                             </svelte:fragment>
                         </Tooltip>
                     </Layout.Stack>
-                    <Typography.Caption variant="400"
-                        >Up to 100 variables allowed</Typography.Caption>
+                    <Typography.Caption variant="400">
+                        Up to 100 variables allowed
+                    </Typography.Caption>
                 </Layout.Stack>
             </Upload.Dropzone>
             {#if variables?.length > 0}

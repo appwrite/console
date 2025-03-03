@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { page } from '$app/stores';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';

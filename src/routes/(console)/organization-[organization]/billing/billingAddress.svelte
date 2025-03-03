@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, DropList, Heading } from '$lib/components';
+    import { CardGrid, DropList } from '$lib/components';
     import DropListItem from '$lib/components/dropListItem.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';

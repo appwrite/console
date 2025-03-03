@@ -27,7 +27,7 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarGroup, Box, Heading } from '$lib/components';
+    import { AvatarGroup, Box } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import { templateConfig, template as templateStore } from './store';
@@ -45,7 +45,7 @@
     import CreateManual from './wizard/createManual.svelte';
     import { repository } from '$lib/stores/vcs';
     import { Repositories } from '$lib/components/git';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconDeno, IconDotnet } from '@appwrite.io/pink-icons-svelte';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
@@ -72,7 +72,7 @@
         <div class="git-container u-position-relative">
             <div class="grid-1-1 u-gap-24">
                 <div class="card u-cross-child-start u-height-100-percent">
-                    <Heading size="6" tag="h6">Connect Git repository</Heading>
+                    <Typography.Title size="s">Connect Git repository</Typography.Title>
                     <p class="u-margin-block-start-8">
                         Create and deploy a function with a connected git repository.
                     </p>
@@ -93,9 +93,9 @@
                             style="border-radius: var(--border-radius-medium)">
                             <div
                                 class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16 u-padding-inline-24">
-                                <Heading size="7" tag="h6" trimmed={false}>
+                                <Typography.Title size="s">
                                     Connect your self-hosted instance to Git
-                                </Heading>
+                                </Typography.Title>
                                 <p>
                                     Configure your self-hosted instance to connect your function to
                                     a Git repository.
@@ -113,7 +113,7 @@
 
                 <div class="card u-height-100-percent">
                     <section class="common-section">
-                        <Heading size="6" tag="h6">Quick start</Heading>
+                        <Typography.Title size="s">Quick start</Typography.Title>
                         <p class="u-margin-block-start-8">Use a starter template.</p>
                         <ul
                             class="grid-box u-margin-block-start-16"
@@ -203,7 +203,7 @@
                     </Button>
                     <div class="u-sep-block-start common-section" />
                     <section class="common-section">
-                        <Heading size="6" tag="h6">Templates</Heading>
+                        <Typography.Title size="s">Templates</Typography.Title>
                         <p class="text u-margin-block-start-8">
                             Find the right template for your use case.
                         </p>

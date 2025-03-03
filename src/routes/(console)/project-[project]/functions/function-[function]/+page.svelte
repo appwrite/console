@@ -1,14 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import {
-        Empty,
-        Heading,
-        PaginationWithLimit,
-        Alert,
-        ViewSelector,
-        EmptySearch
-    } from '$lib/components';
+    import { Empty, PaginationWithLimit, Alert, ViewSelector, EmptySearch } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { deploymentList, func } from './store';
     import { Container, ContainerHeader } from '$lib/layout';
@@ -28,6 +21,7 @@
     import { Pill } from '$lib/elements';
     import { onMount } from 'svelte';
     import { canWriteFunctions } from '$lib/stores/roles';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -143,7 +137,8 @@
     {#if !data?.deploymentList?.total && !data?.query}
         <Empty single target="deployment">
             <div class="u-text-center">
-                <Heading size="7" tag="h2">Create your first deployment to get started.</Heading>
+                <Typography.Title size="s"
+                    >Create your first deployment to get started.</Typography.Title>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
                     Learn more about deployments in our Documentation.
                 </p>
@@ -162,7 +157,7 @@
         {@const activeDeployment = data.activeDeployment}
 
         <div class="common-section">
-            <Heading tag="h3" size="7">Active</Heading>
+            <Typography.Title size="s">Active</Typography.Title>
         </div>
         {#if data?.activeDeployment && !$func.live && showAlert}
             <Alert
@@ -207,8 +202,8 @@
         {:else if !$deploymentList.total && !data?.query}
             <Empty single target="deployment">
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2"
-                        >Create your first deployment to get started.</Heading>
+                    <Typography.Title size="s"
+                        >Create your first deployment to get started.</Typography.Title>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Learn more about deployments in our Documentation.
                     </p>
@@ -244,7 +239,7 @@
             </Empty>
         {/if}
         <div class="u-margin-block-start-48">
-            <Heading tag="h3" size="7">All deployments</Heading>
+            <Typography.Title size="s">All deployments</Typography.Title>
             <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
                 <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
                     <QuickFilters {columns} />

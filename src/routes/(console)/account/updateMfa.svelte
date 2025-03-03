@@ -1,9 +1,9 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, EyebrowHeading, Heading } from '$lib/components';
+    import { CardGrid, EyebrowHeading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, FormList, InputChoice } from '$lib/elements/forms';
+    import { Button, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, EmptyCardImageCloud, Heading } from '$lib/components';
+    import { CardGrid, EmptyCardImageCloud } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
     import { app } from '$lib/stores/app';
     import { upgradeURL } from '$lib/stores/billing';

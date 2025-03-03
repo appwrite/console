@@ -1,7 +1,7 @@
 <script lang="ts">
     import { hoursToDays, timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Alert, Card, Code, Copy, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
+    import { Alert, Card, Code, Copy, Id, SvgIcon, Tab, Tabs } from '../components';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import {
         TableBody,
@@ -18,7 +18,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { BillingPlan } from '$lib/constants';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -201,7 +201,7 @@
                     <div class="code-panel-content grid-1-2">
                         <div
                             class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16 mobile-only-inline-20-padding">
-                            <Heading tag="h3" size="6">Request</Heading>
+                            <Typography.Title size="s">Request</Typography.Title>
                             <div class="u-sep-block-end">
                                 <Tabs>
                                     <Tab
@@ -314,7 +314,7 @@
                         <div class="u-sep-block-end is-only-mobile u-padding-block-start-16" />
                         <div
                             class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0 mobile-only-inline-20-padding mobile-only-block-start-20-padding">
-                            <Heading tag="h3" size="6">Response</Heading>
+                            <Typography.Title size="s">Request</Typography.Title>
                             <div class="u-sep-block-end">
                                 <Tabs>
                                     <Tab

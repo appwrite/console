@@ -15,7 +15,6 @@
         DropListItem,
         Empty,
         GridItem1,
-        Heading,
         PaginationWithLimit
     } from '$lib/components';
     import { goto } from '$app/navigation';
@@ -31,7 +30,7 @@
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Icon } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Typography } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
         IconApple,
@@ -146,7 +145,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Projects</Heading>
+        <Typography.Title>Projects</Typography.Title>
 
         <DropList bind:show={showDropdown} placement="bottom-end">
             {#if $canWriteProjects}

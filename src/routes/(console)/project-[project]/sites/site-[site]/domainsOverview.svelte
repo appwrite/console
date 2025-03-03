@@ -5,7 +5,7 @@
     import OpenOnMobileModal from '../(components)/openOnMobileModal.svelte';
     import { timeFromNow } from '$lib/helpers/date';
     import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
-    import { consoleVariables, protocol } from '$routes/(console)/store';
+    import { protocol } from '$routes/(console)/store';
     import { type Models } from '@appwrite.io/console';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -16,11 +16,11 @@
     let showDomainQR = false;
     let selectedDomainURL: string;
 
-    $: hasCustomDomain = proxyRuleList?.total
-        ? proxyRuleList.rules.some((rule) =>
-              rule.domain.includes($consoleVariables._APP_DOMAIN_TARGET)
-          )
-        : false;
+    // $: hasCustomDomain = proxyRuleList?.total
+    //     ? proxyRuleList.rules.some((rule) =>
+    //           rule.domain.includes($consoleVariables._APP_DOMAIN_TARGET)
+    //       )
+    //     : false;
 </script>
 
 <Layout.Stack>
@@ -42,7 +42,7 @@
             {#if proxyRuleList?.rules?.length <= 1}
                 <Layout.Stack gap="l">
                     <Layout.Stack gap="xxs">
-                        <Typography.Text variant="l-500">
+                        <Typography.Text variant="m-500">
                             Add your first custom domain
                         </Typography.Text>
                         <Typography.Caption variant="500" color="--color-fgcolor-neutral-tertiary">
@@ -53,7 +53,7 @@
                     <div>
                         <Button
                             secondary
-                            size="xs"
+                            size="s"
                             href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
                             Add domain
                         </Button>

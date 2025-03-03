@@ -8,7 +8,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { CardGrid, Heading, Empty, PaginationInline, EmptySearch } from '$lib/components';
+    import { CardGrid, Empty, PaginationInline, EmptySearch } from '$lib/components';
     import TopicsModal from '../topicsModal.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -21,7 +21,7 @@
     import { getTotal } from '../wizard/store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Typography } from '@appwrite.io/pink-svelte';
 
     export let message: Models.Message;
     export let selectedTopicsById: Record<string, Models.Topic>;
@@ -86,7 +86,7 @@
 
 <Form onSubmit={update}>
     <CardGrid hideFooter={message.status != 'draft'}>
-        <Heading tag="h6" size="7" id="variables">Topics</Heading>
+        <Typography.Title size="s">Topics</Typography.Title>
         <svelte:fragment slot="aside">
             {@const sum = topicIds.length}
             {#if sum}

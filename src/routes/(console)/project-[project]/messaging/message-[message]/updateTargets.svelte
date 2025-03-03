@@ -8,14 +8,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import {
-        CardGrid,
-        Heading,
-        Empty,
-        PaginationInline,
-        EmptySearch,
-        Alert
-    } from '$lib/components';
+    import { CardGrid, Empty, PaginationInline, EmptySearch, Alert } from '$lib/components';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -27,7 +20,7 @@
     import UserTargetsModal from '../userTargetsModal.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Typography } from '@appwrite.io/pink-svelte';
 
     export let message: Models.Message & { data: Record<string, unknown> };
     export let selectedTargetsById: Record<string, Models.Target>;
@@ -134,7 +127,7 @@
 
 <Form onSubmit={update}>
     <CardGrid hideFooter={!isDraft}>
-        <Heading tag="h6" size="7" id="variables">Targets</Heading>
+        <Typography.Title size="s">Targets</Typography.Title>
         <svelte:fragment slot="aside">
             {@const sum = targetIds.length || Object.values(recipients).length}
             {@const dataSource =

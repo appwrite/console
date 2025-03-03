@@ -6,7 +6,6 @@
         EmptySearch,
         SearchQuery,
         PaginationWithLimit,
-        Heading,
         ViewSelector,
         EmptyFilter
     } from '$lib/components';
@@ -18,7 +17,7 @@
     import Table from './table.svelte';
     import { base } from '$app/paths';
     import { canWriteProviders } from '$lib/stores/roles';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
 
     export let data: PageData;
@@ -65,9 +64,9 @@
     {:else}
         <Empty single target="provider">
             <div class="u-text-center">
-                <Heading size="7" tag="h2" trimmed={false}>
+                <Typography.Title size="s">
                     Create your first provider to get started.
-                </Heading>
+                </Typography.Title>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
                     Need a hand? Learn more in our documentation.
                 </p>

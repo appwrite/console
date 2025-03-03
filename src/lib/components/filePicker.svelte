@@ -20,11 +20,11 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
-    import Heading from './heading.svelte';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import Empty from './empty.svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let show: boolean;
     export let mimeTypeQuery: string = 'image/';
@@ -479,12 +479,9 @@
                                                     --color-border="var(--color-neutral-15)">
                                                     <div class="common-section">
                                                         <div class="u-text-center common-section">
-                                                            <Heading
-                                                                size="7"
-                                                                tag="h2"
-                                                                trimmed={false}>
+                                                            <Typography.Title size="s">
                                                                 No files found within this bucket.
-                                                            </Heading>
+                                                            </Typography.Title>
                                                             <p class="text u-line-height-1-5">
                                                                 Need a hand? Learn more in our <a
                                                                     class="link"
@@ -510,9 +507,7 @@
                                 --shadow-small="none"
                                 --color-border="var(--color-neutral-15)">
                                 <div class="u-text-center u-flex-vertical u-cross-center u-gap-24">
-                                    <Heading size="7" tag="h2" trimmed={false}>
-                                        No buckets found
-                                    </Heading>
+                                    <Typography.Title size="s">No buckets found</Typography.Title>
                                     <Button
                                         secondary
                                         external

@@ -1,14 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import {
-        Alert,
-        Arrow,
-        AvatarGroup,
-        CardGrid,
-        PaginationInline,
-        SvgIcon
-    } from '$lib/components';
+    import { Alert, CardGrid, PaginationInline } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
@@ -17,19 +10,21 @@
     import dayjs from 'dayjs';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
-    import { ActionMenu, Icon, Popover, Table } from '@appwrite.io/pink-svelte';
     import {
-        IconAppwrite,
-        IconAzure,
-        IconBitBucket,
+        ActionMenu,
+        Card,
+        Empty,
+        Icon,
+        Layout,
+        Popover,
+        Table
+    } from '@appwrite.io/pink-svelte';
+    import {
         IconExternalLink,
         IconGithub,
-        IconGitlab,
         IconPlus,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
-    import Avatar from '$lib/components/avatar.svelte';
-    import { iconPath } from '$lib/stores/app';
 
     export let total: number;
     export let limit: number;
@@ -157,51 +152,37 @@
                 </Table.Root>
             </div>
             {#if total > limit}
-                <div class="u-flex u-main-space-between">
+                <Layout.Stack justifyContent="space-between">
                     <p class="text">Total installations: {total}</p>
                     <PaginationInline
                         {limit}
                         sum={total}
                         on:change={navigateInstallations}
                         bind:offset />
-                </div>
+                </Layout.Stack>
             {/if}
-        {:else}
-            {#if isSelfHosted && !isVcsEnabled}
-                <Alert type="info">
-                    <svelte:fragment slot="title">
-                        Installing Git to a self-hosted instance
-                    </svelte:fragment>
-                    When installing Git in a locally hosted Appwrite project, you must first configure
-                    environment variables.
-                    <svelte:fragment slot="buttons">
-                        <Button
-                            href="https://appwrite.io/docs/advanced/self-hosting/functions"
-                            external
-                            text>
-                            Learn more
-                        </Button>
-                    </svelte:fragment>
-                </Alert>
-            {/if}
-            <article class="card-git card is-border-dashed is-no-shadow">
-                <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
-                    <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
-                        <AvatarGroup icons={[IconGithub, IconGitlab, IconBitBucket, IconAzure]} />
-                        <Arrow direction="down" />
-                        <Avatar alt="appwrite" --icon-fill="var(--color-bgcolor-accent)">
-                            <Icon icon={IconAppwrite} />
-                        </Avatar>
-                    </div>
-                    <Button
-                        disabled={isSelfHosted && !isVcsEnabled}
-                        on:click={() => (showGitIstall = true)}
-                        secondary>
-                        <span class="text">Add installation</span>
-                    </Button>
-                </div>
-            </article>
+        {:else if isSelfHosted && !isVcsEnabled}
+            <Alert type="info">
+                <svelte:fragment slot="title">
+                    Installing Git to a self-hosted instance
+                </svelte:fragment>
+                Before installing Git in a locally hosted Appwrite project, ensure your environment variables
+                are configured.
+            </Alert>
         {/if}
+        <Card.Base padding="none" border="dashed">
+            <Empty
+                type="secondary"
+                title="No installation was added to the project yet"
+                description="Add an installation to connect repositories">
+                <svelte:fragment slot="actions">
+                    <Button secondary href={configureGitHub()} external>
+                        <Icon icon={IconGithub} size="s" slot="start" />
+                        Add installation
+                    </Button>
+                </svelte:fragment>
+            </Empty>
+        </Card.Base>
     </svelte:fragment>
 </CardGrid>
 
@@ -212,9 +193,3 @@
 {#if showGitDisconnect}
     <GitDisconnectModal bind:showGitDisconnect {selectedInstallation} />
 {/if}
-
-<style>
-    :global(.git-installation-avatar-group .icon-gitlab, .icon-bitBucket, .icon-azure) {
-        color: hsl(var(--color-neutral-50));
-    }
-</style>

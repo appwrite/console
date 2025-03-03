@@ -1,8 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Heading } from '$lib/components';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import { Account, Client } from '@appwrite.io/console';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
 
     const client = new Client();
@@ -21,7 +21,7 @@
     });
 </script>
 
-<Heading tag="h1" size="1">Missing redirect URL</Heading>
+<Typography.Title size="xl">Missing redirect URL</Typography.Title>
 <p>
     Your Magic URL login flow is missing a proper redirect URL. Please check the
     <a href="https://appwrite.io/docs/references/cloud/client-web/account#createMagicURLSession"

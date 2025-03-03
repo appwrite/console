@@ -99,10 +99,15 @@
         }
     }
 
+    function handleSubmit() {
+        rootDir = currentPath;
+        show = false;
+    }
+
     // $: console.log(rootDir);
 </script>
 
-<Modal title="Root directory" bind:show>
+<Modal title="Root directory" bind:show onSubmit={handleSubmit}>
     <span slot="description">
         Select the directory where your site code is located using the menu below.
     </span>
@@ -110,5 +115,6 @@
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
+        <Button submit>Save</Button>
     </svelte:fragment>
 </Modal>

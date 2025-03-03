@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AvatarInitials, CardGrid, Heading, Paginator } from '$lib/components';
+    import { AvatarInitials, CardGrid, Paginator } from '$lib/components';
     import { EmptyCardCloud } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';

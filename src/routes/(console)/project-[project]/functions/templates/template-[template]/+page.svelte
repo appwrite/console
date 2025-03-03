@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Card, Collapsible, Heading } from '$lib/components';
+    import { Card, Collapsible } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container, ContainerButton } from '$lib/layout';
@@ -13,6 +13,7 @@
     import { organization } from '$lib/stores/organization';
     import { functionsList } from '../../store';
     import { canWriteFunctions } from '$lib/stores/roles';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     $: buttonDisabled =
         isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
@@ -59,7 +60,7 @@
         </section>
         <section>
             <Card>
-                <Heading size="7" tag="h3">
+                <Typography.Title size="s">
                     <span class="u-flex u-cross-center u-gap-16 functions-avatar-holder">
                         <div class="avatar is-size-small">
                             <span
@@ -69,7 +70,7 @@
                         </div>
                         {$template.name}
                     </span>
-                </Heading>
+                </Typography.Title>
                 <p class="u-margin-block-start-24">{$template.tagline}</p>
 
                 <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24 u-flex-wrap">

@@ -6,7 +6,6 @@
         EmptySearch,
         SearchQuery,
         PaginationWithLimit,
-        Heading,
         ViewSelector,
         EmptyFilter
     } from '$lib/components';
@@ -27,7 +26,7 @@
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { base } from '$app/paths';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
@@ -90,7 +89,7 @@
 <Container>
     <div class="u-flex u-flex-vertical">
         <div class="u-flex u-main-space-between">
-            <Heading tag="h2" size="5">Subscribers</Heading>
+            <Typography.Title>Subscribers</Typography.Title>
             <div class="is-only-mobile">
                 <Button on:click={() => (showAdd = true)} event="create_subscriber">
                     <Icon icon={IconPlus} slot="start" size="s" />

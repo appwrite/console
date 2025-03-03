@@ -136,17 +136,6 @@
         }
     }
 
-    .meta {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
-        padding: 1.5rem;
-
-        :nth-child(2n) {
-            font-weight: 600;
-        }
-    }
-
     .icon-wrapper {
         position: relative;
 
