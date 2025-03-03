@@ -1,10 +1,14 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { Card } from '$lib/components';
     import { Button, InputSelect } from '$lib/elements/forms';
+    import { app } from '$lib/stores/app';
     import { IconDownload } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Image, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let framework: 'react' | 'vue' | 'angular' | 'svelte' | 'web' = 'web';
+
+    let starterKit;
 </script>
 
 <Card padding="xs">
@@ -27,10 +31,16 @@
             ]}
             bind:value={framework} />
 
-        <Image src="https://placehold.co/349x201/111/bbb?text=Preview&font=inter" alt="preview" />
+        <Image
+            ratio="16/9"
+            src={starterKit?.preview ||
+                ($app.themeInUse === 'dark'
+                    ? `${base}/images/sites/screenshot-placeholder-dark.svg`
+                    : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+            alt="preview" />
 
-        <Button size="s" fullWidth secondary href="#">
-            <Icon icon={IconDownload} /> Starter kit
+        <Button fullWidth secondary href="#">
+            <Icon icon={IconDownload} slot="start" /> Starter kit
         </Button>
     </Layout.Stack>
 </Card>
