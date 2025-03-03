@@ -93,6 +93,10 @@
                             <TableCell width={column.width} title={column.title}>
                                 <DeploymentSource {deployment} />
                             </TableCell>
+                        {:else if column.id === '$createdAt'}
+                            <TableCellText width={column.width} title={column.title}>
+                                <DeploymentCreatedBy {deployment} />
+                            </TableCellText>
                         {:else if column.id === '$updatedAt'}
                             <TableCellText width={column.width} title={column.title}>
                                 <DeploymentCreatedBy {deployment} />
