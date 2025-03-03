@@ -94,12 +94,14 @@
     export let showAccountMenu = false;
 
     let activeTheme = $app.theme;
+    let shouldAnimateThemeToggle = false;
 
     $: {
         if (activeTheme) {
             updateTheme(activeTheme);
         }
     }
+
     $: currentOrg = organizations.find((org) => org.isSelected);
     $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
 </script>
@@ -195,6 +197,7 @@
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
+                    shouldAnimateThemeToggle = false;
                     if (showAccountMenu) {
                         trackEvent('click_menu_dropdown');
                     }
@@ -235,17 +238,31 @@
                                             direction="row"
                                             alignItems="center">
                                             <Typography.Text>Theme</Typography.Text>
-                                            <ToggleButton
-                                                bind:active={activeTheme}
-                                                buttons={[
-                                                    { id: 'light', label: 'Light', icon: IconSun },
-                                                    { id: 'dark', label: 'Dark', icon: IconMoon },
-                                                    {
-                                                        id: 'auto',
-                                                        label: 'System',
-                                                        icon: IconMode
-                                                    }
-                                                ]}></ToggleButton>
+                                            <div
+                                                class:keepTransformTransition={shouldAnimateThemeToggle}>
+                                                <ToggleButton
+                                                    bind:active={activeTheme}
+                                                    on:change={(event) => {
+                                                        shouldAnimateThemeToggle = true;
+                                                    }}
+                                                    buttons={[
+                                                        {
+                                                            id: 'light',
+                                                            label: 'Light',
+                                                            icon: IconSun
+                                                        },
+                                                        {
+                                                            id: 'dark',
+                                                            label: 'Dark',
+                                                            icon: IconMoon
+                                                        },
+                                                        {
+                                                            id: 'auto',
+                                                            label: 'System',
+                                                            icon: IconMode
+                                                        }
+                                                    ]}></ToggleButton>
+                                            </div>
                                         </Layout.Stack>
                                     </div>
                                 </Layout.Stack>
@@ -404,5 +421,9 @@
 
         /* `desltop` is not a typo—it comes from the `pink2/legacy` module! */
         inline-size: var(--p-drop-width-size-desltop);
+    }
+
+    :global(.keepTransformTransition span) {
+        transition: transform 0.2s ease-out !important;
     }
 </style>

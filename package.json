@@ -23,7 +23,7 @@
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@dd94b87a ",
         "@appwrite.io/pink-legacy": "^1.0.2",
-        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@af8d85a",
+        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@9251adb",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",
@@ -37,6 +37,7 @@
         "ignore": "^6.0.2",
         "nanoid": "^5.0.8",
         "nanotar": "^0.1.1",
+        "pink-svelte": "link:../../../Library/pnpm/global/5/node_modules/@appwrite.io/pink-svelte",
         "plausible-tracker": "^0.3.9",
         "pretty-bytes": "^6.1.1",
         "prismjs": "^1.29.0",
@@ -80,5 +81,10 @@
         "vitest": "^1.6.0"
     },
     "type": "module",
-    "packageManager": "pnpm@10.4.1"
+    "packageManager": "pnpm@10.4.1",
+    "pnpm": {
+        "overrides": {
+            "pink-svelte": "link:../../../Library/pnpm/global/5/node_modules/@appwrite.io/pink-svelte"
+        }
+    }
 }
