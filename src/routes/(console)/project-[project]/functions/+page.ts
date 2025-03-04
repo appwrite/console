@@ -2,10 +2,10 @@ import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, depends, route }) => {
+export const load = async ({ url, depends, route, parent }) => {
     depends(Dependencies.FUNCTIONS);
+    const { templatesList } = await parent();
 
     const page = getPage(url);
     const limit = getLimit(url, route, CARD_LIMIT);
@@ -18,6 +18,7 @@ export const load: PageLoad = async ({ url, depends, route }) => {
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc('')
-        ])
+        ]),
+        templatesList
     };
 };

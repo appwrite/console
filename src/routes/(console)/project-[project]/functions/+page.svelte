@@ -13,7 +13,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
-    import { templatesList } from '$lib/stores/templates';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import Initial from '$lib/wizards/functions/cover.svelte';
@@ -46,7 +45,7 @@
                     const template = $page.url.searchParams.get('template');
                     const templateConfig = $page.url.searchParams.get('templateConfig');
                     templateStore.set(
-                        (await $templatesList).templates.find((item) => item.id === template)
+                        data.templatesList.templates.find((item) => item.id === template)
                     );
                     templateConfigStore.set(JSON.parse(templateConfig));
                     wizard.start(CreateTemplate);
