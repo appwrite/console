@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Button, Layout, Typography } from '@appwrite.io/pink-svelte';
     import {
         FormList,
         InputNumber,
@@ -6,47 +7,47 @@
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
-    import { WizardStep } from '$lib/layout';
-    import type { Provider } from '$lib/stores/migration';
     import { provider } from '.';
+    import { onMount } from 'svelte';
 
-    const providers: Record<Provider, string> = {
-        appwrite: 'Appwrite Self-hosted',
-        firebase: 'Firebase',
-        supabase: 'Supabase',
-        nhost: 'NHost'
-    };
+    export let formSubmitted = false;
+
+    $: disableButton = (() => {
+        if (!$provider) return true;
+
+        switch ($provider.provider) {
+            case 'appwrite':
+                return !$provider.endpoint || !$provider.projectID || !$provider.apiKey;
+
+            case 'firebase':
+                return !$provider.serviceAccount;
+
+            case 'supabase':
+                return (
+                    !$provider.host ||
+                    !$provider.port ||
+                    !$provider.password ||
+                    !$provider.endpoint ||
+                    !$provider.apiKey
+                );
+
+            case 'nhost':
+                return (
+                    !$provider.region ||
+                    !$provider.subdomain ||
+                    !$provider.password ||
+                    !$provider.adminSecret
+                );
+
+            default:
+                return true;
+        }
+    })();
 </script>
 
-<WizardStep>
-    <svelte:fragment slot="title">Source</svelte:fragment>
-    <svelte:fragment slot="subtitle">
-        Select a source platform with the project you want to migrate. <a
-            class="link"
-            href="https://appwrite.io/docs/advanced/migrations"
-            target="_blank"
-            rel="noopener noreferrer">
-            Learn about which platforms are supported</a
-        >.
-    </svelte:fragment>
-    <div class="u-flex u-flex-vertical u-gap-8">
-        {#each Object.entries(providers) as [key, value]}
-            <label class="u-flex u-cross-center u-cursor-pointer u-gap-8">
-                <input
-                    class="is-small"
-                    type="radio"
-                    name="provider"
-                    bind:group={$provider.provider}
-                    value={key} />
-                <div class="content">
-                    <p>{value}</p>
-                </div>
-            </label>
-        {/each}
-    </div>
-
+<Layout.Stack gap="xl">
     {#if $provider.provider === 'appwrite'}
-        <FormList class="u-margin-block-start-24">
+        <FormList>
             <InputText
                 id="endpoint"
                 label="Endpoint"
@@ -64,23 +65,20 @@
                 label="API Key"
                 required
                 placeholder="Enter API Key"
-                showPasswordButton
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'firebase'}
-        <FormList class="u-margin-block-start-24">
-            <div class="u-margin-block-start-16">
-                <InputTextarea
-                    id="credentials"
-                    label="Account credentials"
-                    required
-                    bind:value={$provider.serviceAccount}
-                    placeholder="Enter account credentials" />
-            </div>
+        <FormList>
+            <InputTextarea
+                id="credentials"
+                label="Account credentials"
+                required
+                bind:value={$provider.serviceAccount}
+                placeholder="Enter account credentials" />
         </FormList>
     {:else if $provider.provider === 'supabase'}
-        <FormList class="u-margin-block-start-24">
-            <p class="body-text-1 u-bold">Postgres credentials</p>
+        <FormList>
+            <Typography.Title size="s">Postgres credentials</Typography.Title>
 
             <InputText
                 id="host"
@@ -88,20 +86,23 @@
                 required
                 placeholder="Enter host"
                 bind:value={$provider.host} />
+
             <InputNumber id="port" label="Port" placeholder="5432" bind:value={$provider.port} />
+
             <InputText
                 id="username"
                 label="Username"
                 placeholder="postgres"
                 bind:value={$provider.username} />
+
             <InputPassword
                 id="password"
                 label="Password"
                 required
                 placeholder="Enter password"
-                showPasswordButton
                 bind:value={$provider.password} />
-            <p class="body-text-1 u-bold">Supabase credentials</p>
+
+            <Typography.Title size="s">Supabase credentials</Typography.Title>
 
             <InputText
                 id="endpoint"
@@ -109,16 +110,16 @@
                 required
                 placeholder="Enter endpoint"
                 bind:value={$provider.endpoint} />
+
             <InputPassword
                 id="api-key"
                 label="API Key"
                 required
                 placeholder="Enter API Key"
-                showPasswordButton
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'nhost'}
-        <FormList class="u-margin-block-start-24">
+        <FormList>
             <InputText
                 id="region"
                 label="Region"
@@ -148,15 +149,21 @@
                 label="Password"
                 required
                 placeholder="Enter password"
-                showPasswordButton
                 bind:value={$provider.password} />
             <InputPassword
                 id="adminSecret"
                 label="Admin secret"
                 required
                 placeholder="Enter admin secret"
-                showPasswordButton
                 bind:value={$provider.adminSecret} />
         </FormList>
     {/if}
-</WizardStep>
+
+    <Layout.Stack direction="row" justifyContent="flex-end">
+        <Button.Button
+            disabled={disableButton}
+            on:click={() => {
+                formSubmitted = true;
+            }}>Next</Button.Button>
+    </Layout.Stack>
+</Layout.Stack>

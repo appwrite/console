@@ -34,18 +34,6 @@
     let showExport = false;
     let showMigration = false;
 
-    const getStatus = (status: string) => {
-        if (status === 'failed') {
-            return 'failed';
-        } else if (status === 'completed') {
-            return 'completed';
-        } else if (status === 'processing') {
-            return 'processing';
-        }
-
-        return 'pending';
-    };
-
     onMount(async () => {
         sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
             if (response.events.includes('migrations.*')) {
@@ -160,7 +148,6 @@
                     </svelte:fragment>
                     {#each data.migrations as entry}
                         <Table.Row>
-                            {@const status = getStatus(entry.status)}
                             <Table.Cell>
                                 {isSameDay(new Date(), new Date(entry.$createdAt))
                                     ? 'Today'
@@ -168,7 +155,7 @@
                             </Table.Cell>
                             <Table.Cell>{entry.source}</Table.Cell>
                             <Table.Cell>
-                                <Status label={capitalize(status)} {status} />
+                                <Status label={capitalize(entry.status)} status={entry.status} />
                             </Table.Cell>
                             <Table.Cell>
                                 <div class="u-flex u-main-end">
