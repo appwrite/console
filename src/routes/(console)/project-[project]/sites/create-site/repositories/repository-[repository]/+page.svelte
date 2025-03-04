@@ -13,13 +13,12 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
-    import ProductionBranch from '../../../../../../../lib/components/git/productionBranchFieldset.svelte';
+    import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Aside from '../../aside.svelte';
     import { BuildRuntime, Framework, ID, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
-    // import Domain from '../../domain.svelte';
     import { consoleVariables } from '$routes/(console)/store';
     import { buildVerboseDomain } from '../../store';
     import { project } from '$routes/(console)/project-[project]/store';
@@ -42,7 +41,6 @@
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
     let domain = id;
-    // let domainIsValid = true;
 
     onMount(async () => {
         installation.set(data.installation);
@@ -66,14 +64,6 @@
     }
 
     async function create() {
-        // if (!domainIsValid) {
-        //     addNotification({
-        //         type: 'error',
-        //         message: 'Please enter a valid domain'
-        //     });
-        //     return;
-        // } else {}
-
         try {
             domain = await buildVerboseDomain(
                 data.repository.name,
@@ -204,8 +194,6 @@
                 bind:selectedFramework={framework}
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
-
-            <!-- <Domain bind:domain bind:domainIsValid /> -->
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

@@ -23,11 +23,10 @@
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
     import ConnectBehaviour from './connectBehaviour.svelte';
-    import ProductionBranch from '../../../../../../../lib/components/git/productionBranchFieldset.svelte';
+    import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
-    // import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
     import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
