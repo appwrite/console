@@ -250,7 +250,7 @@
     <CardGrid>
         <Heading tag="h6" size="7">Image transformations</Heading>
 
-        <p class="text">Total image transformations in your project.</p>
+        <p class="text">Total unique image transformations in your project.</p>
 
         <svelte:fragment slot="aside">
             {#if imageTransformations}

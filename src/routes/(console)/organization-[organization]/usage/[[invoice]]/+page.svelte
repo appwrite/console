@@ -2,7 +2,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { BarChart, Legend } from '$lib/charts';
-    import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import { Alert, Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -263,13 +263,21 @@
         <Heading tag="h6" size="7">Image Transformations</Heading>
 
         <p class="text">
-            The total number of image transformations across all projects in your organization.
+            The total number of unique image transformations across all projects in your
+            organization. For more details, see our <a
+                href="https://appwrite.io/docs/advanced/platform/image-transformations"
+                class="link">documentation</a
+            >.
         </p>
-        {#if $organization.billingPlan === BillingPlan.FREE}
-            <p>This feature is not available on the Free plan.</p>
-        {/if}
         <svelte:fragment slot="aside">
-            {#if $organization.billingPlan !== BillingPlan.FREE && data.organizationUsage.imageTransformationsTotal}
+            {#if $organization.billingPlan === BillingPlan.FREE}
+                <Alert type="info">
+                    <svelte:fragment slot="title">
+                        Image Transformations are a Pro plan feature
+                    </svelte:fragment>
+                    Upgrade to a Pro plan to use image transformations.
+                </Alert>
+            {:else if data.organizationUsage.imageTransformationsTotal}
                 {@const current = data.organizationUsage.imageTransformationsTotal}
                 {@const max = getServiceLimit('imageTransformations', tier, plan)}
                 <ProgressBarBig
