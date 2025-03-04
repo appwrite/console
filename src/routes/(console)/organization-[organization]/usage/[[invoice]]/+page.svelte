@@ -24,6 +24,22 @@
 
     export let data;
 
+    // Mock data for image transformations
+    data.organizationUsage = {
+        ...data.organizationUsage,
+        imageTransformationsTotal: 1250,
+        imageTransformations: [
+            { date: '2024-03-01', value: 50 },
+            { date: '2024-03-02', value: 75 },
+            { date: '2024-03-03', value: 125 },
+            { date: '2024-03-04', value: 200 },
+            { date: '2024-03-05', value: 150 },
+            { date: '2024-03-06', value: 175 },
+            { date: '2024-03-07', value: 225 },
+            { date: '2024-03-08', value: 250 }
+        ]
+    };
+
     const tier = data?.plan
         ? (data.plan.$id as Tier)
         : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
@@ -271,18 +287,20 @@
             >.
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization.billingPlan === BillingPlan.FREE}
+            <!-- TODO: Refactor this after April 1st -->
+            {#if $organization.billingPlan === BillingPlan.FREE && new Date() < new Date('2024-04-01')}
                 <EmptyCardCloud service="Image transformations" eventSource="organization_usage" />
             {:else if data.organizationUsage.imageTransformationsTotal}
                 {@const current = data.organizationUsage.imageTransformationsTotal}
                 {@const max = getServiceLimit('imageTransformations', tier, plan)}
+                {@const isBeforeApril = new Date() < new Date('2024-04-01')}
                 <ProgressBarBig
                     currentUnit="Transformations"
                     currentValue={formatNum(current)}
-                    maxUnit="transformations"
-                    maxValue={`out of ${formatNum(max)}`}
+                    maxUnit={isBeforeApril ? 'transformations' : ''}
+                    maxValue={isBeforeApril ? `out of ${formatNum(max)}` : ''}
                     progressValue={current}
-                    progressMax={max}
+                    progressMax={isBeforeApril ? max : undefined}
                     showBar={false} />
                 <BarChart
                     options={{
