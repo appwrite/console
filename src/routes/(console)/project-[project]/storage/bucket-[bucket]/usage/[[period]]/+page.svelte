@@ -22,12 +22,12 @@
     }} />
 
 <Usage
-    title="Image Transformations"
+    title="Image transformations"
     path={`${base}/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/usage`}
     total={transformationsTotal}
     count={transformations}
     countMetadata={{
-        legend: 'Image Transformations',
+        legend: 'Image transformations',
         title: 'Total transformations'
     }}
     hideSelectPeriod />

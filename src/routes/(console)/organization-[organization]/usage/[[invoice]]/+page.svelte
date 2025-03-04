@@ -2,7 +2,8 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { BarChart, Legend } from '$lib/charts';
-    import { Alert, Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import { EmptyCardCloud } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -260,23 +261,18 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Image Transformations</Heading>
+        <Heading tag="h6" size="7">Image transformations</Heading>
 
         <p class="text">
             The total number of unique image transformations across all projects in your
-            organization. For more details, see our <a
+            organization. <a
                 href="https://appwrite.io/docs/advanced/platform/image-transformations"
-                class="link">documentation</a
+                class="link">Learn more</a
             >.
         </p>
         <svelte:fragment slot="aside">
             {#if $organization.billingPlan === BillingPlan.FREE}
-                <Alert type="info">
-                    <svelte:fragment slot="title">
-                        Image Transformations are a Pro plan feature
-                    </svelte:fragment>
-                    Upgrade to a Pro plan to use image transformations.
-                </Alert>
+                <EmptyCardCloud service="Image transformations" eventSource="organization_usage" />
             {:else if data.organizationUsage.imageTransformationsTotal}
                 {@const current = data.organizationUsage.imageTransformationsTotal}
                 {@const max = getServiceLimit('imageTransformations', tier, plan)}
@@ -298,7 +294,7 @@
                     }}
                     series={[
                         {
-                            name: 'Image Transformations',
+                            name: 'Image transformations',
                             data: [
                                 ...(data.organizationUsage.imageTransformations ?? []).map((e) => [
                                     e.date,
