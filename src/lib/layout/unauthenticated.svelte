@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Avatar, AvatarInitials, Card, Heading } from '$lib/components';
+    import { Avatar, AvatarInitials, Card } from '$lib/components';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.png';
@@ -93,26 +93,7 @@
                     alt="promo" />
 
                 <div class="u-text-center auth-container">
-                    <div class="is-only-mobile u-width-full-line">
-                        <Heading
-                            size="5"
-                            tag="h3"
-                            class="u-margin-block-start-16"
-                            trimmed={false}
-                            style="font-weight:normal">
-                            {generateTitle()}
-                        </Heading>
-                    </div>
-                    <div class="is-not-mobile u-width-full-line">
-                        <Heading
-                            size="4"
-                            tag="h3"
-                            class="u-margin-block-start-32"
-                            trimmed={false}
-                            style="font-weight:normal">
-                            {generateTitle()}
-                        </Heading>
-                    </div>
+                    <Typography.Title size="m">{generateTitle()}</Typography.Title>
                     <p class="u-margin-block-start-16">
                         {generateDesc()}
                     </p>
@@ -122,26 +103,7 @@
             <section
                 class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line review-container">
                 <div class="u-text-center">
-                    <div class="is-only-mobile u-width-full-line">
-                        <Heading
-                            size="5"
-                            tag="h3"
-                            class="u-margin-block-start-48"
-                            trimmed={false}
-                            style="font-weight:normal">
-                            {generateTitle()}
-                        </Heading>
-                    </div>
-                    <div class="is-not-mobile u-width-full-line">
-                        <Heading
-                            size="3"
-                            tag="h3"
-                            class="u-margin-block-start-32"
-                            trimmed={false}
-                            style="font-weight:normal">
-                            {generateTitle()}
-                        </Heading>
-                    </div>
+                    <Typography.Title size="m">{generateTitle()}</Typography.Title>
                 </div>
 
                 <p class="body-text-1 u-margin-block-start-16 u-text-center">{generateDesc()}</p>

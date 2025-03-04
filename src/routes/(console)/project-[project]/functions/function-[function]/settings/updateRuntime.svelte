@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';

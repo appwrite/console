@@ -25,8 +25,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
-            >Functions</Typography.Title>
+        <Typography.Title color="--fgcolor-neutral-primary" size="xl">Functions</Typography.Title>
     </svelte:fragment>
 
     <Tabs>

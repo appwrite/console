@@ -33,6 +33,7 @@
     export let site: Models.Site;
     export let deployment: Models.Deployment;
     export let hideTitle = false;
+    export let hideScrollButtons = false;
 
     let { status, buildLogs } = deployment;
 
@@ -81,7 +82,7 @@
     {#if !hideTitle}
         <Layout.Stack direction="row" justifyContent="space-between">
             <Layout.Stack direction="row" alignItems="center" gap="s" inline>
-                <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                     Deployment logs
                 </Typography.Text>
                 <Badge
@@ -94,7 +95,10 @@
         </Layout.Stack>
     {/if}
     {#key buildLogs}
-        <Logs logs={buildLogs || 'No logs available'} bind:theme={$app.themeInUse} />
+        <Logs
+            showScrollButton={!hideScrollButtons}
+            logs={buildLogs || 'No logs available yet...'}
+            bind:theme={$app.themeInUse} />
     {/key}
     {#if ['processing', 'building'].includes(status)}
         <Layout.Stack alignItems="flex-end">

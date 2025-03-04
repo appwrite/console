@@ -182,6 +182,7 @@
                                                         </Tooltip>
                                                     {:else}
                                                         <InteractiveText
+                                                            variant="secret"
                                                             isVisible={false}
                                                             text={variable.value} />
                                                     {/if}

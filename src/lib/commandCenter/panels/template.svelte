@@ -300,12 +300,12 @@
                                             <Icon
                                                 icon={item.icon}
                                                 size="s"
-                                                color="--color-fgcolor-neutral-tertiary" />
+                                                color="--fgcolor-neutral-tertiary" />
                                         {:else}
                                             <Icon
                                                 icon={IconArrowSmRight}
                                                 size="s"
-                                                color="--color-fgcolor-neutral-tertiary" />
+                                                color="--fgcolor-neutral-tertiary" />
                                         {/if}
                                         <span>
                                             {item.label}
@@ -378,15 +378,15 @@
     }
 
     .card {
-        --cmd-center-bg: var(--color-bgcolor-neutral-primary, #fff);
-        --footer-bg: var(--color-bgcolor-neutral-primary, #fff);
-        --cmd-center-border: var(--color-border-neutral, #ededf0);
-        --result-bg: var(--color-overlay-neutral-hover, rgba(25, 25, 28, 0.03));
-        --kbd-bg: var(--color-overlay-on-neutral, rgba(0, 0, 0, 0.06));
-        --kbd-color: var(--color-fgcolor-neutral-secondary, #56565c);
-        --icon-color: var(--color-fgcolor-neutral-tertiary, #97979b);
-        --label-color: var(--color-fgColor-neutral-secondary, #56565c);
-        --crumb-color: var(--color-fgColor-neutral-secondary, #56565c);
+        --cmd-center-bg: var(--bgcolor-neutral-primary);
+        --footer-bg: var(--bgcolor-neutral-primary);
+        --cmd-center-border: var(--border-neutral);
+        --result-bg: var(--color-overlay-neutral-hover);
+        --kbd-bg: var(--color-overlay-on-neutral);
+        --kbd-color: var(--fgcolor-neutral-secondary);
+        --icon-color: var(--fgcolor-neutral-tertiary);
+        --label-color: var(--fgcolor-neutral-secondary);
+        --crumb-color: var(--fgcolor-neutral-secondary);
     }
 
     // Elements
@@ -432,7 +432,7 @@
         align-items: center;
         width: 100%;
 
-        border-bottom: 1px solid var(--color-border-neutral, #ededf0);
+        border-bottom: 1px solid var(--border-neutral, #ededf0);
         font-size: 16px;
         padding: 1rem;
 
@@ -480,7 +480,7 @@
             padding: 1rem;
 
             .group {
-                color: var(--color-fgcolor-neutral-secondary, #56565c);
+                color: var(--fgcolor-neutral-secondary, #56565c);
                 margin-inline-start: 0.25rem;
                 margin-block-end: 0.25rem;
                 position: relative;
@@ -548,7 +548,7 @@
                         content: '';
                         position: absolute;
                         left: -8px;
-                        border-left: 1px solid var(--color-border-neutral, #ededf0);
+                        border-left: 1px solid var(--border-neutral, #ededf0);
                         height: 100%;
                     }
                 }
@@ -558,7 +558,7 @@
 
     .footer {
         background: var(--footer-bg);
-        border-top: 1px solid var(--color-border-neutral, #ededf0);
+        border-top: 1px solid var(--border-neutral, #ededf0);
 
         padding: 0.75rem 1rem;
     }

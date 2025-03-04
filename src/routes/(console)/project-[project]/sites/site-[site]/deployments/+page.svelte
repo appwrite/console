@@ -76,7 +76,7 @@
                                     {#if $tags?.length}
                                         <!-- TODO: add vertical divider to pink 2 -->
                                         <div
-                                            style="flex-basis:1px; background-color:hsl(var(--color-border)); width: 1px">
+                                            style="flex-basis:1px; background-color:hsl(var(--border)); width: 1px">
                                         </div>
                                         <Button text on:click={clearAll} size="s">Clear all</Button>
                                     {/if}

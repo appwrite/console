@@ -144,15 +144,3 @@
         <Helper class="u-position-relative" type="warning">{error}</Helper>
     {/if}
 </div> -->
-
-<style>
-    .form-item :global(.drop) {
-        translate: 0 4px;
-    }
-
-    .form-item :global(.drop-section) {
-        width: 100%;
-        margin-inline: initial;
-        max-inline-size: initial;
-    }
-</style>

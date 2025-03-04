@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { provider } from './store';

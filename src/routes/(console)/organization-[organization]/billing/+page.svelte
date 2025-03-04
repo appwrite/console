@@ -9,7 +9,7 @@
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
-    import { Alert, Heading } from '$lib/components';
+    import { Alert } from '$lib/components';
     import { failedInvoice, paymentMethods, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
@@ -21,6 +21,7 @@
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
     import { goto } from '$app/navigation';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -117,7 +118,7 @@
         </Alert>
     {/if}
     <div class="common-section">
-        <Heading tag="h2" size="5">Billing</Heading>
+        <Typography.Title>Billing</Typography.Title>
     </div>
     <PlanSummary
         creditList={data?.creditList}

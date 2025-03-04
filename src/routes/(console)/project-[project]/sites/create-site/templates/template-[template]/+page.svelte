@@ -23,17 +23,17 @@
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
     import ConnectBehaviour from './connectBehaviour.svelte';
-    import ProductionBranch from '../../productionBranch.svelte';
+    import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
-    // import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
     import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
     import { consoleVariables } from '$routes/(console)/store';
     import { project } from '$routes/(console)/project-[project]/store';
     import { buildVerboseDomain } from '../../store';
+    import { organization } from '$lib/stores/organization';
 
     export let data;
 
@@ -53,7 +53,7 @@
     let rootDir = './';
     let connectBehaviour: 'now' | 'later' = 'now';
     let repositoryBehaviour: 'new' | 'existing' = 'new';
-    let repositoryName = '';
+    let repositoryName = undefined;
     let repositoryPrivate = true;
     let selectedInstallationId = '';
     let selectedRepository = '';
@@ -123,7 +123,12 @@
         // }
         else {
             try {
-                domain = await buildVerboseDomain(data.template.name, $project.name, id);
+                domain = await buildVerboseDomain(
+                    data.template.name,
+                    $project.name,
+                    $organization.name,
+                    id
+                );
 
                 const fr = Object.values(Framework).find((f) => f === framework.key);
                 const buildRuntime = Object.values(BuildRuntime).find(
@@ -196,12 +201,14 @@
 
     $: if (repositoryBehaviour === 'new') {
         selectedInstallationId = $installation?.$id;
-        repositoryName = name.split(' ').join('-').toLowerCase();
+        repositoryName ??= name.split(' ').join('-').toLowerCase();
     }
 
     $: if (connectBehaviour === 'later') {
         selectedRepository = null;
     }
+
+    $: console.log(repositoryName);
 
     $: console.log(data.template);
     $: console.log(variables);
@@ -228,9 +235,7 @@
                             gap="xs">
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Icon size="s" icon={IconGithub} />
-                                <Typography.Text
-                                    variant="m-400"
-                                    color="--color-fgcolor-neutral-primary">
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                     {$repository.name}
                                 </Typography.Text>
                             </Layout.Stack>
@@ -326,23 +331,17 @@
                             </Empty>
                         </Card>
                     {/if}
-                {:else}
-                    {#if data.template.variables?.length}
-                        <Configuration bind:variables templateVariables={data.template.variables} />
-                    {/if}
-                    <!-- <Domain bind:domain bind:domainIsValid /> -->
+                {:else if data.template.variables?.length}
+                    <Configuration bind:variables templateVariables={data.template.variables} />
                 {/if}
             {/if}
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {framework} {repositoryName} {branch} {rootDir} {domain} showAfter={showSiteConfig}>
+        <Aside {framework} {repositoryName} {branch} {rootDir} showAfter={showSiteConfig}>
             <Layout.Stack>
                 <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography.Text
-                        variant="m-500"
-                        truncate
-                        color="--color-fgcolor-neutral-primary">
+                    <Typography.Text variant="m-500" truncate color="--fgcolor-neutral-primary">
                         {name || data.template.name}
                     </Typography.Text>
                     {#if data?.template?.demoUrl}

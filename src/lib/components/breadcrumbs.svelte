@@ -194,7 +194,7 @@
                 >{#if selectedOrg?.tierName}<Badge
                         variant="secondary"
                         content={selectedOrg?.tierName} />{/if}</span>
-            <Icon icon={IconChevronDown} size="s" color="--color-fgcolor-neutral-secondary" />
+            <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
         </button>
     {:else}
         <button
@@ -208,7 +208,7 @@
                 >{selectedOrg?.name ?? 'Organization'}</span>
             <span class="not-mobile"
                 ><Badge variant="secondary" content={selectedOrg?.tierName ?? ''} /></span>
-            <Icon icon={IconChevronDown} size="s" color="--color-fgcolor-neutral-secondary" />
+            <Icon icon={IconChevronDown} size="s" color="--fgcolor-neutral-secondary" />
         </button>
     {/if}
 
@@ -348,7 +348,7 @@
 
 <style lang="scss">
     .menu {
-        min-width: 220px;
+        min-width: 244px;
         z-index: 20;
     }
 
@@ -361,7 +361,7 @@
     }
 
     .subMenu {
-        min-width: 220px;
+        min-width: 244px;
         margin-inline: -4px;
         margin-block: -4px;
     }
@@ -372,7 +372,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 60px;
-        color: var(--color-fgcolor-neutral-secondary);
+        color: var(--fgcolor-neutral-secondary);
 
         @media (min-width: 390px) {
             max-width: 95px;
@@ -409,7 +409,7 @@
 
         transition: color 0.2s ease;
 
-        color: var(--color-fgcolor-neutral-primary, #2d2d31);
+        color: var(--fgcolor-neutral-primary, #2d2d31);
         border-radius: var(--corner-radius-medium, 8px);
 
         cursor: default;
@@ -427,29 +427,29 @@
 
     :global(.trigger[data-highlighted]) {
         outline: none;
-        background: var(--color-bgcolor-neutral-secondary, #f4f4f7);
+        background: var(--bgcolor-neutral-secondary, #f4f4f7);
     }
 
     :global(.trigger[data-highlighted]:focus) {
         outline: none;
-        box-shadow: 0 0 0 2px var(--color-bgcolor-neutral-secondary, #f4f4f7);
+        box-shadow: 0 0 0 2px var(--bgcolor-neutral-secondary, #f4f4f7);
     }
 
     .trigger:focus {
         z-index: 30;
         box-shadow:
             var(--shadow-offsetx-0, 0px) var(--shadow-offsety-0, 0px) 0 2px
-                var(--color-bgcolor-neutral-default, #fafafb),
-            0 0 0 4px var(--color-border-focus, #818186);
+                var(--bgcolor-neutral-default, #fafafb),
+            0 0 0 4px var(--border-focus, #818186);
     }
     .separator {
         height: 1px;
         margin-block: 2px;
         margin-inline-start: calc(var(--base-4) * -1);
         width: calc(100% + var(--base-8));
-        background-color: var(--color-border-neutral);
+        background-color: var(--border-neutral);
     }
     .breadcrumb-separator {
-        color: var(--color-fgcolor-neutral-tertiary, #97979b);
+        color: var(--fgcolor-neutral-tertiary, #97979b);
     }
 </style>

@@ -44,6 +44,7 @@
     import { last } from '$lib/helpers/array';
     import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import Wizard from '$lib/layout/wizard.svelte';
 
     let previousPage: string = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/executions`;
 
@@ -148,7 +149,7 @@
     <title>Execute function - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer href={previousPage}>
+<Wizard title="Execute function" href={previousPage}>
     <svelte:fragment slot="title">Execute function</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
@@ -399,4 +400,4 @@
             Execute
         </Button>
     </WizardSecondaryFooter>
-</WizardSecondaryContainer>
+</Wizard>

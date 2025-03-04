@@ -2,7 +2,6 @@
     import { Button } from '$lib/elements/forms';
     import {
         PaginationWithLimit,
-        Heading,
         ViewSelector,
         EmptyFilter,
         EmptySearch,

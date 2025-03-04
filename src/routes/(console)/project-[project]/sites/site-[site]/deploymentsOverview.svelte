@@ -31,7 +31,7 @@
 <Layout.Stack style="overflow-x: auto;">
     <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
         <Layout.Stack gap="xs" direction="row" alignItems="center" inline>
-            <Typography.Text variant="l-500" color="--color-fgcolor-neutral-primary">
+            <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
                 Deployments
             </Typography.Text><Badge
                 variant="secondary"

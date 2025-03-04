@@ -84,7 +84,7 @@
     <Layout.Stack gap="s">
         <div
             style:max-width="250px"
-            style:--input-background-color="var(--color-bgcolor-neutral-primary)">
+            style:--input-background-color="var(--bgcolor-neutral-primary)">
             <InputSelect
                 on:change={(e) => goto(`${path}/${e.detail}`)}
                 id="period"

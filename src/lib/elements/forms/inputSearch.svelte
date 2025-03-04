@@ -48,7 +48,6 @@
     {required}
     {autofocus}
     {label}
-    type="search"
     bind:value
     on:input={valueChange}>
     <svelte:fragment slot="start">

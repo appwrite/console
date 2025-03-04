@@ -38,7 +38,6 @@
 
 <Layout.Stack>
     <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
-
     <EmailTemplate bind:loading>
         <Id value={'{{user}}'}>{'{{user}}'}</Id>
         <Id value={'{{project}}'}>{'{{project}}'}</Id>

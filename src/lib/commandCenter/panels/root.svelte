@@ -68,9 +68,9 @@
                     src={`${base}/icons/${$app.themeInUse}/color/${command.image}.svg`}
                     alt={command.label} />
             {:else if command.icon}
-                <Icon icon={command.icon} size="s" color="--color-fgcolor-neutral-tertiary" />
+                <Icon icon={command.icon} size="s" color="--fgcolor-neutral-tertiary" />
             {:else}
-                <Icon icon={IconArrowSmRight} size="s" color="--color-fgcolor-neutral-tertiary" />
+                <Icon icon={IconArrowSmRight} size="s" color="--fgcolor-neutral-tertiary" />
             {/if}
             <span>
                 {command.label}
@@ -103,7 +103,7 @@
 
 <style>
     .then {
-        color: var(--color-fgcolor-neutral-tertiary, #97979b);
+        color: var(--fgcolor-neutral-tertiary, #97979b);
         font-size: var(--font-size-s, 14px);
         font-weight: 400;
     }

@@ -58,7 +58,7 @@
 
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { BoxAvatar, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, CardGrid } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';

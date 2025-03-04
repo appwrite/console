@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BoxAvatar, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';

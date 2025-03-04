@@ -1,18 +1,20 @@
 <script lang="ts">
-    import { Card, Collapsible, Heading } from '$lib/components';
+    import { Card, Collapsible } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container, ContainerButton } from '$lib/layout';
     import { isCloud } from '$lib/system';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
-    import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import { template } from './store';
     import { app } from '$lib/stores/app';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { functionsList } from '../../store';
     import { canWriteFunctions } from '$lib/stores/roles';
+    import { Typography } from '@appwrite.io/pink-svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     $: buttonDisabled =
         isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
@@ -59,7 +61,7 @@
         </section>
         <section>
             <Card>
-                <Heading size="7" tag="h3">
+                <Typography.Title size="s">
                     <span class="u-flex u-cross-center u-gap-16 functions-avatar-holder">
                         <div class="avatar is-size-small">
                             <span
@@ -69,7 +71,7 @@
                         </div>
                         {$template.name}
                     </span>
-                </Heading>
+                </Typography.Title>
                 <p class="u-margin-block-start-24">{$template.tagline}</p>
 
                 <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24 u-flex-wrap">
@@ -84,7 +86,7 @@
                         <ContainerButton
                             title="functions"
                             disabled={buttonDisabled}
-                            buttonMethod={() => connectTemplate($template)}
+                            buttonHref={`${base}/project-${$page.params.project}/functions/create-function/template-${$template.id}`}
                             showIcon={false}
                             buttonText="Create function"
                             buttonEvent="create_function" />

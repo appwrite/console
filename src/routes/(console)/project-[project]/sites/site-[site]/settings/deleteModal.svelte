@@ -30,5 +30,6 @@
 </script>
 
 <Confirm onSubmit={handleSubmit} title="Delete site" bind:open={showDelete} bind:error>
-    Are you sure you want to delete this site and all associated deployments from your project?
+    Are you sure you want to delete this site and all associated deployments from your project? This
+    action is irreversible.
 </Confirm>

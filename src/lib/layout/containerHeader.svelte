@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, DropList, Heading } from '$lib/components';
+    import { Alert, DropList } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Link, Pill } from '$lib/elements';
     import {
@@ -17,11 +17,9 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { ContainerButton } from '.';
     import { goto } from '$app/navigation';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let title: string;
-    export let titleTag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' = 'h2';
-    export let titleSize: '1' | '2' | '3' | '4' | '5' | '6' | '7' = '5';
     export let serviceId = title.toLocaleLowerCase() as PlanServices;
     export let total: number = null;
     export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
@@ -117,7 +115,7 @@
 
 <Layout.Stack direction="row" alignContent="center">
     <Layout.Stack direction="row">
-        <Heading tag={titleTag} size={titleSize}>{title}</Heading>
+        <Typography.Title size="m">{title}</Typography.Title>
         {#if isCloud && isLimited}
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}

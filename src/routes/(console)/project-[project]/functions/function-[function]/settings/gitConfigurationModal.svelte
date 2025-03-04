@@ -12,9 +12,8 @@
     import { func, repositories } from '../store';
     import { invalidate } from '$app/navigation';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
-    import { installations } from '$lib/wizards/functions/store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { sortBranches } from '$lib/stores/vcs';
+    import { installations, sortBranches } from '$lib/stores/vcs';
 
     export let show: boolean;
 

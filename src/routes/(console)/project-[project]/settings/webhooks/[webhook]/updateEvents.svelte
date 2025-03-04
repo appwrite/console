@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Empty, EventModal, Heading } from '$lib/components';
+    import { CardGrid, Empty, EventModal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { TableCell, TableCellText, TableList } from '$lib/elements/table';

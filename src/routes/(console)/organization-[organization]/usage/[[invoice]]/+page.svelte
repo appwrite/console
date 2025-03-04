@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import { Card, CardGrid, ProgressBarBig } from '$lib/components';
     import {
         getServiceLimit,
         showUsageRatesModal,
@@ -20,6 +20,7 @@
     import TotalMembers from './totalMembers.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -38,7 +39,7 @@
 
 <Container>
     <div class="u-flex u-cross-center u-main-space-between">
-        <Heading tag="h2" size="5">Usage</Heading>
+        <Typography.Title>Usage</Typography.Title>
 
         {#if $organization?.billingPlan === BillingPlan.FREE}
             <Button

@@ -7,8 +7,7 @@
         CreditCardBrandImage,
         CreditCardInfo,
         DropList,
-        DropListItem,
-        Heading
+        DropListItem
     } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';

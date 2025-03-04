@@ -70,7 +70,7 @@
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row" alignItems="flex-start">
                     <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                             Domains
                         </Typography.Text>
                         <DeploymentDomains domains={proxyRuleList} />
@@ -85,27 +85,19 @@
                 <Layout.Stack direction="row" gap="xl">
                     {#if deployment.status === 'failed'}
                         <Layout.Stack gap="xxs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Status
                             </Typography.Text>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-primary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                 <Status status={deployment.status} label={deployment.status} />
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}
                         <Layout.Stack gap="xxs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Deployed
                             </Typography.Text>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-primary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                 <DeploymentCreatedBy {deployment} />
                             </Typography.Text>
                         </Layout.Stack>
@@ -116,36 +108,26 @@
                     <Layout.Stack gap="xxl" direction="row" wrap="wrap" inline>
                         {#if deployment?.buildTime}
                             <Layout.Stack gap="xxs" inline>
-                                <Typography.Text
-                                    variant="m-400"
-                                    color="--color-fgcolor-neutral-tertiary">
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                     Build time
                                 </Typography.Text>
-                                <Typography.Text
-                                    variant="m-400"
-                                    color="--color-fgcolor-neutral-primary">
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                     {formatTimeDetailed(deployment.buildTime)}
                                 </Typography.Text>
                             </Layout.Stack>
                         {/if}
                         <Layout.Stack gap="xxs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Total size
                             </Typography.Text>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-primary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                 {totalSize.value}{totalSize.unit}
                             </Typography.Text>
                         </Layout.Stack>
                     </Layout.Stack>
                     <Layout.Stack gap="xxl" direction="row" wrap="wrap" inline>
                         <Layout.Stack gap="xxs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 <Layout.Stack direction="row" gap="xxs" alignItems="center">
                                     Global CDN <Tooltip>
                                         <Icon icon={IconInfo} size="s" />
@@ -165,9 +147,7 @@
                             </Layout.Stack>
                         </Layout.Stack>
                         <Layout.Stack gap="xxs" inline>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 <Layout.Stack direction="row" gap="xxs" alignItems="center">
                                     DDoS protection <Tooltip>
                                         <Icon icon={IconInfo} size="s" />
@@ -189,10 +169,10 @@
                     </Layout.Stack>
                 </Layout.Stack>
                 <Layout.Stack gap="xxs">
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                         Source
                     </Typography.Text>
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
+                    <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                         <DeploymentSource {deployment} />
                     </Typography.Text>
                 </Layout.Stack>

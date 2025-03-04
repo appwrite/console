@@ -17,7 +17,7 @@
 
     {#if !hideFooter}
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography.Text variant="m-400" color="--color-fgcolor-neutral-secondary">
+            <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
                 Total results: {total}
             </Typography.Text>
             <div>

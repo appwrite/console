@@ -6,7 +6,6 @@
         Collapsible,
         CollapsibleItem,
         EmptySearch,
-        Heading,
         Pagination,
         SvgIcon
     } from '$lib/components';
@@ -16,11 +15,10 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { canWriteFunctions } from '$lib/stores/roles';
-    import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
     import { debounce } from '$lib/helpers/debounce';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
 
     export let data;
@@ -124,7 +122,7 @@
 
 <Container>
     <div class="u-flex u-gap-8 u-cross-center">
-        <Heading tag="h2" size="5">Templates</Heading>
+        <Typography.Title>Templates</Typography.Title>
         <div class="tag eyebrow-heading-3">
             <span class="text u-x-small">Experimental</span>
         </div>

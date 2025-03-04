@@ -33,7 +33,6 @@
 
     export let factors: Models.MfaFactors & { recoveryCode: boolean };
     /** If true, the form will be submitted automatically when the code is entered. */
-    export let autoSubmit: boolean = true;
     export let showVerifyButton: boolean = true;
     export let disabled: boolean = false;
     export let challenge: Models.MfaChallenge;

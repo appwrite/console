@@ -147,9 +147,7 @@
         <Card.Base variant="primary" padding="l"
             ><form>
                 <Layout.Stack direction="column" gap="xxl">
-                    <div style:margin-top="20px">
-                        <Typography.Title size="l">Create your project</Typography.Title>
-                    </div>
+                    <Typography.Title size="l">Create your project</Typography.Title>
 
                     <Layout.Stack direction="column" gap="xxl">
                         <Layout.Stack direction="column" gap="xxl">
@@ -191,7 +189,7 @@
                         ><Button.Button
                             type="button"
                             variant="primary"
-                            size="m"
+                            size="s"
                             on:click={createProject}>
                             Create</Button.Button>
                     </Layout.Stack>
@@ -204,13 +202,13 @@
     @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
 
     :global(body) {
-        background: var(--color-bgcolor-neutral-default, #19191c);
+        background: var(--bgcolor-neutral-default, #19191c);
     }
     .page-container {
         width: calc(100% - 2rem);
         margin: 0 1rem;
         gap: 4.5rem;
-        background: var(--color-bgcolor-neutral-default, #19191c);
+        background: var(--bgcolor-neutral-default, #19191c);
 
         @media #{devices.$break2open} {
             width: 700px;

@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Heading, ViewSelector } from '$lib/components';
+    import { ViewSelector } from '$lib/components';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import type { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
@@ -14,7 +15,7 @@
 </script>
 
 <header class="grid-header">
-    <Heading tag="h2" size="5">{title}</Heading>
+    <Typography.Title size="m">{title}</Typography.Title>
     <div class="u-flex u-gap-16 u-contents-mobile">
         <ViewSelector
             {view}

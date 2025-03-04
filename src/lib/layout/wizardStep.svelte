@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { Heading } from '$lib/components';
     import { wizard } from '$lib/stores/wizard';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { onDestroy } from 'svelte';
 
     /**
@@ -23,9 +22,7 @@
 
 <Layout.Stack>
     <header class="form-header" class:hide-divider={!$$slots.subtitle}>
-        <Heading tag="h1" size="6">
-            <slot name="title" />
-        </Heading>
+        <Typography.Title><slot name="title" /></Typography.Title>
         {#if $$slots.subtitle}
             <p>
                 <slot name="subtitle" />

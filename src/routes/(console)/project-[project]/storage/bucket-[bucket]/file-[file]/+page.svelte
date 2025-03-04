@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Heading, Alert, CopyInput } from '$lib/components';
+    import { CardGrid, BoxAvatar, Alert, CopyInput } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { file } from './store';
@@ -15,6 +15,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { bucket } from '../store';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     let showFileAlert = true;
     onMount(async () => {
@@ -93,8 +94,7 @@
                     </div>
                 </a>
                 <div class="u-flex u-flex-vertical u-gap-4">
-                    <Heading tag="h2" size="7" trimmed={false} trimmedSecondLine={true}
-                        >{$file.name}</Heading>
+                    <Typography.Title size="s">{$file.name}</Typography.Title>
                     <p>{$file.mimeType}</p>
                 </div>
             </div>

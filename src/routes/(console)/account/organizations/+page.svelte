@@ -5,7 +5,6 @@
         Empty,
         AvatarGroup,
         CardContainer,
-        Heading,
         PaginationWithLimit
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -21,7 +20,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
     import { goto } from '$app/navigation';
-    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
@@ -47,7 +46,7 @@
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Organizations</Heading>
+        <Typography.Title>Organizations</Typography.Title>
 
         <Button on:click={createOrg} event="create_organization">
             <Icon icon={IconPlus} slot="start" size="s" />

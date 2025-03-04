@@ -10,7 +10,6 @@
         Collapsible,
         CollapsibleItem,
         EyebrowHeading,
-        Heading,
         SvgIcon
     } from '$lib/components';
     import { Dependencies } from '$lib/constants';
