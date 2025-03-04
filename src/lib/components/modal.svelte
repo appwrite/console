@@ -8,7 +8,6 @@
 
     export let show = false;
     export let error: string = null;
-    export let closable = true;
     export let dismissible = true;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;

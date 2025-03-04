@@ -6,6 +6,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -46,26 +48,25 @@
 </script>
 
 <Modal title="Create bucket" {error} onSubmit={create} bind:show={showCreate}>
-    <FormList>
-        <InputText
-            id="name"
-            label="Name"
-            placeholder="New bucket"
-            bind:value={name}
-            autofocus
-            required />
+    <InputText
+        id="name"
+        label="Name"
+        placeholder="New bucket"
+        bind:value={name}
+        autofocus
+        required />
 
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                    <span class="icon-pencil" aria-hidden="true" />
-                    <span class="text"> Bucket ID </span>
-                </Pill>
-            </div>
-        {:else}
-            <CustomId autofocus bind:show={showCustomId} name="Bucket" bind:id />
-        {/if}
-    </FormList>
+    {#if !showCustomId}
+        <div>
+            <Tag
+                size="s"
+                on:click={() => {
+                    showCustomId = true;
+                }}><Icon icon={IconPencil} /> Bucket ID</Tag>
+        </div>
+    {:else}
+        <CustomId autofocus bind:show={showCustomId} name="Bucket" bind:id />
+    {/if}
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
         <Button submit>Create</Button>

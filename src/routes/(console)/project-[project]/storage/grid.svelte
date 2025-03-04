@@ -4,7 +4,7 @@
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import Pill from '$lib/elements/pill.svelte';
     import { canWriteBuckets } from '$lib/stores/roles';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Badge, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
 
     export let data: PageData;
@@ -25,35 +25,24 @@
             <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
             <svelte:fragment slot="status">
                 {#if !bucket.enabled}
-                    <Pill>Disabled</Pill>
+                    <div>
+                        <Badge size="s" variant="secondary" content="Disabled" />
+                    </div>
                 {/if}
             </svelte:fragment>
 
             <Id value={bucket.$id}>{bucket.$id}</Id>
 
             <svelte:fragment slot="icons">
-                <li>
-                    <Tooltip>
-                        <span
-                            class:u-opacity-20={!bucket.encryption}
-                            class="icon-lock-closed"
-                            aria-hidden="true" />
-                        <span slot="tooltip"
-                            >{bucket.encryption
-                                ? 'Encryption enabled'
-                                : 'Encryption disabled'}</span>
-                    </Tooltip>
-                </li>
-                <li>
-                    <Tooltip>
-                        <span
-                            class:u-opacity-20={!bucket.antivirus}
-                            class="icon-shield-check"
-                            aria-hidden="true" />
-                        <span slot="tooltip"
-                            >{bucket.antivirus ? 'Antivirus enabled' : 'Antivirus disabled'}</span>
-                    </Tooltip>
-                </li>
+                <Tooltip>
+                    <span
+                        class:u-opacity-20={!bucket.encryption}
+                        class="icon-lock-closed"
+                        aria-hidden="true" />
+                    <span slot="tooltip">
+                        {bucket.encryption ? 'Encryption enabled' : 'Encryption disabled'}
+                    </span>
+                </Tooltip>
             </svelte:fragment>
         </GridItem1>
     {/each}
