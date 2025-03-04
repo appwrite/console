@@ -6,7 +6,6 @@
     import { isCloud } from '$lib/system';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
-    import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import { template } from './store';
     import { app } from '$lib/stores/app';
     import { isServiceLimited } from '$lib/stores/billing';
@@ -14,6 +13,8 @@
     import { functionsList } from '../../store';
     import { canWriteFunctions } from '$lib/stores/roles';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     $: buttonDisabled =
         isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
@@ -85,7 +86,7 @@
                         <ContainerButton
                             title="functions"
                             disabled={buttonDisabled}
-                            buttonMethod={() => connectTemplate($template)}
+                            buttonHref={`${base}/project-${$page.params.project}/functions/create-function/template-${$template.id}`}
                             showIcon={false}
                             buttonText="Create function"
                             buttonEvent="create_function" />

@@ -37,7 +37,6 @@
     let rootDir = './';
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
-    let domain = id;
 
     onMount(async () => {
         installation.set(data.installation);
@@ -86,7 +85,7 @@
 
             // Add domain
             await sdk.forProject.proxy.createFunctionRule(
-                `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_TARGET}`,
                 func.$id
             );
 
@@ -124,6 +123,14 @@
             trackError(e, Submit.FunctionCreate);
         }
     }
+
+    const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
+        return {
+            value: runtime.name,
+            label: runtime.name
+            // leadingHtml: `<img src='${$iconPath(getruntimeIcon(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+        };
+    });
 </script>
 
 <svelte:head>
@@ -156,7 +163,7 @@
                     </Button>
                 </Layout.Stack>
             </Card>
-            <Details bind:name bind:entrypoint bind:id bind:runtime />
+            <Details bind:name bind:entrypoint bind:id bind:runtime options={runtimeOptions} />
 
             {#await loadBranches()}
                 <Layout.Stack justifyContent="center" alignItems="center">

@@ -15,7 +15,6 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { canWriteFunctions } from '$lib/stores/roles';
-    import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
     import { debounce } from '$lib/helpers/debounce';
