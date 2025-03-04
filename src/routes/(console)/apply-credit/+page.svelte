@@ -12,7 +12,7 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type PaymentList } from '$lib/sdk/billing';
+    import { type PaymentList, type Plan } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import { isOrganization } from '$lib/stores/billing.js';
     import { addNotification } from '$lib/stores/notifications';
@@ -72,6 +72,12 @@
     let couponData = data?.couponData;
     let campaign = data?.campaign;
     let billingPlan = BillingPlan.PRO;
+    let currentPlan: Plan;
+
+    function isUpgrade() {
+        const newPlan = $page.data.plansInfo.get(billingPlan);
+        return currentPlan && newPlan && currentPlan.order < newPlan.order;
+    }
 
     onMount(async () => {
         await loadPaymentMethods();
@@ -132,7 +138,7 @@
             }
 
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan !== billingPlan) {
+            else if (selectedOrg?.billingPlan !== billingPlan && isUpgrade()) {
                 org = await sdk.forConsole.billing.updatePlan(
                     selectedOrg.$id,
                     billingPlan,
@@ -216,6 +222,14 @@
         selectedOrg?.billingPlan === BillingPlan.SCALE
             ? BillingPlan.SCALE
             : (campaign?.plan ?? BillingPlan.PRO);
+
+    $: {
+        if (selectedOrgId) {
+            (async () => {
+                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
+            })();
+        }
+    }
 </script>
 
 <svelte:head>
