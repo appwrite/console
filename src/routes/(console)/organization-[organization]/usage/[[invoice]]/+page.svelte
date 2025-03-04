@@ -175,8 +175,9 @@
                             {
                                 name: 'Users',
                                 data: accumulateFromEndingTotal(
-                                    data.usersUsageToDate,
-                                    data.organizationUsage.usersTotal
+                                    data.organizationUsage.users,
+                                    data.organizationUsage.usersTotal,
+                                    new Date()
                                 )
                             }
                         ]} />
