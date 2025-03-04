@@ -33,6 +33,7 @@
     export let site: Models.Site;
     export let deployment: Models.Deployment;
     export let hideTitle = false;
+    export let hideScrollButtons = false;
 
     let { status, buildLogs } = deployment;
 
@@ -94,7 +95,10 @@
         </Layout.Stack>
     {/if}
     {#key buildLogs}
-        <Logs logs={buildLogs || 'Waiting for build to start...'} bind:theme={$app.themeInUse} />
+        <Logs
+            showScrollButton={!hideScrollButtons}
+            logs={buildLogs || 'No logs available yet...'}
+            bind:theme={$app.themeInUse} />
     {/key}
     {#if ['processing', 'building'].includes(status)}
         <Layout.Stack alignItems="flex-end">

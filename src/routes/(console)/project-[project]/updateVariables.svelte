@@ -9,7 +9,6 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '$routes/(console)/project-[project]/store';
-    import Alert from '$lib/components/alert.svelte';
     import PromoteVariableModal from './promoteVariableModal.svelte';
     import CreateVariable from './createVariable.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
@@ -21,7 +20,8 @@
         Icon,
         Layout,
         Popover,
-        Table
+        Table,
+        Alert
     } from '@appwrite.io/pink-svelte';
     import {
         IconCode,
@@ -240,7 +240,7 @@
         {#if sum}
             <Layout.Stack gap="l">
                 {#if conflictVariables.length > 0}
-                    <Alert type="warning">
+                    <Alert.Inline status="warning">
                         <p class="text">
                             {#if conflictVariables.length === 1}
                                 <b class="u-bold">{conflictVariables[0].key}</b> has
@@ -255,7 +255,7 @@
                                 project settings</a
                             >.
                         </p>
-                    </Alert>
+                    </Alert.Inline>
                 {/if}
                 <Table.Root>
                     <svelte:fragment slot="header">
