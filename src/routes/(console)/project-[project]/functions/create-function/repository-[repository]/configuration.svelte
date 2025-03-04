@@ -22,8 +22,11 @@
         </Accordion>
         <Accordion title="Execute access" badge="Optional" hideDivider>
             <Layout.Stack gap="xl">
-                Choose who can execute this function using the client API. <Link external href="#"
-                    >Learn more</Link>
+                <span>
+                    Choose who can execute this function using the client API. <Link
+                        external
+                        href="#">Learn more</Link>
+                </span>
 
                 <Roles bind:roles={scopes} />
             </Layout.Stack>

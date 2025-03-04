@@ -156,7 +156,7 @@
                     </Button>
                 </Layout.Stack>
             </Card>
-            <Details bind:name bind:entrypoint bind:id />
+            <Details bind:name bind:entrypoint bind:id bind:runtime />
 
             {#await loadBranches()}
                 <Layout.Stack justifyContent="center" alignItems="center">
@@ -188,9 +188,10 @@
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
+            submissionLoader
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
-            Deploy
+            Create
         </Button>
     </svelte:fragment>
 </Wizard>

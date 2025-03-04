@@ -1,9 +1,7 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { EmptySearch } from '$lib/components';
     import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
-    import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
@@ -167,18 +165,18 @@
                                                     size="xs"
                                                     alt={repo.name}
                                                     empty={!framework}>
-                                                    <SvgIcon name={getFrameworkIcon(framework)} />
+                                                    <SvgIcon
+                                                        name={getFrameworkIcon(framework)}
+                                                        iconSize="small" />
                                                 </Avatar>
                                             {/await}
                                         {:else}
-                                            <Avatar
-                                                size="xs"
-                                                src={repo?.runtime
-                                                    ? `${base}/icons/${$app.themeInUse}/color/${
-                                                          repo.runtime.split('-')[0]
-                                                      }.svg`
-                                                    : ''}
-                                                alt={repo.name} />
+                                            {@const iconName = repo?.runtime
+                                                ? repo.runtime.split('-')[0]
+                                                : undefined}
+                                            <Avatar size="xs" alt={repo.name} empty={!iconName}>
+                                                <SvgIcon name={iconName} iconSize="small" />
+                                            </Avatar>
                                         {/if}
                                         <Layout.Stack gap="s" direction="row" alignItems="center">
                                             <Typography.Text

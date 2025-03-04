@@ -10,7 +10,7 @@
     export let id: string;
     export let entrypoint: string;
     export let showEntrypoint = false;
-    export let runtime: Models.TemplateRuntime | undefined = undefined;
+    export let runtime: Partial<Models.TemplateRuntime>;
     export let options: {
         value: string;
         label: string;

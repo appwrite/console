@@ -27,7 +27,7 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarGroup, Box } from '$lib/components';
+    import { AvatarGroup, Box, Card } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import { templateConfig, template as templateStore } from './store';
@@ -39,25 +39,26 @@
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import { featuredTemplatesList, starterTemplate } from '$lib/stores/templates';
-    import { afterNavigate } from '$app/navigation';
-    import CreateGit from './wizard/createGit.svelte';
+    import { afterNavigate, goto } from '$app/navigation';
     import CreateManual from './wizard/createManual.svelte';
-    import { repository } from '$lib/stores/vcs';
+    import { installation, repository } from '$lib/stores/vcs';
     import { Repositories } from '$lib/components/git';
-    import { Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { IconDeno, IconDotnet } from '@appwrite.io/pink-icons-svelte';
+    import { Divider, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconArrowSmRight, IconDeno, IconDotnet } from '@appwrite.io/pink-icons-svelte';
     import Wizard from '$lib/layout/wizard.svelte';
+    import { Link } from '$lib/elements';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
     let selectedRepository: string;
 
-    function connect(event: CustomEvent<Models.ProviderRepository>) {
+    function connect(e: CustomEvent<Models.ProviderRepository>) {
         trackEvent('click_connect_repository', {
             from: 'cover'
         });
-        repository.set(event.detail);
-        wizard.start(CreateGit);
+        repository.set(e.detail);
+        const target = `${base}/project-${$page.params.project}/functions/create-function/repository-${e.detail.id}?installation=${$installation.$id}`;
+        goto(target);
     }
 
     let previousPage: string = base;
@@ -68,46 +69,38 @@
 
 <Wizard title="Create function" href={previousPage} column>
     <div class="git-container u-position-relative">
-        <div class="grid-1-1 u-gap-24">
-            <div class="card u-cross-child-start u-height-100-percent">
-                <Typography.Title size="s">Connect Git repository</Typography.Title>
-                <p class="u-margin-block-start-8">
-                    Create and deploy a function with a connected git repository.
-                </p>
-                <div class="u-margin-block-start-24">
-                    <Repositories
-                        bind:hasInstallations
-                        bind:selectedRepository
-                        action="button"
-                        callbackState={{
-                            from: 'github',
-                            to: 'cover'
-                        }}
-                        on:connect={connect} />
-                </div>
-                {#if isSelfHosted && !isVcsEnabled}
-                    <div
-                        class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 u-text-center u-inset-0"
-                        style="border-radius: var(--border-radius-medium)">
-                        <div
-                            class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16 u-padding-inline-24">
-                            <Typography.Title size="s">
-                                Connect your self-hosted instance to Git
-                            </Typography.Title>
-                            <p>
-                                Configure your self-hosted instance to connect your function to a
-                                Git repository.
-                                <a
-                                    href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="link">Learn more</a
-                                >.
-                            </p>
-                        </div>
-                    </div>
-                {/if}
-            </div>
+        <Layout.GridFraction start={2} end={3} gap="xxl">
+            <Card>
+                <Layout.Stack
+                    gap="xl"
+                    justifyContent="space-between"
+                    alignContent="space-between"
+                    alignItems="stretch"
+                    height="100%">
+                    <Layout.Stack gap="xl" inline>
+                        <Typography.Title size="s">Connect Git repository</Typography.Title>
+
+                        <Repositories
+                            bind:hasInstallations
+                            bind:selectedRepository
+                            action="button"
+                            callbackState={{
+                                from: 'github',
+                                to: 'cover'
+                            }}
+                            on:connect={connect} />
+                    </Layout.Stack>
+                    <Layout.Stack gap="l" inline>
+                        <Divider />
+                        <Link variant="quiet" href="#/">
+                            <Layout.Stack direction="row" gap="xs">
+                                Missing a repository? check your permissions <Icon
+                                    icon={IconArrowSmRight} />
+                            </Layout.Stack>
+                        </Link>
+                    </Layout.Stack>
+                </Layout.Stack>
+            </Card>
 
             <div class="card u-height-100-percent">
                 <section class="common-section">
@@ -264,7 +257,8 @@
                     <span class="icon-cheveron-right" aria-hidden="true" />
                 </Button>
             </div>
-        </div>
+        </Layout.GridFraction>
+
         <p class="u-margin-block-start-16">
             You can also create a function <button
                 class="link"
@@ -283,6 +277,28 @@
             >.
         </p>
     </div>
+    <!-- {#if isSelfHosted && !isVcsEnabled}
+        <div
+            class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 u-text-center u-inset-0"
+            style="border-radius: var(--border-radius-medium)">
+            <div
+                class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16 u-padding-inline-24">
+                <Typography.Title size="s">
+                    Connect your self-hosted instance to Git
+                </Typography.Title>
+                <p>
+                    Configure your self-hosted instance to connect your function to a Git
+                    repository.
+                    <a
+                        href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="link">Learn more</a
+                    >.
+                </p>
+            </div>
+        </div>
+    {/if} -->
 </Wizard>
 
 <style lang="scss">
