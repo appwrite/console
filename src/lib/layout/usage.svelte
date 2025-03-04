@@ -46,9 +46,9 @@
     ): Array<[string, number]> {
         return (metrics ?? []).reduceRight(
             (acc, curr) => {
-                if (startingDayToFillZero) {
+                if (startingDayToFillZero !== null && startingDayToFillZero instanceof Date) {
                     const date = new Date(curr.date);
-                    if (date > new Date(startingDayToFillZero)) {
+                    if (date > startingDayToFillZero) {
                         acc.data.unshift([date.toISOString(), 0]);
                         acc.total -= 0;
 
