@@ -25,6 +25,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import DualTimeView from './dualTimeView.svelte';
 
     export let show: boolean;
     export let mimeTypeQuery: string = 'image/';
@@ -433,9 +434,8 @@
                                                                     <TableCellText
                                                                         title="Created"
                                                                         onlyDesktop>
-                                                                        {toLocaleDate(
-                                                                            file.$createdAt
-                                                                        )}
+                                                                        <DualTimeView
+                                                                            time={file.$createdAt} />
                                                                     </TableCellText>
                                                                 </TableRowButton>
                                                             {/each}

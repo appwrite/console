@@ -155,6 +155,7 @@
             <TableRow>
                 <TableCellCheck id={backup.$id} bind:selectedIds={selectedBackups} />
                 <TableCell title={backup.$createdAt}>
+                    <!-- TODO: @itznotabug, use DualTimeView and use a slot for custom title -->
                     <Tooltip>
                         <span>
                             {cleanBackupName(backup)}

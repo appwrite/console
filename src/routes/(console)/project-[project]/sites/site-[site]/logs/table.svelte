@@ -6,6 +6,7 @@
     import { Badge, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
     import Sheet from './sheet.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let columns: Column[];
     export let logs: Models.ExecutionList;
@@ -38,7 +39,7 @@
                         {/key}
                     {:else if column.id === '$createdAt'}
                         <Table.Cell>
-                            {capitalize(timeFromNow(log.$createdAt))}
+                            <DualTimeView time={log.$createdAt} />
                         </Table.Cell>
                     {:else if column.id === 'responseStatusCode'}
                         <Table.Cell>

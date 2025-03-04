@@ -1,14 +1,25 @@
 <script lang="ts">
-    import { timeFromNow } from '$lib/helpers/date';
+    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
+    import { capitalize } from '$lib/helpers/string';
+    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import Link from '$lib/elements/link.svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let deployment: Models.Deployment;
 </script>
 
-{timeFromNow(deployment.$updatedAt)}
-{#if deployment.providerCommitAuthor}
-    by <a
-        class="u-underline u-cursor-pointer"
-        target="_blank"
-        href={deployment.providerCommitAuthorUrl}>{deployment.providerCommitAuthor}</a>
-{/if}
+<p>
+    {#if deployment.providerCommitAuthor}
+        <Tooltip>
+            <span>
+                {capitalize(timeFromNow(deployment.$updatedAt))}
+            </span>
+            <span slot="tooltip">{toLocaleDateTime(deployment.$updatedAt)}</span>
+        </Tooltip>
+        by <Link href={deployment.providerCommitAuthorUrl} external
+            >{deployment.providerCommitAuthor}</Link>
+    {:else}
+        <DualTimeView time={deployment.$updatedAt} />
+    {/if}
+</p>

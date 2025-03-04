@@ -14,7 +14,6 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import DeploymentSource from './deploymentSource.svelte';
-    import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import { Button } from '$lib/elements/forms';
     import { IconInfo, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';
@@ -23,6 +22,7 @@
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
     import { getApiEndpoint } from '$lib/stores/sdk';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList;
@@ -97,8 +97,10 @@
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Deployed
                             </Typography.Text>
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                <DeploymentCreatedBy {deployment} />
+                            <Typography.Text
+                                variant="m-400"
+                                color="--color-fgcolor-neutral-primary">
+                                <DualTimeView time={deployment.$updatedAt} />
                             </Typography.Text>
                         </Layout.Stack>
                     {/if}

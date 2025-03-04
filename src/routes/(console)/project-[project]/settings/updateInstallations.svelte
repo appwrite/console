@@ -25,6 +25,7 @@
         IconPlus,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let total: number;
     export let limit: number;
@@ -117,7 +118,7 @@
                                 </div>
                             </Table.Cell>
                             <Table.Cell>
-                                {dayjs().to(installation.$updatedAt)}
+                                <DualTimeView time={installation.$updatedAt} />
                             </Table.Cell>
                             <Table.Cell>
                                 <Popover let:toggle padding="none" placement="bottom-end">
