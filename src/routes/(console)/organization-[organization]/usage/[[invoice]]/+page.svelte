@@ -269,7 +269,7 @@
             <p>This feature is not available on the Free plan.</p>
         {/if}
         <svelte:fragment slot="aside">
-            {#if data.organizationUsage.imageTransformationsTotal}
+            {#if $organization.billingPlan !== BillingPlan.FREE && data.organizationUsage.imageTransformationsTotal}
                 {@const current = data.organizationUsage.imageTransformationsTotal}
                 {@const max = getServiceLimit('imageTransformations', tier, plan)}
                 <ProgressBarBig
