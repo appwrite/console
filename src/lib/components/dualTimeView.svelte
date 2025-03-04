@@ -43,7 +43,8 @@
     </button>
 
     <Layout.Stack gap="m" alignContent="flex-start" slot="tooltip">
-        <Typography.Text variant="m-400">{timeToString}</Typography.Text>
+        <Typography.Text color="--fgcolor-neutral-tertiary" variant="m-400"
+            >{timeToString}</Typography.Text>
 
         <Layout.Stack gap="xxs">
             <Layout.Stack direction="row" justifyContent="space-between">
