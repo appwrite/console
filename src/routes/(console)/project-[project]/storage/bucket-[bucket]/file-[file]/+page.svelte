@@ -26,11 +26,13 @@
     } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
+        IconDuplicate,
         IconPencil,
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import ManageFileTokenModal, { cleanFormattedDate } from './manageFileToken.svelte';
+    import { copy } from '$lib/helpers/copy';
 
     let showFileAlert = true;
 
@@ -119,6 +121,12 @@
         });
 
         selectedFileToken = null;
+    }
+
+    async function copyPreviewWithToken(token: string) {
+        await copy(
+            `${sdk.forProject.storage.getFilePreview($file.bucketId, $file.$id)}?token=${token}`
+        );
     }
 
     onMount(async () => {
@@ -223,6 +231,14 @@
                                         </PinkButton.Button>
                                         <svelte:fragment slot="tooltip" let:toggle>
                                             <ActionMenu.Root>
+                                                <ActionMenu.Item.Button
+                                                    leadingIcon={IconDuplicate}
+                                                    on:click={(e) => {
+                                                        toggle(e);
+                                                        copyPreviewWithToken(token.value);
+                                                    }}>
+                                                    Copy URL
+                                                </ActionMenu.Item.Button>
                                                 <ActionMenu.Item.Button
                                                     leadingIcon={IconPencil}
                                                     on:click={(e) => {

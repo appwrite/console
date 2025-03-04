@@ -14,6 +14,7 @@
     export let step: number | 'any' = 0.001;
 
     let error: string;
+    let element: HTMLInputElement;
 
     onMount(() => {
         if (element && autofocus) {
@@ -30,6 +31,7 @@
         } else {
             value = prevValue;
         }
+    }
 
     $: if (value) {
         error = null;
@@ -47,7 +49,7 @@
         {step}
         helper={error}
         autocomplete={autocomplete ? 'on' : 'off'}>
-        {#if isNullable}
+        {#if nullable}
             <Selector.Checkbox
                 size="s"
                 slot="end"
