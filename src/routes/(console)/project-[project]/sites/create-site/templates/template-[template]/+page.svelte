@@ -54,7 +54,7 @@
     let rootDir = './';
     let connectBehaviour: 'now' | 'later' = 'now';
     let repositoryBehaviour: 'new' | 'existing' = 'new';
-    let repositoryName = '';
+    let repositoryName = undefined;
     let repositoryPrivate = true;
     let selectedInstallationId = '';
     let selectedRepository = '';
@@ -202,12 +202,14 @@
 
     $: if (repositoryBehaviour === 'new') {
         selectedInstallationId = $installation?.$id;
-        repositoryName = name.split(' ').join('-').toLowerCase();
+        repositoryName ??= name.split(' ').join('-').toLowerCase();
     }
 
     $: if (connectBehaviour === 'later') {
         selectedRepository = null;
     }
+
+    $: console.log(repositoryName);
 
     $: console.log(data.template);
     $: console.log(variables);
@@ -330,11 +332,8 @@
                             </Empty>
                         </Card>
                     {/if}
-                {:else}
-                    {#if data.template.variables?.length}
-                        <Configuration bind:variables templateVariables={data.template.variables} />
-                    {/if}
-                    <!-- <Domain bind:domain bind:domainIsValid /> -->
+                {:else if data.template.variables?.length}
+                    <Configuration bind:variables templateVariables={data.template.variables} />
                 {/if}
             {/if}
         </Layout.Stack>
