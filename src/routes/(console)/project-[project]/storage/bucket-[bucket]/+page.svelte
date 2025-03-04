@@ -42,6 +42,7 @@
     import { Layout, Table, Icon } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data;
 
@@ -146,7 +147,7 @@
                             {calculateSize(file.sizeOriginal)}
                         </Table.Cell>
                         <Table.Cell>
-                            {toLocaleDate(file.$createdAt)}
+                            <DualTimeView time={file.$createdAt} />
                         </Table.Cell>
                         <Table.Cell>
                             <div class="u-flex u-main-center">
@@ -175,7 +176,7 @@
                             {calculateSize(file.sizeOriginal)}
                         </Table.Cell>
                         <Table.Cell>
-                            {toLocaleDate(file.$createdAt)}
+                            <DualTimeView time={file.$createdAt} />
                         </Table.Cell>
                         <Table.Cell>
                             <DropList

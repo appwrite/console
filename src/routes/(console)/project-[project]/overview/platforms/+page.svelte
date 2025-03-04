@@ -84,6 +84,7 @@
         IconReact
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentType } from 'svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
 
@@ -141,7 +142,11 @@
                     </Layout.Stack>
                 </Table.Cell>
                 <Table.Cell>
-                    {platform.$updatedAt ? toLocaleDate(platform.$updatedAt) : 'never'}
+                    {#if platform.$updatedAt}
+                        <DualTimeView time={platform.updatedAt} />
+                    {:else}
+                        never
+                    {/if}
                 </Table.Cell>
             </Table.Link>
         {/each}

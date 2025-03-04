@@ -28,6 +28,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Link, Status, Table } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data;
     let migration: Models.Migration = null;
@@ -162,9 +163,11 @@
                         <Table.Row>
                             {@const status = getStatus(entry.status)}
                             <Table.Cell>
-                                {isSameDay(new Date(), new Date(entry.$createdAt))
-                                    ? 'Today'
-                                    : toLocaleDate(entry.$createdAt)}
+                                {#if isSameDay(new Date(), new Date(entry.$createdAt))}
+                                    Today
+                                {:else}
+                                    <DualTimeView time={entry.$createdAt} />
+                                {/if}
                             </Table.Cell>
                             <Table.Cell>{entry.source}</Table.Cell>
                             <Table.Cell>

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { AvatarInitials, CardGrid, Paginator } from '$lib/components';
     import { EmptyCardCloud } from '$lib/components/billing';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import {
@@ -72,9 +73,7 @@
                                     </div>
                                 </TableCell>
                                 <TableCellText title="joined">
-                                    {member.joined
-                                        ? toLocaleDate(member.joined)
-                                        : toLocaleDate(member.$createdAt)}
+                                    <DualTimeView time={member.joined ?? member.$createdAt} />
                                 </TableCellText>
                             </TableRow>
                         {/each}

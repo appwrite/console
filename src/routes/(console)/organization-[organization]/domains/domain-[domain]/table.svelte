@@ -17,6 +17,7 @@
     import { capitalize } from '$lib/helpers/string';
     import EditRecordModal from './editRecordModal.svelte';
     import type { DnsRecord } from '$lib/sdk/domains';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data;
 
@@ -78,9 +79,7 @@
                             </Table.Cell>
                         {:else if column.id === '$createdAt'}
                             <Table.Cell>
-                                <Typography.Text>
-                                    {capitalize(timeFromNow(record.$createdAt))}
-                                </Typography.Text>
+                                <DualTimeView time={record.$createdAt} />
                             </Table.Cell>
                         {/if}
                     {/if}

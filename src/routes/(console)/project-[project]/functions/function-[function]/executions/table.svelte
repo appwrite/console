@@ -20,6 +20,7 @@
     import { Button } from '$lib/elements/forms';
     import { Tooltip, Table } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     let showDropdown = [];
     let showDelete = false;
@@ -85,7 +86,7 @@
                         </Table.Cell>
                     {:else if column.id === '$createdAt'}
                         <Table.Cell>
-                            {timeFromNow(execution.$createdAt)}
+                            <DualTimeView time={execution.$createdAt} />
                         </Table.Cell>
                     {:else if column.id === 'trigger'}
                         <Table.Cell>
