@@ -32,6 +32,7 @@
     import CreateVariableModal from './createVariableModal.svelte';
     import DeleteVariableModal from './deleteVariableModal.svelte';
     import UpdateVariableModal from './updateVariableModal.svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -145,7 +146,15 @@
                                 </Button>
                             </Layout.Stack>
                             {#if variables?.length}
-                                <Button secondary size="s" on:mousedown={() => (showCreate = true)}>
+                                <Button
+                                    secondary
+                                    size="s"
+                                    on:mousedown={() => {
+                                        showCreate = true;
+                                        trackEvent(Click.VariablesCreate, {
+                                            source: 'site_settings'
+                                        });
+                                    }}>
                                     <Icon slot="start" icon={IconPlus} /> Create variable
                                 </Button>
                             {/if}

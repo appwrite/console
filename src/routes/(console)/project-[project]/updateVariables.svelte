@@ -5,7 +5,7 @@
     import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
     import { invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '$routes/(console)/project-[project]/store';
@@ -230,7 +230,12 @@
                     </Button>
                 </Layout.Stack>
                 {#if variableList.total}
-                    <Button secondary on:mousedown={() => (showVariablesModal = true)}>
+                    <Button
+                        secondary
+                        on:mousedown={() => {
+                            showVariablesModal = true;
+                            trackEvent(Click.VariablesCreate, { source: 'project_settings' });
+                        }}>
                         <Icon slot="start" icon={IconPlus} /> Create variable
                     </Button>
                 {/if}

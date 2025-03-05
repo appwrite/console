@@ -149,6 +149,7 @@
                 );
 
                 trackEvent(Submit.FunctionCreate, {
+                    runtime: runtime,
                     source: 'template',
                     framework: data.template.name
                 });

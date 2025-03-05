@@ -161,7 +161,8 @@ export enum Click {
     OnboardingAuthEmailPasswordClick = 'click_onboarding_auth_email_password',
     OnboardingAuthOauth2Click = 'click_onboarding_auth_oauth2',
     OnboardingAuthAllMethodsClick = 'click_onboarding_auth_all_methods',
-    OnboardingDiscordClick = 'click_onboarding_discord'
+    OnboardingDiscordClick = 'click_onboarding_discord',
+    VariablesCreate = 'click_variable_create'
 }
 
 export enum Submit {
