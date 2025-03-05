@@ -139,9 +139,13 @@ export function isTrackingAllowed() {
 }
 
 export enum Click {
+    BreadcrumbClick = 'click_breadcrumb',
     KeyCreateClick = 'click_key_create',
+    MenuDropDownClick = 'click_menu_dropdown',
+    ModalCloseClick = 'click_close_modal',
     PlatformCreateClick = 'click_platform_create',
     OrganizationClickCreate = 'click_create_organization',
+    OrganizationClickUpgrade = 'click_organization_upgrade',
     OnboardingSetupDatabaseClick = 'click_onboarding_setup_database',
     OnboardingApiReferencesClick = 'click_onboarding_api_references',
     OnboardingTutorialsClick = 'click_onboarding_tutorials',
