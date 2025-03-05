@@ -113,15 +113,7 @@
                 message: 'Please select a repository'
             });
             return;
-        }
-        // else if (!domainIsValid) {
-        //     addNotification({
-        //         type: 'error',
-        //         message: 'Please enter a valid domain'
-        //     });
-        //     return;
-        // }
-        else {
+        } else {
             try {
                 domain = await buildVerboseDomain(
                     data.template.name,
@@ -253,7 +245,6 @@
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <!-- <Domain bind:domain bind:domainIsValid /> -->
                 </Layout.Stack>
             {:else}
                 {@const options = data.template.frameworks.map((framework) => {

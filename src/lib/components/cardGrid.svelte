@@ -7,19 +7,19 @@
 
 <Card.Base>
     <Layout.Stack gap="xl" justifyContent="space-around">
-        <div class="common-section grid-1-2" class:hideOverflow>
-            <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-4">
+        <Layout.GridFraction gap="xxxl" rowGap="xl" start={1} end={2}>
+            <Layout.Stack gap="xxs">
                 <Typography.Title size="s"><slot name="title" /></Typography.Title>
                 {#if $$slots.default}
                     <Typography.Text>
                         <slot />
                     </Typography.Text>
                 {/if}
-            </div>
-            <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0">
+            </Layout.Stack>
+            <Layout.Stack gap="l">
                 <slot name="aside" />
-            </div>
-        </div>
+            </Layout.Stack>
+        </Layout.GridFraction>
         {#if $$slots.actions && !hideFooter}
             <span
                 style="margin-left: calc(-1* var(--space-9));margin-right: calc(-1* var(--space-9));width:auto;">
@@ -31,10 +31,3 @@
         {/if}
     </Layout.Stack>
 </Card.Base>
-
-<style lang="scss">
-    .hideOverflow > * {
-        width: 100%;
-        overflow: hidden;
-    }
-</style>

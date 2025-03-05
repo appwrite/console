@@ -7,8 +7,11 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Card, Fieldset, InlineCode, Layout } from '@appwrite.io/pink-svelte';
+    import { iconPath } from '$lib/stores/app';
+    import { getFrameworkIcon } from '../../store';
+    import { Link } from '$lib/elements';
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];
@@ -18,6 +21,7 @@
     let outputDirectory = undefined;
     let frameworkKey = site.framework;
     let isButtonDisabled = true;
+    let adapter: Adapter;
 
     onMount(async () => {
         selectedFramework ??= frameworks.find((framework) => framework.key === site.framework);
@@ -66,7 +70,7 @@
         }
     }
 
-    $: frameworkData = frameworks.find((framework) => framework.key === framework.key);
+    $: frameworkData = frameworks.find((framework) => framework.key === frameworkKey);
     $: if (
         installCommand === site?.installCommand &&
         buildCommand === site?.buildCommand &&
@@ -85,44 +89,77 @@
         Default build settings are configured based on your framework, ensuring optimal performance.
         Adjust the settings here if needed.
         <svelte:fragment slot="aside">
-            <InputSelect
-                id="framework"
-                label="Framework"
-                placeholder="Select framework"
-                bind:value={frameworkKey}
-                options={frameworks.map((framework) => ({
-                    value: framework.key,
-                    label: framework.name
-                }))}
-                on:change={() => {
-                    selectedFramework = frameworks.find(
-                        (framework) => framework.key === frameworkKey
-                    );
-                }} />
-
-            <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                <InputText
-                    id="installCommand"
-                    label="Install command"
-                    bind:value={installCommand}
-                    placeholder={frameworkData.adapters[site.adapter].defaultInstallCommand} />
-                <Button secondary size="s" on:click={() => (installCommand = '')}>Reset</Button>
-            </Layout.Stack>
-            <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                <InputText
-                    id="buildCommand"
-                    label="Build command"
-                    bind:value={buildCommand}
-                    placeholder={frameworkData.adapters[site.adapter].defaultBuildCommand} />
-                <Button secondary size="s" on:click={() => (buildCommand = '')}>Reset</Button>
-            </Layout.Stack>
-            <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                <InputText
-                    id="outputDirectory"
-                    label="Output directory"
-                    bind:value={outputDirectory}
-                    placeholder={frameworkData.adapters[site.adapter].defaultOutputDirectory} />
-                <Button secondary size="s" on:click={() => (outputDirectory = '')}>Reset</Button>
+            <Layout.Stack gap="xl">
+                <InputSelect
+                    required
+                    id="framework"
+                    label="Framework"
+                    placeholder="Select framework"
+                    bind:value={frameworkKey}
+                    options={frameworks.map((framework) => ({
+                        value: framework.key,
+                        label: framework.name,
+                        leadingHtml: `<img src='${$iconPath(getFrameworkIcon(framework.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+                    }))}
+                    on:change={() => {
+                        selectedFramework = frameworks.find(
+                            (framework) => framework.key === frameworkKey
+                        );
+                    }} />
+                <Layout.Grid columnsXS={1} columns={2} gap="l">
+                    <Card.Selector
+                        title="Server side rendering"
+                        variant="primary"
+                        radius="s"
+                        padding="s"
+                        value={Adapter.Ssr}
+                        bind:group={adapter}>
+                        Use <InlineCode code={`${frameworkKey}/node`} size="s" /> adapter in your {frameworkData.name}
+                        config file. <Link external href="#">Learn more</Link>.
+                    </Card.Selector>
+                    <Card.Selector
+                        title="Static site"
+                        variant="primary"
+                        radius="s"
+                        padding="s"
+                        value={Adapter.Static}
+                        bind:group={adapter}>
+                        Use <InlineCode code={`${frameworkKey}/static`} size="s" /> adapter in your {frameworkData.name}
+                        config file. <Link external href="#">Learn more</Link>.
+                    </Card.Selector>
+                </Layout.Grid>
+                <Fieldset legend="Settings">
+                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                        <InputText
+                            id="installCommand"
+                            label="Install command"
+                            bind:value={installCommand}
+                            placeholder={frameworkData.adapters[site.adapter]
+                                .defaultInstallCommand} />
+                        <Button secondary size="s" on:click={() => (installCommand = '')}
+                            >Reset</Button>
+                    </Layout.Stack>
+                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                        <InputText
+                            id="buildCommand"
+                            label="Build command"
+                            bind:value={buildCommand}
+                            placeholder={frameworkData.adapters[site.adapter]
+                                .defaultBuildCommand} />
+                        <Button secondary size="s" on:click={() => (buildCommand = '')}
+                            >Reset</Button>
+                    </Layout.Stack>
+                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                        <InputText
+                            id="outputDirectory"
+                            label="Output directory"
+                            bind:value={outputDirectory}
+                            placeholder={frameworkData.adapters[site.adapter]
+                                .defaultOutputDirectory} />
+                        <Button secondary size="s" on:click={() => (outputDirectory = '')}
+                            >Reset</Button>
+                    </Layout.Stack>
+                </Fieldset>
             </Layout.Stack>
         </svelte:fragment>
 
