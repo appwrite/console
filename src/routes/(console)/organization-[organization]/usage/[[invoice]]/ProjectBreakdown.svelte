@@ -107,7 +107,6 @@
     }
 
     onMount(() => {
-        console.log(JSON.stringify(projects, null, 2));
         if (metric === undefined && databaseOperationMetric === undefined) {
             throw new Error(`metric or database operations must be defined`);
         }
