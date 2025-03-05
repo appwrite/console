@@ -35,7 +35,7 @@
     import { AvatarGroup } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { getPlatformInfo } from '$lib/helpers/platform';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
 
     function createKey() {
@@ -56,6 +56,7 @@
         if (platform) {
             continuePlatform(type, platform.name, platform.key, platform.type);
         } else {
+            trackEvent(Submit.PlatformCreateClick, { source: 'onboard_hub' });
             addPlatform(type);
         }
     }

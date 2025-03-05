@@ -252,6 +252,7 @@ export enum Submit {
     PlatformCreate = 'submit_platform_create',
     PlatformDelete = 'submit_platform_delete',
     PlatformUpdate = 'submit_platform_update',
+    PlatformCreateClick = 'click_platform_create',
     DomainCreate = 'submit_domain_create',
     DomainDelete = 'submit_domain_delete',
     DomainUpdateVerification = 'submit_domain_update_verification',
