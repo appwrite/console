@@ -249,6 +249,7 @@ export enum Submit {
     KeyUpdateName = 'submit_key_update_name',
     KeyUpdateScopes = 'submit_key_update_scopes',
     KeyUpdateExpire = 'submit_key_update_expire',
+    KeyCreateClick = 'click_key_create',
     PlatformCreate = 'submit_platform_create',
     PlatformDelete = 'submit_platform_delete',
     PlatformUpdate = 'submit_platform_update',
@@ -347,5 +348,14 @@ export enum Submit {
     RecordCreate = 'submit_dns_record_create',
     RecordUpdate = 'submit_dns_record_update',
     RecordDelete = 'submit_dns_record_delete',
-    SearchClear = 'submit_clear_search'
+    SearchClear = 'submit_clear_search',
+    OnboardingSetupDatabaseClick = 'click_onboarding_setup_database',
+    OnboardingApiReferencesClick = 'click_onboarding_api_references',
+    OnboardingTutorialsClick = 'click_onboarding_tutorials',
+    OnboardingStorageQuickstartClick = 'click_onboarding_storage_quickstart',
+    OnboardingFunctionsQuickstartClick = 'click_onboarding_functions_quickstart',
+    OnboardingAuthEmailPasswordClick = 'click_onboarding_auth_email_password',
+    OnboardingAuthOauth2Click = 'click_onboarding_auth_oauth2',
+    OnboardingAuthAllMethodsClick = 'click_onboarding_auth_all_methods',
+    OnboardingDiscordClick = 'click_onboarding_discord'
 }
