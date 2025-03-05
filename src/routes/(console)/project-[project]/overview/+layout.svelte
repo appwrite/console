@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
     export function totalMetrics(set: Array<unknown>): number {
         if (!set) return 0;
-        return total((set as Metric[]).map((c) => c.value));
+        return total((set as Models.Metric[]).map((c) => c.value));
     }
 </script>
 
@@ -12,8 +12,13 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { PlatformsPanel } from '$lib/commandCenter/panels';
     import { Heading, Tab } from '$lib/components';
+    import { total } from '$lib/helpers/array';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { formatNum } from '$lib/helpers/string';
     import { Container, type UsagePeriods } from '$lib/layout';
+    import { periodToDates } from '$lib/layout/usage.svelte';
+    import { canWriteProjects } from '$lib/stores/roles';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { onboarding, project } from '../store';
     import Bandwidth from './bandwidth.svelte';
@@ -22,11 +27,6 @@
     import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
-    import { formatNum } from '$lib/helpers/string';
-    import { total } from '$lib/helpers/array';
-    import type { Metric } from '$lib/sdk/usage';
-    import { periodToDates } from '$lib/layout/usage.svelte';
-    import { canWriteProjects } from '$lib/stores/roles';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;

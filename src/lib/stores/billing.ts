@@ -17,13 +17,12 @@ import type {
     Aggregation,
     Invoice,
     InvoiceList,
-    PaymentList,
-    PaymentMethodData,
     Plan,
     PlansMap
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
+import type { Models } from '@appwrite.io/console';
 import { Query } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
@@ -58,7 +57,10 @@ export const roles = [
     }
 ];
 
-export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
+export const paymentMethods = derived(
+    page,
+    ($page) => $page.data.paymentMethods as Models.PaymentMethodList
+);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
 export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
 export const daysLeftInTrial = writable<number>(0);
@@ -414,7 +416,7 @@ export function checkForMarkedForDeletion(org: Organization) {
     }
 }
 
-export const paymentMissingMandate = writable<PaymentMethodData>(null);
+export const paymentMissingMandate = writable<Models.PaymentMethod>(null);
 
 export async function checkForMandate(org: Organization) {
     const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;

@@ -1,5 +1,11 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
     import { Card, DropList, DropListItem, FloatingActionBar, Modal } from '$lib/components';
+    import { LabelCard } from '$lib/components/index.js';
+    import { Dependencies } from '$lib/constants';
+    import { Pill } from '$lib/elements';
     import { Button, FormList, InputCheckbox, InputText } from '$lib/elements/forms';
     import {
         TableBody,
@@ -11,27 +17,20 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { tooltip } from '$lib/actions/tooltip';
-    import RestoreModal from './restoreModal.svelte';
-    import type { PageData } from './$types';
+    import { copy } from '$lib/helpers/copy';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
-    import { Pill } from '$lib/elements';
-    import { sdk } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
-    import { invalidate } from '$app/navigation';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { ID } from '@appwrite.io/console';
     import { database } from '../store';
-    import type { BackupArchive } from '$lib/sdk/backups';
-    import { trackEvent } from '$lib/actions/analytics';
-    import { copy } from '$lib/helpers/copy';
-    import { LabelCard } from '$lib/components/index.js';
-    import { Dependencies } from '$lib/constants';
-
+    import type { PageData } from './$types';
+    import RestoreModal from './restoreModal.svelte';
     export let data: PageData;
 
     let showDelete = false;
-    let selectedBackup: BackupArchive = null;
+    let selectedBackup: Models.BackupArchive = null;
 
     let showDropdown = [];
     let selectedBackups: string[] = [];
@@ -121,7 +120,7 @@
     const policyDetails = (policyId: string | null) =>
         data.policies.policies.find((policy) => policy.$id === policyId);
 
-    const cleanBackupName = (backup: BackupArchive) =>
+    const cleanBackupName = (backup: Models.BackupArchive) =>
         toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
 
     $: if (!showRestore && !showDelete) {

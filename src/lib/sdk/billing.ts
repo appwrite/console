@@ -4,31 +4,6 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
-export type PaymentMethodData = {
-    $id: string;
-    $createdAt: string;
-    $updatedAt: string;
-    providerMethodId: string;
-    providerUserId: string;
-    userId: string;
-    expiryMonth: number;
-    expiryYear: number;
-    expired: boolean;
-    last4: string;
-    country: string;
-    brand: string;
-    clientSecret: string;
-    failed: boolean;
-    name: string;
-    mandateId?: string;
-    lastError?: string;
-};
-
-export type PaymentList = {
-    paymentMethods: PaymentMethodData[];
-    total: number;
-};
-
 export type Invoice = {
     $id: string;
     $createdAt: Date;
@@ -89,65 +64,6 @@ export type EstimationDeleteOrganization = {
     discount: number;
     items: EstimationItem[];
     unpaidInvoices: Invoice[];
-};
-
-export type Coupon = {
-    $id: string;
-    code: string;
-    credits: number;
-    expiration: string;
-    status: string; // 'active' | 'disabled' | 'expired'
-    validity: number;
-    campaign?: string;
-};
-
-export type Credit = {
-    /**
-     * Credit ID.
-     */
-    $id: string;
-    /**
-     * Credit creation time in ISO 8601 format.
-     */
-    $createdAt: string;
-    /**
-     * Credit update date in ISO 8601 format.
-     */
-    $updatedAt: string;
-    /**
-     * coupon ID
-     */
-    couponId: string;
-    /**
-     * ID of the User.
-     */
-    userId: string;
-    /**
-     * ID of the Team.
-     */
-    teamId: string;
-    /**
-     * Provided credit amount
-     */
-    total: number;
-    /**
-     * Remaining credit amount
-     */
-    credits: number;
-    /**
-     * Credit expiration time in ISO 8601 format.
-     */
-    expiration: string;
-    /**
-     * Status of the credit. Can be one of `disabled`, `active` or `expired`.
-     */
-    status: string;
-};
-
-export type CreditList = {
-    available: number;
-    credits: Credit[];
-    total: number;
 };
 
 export type Aggregation = {
@@ -826,7 +742,7 @@ export class Billing {
         );
     }
 
-    async addCredit(organizationId: string, couponId: string): Promise<Credit> {
+    async addCredit(organizationId: string, couponId: string): Promise<Models.Credit> {
         const path = `/organizations/${organizationId}/credits`;
         const params = {
             couponId
@@ -841,7 +757,7 @@ export class Billing {
             params
         );
     }
-    async listCredits(organizationId: string, queries = []): Promise<CreditList> {
+    async listCredits(organizationId: string, queries = []): Promise<Models.CreditList> {
         const path = `/organizations/${organizationId}/credits`;
         const params = {
             queries
@@ -857,7 +773,7 @@ export class Billing {
         );
     }
 
-    async getCredit(organizationId: string, creditId: string): Promise<Credit> {
+    async getCredit(organizationId: string, creditId: string): Promise<Models.Credit> {
         const path = `/organizations/${organizationId}/credits/${creditId}`;
         const params = {
             creditId
@@ -895,7 +811,7 @@ export class Billing {
         }
     }
 
-    async getCouponAccount(couponId: string): Promise<Coupon> {
+    async getCouponAccount(couponId: string): Promise<Models.Coupon> {
         const path = `/account/coupons/${couponId}`;
         const params = {
             couponId
@@ -911,7 +827,7 @@ export class Billing {
         );
     }
 
-    async getCoupon(couponId: string): Promise<Coupon> {
+    async getCoupon(couponId: string): Promise<Models.Coupon> {
         const path = `/console/coupons/${couponId}`;
         const params = {
             couponId
@@ -983,7 +899,7 @@ export class Billing {
     async getOrganizationPaymentMethod(
         organizationId: string,
         paymentMethodId: string
-    ): Promise<PaymentMethodData> {
+    ): Promise<Models.PaymentMethod> {
         const path = `/organizations/${organizationId}/payment-methods/${paymentMethodId}`;
         const params = {
             organizationId,
@@ -1022,7 +938,7 @@ export class Billing {
 
     //ACCOUNT
 
-    async listPaymentMethods(queries: [] = []): Promise<PaymentList> {
+    async listPaymentMethods(queries: [] = []): Promise<Models.PaymentMethodList> {
         const path = `/account/payment-methods`;
         const params = {
             queries
@@ -1038,7 +954,7 @@ export class Billing {
         );
     }
 
-    async getPaymentMethod(paymentMethodId: string): Promise<PaymentMethodData> {
+    async getPaymentMethod(paymentMethodId: string): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId
@@ -1054,7 +970,7 @@ export class Billing {
         );
     }
 
-    async createPaymentMethod(): Promise<PaymentMethodData> {
+    async createPaymentMethod(): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);
@@ -1072,7 +988,7 @@ export class Billing {
         paymentMethodId: string,
         providerMethodId: string | PaymentMethod,
         name: string
-    ): Promise<PaymentMethodData> {
+    ): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}/provider`;
         const params = {
             paymentMethodId,
@@ -1094,7 +1010,7 @@ export class Billing {
         paymentMethodId: string,
         expiryMonth: string,
         expiryYear: string
-    ): Promise<PaymentMethodData> {
+    ): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId,
@@ -1112,7 +1028,7 @@ export class Billing {
         );
     }
 
-    async deletePaymentMethod(paymentMethodId: string): Promise<PaymentMethodData> {
+    async deletePaymentMethod(paymentMethodId: string): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}`;
         const params = {
             paymentMethodId
@@ -1127,7 +1043,7 @@ export class Billing {
             params
         );
     }
-    async setDefaultPaymentMethod(paymentMethodId: string): Promise<PaymentMethodData> {
+    async setDefaultPaymentMethod(paymentMethodId: string): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}/default`;
         const params = {
             paymentMethodId
@@ -1146,7 +1062,7 @@ export class Billing {
     async setupPaymentMandate(
         organizationId: string,
         paymentMethodId: string
-    ): Promise<PaymentMethodData> {
+    ): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}/setup`;
         const params = {
             organizationId,

@@ -1,8 +1,26 @@
 import type { Aggregation, Invoice } from '$lib/sdk/billing';
-import { accumulateUsage } from '$lib/sdk/usage';
 import { getSdkForProject, sdk } from '$lib/stores/sdk';
+import type { Models } from '@appwrite.io/console';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+
+function accumulateUsage(usage: Models.Metric[], base: number): Models.Metric[] {
+    const accumulation = usage.reduce(
+        (carry, item) => {
+            const value = item.value + carry.currentTotal;
+            return {
+                currentTotal: value,
+                metrics: [...carry.metrics, { ...item, value }]
+            };
+        },
+        {
+            currentTotal: base,
+            metrics: []
+        }
+    );
+
+    return accumulation.metrics;
+}
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice, project } = params;

@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
     import {
         CardGrid,
         CreditCardBrandImage,
@@ -10,19 +10,19 @@
         DropListItem,
         Heading
     } from '$lib/components';
+    import PaymentModal from '$lib/components/billing/paymentModal.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
+    import { paymentMethods } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
-    import { Button } from '$lib/elements/forms';
+    import { sdk } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import { paymentMethods } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
+    import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
+    import type { Models } from '@appwrite.io/console';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
-    import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
-    import { tooltip } from '$lib/actions/tooltip';
-    import PaymentModal from '$lib/components/billing/paymentModal.svelte';
-    import { user } from '$lib/stores/user';
 
     let showDropdown = false;
     let showDropdownBackup = false;
@@ -32,8 +32,8 @@
     let showDelete = false;
     let showReplace = false;
     let isSelectedBackup = false;
-    let defaultPaymentMethod: PaymentMethodData;
-    let backupPaymentMethod: PaymentMethodData;
+    let defaultPaymentMethod: Models.PaymentMethod;
+    let backupPaymentMethod: Models.PaymentMethod;
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {

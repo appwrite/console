@@ -1,18 +1,19 @@
 <script lang="ts">
     import { FormList, InputChoice, InputNumber } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon, Estimation } from '$lib/sdk/billing';
+    import type { Estimation } from '$lib/sdk/billing';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { AppwriteException } from '@appwrite.io/console';
     import Card from '../card.svelte';
     import DiscountsApplied from './discountsApplied.svelte';
-    import { addNotification } from '$lib/stores/notifications';
 
     export let organizationId: string | undefined = undefined;
     export let billingPlan: string;
     export let collaborators: string[];
     export let fixedCoupon = false;
-    export let couponData: Partial<Coupon>;
+    export let couponData: Partial<Models.Coupon>;
 
     export let billingBudget: number;
 

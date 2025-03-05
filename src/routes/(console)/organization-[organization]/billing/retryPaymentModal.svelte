@@ -1,26 +1,25 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { FakeModal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
-    import { Dependencies } from '$lib/constants';
-    import type { Invoice } from '$lib/sdk/billing';
-    import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/stores';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { FakeModal } from '$lib/components';
+    import { PaymentBoxes } from '$lib/components/billing';
+    import { Dependencies } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { formatCurrency } from '$lib/helpers/numbers';
+    import type { Invoice } from '$lib/sdk/billing';
+    import { paymentMethods } from '$lib/stores/billing';
+    import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
+    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import {
         confirmPayment,
         initializeStripe,
         isStripeInitialized,
         submitStripeCard
     } from '$lib/stores/stripe';
-    import { organization } from '$lib/stores/organization';
-    import { toLocaleDate } from '$lib/helpers/date';
-    import { PaymentBoxes } from '$lib/components/billing';
-    import { paymentMethods } from '$lib/stores/billing';
     import { onMount } from 'svelte';
-    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
-    import { formatCurrency } from '$lib/helpers/numbers';
-
     export let show = false;
     export let invoice: Invoice;
     let error: string = null;

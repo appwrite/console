@@ -1,14 +1,14 @@
 <script lang="ts">
     import { CouponInput } from '$lib/components/billing';
     import { WizardStep } from '$lib/layout';
-    import type { Coupon } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { addCreditWizardStore } from '../store';
 
     let coupon: string;
-    export let couponData: Partial<Coupon> = {
+    export let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null

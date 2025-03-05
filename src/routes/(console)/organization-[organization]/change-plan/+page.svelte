@@ -27,7 +27,6 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
     import { isOrganization, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
@@ -40,6 +39,7 @@
     import { confirmPayment } from '$lib/stores/stripe';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
@@ -57,7 +57,7 @@
 
     let formComponent: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let billingPlan: Tier = $currentPlan?.$id as Tier;
     let paymentMethodId: string;
     let collaborators: string[] =
@@ -66,7 +66,7 @@
                 if (m.userEmail !== $user.email) return m.userEmail;
             })
             ?.filter(Boolean) ?? [];
-    let couponData: Partial<Coupon> = {
+    let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null

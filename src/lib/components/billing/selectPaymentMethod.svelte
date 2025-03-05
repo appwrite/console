@@ -1,14 +1,14 @@
 <script lang="ts">
     import { Button, Helper, InputChoice, InputSelectSearch, InputText } from '$lib/elements/forms';
-    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
+    import { capitalize } from '$lib/helpers/string';
     import { sdk } from '$lib/stores/sdk';
     import { hasStripePublicKey, isCloud } from '$lib/system';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { Alert, Card, CreditCardBrandImage } from '..';
     import PaymentModal from './paymentModal.svelte';
-    import { capitalize } from '$lib/helpers/string';
 
-    export let methods: PaymentList;
+    export let methods: Models.PaymentMethodList;
     export let value: string;
     export let taxId = '';
 
@@ -27,7 +27,7 @@
         error = input.validationMessage;
     }
 
-    async function cardSaved(event: CustomEvent<PaymentMethodData>) {
+    async function cardSaved(event: CustomEvent<Models.PaymentMethod>) {
         value = event.detail.$id;
         methods = await sdk.forConsole.billing.listPaymentMethods();
     }

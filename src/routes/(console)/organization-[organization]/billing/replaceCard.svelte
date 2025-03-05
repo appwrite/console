@@ -1,20 +1,20 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { FakeModal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
-    import { sdk } from '$lib/stores/sdk';
-    import { organization } from '$lib/stores/organization';
-    import { Dependencies } from '$lib/constants';
-    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
-    import { onMount } from 'svelte';
-    import type { PaymentList } from '$lib/sdk/billing';
-    import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { FakeModal } from '$lib/components';
     import { PaymentBoxes } from '$lib/components/billing';
+    import { Dependencies } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
+    import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
 
     export let show = false;
     export let isBackup = false;
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let selectedPaymentMethodId: string;
     let name: string;
     let error: string;

@@ -1,17 +1,17 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { PaymentBoxes } from '$lib/components/billing';
+    import { Dependencies } from '$lib/constants';
     import { FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { onMount } from 'svelte';
-    import type { PaymentList } from '$lib/sdk/billing';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
-    import { sdk } from '$lib/stores/sdk';
-    import { PaymentBoxes } from '$lib/components/billing';
-    import { addCreditWizardStore } from '../store';
     import { organization } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
+    import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
+    import { addCreditWizardStore } from '../store';
 
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let name: string;
 
     onMount(async () => {

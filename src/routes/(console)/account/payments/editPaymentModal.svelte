@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { Alert, Modal } from '$lib/components';
-    import { Button, FormItem, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Alert, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
+    import { Button, FormItem, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedPaymentMethod: PaymentMethodData;
+    export let selectedPaymentMethod: Models.PaymentMethod;
     export let isLinked = false;
     const currentYear = new Date().getFullYear();
     let error: string;
