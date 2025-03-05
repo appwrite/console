@@ -117,7 +117,7 @@
                         <div>
                             <InteractiveText
                                 text={selectedLog.requestPath}
-                                variant="copy"
+                                variant="copy-code"
                                 isVisible />
                         </div>
                     </Layout.Stack>
