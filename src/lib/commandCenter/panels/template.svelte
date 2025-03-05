@@ -10,6 +10,7 @@
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Keyboard, Layout } from '@appwrite.io/pink-svelte';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     /* eslint no-undef: "off" */
     type Option = $$Generic<Omit<Command, 'group'> & { group?: string }>;
@@ -22,6 +23,7 @@
     let selected = 0;
     let usingKeyboard = false;
     let contentEl: HTMLElement;
+    let didSearch = false;
 
     async function triggerOption(option: Option) {
         const prevPanels = $subPanels.length;
@@ -42,6 +44,14 @@
     function handleKeyDown(event: KeyboardEvent) {
         if (!open) return;
         usingKeyboard = true;
+
+        if (search.length > 0) {
+            didSearch = true;
+        }
+
+        if (search === '' && didSearch) {
+            trackEvent(Submit.SearchClear);
+        }
 
         let canceled = false;
         dispatch('keydown', {
