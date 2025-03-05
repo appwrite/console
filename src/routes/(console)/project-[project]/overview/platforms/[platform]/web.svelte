@@ -8,6 +8,7 @@
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
+    import { hostnameRegex } from '$lib/helpers/string';
 
     let hostname: string = null;
 
@@ -28,7 +29,7 @@
             await invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
-                message: 'Platform Hostname has been updated'
+                message: 'Platform hostname has been updated'
             });
         } catch (error) {
             addNotification({
@@ -49,7 +50,8 @@
                     id="hostname"
                     label="Hostname"
                     bind:value={hostname}
-                    required
+                    pattern={hostnameRegex}
+                    patternError="Please enter a valid hostname"
                     placeholder="myapp.com" />
             </FormList>
         </svelte:fragment>

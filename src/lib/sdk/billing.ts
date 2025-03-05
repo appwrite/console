@@ -1,8 +1,8 @@
-import type { Client, Models } from '@appwrite.io/console';
-import type { OrganizationError, Organization, OrganizationList } from '../stores/organization';
-import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
+import type { Client, Models } from '@appwrite.io/console';
+import type { PaymentMethod } from '@stripe/stripe-js';
+import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
 export type PaymentMethodData = {
     $id: string;
@@ -213,11 +213,13 @@ export type OrganizationUsage = {
     executions: Array<Models.Metric>;
     databasesReads: Array<Models.Metric>;
     databasesWrites: Array<Models.Metric>;
+    imageTransformations: Array<Models.Metric>;
     executionsTotal: number;
     filesStorageTotal: number;
     buildsStorageTotal: number;
     databasesReadsTotal: number;
     databasesWritesTotal: number;
+    imageTransformationsTotal: number;
     deploymentsStorageTotal: number;
     executionsMBSecondsTotal: number;
     buildsMBSecondsTotal: number;
@@ -235,6 +237,7 @@ export type OrganizationUsage = {
         users: number;
         authPhoneTotal: number;
         authPhoneEstimate: number;
+        imageTransformations: number;
     }>;
     authPhoneTotal: number;
     authPhoneEstimate: number;
@@ -313,6 +316,7 @@ export type Plan = {
     order: number;
     bandwidth: number;
     storage: number;
+    imageTransformations: number;
     webhooks: number;
     users: number;
     teams: number;

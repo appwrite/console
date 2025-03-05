@@ -64,6 +64,14 @@
             ]
         },
         {
+            id: '$createdAt',
+            title: 'Created',
+            type: 'datetime',
+            show: true,
+            width: 150,
+            format: 'datetime'
+        },
+        {
             id: '$updatedAt',
             title: 'Updated',
             type: 'datetime',
@@ -71,7 +79,6 @@
             width: 150,
             format: 'datetime'
         },
-
         {
             id: 'buildTime',
             title: 'Build time',
