@@ -19,11 +19,6 @@
             title: 'Deployments',
             event: 'deployments'
         },
-        // {
-        //     href: `${path}/analytics`,
-        //     title: 'Analytics',
-        //     event: 'analytics'
-        // },
         {
             href: `${path}/logs`,
             title: 'Logs',
@@ -33,6 +28,11 @@
             href: `${path}/domains`,
             title: 'Domains',
             event: 'domains'
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage',
+            event: 'usage'
         },
         {
             href: `${path}/settings`,
