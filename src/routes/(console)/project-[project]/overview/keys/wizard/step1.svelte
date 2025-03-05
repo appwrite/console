@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { FormList, InputText } from '$lib/elements/forms';
+    import { apiKey } from '../../store';
     import { WizardStep } from '$lib/layout';
-    import ExpirationInput from '../expirationInput.svelte';
-    import { key } from './store';
+    import { FormList, InputText } from '$lib/elements/forms';
+    import ExpirationInput from '../../components/expirationInput.svelte';
 </script>
 
 <WizardStep>
@@ -14,7 +14,7 @@
             label="Name"
             placeholder="API key name"
             required
-            bind:value={$key.name} />
-        <ExpirationInput bind:value={$key.expire} />
+            bind:value={$apiKey.name} />
+        <ExpirationInput bind:value={$apiKey.expire} />
     </FormList>
 </WizardStep>

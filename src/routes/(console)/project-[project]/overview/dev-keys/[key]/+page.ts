@@ -5,17 +5,18 @@ import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, depends }) => {
-    depends(Dependencies.KEY);
+    depends(Dependencies.DEV_KEY);
 
-    const apiKey = await sdk.forConsole.projects.getKey(params.project, params.key);
-    if (apiKey.expire) {
-        apiKey.expire = new Date(apiKey.expire).toISOString().slice(0, 23);
+    const devKey = await sdk.forConsole.projects.getDevKey(params.project, params.key);
+
+    if (devKey.expire) {
+        devKey.expire = new Date(devKey.expire).toISOString().slice(0, 23);
     } else {
-        apiKey.expire = undefined;
+        devKey.expire = undefined;
     }
 
     return {
-        apiKey,
+        devKey,
         header: Header,
         breadcrumbs: Breadcrumbs
     };
