@@ -1,33 +1,33 @@
 <script lang="ts">
-    import Card from '$lib/components/card.svelte';
     import { DropList, DropListItem, Modal } from '$lib/components';
+    import Card from '$lib/components/card.svelte';
     import { Button, FormList, InputCheckbox } from '$lib/elements/forms/index';
 
-    import { app } from '$lib/stores/app';
-    import { sdk } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { parseExpression } from 'cron-parser';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { app } from '$lib/stores/app';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
+    import { parseExpression } from 'cron-parser';
 
     import { tooltip } from '$lib/actions/tooltip';
 
+    import { trackEvent } from '$lib/actions/analytics';
+    import { backupFrequencies } from '$lib/helpers/backups';
     import EmptyDark from '$lib/images/backups/backups-dark.png';
     import EmptyLight from '$lib/images/backups/backups-light.png';
-    import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
-    import { backupFrequencies } from '$lib/helpers/backups';
-    import { trackEvent } from '$lib/actions/analytics';
+    import type { Models } from '@appwrite.io/console';
 
     let showDropdown = [];
     let showDelete = false;
-    let selectedPolicy: BackupPolicy = null;
+    let selectedPolicy: Models.BackupPolicy = null;
 
     let showEveryPolicy = false;
     let confirmedDeletion = false;
 
     export let showCreatePolicy = false;
-    export let policies: BackupPolicyList;
+    export let policies: Models.BackupPolicyList;
     export let lastBackupDates: Record<string, string>;
 
     async function deletePolicy() {

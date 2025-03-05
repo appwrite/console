@@ -18,16 +18,6 @@ export function accumulateUsage(usage: Models.Metric[], base: number): Models.Me
     return accumulation.metrics;
 }
 
-export type Metric = {
-    /**
-     * The value of this metric at the timestamp.
-     */
-    value: number;
-    /**
-     * The date at which this metric was aggregated in ISO 8601 format.
-     */
-    date: string;
-};
 /**
  * UsageDatabases
  */
@@ -51,15 +41,15 @@ export type UsageDatabases = {
     /**
      * Aggregated total statistics of documents per period.
      */
-    databases: Metric[];
+    databases: Models.Metric[];
     /**
      * Aggregated total statistics  of collections per period.
      */
-    collections: Metric[];
+    collections: Models.Metric[];
     /**
      * Aggregated total statistics  of documents per period.
      */
-    documents: Metric[];
+    documents: Models.Metric[];
 };
 /**
  * UsageDatabase
@@ -80,11 +70,11 @@ export type UsageDatabase = {
     /**
      * Aggregated  statistics collections per period.
      */
-    collections: Metric[];
+    collections: Models.Metric[];
     /**
      * Aggregated  statistics of documents per period.
      */
-    documents: Metric[];
+    documents: Models.Metric[];
 };
 /**
  * UsageCollection
@@ -101,7 +91,7 @@ export type UsageCollection = {
     /**
      * Aggregated statistics  of documents per period.
      */
-    documents: Metric[];
+    documents: Models.Metric[];
 };
 /**
  * UsageUsers
@@ -122,11 +112,11 @@ export type UsageUsers = {
     /**
      * Aggregated statistics of users per period.
      */
-    users: Metric[];
+    users: Models.Metric[];
     /**
      * Aggregated statistics sessions created per period.
      */
-    sessions: Metric[];
+    sessions: Models.Metric[];
 };
 /**
  * StorageUsage
@@ -151,15 +141,15 @@ export type UsageStorage = {
     /**
      * Aggregated statistics of buckets per period.
      */
-    buckets: Metric[];
+    buckets: Models.Metric[];
     /**
      * Aggregated statistics of files per period.
      */
-    files: Metric[];
+    files: Models.Metric[];
     /**
      * Aggregated statistics of storage (in bytes) per period .
      */
-    storage: Metric[];
+    storage: Models.Metric[];
 };
 /**
  * UsageBuckets
@@ -180,15 +170,15 @@ export type UsageBuckets = {
     /**
      * Aggregated  statistics of bucket files per period.
      */
-    files: Metric[];
+    files: Models.Metric[];
     /**
      * Aggregated statistics of bucket storage files per period.
      */
-    storage: Metric[];
+    storage: Models.Metric[];
     /**
      * Aggregated statistics of bucket image transformations per period.
      */
-    imageTransformations: Metric[];
+    imageTransformations: Models.Metric[];
     /**
      * Total aggregated number of bucket image transformations.
      */
@@ -237,35 +227,35 @@ export type UsageFunctions = {
     /**
      * Aggregated statistics of functions per period.
      */
-    functions: Metric[];
+    functions: Models.Metric[];
     /**
      * Aggregated statistics of deployments per period.
      */
-    deployments: Metric[];
+    deployments: Models.Metric[];
     /**
      * Aggregated statistics of deployments storage per period.
      */
-    deploymentsStorage: Metric[];
+    deploymentsStorage: Models.Metric[];
     /**
      * Aggregated statistics of builds per period.
      */
-    builds: Metric[];
+    builds: Models.Metric[];
     /**
      * Aggregated statistics of storage per period.
      */
-    buildsStorage: Metric[];
+    buildsStorage: Models.Metric[];
     /**
      * Aggregated statistics of  builds compute time per period.
      */
-    buildsTime: Metric[];
+    buildsTime: Models.Metric[];
     /**
      * Aggregated statistics of  executions per period.
      */
-    executions: Metric[];
+    executions: Models.Metric[];
     /**
      * Aggregated statistics of execution compute time per period.
      */
-    executionsTime: Metric[];
+    executionsTime: Models.Metric[];
 };
 /**
  * UsageProject
@@ -326,7 +316,7 @@ export type UsageProject = {
     /**
      * Array of image transformations per period.
      */
-    imageTransformations: Metric[];
+    imageTransformations: Models.Metric[];
 
     /**
      * Aggregated statistics of total number of image transformations.

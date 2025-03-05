@@ -1,21 +1,21 @@
 <script lang="ts">
+    import { goto, invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { getProjectId } from '$lib/helpers/project';
+    import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { isCloud, isSelfHosted } from '$lib/system';
+    import type { Models } from '@appwrite.io/console';
     import { type Payload } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { isCloud, isSelfHosted } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
-    import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
-    import { goto, invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
-    import { addNotification } from '$lib/stores/notifications';
-    import { base } from '$app/paths';
-    import { getProjectId } from '$lib/helpers/project';
-    import { toLocaleDate } from '$lib/helpers/date';
 
     const backupRestoreItems: {
-        archives: Map<string, BackupArchive>;
-        restorations: Map<string, BackupRestoration>;
+        archives: Map<string, Models.BackupArchive>;
+        restorations: Map<string, Models.BackupRestoration>;
     } = {
         archives: new Map(),
         restorations: new Map()
@@ -112,7 +112,7 @@
         if (which === 'restorations') lastDatabaseRestorationId = null;
     }
 
-    function backupName(item: BackupArchive | BackupRestoration, key: string) {
+    function backupName(item: Models.BackupArchive | Models.BackupRestoration, key: string) {
         const attribute = key === 'archives' ? '$createdAt' : 'startedAt';
 
         return toLocaleDate(item[attribute]);

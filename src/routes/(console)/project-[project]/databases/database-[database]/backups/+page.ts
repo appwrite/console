@@ -1,8 +1,8 @@
-import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
+import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
+import type { Models } from '@appwrite.io/console';
 import { Query } from '@appwrite.io/console';
-import type { BackupArchive, BackupArchiveList, BackupPolicyList } from '$lib/sdk/backups';
 
 export const load = async ({ params, url, route, depends }) => {
     depends(Dependencies.BACKUPS);
@@ -11,8 +11,8 @@ export const load = async ({ params, url, route, depends }) => {
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
-    let backups: BackupArchiveList = { total: 0, archives: [] };
-    let policies: BackupPolicyList = { total: 0, policies: [] };
+    let backups: Models.BackupArchiveList = { total: 0, archives: [] };
+    let policies: Models.BackupPolicyList = { total: 0, policies: [] };
 
     try {
         [backups, policies] = await Promise.all([
@@ -47,17 +47,17 @@ export const load = async ({ params, url, route, depends }) => {
     };
 };
 
-const groupArchivesByPolicy = (archives: BackupArchive[]) => {
+const groupArchivesByPolicy = (archives: Models.BackupArchive[]) => {
     return archives.reduce((acc, archive) => {
         if (!acc.has(archive.policyId)) {
             acc.set(archive.policyId, []);
         }
         acc.get(archive.policyId)!.push(archive);
         return acc;
-    }, new Map<string, BackupArchive[]>());
+    }, new Map<string, Models.BackupArchive[]>());
 };
 
-const getLatestBackupForPolicies = (policyIdMap: Map<string, BackupArchive[]>) => {
+const getLatestBackupForPolicies = (policyIdMap: Map<string, Models.BackupArchive[]>) => {
     const latestBackups = new Map<string, string | null>();
     for (const [policyId, archives] of policyIdMap) {
         const latestBackup = archives.sort(
