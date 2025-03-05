@@ -10,6 +10,7 @@
     import { addNotification } from '$lib/stores/notifications.js';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     export let data;
 
@@ -28,6 +29,7 @@
         disabled = true;
         try {
             await verify(challenge, code);
+            trackEvent(Submit.AccountLogin);
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
