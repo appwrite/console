@@ -259,7 +259,7 @@
                 {/if}
                 <Table.Root>
                     <svelte:fragment slot="header">
-                        <Table.Header.Cell width="180px">Key</Table.Header.Cell>
+                        <Table.Header.Cell width="300px">Key</Table.Header.Cell>
                         <Table.Header.Cell>Value</Table.Header.Cell>
                         <Table.Header.Cell width="30px" />
                     </svelte:fragment>

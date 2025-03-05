@@ -8,10 +8,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
-    import { Card, Fieldset, InlineCode, Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Fieldset, Icon, InlineCode, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { iconPath } from '$lib/stores/app';
     import { getFrameworkIcon } from '../../store';
     import { Link } from '$lib/elements';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];
@@ -20,8 +21,10 @@
     let buildCommand = undefined;
     let outputDirectory = undefined;
     let frameworkKey = site.framework;
+    let adapter: Adapter = site.adapter as Adapter;
+    let fallback = site.fallbackFile;
     let isButtonDisabled = true;
-    let adapter: Adapter;
+    let showFallback = site.adapter === Adapter.Static;
 
     onMount(async () => {
         selectedFramework ??= frameworks.find((framework) => framework.key === site.framework);
@@ -47,8 +50,8 @@
                 buildCommand || undefined,
                 outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter,
-                site.fallbackFile || undefined,
+                adapter || undefined,
+                fallback || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
                 site.providerBranch || undefined,
@@ -75,11 +78,22 @@
         installCommand === site?.installCommand &&
         buildCommand === site?.buildCommand &&
         outputDirectory === site?.outputDirectory &&
-        selectedFramework?.key === site?.framework
+        selectedFramework?.key === site?.framework &&
+        fallback === site?.fallbackFile
     ) {
         isButtonDisabled = true;
     } else {
         isButtonDisabled = false;
+    }
+
+    $: if (adapter === Adapter.Static) {
+        showFallback = true;
+    } else {
+        showFallback = false;
+    }
+
+    $: if (fallback === '') {
+        fallback = null;
     }
 </script>
 
@@ -129,35 +143,78 @@
                     </Card.Selector>
                 </Layout.Grid>
                 <Fieldset legend="Settings">
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputText
-                            id="installCommand"
-                            label="Install command"
-                            bind:value={installCommand}
-                            placeholder={frameworkData.adapters[site.adapter]
-                                .defaultInstallCommand} />
-                        <Button secondary size="s" on:click={() => (installCommand = '')}
-                            >Reset</Button>
-                    </Layout.Stack>
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputText
-                            id="buildCommand"
-                            label="Build command"
-                            bind:value={buildCommand}
-                            placeholder={frameworkData.adapters[site.adapter]
-                                .defaultBuildCommand} />
-                        <Button secondary size="s" on:click={() => (buildCommand = '')}
-                            >Reset</Button>
-                    </Layout.Stack>
-                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                        <InputText
-                            id="outputDirectory"
-                            label="Output directory"
-                            bind:value={outputDirectory}
-                            placeholder={frameworkData.adapters[site.adapter]
-                                .defaultOutputDirectory} />
-                        <Button secondary size="s" on:click={() => (outputDirectory = '')}
-                            >Reset</Button>
+                    <Layout.Stack gap="xl">
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="installCommand"
+                                label="Install command"
+                                bind:value={installCommand}
+                                placeholder={frameworkData.adapters[site.adapter]
+                                    .defaultInstallCommand} />
+
+                            <Button
+                                secondary
+                                size="s"
+                                on:click={() =>
+                                    (installCommand =
+                                        site?.installCommand ??
+                                        selectedFramework.adapters[site.adapter]
+                                            .defaultInstallCommand)}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="buildCommand"
+                                label="Build command"
+                                bind:value={buildCommand}
+                                placeholder={frameworkData.adapters[site.adapter]
+                                    .defaultBuildCommand} />
+                            <Button
+                                secondary
+                                size="s"
+                                on:click={() =>
+                                    (buildCommand =
+                                        site?.buildCommand ??
+                                        selectedFramework.adapters[site.adapter]
+                                            .defaultbuildCommand)}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="outputDirectory"
+                                label="Output directory"
+                                bind:value={outputDirectory}
+                                placeholder={frameworkData.adapters[site.adapter]
+                                    .defaultOutputDirectory} />
+                            <Button
+                                secondary
+                                size="s"
+                                on:click={() =>
+                                    (outputDirectory =
+                                        site?.outputDirectory ??
+                                        selectedFramework.adapters[site.adapter]
+                                            .defaultoutputDirectory)}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        {#if showFallback}
+                            <InputText
+                                id="fallback"
+                                label="Fallback file"
+                                required
+                                placeholder="index.html"
+                                bind:value={fallback}>
+                                <Tooltip slot="info">
+                                    <Icon icon={IconInfo} size="s" />
+                                    <span slot="tooltip">
+                                        Provide a fallback file for advanced routing and proper page
+                                        handling in SPA mode.
+                                    </span>
+                                </Tooltip>
+                            </InputText>
+                        {/if}
                     </Layout.Stack>
                 </Fieldset>
             </Layout.Stack>
