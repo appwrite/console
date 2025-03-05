@@ -190,18 +190,16 @@
             </p>
             <PlanSelection bind:billingPlan {anyOrgFree} isNewOrg />
             {#if billingPlan !== BillingPlan.FREE}
-                <FormList class="u-margin-block-start-24">
-                    <InputTags
-                        bind:tags={collaborators}
-                        label="Invite members by email"
-                        popover={Default}
-                        placeholder="Enter email address(es)"
-                        validityRegex={emailRegex}
-                        validityMessage="Invalid email address"
-                        id="members" />
-                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId
-                    ></SelectPaymentMethod>
-                </FormList>
+                <InputTags
+                    bind:tags={collaborators}
+                    label="Invite members by email"
+                    popover={Default}
+                    placeholder="Enter email address(es)"
+                    validityRegex={emailRegex}
+                    validityMessage="Invalid email address"
+                    id="members" />
+                <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId
+                ></SelectPaymentMethod>
                 {#if !couponData?.code}
                     <Button text on:click={() => (showCreditModal = true)}>
                         <Icon icon={IconPlus} slot="start" size="s" />

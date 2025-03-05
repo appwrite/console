@@ -10,6 +10,7 @@
     import { app } from '$lib/stores/app';
     import { currentPlan } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let show = false;
 
@@ -61,21 +62,18 @@
 
 <section class="drop-section support-section">
     {#if showHeader}
-        <h4 class="heading-level-6">Support</h4>
+        <Typography.Title size="s">Support</Typography.Title>
     {/if}
 
     {#each supportOptions as option, index}
         {#if showCloudSupport(index)}
             <Card
                 isTile
-                class="support-option-card u-flex u-flex-vertical u-gap-16"
-                style="border-radius: var(--border-radius-small, 8px); padding: 0.65rem;">
+                class="support-option-card "
+                style="border-radius: var(--border-radius-small, 8px); --gap-xl: 16px">
                 <div class="u-flex u-flex-vertical u-gap-4">
-                    <h4 class="body-text-2 u-bold">{option.label}</h4>
-
-                    <p class="u-line-height-1-5">
-                        {option.description}
-                    </p>
+                    <Typography.Text variant="m-500">{option.label}</Typography.Text>
+                    <Typography.Text variant="m-400">{option.description}</Typography.Text>
                 </div>
 
                 {#if option.showSupport}
@@ -177,12 +175,12 @@
 
     :global(.theme-dark .support-option-card) {
         /* override required due to the card's background color */
-        background: var(--color-bgcolor-neutral-default, #19191c) !important;
+        background: var(--bgcolor-neutral-default, #19191c) !important;
     }
 
     :global(.theme-light .support-option-card) {
-        border: 1px solid var(--color-border-neutral, #ededf0);
+        border: 1px solid var(--border-neutral, #ededf0);
         /* override required due to the card's background color */
-        background: var(--color-bgcolor-neutral-default, #fafafb) !important;
+        background: var(--bgcolor-neutral-default, #fafafb) !important;
     }
 </style>

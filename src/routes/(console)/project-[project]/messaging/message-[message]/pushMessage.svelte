@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import {
         Button,
         Form,
@@ -19,7 +19,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { validateData } from '../wizard/pushFormList.svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
@@ -103,7 +103,7 @@
 <Form onSubmit={update}>
     <CardGrid hideFooter={message.status != 'draft'}>
         <div class="grid-1-2-col-1 u-flex-vertical u-cross-start u-gap-16">
-            <Heading tag="h6" size="7">Message</Heading>
+            <Typography.Title size="s">Message</Typography.Title>
             <div class="u-flex u-margin-block-start-24 u-width-full-line">
                 <PushPhone {title} {body} />
             </div>

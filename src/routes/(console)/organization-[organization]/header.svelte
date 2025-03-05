@@ -92,7 +92,7 @@
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
                 <span class="u-trim">
-                    <Typography.Title color="--color-fgcolor-neutral-primary" size="xl"
+                    <Typography.Title color="--fgcolor-neutral-primary" size="xl"
                         >{$organization.name}</Typography.Title>
                 </span>
                 {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}

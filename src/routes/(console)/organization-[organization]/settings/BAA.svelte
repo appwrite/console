@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Box, CardGrid, Heading } from '$lib/components';
+    import { Box, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import BaaModal from './BAAModal.svelte';
 

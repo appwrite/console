@@ -1,82 +1,82 @@
 {
-    "backgroundColor": "var(--color-bgcolor-neutral-primary)",
+    "backgroundColor": "var(--bgcolor-neutral-primary)",
     "categoryAxis": {
         "axisLine": {
             "lineStyle": {
-                "color": "var(--color-fgcolor-neutral-tertiary)"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisTick": {
             "lineStyle": {
-                "color": "var(--color-fgcolor-neutral-tertiary)"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisLabel": {
-            "color": "var(--color-fgcolor-neutral-tertiary)"
+            "color": "var(--fgcolor-neutral-tertiary)"
         }
     },
     "valueAxis": {
         "axisLabel": {
-            "color": "var(--color-fgcolor-neutral-tertiary)"
+            "color": "var(--fgcolor-neutral-tertiary)"
         },
         "splitLine": {
             "lineStyle": {
-                "color": ["var(--color-border-neutral)"]
+                "color": ["var(--border-neutral)"]
             }
         }
     },
     "logAxis": {
         "axisLine": {
             "lineStyle": {
-                "color": "var(--color-fgcolor-neutral-tertiary)"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisTick": {
             "lineStyle": {
-                "color": "var(--color-fgcolor-neutral-tertiary)"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisLabel": {
-            "color": "var(--color-fgcolor-neutral-tertiary)"
+            "color": "var(--fgcolor-neutral-tertiary)"
         },
         "splitLine": {
             "lineStyle": {
-                "color": ["var(--color-border-neutral)"]
+                "color": ["var(--border-neutral)"]
             }
         }
     },
     "timeAxis": {
         "axisLine": {
             "lineStyle": {
-                "color": "var(--color-fgcolor-neutral-tertiary)"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisTick": {
             "lineStyle": {
-                "color": "var(--color-fgcolor-neutral-tertiary)"
+                "color": "var(--fgcolor-neutral-tertiary)"
             }
         },
         "axisLabel": {
-            "color": "var(--color-fgcolor-neutral-tertiary)"
+            "color": "var(--fgcolor-neutral-tertiary)"
         },
         "splitLine": {
             "lineStyle": {
-                "color": ["var(--color-border-neutral)"]
+                "color": ["var(--border-neutral)"]
             }
         }
     },
     "tooltip": {
-        "backgroundColor": "var(--color-bgcolor-neutral-primary)",
-        "borderColor": "var(--color-border-neutral)",
+        "backgroundColor": "var(--bgcolor-neutral-primary)",
+        "borderColor": "var(--border-neutral)",
         "textStyle": {
-            "color": "var(--color-fgcolor-neutral-secondary)"
+            "color": "var(--fgcolor-neutral-secondary)"
         },
         "axisPointer": {
             "lineStyle": {
-                "color": "var(--color-border-neutral-strong)"
+                "color": "var(--border-neutral-strong)"
             },
             "crossStyle": {
-                "color": "var(--color-border-neutral-strong)"
+                "color": "var(--border-neutral-strong)"
             }
         }
     }

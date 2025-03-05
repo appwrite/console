@@ -131,19 +131,8 @@
             padding: 1.25rem;
 
             &:not(:last-child) {
-                border-bottom: 1px solid hsl(var(--color-border));
+                border-bottom: 1px solid hsl(var(--border));
             }
-        }
-    }
-
-    .meta {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
-        padding: 1.5rem;
-
-        :nth-child(2n) {
-            font-weight: 600;
         }
     }
 

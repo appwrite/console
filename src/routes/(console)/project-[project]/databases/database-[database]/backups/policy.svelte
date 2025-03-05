@@ -323,7 +323,7 @@
     .u-border-vertical {
         width: 1px;
         height: 34px;
-        background-color: hsl(var(--color-border));
+        background-color: hsl(var(--border));
     }
 
     :global(.small-ellipse) {
@@ -349,7 +349,7 @@
 
     .policy-card-item-padding {
         padding: var(--space-3, 6px) var(--space-4, 8px);
-        border-block-end: solid 0.0625rem hsl(var(--color-border));
+        border-block-end: solid 0.0625rem hsl(var(--border));
     }
 
     .policy-card-item-padding:last-child {
@@ -377,7 +377,7 @@
     }
 
     :global(.theme-light .policy-item-subtitles) {
-        color: var(--color-fgColor-neutral-secondary, #56565c);
+        color: var(--fgcolor-neutral-secondary, #56565c);
     }
 
     :global(.theme-light .policy-item-caption) {
@@ -435,7 +435,7 @@
         .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3):not(
                 :last-child
             ) {
-            border-block-end: solid 0.0625rem hsl(var(--color-border));
+            border-block-end: solid 0.0625rem hsl(var(--border));
         }
 
         .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3)

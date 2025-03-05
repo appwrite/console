@@ -29,10 +29,9 @@
     import { project } from '$routes/(console)/project-[project]/store';
     import { page } from '$app/stores';
     import CreateIndex from './indexes/createIndex.svelte';
-    import { wizard } from '$lib/stores/wizard';
-    import CreateDocument from './createDocument.svelte';
     import { base } from '$app/paths';
     import { canWriteCollections } from '$lib/stores/roles';
+    import { IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
     let unsubscribe: { (): void };
 
@@ -58,9 +57,11 @@
             label: 'Create document',
             keys: $page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
             callback() {
-                wizard.start(CreateDocument);
+                goto(
+                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/create`
+                );
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'documents'
         },
         {
@@ -69,7 +70,7 @@
             callback() {
                 addSubPanel(CreateAttributePanel);
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'attributes',
             disabled: !$canWriteCollections
         },
@@ -165,7 +166,7 @@
                 $page.url.pathname.endsWith('permissions') ||
                 $page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
-            icon: 'puzzle'
+            icon: IconPuzzle
         },
         {
             label: 'Document security',
@@ -179,7 +180,7 @@
                 $page.url.pathname.endsWith('document-security') ||
                 $page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
-            icon: 'lock-closed'
+            icon: IconLockClosed
         },
         {
             label: 'Create index',
@@ -187,7 +188,7 @@
             callback() {
                 initCreateIndex();
             },
-            icon: 'plus',
+            icon: IconPlus,
             group: 'indexes',
             disabled: !$canWriteCollections
         }

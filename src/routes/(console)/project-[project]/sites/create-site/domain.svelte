@@ -36,7 +36,7 @@
             <Layout.Stack gap="s">
                 <InputText id="domain" placeholder="my-domain" bind:value={domain}>
                     <svelte:fragment slot="end">
-                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                             .{$consoleVariables._APP_DOMAIN_SITES}
                         </Typography.Text>
                     </svelte:fragment>
@@ -64,7 +64,7 @@
 {:else}
     <Card isTile padding="s" radius="s">
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
+            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                 <Layout.Stack direction="row" gap="s" alignItems="center">
                     <span class="icon-globe-alt"></span>
                     {domain}.{$consoleVariables._APP_DOMAIN_SITES}

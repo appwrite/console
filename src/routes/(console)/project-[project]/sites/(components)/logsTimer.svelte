@@ -11,14 +11,14 @@
 
 <Layout.Stack direction="row" alignItems="center" inline>
     {#if ['processing', 'building'].includes(status)}
-        <Typography.Code color="--color-fgcolor-neutral-secondary">
+        <Typography.Code color="--fgcolor-neutral-secondary">
             <Layout.Stack direction="row" alignItems="center" inline>
                 <p use:timer={{ start: deployment.$createdAt }} />
                 <Spinner size="s" />
             </Layout.Stack>
         </Typography.Code>
     {:else}
-        <Typography.Code color="--color-fgcolor-neutral-secondary">
+        <Typography.Code color="--fgcolor-neutral-secondary">
             {formatTimeDetailed(deployment.buildTime)}
         </Typography.Code>
     {/if}

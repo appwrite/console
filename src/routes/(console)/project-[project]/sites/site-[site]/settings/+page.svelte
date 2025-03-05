@@ -67,8 +67,8 @@
         globalVariableList={data.globalVariables}
         variableList={data.variables}
         product="site" />
-    <UpdateTimeout site={data.site} />
     <UpdateSpa site={data.site} />
     <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
+    <UpdateTimeout site={data.site} />
     <DangerZone site={data.site} />
 </Container>

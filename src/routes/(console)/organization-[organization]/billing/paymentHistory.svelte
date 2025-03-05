@@ -6,7 +6,6 @@
         DropListItem,
         DropListLink,
         EmptySearch,
-        Heading,
         PaginationInline
     } from '$lib/components';
     import { Pill } from '$lib/elements';

@@ -6,7 +6,6 @@
         EmptyFilter,
         EmptySearch,
         FloatingActionBar,
-        Heading,
         Id,
         Modal,
         PaginationWithLimit,
@@ -43,7 +42,7 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
     let selected: string[] = [];
@@ -237,9 +236,9 @@
     {:else}
         <Empty single target="message" on:click={() => ($showCreate = true)}>
             <div class="u-text-center">
-                <Heading size="7" tag="h2" trimmed={false}>
+                <Typography.Title size="s">
                     Create your first message to get started.
-                </Heading>
+                </Typography.Title>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
                     Need a hand? Learn more in our documentation.
                 </p>

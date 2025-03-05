@@ -2,7 +2,8 @@
     import { CustomId } from '$lib/components';
     import { InputSelect, InputText } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { Fieldset, Layout, Tag } from '@appwrite.io/pink-svelte';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { Fieldset, Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import type { ComponentType } from 'svelte';
 
     export let name: string;
@@ -35,8 +36,8 @@
             {:else}
                 <div>
                     <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
-                        <span class="icon-pencil" aria-hidden="true" />
-                        <span class="text">Site ID </span>
+                        <Icon icon={IconPencil} size="s" />
+                        Site ID
                     </Tag>
                 </div>
             {/if}

@@ -19,7 +19,7 @@
         PaginationWithLimit,
         SearchQuery
     } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -29,17 +29,16 @@
         humanFileSize,
         sizeToBytes
     } from '$lib/helpers/sizeConvertion';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
-    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
+    import { getServiceLimit } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
-    import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
-    import { Layout, Tooltip, Table, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Icon } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -56,7 +55,8 @@
             ? bytesToSize(data.organizationUsage.storageTotal, 'GB')
             : null;
     const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview(bucketId, fileId, 64, 64).toString() + '&mode=admin';
+        sdk.forProject.storage.getFilePreview(bucketId, fileId, 128, 128).toString() +
+        '&mode=admin';
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -113,7 +113,10 @@
             <SearchQuery search={data.search} placeholder="Search files" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Button on:mousedown={() => wizard.start(Create)} event="create_file" size="s">
+            <Button
+                href={`${base}/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/create`}
+                event="create_file"
+                size="s">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create file
             </Button>
@@ -166,7 +169,7 @@
                         href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
                         <Table.Cell>
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <Avatar size="s" src={getPreview(file.$id)} alt={file.name} />
+                                <Avatar size="xs" src={getPreview(file.$id)} alt={file.name} />
                                 <span class="text u-trim">{file.name}</span>
                             </div>
                         </Table.Cell>
@@ -242,7 +245,7 @@
             single
             href="https://appwrite.io/docs/products/storage/upload-download"
             target="file"
-            on:click={() => wizard.start(Create)} />
+            on:click={() => void 0} />
     {/if}
 </Container>
 

@@ -1,14 +1,14 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
-    import InputChoice from '$lib/elements/forms/inputChoice.svelte';
+    import { Selector } from '@appwrite.io/pink-svelte';
 
     export let site: Models.Site;
     let fallback: null | string;
@@ -56,13 +56,12 @@
 <Form onSubmit={updateSPA}>
     <CardGrid>
         <svelte:fragment slot="title">Single page application</svelte:fragment>
-        Provide a fallback file for advanced routing and proper page handling in SPA mode.
+
         <svelte:fragment slot="aside">
-            <InputChoice
-                id="spa"
-                type="switchbox"
+            <Selector.Switch
                 label="Single page application (SPA)"
-                value={site.fallbackFile !== null}
+                description="Provide a fallback file for advanced routing and proper page handling in SPA mode."
+                checked={site.fallbackFile !== null}
                 on:change={(value) => {
                     if (value.detail) {
                         fallback = '';
@@ -74,8 +73,9 @@
             {#if fallback !== null}
                 <InputText
                     id="fallback"
-                    label="Fallback"
-                    placeholder="Enter fallback"
+                    label="Fallback file"
+                    required
+                    placeholder="index.html"
                     bind:value={fallback} />
             {/if}
         </svelte:fragment>

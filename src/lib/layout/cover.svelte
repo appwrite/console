@@ -23,8 +23,8 @@
         container-type: inline-size;
         padding-block-start: var(--base-32);
         padding-block-end: var(--base-16);
-        border-bottom: 1px solid var(--color-border-neutral, #2d2d31);
-        background: var(--color-bgcolor-neutral-primary, #1d1d21);
+        border-bottom: 1px solid var(--border-neutral, #2d2d31);
+        background: var(--bgcolor-neutral-primary, #1d1d21);
         margin-left: -190px;
         padding-left: 190px;
     }
@@ -41,7 +41,7 @@
         }
         @media (min-width: 1024px) {
             margin-inline: auto;
-            max-width: min(944px, calc(944px - 5rem));
+            max-width: calc(944px - 11rem);
         }
         @media (min-width: 1280px) {
             margin-inline: auto;

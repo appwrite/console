@@ -22,8 +22,8 @@
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Git repository</Typography.Caption>
                     <Layout.Stack gap="xxs" alignItems="center" direction="row">
-                        <Icon size="s" icon={IconGithub} color="--color-fgcolor-neutral-primary" />
-                        <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                        <Icon size="s" icon={IconGithub} color="--fgcolor-neutral-primary" />
+                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                             {repositoryName}
                         </Typography.Text>
                     </Layout.Stack>
@@ -33,11 +33,8 @@
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Branch</Typography.Caption>
                     <Layout.Stack gap="xxs" alignItems="center" direction="row">
-                        <Icon
-                            size="s"
-                            icon={IconGitBranch}
-                            color="--color-fgcolor-neutral-primary" />
-                        <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                        <Icon size="s" icon={IconGitBranch} color="--fgcolor-neutral-primary" />
+                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                             {branch}
                         </Typography.Text>
                     </Layout.Stack>
@@ -47,7 +44,7 @@
             {#if rootDir && showAfter}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Root directory</Typography.Caption>
-                    <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                         {rootDir}
                     </Typography.Text>
                 </Layout.Stack>
@@ -60,7 +57,7 @@
                         {#if frameworkIcon}
                             <SvgIcon iconSize="small" size={16} name={frameworkIcon} />
                         {/if}
-                        <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                             {framework.name}
                         </Typography.Text>
                     </Layout.Stack>
@@ -71,7 +68,7 @@
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Domain</Typography.Caption>
 
-                    <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                         {#key domain}
                             <Trim alternativeTrim>
                                 {$consoleVariables._APP_OPTIONS_FORCE_HTTPS

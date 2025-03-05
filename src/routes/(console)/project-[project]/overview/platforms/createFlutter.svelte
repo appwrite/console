@@ -217,9 +217,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
                             gap="xs">
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Icon size="m" icon={IconFlutter} />
-                                <Typography.Text
-                                    variant="m-400"
-                                    color="--color-fgcolor-neutral-primary">
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                     {$createPlatform.name} ({$createPlatform.key})
                                 </Typography.Text>
                             </Layout.Stack>

@@ -13,15 +13,9 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
-    import { templatesList } from '$lib/stores/templates';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import Initial from '$lib/wizards/functions/cover.svelte';
-    import CreateTemplate from '$lib/wizards/functions/createTemplate.svelte';
-    import {
-        templateConfig as templateConfigStore,
-        template as templateStore
-    } from '$lib/wizards/functions/store.js';
+
     import { parseExpression } from 'cron-parser';
     import { onMount } from 'svelte';
     import { functionsList } from './store';
@@ -29,6 +23,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { goto } from '$app/navigation';
 
     export let data;
 
@@ -42,27 +37,19 @@
             const to = $page.url.searchParams.get('to');
             switch (to) {
                 case 'template': {
-                    const step = $page.url.searchParams.get('step');
                     const template = $page.url.searchParams.get('template');
                     const templateConfig = $page.url.searchParams.get('templateConfig');
-                    templateStore.set(
-                        (await $templatesList).templates.find((item) => item.id === template)
+                    goto(
+                        `${base}/project-${project}/functions/create-function/template-${template}?templateConfig=${templateConfig}`
                     );
-                    templateConfigStore.set(JSON.parse(templateConfig));
-                    wizard.start(CreateTemplate);
-                    wizard.setStep(Number(step));
                     break;
                 }
                 case 'cover':
-                    openWizard();
+                    goto(`${base}/project-${project}/functions/create-function`);
                     break;
             }
         }
     });
-
-    function openWizard() {
-        wizard.showCover(Initial);
-    }
 
     function getNextScheduledExecution(func: Models.Function) {
         return toLocaleDateTime(parseExpression(func.schedule, { utc: true }).next().toString());
@@ -71,7 +58,7 @@
     $: $registerCommands([
         {
             label: 'Create function',
-            callback: openWizard,
+            callback: () => goto(`${base}/project-${project}/functions/create-function`),
             keys: ['c'],
             disabled:
                 $wizard.show ||
@@ -90,7 +77,7 @@
         title="Functions"
         buttonText={$canWriteFunctions ? 'Create function' : ''}
         buttonEvent="create_function"
-        buttonMethod={openWizard}
+        buttonHref={`${base}/project-${project}/functions/create-function`}
         total={data.functions.total} />
 
     {#if data.functions.total}
@@ -99,7 +86,6 @@
             showEmpty={$canWriteFunctions}
             event="functions"
             total={data.functions.total}
-            on:click={openWizard}
             service="functions">
             {#each data.functions.functions as func}
                 <GridItem1 href={`${base}/project-${project}/functions/function-${func.$id}`}>
@@ -137,11 +123,12 @@
             offset={data.offset}
             total={data.functions.total} />
     {:else}
+        <!-- TODO: use new empty state -->
         <Empty
             single
             allowCreate={$canWriteFunctions}
             href="https://appwrite.io/docs/products/functions"
             target="function"
-            on:click={openWizard} />
+            on:click={() => goto(`${base}/project-${project}/functions/create-function`)} />
     {/if}
 </Container>

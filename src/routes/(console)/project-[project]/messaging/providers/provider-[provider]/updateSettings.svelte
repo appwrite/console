@@ -8,7 +8,7 @@
     import { Dependencies } from '$lib/constants';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import SettingsFormList from '../settingsFormList.svelte';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';

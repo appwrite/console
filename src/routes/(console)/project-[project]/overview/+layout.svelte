@@ -11,7 +11,7 @@
     import { page } from '$app/stores';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { PlatformsPanel } from '$lib/commandCenter/panels';
-    import { Heading, Tab, Tabs } from '$lib/components';
+    import { Tab, Tabs } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
     import { onMount, setContext, SvelteComponent } from 'svelte';
@@ -203,7 +203,7 @@
         {/if}
 
         <Layout.Stack gap="xl">
-            <Heading tag="h2" size="5" id="integrations">Integrations</Heading>
+            <Typography.Title>Integrations</Typography.Title>
             <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
                 <Tabs>
                     <Tab

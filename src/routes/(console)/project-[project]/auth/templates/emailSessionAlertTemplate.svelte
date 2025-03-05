@@ -7,6 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Id } from '$lib/components';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     const projectId = $page.params.project;
     let locale = 'en';
@@ -34,7 +35,7 @@
     }
 </script>
 
-<div class="boxes-wrapper u-margin-block-start-16">
+<Layout.Stack>
     <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
     <EmailTemplate bind:loading>
         <Id value={'{{user}}'}>{'{{user}}'}</Id>
@@ -43,4 +44,4 @@
         <Id value={'{{ipAddress'}>{'{{ipAddress}}'}</Id>
         <Id value={'{{country'}>{'{{country}}'}</Id>
     </EmailTemplate>
-</div>
+</Layout.Stack>

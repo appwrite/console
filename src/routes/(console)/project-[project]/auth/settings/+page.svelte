@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';

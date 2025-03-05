@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { collection } from '../store';
     import { doc } from './store';
     import { onMount } from 'svelte';
@@ -82,7 +82,7 @@
     <svelte:fragment slot="title">Data</svelte:fragment>
     Update document data based on the attributes created earlier.
     <svelte:fragment slot="aside">
-        <AttributeForm attributes={$collection.attributes} bind:formValues={$work} gap="16" />
+        <AttributeForm attributes={$collection.attributes} bind:formValues={$work} />
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

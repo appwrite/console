@@ -1,7 +1,6 @@
 <script lang="ts">
     import CardGrid from '$lib/components/cardGrid.svelte';
     import Empty from '$lib/components/empty.svelte';
-    import Heading from '$lib/components/heading.svelte';
 
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';

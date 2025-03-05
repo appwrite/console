@@ -120,10 +120,10 @@
                 "color": "#444444"
             }
         },
-        "backgroundColor": "var(--color-bgcolor-neutral-primary)",
-        "borderColor": "var(--color-border-neutral)",
+        "backgroundColor": "var(--bgcolor-neutral-primary)",
+        "borderColor": "var(--border-neutral)",
         "textStyle": {
-            "color": "var(--color-fgcolor-neutral-secondary)"
+            "color": "var(--fgcolor-neutral-secondary)"
         }
     },
     "timeline": {

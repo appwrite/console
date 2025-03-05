@@ -17,13 +17,7 @@
         Table,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import {
-        IconAnonymous,
-        IconChartSquareBar,
-        IconCheck,
-        IconMinus,
-        IconMinusSm
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconAnonymous, IconMinusSm } from '@appwrite.io/pink-icons-svelte';
 
     export let show: boolean;
     export let groups: Writable<Map<string, Permission>>;
@@ -105,7 +99,7 @@
                                             >{user.name}</Typography.Caption>
                                         <Typography.Caption
                                             variant="400"
-                                            color="--color-fgcolor-neutral-tertiary">
+                                            color="--fgcolor-neutral-tertiary">
                                             {user.$id}
                                         </Typography.Caption>
                                     </Layout.Stack>
@@ -120,7 +114,7 @@
                                                 : user.phone}</Typography.Caption>
                                         <Typography.Caption
                                             variant="400"
-                                            color="--color-fgcolor-neutral-tertiary">
+                                            color="--fgcolor-neutral-tertiary">
                                             {user.$id}
                                         </Typography.Caption>
                                     </Layout.Stack>
@@ -134,7 +128,7 @@
                                         >{user.name ? user.name : '-'}</Typography.Caption>
                                     <Typography.Caption
                                         variant="400"
-                                        color="--color-fgcolor-neutral-tertiary">
+                                        color="--fgcolor-neutral-tertiary">
                                         {user.$id}
                                     </Typography.Caption>
                                 </Layout.Stack>

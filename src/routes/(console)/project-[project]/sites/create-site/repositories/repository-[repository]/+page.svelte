@@ -13,15 +13,15 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
-    import ProductionBranch from '../../productionBranch.svelte';
+    import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Aside from '../../aside.svelte';
     import { BuildRuntime, Framework, ID, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
-    // import Domain from '../../domain.svelte';
     import { consoleVariables } from '$routes/(console)/store';
     import { buildVerboseDomain } from '../../store';
+    import { project } from '$routes/(console)/project-[project]/store';
 
     export let data;
     let showExitModal = false;
@@ -41,14 +41,11 @@
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
     let domain = id;
-    // let domainIsValid = true;
 
     onMount(async () => {
         installation.set(data.installation);
         repository.set(data.repository);
         name = data.repository.name;
-
-        // domain = await buildVerboseDomain(data.repository.name, data.repository.organization, id);
     });
 
     async function loadBranches() {
@@ -67,18 +64,11 @@
     }
 
     async function create() {
-        // if (!domainIsValid) {
-        //     addNotification({
-        //         type: 'error',
-        //         message: 'Please enter a valid domain'
-        //     });
-        //     return;
-        // } else {}
-
         try {
             domain = await buildVerboseDomain(
                 data.repository.name,
                 data.repository.organization,
+                $project.name,
                 id
             );
             const fr = Object.values(Framework).find((f) => f === framework.key);
@@ -164,8 +154,8 @@
                     alignItems="center"
                     gap="xs">
                     <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Icon icon={IconGithub} color="--color-fgcolor-neutral-primary" />
-                        <Typography.Text variation="m-500" color="--color-fgcolor-neutral-primary">
+                        <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
+                        <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
                             {data.repository?.organization}/{data.repository?.name}
                         </Typography.Text>
                     </Layout.Stack>
@@ -204,12 +194,10 @@
                 bind:selectedFramework={framework}
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
-
-            <!-- <Domain bind:domain bind:domainIsValid /> -->
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} {domain} />
+        <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Heading } from '$lib/components';
+    import { CardGrid, BoxAvatar } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -13,7 +13,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { collection } from '../store';
-    import { Alert } from '@appwrite.io/pink-svelte';
+    import { Alert, Link } from '@appwrite.io/pink-svelte';
 
     let showDelete = false;
     let permissions = $doc?.$permissions;
@@ -71,12 +71,10 @@
         A user requires appropriate permissions at either the <b>collection level</b> or
         <b>document level</b> to access a document. If no permissions are configured, no user can
         access the document
-        <a
+        <Link.Anchor
             href="https://appwrite.io/docs/products/databases/permissions"
             target="_blank"
-            rel="noopener noreferrer"
-            class="link">Learn more about database permissions</a
-        >.
+            rel="noopener noreferrer">Learn more</Link.Anchor>
         <svelte:fragment slot="aside">
             {#if $collection.documentSecurity}
                 {#if showPermissionAlert}

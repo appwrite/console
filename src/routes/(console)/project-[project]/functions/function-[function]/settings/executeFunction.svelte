@@ -1,9 +1,10 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { CardGrid, Heading, SvgIcon } from '$lib/components';
+    import { CardGrid, SvgIcon } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { project } from '$routes/(console)/project-[project]/store';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
 </script>
 
@@ -13,7 +14,7 @@
             <SvgIcon size={64} iconSize="large" name={$func.runtime.split('-')[0]}></SvgIcon>
         </div>
         <div class="u-flex-vertical u-gap-4">
-            <Heading tag="h6" size="7">{$func.name}</Heading>
+            <Typography.Title size="s">{$func.name}</Typography.Title>
 
             <p class="text u-capitalize">{$func.runtime}</p>
         </div>

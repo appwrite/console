@@ -120,7 +120,7 @@
                         <EmailVerificationTemplate />
                     </Layout.Stack>
                 </Accordion>
-                <!-- <Accordion
+                <Accordion
                     title="Magic URL"
                     bind:open={emailMagicSessionOpen}
                     on:click={(e) => {
@@ -179,7 +179,7 @@
                     }}>
                     Send an email to users when a new session is created.
                     <EmailSessionAlertTemplate />
-                </Accordion> -->
+                </Accordion>
             </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">

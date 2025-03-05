@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Empty, EmptySearch, Heading, PaginationWithLimit } from '$lib/components';
+    import { Empty, EmptySearch, PaginationWithLimit } from '$lib/components';
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
@@ -8,16 +8,15 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
-    import { wizard } from '$lib/stores/wizard';
     import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
-    import Create from './createDocument.svelte';
     import { collection, columns } from './store';
     import Table from './table.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { base } from '$app/paths';
 
     export let data: PageData;
 
@@ -36,14 +35,7 @@
             elements: 'elements' in attribute ? attribute.elements : null
         }))
     );
-
-    function openWizard() {
-        if (!$canWriteDocuments) return;
-        wizard.start(Create);
-    }
-
     $: hasAttributes = !!$collection.attributes.length;
-
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
 </script>
 
@@ -58,7 +50,7 @@
                 <ViewSelector view={data.view} {columns} hideView allowNoColumns />
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
-                    on:click={openWizard}
+                    href={`${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}/create`}
                     event="create_document">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
@@ -99,8 +91,24 @@
                     allowCreate={$canWriteDocuments}
                     single
                     href="https://appwrite.io/docs/products/databases/documents"
-                    target="document"
-                    on:click={openWizard} />
+                    target="document">
+                    <svelte:fragment slot="actions">
+                        <Button
+                            external
+                            href="https://appwrite.io/docs/products/databases/documents"
+                            text
+                            event="empty_documentation"
+                            size="s"
+                            ariaLabel="create document">Documentation</Button>
+                        <Button
+                            href={`${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}/create`}
+                            secondary
+                            disabled={!$canWriteDocuments}
+                            size="s">
+                            Create document
+                        </Button>
+                    </svelte:fragment>
+                </Empty>
             {/if}
         {:else}
             <Card.Base padding="none">

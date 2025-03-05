@@ -9,7 +9,6 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '$routes/(console)/project-[project]/store';
-    import Alert from '$lib/components/alert.svelte';
     import PromoteVariableModal from './promoteVariableModal.svelte';
     import CreateVariable from './createVariable.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
@@ -21,7 +20,8 @@
         Icon,
         Layout,
         Popover,
-        Table
+        Table,
+        Alert
     } from '@appwrite.io/pink-svelte';
     import {
         IconCode,
@@ -219,17 +219,28 @@
         >.
     {/if}
     <svelte:fragment slot="aside">
-        <Layout.Stack justifyContent="space-between" direction="row" wrap="wrap">
-            <Button secondary on:click={() => (showVariablesModal = true)}>
-                <Icon size="s" icon={IconPlus} />
-                <span class="text">Create variable</span>
-            </Button>
+        <Layout.Stack gap="l">
+            <Layout.Stack direction="row">
+                <Layout.Stack direction="row" gap="s">
+                    <Button secondary on:mousedown={() => (showEditorModal = true)}>
+                        <Icon slot="start" icon={IconCode} /> Editor
+                    </Button>
+                    <Button secondary on:mousedown={() => (showVariablesUpload = true)}>
+                        <Icon slot="start" icon={IconUpload} /> Import .env
+                    </Button>
+                </Layout.Stack>
+                {#if variableList.total}
+                    <Button secondary on:mousedown={() => (showVariablesModal = true)}>
+                        <Icon slot="start" icon={IconPlus} /> Create variable
+                    </Button>
+                {/if}
+            </Layout.Stack>
         </Layout.Stack>
         {@const sum = variableList.total}
         {#if sum}
             <Layout.Stack gap="l">
                 {#if conflictVariables.length > 0}
-                    <Alert type="warning">
+                    <Alert.Inline status="warning">
                         <p class="text">
                             {#if conflictVariables.length === 1}
                                 <b class="u-bold">{conflictVariables[0].key}</b> has
@@ -244,7 +255,7 @@
                                 project settings</a
                             >.
                         </p>
-                    </Alert>
+                    </Alert.Inline>
                 {/if}
                 <Table.Root>
                     <svelte:fragment slot="header">
@@ -307,7 +318,7 @@
                                                     showVariablesModal = true;
                                                     toggle(e);
                                                 }}>
-                                                Edit
+                                                Update
                                             </ActionMenu.Item.Button>
                                             {#if !isGlobal}
                                                 <ActionMenu.Item.Button
@@ -322,6 +333,7 @@
                                                 </ActionMenu.Item.Button>
                                             {/if}
                                             <ActionMenu.Item.Button
+                                                status="danger"
                                                 trailingIcon={IconTrash}
                                                 on:click={async (e) => {
                                                     handleVariableDeleted(variable);
@@ -349,16 +361,6 @@
                 Create a {isGlobal ? 'global variable' : 'variable'} to get started
             </Empty>
         {/if}
-        <Layout.Stack direction="row" gap="s" wrap="wrap">
-            <Button secondary on:click={() => (showEditorModal = true)}>
-                <Icon size="s" icon={IconCode} />
-                <span class="text">Editor</span>
-            </Button>
-            <Button secondary on:click={() => (showVariablesUpload = true)}>
-                <Icon size="s" icon={IconUpload} />
-                <span class="text">Import .env file</span>
-            </Button>
-        </Layout.Stack>
     </svelte:fragment>
 </CardGrid>
 
@@ -396,8 +398,6 @@
 
 {#if showVariablesUpload}
     <UploadVariables
-        {product}
-        {isGlobal}
         {sdkCreateVariable}
         {sdkUpdateVariable}
         {variableList}

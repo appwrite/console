@@ -94,12 +94,14 @@
     export let showAccountMenu = false;
 
     let activeTheme = $app.theme;
+    let shouldAnimateThemeToggle = false;
 
     $: {
         if (activeTheme) {
             updateTheme(activeTheme);
         }
     }
+
     $: currentOrg = organizations.find((org) => org.isSelected);
     $: selectedProject = currentOrg?.projects.find((project) => project.isSelected);
 </script>
@@ -120,7 +122,7 @@
         </a>
         <Breadcrumbs {organizations} />
         {#if selectedProject && selectedProject.pingCount === 0}
-            <div class="only-desktop" style:margin-inline-start="-10px">
+            <div class="only-desktop" style:margin-inline-start="-16px">
                 <Button.Anchor
                     href={`${base}/project-${selectedProject.$id}/get-started`}
                     variant="secondary"
@@ -186,7 +188,8 @@
                     <Button.Button
                         variant="text"
                         aria-label="Toggle Command Center"
-                        on:click={toggleCommandCenter}>
+                        on:click={toggleCommandCenter}
+                        icon>
                         <Icon icon={IconSearch} />
                     </Button.Button>
                     <span slot="tooltip">{isMac() ? '⌘ + K' : 'Ctrl + K'}</span></Tooltip>
@@ -194,6 +197,7 @@
             <Link.Button
                 on:click={() => {
                     showAccountMenu = !showAccountMenu;
+                    shouldAnimateThemeToggle = false;
                     if (showAccountMenu) {
                         trackEvent('click_menu_dropdown');
                     }
@@ -234,17 +238,31 @@
                                             direction="row"
                                             alignItems="center">
                                             <Typography.Text>Theme</Typography.Text>
-                                            <ToggleButton
-                                                bind:active={activeTheme}
-                                                buttons={[
-                                                    { id: 'light', label: 'Light', icon: IconSun },
-                                                    { id: 'dark', label: 'Dark', icon: IconMoon },
-                                                    {
-                                                        id: 'auto',
-                                                        label: 'System',
-                                                        icon: IconMode
-                                                    }
-                                                ]}></ToggleButton>
+                                            <div
+                                                class:keepTransformTransition={shouldAnimateThemeToggle}>
+                                                <ToggleButton
+                                                    bind:active={activeTheme}
+                                                    on:change={(event) => {
+                                                        shouldAnimateThemeToggle = true;
+                                                    }}
+                                                    buttons={[
+                                                        {
+                                                            id: 'light',
+                                                            label: 'Light',
+                                                            icon: IconSun
+                                                        },
+                                                        {
+                                                            id: 'dark',
+                                                            label: 'Dark',
+                                                            icon: IconMoon
+                                                        },
+                                                        {
+                                                            id: 'auto',
+                                                            label: 'System',
+                                                            icon: IconMode
+                                                        }
+                                                    ]}></ToggleButton>
+                                            </div>
                                         </Layout.Stack>
                                     </div>
                                 </Layout.Stack>
@@ -356,8 +374,8 @@
         align-items: center;
         gap: var(--space-4, 8px);
         border-radius: var(--border-radius-xs, 6px);
-        border: var(--border-width-s, 1px) solid var(--color-border-neutral-strong, #d8d8db);
-        background: var(--color-bgcolor-neutral-primary, #fff);
+        border: var(--border-width-s, 1px) solid var(--border-neutral-strong, #d8d8db);
+        background: var(--bgcolor-neutral-primary, #fff);
         cursor: pointer;
     }
 
@@ -403,5 +421,9 @@
 
         /* `desltop` is not a typo—it comes from the `pink2/legacy` module! */
         inline-size: var(--p-drop-width-size-desltop);
+    }
+
+    :global(.keepTransformTransition span) {
+        transition: transform 0.2s ease-out !important;
     }
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { CardGrid, Heading, Card, ProgressBarBig } from '$lib/components';
+    import { CardGrid, Card, ProgressBarBig } from '$lib/components';
     import {
         TableRow,
         TableBody,
@@ -23,6 +23,7 @@
     import Collapsible from '$lib/components/collapsible.svelte';
     import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -64,7 +65,7 @@
 
 <Container>
     <div class="u-flex u-cross-center u-main-space-between">
-        <Heading tag="h2" size="5">Usage</Heading>
+        <Typography.Title>Usage</Typography.Title>
 
         {#if $organization?.billingPlan === BillingPlan.FREE}
             <Button href={$upgradeURL}>
@@ -117,8 +118,8 @@
             {#if network}
                 {@const humanized = humanFileSize(total(network))}
                 <div class="u-flex u-gap-8 u-cross-baseline">
-                    <Heading tag="h5" size="4">{humanized.value}</Heading>
-                    <Heading tag="h6" size="6">{humanized.unit}</Heading>
+                    <Typography.Title>{humanized.value}</Typography.Title>
+                    <Typography.Title size="s">{humanized.unit}</Typography.Title>
                 </div>
                 <BarChart
                     options={{

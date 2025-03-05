@@ -1,12 +1,21 @@
 <script lang="ts">
+    import { Card } from '$lib/components';
+    import { Link } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Icon, Layout, Table, Tabs, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Divider,
+        Input,
+        Layout,
+        Table,
+        Tabs,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
 
     export let selectedLog: Models.Execution;
 
-    let requestTab: 'parameters' | 'headers' | 'body' = 'parameters';
+    let requestTab: 'parameters' | 'headers' = 'parameters';
 
     let parameters = [];
 
@@ -24,33 +33,38 @@
             parameters = [];
         }
     });
+
+    onMount(() => {
+        if (parameters?.length) {
+            requestTab = 'parameters';
+        } else if (selectedLog.requestHeaders?.length) {
+            requestTab = 'headers';
+        }
+    });
 </script>
 
 <Layout.Stack>
-    <Tabs.Root variant="secondary" let:root>
-        <Tabs.Item.Button
-            {root}
-            active={requestTab === 'parameters'}
-            on:click={() => (requestTab = 'parameters')}>
-            Parameters
-            <Badge variant="secondary" size="s" content={parameters?.length?.toString()} />
-        </Tabs.Item.Button>
-        <Tabs.Item.Button
-            {root}
-            active={requestTab === 'headers'}
-            on:click={() => (requestTab = 'headers')}>
-            Headers <Badge
-                variant="secondary"
-                size="s"
-                content={selectedLog?.requestHeaders?.length?.toString()} />
-        </Tabs.Item.Button>
-        <Tabs.Item.Button
-            {root}
-            active={requestTab === 'body'}
-            on:click={() => (requestTab = 'body')}>
-            Body
-        </Tabs.Item.Button>
-    </Tabs.Root>
+    <Layout.Stack gap="none">
+        <Tabs.Root variant="secondary" let:root>
+            <Tabs.Item.Button
+                {root}
+                active={requestTab === 'parameters'}
+                on:click={() => (requestTab = 'parameters')}>
+                Parameters
+                <Badge variant="secondary" size="s" content={parameters?.length?.toString()} />
+            </Tabs.Item.Button>
+            <Tabs.Item.Button
+                {root}
+                active={requestTab === 'headers'}
+                on:click={() => (requestTab = 'headers')}>
+                Headers <Badge
+                    variant="secondary"
+                    size="s"
+                    content={selectedLog?.requestHeaders?.length?.toString()} />
+            </Tabs.Item.Button>
+        </Tabs.Root>
+        <Divider />
+    </Layout.Stack>
     {#if requestTab === 'parameters'}
         {#if parameters?.length}
             <Table.Root>
@@ -66,7 +80,9 @@
                 {/each}
             </Table.Root>
         {:else}
-            <Typography.Code>No parameters found.</Typography.Code>
+            <Card isTile padding="xs" radius="s">
+                <Typography.Code>No parameters found.</Typography.Code>
+            </Card>
         {/if}
     {:else if requestTab === 'headers'}
         {#if selectedLog.requestHeaders?.length}
@@ -82,16 +98,17 @@
                     </Table.Row>
                 {/each}
             </Table.Root>
-            <p>
-                <Layout.Stack direction="row" gap="xs" alignItems="center">
-                    <Icon icon={IconInfo} size="s" color="--color-fgcolor-neutral-secondary" /> Missing
-                    headers? Check our docs to see the supported data and how to log it.
-                </Layout.Stack>
-            </p>
+
+            <Input.Helper state="default">
+                <span>
+                    Missing headers? Check the <Link variant="muted" href="#" external>docs</Link> to
+                    see the supported data and how to log it.
+                </span>
+            </Input.Helper>
         {:else}
-            <Typography.Code>No headers found.</Typography.Code>
+            <Card isTile padding="xs" radius="s">
+                <Typography.Code>No headers found.</Typography.Code>
+            </Card>
         {/if}
-    {:else if requestTab === 'body'}
-        <Typography.Code>No body found.</Typography.Code>
     {/if}
 </Layout.Stack>

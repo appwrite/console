@@ -14,38 +14,14 @@
 
     const backPage = `${base}/project-${$page.params.organization}/domains`;
 
-    let domain = '';
-    let domainData: Domain;
+    let domainName = '';
+    let domain: Domain;
 
     async function addDomain() {
         try {
-            domainData = await sdk.forConsole.domains.create($page.params.organization, domain);
-            console.log(domainData);
+            domain = await sdk.forConsole.domains.create($page.params.organization, domainName);
+            console.log(domain);
             invalidate(Dependencies.DOMAINS);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    }
-
-    async function verifyStatus() {
-        try {
-            domainData = await sdk.forConsole.domains.updateNameservers(domainData.$id);
-            console.log(domainData);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    }
-
-    async function back() {
-        try {
-            await sdk.forConsole.domains.delete(domainData.$id);
-            domainData = undefined;
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -55,15 +31,9 @@
     }
 </script>
 
-<Wizard title="Add domain" href={backPage} column columnSize="s" hideFooter={!domainData}>
-    {#if domainData}
-        <RecordsCard domain={domainData}>
-            <Divider />
-            <Layout.Stack direction="row" justifyContent="flex-end">
-                <Button text on:click={back}>Back</Button>
-                <Button secondary on:click={verifyStatus}>Verify</Button>
-            </Layout.Stack>
-        </RecordsCard>
+<Wizard title="Add domain" href={backPage} column columnSize="s" hideFooter={!domain}>
+    {#if domain}
+        <RecordsCard {domain} />
     {:else}
         <Fieldset legend="Configuration">
             <Form onSubmit={addDomain}>
@@ -72,7 +42,7 @@
                         label="Domain"
                         id="domain"
                         name="domain"
-                        bind:value={domain}
+                        bind:value={domainName}
                         required
                         placeholder="example.com" />
 
@@ -87,7 +57,7 @@
 
     <svelte:fragment slot="footer">
         <Button text href={backPage}>Cancel</Button>
-        {#if domainData}
+        {#if domain}
             <Button secondary href={backPage}>Skip to console</Button>
         {/if}
     </svelte:fragment>

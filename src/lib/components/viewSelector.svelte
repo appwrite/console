@@ -23,7 +23,6 @@
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
-    export let fullWidthMobile = false;
 
     onMount(async () => {
         if (isCustomCollection) {
@@ -115,7 +114,7 @@
 
 {#if !hideView}
     <ToggleButton
-        --color-bgcolor-neutral-default="var(--color-bgcolor-neutral-primary)"
+        --bgcolor-neutral-default="var(--bgcolor-neutral-primary)"
         on:change={onViewChange}
         active={view}
         buttons={[

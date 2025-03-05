@@ -9,7 +9,7 @@
     import { onMount } from 'svelte';
     import { doc } from '../store';
     import { isRelationshipToMany } from './store';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let id: string;
@@ -98,16 +98,16 @@
 
 {#if isRelationshipToMany(attribute)}
     <div class="u-width-full-line">
-        <div class="u-flex u-cross-center u-main-space-between">
-            <div>
-                <Label required={attribute.required} {optionalText} for={id}>
-                    {label}
-                </Label>
-            </div>
+        <Layout.Stack direction="row" alignContent="space-between">
+            <Layout.Stack gap="xxs" direction="row" alignItems="center">
+                <Typography.Text variant="m-500">{label}</Typography.Text>
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                    {optionalText}
+                </Typography.Text>
+            </Layout.Stack>
             {#if editing || total === 0}
                 <Button
-                    text
-                    noMargin
+                    secondary
                     on:click={() => {
                         showInput = true;
                     }}>
@@ -115,8 +115,7 @@
                     Add item
                 </Button>
             {/if}
-        </div>
-
+        </Layout.Stack>
         <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
             {#if !editing && relatedList?.length}
                 {#each relatedList as item, i}
@@ -236,6 +235,7 @@
                 <PaginationInline {limit} bind:offset sum={total} hidePages />
             </div>
         {/if}
+
         {#if total > 0 && !editing}
             <Button
                 text

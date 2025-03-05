@@ -14,8 +14,10 @@
     import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
-    import Domain from '../domain.svelte';
     import InputFile from '$lib/elements/forms/inputFile.svelte';
+    import { buildVerboseDomain } from '../store';
+    import { project } from '$routes/(console)/project-[project]/store';
+    import { organization } from '$lib/stores/organization';
 
     export let data;
     let showExitModal = false;
@@ -23,11 +25,12 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let name = '';
+    let name = 'My website';
     let id = ID.unique();
     let domain = id;
-    let domainIsValid = true;
-    let framework: Models.Framework = data.frameworks.frameworks[0];
+    let framework: Models.Framework =
+        data.frameworks.frameworks?.find((f) => f.key === 'other') ??
+        data.frameworks.frameworks?.[0];
     let adapter = framework?.adapters[0];
     let installCommand = adapter?.installCommand;
     let buildCommand = adapter?.buildCommand;
@@ -37,6 +40,8 @@
 
     async function create() {
         try {
+            domain = await buildVerboseDomain(name, $project.name, $organization.name, id);
+
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
@@ -126,7 +131,7 @@
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
 
-            <Domain bind:domain bind:domainIsValid />
+            <!-- <Domain bind:domain bind:domainIsValid /> -->
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

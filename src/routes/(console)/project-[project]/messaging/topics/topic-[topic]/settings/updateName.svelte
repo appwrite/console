@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Heading } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { topic } from '../store';
@@ -34,7 +34,7 @@
 
 <Form onSubmit={updateName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
+        <svelte:fragment slot="title">Name</svelte:fragment>
 
         <svelte:fragment slot="aside">
             <ul data-private>

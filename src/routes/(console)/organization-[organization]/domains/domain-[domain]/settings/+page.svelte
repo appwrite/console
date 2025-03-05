@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Heading } from '$lib/components';
     import { Container } from '$lib/layout';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import ChangeOrganization from './changeOrganization.svelte';
     import DeleteDomain from './deleteDomain.svelte';
 
@@ -8,7 +8,7 @@
 </script>
 
 <Container>
-    <Heading tag="h2" size="5">Settings</Heading>
+    <Typography.Title>Settings</Typography.Title>
     <ChangeOrganization domain={data.domain} organizations={data.organizations} />
     <DeleteDomain domain={data.domain} />
 </Container>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Heading, Alert, CopyInput, Empty } from '$lib/components';
+    import { CardGrid, BoxAvatar, Alert, CopyInput, Empty } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { file } from './store';
@@ -22,7 +22,8 @@
         Layout,
         Icon,
         Popover,
-        Table
+        Table,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
@@ -158,8 +159,7 @@
                     </div>
                 </a>
                 <div class="u-flex u-flex-vertical u-gap-4">
-                    <Heading tag="h2" size="7" trimmed={false} trimmedSecondLine={true}
-                        >{$file.name}</Heading>
+                    <Typography.Title size="s">{$file.name}</Typography.Title>
                     <p>{$file.mimeType}</p>
                 </div>
             </div>

@@ -2,7 +2,7 @@
     import { Container } from '$lib/layout';
     import { BarChart, Legend, type LegendData } from '$lib/charts';
     import { accumulateFromEndingTotal } from '$lib/layout/usage.svelte';
-    import { Card, Heading, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
+    import { Card, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
     import { page } from '$app/stores';
     import { type Models } from '@appwrite.io/console';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -20,7 +20,7 @@
 <Container overlapCover={overlapContainerCover}>
     {#if showHeader}
         <div class="u-flex u-main-space-between common-section">
-            <Heading tag="h2" size="5">{title}</Heading>
+            <Typography.Title>{title}</Typography.Title>
 
             {#if path}
                 <SecondaryTabs>

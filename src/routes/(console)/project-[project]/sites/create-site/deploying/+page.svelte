@@ -7,7 +7,7 @@
     import Aside from '../aside.svelte';
     import Logs from '../../(components)/logs.svelte';
     import { getFrameworkIcon } from '../../store';
-    import { SvgIcon } from '$lib/components';
+    import { Copy, SvgIcon } from '$lib/components';
 
     export let data;
 
@@ -25,29 +25,31 @@
                         iconSize="small"
                         size={16}
                         name={getFrameworkIcon(data.site.framework)} />
-                    <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                    <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                         {data.site.name}
                     </Typography.Text>
-                    <Tag variant="code" size="xs">{data.site.$id}</Tag>
+                    <Copy value={data.site.$id}>
+                        <Tag variant="code" size="xs">{data.site.$id}</Tag>
+                    </Copy>
                 </Layout.Stack>
             </Layout.Stack>
         </Card.Base>
         <Fieldset legend="Deploy">
-            <Logs bind:deployment={data.deployment} bind:site={data.site} />
+            <Logs bind:deployment={data.deployment} bind:site={data.site} hideScrollButtons />
         </Fieldset>
     </Layout.Stack>
     <svelte:fragment slot="aside">
-        <!-- TODO: fix use repository name instead of id-->
         <Aside
             framework={data.frameworks.frameworks.find((f) => f.key === data.site.framework)}
             repositoryName={data?.repository?.name}
             branch={data.repository?.id ? data.site.providerBranch : ''}
-            rootDir={data.repository?.id ? data.site.providerRootDirectory : ''} />
+            rootDir={data.repository?.id ? data.site.providerRootDirectory : ''}
+            domain={data.proxyRuleList.rules[0]?.domain} />
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             {#if ['processing', 'building'].includes(data.deployment.status)}
-                <Typography.Text variant="m-400" color="--color-fgColor-neutral-tertiary">
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                     Deployment will continue in the background
                 </Typography.Text>
             {/if}

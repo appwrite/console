@@ -18,9 +18,10 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { Alert, Heading } from '$lib/components';
+    import { Alert } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
     let showAlert = true;
@@ -42,7 +43,7 @@
 </script>
 
 <Container>
-    <Heading tag="h2" size="5">Settings</Heading>
+    <Typography.Title>Settings</Typography.Title>
     {#if $func.version === 'v2' && showAlert}
         <Alert
             type="warning"
