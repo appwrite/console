@@ -140,6 +140,10 @@ export function isTrackingAllowed() {
 
 export enum Click {
     BreadcrumbClick = 'click_breadcrumb',
+    DatabaseAttributeDelete = 'click_attribute_delete',
+    DatabaseIndexDelete = 'click_index_delete',
+    DatabaseColletionDelete = 'click_collection_delete',
+    DatabaseDatabaseDelete = 'click_database_delete',
     FilterApplyClick = 'click_apply_filter',
     KeyCreateClick = 'click_key_create',
     MenuDropDownClick = 'click_menu_dropdown',

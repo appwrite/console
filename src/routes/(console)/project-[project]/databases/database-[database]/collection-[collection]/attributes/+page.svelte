@@ -35,6 +35,7 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -179,6 +180,7 @@
                                             selectedAttribute = attribute;
                                             showDelete = true;
                                             showDropdown[index] = false;
+                                            trackEvent(Click.DatabaseAttributeDelete);
                                         }}>
                                         Delete
                                     </ActionMenu.Item.Button>

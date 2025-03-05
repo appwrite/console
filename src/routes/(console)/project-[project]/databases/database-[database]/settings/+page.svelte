@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { BoxAvatar, Card, CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, Helper, InputText } from '$lib/elements/forms';
@@ -113,7 +113,12 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button
+                    secondary
+                    on:click={() => {
+                        showDelete = true;
+                        trackEvent(Click.DatabaseDatabaseDelete);
+                    }}>Delete</Button>
             </svelte:fragment>
         </CardGrid>
     </Container>
