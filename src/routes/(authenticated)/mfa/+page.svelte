@@ -29,7 +29,6 @@
         disabled = true;
         try {
             await verify(challenge, code);
-            trackEvent(Submit.AccountLogin, { mfa_used: data.factors });
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
