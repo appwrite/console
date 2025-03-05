@@ -56,7 +56,7 @@
         if (platform) {
             continuePlatform(type, platform.name, platform.key, platform.type);
         } else {
-            trackEvent(Submit.PlatformCreateClick, { source: 'onboard_hub' });
+            trackEvent(Submit.PlatformCreateClick, { source: 'onboarding' });
             addPlatform(type);
         }
     }
