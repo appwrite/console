@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../../store';
-    import ExpirationInput from '../expirationInput.svelte';
+    import { ExpirationInput } from '$lib/components';
     import { key } from './store';
 
     let expiration = $key.expire;

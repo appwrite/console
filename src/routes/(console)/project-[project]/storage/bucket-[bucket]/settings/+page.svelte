@@ -122,15 +122,12 @@
     });
 
     $: if (bucketPermissions) {
-        if (symmetricDifference(bucketPermissions, $bucket.$permissions).length) {
-            $arePermsDisabled = false;
-        } else $arePermsDisabled = true;
+        $arePermsDisabled = !symmetricDifference(bucketPermissions, $bucket.$permissions).length;
     }
 
     $: if (extensions) {
-        if (JSON.stringify(extensions) !== JSON.stringify($bucket.allowedFileExtensions)) {
-            isExtensionsDisabled = false;
-        } else isExtensionsDisabled = true;
+        isExtensionsDisabled =
+            JSON.stringify(extensions) === JSON.stringify($bucket.allowedFileExtensions);
     }
 
     function toggleBucket() {
