@@ -125,7 +125,7 @@
 
     async function copyPreviewWithToken(token: string) {
         await copy(
-            `${sdk.forProject.storage.getFilePreview($file.bucketId, $file.$id)}?token=${token}`
+            `${sdk.forProject.storage.getFilePreview($file.bucketId, $file.$id)}&token=${token}`
         );
     }
 
