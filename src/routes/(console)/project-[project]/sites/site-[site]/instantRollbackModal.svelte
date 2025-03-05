@@ -64,7 +64,7 @@
 <Modal title="Instant rollback" bind:show onSubmit={handleSubmit}>
     <svelte:fragment slot="description">
         Rollback is only available for deployments that are <b>ready and previously active</b>. <Link
-            href="/#">Learn more</Link
+            href="#/">Learn more</Link
         >.
     </svelte:fragment>
     <Layout.Stack gap="xl">
