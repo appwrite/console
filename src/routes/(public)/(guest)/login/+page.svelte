@@ -23,7 +23,7 @@
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             if ($user) {
-                trackEvent(Submit.AccountLogin);
+                trackEvent(Submit.AccountLogin, { mfa_used: 'none' });
                 addNotification({
                     type: 'success',
                     message: 'Successfully logged in.'
