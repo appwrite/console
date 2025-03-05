@@ -28,6 +28,7 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { RuleType } from '$lib/stores/sdk';
+    import CreateAppwriteDomainModal from './createAppwriteDomainModal.svelte';
 
     export let data;
 
@@ -180,9 +181,13 @@
 </Container>
 
 {#if showDelete}
-    <DeleteDomainModal show={showDelete} {selectedDomain} />
+    <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal show={showRetry} {selectedDomain} />
+    <RetryDomainModal bind:show={showRetry} {selectedDomain} />
+{/if}
+
+{#if showAppwriteDomainModal}
+    <CreateAppwriteDomainModal bind:show={showAppwriteDomainModal} />
 {/if}

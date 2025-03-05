@@ -21,7 +21,7 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been deleted`
+                message: `Domain has been deleted`
             });
             trackEvent(Submit.DomainDelete);
         } catch (e) {
