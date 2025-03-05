@@ -61,7 +61,6 @@
             } else {
                 await goto(base);
             }
-            trackEvent(Submit.AccountCreate);
         } catch (error) {
             disabled = false;
             addNotification({
