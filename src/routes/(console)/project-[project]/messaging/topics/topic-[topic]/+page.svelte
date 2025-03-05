@@ -102,7 +102,7 @@
             search={data.search}
             placeholder="Search by subscriber ID, target ID, user ID, or type">
             <div class="u-flex u-gap-16 is-not-mobile">
-                <Filters query={data.query} {columns} />
+                <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
                 <ViewSelector
                     view={View.Table}
                     {columns}
@@ -127,7 +127,7 @@
             </div>
             <div class="u-flex-basis-50-percent">
                 <!-- TODO: fix width -->
-                <Filters query={data.query} {columns} />
+                <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
             </div>
         </div>
     </div>

@@ -140,6 +140,7 @@ export function isTrackingAllowed() {
 
 export enum Click {
     BreadcrumbClick = 'click_breadcrumb',
+    FilterApplyClick = 'click_apply_filter',
     KeyCreateClick = 'click_key_create',
     MenuDropDownClick = 'click_menu_dropdown',
     ModalCloseClick = 'click_close_modal',
@@ -177,6 +178,8 @@ export enum Submit {
     AccountRecoveryCodesCreate = 'submit_account_recovery_codes_create',
     AccountRecoveryCodesUpdate = 'submit_account_recovery_codes_update',
     AccountDeleteIdentity = 'submit_account_delete_identity',
+    FilterClear = 'submit_clear_filter',
+    FilterApply = 'submit_filter_apply',
     UserCreate = 'submit_user_create',
     UserDelete = 'submit_user_delete',
     UserUpdateEmail = 'submit_user_update_email',

@@ -100,7 +100,7 @@
                 placeholder="Search by message ID, description, type, or status" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Filters query={data.query} {columns} />
+            <Filters query={data.query} {columns} analyticsSource="messaging_messages" />
             <ViewSelector view={data.view} {columns} hideView allowNoColumns showColsTextMobile />
             {#if $canWriteMessages}
                 <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
