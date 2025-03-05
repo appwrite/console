@@ -16,6 +16,7 @@
         DropListLink,
         Empty,
         EmptySearch,
+        FloatingActionBar,
         PaginationWithLimit,
         SearchQuery
     } from '$lib/components';
@@ -30,7 +31,9 @@
         TableCellText,
         TableHeader,
         TableRow,
-        TableRowLink
+        TableRowLink,
+        TableCellHeadCheck,
+        TableCellCheck
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import {
@@ -57,6 +60,7 @@
     let showDelete = false;
     let showDropdown = [];
     let selectedFile: Models.File = null;
+    let selected: string[] = [];
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
@@ -167,6 +171,9 @@
     {#if data.files.total}
         <Table>
             <TableHeader>
+                <TableCellHeadCheck
+                    bind:selected
+                    pageItemsIds={data.files.files.map((f) => f.$id)} />
                 <TableCellHead>Filename</TableCellHead>
                 <TableCellHead onlyDesktop width={140}>Type</TableCellHead>
                 <TableCellHead onlyDesktop width={100}>Size</TableCellHead>
@@ -210,6 +217,7 @@
                     {:else}
                         <TableRowLink
                             href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
+                            <TableCellCheck bind:selectedIds={selected} id={file.$id} />
                             <TableCell title="Name">
                                 <div class="u-flex u-gap-12 u-cross-center">
                                     <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
@@ -291,8 +299,50 @@
             target="file"
             on:click={() => wizard.start(Create)} />
     {/if}
+
+    <FloatingActionBar show={selected.length > 0}>
+        <div class="u-flex u-cross-center u-main-space-between actions">
+            <div class="u-flex u-cross-center u-gap-8">
+                <span class="indicator body-text-2 u-bold">{selected.length}</span>
+                <p>
+                    <span class="is-only-desktop">
+                        file{selected.length > 1 ? 's' : ''}
+                    </span>
+                    selected
+                </p>
+            </div>
+
+            <div class="u-flex u-cross-center u-gap-8">
+                <Button text on:click={() => (selected = [])}>Cancel</Button>
+                <Button
+                    secondary
+                    on:click={() => {
+                        showDelete = true;
+                        selectedFile = null;
+                    }}>
+                    <p>Delete</p>
+                </Button>
+            </div>
+        </div>
+    </FloatingActionBar>
 </Container>
 
-{#if selectedFile}
-    <DeleteFile file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
-{/if}
+<DeleteFile
+    singleFile={selectedFile}
+    bind:multipleFiles={selected}
+    {bucketId}
+    bind:showDelete
+    on:deleted={fileDeleted} />
+
+<style lang="scss">
+    .actions {
+        .indicator {
+            border-radius: 0.25rem;
+            background: hsl(var(--color-information-100));
+            color: hsl(var(--color-neutral-0));
+
+            padding: 0rem 0.375rem;
+            display: inline-block;
+        }
+    }
+</style>
