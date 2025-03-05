@@ -35,11 +35,11 @@
     import { AvatarGroup } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { getPlatformInfo } from '$lib/helpers/platform';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
 
     function createKey() {
-        trackEvent(Submit.KeyCreateClick, {
+        trackEvent(Click.KeyCreateClick, {
             source: 'onboarding'
         });
         goto(`${base}/project-${projectId}/overview/keys/create`, {
@@ -55,7 +55,7 @@
         if (platform) {
             continuePlatform(type, platform.name, platform.key, platform.type);
         } else {
-            trackEvent(Submit.PlatformCreateClick, { source: 'onboarding' });
+            trackEvent(Click.PlatformCreateClick, { source: 'onboarding' });
             addPlatform(type);
         }
     }
@@ -392,7 +392,7 @@
                                     direction={$isSmallViewport ? 'column' : 'row'}>
                                     <Card.Button
                                         on:click={() => {
-                                            trackEvent(Submit.OnboardingSetupDatabaseClick);
+                                            trackEvent(Click.OnboardingSetupDatabaseClick);
                                             goto(`${base}/project-${projectId}/databases`);
                                         }}
                                         padding="s"
@@ -430,7 +430,7 @@
                                                         href="https://appwrite.io/docs/references"
                                                         on:click={() => {
                                                             trackEvent(
-                                                                Submit.OnboardingApiReferencesClick
+                                                                Click.OnboardingApiReferencesClick
                                                             );
                                                         }}
                                                         target="_blank">API references</Link.Anchor>
@@ -439,7 +439,7 @@
                                                         href="https://appwrite.io/docs/tutorials"
                                                         on:click={() => {
                                                             trackEvent(
-                                                                Submit.OnboardingTutorialsClick
+                                                                Click.OnboardingTutorialsClick
                                                             );
                                                         }}
                                                         target="_blank">Tutorials</Link.Anchor>
@@ -448,7 +448,7 @@
                                                         href="https://appwrite.io/docs/products/storage/quick-start"
                                                         on:click={() => {
                                                             trackEvent(
-                                                                Submit.OnboardingStorageQuickstartClick
+                                                                Click.OnboardingStorageQuickstartClick
                                                             );
                                                         }}
                                                         target="_blank"
@@ -459,7 +459,7 @@
                                                         href="https://appwrite.io/docs/products/functions/quick-start"
                                                         on:click={() => {
                                                             trackEvent(
-                                                                Submit.OnboardingFunctionsQuickstartClick
+                                                                Click.OnboardingFunctionsQuickstartClick
                                                             );
                                                         }}
                                                         target="_blank"
@@ -489,7 +489,7 @@
                                                                 href={`${base}/project-${projectId}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
-                                                                        Submit.OnboardingAuthEmailPasswordClick
+                                                                        Click.OnboardingAuthEmailPasswordClick
                                                                     );
                                                                 }}
                                                                 >E-mail and password
@@ -499,7 +499,7 @@
                                                                 href={`${base}/project-${projectId}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
-                                                                        Submit.OnboardingAuthOauth2Click
+                                                                        Click.OnboardingAuthOauth2Click
                                                                     );
                                                                 }}>OAuth 2</Link.Anchor>
                                                             <Link.Anchor
@@ -507,7 +507,7 @@
                                                                 href={`${base}/project-${projectId}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
-                                                                        Submit.OnboardingAuthAllMethodsClick
+                                                                        Click.OnboardingAuthAllMethodsClick
                                                                     );
                                                                 }}>View all methods</Link.Anchor>
                                                         </Layout.Stack>
@@ -527,7 +527,7 @@
                                         href="https://appwrite.io/discord"
                                         padding="s"
                                         on:click={() => {
-                                            trackEvent(Submit.OnboardingDiscordClick);
+                                            trackEvent(Click.OnboardingDiscordClick);
                                         }}>
                                         <div class="full-height-card">
                                             <Layout.Stack gap="xs" justifyContent="space-between">

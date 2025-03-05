@@ -138,6 +138,21 @@ export function isTrackingAllowed() {
     }
 }
 
+export enum Click {
+    KeyCreateClick = 'click_key_create',
+    PlatformCreateClick = 'click_platform_create',
+    OrganizationClickCreate = 'click_create_organization',
+    OnboardingSetupDatabaseClick = 'click_onboarding_setup_database',
+    OnboardingApiReferencesClick = 'click_onboarding_api_references',
+    OnboardingTutorialsClick = 'click_onboarding_tutorials',
+    OnboardingStorageQuickstartClick = 'click_onboarding_storage_quickstart',
+    OnboardingFunctionsQuickstartClick = 'click_onboarding_functions_quickstart',
+    OnboardingAuthEmailPasswordClick = 'click_onboarding_auth_email_password',
+    OnboardingAuthOauth2Click = 'click_onboarding_auth_oauth2',
+    OnboardingAuthAllMethodsClick = 'click_onboarding_auth_all_methods',
+    OnboardingDiscordClick = 'click_onboarding_discord'
+}
+
 export enum Submit {
     DownloadDPA = 'submit_download_dpa',
     Error = 'submit_error',
@@ -249,11 +264,11 @@ export enum Submit {
     KeyUpdateName = 'submit_key_update_name',
     KeyUpdateScopes = 'submit_key_update_scopes',
     KeyUpdateExpire = 'submit_key_update_expire',
-    KeyCreateClick = 'click_key_create',
+
     PlatformCreate = 'submit_platform_create',
     PlatformDelete = 'submit_platform_delete',
     PlatformUpdate = 'submit_platform_update',
-    PlatformCreateClick = 'click_platform_create',
+
     DomainCreate = 'submit_domain_create',
     DomainDelete = 'submit_domain_delete',
     DomainUpdateVerification = 'submit_domain_update_verification',
@@ -299,7 +314,7 @@ export enum Submit {
     OrganizationUpgrade = 'submit_organization_upgrade',
     OrganizationDowngrade = 'submit_organization_downgrade',
     OrganizationBillingTaxIdUpdate = 'submit_organization_billing_tax_id_update',
-    OrganizationClickCreate = 'click_create_organization',
+
     SupportTicket = 'submit_support_ticket',
     InstallationCreate = 'submit_installation_create',
     InstallationDelete = 'submit_installation_delete',
@@ -348,14 +363,5 @@ export enum Submit {
     RecordCreate = 'submit_dns_record_create',
     RecordUpdate = 'submit_dns_record_update',
     RecordDelete = 'submit_dns_record_delete',
-    SearchClear = 'submit_clear_search',
-    OnboardingSetupDatabaseClick = 'click_onboarding_setup_database',
-    OnboardingApiReferencesClick = 'click_onboarding_api_references',
-    OnboardingTutorialsClick = 'click_onboarding_tutorials',
-    OnboardingStorageQuickstartClick = 'click_onboarding_storage_quickstart',
-    OnboardingFunctionsQuickstartClick = 'click_onboarding_functions_quickstart',
-    OnboardingAuthEmailPasswordClick = 'click_onboarding_auth_email_password',
-    OnboardingAuthOauth2Click = 'click_onboarding_auth_oauth2',
-    OnboardingAuthAllMethodsClick = 'click_onboarding_auth_all_methods',
-    OnboardingDiscordClick = 'click_onboarding_discord'
+    SearchClear = 'submit_clear_search'
 }
