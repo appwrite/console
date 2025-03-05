@@ -20,6 +20,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { base } from '$app/paths';
     import { Table } from '@appwrite.io/pink-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let columns: Column[];
     export let data: PageData;
@@ -126,6 +127,7 @@
                                 selectedDeployment = deployment;
                                 showRedeploy = true;
                                 showDropdown = [];
+                                trackEvent(Click.FunctionsRedeployClick);
                             }}>
                             Redeploy
                         </DropListItem>
@@ -170,6 +172,7 @@
                                     selectedDeployment = deployment;
                                     showDropdown = [];
                                     showDelete = true;
+                                    trackEvent(Click.FunctionsDeploymentDeleteClick);
                                 }}>
                                 Delete
                             </DropListItem>

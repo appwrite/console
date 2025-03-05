@@ -22,6 +22,7 @@
     import { onMount } from 'svelte';
     import { canWriteFunctions } from '$lib/stores/roles';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
 
@@ -186,6 +187,7 @@
                                 on:click={() => {
                                     selectedDeployment = activeDeployment;
                                     showRedeploy = true;
+                                    trackEvent(Click.FunctionsRedeployClick);
                                 }}>
                                 Redeploy
                             </Button>

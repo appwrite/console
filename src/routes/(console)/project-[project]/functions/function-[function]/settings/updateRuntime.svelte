@@ -75,13 +75,13 @@
                 message: 'Runtime settings have been updated',
                 type: 'success'
             });
-            trackEvent(Submit.FunctionUpdateName);
+            trackEvent(Submit.FunctionUpdateRuntime, { runtime });
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.FunctionUpdateName);
+            trackError(error, Submit.FunctionUpdateRuntime);
         }
     }
 
