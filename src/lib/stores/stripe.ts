@@ -1,15 +1,15 @@
-import type { Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
-import { sdk } from './sdk';
-import { app } from './app';
-import { get, writable } from 'svelte/store';
-import type { PaymentMethodData } from '$lib/sdk/billing';
+import { base } from '$app/paths';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+import type { Models } from '@appwrite.io/console';
+import type { Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
+import { get, writable } from 'svelte/store';
+import { app } from './app';
 import { addNotification } from './notifications';
 import { organization } from './organization';
-import { base } from '$app/paths';
+import { sdk } from './sdk';
 
 export const stripe = writable<Stripe>();
-let paymentMethod: PaymentMethodData;
+let paymentMethod: Models.PaymentMethod;
 let clientSecret: string;
 let elements: StripeElements;
 let paymentElement: StripeElement;

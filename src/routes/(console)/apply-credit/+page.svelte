@@ -12,7 +12,7 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type PaymentList, type Plan } from '$lib/sdk/billing';
+    import { type Plan } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import { isOrganization } from '$lib/stores/billing.js';
     import { addNotification } from '$lib/stores/notifications';
@@ -23,10 +23,10 @@
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe.js';
-    import { ID } from '@appwrite.io/console';
+    import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
+    import { ID, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
 
     export let data;
 
@@ -51,7 +51,7 @@
     let formComponent: Form;
     let couponForm: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let paymentMethodId: string;
     let collaborators: string[];
     let taxId: string;

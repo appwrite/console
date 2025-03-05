@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { PaymentMethodData } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
     import { Alert } from '.';
     import CreditCardBrandImage from './creditCardBrandImage.svelte';
 
     export let isBox = false;
-    export let paymentMethod: PaymentMethodData;
+    export let paymentMethod: Models.PaymentMethod;
 </script>
 
 <div class:box={isBox}>

@@ -27,7 +27,6 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type PaymentList } from '$lib/sdk/billing';
     import { isOrganization, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
@@ -58,7 +57,7 @@
 
     let formComponent: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let billingPlan: Tier = $currentPlan?.$id as Tier;
     let paymentMethodId: string;
     let collaborators: string[] =

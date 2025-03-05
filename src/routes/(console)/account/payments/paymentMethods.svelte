@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import {
         CardGrid,
         CreditCardInfo,
@@ -7,6 +8,7 @@
         Empty,
         Heading
     } from '$lib/components';
+    import PaymentModal from '$lib/components/billing/paymentModal.svelte';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -18,17 +20,15 @@
         TableRow
     } from '$lib/elements/table';
     import { paymentMethods } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
-    import { base } from '$app/paths';
-    import EditPaymentModal from './editPaymentModal.svelte';
-    import DeletePaymentModal from './deletePaymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import type { Models } from '@appwrite.io/console';
+    import DeletePaymentModal from './deletePaymentModal.svelte';
+    import EditPaymentModal from './editPaymentModal.svelte';
 
     export let showPayment = false;
     let showDropdown = [];
-    let selectedMethod: PaymentMethodData;
+    let selectedMethod: Models.PaymentMethod;
     let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
     let showEdit = false;
@@ -38,7 +38,7 @@
     $: orgList = $organizationList.teams as unknown as Organization[];
 
     $: filteredMethods = $paymentMethods?.paymentMethods.filter(
-        (method: PaymentMethodData) => !!method?.last4
+        (method: Models.PaymentMethod) => !!method?.last4
     );
 </script>
 

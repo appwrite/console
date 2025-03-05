@@ -1,20 +1,21 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Card, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo, upgradeURL } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
-    import type { Aggregation, CreditList, Invoice, Plan } from '$lib/sdk/billing';
-    import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
+    import { Card, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import type { Aggregation, Invoice, Plan } from '$lib/sdk/billing';
+    import { plansInfo, upgradeURL } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import type { Models } from '@appwrite.io/console';
     import CancelDowngradeModel from './cancelDowngradeModal.svelte';
 
     export let currentPlan: Plan;
-    export let creditList: CreditList;
+    export let creditList: Models.CreditList;
     export let currentInvoice: Invoice | undefined = undefined;
     export let currentAggregation: Aggregation | undefined = undefined;
 

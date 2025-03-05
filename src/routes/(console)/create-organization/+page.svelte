@@ -14,7 +14,6 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import type { PaymentList } from '$lib/sdk/billing';
     import { isOrganization, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
@@ -43,7 +42,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let name: string;
     let billingPlan: BillingPlan = BillingPlan.FREE;
     let paymentMethodId: string;
