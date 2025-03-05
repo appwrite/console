@@ -41,10 +41,20 @@
 
     export function accumulateFromEndingTotal(
         metrics: Models.Metric[],
-        endingTotal: number
+        endingTotal: number,
+        startingDayToFillZero: Date = null
     ): Array<[string, number]> {
         return (metrics ?? []).reduceRight(
             (acc, curr) => {
+                if (startingDayToFillZero !== null && startingDayToFillZero instanceof Date) {
+                    const date = new Date(curr.date);
+                    if (date > startingDayToFillZero) {
+                        acc.data.unshift([date.toISOString(), 0]);
+                        acc.total -= 0;
+
+                        return acc;
+                    }
+                }
                 acc.data.unshift([curr.date, acc.total]);
                 acc.total -= curr.value;
                 return acc;
