@@ -1,9 +1,11 @@
 import { getProjectId } from '$lib/helpers/project';
+import { Sources } from '$lib/sdk/sources';
 import { VARS } from '$lib/system';
 import {
     Account,
     Assistant,
     Avatars,
+    Backups,
     Client,
     Console,
     Databases,
@@ -22,8 +24,6 @@ import {
     Vcs
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
-import { Backups } from '../sdk/backups';
-import { Sources } from '$lib/sdk/sources';
 
 export function getApiEndpoint(): string {
     if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
