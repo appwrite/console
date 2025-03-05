@@ -1,10 +1,10 @@
 <script lang="ts">
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
     export let label: string;
     export let value: number;
-    export let couponData: Partial<Coupon> = {
+    export let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null

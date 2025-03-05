@@ -1,16 +1,16 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button, FormList, InputText } from '$lib/elements/forms';
-    import type { Coupon } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     const dispatch = createEventDispatcher();
     export let show = false;
     let error: string = null;
     let coupon: string = '';
-    export let couponData: Partial<Coupon> = {
+    export let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null

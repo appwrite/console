@@ -1,13 +1,13 @@
 import { base } from '$app/paths';
-import type { Coupon } from '$lib/sdk/billing.js';
 import type { Campaign } from '$lib/stores/campaigns.js';
 import { sdk } from '$lib/stores/sdk.js';
+import type { Models } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ url }) => {
     // Has promo code
     if (url.searchParams.has('code')) {
-        let couponData: Coupon;
+        let couponData: Models.Coupon;
         let campaign: Campaign;
         const code = url.searchParams.get('code');
         try {

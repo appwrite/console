@@ -91,16 +91,6 @@ export type EstimationDeleteOrganization = {
     unpaidInvoices: Invoice[];
 };
 
-export type Coupon = {
-    $id: string;
-    code: string;
-    credits: number;
-    expiration: string;
-    status: string; // 'active' | 'disabled' | 'expired'
-    validity: number;
-    campaign?: string;
-};
-
 export type Credit = {
     /**
      * Credit ID.
@@ -895,7 +885,7 @@ export class Billing {
         }
     }
 
-    async getCouponAccount(couponId: string): Promise<Coupon> {
+    async getCouponAccount(couponId: string): Promise<Models.Coupon> {
         const path = `/account/coupons/${couponId}`;
         const params = {
             couponId
@@ -911,7 +901,7 @@ export class Billing {
         );
     }
 
-    async getCoupon(couponId: string): Promise<Coupon> {
+    async getCoupon(couponId: string): Promise<Models.Coupon> {
         const path = `/console/coupons/${couponId}`;
         const params = {
             couponId
