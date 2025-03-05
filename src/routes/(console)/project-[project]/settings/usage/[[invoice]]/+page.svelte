@@ -1,28 +1,28 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
-    import { CardGrid, Heading, Card, ProgressBarBig } from '$lib/components';
+    import { base } from '$app/paths';
+    import { BarChart, Legend } from '$lib/charts';
+    import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import Collapsible from '$lib/components/collapsible.svelte';
+    import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
+    import { BillingPlan } from '$lib/constants.js';
+    import { Button } from '$lib/elements/forms';
     import {
-        TableRow,
+        Table,
         TableBody,
         TableCell,
         TableCellHead,
         TableHeader,
-        Table,
+        TableRow,
         TableRowLink
     } from '$lib/elements/table';
+    import { getCountryName } from '$lib/helpers/diallingCodes.js';
+    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
+    import { formatNum } from '$lib/helpers/string';
+    import { Container } from '$lib/layout';
+    import { total } from '$lib/layout/usage.svelte';
     import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { Button } from '$lib/elements/forms';
-    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart, Legend } from '$lib/charts';
-    import { formatNum } from '$lib/helpers/string';
-    import { total } from '$lib/layout/usage.svelte';
-    import { BillingPlan } from '$lib/constants.js';
-    import { base } from '$app/paths';
-    import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
-    import Collapsible from '$lib/components/collapsible.svelte';
-    import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
-    import { getCountryName } from '$lib/helpers/diallingCodes.js';
 
     export let data;
 
@@ -36,7 +36,8 @@
         data.usage.filesStorageTotal +
         data.usage.deploymentsStorageTotal +
         data.usage.buildsStorageTotal;
-
+    $: imageTransformations = data.usage.imageTransformations;
+    $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
     $: dbReads = data.usage.databasesReads;
     $: dbWrites = data.usage.databasesWrites;
 
@@ -233,6 +234,49 @@
                 </div>
 
                 <Legend {legendData} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">Image transformations</Heading>
+
+        <p class="text">Total unique image transformations in your project.</p>
+
+        <svelte:fragment slot="aside">
+            {#if imageTransformations}
+                {@const current = formatNum(imageTransformationsTotal)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{current}</span>
+                            <span class="body-text-1 u-bold">Transformations</span>
+                        </p>
+                    </div>
+                </div>
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Image transformations',
+                            data: [...imageTransformations.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
