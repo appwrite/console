@@ -297,6 +297,7 @@ export enum Submit {
     OrganizationUpgrade = 'submit_organization_upgrade',
     OrganizationDowngrade = 'submit_organization_downgrade',
     OrganizationBillingTaxIdUpdate = 'submit_organization_billing_tax_id_update',
+    OrganizationClickCreate = 'click_create_organization',
     SupportTicket = 'submit_support_ticket',
     InstallationCreate = 'submit_installation_create',
     InstallationDelete = 'submit_installation_delete',
