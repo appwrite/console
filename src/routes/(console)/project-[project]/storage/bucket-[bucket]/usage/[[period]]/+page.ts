@@ -1,7 +1,6 @@
 import { isValueOfStringEnum } from '$lib/helpers/types';
-import type { Metric, UsageBuckets } from '$lib/sdk/usage';
 import { sdk } from '$lib/stores/sdk';
-import { StorageUsageRange } from '@appwrite.io/console';
+import { StorageUsageRange, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
@@ -11,12 +10,12 @@ export const load: PageLoad = async ({ params }) => {
     const response = (await sdk.forProject.storage.getBucketUsage(
         params.bucket,
         period
-    )) as unknown as UsageBuckets;
+    )) as unknown as Models.UsageBuckets;
 
     return {
         filesTotal: response.filesTotal,
-        files: response.files as Metric[],
+        files: response.files as Models.Metric[],
         imageTransformationsTotal: response.imageTransformationsTotal,
-        imageTransformations: response.imageTransformations as Metric[]
+        imageTransformations: response.imageTransformations as Models.Metric[]
     };
 };
