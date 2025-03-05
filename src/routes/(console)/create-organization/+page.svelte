@@ -170,7 +170,7 @@
 
             trackEvent(Submit.OrganizationCreate, {
                 plan: tierToPlan(billingPlan)?.name,
-                budget_cap_enabled: billingBudget !== null,
+                budget_cap_enabled: !!billingBudget,
                 members_invited: collaborators?.length
             });
 
