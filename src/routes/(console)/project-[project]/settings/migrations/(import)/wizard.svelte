@@ -1,18 +1,21 @@
 <script lang="ts">
-    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
-    import Wizard from '$lib/layout/wizardWithSteps.svelte';
+    import { Wizard } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { onDestroy } from 'svelte';
     import { formData, provider, resetImportStores } from '.';
-    import Step1 from './step1.svelte';
-    import Step2 from './step2.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { migrationFormToResources } from '$lib/stores/migration';
+    import { migrationFormToResources, type Provider } from '$lib/stores/migration';
     import { started } from '../stores';
     import { showMigrationBox } from '$lib/components/migrationBox.svelte';
     import { addNotification } from '$lib/stores/notifications';
+    import { Button, Card, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Link } from '$lib/elements';
+    import { Form } from '$lib/elements/forms';
+    import { Box, EyebrowHeading } from '$lib/components';
+    import Credentials from './credentials.svelte';
+    import ResourceForm from '$routes/(console)/(migration-wizard)/resource-form.svelte';
 
     const onExit = () => {
         resetImportStores();
@@ -87,15 +90,153 @@
 
     onDestroy(onExit);
 
-    const steps: WizardStepsType = new Map();
-    steps.set(1, {
-        label: 'Source',
-        component: Step1
-    });
-    steps.set(2, {
-        label: 'Resources',
-        component: Step2
-    });
+    const providers: Record<Provider, string> = {
+        appwrite: 'Appwrite Self-hosted',
+        firebase: 'Firebase',
+        supabase: 'Supabase',
+        nhost: 'NHost'
+    };
+
+    let showResources = false;
+
+    let showExitModal = false;
 </script>
 
-<Wizard title="Create Migration" {steps} on:exit={onExit} on:finish={onFinish} />
+<Wizard
+    title="Create Migration"
+    bind:showExitModal
+    confirmExit
+    {onExit}>
+    <Form onSubmit={onFinish}>
+        <Layout.Stack gap="xxl">
+            <Fieldset legend="Source">
+                <Layout.Stack gap="xl">
+                    <Typography.Text variant="m-400">
+                        Select a source platform with the project you want to migrate.
+                        <Link href="https://appwrite.io/docs/advanced/migrations" external>
+                            Learn about which platforms are supported.
+                        </Link>
+                    </Typography.Text>
+
+                    <div class="providers">
+                        {#each Object.entries(providers) as [key, platform]}
+                            <Card.Selector
+                                bind:group={$provider.provider}
+                                name={key}
+                                id={key}
+                                value={key}
+                                title={platform}
+                                imageRadius="s" />
+                        {/each}
+                    </div>
+                </Layout.Stack>
+            </Fieldset>
+
+            <Fieldset legend="Credentials">
+                {#if !showResources}
+                    <Credentials bind:formSubmitted={showResources} />
+                {:else}
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        gap="xs">
+                        <Layout.Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center">
+                            <Typography.Text variant="m-500">Credentials set</Typography.Text>
+                        </Layout.Stack>
+
+                        <Button.Button
+                            variant="secondary"
+                            size="s"
+                            on:click={() => (showResources = !showResources)}>Update</Button.Button>
+                    </Layout.Stack>
+                {/if}
+            </Fieldset>
+
+            {#if showResources}
+                <Fieldset legend="Resources">
+                    <Layout.Stack gap="xl">
+                        <ResourceForm {formData} {provider} projectSdk={sdk.forProject} />
+                    </Layout.Stack>
+                </Fieldset>
+            {/if}
+        </Layout.Stack>
+    </Form>
+
+    <!--    <svelte:fragment slot="aside">-->
+    <!--        <Box radius="s">-->
+    <!--            <div class="u-flex u-flex-vertical u-gap-16">-->
+    <!--                <EyebrowHeading class="eyebrow" tag="h3" size={3}>Good to know</EyebrowHeading>-->
+    <!--                <div class="u-flex u-gap-16">-->
+    <!--                    <div class="circled">-->
+    <!--                        <i class="icon-cog" />-->
+    <!--                    </div>-->
+    <!--                    <div>-->
+    <!--                        <p class="u-bold">Project settings are not imported</p>-->
+    <!--                        <p>You will need to set service and project settings manually</p>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--                <div class="u-flex u-gap-16">-->
+    <!--                    <div class="circled">-->
+    <!--                        <i class="icon-trending-up" />-->
+    <!--                    </div>-->
+    <!--                    <div>-->
+    <!--                        <p class="u-bold">Keep your organization plan's limits in mind</p>-->
+    <!--                        <p>-->
+    <!--                            Make sure to have enough storage in your organization plan when-->
+    <!--                            importing files.-->
+    <!--                        </p>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--                {#if $provider.provider === 'firebase'}-->
+    <!--                    <div class="u-flex u-gap-16">-->
+    <!--                        <div class="circled">-->
+    <!--                            <i class="icon-exclamation u-color-text-warning" />-->
+    <!--                        </div>-->
+    <!--                        <div>-->
+    <!--                            <p class="u-bold">Possible charges by Firebase</p>-->
+    <!--                            <p>-->
+    <!--                                Appwrite does not impose charges for importing data, but please note-->
+    <!--                                that Firebase may have its own pricing for this service-->
+    <!--                            </p>-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                {:else}-->
+    <!--                    <div class="u-flex u-gap-16">-->
+    <!--                        <div class="circled">-->
+    <!--                            <i class="icon-currency-dollar" />-->
+    <!--                        </div>-->
+    <!--                        <div>-->
+    <!--                            <p class="u-bold">Transfer is free of charge</p>-->
+    <!--                            <p>-->
+    <!--                                You won't be charged for Appwrite bandwidth usage for importing data-->
+    <!--                            </p>-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                {/if}-->
+    <!--            </div>-->
+    <!--        </Box>-->
+    <!--    </svelte:fragment>-->
+
+    <svelte:fragment slot="footer">
+        <Button.Button
+            variant="secondary"
+            on:click={() => {
+                showExitModal = true;
+            }}>Cancel</Button.Button>
+
+        <!-- todo: @itznotabug, correct disabled state -->
+        <Button.Button variant="primary" disabled>Create</Button.Button>
+    </svelte:fragment>
+</Wizard>
+
+<style>
+    .providers {
+        display: grid;
+        gap: var(--gap-l, 16px);
+        grid-template-columns: repeat(3, 1fr);
+    }
+</style>
