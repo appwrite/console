@@ -195,7 +195,7 @@
 </Container>
 
 {#if showDelete}
-    <DeleteDomainModal show={showDelete} {selectedDomain} />
+    <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
 {/if}
 
 <!-- {#if showRetry}

@@ -7,6 +7,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { Confirm } from '$lib/components';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let selectedDomain: Models.ProxyRule;
@@ -20,7 +21,7 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: `${selectedDomain.domain} has been deleted`
+                message: `Domain has been deleted`
             });
             trackEvent(Submit.DomainDelete);
         } catch (e) {
@@ -32,10 +33,13 @@
 
 <Confirm title="Delete domain" bind:open={show} onSubmit={deleteDomain} bind:error>
     {#if selectedDomain}
-        <p data-private>
-            Are you sure you want to delete <b>{selectedDomain.domain}</b>? You will no longer be
-            able to view your site by visiting this domain.
-        </p>
+        <Typography.Text variant="m-400">
+            Are you sure you want to delete this domain? You will no longer be able to view your
+            site by visiting:
+        </Typography.Text>
+        <Typography.Text variant="m-500">
+            {selectedDomain.domain}
+        </Typography.Text>
     {/if}
     <InputCheckbox
         required

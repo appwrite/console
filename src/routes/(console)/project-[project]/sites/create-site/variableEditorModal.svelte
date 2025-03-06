@@ -5,11 +5,10 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { parse } from 'envfile';
-    import { Icon, Layout, Tabs } from '@appwrite.io/pink-svelte';
+    import { Alert, Icon, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { InputTextarea } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import Alert from '$lib/components/alert.svelte';
     import { Link } from '$lib/elements';
 
     export let showEditor = false;
@@ -137,10 +136,10 @@
 
     <Layout.Stack gap="l">
         {#if secretVariables?.length > 0}
-            <Alert type="info" dismissible>
+            <Alert.Inline status="info">
                 {secretVariables.length} secret variables are hidden from the editor. Their values will
                 remain unchanged. <Link href="#" variant="muted">Learn more</Link>.
-            </Alert>
+            </Alert.Inline>
         {/if}
         <Layout.Stack gap="s">
             <Tabs.Root stretch let:root>
