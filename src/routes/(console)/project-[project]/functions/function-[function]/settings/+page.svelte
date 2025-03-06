@@ -89,7 +89,8 @@
         {sdkDeleteVariable}
         isGlobal={false}
         globalVariableList={data.globalVariables}
-        variableList={data.variables} />
+        variableList={data.variables}
+        analyticsSource="function_settings" />
     <UpdateTimeout />
     <UpdateScopes />
     <DangerZone />

@@ -37,7 +37,7 @@
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
-
+    export let analyticsSource = '';
     export let isGlobal: boolean;
     export let sdkCreateVariable: (
         key: string,
@@ -222,10 +222,20 @@
         <Layout.Stack gap="l">
             <Layout.Stack direction="row">
                 <Layout.Stack direction="row" gap="s">
-                    <Button secondary on:mousedown={() => (showEditorModal = true)}>
+                    <Button
+                        secondary
+                        on:mousedown={() => {
+                            showEditorModal = true;
+                            trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
+                        }}>
                         <Icon slot="start" icon={IconCode} /> Editor
                     </Button>
-                    <Button secondary on:mousedown={() => (showVariablesUpload = true)}>
+                    <Button
+                        secondary
+                        on:mousedown={() => {
+                            showEditorModal = true;
+                            trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
+                        }}>
                         <Icon slot="start" icon={IconUpload} /> Import .env
                     </Button>
                 </Layout.Stack>
@@ -234,7 +244,7 @@
                         secondary
                         on:mousedown={() => {
                             showVariablesModal = true;
-                            trackEvent(Click.VariablesCreate, { source: 'project_settings' });
+                            trackEvent(Click.VariablesCreateClick, { source: 'project_settings' });
                         }}>
                         <Icon slot="start" icon={IconPlus} /> Create variable
                     </Button>

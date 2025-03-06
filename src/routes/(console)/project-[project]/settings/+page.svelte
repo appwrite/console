@@ -85,7 +85,8 @@
                 {sdkUpdateVariable}
                 {sdkDeleteVariable}
                 isGlobal={true}
-                variableList={data.variables} />
+                variableList={data.variables}
+                analyticsSource="project_settings" />
             <CardGrid>
                 <svelte:fragment slot="title">Transfer project</svelte:fragment>
                 Transfer your project to another organization that you own.

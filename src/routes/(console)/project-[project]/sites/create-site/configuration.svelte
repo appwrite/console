@@ -151,7 +151,7 @@
                                     size="s"
                                     on:mousedown={() => {
                                         showCreate = true;
-                                        trackEvent(Click.VariablesCreate, {
+                                        trackEvent(Click.VariablesCreateClick, {
                                             source: 'site_settings'
                                         });
                                     }}>
