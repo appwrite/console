@@ -139,7 +139,7 @@
                         size="s"
                         variant="primary"
                         on:click={() => {
-                            trackEvent('click_organization_upgrade', {
+                            trackEvent(Click.OrganizationClickUpgrade, {
                                 from: 'button',
                                 source: 'top_nav'
                             });

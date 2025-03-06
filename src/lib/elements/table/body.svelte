@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { getServiceLimit, upgradeURL, type PlanServices } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { Button } from '../forms';
@@ -41,7 +41,7 @@
                         secondary
                         href={$upgradeURL}
                         on:click={() =>
-                            trackEvent('click_organization_upgrade', {
+                            trackEvent(Click.OrganizationClickUpgrade, {
                                 from: 'button',
                                 source: event ?? 'table_row_limit_reached'
                             })}>Upgrade plan</Button>

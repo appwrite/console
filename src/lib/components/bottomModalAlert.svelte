@@ -15,7 +15,7 @@
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[project]/store';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
@@ -170,7 +170,7 @@
                                 external={!!currentModalAlert.cta.external}
                                 fullWidthMobile
                                 on:click={() => {
-                                    trackEvent('click_promo', {
+                                    trackEvent(Click.PromoClick, {
                                         promo: currentModalAlert.id,
                                         type: shouldShowUpgrade ? 'upgrade' : 'try_now'
                                     });
@@ -282,7 +282,7 @@
                                     fullWidthMobile
                                     on:click={() => {
                                         openModalOnMobile = false;
-                                        trackEvent('click_promo', {
+                                        trackEvent(Click.PromoClick, {
                                             promo: currentModalAlert.id,
                                             type: shouldShowUpgrade ? 'upgrade' : 'try_now'
                                         });

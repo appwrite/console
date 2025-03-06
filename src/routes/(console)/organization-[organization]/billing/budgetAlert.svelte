@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { tierToPlan, upgradeURL } from '$lib/stores/billing';
@@ -161,7 +161,7 @@
                     secondary
                     href={$upgradeURL}
                     on:click={() => {
-                        trackEvent('click_organization_upgrade', {
+                        trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source: 'billing_alerts_card'
                         });
