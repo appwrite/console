@@ -153,6 +153,8 @@ export enum Click {
     KeyCreateClick = 'click_key_create',
     MenuDropDownClick = 'click_menu_dropdown',
     ModalCloseClick = 'click_close_modal',
+    MessagingScheduleClick = 'click_messaging_schedule',
+    MessagingTopicCreateClick = 'click_messaging_topic_create',
     PlatformCreateClick = 'click_platform_create',
     OrganizationClickCreate = 'click_create_organization',
     OrganizationClickUpgrade = 'click_organization_upgrade',
