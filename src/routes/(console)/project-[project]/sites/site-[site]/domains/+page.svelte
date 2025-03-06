@@ -29,6 +29,7 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { RuleType } from '$lib/stores/sdk';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
 
@@ -43,6 +44,11 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery search={data.search} placeholder="Search sites" />
         <Button
+            on:click={() => {
+                trackEvent(Click.DomainCreateClick, {
+                    source: 'sites_domain_overview'
+                });
+            }}
             href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
             <Icon icon={IconPlus} size="s" />
             Add domain

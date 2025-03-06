@@ -10,6 +10,7 @@
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Card, Trim } from '$lib/components';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let proxyRuleList: Models.ProxyRuleList;
 
@@ -54,6 +55,11 @@
                         <Button
                             secondary
                             size="s"
+                            on:click={() => {
+                                trackEvent(Click.DomainCreateClick, {
+                                    source: 'sites_domain_overview'
+                                });
+                            }}
                             href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
                             Add domain
                         </Button>
