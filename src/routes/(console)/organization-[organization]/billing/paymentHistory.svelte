@@ -73,7 +73,7 @@
             <TableScroll noMargin transparent noStyles>
                 <TableHeader>
                     <TableCellHead width={100}>Due Date</TableCellHead>
-                    <TableCellHead width={80}>Status</TableCellHead>
+                    <TableCellHead width={110}>Status</TableCellHead>
                     <TableCellHead width={100}>Amount Due</TableCellHead>
                     <TableCellHead width={40} />
                 </TableHeader>
