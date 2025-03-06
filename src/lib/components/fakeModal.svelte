@@ -152,5 +152,9 @@
         :global() {
             background-color: hsl(240 5% 8% / 0.6);
         }
+
+        & :global(.modal-form) {
+            position: unset;
+        }
     }
 </style>
