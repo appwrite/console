@@ -1,31 +1,20 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import Card from '$lib/components/card.svelte';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { type Models } from '@appwrite.io/console';
-    import {
-        Fieldset,
-        Layout,
-        Tooltip,
-        Icon,
-        Card as PinkCard,
-        Empty,
-        Alert
-    } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Tooltip, Icon, Alert } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
     import { organization } from '$lib/stores/organization';
     import { consoleVariables } from '$routes/(console)/store';
     import InputDomain from '$lib/elements/forms/inputDomain.svelte';
-    import { IconGithub, IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
     import { writable } from 'svelte/store';
-    import { ConnectGit } from '$lib/components/git';
     import ConnectRepoModal from '../../../(components)/connectRepoModal.svelte';
     import { isCloud } from '$lib/system';
 
@@ -37,13 +26,10 @@
     let isSubmitting = writable(false);
 
     let showConnectRepo = false;
-
+    let behaviour: 'REDIRECT' | 'CREATE' = 'CREATE';
     let domain = '';
-    let domainData: Models.ProxyRule;
-
     let redirect = null;
     let statusCode = null;
-
     let branch = null;
 
     const redirectOptions = data.domains.rules
@@ -77,51 +63,65 @@
     ];
 
     async function addDomain() {
+        const isAppwriteDomain = domain.endsWith($consoleVariables._APP_DOMAIN_SITES);
         const isNewDomain = data.domains.rules.findIndex((rule) => rule.domain === domain) === -1;
-        const isSubDomain = domain.endsWith(`.${$consoleVariables._APP_DOMAIN_SITES}`);
-
-        if (behaviour === 'redirect') {
-            try {
+        const isSubDomain = domain.split('.').length >= 2;
+        try {
+            if (behaviour === 'CREATE') {
+                if (isCloud && !isAppwriteDomain) {
+                    //Redirect if subdomain so user can choose how to proceed
+                    if (isSubDomain) {
+                        goto(
+                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify?domain=${domain}`
+                        );
+                    }
+                    //Create domain if it's a new domain
+                    else if (isNewDomain) {
+                        const domainData = await sdk.forConsole.domains.create(
+                            $organization.$id,
+                            domain
+                        );
+                        await sdk.forProject.proxy.createSiteRule(
+                            domain,
+                            $page.params.site,
+                            branch
+                        );
+                        goto(
+                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify-${domainData.$id}}`
+                        );
+                    }
+                }
+                //if selfhosted or appwrite domain create site rule                else {
+                    await sdk.forProject.proxy.createSiteRule(domain, $page.params.site, branch);
+                    addNotification({
+                        type: 'success',
+                        message: 'Domain added successfully'
+                    });
+                    await goto(backPage);
+                    await invalidate(Dependencies.SITES_DOMAINS);
+                }
+            } else if (behaviour === 'REDIRECT') {
                 if (isNewDomain && !isSubDomain && isCloud) {
                     await sdk.forConsole.domains.create($organization.$id, domain);
                 }
-                domainData = await sdk.forProject.proxy.createRedirectRule(domain, redirect);
-                invalidate(Dependencies.SITES_DOMAINS);
+                if (isNewDomain && !isCloud) {
+                    await sdk.forProject.proxy.createSiteRule(domain, $page.params.site);
+                }
+                await sdk.forProject.proxy.createRedirectRule(domain, redirect);
 
                 if (isNewDomain && !isSubDomain) {
                     goto(
                         `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify`
                     );
                 }
-            } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
             }
-        } else {
-            try {
-                if (isNewDomain && !isSubDomain && isCloud) {
-                    await sdk.forConsole.domains.create($organization.$id, domain);
-                }
-                domainData = await sdk.forProject.proxy.createSiteRule(
-                    domain,
-                    $page.params.site,
-                    branch
-                );
-                console.log(domainData);
-                invalidate(Dependencies.SITES_DOMAINS);
-            } catch (error) {
-                addNotification({
-                    type: 'error',
-                    message: error.message
-                });
-            }
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
         }
     }
-
-    let behaviour: 'redirect' | 'create' = 'create';
-    $: console.log($consoleVariables);
 </script>
 
 <Wizard title="Add custom domain" href={backPage} column columnSize="s">
@@ -146,21 +146,21 @@
 
             <Layout.Grid columns={2} columnsXS={1}>
                 <LabelCard
-                    value="create"
+                    value="CREATE"
                     bind:group={behaviour}
                     title="Connect to active deployment">
                     Connect this domain to your active deployment and configure the linked Git
                     branch as needed.
                 </LabelCard>
                 <LabelCard
-                    value="redirect"
+                    value="REDIRECT"
                     bind:group={behaviour}
                     title="Redirect to another domain">
                     Automatically forward traffic from this domain to another URL of your choice.
                 </LabelCard>
             </Layout.Grid>
 
-            {#if behaviour === 'create'}
+            {#if behaviour === 'CREATE'}
                 <Fieldset legend="Configuration">
                     <Layout.Stack gap="xl">
                         {#if data.branches?.total}
@@ -173,6 +173,7 @@
                                 {options}
                                 label="Production branch"
                                 id="branch"
+                                required
                                 bind:value={branch}
                                 placeholder="Select branch" />
                         {:else}
@@ -219,7 +220,7 @@
                 {:else}
                     <ConnectGit callbackState={{ newInstallation: 'true' }} />
                 {/if} -->
-            {:else if behaviour === 'redirect'}
+            {:else if behaviour === 'REDIRECT'}
                 <Fieldset legend="Configuration">
                     <Layout.Stack gap="xl">
                         <InputSelect
@@ -251,7 +252,9 @@
     </Form>
     <svelte:fragment slot="footer">
         <Button secondary href={backPage}>Cancel</Button>
-        <Button on:click={() => formComponent.triggerSubmit()} disabled={$isSubmitting}>Add</Button>
+        <Button on:click={() => formComponent.triggerSubmit()} bind:disabled={$isSubmitting}>
+            Add
+        </Button>
     </svelte:fragment>
 </Wizard>
 
