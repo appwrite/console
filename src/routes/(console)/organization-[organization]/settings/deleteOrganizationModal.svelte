@@ -1,17 +1,10 @@
 <script lang="ts">
-    import { Modal, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import { members, organization, organizationList } from '$lib/stores/organization';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Modal, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { projects } from '../store';
-    import { toLocaleDate } from '$lib/helpers/date';
-    import { isCloud } from '$lib/system';
-    import type { EstimationDeleteOrganization } from '$lib/sdk/billing';
+    import { Button, FormList, InputText } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
@@ -20,9 +13,16 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { onMount } from 'svelte';
-    import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import type { EstimationDeleteOrganization } from '$lib/sdk/billing';
     import { billingURL } from '$lib/stores/billing';
+    import { addNotification } from '$lib/stores/notifications';
+    import { members, organization, organizationList } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+    import { isCloud } from '$lib/system';
+    import { onMount } from 'svelte';
+    import { projects } from '../store';
+    import DeleteOrganizationEstimation from './deleteOrganizationEstimation.svelte';
 
     export let showDelete = false;
     let error: string = null;
@@ -39,7 +39,7 @@
     async function deleteOrg() {
         try {
             if (isCloud) {
-                await sdk.forConsole.billing.deleteOrganization($organization.$id);
+                await sdk.forConsole.organizations.delete($organization.$id);
             } else {
                 await sdk.forConsole.teams.delete($organization.$id);
             }

@@ -18,7 +18,7 @@
     let regions: Models.ConsoleRegionList;
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
+            regions = await sdk.forConsole.console.regions();
         }
     });
 

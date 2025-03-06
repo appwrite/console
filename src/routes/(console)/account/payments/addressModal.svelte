@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
@@ -42,7 +42,7 @@
 
     async function handleSubmit() {
         try {
-            const response = await sdk.forConsole.billing.createAddress(
+            const response = await sdk.forConsole.account.createBillingAddress(
                 country,
                 address,
                 city,

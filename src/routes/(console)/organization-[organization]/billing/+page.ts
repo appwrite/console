@@ -52,7 +52,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
     const [paymentMethods, addressList, billingAddress, creditList, aggregationBillingPlan] =
         await Promise.all([
             sdk.forConsole.billing.listPaymentMethods(),
-            sdk.forConsole.billing.listAddresses(),
+            sdk.forConsole.account.listBillingAddresses(),
             billingAddressPromise,
             sdk.forConsole.billing.listCredits(organization.$id),
             sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan)

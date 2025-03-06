@@ -1,14 +1,8 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
-    import Create from './createProjectCloud.svelte';
-    import CreateProject from './createProject.svelte';
-    import CreateOrganization from '../createOrganization.svelte';
-    import { wizard } from '$lib/stores/wizard';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { registerCommands } from '$lib/commandCenter';
     import {
         CardContainer,
@@ -19,20 +13,26 @@
         Heading,
         PaginationWithLimit
     } from '$lib/components';
-    import { goto } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+    import { Container } from '$lib/layout';
+    import { readOnly } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
     import { services } from '$lib/stores/project-services';
+    import { canWriteProjects } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { regions as regionsStore } from '$routes/(console)/organization-[organization]/store';
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
     import { ID, Region } from '@appwrite.io/console';
-    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
-    import { readOnly } from '$lib/stores/billing';
     import { onMount } from 'svelte';
-    import { organization } from '$lib/stores/organization';
-    import { canWriteProjects } from '$lib/stores/roles';
-    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { regions as regionsStore } from '$routes/(console)/organization-[organization]/store';
+    import CreateOrganization from '../createOrganization.svelte';
+    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
+    import CreateProject from './createProject.svelte';
+    import Create from './createProjectCloud.svelte';
 
     export let data;
 
@@ -123,7 +123,7 @@
 
     onMount(async () => {
         if (isCloud) {
-            const regions = await sdk.forConsole.billing.listRegions();
+            const regions = await sdk.forConsole.console.regions();
             regionsStore.set(regions);
             checkPricingRefAndRedirect($page.url.searchParams);
         }

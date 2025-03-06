@@ -2,7 +2,7 @@ import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
 import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
-import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
+import type { Organization, OrganizationError } from '../stores/organization';
 
 export type Invoice = {
     $id: string;
@@ -158,22 +158,6 @@ export class Billing {
         this.client = client;
     }
 
-    async listOrganization(queries: string[] = []): Promise<OrganizationList> {
-        const path = `/organizations`;
-        const params = {
-            queries
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
     async validateOrganization(organizationId: string, invites: string[]): Promise<Organization> {
         const path = `/organizations/${organizationId}/validate`;
         const params = {
@@ -239,22 +223,6 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async deleteOrganization(organizationId: string): Promise<Organization> {
-        const path = `/organizations/${organizationId}`;
-        const params = {
-            organizationId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'DELETE',
             uri,
             {
                 'content-type': 'application/json'
@@ -946,124 +914,6 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async listAddresses(queries: string[] = []): Promise<AddressesList> {
-        const path = `/account/billing-addresses`;
-        const params = {
-            queries
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async getAddress(billingAddressId: string): Promise<Address> {
-        const path = `/account/billing-addresses/${billingAddressId}`;
-        const params = {
-            billingAddressId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async createAddress(
-        country: string,
-        streetAddress: string,
-        city: string,
-        state: string,
-        postalCode: string,
-        addressLine2?: string
-    ): Promise<Address> {
-        const path = `/account/billing-addresses`;
-        const params = {
-            country,
-            streetAddress,
-            city,
-            state,
-            postalCode,
-            addressLine2
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'POST',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-    async updateAddress(
-        billingAddressId: string,
-        country: string,
-        streetAddress: string,
-        city: string,
-        state: string,
-        postalCode: string,
-        addressLine2?: string
-    ): Promise<Address> {
-        const path = `/account/billing-addresses/${billingAddressId}`;
-        const params = {
-            billingAddressId,
-            country,
-            streetAddress,
-            city,
-            state,
-            postalCode,
-            addressLine2
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'PUT',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-    async deleteAddress(billingAddressId: string): Promise<void> {
-        const path = `/account/billing-addresses/${billingAddressId}`;
-        const params = {
-            billingAddressId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'delete',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async listRegions(): Promise<Models.ConsoleRegionList> {
-        const path = `/console/regions`;
-        const params = {};
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
             uri,
             {
                 'content-type': 'application/json'
