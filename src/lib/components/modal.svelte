@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { Alert } from '$lib/components';
     import { Form } from '$lib/elements/forms';
     import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
-    import { Layout, Modal } from '@appwrite.io/pink-svelte';
+    import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
@@ -47,14 +46,14 @@
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>
-                <Alert
+                <Alert.Inline
                     dismissible
-                    type="warning"
+                    status="warning"
                     on:dismiss={() => {
                         error = null;
                     }}>
                     {error}
-                </Alert>
+                </Alert.Inline>
             </div>
         {/if}
         <slot />

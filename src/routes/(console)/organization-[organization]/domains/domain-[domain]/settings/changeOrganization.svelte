@@ -1,19 +1,34 @@
 <script lang="ts">
+    import { goto, invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { CardGrid } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, InputSelect } from '$lib/elements/forms';
+    import type { Domain } from '$lib/sdk/domains';
+    import { addNotification } from '$lib/stores/notifications';
     import type { OrganizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
 
-    export let domain: Models.Domain;
+    export let domain: Domain;
     export let organizations: OrganizationList;
     let selectedOrg: string = null;
 
     async function moveDomain() {
         try {
             await sdk.forConsole.domains.updateTeam(domain.$id, selectedOrg);
-        } catch (error) {}
+            addNotification({
+                type: 'success',
+                message: 'Domain moved successfully'
+            });
+            await goto(`/console/organization-${selectedOrg}/domains/`);
+            await invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.DOMAINS);
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
     }
 
     $: options = organizations.total

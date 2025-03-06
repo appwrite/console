@@ -70,18 +70,9 @@
                 <Table.Link
                     href={`${base}/organization-${$page.params.organization}/domains/domain-${domain.$id}`}>
                     <Table.Cell>
-                        <Layout.Stack direction="row" alignItems="center" gap="xs">
-                            <Link
-                                external
-                                href={`${$protocol}${domain.domain}`}
-                                size="s"
-                                variant="quiet">
-                                <Layout.Stack direction="row" alignItems="center" gap="xs">
-                                    {domain.domain}
-                                    <Icon icon={IconExternalLink} size="s" />
-                                </Layout.Stack>
-                            </Link>
-                        </Layout.Stack>
+                        <Link external icon href={`${$protocol}${domain.domain}`} variant="quiet">
+                            {domain.domain}
+                        </Link>
                     </Table.Cell>
                     <Table.Cell>{domain?.registrar || '-'}</Table.Cell>
                     <Table.Cell>{domain?.nameservers || '-'}</Table.Cell>
@@ -93,7 +84,7 @@
                     <Table.Cell>{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
                     <Table.Cell>
                         <Layout.Stack direction="row" justifyContent="flex-end">
-                            <Popover let:toggle placement="bottom-start" padding="none">
+                            <Popover let:toggle placement="bottom-end" padding="none">
                                 <Button
                                     text
                                     icon

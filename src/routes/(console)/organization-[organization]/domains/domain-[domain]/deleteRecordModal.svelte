@@ -2,14 +2,14 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
-    import type { Models } from '@appwrite.io/console';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { Confirm } from '$lib/components';
     import { page } from '$app/stores';
+    import type { DnsRecord } from '$lib/sdk/domains';
 
     export let show = false;
-    export let selectedRecord: Models.DnsRecord;
+    export let selectedRecord: DnsRecord;
 
     let error = '';
 
