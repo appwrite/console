@@ -86,6 +86,7 @@
     export let countMetadata: MetricMetadata;
     export let path: string = null;
     export let hideSelectPeriod: boolean = false;
+    export let isCumulative: boolean = false;
 </script>
 
 <Container>
@@ -118,7 +119,9 @@
                     series={[
                         {
                             name: countMetadata.legend,
-                            data: accumulateFromEndingTotal(count, total)
+                            data: isCumulative
+                                ? count.map((m) => [m.date, m.value])
+                                : accumulateFromEndingTotal(count, total)
                         }
                     ]} />
             </div>
