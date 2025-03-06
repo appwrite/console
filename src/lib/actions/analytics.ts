@@ -140,6 +140,7 @@ export function isTrackingAllowed() {
 
 export enum Click {
     BreadcrumbClick = 'click_breadcrumb',
+    ConnectRepositoryClick = 'click_connect_repository',
     DatabaseAttributeDelete = 'click_attribute_delete',
     DatabaseIndexDelete = 'click_index_delete',
     DatabaseCollectionDelete = 'click_collection_delete',
@@ -174,6 +175,7 @@ export enum Click {
     SettingsWebhookDeleteClick = 'click_webhook_delete',
     SettingsInstallProviderClick = 'click_install_provider',
     SettingsStartMigrationClick = 'click_start_migration',
+    ShowCustomIdClick = 'click_show_custom_id',
     SupportOpenClick = 'click_open_support_menu',
     PromoClick = 'click_promo',
     VariablesCreateClick = 'click_variable_create',

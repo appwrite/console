@@ -11,7 +11,7 @@
     import ConnectGit from '$lib/components/git/connectGit.svelte';
     import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
@@ -112,7 +112,7 @@
                     action="button"
                     {callbackState}
                     on:connect={(e) => {
-                        trackEvent('click_connect_repository', {
+                        trackEvent(Click.ConnectRepositoryClick, {
                             from: 'sites'
                         });
                         repository.set(e.detail);

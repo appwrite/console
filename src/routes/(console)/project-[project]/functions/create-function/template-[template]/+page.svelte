@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
@@ -268,7 +268,7 @@
                                         product="sites"
                                         action="button"
                                         on:connect={(e) => {
-                                            trackEvent('click_connect_repository', {
+                                            trackEvent(Click.ConnectRepositoryClick, {
                                                 from: 'template-wizard'
                                             });
                                             repository.set(e.detail);
