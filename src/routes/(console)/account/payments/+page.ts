@@ -7,7 +7,7 @@ export const load: PageLoad = async ({ depends }) => {
     depends(Dependencies.ADDRESS);
 
     const [paymentMethods, addressList] = await Promise.all([
-        sdk.forConsole.billing.listPaymentMethods(),
+        sdk.forConsole.account.listPaymentMethods(),
         sdk.forConsole.account.listBillingAddresses()
     ]);
     return {

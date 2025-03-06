@@ -108,7 +108,7 @@
     });
 
     async function loadPaymentMethods() {
-        const methodList = await sdk.forConsole.billing.listPaymentMethods();
+        const methodList = await sdk.forConsole.account.listPaymentMethods();
         const filteredMethods = methodList.paymentMethods.filter((method) => !!method?.last4);
         methods = { paymentMethods: filteredMethods, total: filteredMethods.length };
         paymentMethodId =

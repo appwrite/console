@@ -98,7 +98,7 @@
     });
 
     async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
         paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     }
 

@@ -20,7 +20,7 @@
     let error: string;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
 
         if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
             selectedPaymentMethodId = methods?.total ? methods.paymentMethods[0].$id : null;

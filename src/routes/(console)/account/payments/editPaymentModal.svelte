@@ -18,10 +18,10 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forConsole.billing.updatePaymentMethod(
+            await sdk.forConsole.account.updatePaymentMethod(
                 selectedPaymentMethod.$id,
-                month,
-                year?.toString()
+                parseInt(month),
+                year
             );
             trackEvent(Submit.PaymentMethodUpdate);
             invalidate(Dependencies.PAYMENT_METHODS);

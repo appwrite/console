@@ -29,7 +29,7 @@
 
     async function cardSaved(event: CustomEvent<Models.PaymentMethod>) {
         value = event.detail.$id;
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
     }
 
     onMount(() => {

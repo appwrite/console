@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
-    import { onDestroy } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Dependencies } from '$lib/constants';
+    import { Wizard } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
+    import { onDestroy } from 'svelte';
     import { addCreditWizardSteps, addCreditWizardStore } from './store';
     import AddCredit from './wizard/addCredit.svelte';
-    import { sdk } from '$lib/stores/sdk';
-    import { organization } from '$lib/stores/organization';
     import PaymentDetails from './wizard/paymentDetails.svelte';
 
     async function onFinish() {
@@ -23,7 +23,10 @@
                 $addCreditWizardStore.paymentMethodId
             );
 
-            await sdk.forConsole.billing.addCredit($organization.$id, $addCreditWizardStore.coupon);
+            await sdk.forConsole.organizations.addCredit(
+                $organization.$id,
+                $addCreditWizardStore.coupon
+            );
             addNotification({
                 type: 'success',
                 message: `Credit has been added to ${$organization.name}`
