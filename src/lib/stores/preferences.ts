@@ -37,7 +37,7 @@ async function updateConsolePreferences(store: PreferencesStore): Promise<void> 
     }
 
     currentPreferences.console = {
-        ...(currentPreferences.console ?? {}),
+        ...currentPreferences.console,
         ...store
     };
 
