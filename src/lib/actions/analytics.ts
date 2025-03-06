@@ -168,6 +168,7 @@ export enum Click {
     OnboardingAuthOauth2Click = 'click_onboarding_auth_oauth2',
     OnboardingAuthAllMethodsClick = 'click_onboarding_auth_all_methods',
     OnboardingDiscordClick = 'click_onboarding_discord',
+    StorageBucketDeleteClick = 'click_bucket_delete',
     VariablesCreateClick = 'click_variable_create',
     VariablesUpdateClick = 'click_variable_update',
     VariablesImportClick = 'click_variable_import'
