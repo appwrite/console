@@ -91,7 +91,8 @@
                         );
                     }
                 }
-                //if selfhosted or appwrite domain create site rule                else {
+                //if selfhosted or appwrite domain create site rule
+                else {
                     await sdk.forProject.proxy.createSiteRule(domain, $page.params.site, branch);
                     addNotification({
                         type: 'success',
