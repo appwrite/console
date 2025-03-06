@@ -428,7 +428,7 @@ export async function checkForMandate(org: Organization) {
 }
 
 export async function checkForMissingPaymentMethod() {
-    const orgs = await sdk.forConsole.billing.listOrganization([
+    const orgs = await sdk.forConsole.organizations.list([
         Query.notEqual('billingPlan', BillingPlan.FREE),
         Query.isNull('paymentMethodId'),
         Query.isNull('backupPaymentMethodId')
@@ -448,7 +448,7 @@ export async function checkForMissingPaymentMethod() {
 export async function checkForNewDevUpgradePro(org: Organization) {
     if (org?.billingPlan !== BillingPlan.FREE || !browser) return;
 
-    const orgs = await sdk.forConsole.billing.listOrganization([
+    const orgs = await sdk.forConsole.organizations.list([
         Query.notEqual('billingPlan', BillingPlan.FREE)
     ]);
     if (orgs?.total) return;

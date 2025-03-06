@@ -13,6 +13,7 @@ import {
     Locale,
     Messaging,
     Migrations,
+    Organizations,
     Project,
     Project as ProjectApi,
     Projects,
@@ -77,6 +78,7 @@ export const sdk = {
         health: new Health(clientConsole),
         locale: new Locale(clientConsole),
         migrations: new Migrations(clientConsole),
+        organizations: new Organizations(clientConsole),
         projects: new Projects(clientConsole),
         teams: new Teams(clientConsole),
         users: new Users(clientConsole)
