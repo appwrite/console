@@ -15,13 +15,14 @@
     import type { Models } from '@appwrite.io/console';
     import ImportReport from '$routes/(console)/project-[project]/settings/migrations/(import)/importReport.svelte';
 
+    export let errorInResources: boolean;
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
     export let projectSdk: ReturnType<typeof getSdkForProject>;
 
     type ValueOf<T> = T[keyof T];
     type FormData = WritableValue<typeof formData>;
-    // TL;DR of this type: It gets a object with two levels (in this case FormData)
+    // TL;DR of this type: It gets an object with two levels (in this case FormData)
     // And returns a join of the keys with a dot between them.
     // e.g. If FormData was { users: { root: boolean, teams: boolean } }
     // The type would be 'users.root' | 'users.teams'
@@ -131,12 +132,9 @@
         isOpen = false;
     });
 
-    $: resources = providerResources[$provider.provider];
+    $: errorInResources = error;
     $: wizard.setNextDisabled(!report);
-
-    $: {
-        console.log(JSON.stringify(report, null, 2));
-    }
+    $: resources = providerResources[$provider.provider];
 </script>
 
 <Layout.Stack gap="l">
@@ -157,10 +155,20 @@
     <!--TODO: FIX UI -->
     <Layout.Stack gap="l">
         <Layout.Stack direction="row">
-            <Button.Button variant="text" role="button" on:click={deselectAll}
-                >Deselect all</Button.Button>
-            <Button.Button variant="text" role="button" on:click={selectAll}
-                >Select all</Button.Button>
+            <Button.Button
+                variant="text"
+                role="button"
+                on:click={(event) => {
+                    event.preventDefault();
+                    deselectAll();
+                }}>Deselect all</Button.Button>
+            <Button.Button
+                variant="text"
+                role="button"
+                on:click={(event) => {
+                    event.preventDefault();
+                    selectAll();
+                }}>Select all</Button.Button>
         </Layout.Stack>
         <Divider />
     </Layout.Stack>
@@ -173,7 +181,6 @@
                 handleChange={handleInputChange('users.root')}
                 description="Import all users"
                 reportValue={report?.user}
-                showReport={$provider.provider !== 'firebase'}
                 isLoading={!error} />
 
             <!-- TODO: no padding, change a component instead -->
@@ -195,7 +202,6 @@
                 handleChange={handleInputChange('databases.root')}
                 description="Import all databases, including collections, indexes and attributes"
                 reportValue={report?.database}
-                showReport={$provider.provider !== 'firebase'}
                 isLoading={!error} />
 
             <div style:padding-left="2rem">
@@ -205,7 +211,6 @@
                     handleChange={handleInputChange('databases.documents')}
                     description="Import all functions and their active deployment"
                     reportValue={report?.document}
-                    showReport={$provider.provider !== 'firebase'}
                     isLoading={!error} />
             </div>
         </Layout.Stack>
@@ -219,7 +224,6 @@
                 handleChange={handleInputChange('functions.root')}
                 description="Import all functions and their active deployment"
                 reportValue={report?.function}
-                showReport={$provider.provider !== 'firebase'}
                 isLoading={!error} />
 
             {#if resources?.includes('environment-variable') || resources?.includes('deployment')}
@@ -254,7 +258,6 @@
                 checked={$formData.storage.root}
                 handleChange={handleInputChange('storage.root')}
                 reportValue={storageSize}
-                showReport={$provider.provider !== 'firebase'}
                 isLoading={!error} />
 
             <div style:padding-left="2rem">

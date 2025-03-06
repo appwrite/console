@@ -8,7 +8,6 @@
         InputTextarea
     } from '$lib/elements/forms';
     import { provider } from '.';
-    import { onMount } from 'svelte';
 
     export let formSubmitted = false;
 
@@ -71,10 +70,10 @@
         <FormList>
             <InputTextarea
                 id="credentials"
-                label="Account credentials"
+                label="Service Account JSON credentials"
                 required
                 bind:value={$provider.serviceAccount}
-                placeholder="Enter account credentials" />
+                placeholder="Enter Service Account JSON credentials" />
         </FormList>
     {:else if $provider.provider === 'supabase'}
         <FormList>

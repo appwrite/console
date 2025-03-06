@@ -10,12 +10,19 @@
     import { started } from '../stores';
     import { showMigrationBox } from '$lib/components/migrationBox.svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import { Button, Card, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Button, Card, Fieldset, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
-    import { Form } from '$lib/elements/forms';
-    import { Box, EyebrowHeading } from '$lib/components';
+    import { FormList } from '$lib/elements/forms';
+    import { EyebrowHeading } from '$lib/components';
     import Credentials from './credentials.svelte';
     import ResourceForm from '$routes/(console)/(migration-wizard)/resource-form.svelte';
+    import {
+        IconCog,
+        IconCurrencyDollar,
+        IconExclamation,
+        IconTrendingUp
+    } from '@appwrite.io/pink-icons-svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     const onExit = () => {
         resetImportStores();
@@ -98,16 +105,18 @@
     };
 
     let showResources = false;
-
     let showExitModal = false;
+    let errorInResources = false;
+    $: isFinalsButtonEnabled =
+        !errorInResources &&
+        showResources &&
+        Object.values($formData).some((category) =>
+            Object.values(category).some((value) => value === true)
+        );
 </script>
 
-<Wizard
-    title="Create Migration"
-    bind:showExitModal
-    confirmExit
-    {onExit}>
-    <Form onSubmit={onFinish}>
+<Wizard title="Create migration" bind:showExitModal confirmExit {onExit}>
+    <FormList>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Source">
                 <Layout.Stack gap="xl">
@@ -126,7 +135,8 @@
                                 id={key}
                                 value={key}
                                 title={platform}
-                                imageRadius="s" />
+                                imageRadius="s"
+                                disabled={showResources} />
                         {/each}
                     </div>
                 </Layout.Stack>
@@ -141,17 +151,16 @@
                         justifyContent="space-between"
                         alignItems="center"
                         gap="xs">
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center">
-                            <Typography.Text variant="m-500">Credentials set</Typography.Text>
-                        </Layout.Stack>
+                        <Typography.Text variant="m-500">
+                            {capitalize($provider.provider)} credentials set successfully
+                        </Typography.Text>
 
                         <Button.Button
-                            variant="secondary"
                             size="s"
-                            on:click={() => (showResources = !showResources)}>Update</Button.Button>
+                            variant="secondary"
+                            on:click={() => (showResources = !showResources)}>
+                            Update
+                        </Button.Button>
                     </Layout.Stack>
                 {/if}
             </Fieldset>
@@ -159,67 +168,73 @@
             {#if showResources}
                 <Fieldset legend="Resources">
                     <Layout.Stack gap="xl">
-                        <ResourceForm {formData} {provider} projectSdk={sdk.forProject} />
+                        <ResourceForm
+                            {formData}
+                            {provider}
+                            bind:errorInResources
+                            projectSdk={sdk.forProject} />
                     </Layout.Stack>
                 </Fieldset>
             {/if}
         </Layout.Stack>
-    </Form>
+    </FormList>
 
-    <!--    <svelte:fragment slot="aside">-->
-    <!--        <Box radius="s">-->
-    <!--            <div class="u-flex u-flex-vertical u-gap-16">-->
-    <!--                <EyebrowHeading class="eyebrow" tag="h3" size={3}>Good to know</EyebrowHeading>-->
-    <!--                <div class="u-flex u-gap-16">-->
-    <!--                    <div class="circled">-->
-    <!--                        <i class="icon-cog" />-->
-    <!--                    </div>-->
-    <!--                    <div>-->
-    <!--                        <p class="u-bold">Project settings are not imported</p>-->
-    <!--                        <p>You will need to set service and project settings manually</p>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--                <div class="u-flex u-gap-16">-->
-    <!--                    <div class="circled">-->
-    <!--                        <i class="icon-trending-up" />-->
-    <!--                    </div>-->
-    <!--                    <div>-->
-    <!--                        <p class="u-bold">Keep your organization plan's limits in mind</p>-->
-    <!--                        <p>-->
-    <!--                            Make sure to have enough storage in your organization plan when-->
-    <!--                            importing files.-->
-    <!--                        </p>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--                {#if $provider.provider === 'firebase'}-->
-    <!--                    <div class="u-flex u-gap-16">-->
-    <!--                        <div class="circled">-->
-    <!--                            <i class="icon-exclamation u-color-text-warning" />-->
-    <!--                        </div>-->
-    <!--                        <div>-->
-    <!--                            <p class="u-bold">Possible charges by Firebase</p>-->
-    <!--                            <p>-->
-    <!--                                Appwrite does not impose charges for importing data, but please note-->
-    <!--                                that Firebase may have its own pricing for this service-->
-    <!--                            </p>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                {:else}-->
-    <!--                    <div class="u-flex u-gap-16">-->
-    <!--                        <div class="circled">-->
-    <!--                            <i class="icon-currency-dollar" />-->
-    <!--                        </div>-->
-    <!--                        <div>-->
-    <!--                            <p class="u-bold">Transfer is free of charge</p>-->
-    <!--                            <p>-->
-    <!--                                You won't be charged for Appwrite bandwidth usage for importing data-->
-    <!--                            </p>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                {/if}-->
-    <!--            </div>-->
-    <!--        </Box>-->
-    <!--    </svelte:fragment>-->
+    <svelte:fragment slot="aside">
+        <Card.Base variant="primary" radius="s" padding="m">
+            <Layout.Stack gap="l">
+                <EyebrowHeading class="eyebrow" tag="h3" size={3}>Good to know</EyebrowHeading>
+
+                <!-- tip 1 -->
+                <Layout.Stack gap="l" direction="row" wrap="normal">
+                    <span class="icon-wrapper">
+                        <Icon icon={IconCog} size="s" />
+                    </span>
+                    <Layout.Stack gap="none">
+                        <Typography.Text variant="m-600"
+                            >Project settings are not imported</Typography.Text>
+                        You will need to set service and project settings manually.
+                    </Layout.Stack>
+                </Layout.Stack>
+
+                <!-- tip 2 -->
+                <Layout.Stack gap="l" direction="row" wrap="normal">
+                    <span class="icon-wrapper">
+                        <Icon icon={IconTrendingUp} size="s" />
+                    </span>
+                    <Layout.Stack gap="none">
+                        <Typography.Text variant="m-600"
+                            >Keep your organization plan's limits in mind</Typography.Text>
+                        Make sure to have enough storage in your organization plan when importing files.
+                    </Layout.Stack>
+                </Layout.Stack>
+
+                <!-- tip 3 -->
+                <Layout.Stack gap="l" direction="row" wrap="normal">
+                    {@const isFirebase = $provider.provider === 'firebase'}
+                    <span class="icon-wrapper" style:padding-block="3px">
+                        <Icon
+                            icon={isFirebase ? IconExclamation : IconCurrencyDollar}
+                            size="s"
+                            color={isFirebase ? '--fgcolor-warning' : undefined} />
+                    </span>
+                    <Layout.Stack gap="none">
+                        <Typography.Text variant="m-600">
+                            {isFirebase
+                                ? 'Possible charges by Firebase'
+                                : 'Transfer is free of charge'}
+                        </Typography.Text>
+
+                        {#if isFirebase}
+                            Appwrite does not impose charges for importing data, but please note
+                            that Firebase may have its own pricing for this service
+                        {:else}
+                            You won't be charged for Appwrite bandwidth usage for importing data
+                        {/if}
+                    </Layout.Stack>
+                </Layout.Stack>
+            </Layout.Stack>
+        </Card.Base>
+    </svelte:fragment>
 
     <svelte:fragment slot="footer">
         <Button.Button
@@ -228,8 +243,8 @@
                 showExitModal = true;
             }}>Cancel</Button.Button>
 
-        <!-- todo: @itznotabug, correct disabled state -->
-        <Button.Button variant="primary" disabled>Create</Button.Button>
+        <Button.Button variant="primary" disabled={!isFinalsButtonEnabled} on:click={onFinish}
+            >Create</Button.Button>
     </svelte:fragment>
 </Wizard>
 
@@ -237,6 +252,15 @@
     .providers {
         display: grid;
         gap: var(--gap-l, 16px);
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+        @media (max-width: 768px) {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+
+    .icon-wrapper {
+        padding-block: 2px;
     }
 </style>

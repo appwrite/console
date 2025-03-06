@@ -3,7 +3,6 @@
 
     export let label: string;
     export let checked: boolean;
-    export let showReport: boolean = true;
     export let isLoading: boolean = false;
     export let handleChange: (event: Event) => void;
     export let description: string | undefined = undefined;
@@ -16,12 +15,10 @@
             <Layout.Stack direction="row" gap="xs" alignItems="flex-start">
                 <Selector.Checkbox {label} bind:checked on:change={handleChange} />
 
-                {#if showReport}
-                    {#if reportValue !== undefined}
-                        <Tag size="xs" selected>{reportValue}</Tag>
-                    {:else if isLoading}
-                        <Spinner size="s" />
-                    {/if}
+                {#if reportValue !== undefined}
+                    <Tag size="xs" selected>{reportValue}</Tag>
+                {:else if isLoading}
+                    <Spinner size="s" />
                 {/if}
             </Layout.Stack>
 
