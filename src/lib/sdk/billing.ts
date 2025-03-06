@@ -66,31 +66,6 @@ export type EstimationDeleteOrganization = {
     unpaidInvoices: Invoice[];
 };
 
-export type AllowedRegions =
-    | 'fra'
-    | 'nyc'
-    | 'sfo'
-    | 'blr'
-    | 'lon'
-    | 'ams'
-    | 'sgp'
-    | 'tor'
-    | 'syd'
-    | 'default'; //TODO: remove after migration
-
-export type Region = {
-    $id: AllowedRegions;
-    name: string;
-    disabled: boolean;
-    default: boolean;
-    flag: string;
-};
-
-export type RegionList = {
-    regions: Region[];
-    total: number;
-};
-
 export type Address = {
     $id: string;
     streetAddress: string;
@@ -175,11 +150,6 @@ export type PlanList = {
 };
 
 export type PlansMap = Map<Tier, Plan>;
-
-export type Roles = {
-    scopes: string[];
-    roles: string[];
-};
 
 export class Billing {
     client: Client;
@@ -319,7 +289,7 @@ export class Billing {
         });
     }
 
-    async getRoles(organizationId: string): Promise<Roles> {
+    async getRoles(organizationId: string): Promise<Models.Roles> {
         const path = `/organizations/${organizationId}/roles`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('get', uri, {
@@ -1088,7 +1058,7 @@ export class Billing {
         );
     }
 
-    async listRegions(): Promise<RegionList> {
+    async listRegions(): Promise<Models.ConsoleRegionList> {
         const path = `/console/regions`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);

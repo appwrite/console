@@ -1,10 +1,9 @@
 import { page } from '$app/stores';
+import { sdk } from '$lib/stores/sdk';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
-import type { RegionList } from '$lib/sdk/billing';
-import { sdk } from '$lib/stores/sdk';
 
-export const regions = writable<RegionList | undefined>(undefined);
+export const regions = writable<Models.ConsoleRegionList | undefined>(undefined);
 export const regionFlagUrls = derived(regions, ($regions) => {
     if (!$regions?.regions?.length) return [];
 

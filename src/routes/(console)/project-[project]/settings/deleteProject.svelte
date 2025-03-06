@@ -1,21 +1,21 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { BoxAvatar, CardGrid, Heading, Modal } from '$lib/components';
     import { Button, FormList, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { project } from '../store';
-    import type { RegionList } from '$lib/sdk/billing';
 
     let showDelete = false;
     let name: string = null;
 
-    let regions: RegionList;
+    let regions: Models.ConsoleRegionList;
     onMount(async () => {
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
