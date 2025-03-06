@@ -55,8 +55,8 @@
         'restrict' = 'Document can not be deleted'
     }
 
-    $: relAttributes = $attributes?.filter((attribute) =>
-        isRelationship(attribute)
+    $: relAttributes = $attributes?.filter(
+        (attribute) => isRelationship(attribute) && attribute.side === 'parent'
     ) as Models.AttributeRelationship[];
 </script>
 
