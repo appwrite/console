@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { InnerModal } from '$lib/components';
     import TextCounter from '$lib/elements/forms/textCounter.svelte';
 
@@ -35,7 +35,7 @@
     };
 
     $: if (show) {
-        trackEvent('click_show_custom_id');
+        trackEvent(Click.ShowCustomIdClick);
     }
 
     $: if (id === databaseId) {

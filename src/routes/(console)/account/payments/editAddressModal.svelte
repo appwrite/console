@@ -51,10 +51,10 @@
                 type: 'success',
                 message: `Address has been added`
             });
-            trackEvent(Submit.BillingAddressCreate);
+            trackEvent(Submit.BillingAddressUpdate);
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.BillingAddressCreate);
+            trackError(e, Submit.BillingAddressUpdate);
         }
     }
 </script>

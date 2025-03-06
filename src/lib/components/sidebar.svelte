@@ -34,7 +34,7 @@
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -58,6 +58,7 @@
     export let subNavigation = undefined;
 
     function toggleFeedback() {
+        trackEvent(Click.FeedbackSubmitClick);
         feedback.toggleFeedback();
         if ($feedback.notification) {
             feedback.toggleNotification();
@@ -139,7 +140,7 @@
                             class="link"
                             class:active={pathname.includes('overview')}
                             on:click={() => {
-                                trackEvent('click_menu_overview');
+                                trackEvent(Click.MenuOverviewClick);
                                 sideBarIsOpen = false;
                             }}
                             ><span class="link-icon"
@@ -243,7 +244,7 @@
                                 size="s"
                                 on:click={() => {
                                     toggleFeedback();
-                                    trackEvent('click_menu_feedback', { source: 'side_nav' });
+                                    trackEvent(Click.FeedbackSubmitClick, { source: 'side_nav' });
                                 }}
                                 >Feedback
                             </Button.Button>
@@ -258,7 +259,7 @@
                                 size="s"
                                 on:click={() => {
                                     $showSupportModal = true;
-                                    trackEvent('click_menu_support', { source: 'side_nav' });
+                                    trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                 }}>
                                 <span>Support</span>
 
@@ -318,7 +319,7 @@
                                     size="s"
                                     on:click={() => {
                                         $showSupportModal = true;
-                                        trackEvent('click_menu_support', { source: 'side_nav' });
+                                        trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                     }}>
                                     <span>Support</span>
 

@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { AvatarGroup, SvgIcon } from '$lib/components';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
@@ -56,7 +56,7 @@
     );
 
     function connect(e: CustomEvent<Models.ProviderRepository>) {
-        trackEvent('click_connect_repository', { from: 'cover' });
+        trackEvent(Click.ConnectRepositoryClick, { from: 'cover' });
         repository.set(e.detail);
         goto(
             `${wizardBase}/create-function/repository-${e.detail.id}?installation=${$installation.$id}`

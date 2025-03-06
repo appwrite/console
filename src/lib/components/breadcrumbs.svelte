@@ -13,6 +13,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { newOrgModal } from '$lib/stores/organization';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     type Project = {
         name: string;
@@ -68,6 +69,7 @@
     let projectsBottomSheetOpen = false;
 
     function createOrg() {
+        trackEvent(Click.OrganizationClickCreate, { source: 'breadcrumbs' });
         if (isCloud) {
             goto(`${base}/create-organization`);
         } else newOrgModal.set(true);

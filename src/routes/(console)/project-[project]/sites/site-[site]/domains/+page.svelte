@@ -28,6 +28,7 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { RuleType } from '$lib/stores/sdk';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import CreateAppwriteDomainModal from './createAppwriteDomainModal.svelte';
 
     export let data;
@@ -44,7 +45,9 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery search={data.search} placeholder="Search domain" />
         <Popover padding="none" let:toggle placement="bottom-end">
-            <Button on:click={toggle}>
+            <Button on:click={(event) => {toggle(event); trackEvent(Click.DomainCreateClick, {
+                    source: 'sites_domain_overview'
+                });}}>
                 <Icon icon={IconPlus} size="s" />
                 Add domain
             </Button>
@@ -123,6 +126,9 @@
                                                 selectedDomain = domain;
                                                 showDelete = true;
                                                 toggle(e);
+                                                trackEvent(Click.DomainDeleteClick, {
+                                                    source: 'sites_domain_overview'
+                                                });
                                             }}>
                                             Delete
                                         </ActionMenu.Item.Button>

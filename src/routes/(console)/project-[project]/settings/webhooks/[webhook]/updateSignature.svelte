@@ -4,6 +4,7 @@
     import { Link } from '@appwrite.io/pink-svelte';
     import Regenerate from './regenerate.svelte';
     import { webhook } from './store';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let showRegenerate = false;
 </script>
@@ -22,7 +23,13 @@
         </div>
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        <Button on:click={() => (showRegenerate = true)} secondary submit>Regenerate key</Button>
+        <Button
+            on:click={() => {
+                showRegenerate = true;
+                trackEvent(Click.SettingsWebhookUpdateSignatureClick);
+            }}
+            secondary
+            submit>Regenerate key</Button>
     </svelte:fragment>
 </CardGrid>
 

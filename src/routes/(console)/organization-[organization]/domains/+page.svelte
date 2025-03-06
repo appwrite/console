@@ -29,6 +29,7 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import type { Domain } from '$lib/sdk/domains';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
 
@@ -42,7 +43,13 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery search={data.search} placeholder="Search domains" />
-        <Button href={`${base}/organization-${$page.params.organization}/domains/add-domain`}>
+        <Button
+            on:click={() => {
+                trackEvent(Click.DomainCreateClick, {
+                    source: 'organization_domain_overview'
+                });
+            }}
+            href={`${base}/organization-${$page.params.organization}/domains/add-domain`}>
             <Icon icon={IconPlus} size="s" />
             Add domain
         </Button>
@@ -107,6 +114,9 @@
                                                     selectedDomain = domain;
                                                     showRetry = true;
                                                     toggle(e);
+                                                    trackEvent(Click.DomainRetryDomainVerificationClick, {
+                                                    source: 'organization_domain_overview'
+                                                });
                                                 }}>
                                                 Retry
                                             </ActionMenu.Item.Button>
@@ -119,6 +129,9 @@
                                                 selectedDomain = domain;
                                                 showDelete = true;
                                                 toggle(e);
+                                                trackEvent(Click.DomainDeleteClick, {
+                                                    source: 'organization_domain_overview'
+                                                });
                                             }}>
                                             Delete
                                         </ActionMenu.Item.Button>
@@ -166,6 +179,11 @@
 
                     <Button
                         secondary
+                        on:click={() => {
+                            trackEvent(Click.DomainCreateClick, {
+                                source: 'organization_domain_overview'
+                            });
+                        }}
                         href={`${base}/organization-${$page.params.organization}/domains/add-domain`}
                         size="s">
                         Add domain

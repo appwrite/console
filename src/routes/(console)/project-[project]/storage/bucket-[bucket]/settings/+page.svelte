@@ -87,6 +87,7 @@
     import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import type { PageData } from './$types';
+    import { Click } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -442,7 +443,12 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button
+                    secondary
+                    on:click={() => {
+                        showDelete = true;
+                        trackEvent(Click.StorageBucketDeleteClick);
+                    }}>Delete</Button>
             </svelte:fragment>
         </CardGrid>
     {/if}

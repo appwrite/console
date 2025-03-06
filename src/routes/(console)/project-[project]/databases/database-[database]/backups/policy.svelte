@@ -15,7 +15,7 @@
     import EmptyLight from '$lib/images/backups/backups-light.png';
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
     import { backupFrequencies } from '$lib/helpers/backups';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -168,7 +168,7 @@
                                             showDelete = true;
                                             selectedPolicy = policy;
                                             showDropdown[index] = false;
-                                            trackEvent('click_policy_delete');
+                                            trackEvent(Click.PolicyDeleteClick);
                                         }}>
                                         Delete
                                     </DropListItem>

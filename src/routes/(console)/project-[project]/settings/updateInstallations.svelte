@@ -25,6 +25,7 @@
         IconPlus,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let total: number;
     export let limit: number;
@@ -84,7 +85,12 @@
                 <div class="u-flex u-flex-vertical-mobile u-main-end u-padding-block-end-16">
                     <ul class="buttons-list">
                         <li class="buttons-list-item">
-                            <Button secondary on:click={() => (showGitIstall = true)}>
+                            <Button
+                                secondary
+                                on:click={() => {
+                                    showGitIstall = true;
+                                    trackEvent(Click.SettingsInstallProviderClick);
+                                }}>
                                 <Icon icon={IconPlus} slot="start" size="s" />
                                 Add installation
                             </Button>

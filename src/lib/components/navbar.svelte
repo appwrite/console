@@ -44,7 +44,7 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let showSupport = false;
 
@@ -80,6 +80,7 @@
     }
 
     function toggleFeedback() {
+        trackEvent(Click.FeedbackSubmitClick);
         feedback.toggleFeedback();
         if ($feedback.notification) {
             feedback.toggleNotification();
@@ -138,7 +139,7 @@
                         size="s"
                         variant="primary"
                         on:click={() => {
-                            trackEvent('click_organization_upgrade', {
+                            trackEvent(Click.OrganizationClickUpgrade, {
                                 from: 'button',
                                 source: 'top_nav'
                             });
@@ -153,7 +154,7 @@
                         variant="compact"
                         on:click={() => {
                             toggleFeedback();
-                            trackEvent('click_menu_feedback', { source: 'top_nav' });
+                            trackEvent(Click.FeedbackSubmitClick, { source: 'top_nav' });
                         }}
                         >Feedback
                     </Button.Button>
@@ -173,7 +174,7 @@
                         type="button"
                         on:click={() => {
                             showSupport = !showSupport;
-                            trackEvent('click_menu_support', { source: 'top_nav' });
+                            trackEvent(Click.SupportOpenClick, { source: 'top_nav' });
                         }}>
                         Support
                     </Button.Button>
@@ -199,7 +200,7 @@
                     showAccountMenu = !showAccountMenu;
                     shouldAnimateThemeToggle = false;
                     if (showAccountMenu) {
-                        trackEvent('click_menu_dropdown');
+                        trackEvent(Click.MenuDropDownClick);
                     }
                 }}>
                 <div style:user-select="none">

@@ -73,7 +73,13 @@
                 ></InputText>
                 <InputTextarea id="message" label="Message" disabled={!isDraft} bind:value={content}
                 ></InputTextarea>
-                <InputSwitch label="HTML mode" id="html" bind:value={html}>
+                <InputSwitch
+                    label="HTML mode"
+                    id="html"
+                    bind:value={html}
+                    on:change={() => {
+                        trackEvent(Submit.MessagingUpdateHtmlMode);
+                    }}>
                     <svelte:fragment slot="description">
                         Enable the HTML mode if your message contains HTML tags.
                     </svelte:fragment>

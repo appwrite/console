@@ -10,6 +10,7 @@
     import { addNotification } from '$lib/stores/notifications.js';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     export let data;
 

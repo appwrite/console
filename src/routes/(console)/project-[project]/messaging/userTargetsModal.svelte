@@ -11,6 +11,7 @@
     import { Query, type Models, MessagingProviderType } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import ProviderType from './providerType.svelte';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     export let title: string;
     export let show: boolean;
@@ -35,6 +36,7 @@
 
     function submit() {
         dispatch('update', selected);
+        trackEvent(Submit.MessagingTargetUpdate);
         reset();
     }
 
