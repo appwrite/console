@@ -135,13 +135,23 @@
                                 <Button
                                     secondary
                                     size="s"
-                                    on:mousedown={() => (showEditorModal = true)}>
+                                    on:mousedown={() => {
+                                        showEditorModal = true;
+                                        trackEvent(Click.VariablesUpdateClick, {
+                                            source: 'site_configuration'
+                                        });
+                                    }}>
                                     <Icon slot="start" icon={IconCode} /> Editor
                                 </Button>
                                 <Button
                                     secondary
                                     size="s"
-                                    on:mousedown={() => (showImportModal = true)}>
+                                    on:mousedown={() => {
+                                        showImportModal = true;
+                                        trackEvent(Click.VariablesImportClick, {
+                                            source: 'site_configuration'
+                                        });
+                                    }}>
                                     <Icon slot="start" icon={IconUpload} /> Import .env
                                 </Button>
                             </Layout.Stack>
