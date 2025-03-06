@@ -9,7 +9,7 @@
     import { Link } from '$lib/elements';
     import { NewRepository, Repositories } from '$lib/components/git';
     import ConnectGit from '$lib/components/git/connectGit.svelte';
-    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
@@ -66,10 +66,14 @@
                 site.buildCommand,
                 site.outputDirectory,
                 site.buildRuntime as BuildRuntime,
-                site.adapter,
+                site.adapter as Adapter,
                 site.fallbackFile,
                 selectedInstallationId,
-                selectedRepository
+                selectedRepository,
+                'main',
+                undefined,
+                undefined,
+                undefined
             );
             console.log('test');
             invalidate(Dependencies.SITE);
@@ -83,8 +87,6 @@
             error = e.message;
         }
     }
-
-    $: console.log(selectedInstallationId);
 </script>
 
 <Modal

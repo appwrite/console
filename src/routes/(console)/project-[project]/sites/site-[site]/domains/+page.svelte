@@ -163,8 +163,7 @@
                     ? `${base}/images/domains/empty-domain-dark.svg`
                     : `${base}/images/domains/empty-domain-light.svg`}
                 title="Use a custom domain for your site"
-                description="Give your site a unique identity and make it easier to find by by assigning it a custom domain.
-">
+                description="Give your site a unique identity and make it easier to find by by assigning it a custom domain.">
                 <svelte:fragment slot="actions">
                     <Button
                         external

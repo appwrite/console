@@ -7,6 +7,7 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
+    import { Layout, Spinner } from '@appwrite.io/pink-svelte';
 
     export let show = false;
 
@@ -34,8 +35,8 @@
         }
     }
 
+    let isLoading = true;
     let element: HTMLElement;
-    let loader: HTMLDivElement;
 
     let observer: MutationObserver;
 
@@ -49,7 +50,7 @@
                                 node instanceof Element &&
                                 node.className.toLowerCase().includes('__privatestripeelement')
                             ) {
-                                loader.style.display = 'none';
+                                isLoading = false;
                             }
                         }
                     }
@@ -69,23 +70,26 @@
 </script>
 
 <FakeModal bind:show title="Add payment method" bind:error onSubmit={handleSubmit}>
-    <FormList gap={16}>
+    <FormList>
         <slot />
         <InputText
             id="name"
-            label="Cardholder name"
-            placeholder="Cardholder name"
-            bind:value={name}
             required
             autofocus={true}
-            hideRequired />
+            bind:value={name}
+            label="Cardholder name"
+            placeholder="Cardholder name" />
+
         <div class="aw-stripe-container" data-private>
-            <div class="loader-container" bind:this={loader}>
-                <div class="loader"></div>
-            </div>
-            <div id="payment-element" bind:this={element}>
-                <!-- Stripe will create form elements here -->
-            </div>
+            <Layout.Stack gap="l" alignItems="center" justifyContent="center">
+                {#if isLoading}
+                    <Spinner />
+                {/if}
+
+                <div id="payment-element" bind:this={element}>
+                    <!-- Stripe will create form elements here -->
+                </div>
+            </Layout.Stack>
         </div>
         <slot name="end"></slot>
     </FormList>
@@ -97,14 +101,7 @@
 
 <style lang="scss">
     .aw-stripe-container {
+        display: flex;
         min-height: 295px;
-        position: relative;
-        .loader-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 0;
-        }
     }
 </style>
