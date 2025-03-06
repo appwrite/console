@@ -34,7 +34,7 @@
     import MobileFeedbackModal from '$routes/(console)/wizard/feedback/mobileFeedbackModal.svelte';
     import { getSidebarState, updateSidebarState } from '$lib/helpers/sidebar';
     import { isTabletViewport } from '$lib/stores/viewport';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     type $$Props = HTMLElement & {
         state?: 'closed' | 'open' | 'icons';
@@ -58,6 +58,7 @@
     export let subNavigation = undefined;
 
     function toggleFeedback() {
+        trackEvent(Click.FeedbackSubmitClick);
         feedback.toggleFeedback();
         if ($feedback.notification) {
             feedback.toggleNotification();

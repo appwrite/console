@@ -44,7 +44,7 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { isCloud } from '$lib/system.js';
     import { user } from '$lib/stores/user';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let showSupport = false;
 
@@ -80,6 +80,7 @@
     }
 
     function toggleFeedback() {
+        trackEvent(Click.FeedbackSubmitClick);
         feedback.toggleFeedback();
         if ($feedback.notification) {
             feedback.toggleNotification();

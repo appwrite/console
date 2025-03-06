@@ -4,6 +4,7 @@ import { get, writable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
+import { Submit, trackEvent } from '$lib/actions/analytics';
 
 export type Feedback = {
     elapsed: number;
@@ -118,6 +119,7 @@ function createFeedbackStore() {
             value?: number
         ) => {
             if (!VARS.GROWTH_ENDPOINT) return;
+            trackEvent(Submit.FeedbackSubmit);
             const response = await fetch(`${VARS.GROWTH_ENDPOINT}/feedback`, {
                 method: 'POST',
                 headers: {

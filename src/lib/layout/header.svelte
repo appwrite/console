@@ -30,6 +30,7 @@
 
     function toggleFeedback() {
         feedback.toggleFeedback();
+        trackEvent(Click.FeedbackSubmitClick);
         if ($feedback.notification) {
             feedback.toggleNotification();
             feedback.addVisualization();
