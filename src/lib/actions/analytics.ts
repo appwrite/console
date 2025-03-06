@@ -225,6 +225,7 @@ export enum Submit {
     MembershipUpdate = 'submit_membership_update',
     MembershipUpdateStatus = 'submit_membership_update_status',
     MessagingTargetUpdate = 'submit_messaging_target_update',
+    MessagingUpdateHtmlMode = 'submit_update_html_mode',
     ProviderUpdate = 'submit_provider_update',
     TeamCreate = 'submit_team_create',
     TeamDelete = 'submit_team_delete',
