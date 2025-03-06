@@ -169,6 +169,10 @@ export enum Click {
     OnboardingAuthAllMethodsClick = 'click_onboarding_auth_all_methods',
     OnboardingDiscordClick = 'click_onboarding_discord',
     StorageBucketDeleteClick = 'click_bucket_delete',
+    SettingsWebhookUpdateSignatureClick = 'click_webhook_update_signature',
+    SettingsWebhookDeleteClick = 'click_webhook_delete',
+    SettingsInstallProviderClick = 'click_install_provider',
+    SettingsStartMigrationClick = 'click_start_migration',
     VariablesCreateClick = 'click_variable_create',
     VariablesUpdateClick = 'click_variable_update',
     VariablesImportClick = 'click_variable_import'
