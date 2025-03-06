@@ -49,8 +49,8 @@ async function fetchDatabasesAndBackups(limit: number, offset: number, currentPl
 
     if (isCloud && backupsEnabled) {
         [policies, lastBackups] = await Promise.all([
-            await fetchPolicies(databases),
-            await fetchLastBackups(databases)
+            fetchPolicies(databases),
+            fetchLastBackups(databases)
         ]);
     }
 
