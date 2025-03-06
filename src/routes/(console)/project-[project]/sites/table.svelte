@@ -3,10 +3,11 @@
     import { page } from '$app/stores';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Avatar, Layout, Table } from '@appwrite.io/pink-svelte';
-    import { columns } from './store';
+    import { columns, getFrameworkIcon } from './store';
     import type { Models } from '@appwrite.io/console';
     import SitesActionMenu from './sitesActionMenu.svelte';
     import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
+    import { SvgIcon } from '$lib/components';
 
     export let siteList: Models.SiteList;
 
@@ -31,9 +32,12 @@
                 {#if column.show}
                     {#if column.id === 'name'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
-                            <!-- TODO: check with Matej if we have the favicon -->
                             <Layout.Stack direction="row" alignItems="center" gap="s" inline>
-                                <Avatar size="xs" src={column.icon} alt={site.name} />
+                                <Avatar size="xs" alt={site.name}>
+                                    <SvgIcon
+                                        iconSize="small"
+                                        name={getFrameworkIcon(site.framework)} />
+                                </Avatar>
                                 {site.name}
                             </Layout.Stack>
                         </Table.Cell>

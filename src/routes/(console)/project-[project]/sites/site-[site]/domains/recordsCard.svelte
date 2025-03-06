@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Copy } from '$lib/components';
     import { Link } from '$lib/elements';
-    import type { Models } from '@appwrite.io/console';
+    import type { Domain } from '$lib/sdk/domains';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Layout, Typography, Table, Fieldset, Icon } from '@appwrite.io/pink-svelte';
 
-    export let domain: Models.ProxyRule;
+    export let domain: Domain;
 </script>
 
 <Fieldset legend="Verification">
@@ -13,7 +13,7 @@
         <Layout.Stack gap="xl">
             <Layout.Stack gap="s">
                 <Layout.Stack gap="s" direction="row" alignItems="center">
-                    <Typography.Text variant="l-500">{domain.domain}</Typography.Text>
+                    <Typography.Text variant="l-500">{domain?.domain}</Typography.Text>
                     <Badge variant="secondary" type="warning" content="Pending verification" />
                 </Layout.Stack>
                 <Typography.Text variant="m-400">
@@ -30,7 +30,7 @@
                 </svelte:fragment>
                 <Table.Row>
                     <Table.Cell>CNAME</Table.Cell>
-                    <Table.Cell>{domain.domain}</Table.Cell>
+                    <Table.Cell>{domain?.domain}</Table.Cell>
                     <Table.Cell>
                         <Copy value={globalThis?.location?.origin}
                             >{globalThis?.location?.origin}</Copy>

@@ -5,7 +5,7 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Fieldset, Layout, Tooltip, Icon, Alert } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Tooltip, Icon, Alert, Input } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
@@ -17,6 +17,7 @@
     import { writable } from 'svelte/store';
     import ConnectRepoModal from '../../../(components)/connectRepoModal.svelte';
     import { isCloud } from '$lib/system';
+    import { onMount } from 'svelte';
 
     const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
 
@@ -62,6 +63,15 @@
         }
     ];
 
+    onMount(() => {
+        if (
+            $page.url.searchParams.has('connectRepo') &&
+            $page.url.searchParams.get('connectRepo') === 'true'
+        ) {
+            showConnectRepo = true;
+        }
+    });
+
     async function addDomain() {
         const isAppwriteDomain = domain.endsWith($consoleVariables._APP_DOMAIN_SITES);
         const isNewDomain = data.domains.rules.findIndex((rule) => rule.domain === domain) === -1;
@@ -102,18 +112,26 @@
                     await invalidate(Dependencies.SITES_DOMAINS);
                 }
             } else if (behaviour === 'REDIRECT') {
-                if (isNewDomain && !isSubDomain && isCloud) {
-                    await sdk.forConsole.domains.create($organization.$id, domain);
-                }
-                if (isNewDomain && !isCloud) {
-                    await sdk.forProject.proxy.createSiteRule(domain, $page.params.site);
-                }
-                await sdk.forProject.proxy.createRedirectRule(domain, redirect);
+                if (isCloud && !isAppwriteDomain) {
+                    //Redirect if subdomain so user can choose how to proceed
+                    if (isSubDomain) {
+                        goto(
+                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify?domain=${domain}?redirect=${redirect}?statusCode=${statusCode}`
+                        );
+                    }
+                    //Create domain if it's a new domain
+                    else if (isNewDomain) {
+                        const domainData = await sdk.forConsole.domains.create(
+                            $organization.$id,
+                            domain
+                        );
+                        //TODO: add status once Matej fixes backend
+                        await sdk.forProject.proxy.createRedirectRule(domain, redirect);
 
-                if (isNewDomain && !isSubDomain) {
-                    goto(
-                        `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify`
-                    );
+                        goto(
+                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify-${domainData.$id}}`
+                        );
+                    }
                 }
             }
         } catch (error) {
@@ -130,13 +148,16 @@
         <Layout.Stack gap="xxl">
             <Fieldset legend="Details">
                 <!-- <Input.ComboBox
-                        label="Domain"
-                        id="domain"
-                        name="domain"
-                        bind:value={domain}
-                        options={domainsOptions}
-                        required
-                        placeholder="appwrite.example.com" /> -->
+                    label="Domain"
+                    id="domain"
+                    name="domain"
+                    bind:value={domain}
+                    options={data.domains.rules.map((domain) => ({
+                        label: domain.domain,
+                        value: domain.domain
+                    }))}
+                    required
+                    placeholder="appwrite.example.com" /> -->
                 <InputDomain
                     label="Domain"
                     id="domain"
@@ -260,5 +281,8 @@
 </Wizard>
 
 {#if showConnectRepo}
-    <ConnectRepoModal bind:show={showConnectRepo} site={data.site} />
+    <ConnectRepoModal
+        bind:show={showConnectRepo}
+        site={data.site}
+        callbackState={{ connectRepo: 'true' }} />
 {/if}
