@@ -1,5 +1,4 @@
 import { getProjectId } from '$lib/helpers/project';
-import { Sources } from '$lib/sdk/sources';
 import { VARS } from '$lib/system';
 import {
     Account,
@@ -39,23 +38,23 @@ const clientProject = new Client();
 clientProject.setEndpoint(endpoint).setMode('admin');
 
 const sdkForProject = {
-    client: clientProject,
     account: new Account(clientProject),
     avatars: new Avatars(clientProject),
     backups: new Backups(clientProject),
+    client: clientProject,
     databases: new Databases(clientProject),
     functions: new Functions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
     messaging: new Messaging(clientProject),
+    migrations: new Migrations(clientProject),
     project: new Project(clientProject),
     projectApi: new ProjectApi(clientProject),
+    proxy: new Proxy(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
-    vcs: new Vcs(clientProject),
-    proxy: new Proxy(clientProject),
-    migrations: new Migrations(clientProject)
+    vcs: new Vcs(clientProject)
 };
 
 export const getSdkForProject = (projectId: string) => {
@@ -68,20 +67,19 @@ export const getSdkForProject = (projectId: string) => {
 
 export const sdk = {
     forConsole: {
-        client: clientConsole,
         account: new Account(clientConsole),
+        assistant: new Assistant(clientConsole),
         avatars: new Avatars(clientConsole),
+        billing: new Billing(clientConsole),
+        client: clientConsole,
+        console: new Console(clientConsole),
         functions: new Functions(clientConsole),
         health: new Health(clientConsole),
         locale: new Locale(clientConsole),
+        migrations: new Migrations(clientConsole),
         projects: new Projects(clientConsole),
         teams: new Teams(clientConsole),
-        users: new Users(clientConsole),
-        migrations: new Migrations(clientConsole),
-        console: new Console(clientConsole),
-        assistant: new Assistant(clientConsole),
-        billing: new Billing(clientConsole),
-        sources: new Sources(clientConsole)
+        users: new Users(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();

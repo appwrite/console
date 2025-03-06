@@ -66,104 +66,6 @@ export type EstimationDeleteOrganization = {
     unpaidInvoices: Invoice[];
 };
 
-export type Aggregation = {
-    $id: string;
-    /**
-     * Aggregation creation time in ISO 8601 format.
-     */
-    $createdAt: string;
-    /**
-     * Aggregation update date in ISO 8601 format.
-     */
-    $updatedAt: string;
-    /**
-     * Beginning date of the invoice.
-     */
-    from: string;
-    /**
-     * End date of the invoice.
-     */
-    to: string;
-    /**
-     * Total amount of the invoice.
-     */
-    amount: number;
-    additionalMembers: number;
-
-    /**
-     * Price for additional members
-     */
-    additionalMemberAmount: number;
-    /**
-     * Total storage usage.
-     */
-    usageStorage: number;
-    /**
-     * Total active users for the billing period.
-     */
-    usageUsers: number;
-    /**
-     * Total number of executions for the billing period.
-     */
-    usageExecutions: number;
-    /**
-     * Total bandwidth usage for the billing period.
-     */
-    usageBandwidth: number;
-    /**
-     * Total realtime usage for the billing period.
-     */
-    usageRealtime: number;
-    /**
-     * Usage logs for the billing period.
-     */
-    resources: OrganizationUsage;
-    /**
-     * Aggregation billing plan
-     */
-    plan: string;
-};
-
-export type OrganizationUsage = {
-    bandwidth: Array<Models.Metric>;
-    executions: Array<Models.Metric>;
-    databasesReads: Array<Models.Metric>;
-    databasesWrites: Array<Models.Metric>;
-    imageTransformations: Array<Models.Metric>;
-    executionsTotal: number;
-    filesStorageTotal: number;
-    buildsStorageTotal: number;
-    databasesReadsTotal: number;
-    databasesWritesTotal: number;
-    imageTransformationsTotal: number;
-    deploymentsStorageTotal: number;
-    executionsMBSecondsTotal: number;
-    buildsMBSecondsTotal: number;
-    backupsStorageTotal: number;
-    storageTotal: number;
-    users: Array<Models.Metric>;
-    usersTotal: number;
-    projects: Array<{
-        projectId: string;
-        storage: number;
-        executions: number;
-        bandwidth: number;
-        databasesReads: number;
-        databasesWrites: number;
-        users: number;
-        authPhoneTotal: number;
-        authPhoneEstimate: number;
-        imageTransformations: number;
-    }>;
-    authPhoneTotal: number;
-    authPhoneEstimate: number;
-};
-
-export type AggregationList = {
-    aggregations: Aggregation[];
-    total: number;
-};
-
 export type AllowedRegions =
     | 'fra'
     | 'nyc'
@@ -681,7 +583,7 @@ export class Billing {
         organizationId: string,
         startDate: string = undefined,
         endDate: string = undefined
-    ): Promise<OrganizationUsage> {
+    ): Promise<Models.UsageOrganization> {
         const path = `/organizations/${organizationId}/usage`;
         const params = {
             organizationId
@@ -708,7 +610,7 @@ export class Billing {
     async listAggregation(
         organizationId: string,
         queries: string[] = []
-    ): Promise<AggregationList> {
+    ): Promise<Models.AggregationTeamList> {
         const path = `/organizations/${organizationId}/aggregations`;
         const params = {
             organizationId,
@@ -725,7 +627,10 @@ export class Billing {
         );
     }
 
-    async getAggregation(organizationId: string, aggregationId: string): Promise<Aggregation> {
+    async getAggregation(
+        organizationId: string,
+        aggregationId: string
+    ): Promise<Models.AggregationTeam> {
         const path = `/organizations/${organizationId}/aggregations/${aggregationId}`;
         const params = {
             organizationId,

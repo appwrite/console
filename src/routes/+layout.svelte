@@ -4,15 +4,15 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackPageView } from '$lib/actions/analytics';
+    import { parseIfString } from '$lib/helpers/object';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { isCloud } from '$lib/system';
-    import { onMount } from 'svelte';
-    import { requestedMigration } from './store';
-    import { parseIfString } from '$lib/helpers/object';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
+    import { isCloud } from '$lib/system';
     import { loading } from '$routes/store';
+    import { onMount } from 'svelte';
+    import { requestedMigration } from './store';
 
     onMount(async () => {
         // handle sources
@@ -30,7 +30,13 @@
             }
 
             if (ref || referrer || utmSource || utmCampaign || utmMedium) {
-                sdk.forConsole.sources.create(ref, referrer, utmSource, utmCampaign, utmMedium);
+                sdk.forConsole.console.createSource(
+                    ref,
+                    referrer,
+                    utmSource,
+                    utmCampaign,
+                    utmMedium
+                );
             }
         }
 

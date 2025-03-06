@@ -12,11 +12,10 @@
     } from '$lib/elements/table';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
     import { canSeeProjects } from '$lib/stores/roles';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
-
     type Metric =
         | 'users'
         | 'storage'
@@ -32,7 +31,7 @@
     type DatabaseOperationMetric = Extract<Metric, 'databasesReads' | 'databasesWrites'>;
 
     export let data: PageData;
-    export let projects: OrganizationUsage['projects'];
+    export let projects: Models.UsageOrganization['projects'];
     export let metric: Metric | undefined = undefined;
     export let estimate: Estimate | undefined = undefined;
     export let databaseOperationMetric: DatabaseOperationMetric[] | undefined = undefined;

@@ -10,7 +10,6 @@
     import { formatNum } from '$lib/helpers/string';
     import { Container } from '$lib/layout';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
     import {
         getServiceLimit,
         showUsageRatesModal,
@@ -18,6 +17,7 @@
         upgradeURL
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
+    import type { Models } from '@appwrite.io/console';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import TotalMembers from './totalMembers.svelte';
 
@@ -28,7 +28,7 @@
         : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
     const plan = data?.plan ?? undefined;
 
-    $: projects = (data.organizationUsage as OrganizationUsage).projects;
+    $: projects = (data.organizationUsage as Models.UsageOrganization).projects;
 
     $: legendData = [
         { name: 'Reads', value: data.organizationUsage.databasesReadsTotal },

@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { tooltip } from '$lib/actions/tooltip';
+    import { Alert } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
     import {
         TableBody,
         TableCell,
@@ -8,18 +11,15 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { Alert } from '$lib/components';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { formatNum } from '$lib/helpers/string';
     import { calculateExcess, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { toLocaleDate } from '$lib/helpers/date';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { abbreviateNumber } from '$lib/helpers/numbers';
-    import { formatNum } from '$lib/helpers/string';
-    import { onMount } from 'svelte';
-    import type { Aggregation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
-    import { BillingPlan } from '$lib/constants';
-    import { tooltip } from '$lib/actions/tooltip';
+    import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
 
     export let tier: Tier;
 
@@ -31,7 +31,7 @@
         executions?: number;
         members?: number;
     } = null;
-    let aggregation: Aggregation = null;
+    let aggregation: Models.AggregationTeam = null;
     let showExcess = false;
 
     onMount(async () => {
