@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
@@ -31,7 +31,7 @@
                 class="u-line-height-1"
                 href={`${base}/apply-credit?code=appw50&org=${$organization.$id}`}
                 on:click={() => {
-                    trackEvent('click_credits_redeem', {
+                    trackEvent(Click.CreditsRedeemClick, {
                         from: 'button',
                         source: 'cloud_credits_banner',
                         campaign: 'WelcomeManual'

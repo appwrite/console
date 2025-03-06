@@ -20,7 +20,7 @@
     import { invalidate } from '$app/navigation';
     import { Alert } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
@@ -62,7 +62,7 @@
             <svelte:fragment slot="buttons">
                 <Button
                     on:click={() =>
-                        trackEvent('click_open_website', {
+                        trackEvent(Click.WebsiteOpenClick, {
                             from: 'button',
                             source: 'function_keys_card',
                             destination: 'docs'

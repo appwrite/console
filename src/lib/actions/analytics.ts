@@ -139,8 +139,11 @@ export function isTrackingAllowed() {
 }
 
 export enum Click {
+    BackupRestoreClick = 'click_backup_restore',
     BreadcrumbClick = 'click_breadcrumb',
     ConnectRepositoryClick = 'click_connect_repository',
+    CreditsRedeemClick = 'click_credits_redeem',
+    CloudSignupClick = 'click_cloud_signup',
     DatabaseAttributeDelete = 'click_attribute_delete',
     DatabaseIndexDelete = 'click_index_delete',
     DatabaseCollectionDelete = 'click_collection_delete',
@@ -154,10 +157,12 @@ export enum Click {
     FunctionsDeploymentDeleteClick = 'click_deployment_delete',
     KeyCreateClick = 'click_key_create',
     MenuDropDownClick = 'click_menu_dropdown',
+    MenuOverviewClick = 'click_menu_overview',
     ModalCloseClick = 'click_close_modal',
     MessagingScheduleClick = 'click_messaging_schedule',
     MessagingTopicCreateClick = 'click_messaging_topic_create',
     MessagingTargetCreateClick = 'click_messaging_target_create',
+    MembershipDeleteClick = 'click_delete_membership',
     PlatformCreateClick = 'click_platform_create',
     OrganizationClickCreate = 'click_create_organization',
     OrganizationClickUpgrade = 'click_organization_upgrade',
@@ -175,12 +180,15 @@ export enum Click {
     SettingsWebhookDeleteClick = 'click_webhook_delete',
     SettingsInstallProviderClick = 'click_install_provider',
     SettingsStartMigrationClick = 'click_start_migration',
+    SubmitFormClick = 'click_submit_form',
     ShowCustomIdClick = 'click_show_custom_id',
     SupportOpenClick = 'click_open_support_menu',
     PromoClick = 'click_promo',
+    PolicyDeleteClick = 'click_policy_delete',
     VariablesCreateClick = 'click_variable_create',
     VariablesUpdateClick = 'click_variable_update',
-    VariablesImportClick = 'click_variable_import'
+    VariablesImportClick = 'click_variable_import',
+    WebsiteOpenClick = 'click_open_website'
 }
 
 export enum Submit {
@@ -352,7 +360,6 @@ export enum Submit {
     OrganizationUpgrade = 'submit_organization_upgrade',
     OrganizationDowngrade = 'submit_organization_downgrade',
     OrganizationBillingTaxIdUpdate = 'submit_organization_billing_tax_id_update',
-
     SupportTicket = 'submit_support_ticket',
     InstallationCreate = 'submit_installation_create',
     InstallationDelete = 'submit_installation_delete',

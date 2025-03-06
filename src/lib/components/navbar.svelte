@@ -154,7 +154,7 @@
                         variant="compact"
                         on:click={() => {
                             toggleFeedback();
-                            trackEvent('click_menu_feedback', { source: 'top_nav' });
+                            trackEvent(Click.FeedbackSubmitClick, { source: 'top_nav' });
                         }}
                         >Feedback
                     </Button.Button>
@@ -200,7 +200,7 @@
                     showAccountMenu = !showAccountMenu;
                     shouldAnimateThemeToggle = false;
                     if (showAccountMenu) {
-                        trackEvent('click_menu_dropdown');
+                        trackEvent(Click.MenuDropDownClick);
                     }
                 }}>
                 <div style:user-select="none">

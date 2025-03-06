@@ -140,7 +140,7 @@
                             class="link"
                             class:active={pathname.includes('overview')}
                             on:click={() => {
-                                trackEvent('click_menu_overview');
+                                trackEvent(Click.MenuOverviewClick);
                                 sideBarIsOpen = false;
                             }}
                             ><span class="link-icon"
@@ -244,7 +244,7 @@
                                 size="s"
                                 on:click={() => {
                                     toggleFeedback();
-                                    trackEvent('click_menu_feedback', { source: 'side_nav' });
+                                    trackEvent(Click.FeedbackSubmitClick, { source: 'side_nav' });
                                 }}
                                 >Feedback
                             </Button.Button>
