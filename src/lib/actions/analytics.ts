@@ -146,6 +146,7 @@ export enum Click {
     DatabaseDatabaseDelete = 'click_database_delete',
     DomainCreateClick = 'click_domain_create',
     DomainDeleteClick = 'click_domain_delete',
+    DomainRetryDomainVerificationClick = 'click_domain_retry_domain_verification',
     FilterApplyClick = 'click_apply_filter',
     FunctionsRedeployClick = 'click_function_redeploy',
     FunctionsDeploymentDeleteClick = 'click_deployment_delete',
