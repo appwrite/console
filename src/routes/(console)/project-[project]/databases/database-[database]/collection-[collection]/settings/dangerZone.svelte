@@ -26,7 +26,7 @@
         <Button
             secondary
             on:click={() => {
-                trackEvent(Click.DatabaseColletionDelete);
+                trackEvent(Click.DatabaseCollectionDelete);
                 showDelete = true;
             }}>Delete</Button>
     </svelte:fragment>

@@ -120,6 +120,9 @@
                                                 selectedDomain = domain;
                                                 showDelete = true;
                                                 toggle(e);
+                                                trackEvent(Click.DomainDeleteClick, {
+                                                    source: 'sites_domain_overview'
+                                                });
                                             }}>
                                             Delete
                                         </ActionMenu.Item.Button>
