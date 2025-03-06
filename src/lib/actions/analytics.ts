@@ -174,6 +174,7 @@ export enum Click {
     SettingsWebhookDeleteClick = 'click_webhook_delete',
     SettingsInstallProviderClick = 'click_install_provider',
     SettingsStartMigrationClick = 'click_start_migration',
+    SupportOpenClick = 'click_open_support_menu',
     VariablesCreateClick = 'click_variable_create',
     VariablesUpdateClick = 'click_variable_update',
     VariablesImportClick = 'click_variable_import'

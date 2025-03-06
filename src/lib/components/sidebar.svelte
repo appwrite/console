@@ -259,7 +259,7 @@
                                 size="s"
                                 on:click={() => {
                                     $showSupportModal = true;
-                                    trackEvent('click_menu_support', { source: 'side_nav' });
+                                    trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                 }}>
                                 <span>Support</span>
 
@@ -319,7 +319,7 @@
                                     size="s"
                                     on:click={() => {
                                         $showSupportModal = true;
-                                        trackEvent('click_menu_support', { source: 'side_nav' });
+                                        trackEvent(Click.SupportOpenClick, { source: 'side_nav' });
                                     }}>
                                     <span>Support</span>
 

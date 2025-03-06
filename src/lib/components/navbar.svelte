@@ -174,7 +174,7 @@
                         type="button"
                         on:click={() => {
                             showSupport = !showSupport;
-                            trackEvent('click_menu_support', { source: 'top_nav' });
+                            trackEvent(Click.SupportOpenClick, { source: 'top_nav' });
                         }}>
                         Support
                     </Button.Button>
