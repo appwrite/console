@@ -8,7 +8,7 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { installation, repository, sortBranches } from '$lib/stores/vcs';
+    import { installation, repository } from '$lib/stores/vcs';
     import { Layout, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
@@ -47,21 +47,6 @@
         repository.set(data.repository);
         name = data.repository.name;
     });
-
-    async function loadBranches() {
-        const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            data.installation.$id,
-            data.repository.id
-        );
-        const sorted = sortBranches(branches);
-        branch = sorted[0]?.name ?? null;
-
-        if (!branch) {
-            branch = 'main';
-        }
-
-        return sorted;
-    }
 
     async function create() {
         try {
@@ -168,24 +153,12 @@
             </Card>
             <Details bind:name bind:id />
 
-            {#await loadBranches()}
-                <Layout.Stack justifyContent="center" alignItems="center">
-                    <div class="loader u-margin-32" />
-                </Layout.Stack>
-            {:then branches}
-                {@const options =
-                    branches
-                        ?.map((branch) => {
-                            return {
-                                value: branch.name,
-                                label: branch.name
-                            };
-                        })
-                        ?.sort((a, b) => {
-                            return a.label > b.label ? 1 : -1;
-                        }) ?? []}
-                <ProductionBranch bind:branch bind:rootDir {options} bind:silentMode />
-            {/await}
+            <ProductionBranch
+                bind:branch
+                bind:rootDir
+                bind:silentMode
+                installationId={data.installation.$id}
+                repositoryId={data.repository.id} />
 
             <Configuration
                 bind:installCommand

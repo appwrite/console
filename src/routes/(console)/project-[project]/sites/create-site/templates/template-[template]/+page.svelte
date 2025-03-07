@@ -48,7 +48,6 @@
     let name = data.template.name;
     let id = ID.unique();
     let domain = id;
-    // let domainIsValid = true;
     let framework = data?.template?.frameworks[0];
     let branch = 'main';
     let rootDir = './';
@@ -225,7 +224,12 @@
                             </Button>
                         </Layout.Stack>
                     </Card>
-                    <ProductionBranch bind:branch bind:rootDir bind:silentMode />
+                    <ProductionBranch
+                        bind:branch
+                        bind:rootDir
+                        bind:silentMode
+                        installationId={selectedInstallationId}
+                        repositoryId={selectedRepository} />
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}

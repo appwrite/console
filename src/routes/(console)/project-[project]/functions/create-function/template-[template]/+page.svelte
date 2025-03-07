@@ -8,7 +8,7 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { installation, repository, sortBranches } from '$lib/stores/vcs';
+    import { installation, repository } from '$lib/stores/vcs';
     import { Fieldset, Layout, Icon, Divider, Empty, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
@@ -168,21 +168,6 @@
         }
     }
 
-    async function loadBranches() {
-        const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            selectedInstallationId,
-            selectedRepository
-        );
-        const sorted = sortBranches(branches);
-        branch = sorted[0]?.name ?? null;
-
-        if (!branch) {
-            branch = 'main';
-        }
-
-        return sorted;
-    }
-
     $: if (repositoryBehaviour === 'new') {
         selectedInstallationId ??= $installation?.$id;
         repositoryName ??= name.split(' ').join('-').toLowerCase();
@@ -231,24 +216,13 @@
                             </Button>
                         </Layout.Stack>
                     </Card>
-                    {#await loadBranches()}
-                        <Layout.Stack justifyContent="center" alignItems="center">
-                            <div class="loader u-margin-32" />
-                        </Layout.Stack>
-                    {:then branches}
-                        {@const options =
-                            branches
-                                ?.map((branch) => {
-                                    return {
-                                        value: branch.name,
-                                        label: branch.name
-                                    };
-                                })
-                                ?.sort((a, b) => {
-                                    return a.label > b.label ? 1 : -1;
-                                }) ?? []}
-                        <ProductionBranch bind:branch bind:rootDir {options} bind:silentMode />
-                    {/await}
+
+                    <ProductionBranch
+                        bind:branch
+                        bind:rootDir
+                        bind:silentMode
+                        installationId={selectedInstallationId}
+                        repositoryId={selectedRepository} />
 
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
@@ -303,7 +277,6 @@
                                     <Repositories
                                         bind:hasInstallations
                                         bind:selectedRepository
-                                        product="sites"
                                         action="button"
                                         on:connect={(e) => {
                                             trackEvent(Click.ConnectRepositoryClick, {
@@ -339,7 +312,22 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {runtime} {repositoryName} {branch} {rootDir} runtimes={data.runtimesList} />
+        <Aside
+            {runtime}
+            {repositoryName}
+            {branch}
+            {rootDir}
+            runtimes={data.runtimesList}
+            bind:showGitData={showConfig}>
+            <Layout.Stack gap="xxxs">
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                    {data.template.name}
+                </Typography.Text>
+                <Typography.Text>
+                    {data.template.tagline}
+                </Typography.Text>
+            </Layout.Stack>
+        </Aside>
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
@@ -351,7 +339,7 @@
             size="s"
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting || (connectBehaviour === 'now' && !selectedRepository)}>
-            Deploy
+            Create
         </Button>
     </svelte:fragment>
 </Wizard>

@@ -6,7 +6,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
@@ -75,7 +75,7 @@
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter,
+                site.adapter as Adapter,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
