@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarGroup, SvgIcon } from '$lib/components';
+    import { SvgIcon } from '$lib/components';
     import { page } from '$app/stores';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
@@ -11,14 +11,14 @@
     import { Repositories } from '$lib/components/git';
     import {
         Avatar,
+        Badge,
         Card,
         Divider,
         Icon,
         Layout,
-        Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { IconArrowSmRight, IconDeno, IconDotnet } from '@appwrite.io/pink-icons-svelte';
+    import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import Wizard from '$lib/layout/wizard.svelte';
     import { Link } from '$lib/elements';
 
@@ -66,11 +66,11 @@
     $: console.log(data);
 </script>
 
-<Wizard title="Create function" href={previousPage} column>
+<Wizard title="Create function" href={previousPage} column columnSize="l">
     <div class="git-container u-position-relative">
-        <Layout.Stack>
+        <Layout.Stack gap="l">
             <!-- TODO: fix mobile -->
-            <Layout.GridFraction start={4} end={6} gap="l">
+            <Layout.GridFraction start={4} end={6} gap="l" rowSize="auto">
                 <Card.Base>
                     <Layout.Stack
                         gap="xl"
@@ -108,7 +108,7 @@
                 <Card.Base>
                     <Layout.Stack gap="xl">
                         <Typography.Title size="s">Quick start</Typography.Title>
-                        <Layout.Grid columnsXXS={1} columnsXS={2} columnsS={3} columns={4}>
+                        <Layout.Grid columnsXXS={1} columnsXS={2} columnsS={3} columns={4} gap="s">
                             {#each starterTemplateRuntimes.slice(0, 6) as template}
                                 {@const iconName = template.name.split('-')[0]}
                                 {@const runtimeDetail = baseRuntimesList.find(
@@ -133,27 +133,23 @@
                                             empty={!template.name}>
                                             <SvgIcon name={iconName} iconSize="small" />
                                         </Avatar>
-                                        <Typography.Text>
-                                            {runtimeDetail?.name}
-                                            {#if runtimeDetail?.name?.toLowerCase() === 'deno'}
-                                                <span class="inline-tag">New</span>
-                                            {/if}
+                                        <Typography.Text color="--fgcolor-neutral-primary">
+                                            <Layout.Stack
+                                                direction="row"
+                                                gap="xs"
+                                                alignItems="center">
+                                                {runtimeDetail?.name}
+                                                {#if runtimeDetail?.name?.toLowerCase() === 'deno'}
+                                                    <Badge
+                                                        variant="secondary"
+                                                        size="xs"
+                                                        content="New" />
+                                                {/if}
+                                            </Layout.Stack>
                                         </Typography.Text>
                                     </Layout.Stack>
                                 </Card.Link>
                             {/each}
-
-                            {#if starterTemplateRuntimes.length < 6}
-                                <Tooltip>
-                                    <Card.Base variant="secondary" radius="s" padding="s">
-                                        <AvatarGroup
-                                            icons={[IconDotnet, IconDeno]}
-                                            total={4}
-                                            size="xs" />
-                                    </Card.Base>
-                                    <span slot="tooltip">More runtimes coming soon</span>
-                                </Tooltip>
-                            {/if}
                         </Layout.Grid>
 
                         <Divider />
@@ -161,6 +157,8 @@
                         <Layout.Grid columnsS={1} columns={2}>
                             {#each featuredTemplatesList as template}
                                 <Card.Link
+                                    radius="s"
+                                    padding="xs"
                                     href={`${wizardBase}/create-function/template-${template.id}`}
                                     on:click={() => {
                                         trackEvent('click_connect_template', {
@@ -168,7 +166,7 @@
                                             template: template.name
                                         });
                                     }}>
-                                    <Layout.Stack gap="s">
+                                    <Layout.Stack gap="xxs">
                                         <Layout.Stack
                                             direction="row"
                                             gap="s"
@@ -179,7 +177,9 @@
                                                 color="--fgcolor-neutral-primary">
                                                 {template.name}
                                             </Typography.Text>
-                                            <Icon icon={IconArrowSmRight} />
+                                            <Icon
+                                                icon={IconArrowSmRight}
+                                                color="--fgcolor-neutral-tertiary" />
                                         </Layout.Stack>
                                         <Typography.Text variant="m-400">
                                             {template.tagline}
@@ -189,7 +189,7 @@
                             {/each}
                         </Layout.Grid>
 
-                        <Link variant="quiet" href="#/">
+                        <Link variant="quiet" href={`${wizardBase}/templates`}>
                             <Layout.Stack direction="row" gap="xs">
                                 Browse all templates <Icon icon={IconArrowSmRight} />
                             </Layout.Stack>
@@ -210,44 +210,38 @@
                 >.
             </span>
         </Layout.Stack>
-    </div>
-
-    <!-- TODO: fix overlay -->
-    {#if isSelfHosted && !isVcsEnabled}
-        <div
-            class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 u-text-center u-inset-0"
-            style="border-radius: var(--border-radius-medium)">
+        {#if isSelfHosted && !isVcsEnabled}
             <div
-                class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16 u-padding-inline-24">
-                <Typography.Title size="s">
-                    Connect your self-hosted instance to Git
-                </Typography.Title>
-                <p>
-                    Configure your self-hosted instance to connect your function to a Git
-                    repository.
-                    <a
-                        href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="link">Learn more</a
-                    >.
-                </p>
+                class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 u-text-center u-inset-0"
+                style="border-radius: var(--border-radius-medium); ">
+                <div
+                    class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16 u-padding-inline-24">
+                    <Typography.Title size="s" align="center">
+                        Connect your self-hosted instance to Git
+                    </Typography.Title>
+                    <p style="max-width: 420px">
+                        Configure your self-hosted instance to connect your function to a Git
+                        repository.
+                        <a
+                            href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="link">Learn more</a
+                        >.
+                    </p>
+                </div>
             </div>
-        </div>
-    {/if}
+        {/if}
+    </div>
 </Wizard>
 
 <style lang="scss">
     .git-container .overlay {
         background: linear-gradient(
             0,
-            hsl(var(--p-card-bg-color)) 68.91%,
-            hsl(var(--p-card-bg-color) / 0.5) 92.8%
+            var(--bgcolor-neutral-primary) 50%,
+            color-mix(in srgb, var(--bgcolor-neutral-primary) 90%, transparent) 70%,
+            color-mix(in srgb, var(--bgcolor-neutral-primary) 20%, transparent) 90%
         );
-    }
-
-    .inline-tag {
-        line-height: 140%;
-        font-weight: 500;
     }
 </style>

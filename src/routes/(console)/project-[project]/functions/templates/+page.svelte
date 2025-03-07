@@ -289,18 +289,3 @@
         </Layout.Stack>
     </Layout.GridFraction>
 </Container>
-
-<style>
-    :global(.theme-light .functions-avatar-holder .avatar) {
-        background-color: var(--p-avatar-bg-color-default);
-        --p-avatar-bg-color-default: hsl(var(--color-neutral-0));
-    }
-
-    :global(.theme-light .functions-template-title) {
-        color: hsl(var(--color-neutral-70));
-    }
-
-    :global(.theme-dark .functions-template-title) {
-        color: hsl(var(--color-neutral-15));
-    }
-</style>
