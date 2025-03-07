@@ -12,10 +12,10 @@
     import { deployment } from './store';
     import BoxAvatar from '$lib/components/boxAvatar.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import Delete from '../delete.svelte';
     import Activate from '../activate.svelte';
-    import Cancel from '../cancel.svelte';
+    import Cancel from '../(modals)/cancel.svelte';
     import DeploymentCard from '../deploymentCard.svelte';
+    import Delete from '../(modals)/delete.svelte';
 
     export let data;
 

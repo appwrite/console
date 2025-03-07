@@ -16,7 +16,7 @@
     import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
-    import { ID, Runtime, Type, type Models } from '@appwrite.io/console';
+    import { ID, Runtime, type Models } from '@appwrite.io/console';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
     import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
@@ -105,6 +105,8 @@
             return;
         } else {
             try {
+                const rt = data.template.runtimes.find((r) => r.name === runtime);
+
                 const func = await sdk.forProject.functions.create(
                     id,
                     name,
@@ -115,11 +117,11 @@
                     data.template.timeout ? data.template.timeout : undefined,
                     undefined,
                     undefined,
-                    entrypoint,
+                    entrypoint || rt.entrypoint,
                     undefined,
                     selectedScopes?.length ? selectedScopes : undefined,
-                    $installation.$id,
-                    $repository.id,
+                    connectBehaviour === 'later' ? undefined : $installation?.$id || undefined,
+                    connectBehaviour === 'later' ? undefined : $repository?.id || undefined,
                     branch,
                     silentMode,
                     rootDir,
@@ -145,10 +147,12 @@
                 );
                 await Promise.all(promises);
 
-                await sdk.forProject.functions.createVcsDeployment(
+                await sdk.forProject.functions.createTemplateDeployment(
                     func.$id,
-                    Type.Branch,
-                    branch,
+                    data.template.providerRepositoryId || undefined,
+                    data.template.providerOwner || undefined,
+                    rt?.providerRootDirectory || undefined,
+                    data.template.providerVersion || undefined,
                     true
                 );
 

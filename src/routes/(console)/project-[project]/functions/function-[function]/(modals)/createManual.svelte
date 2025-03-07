@@ -14,7 +14,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { func } from './store';
+    import { func } from '../store';
 
     export let show = false;
 

@@ -3,7 +3,7 @@
     import { Modal, Code, Alert } from '$lib/components';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { func } from './store';
+    import { func } from '../store';
     import SecondaryTabs from '$lib/components/secondaryTabs.svelte';
     import SecondaryTabsItem from '$lib/components/secondaryTabsItem.svelte';
 

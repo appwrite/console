@@ -3,8 +3,7 @@
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
-    import DeploymentSource from '../../(components)/deploymentSource.svelte';
-    import DeploymentCreatedBy from '../../(components)/deploymentCreatedBy.svelte';
+    import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
     import { timer } from '$lib/actions/timer';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { page } from '$app/stores';

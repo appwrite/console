@@ -1,12 +1,13 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
-    import { DropList, DropListItem } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { canWriteFunctions } from '$lib/stores/roles';
+    import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
     import CreateCli from './createCli.svelte';
     import CreateGit from './createGit.svelte';
     import CreateManual from './createManual.svelte';
     import { showCreateDeployment } from './store';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let secondary = false;
     export let round = false;
@@ -24,35 +25,43 @@
     }
 </script>
 
-<DropList bind:show placement="bottom-end">
+<Popover let:toggle placement="bottom-end" padding="none">
     {#if $canWriteFunctions}
-        <Button {secondary} icon={round} on:click={() => (show = !show)} event="create_deployment">
+        <Button {secondary} icon={round} on:click={toggle} event="create_deployment">
             <slot>
                 {#if !secondary}
-                    <span class="icon-plus" aria-hidden="true" />
+                    <Icon icon={IconPlus} size="s" />
                 {/if}
-                <span class="text">Create deployment</span>
+                Create deployment
             </slot>
         </Button>
     {/if}
-    <svelte:fragment slot="list">
-        <DropListItem
-            on:click={() => {
-                showCreateGit = true;
-                show = false;
-            }}>Git</DropListItem>
-        <DropListItem
-            on:click={() => {
-                showCreateCli = true;
-                show = false;
-            }}>CLI</DropListItem>
-        <DropListItem
-            on:click={() => {
-                showCreateManual = true;
-                show = false;
-            }}>Manual</DropListItem>
+    <svelte:fragment slot="tooltip" let:toggle>
+        <ActionMenu.Root>
+            <ActionMenu.Item.Button
+                on:click={(e) => {
+                    showCreateGit = true;
+                    toggle(e);
+                }}>
+                Git
+            </ActionMenu.Item.Button>
+            <ActionMenu.Item.Button
+                on:click={(e) => {
+                    showCreateCli = true;
+                    toggle(e);
+                }}>
+                CLI
+            </ActionMenu.Item.Button>
+            <ActionMenu.Item.Button
+                on:click={(e) => {
+                    showCreateManual = true;
+                    toggle(e);
+                }}>
+                Manual
+            </ActionMenu.Item.Button>
+        </ActionMenu.Root>
     </svelte:fragment>
-</DropList>
+</Popover>
 <CreateCli bind:show={showCreateCli} />
 <CreateGit bind:show={showCreateGit} />
 <CreateManual bind:show={showCreateManual} />

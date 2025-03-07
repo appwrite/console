@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { Box, Code, Modal, NumericList, NumericListItem } from '$lib/components';
-    import { func } from './store';
+    import { func } from '../store';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
 
