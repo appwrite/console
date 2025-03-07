@@ -25,6 +25,7 @@
     import { getIconFromRuntime } from '../../store';
     import Permissions from './permissions.svelte';
     import { connectGitHub } from '$lib/stores/git';
+    import RepoCard from './repoCard.svelte';
 
     export let data;
 
@@ -71,7 +72,6 @@
             });
             runtime = matchingRuntimes[0];
         }
-        console.log(runtime);
     });
 
     async function createRepository() {
@@ -178,7 +178,10 @@
     }
 
     $: console.log(data.template);
-    $: console.log(variables);
+    $: availableRuntimes = data.runtimesList.runtimes.filter((runtime) =>
+        data.template.runtimes.some((templateRuntime) => templateRuntime.name === runtime.$id)
+    );
+    $: console.log(availableRuntimes);
 </script>
 
 <svelte:head>
@@ -194,28 +197,7 @@
         <Layout.Stack gap="xl">
             {#if selectedRepository && showConfig}
                 <Layout.Stack gap="xxl">
-                    <Card isTile padding="s" radius="s">
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            gap="xs">
-                            <Layout.Stack direction="row" alignItems="center" gap="s">
-                                <Icon size="s" icon={IconGithub} />
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {$repository.organization}/{$repository.name}
-                                </Typography.Text>
-                            </Layout.Stack>
-                            <Button
-                                size="s"
-                                secondary
-                                on:click={() => {
-                                    showConfig = false;
-                                }}>
-                                Update
-                            </Button>
-                        </Layout.Stack>
-                    </Card>
+                    <RepoCard bind:showConfig />
 
                     <ProductionBranch
                         bind:branch
@@ -229,11 +211,11 @@
                     {/if}
                 </Layout.Stack>
             {:else}
-                {@const options = data.template.runtimes.map((runtime) => {
+                {@const options = availableRuntimes.map((runtime) => {
                     return {
-                        value: runtime.name,
-                        label: runtime.name,
-                        leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.name), 'color')}' style='inline-size: var(--icon-size-m)' />`
+                        value: runtime.$id,
+                        label: `${runtime.name} - ${runtime.version}`,
+                        leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.$id), 'color')}' style='inline-size: var(--icon-size-m)' />`
                     };
                 })}
 

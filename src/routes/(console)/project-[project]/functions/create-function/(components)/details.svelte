@@ -40,13 +40,15 @@
                 </div>
             {/if}
         </Layout.Stack>
-        <InputSelect
-            id="runtime"
-            label="Runtime"
-            placeholder="Select runtime"
-            bind:value={runtime}
-            required
-            {options} />
+        {#key runtime}
+            <InputSelect
+                id="runtime"
+                label="Runtime"
+                placeholder="Select runtime"
+                bind:value={runtime}
+                required
+                {options} />
+        {/key}
         {#if showEntrypoint}
             <InputText
                 label="Entrypoint"

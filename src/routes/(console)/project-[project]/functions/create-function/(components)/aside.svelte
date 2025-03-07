@@ -8,11 +8,12 @@
     export let repositoryName: string;
     export let branch: string;
     export let rootDir: string;
-    export let domain: string = '';
     export let showGitData = true;
     export let runtimes: Models.RuntimeList;
 
     $: selectedRuntime = runtimes?.runtimes.find((r) => r.$id === runtime);
+
+    $: console.log(runtimes);
 </script>
 
 <Card padding="s" radius="s">
