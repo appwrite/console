@@ -9,7 +9,7 @@
     <Layout.Stack gap="xl" justifyContent="space-around">
         <Layout.GridFraction gap="xxxl" rowGap="xl" start={1} end={2}>
             <Layout.Stack gap="xxs">
-                <Typography.Title size="s"><slot name="title" /></Typography.Title>
+                <Typography.Title size="s" truncate><slot name="title" /></Typography.Title>
                 {#if $$slots.default}
                     <Typography.Text>
                         <slot />
