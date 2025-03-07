@@ -30,4 +30,5 @@
         legend: 'Image transformations',
         title: 'Total transformations'
     }}
+    isCumulative
     hideSelectPeriod />
