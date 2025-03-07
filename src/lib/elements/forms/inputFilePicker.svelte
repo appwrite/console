@@ -4,6 +4,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { Models } from '@appwrite.io/console';
     import { Label } from '.';
+    import { Upload } from '@appwrite.io/pink-svelte';
 
     export let label: string = null;
     export let value: Models.File = null;

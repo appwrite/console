@@ -45,9 +45,13 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery search={data.search} placeholder="Search domain" />
         <Popover padding="none" let:toggle placement="bottom-end">
-            <Button on:click={(event) => {toggle(event); trackEvent(Click.DomainCreateClick, {
-                    source: 'sites_domain_overview'
-                });}}>
+            <Button
+                on:click={(event) => {
+                    toggle(event);
+                    trackEvent(Click.DomainCreateClick, {
+                        source: 'sites_domain_overview'
+                    });
+                }}>
                 <Icon icon={IconPlus} size="s" />
                 Add domain
             </Button>

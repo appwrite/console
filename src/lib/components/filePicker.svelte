@@ -21,7 +21,8 @@
         Spinner,
         ToggleButton,
         Selector,
-        Empty
+        Empty,
+        Card
     } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { IconCheck, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
@@ -73,6 +74,7 @@
     }
 
     function selectBucket(bucket: Models.Bucket | null) {
+        search.set('');
         currentBucket = bucket;
         selectedBucket = bucket?.$id ?? null;
         resetFile();
@@ -146,7 +148,7 @@
     <Modal bind:open={show} title="Select file" size="l">
         <Layout.Stack direction="row" height="50vh">
             <aside>
-                <Typography.Eyebrow>Buckets</Typography.Eyebrow>
+                <Typography.Caption variant="500">Buckets</Typography.Caption>
                 {#await buckets}
                     <div class="u-flex u-main-center">
                         <div class="loader" />
@@ -234,47 +236,24 @@
                                 {:then response}
                                     {#if response?.files?.length}
                                         {#if view === 'grid'}
-                                            <ul
-                                                class="grid-box"
-                                                style="--grid-gap:40px; --grid-item-size:120px; --grid-item-size-small-screens:100px;">
+                                            <Layout.Grid
+                                                columnsXXS={1}
+                                                columnsXS={2}
+                                                columnsS={3}
+                                                columns={4}>
                                                 {#each response?.files as file}
-                                                    <li>
-                                                        <div class="u-flex-vertical u-gap-8">
-                                                            <div
-                                                                role="button"
-                                                                style:background-size="cover"
-                                                                style:background-image={`url(${getPreview(
-                                                                    currentBucket.$id,
-                                                                    file.$id,
-                                                                    360
-                                                                )})`}
-                                                                on:click={() => selectFile(file)}
-                                                                on:keyup={clickOnEnter}
-                                                                tabindex="0"
-                                                                style:aspect-ratio="1/1"
-                                                                style:display="flex"
-                                                                style:align-items="flex-end"
-                                                                style:flex-direction="row-reverse"
-                                                                style:box-shadow="none"
-                                                                class="card u-height-100-percent u-gap-16"
-                                                                style="--card-padding:0.5rem;--card-padding-mobile:0.5rem; --card-border-radius:var(--border-radius-medium);">
-                                                                <input
-                                                                    class="u-position-absolute is-small u-margin-block-start-2"
-                                                                    type="radio"
-                                                                    name="file"
-                                                                    value={file.$id}
-                                                                    style:pointer-events="none"
-                                                                    checked={selectedFile ===
-                                                                        file.$id} />
-                                                            </div>
-                                                            <span class="u-text-center"
-                                                                ><Trim alternativeTrim
-                                                                    >{file.name}</Trim
-                                                                ></span>
-                                                        </div>
-                                                    </li>
+                                                    <Card.Selector
+                                                        group="files"
+                                                        name="files"
+                                                        value={file.$id}
+                                                        src={getPreview(
+                                                            currentBucket.$id,
+                                                            file.$id,
+                                                            360
+                                                        )}
+                                                        on:click={() => selectFile(file)} />
                                                 {/each}
-                                            </ul>
+                                            </Layout.Grid>
                                         {/if}
                                         {#if view === 'list'}
                                             <Table.Root>
@@ -341,52 +320,32 @@
                                             description="There are no files that match your search.">
                                             <Button
                                                 secondary
-                                                slot=""
+                                                slot="actions"
                                                 on:click={() => ($search = '')}
                                                 >Clear search</Button>
                                         </Empty>
                                     {:else}
-                                        <Empty
-                                            single
-                                            --card-bg-color="transparent"
-                                            --shadow-small="none"
-                                            --border="var(--color-neutral-15)">
-                                            <div class="common-section">
-                                                <div class="u-text-center common-section">
-                                                    <Typography.Title size="s">
-                                                        No files found within this bucket.
-                                                    </Typography.Title>
-                                                    <p class="text u-line-height-1-5">
-                                                        Need a hand? Learn more in our <a
-                                                            class="link"
-                                                            href="https://appwrite.io/docs/products/storage"
-                                                            target="_blank"
-                                                            rel="noopener noreferrer">
-                                                            documentation</a
-                                                        >.
-                                                    </p>
-                                                </div>
-                                            </div>
+                                        <Empty title="No files found within this bucket.">
+                                            <Button
+                                                secondary
+                                                slot="actions"
+                                                disabled={uploading}
+                                                on:click={() => fileSelector.click()}
+                                                >Upload file</Button>
                                         </Empty>
                                     {/if}
                                 {/await}
                             {/if}
                         {/if}
                     {:else}
-                        <Empty
-                            single
-                            --card-bg-color="transparent"
-                            --shadow-small="none"
-                            --border="var(--color-neutral-15)">
-                            <div class="u-text-center u-flex-vertical u-cross-center u-gap-24">
-                                <Typography.Title size="s">No buckets found</Typography.Title>
-                                <Button
-                                    secondary
-                                    external
-                                    href={`${base}/project-${$page.params.project}/storage`}>
-                                    Create bucket
-                                </Button>
-                            </div>
+                        <Empty title="No buckets found">
+                            <Button
+                                slot="actions"
+                                secondary
+                                external
+                                href={`${base}/project-${$page.params.project}/storage`}>
+                                Create bucket
+                            </Button>
                         </Empty>
                     {/if}
                 {/await}
