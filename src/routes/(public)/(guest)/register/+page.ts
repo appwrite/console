@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ url }) => {
         const code = url.searchParams.get('code');
         let campaign: Campaign;
         try {
-            const couponData = await sdk.forConsole.billing.getCoupon(code);
+            const couponData = await sdk.forConsole.console.getCoupon(code);
             if (couponData.campaign) {
                 campaign = await sdk.forConsole.billing.getCampaign(couponData.campaign);
                 return {

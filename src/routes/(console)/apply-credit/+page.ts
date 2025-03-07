@@ -11,7 +11,7 @@ export const load = async ({ url }) => {
         let campaign: Campaign;
         const code = url.searchParams.get('code');
         try {
-            couponData = await sdk.forConsole.billing.getCouponAccount(code);
+            couponData = await sdk.forConsole.account.getCoupon(code);
             if (couponData.campaign) {
                 campaign = await sdk.forConsole.billing.getCampaign(couponData.campaign);
             }

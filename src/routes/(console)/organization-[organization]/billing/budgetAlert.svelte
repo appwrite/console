@@ -3,7 +3,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { Button, Form, FormList, InputSelectSearch } from '$lib/elements/forms';
     import {
         Table,
@@ -15,6 +14,7 @@
         TableRow
     } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
+    import { tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -49,7 +49,7 @@
 
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget(
+            await sdk.forConsole.organizations.updateBudget(
                 $organization.$id,
                 $organization.billingBudget,
                 alerts

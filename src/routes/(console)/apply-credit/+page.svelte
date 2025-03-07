@@ -199,7 +199,7 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.console.getCoupon(coupon);
             couponData = response;
             coupon = null;
             addNotification({

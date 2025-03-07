@@ -6,7 +6,7 @@
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization, currentPlan } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
 
@@ -20,7 +20,7 @@
 
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget(
+            await sdk.forConsole.organizations.updateBudget(
                 $organization.$id,
                 budget,
                 $organization.budgetAlerts

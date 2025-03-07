@@ -257,14 +257,6 @@ export class Billing {
         });
     }
 
-    async getRoles(organizationId: string): Promise<Models.Roles> {
-        const path = `/organizations/${organizationId}/roles`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json'
-        });
-    }
-
     async updatePlan(
         organizationId: string,
         billingPlan: string,
@@ -326,98 +318,6 @@ export class Billing {
         return await this.client.call('patch', uri, {
             'content-type': 'application/json'
         });
-    }
-
-    async updateBudget(
-        organizationId: string,
-        budget: number,
-        alerts: number[]
-    ): Promise<Organization> {
-        const path = `/organizations/${organizationId}/budget`;
-        const params = {
-            organizationId,
-            budget,
-            alerts
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async setOrganizationPaymentMethod(
-        organizationId: string,
-        paymentMethodId: string
-    ): Promise<Organization> {
-        const path = `/organizations/${organizationId}/payment-method`;
-        const params = {
-            organizationId,
-            paymentMethodId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async setOrganizationPaymentMethodBackup(
-        organizationId: string,
-        paymentMethodId: string
-    ): Promise<Organization> {
-        const path = `/organizations/${organizationId}/payment-method/backup`;
-        const params = {
-            organizationId,
-            paymentMethodId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-    async removeOrganizationPaymentMethod(organizationId: string): Promise<Organization> {
-        const path = `/organizations/${organizationId}/payment-method`;
-        const params = {
-            organizationId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'DELETE',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-    async removeOrganizationPaymentMethodBackup(organizationId: string): Promise<Organization> {
-        const path = `/organizations/${organizationId}/payment-method/backup`;
-        const params = {
-            organizationId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'DELETE',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
     }
 
     async listInvoices(organizationId: string, queries: string[] = []): Promise<InvoiceList> {
@@ -517,54 +417,6 @@ export class Billing {
         );
     }
 
-    async listUsage(
-        organizationId: string,
-        startDate: string = undefined,
-        endDate: string = undefined
-    ): Promise<Models.UsageOrganization> {
-        const path = `/organizations/${organizationId}/usage`;
-        const params = {
-            organizationId
-        };
-
-        if (startDate !== undefined) {
-            params['startDate'] = startDate;
-        }
-        if (endDate !== undefined) {
-            params['endDate'] = endDate;
-        }
-
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async listAggregation(
-        organizationId: string,
-        queries: string[] = []
-    ): Promise<Models.AggregationTeamList> {
-        const path = `/organizations/${organizationId}/aggregations`;
-        const params = {
-            organizationId,
-            queries
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
     async getAggregation(
         organizationId: string,
         aggregationId: string
@@ -605,38 +457,6 @@ export class Billing {
         } catch (e) {
             return { error: { code: e.code, message: e.message } };
         }
-    }
-
-    async getCouponAccount(couponId: string): Promise<Models.Coupon> {
-        const path = `/account/coupons/${couponId}`;
-        const params = {
-            couponId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async getCoupon(couponId: string): Promise<Models.Coupon> {
-        const path = `/console/coupons/${couponId}`;
-        const params = {
-            couponId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
     }
 
     async setBillingAddress(

@@ -1,18 +1,17 @@
-import { Dependencies } from '$lib/constants';
+import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte';
+import { defaultRoles, defaultScopes, Dependencies } from '$lib/constants';
+import type { Plan } from '$lib/sdk/billing';
 import { failedInvoice } from '$lib/stores/billing';
-import { isCloud } from '$lib/system';
+import { headerAlert } from '$lib/stores/headerAlert';
+import type { Organization } from '$lib/stores/organization';
+import { preferences } from '$lib/stores/preferences';
 import { sdk } from '$lib/stores/sdk';
+import { isCloud } from '$lib/system';
 import { error } from '@sveltejs/kit';
+import { get } from 'svelte/store';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
-import { headerAlert } from '$lib/stores/headerAlert';
-import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte';
-import { get } from 'svelte/store';
-import { preferences } from '$lib/stores/preferences';
-import type { Organization } from '$lib/stores/organization';
-import { defaultRoles, defaultScopes } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
@@ -24,7 +23,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     try {
         if (isCloud) {
-            const res = await sdk.forConsole.billing.getRoles(params.organization);
+            const res = await sdk.forConsole.organizations.getScopes(params.organization);
             roles = res.roles;
             scopes = res.scopes;
             currentPlan = await sdk.forConsole.billing.getOrganizationPlan(params.organization);

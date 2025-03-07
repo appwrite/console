@@ -1,9 +1,9 @@
-import { Query } from '@appwrite.io/console';
-import { sdk } from '$lib/stores/sdk';
-import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-import type { PageLoad } from './$types';
+import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
+import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
+import { Query } from '@appwrite.io/console';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
     const { organization } = await parent();
@@ -19,7 +19,9 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
             [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
             search
         ),
-        isCloud && organization?.$id ? sdk.forConsole.billing.listUsage(organization.$id) : null
+        isCloud && organization?.$id
+            ? sdk.forConsole.organizations.getUsage(organization.$id)
+            : null
     ]);
     return {
         offset,

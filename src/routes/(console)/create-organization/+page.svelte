@@ -61,7 +61,7 @@
         if ($page.url.searchParams.has('coupon')) {
             const coupon = $page.url.searchParams.get('coupon');
             try {
-                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
+                const response = await sdk.forConsole.account.getCoupon(coupon);
                 couponData = response;
             } catch (e) {
                 couponData = {

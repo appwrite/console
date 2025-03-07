@@ -1,12 +1,12 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
     export let isBackup = false;
@@ -19,7 +19,7 @@
         if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
 
         try {
-            await sdk.forConsole.billing.removeOrganizationPaymentMethod($organization.$id);
+            await sdk.forConsole.organizations.deleteDefaultPaymentMethod($organization.$id);
             addNotification({
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`
@@ -39,7 +39,7 @@
         showDelete = false;
 
         try {
-            await sdk.forConsole.billing.removeOrganizationPaymentMethodBackup($organization.$id);
+            await sdk.forConsole.organizations.deleteBackupPaymentMethod($organization.$id);
             addNotification({
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`

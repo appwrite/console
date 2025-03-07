@@ -18,7 +18,7 @@
 
     async function create() {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
+            await sdk.forConsole.organizations.setDefaultPaymentMethod(
                 $organization.$id,
                 $addCreditWizardStore.paymentMethodId
             );
