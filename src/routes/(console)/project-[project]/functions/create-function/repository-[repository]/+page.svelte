@@ -20,6 +20,8 @@
     import ProductionBranchFieldset from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../(components)/aside.svelte';
+    import { iconPath } from '$lib/stores/app';
+    import { getIconFromRuntime } from '../../store';
 
     export let data;
     let showExitModal = false;
@@ -128,8 +130,8 @@
     const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
         return {
             value: runtime.name,
-            label: runtime.name
-            // leadingHtml: `<img src='${$iconPath(getruntimeIcon(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+            label: runtime.name,
+            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
         };
     });
 </script>

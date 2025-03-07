@@ -9,7 +9,7 @@
     import { organization } from '$lib/stores/organization';
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
-    import { functionsList } from '../store';
+    import { functionsList, getIconFromRuntime } from '../store';
     import { debounce } from '$lib/helpers/debounce';
     import {
         Accordion,
@@ -65,29 +65,6 @@
             });
         }
         return [...baseRuntimes.values()];
-    }
-
-    function getIconFromRuntime(runtime: string) {
-        switch (true) {
-            case runtime.includes('node'):
-                return 'node';
-            case runtime.includes('php'):
-                return 'php';
-            case runtime.includes('ruby'):
-                return 'ruby';
-            case runtime.includes('python'):
-                return 'python';
-            case runtime.includes('dart'):
-                return 'dart';
-            case runtime.includes('bun'):
-                return 'bun';
-            case runtime.includes('go'):
-                return 'go';
-            case runtime.includes('deno'):
-                return 'deno';
-            default:
-                return undefined;
-        }
     }
 
     function applySearch(event: CustomEvent<string>) {

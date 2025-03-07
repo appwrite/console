@@ -8,7 +8,7 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { installation, repository } from '$lib/stores/vcs';
+    import { installation, repository, sortBranches } from '$lib/stores/vcs';
     import { Fieldset, Layout, Icon, Divider, Empty, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
@@ -21,6 +21,9 @@
     import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
+    import { iconPath } from '$lib/stores/app';
+    import { getIconFromRuntime } from '../../store';
+    import Permissions from './permissions.svelte';
 
     export let data;
 
@@ -33,7 +36,7 @@
 
     let name = data.template.name;
     let id = ID.unique();
-    let runtime: Models.Runtime = data.runtimesList.runtimes[0];
+    let runtime: string;
     let branch = 'main';
     let rootDir = './';
     let connectBehaviour: 'now' | 'later' = 'now';
@@ -102,11 +105,10 @@
             return;
         } else {
             try {
-                const rt = Object.values(Runtime).find((r) => r === runtime.key);
                 const func = await sdk.forProject.functions.create(
                     id,
                     name,
-                    rt,
+                    runtime as Runtime,
                     undefined,
                     undefined,
                     undefined,
@@ -130,7 +132,7 @@
                     func.$id
                 );
 
-                //Add variables
+                // Add variables
                 const promises = variables.map((variable) =>
                     sdk.forProject.functions.createVariable(
                         func.$id,
@@ -141,7 +143,7 @@
                 );
                 await Promise.all(promises);
 
-                const deployment = await sdk.forProject.functions.createVcsDeployment(
+                await sdk.forProject.functions.createVcsDeployment(
                     func.$id,
                     Type.Branch,
                     branch,
@@ -155,7 +157,7 @@
                 });
 
                 await goto(
-                    `${base}/project-${$page.params.project}/functions/create-function/deploying?function=${func.$id}&deployment=${deployment.$id}`
+                    `${base}/project-${$page.params.project}/functions/function-${func.$id}`
                 );
             } catch (e) {
                 addNotification({
@@ -165,6 +167,21 @@
                 trackError(e, Submit.FunctionCreate);
             }
         }
+    }
+
+    async function loadBranches() {
+        const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
+            selectedInstallationId,
+            selectedRepository
+        );
+        const sorted = sortBranches(branches);
+        branch = sorted[0]?.name ?? null;
+
+        if (!branch) {
+            branch = 'main';
+        }
+
+        return sorted;
     }
 
     $: if (repositoryBehaviour === 'new') {
@@ -183,13 +200,13 @@
 </script>
 
 <svelte:head>
-    <title>Create site - Appwrite</title>
+    <title>Create function - Appwrite</title>
 </svelte:head>
 
 <Wizard
-    title="Create site"
+    title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/sites/`}
+    href={`${base}/project-${$page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -204,7 +221,7 @@
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Icon size="s" icon={IconGithub} />
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {$repository.name}
+                                    {$repository.organization}/{$repository.name}
                                 </Typography.Text>
                             </Layout.Stack>
                             <Button
@@ -217,22 +234,43 @@
                             </Button>
                         </Layout.Stack>
                     </Card>
-                    <ProductionBranch bind:branch bind:rootDir bind:silentMode />
+                    {#await loadBranches()}
+                        <Layout.Stack justifyContent="center" alignItems="center">
+                            <div class="loader u-margin-32" />
+                        </Layout.Stack>
+                    {:then branches}
+                        {@const options =
+                            branches
+                                ?.map((branch) => {
+                                    return {
+                                        value: branch.name,
+                                        label: branch.name
+                                    };
+                                })
+                                ?.sort((a, b) => {
+                                    return a.label > b.label ? 1 : -1;
+                                }) ?? []}
+                        <ProductionBranch bind:branch bind:rootDir {options} bind:silentMode />
+                    {/await}
+
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <!-- <Domain bind:domain bind:domainIsValid /> -->
                 </Layout.Stack>
             {:else}
                 {@const options = data.template.runtimes.map((runtime) => {
                     return {
                         value: runtime.name,
-                        label: runtime.name
-                        // leadingHtml: `<img src='${$iconPath(getruntimeIcon(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+                        label: runtime.name,
+                        leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.name), 'color')}' style='inline-size: var(--icon-size-m)' />`
                     };
                 })}
+
                 <Layout.Stack gap="xxl">
                     <Details bind:name bind:id bind:runtime bind:entrypoint {options} />
+
+                    <Permissions bind:templateScopes={data.template.scopes} />
+
                     <ConnectBehaviour bind:connectBehaviour />
                 </Layout.Stack>
                 {#if connectBehaviour === 'now'}

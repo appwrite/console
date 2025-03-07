@@ -101,7 +101,7 @@
                                                 toggle(e);
                                             }}>
                                             <Icon size="s" icon={IconInfo} /></Button>
-                                        <p slot="tooltip">{variable.description}</p>
+                                        <p slot="tooltip">{@html variable.description}</p>
                                     </Popover>
                                 </Layout.Stack>
                             </Layout.Stack>
@@ -140,8 +140,9 @@
                                                 e.preventDefault();
                                                 toggle(e);
                                             }}>
-                                            <Icon size="s" icon={IconInfo} /></Button>
-                                        <p slot="tooltip">{variable.description}</p>
+                                            <Icon size="s" icon={IconInfo} />
+                                        </Button>
+                                        <p slot="tooltip">{@html variable.description}</p>
                                     </Popover>
                                 </Layout.Stack>
                             </Layout.Stack>

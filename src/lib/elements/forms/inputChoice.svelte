@@ -37,7 +37,7 @@
                 {id}
                 {disabled}
                 {required}
-                description="aspdjasipdj"
+                {description}
                 bind:checked={value}
                 on:change
                 on:invalid={handleInvalid} />

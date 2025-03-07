@@ -1,7 +1,6 @@
 <script lang="ts">
     import { CustomId } from '$lib/components';
     import { InputSelect, InputText } from '$lib/elements/forms';
-    import type { Models } from '@appwrite.io/console';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Fieldset, Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import type { ComponentType } from 'svelte';
@@ -10,7 +9,7 @@
     export let id: string;
     export let entrypoint: string;
     export let showEntrypoint = false;
-    export let runtime: Partial<Models.TemplateRuntime>;
+    export let runtime: string;
     export let options: {
         value: string;
         label: string;
@@ -45,7 +44,7 @@
             id="runtime"
             label="Runtime"
             placeholder="Select runtime"
-            bind:value={runtime.name}
+            bind:value={runtime}
             required
             {options} />
         {#if showEntrypoint}
