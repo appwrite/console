@@ -34,6 +34,7 @@
     import { project } from '$routes/(console)/project-[project]/store';
     import { buildVerboseDomain } from '../../store';
     import { organization } from '$lib/stores/organization';
+    import { connectGitHub } from '$lib/stores/git';
 
     export let data;
 
@@ -67,23 +68,6 @@
         }
         selectedInstallationId = $installation?.$id;
     });
-
-    let callbackState: Record<string, string> = null;
-
-    function connectGitHub() {
-        const redirect = new URL($page.url);
-        if (callbackState) {
-            Object.keys(callbackState).forEach((key) => {
-                redirect.searchParams.append(key, callbackState[key]);
-            });
-        }
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('project', $page.params.project);
-        target.searchParams.set('success', redirect.toString());
-        target.searchParams.set('failure', redirect.toString());
-        target.searchParams.set('mode', 'admin');
-        return target;
-    }
 
     async function createRepository() {
         try {

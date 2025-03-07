@@ -24,6 +24,7 @@
     import { iconPath } from '$lib/stores/app';
     import { getIconFromRuntime } from '../../store';
     import Permissions from './permissions.svelte';
+    import { connectGitHub } from '$lib/stores/git';
 
     export let data;
 
@@ -36,7 +37,7 @@
 
     let name = data.template.name;
     let id = ID.unique();
-    let runtime: string;
+    let runtime: Runtime;
     let branch = 'main';
     let rootDir = './';
     let connectBehaviour: 'now' | 'later' = 'now';
@@ -56,24 +57,21 @@
             $installation = data.installations.installations[0];
         }
         selectedInstallationId = $installation?.$id;
-    });
+        if (data.template.runtimes && data.template.runtimes.length > 0) {
+            const targetRuntime = data.template.runtimes[0].name;
+            const matchingRuntimes = Object.values(Runtime).filter((r) =>
+                r.startsWith(targetRuntime.split('-')[0])
+            );
 
-    let callbackState: Record<string, string> = null;
-
-    function connectGitHub() {
-        const redirect = new URL($page.url);
-        if (callbackState) {
-            Object.keys(callbackState).forEach((key) => {
-                redirect.searchParams.append(key, callbackState[key]);
+            matchingRuntimes.sort((a, b) => {
+                const versionA = a.split('-')[1];
+                const versionB = b.split('-')[1];
+                return versionB.localeCompare(versionA, undefined, { numeric: true });
             });
+            runtime = matchingRuntimes[0];
         }
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('project', $page.params.project);
-        target.searchParams.set('success', redirect.toString());
-        target.searchParams.set('failure', redirect.toString());
-        target.searchParams.set('mode', 'admin');
-        return target;
-    }
+        console.log(runtime);
+    });
 
     async function createRepository() {
         try {
@@ -185,15 +183,13 @@
     }
 
     $: if (repositoryBehaviour === 'new') {
-        selectedInstallationId = $installation?.$id;
+        selectedInstallationId ??= $installation?.$id;
         repositoryName ??= name.split(' ').join('-').toLowerCase();
     }
 
     $: if (connectBehaviour === 'later') {
         selectedRepository = null;
     }
-
-    $: console.log(repositoryName);
 
     $: console.log(data.template);
     $: console.log(variables);
@@ -339,7 +335,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {runtime} {repositoryName} {branch} {rootDir} />
+        <Aside {runtime} {repositoryName} {branch} {rootDir} runtimes={data.runtimesList} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">

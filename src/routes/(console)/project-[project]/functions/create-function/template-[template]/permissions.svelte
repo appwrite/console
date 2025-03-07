@@ -2,7 +2,7 @@
     import { scopes } from '$lib/constants';
     import { Fieldset, Layout, Selector } from '@appwrite.io/pink-svelte';
 
-    export let templateScopes = [];
+    export let templateScopes: string[];
 
     let execute = false;
     // onMount(() => {
