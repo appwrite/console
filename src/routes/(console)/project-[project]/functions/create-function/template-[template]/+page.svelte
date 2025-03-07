@@ -52,7 +52,7 @@
     let entrypoint = '';
     let selectedScopes: string[] = [];
     let execute = false;
-    let variables: Partial<Models.Variable>[] = [];
+    let variables: Partial<Models.TemplateVariable>[] = [];
 
     onMount(async () => {
         if (!$installation?.$id) {
@@ -108,11 +108,11 @@
                     id,
                     name,
                     runtime as Runtime,
-                    undefined, //excute ? permissions  || undefined : undefined,
+                    data.template.permissions?.length ? data.template.permissions : undefined,
+                    data.template.events?.length ? data.template.events : undefined,
+                    data.template.cron || undefined,
+                    data.template.timeout ? data.template.timeout : undefined,
                     undefined,
-                    undefined,
-                    undefined,
-                    true,
                     undefined,
                     entrypoint,
                     undefined,
@@ -131,11 +131,13 @@
                     func.$id
                 );
 
+                console.log(variables);
+
                 // Add variables
                 const promises = variables.map((variable) =>
                     sdk.forProject.functions.createVariable(
                         func.$id,
-                        variable.key,
+                        variable.name,
                         variable.value,
                         variable?.secret ?? false
                     )
