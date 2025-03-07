@@ -58,4 +58,6 @@
     on:invalid={handleInvalid}
     on:input
     on:change
-    bind:value />
+    bind:value>
+    <slot name="info" slot="info" />
+</Input.Select>

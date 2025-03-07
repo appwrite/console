@@ -16,14 +16,11 @@
 </script>
 
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app';
-    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { Badge, Layout, Logs, Typography } from '@appwrite.io/pink-svelte';
@@ -60,22 +57,22 @@
         return () => unsubscribe();
     });
 
-    async function cancelDeployment() {
-        try {
-            await sdk.forProject.sites.updateDeploymentBuild(deployment.resourceId, deployment.$id);
+    // async function cancelDeployment() {
+    //     try {
+    //         await sdk.forProject.sites.updateDeploymentBuild(deployment.resourceId, deployment.$id);
 
-            await invalidate(Dependencies.DEPLOYMENTS);
-            addNotification({
-                type: 'success',
-                message: `Deployment has been canceled`
-            });
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    }
+    //         await invalidate(Dependencies.DEPLOYMENTS);
+    //         addNotification({
+    //             type: 'success',
+    //             message: `Deployment has been canceled`
+    //         });
+    //     } catch (error) {
+    //         addNotification({
+    //             type: 'error',
+    //             message: error.message
+    //         });
+    //     }
+    // }
 </script>
 
 <Layout.Stack gap="xl">
@@ -100,9 +97,9 @@
             logs={buildLogs || 'No logs available yet...'}
             bind:theme={$app.themeInUse} />
     {/key}
-    {#if ['processing', 'building'].includes(status)}
+    <!-- {#if ['processing', 'building'].includes(status)}
         <Layout.Stack alignItems="flex-end">
             <Button size="s" text on:click={cancelDeployment}>Cancel deployment</Button>
         </Layout.Stack>
-    {/if}
+    {/if} -->
 </Layout.Stack>

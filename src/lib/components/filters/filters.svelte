@@ -16,6 +16,7 @@
     import { createEventDispatcher } from 'svelte';
     import { Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import { IconFilter, IconFilterLine } from '@appwrite.io/pink-icons-svelte';
+    import { Click, Submit, trackEvent } from '$lib/actions/analytics';
 
     export let query = '[]';
     export let columns: Writable<Column[]>;
@@ -25,6 +26,7 @@
     export let clearOnClick = false; // When enabled the user doesn't have to click apply to clear the filters
     export let enableApply = false;
     export let quickFilters = false;
+    export let analyticsSource = '';
     let displayQuickFilters = quickFilters;
 
     const dispatch = createEventDispatcher();
@@ -53,12 +55,14 @@
         selectedColumn = null;
         queries.clearAll();
         if (clearOnClick) {
+            trackEvent(Submit.FilterClear, { source: analyticsSource });
             queries.apply();
         }
     }
 
     function apply() {
         if (quickFilters && displayQuickFilters) {
+            trackEvent(Submit.FilterApply, { source: analyticsSource });
             dispatch('apply');
         } else if (
             selectedColumn &&
@@ -118,7 +122,13 @@
 
 <div class="is-not-mobile">
     <Popover let:toggle placement="bottom-start">
-        <Button secondary on:click={toggle} {disabled}>
+        <Button
+            secondary
+            on:click={(event) => {
+                toggle(event);
+                trackEvent(Click.FilterApplyClick, { source: analyticsSource });
+            }}
+            {disabled}>
             <Icon icon={IconFilterLine} slot="start" size="s" />
             Filters
             {#if applied > 0}

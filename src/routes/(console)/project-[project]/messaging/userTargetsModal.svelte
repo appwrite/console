@@ -6,6 +6,7 @@
     import { createEventDispatcher } from 'svelte';
     import { Accordion, Badge, Card, Empty, Layout, Selector } from '@appwrite.io/pink-svelte';
     import { getProviderText } from './helper';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     export let title: string;
     export let show: boolean;
@@ -30,6 +31,7 @@
 
     function submit() {
         dispatch('update', selected);
+        trackEvent(Submit.MessagingTargetUpdate);
         reset();
     }
 

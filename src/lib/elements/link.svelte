@@ -13,6 +13,7 @@
     export let variant: Props['variant'] = 'default';
     export let size: Props['size'] = 'm';
     export let external = false;
+    export let icon = false;
 
     function track() {
         if (!event) {
@@ -33,6 +34,7 @@
         on:click={track}
         {href}
         {disabled}
+        {icon}
         {variant}
         {size}
         target={external ? '_blank' : ''}
@@ -40,7 +42,7 @@
         <slot />
     </Link.Anchor>
 {:else}
-    <Link.Button on:click on:mousedown on:click={track} {type} {disabled} {variant} {size}>
+    <Link.Button on:click on:mousedown on:click={track} {type} {disabled} {variant} {size} {icon}>
         <slot />
     </Link.Button>
 {/if}

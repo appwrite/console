@@ -1,6 +1,6 @@
 <script lang="ts">
     import { ModalWrapper } from '$lib/components';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     export let title = '';
@@ -28,7 +28,7 @@
                         aria-label="Close Modal"
                         title="Close Modal"
                         on:click={() =>
-                            trackEvent('click_close_modal', {
+                            trackEvent(Click.ModalCloseClick, {
                                 from: 'button'
                             })}
                         on:click={close}>

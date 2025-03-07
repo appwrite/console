@@ -15,6 +15,7 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { ID, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     let showCustomId = false;
     let showTest = false;
@@ -101,7 +102,13 @@
             </svelte:fragment>
         </Modal>
     </div>
-    <InputSwitch label="HTML mode" id="html" bind:value={$messageParams[$providerType]['html']}>
+    <InputSwitch
+        label="HTML mode"
+        id="html"
+        bind:value={$messageParams[$providerType]['html']}
+        on:change={() => {
+            trackEvent(Submit.MessagingUpdateHtmlMode);
+        }}>
         <svelte:fragment slot="description">
             Enable the HTML mode if your message contains HTML tags.
         </svelte:fragment>

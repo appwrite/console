@@ -161,8 +161,8 @@
 </Container>
 
 {#if showAdvancedInfo}
-    <CertificateInfoModal {selectedCertificate} show={showAdvancedInfo} />
+    <CertificateInfoModal {selectedCertificate} bind:show={showAdvancedInfo} />
 {/if}
 {#if showDelete}
-    <DeleteCertificateModal {selectedCertificate} show={showDelete} />
+    <DeleteCertificateModal {selectedCertificate} bind:show={showDelete} />
 {/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { InputId } from '$lib/elements/forms';
     import { InputProjectId } from '$lib/elements/forms';
     import Button from '$lib/elements/forms/button.svelte';
@@ -20,7 +20,7 @@
     }
 
     $: if (show) {
-        trackEvent('click_show_custom_id');
+        trackEvent(Click.ShowCustomIdClick);
     }
 </script>
 

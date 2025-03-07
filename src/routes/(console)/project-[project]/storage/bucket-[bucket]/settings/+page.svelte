@@ -88,6 +88,7 @@
     import type { PageData } from './$types';
     import { Icon, Layout, Link, Selector, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Click } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -422,7 +423,12 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+            <Button
+                secondary
+                on:click={() => {
+                    showDelete = true;
+                    trackEvent(Click.StorageBucketDeleteClick);
+                }}>Delete</Button>
         </svelte:fragment>
     </CardGrid>
 </Container>

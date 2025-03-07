@@ -109,6 +109,7 @@
 
             trackEvent(Submit.FunctionCreate, {
                 source: 'repository',
+                runtime: runtime,
                 framework: runtime.key
             });
 

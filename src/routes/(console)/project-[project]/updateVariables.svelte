@@ -4,8 +4,8 @@
     import { Button } from '$lib/elements/forms';
     import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
-    import { invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { goto, invalidate } from '$app/navigation';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '$routes/(console)/project-[project]/store';
@@ -34,10 +34,11 @@
     } from '@appwrite.io/pink-icons-svelte';
     import Link from '$lib/elements/link.svelte';
     import Copy from '$lib/components/copy.svelte';
+    import { page } from '$app/stores';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
-
+    export let analyticsSource = '';
     export let isGlobal: boolean;
     export let sdkCreateVariable: (
         key: string,
@@ -177,7 +178,13 @@
 
             addNotification({
                 type: 'success',
-                message: `Variable has been ${isConflicting ? 'overwritten' : 'promoted'}.`
+                message: `Variable has been ${isConflicting ? 'overwritten' : 'promoted'}. You can find it in the project settings.`,
+                buttons: [
+                    {
+                        method: () => goto(`${base}/project-${$page.params.project}/settings`),
+                        name: 'Go to settings'
+                    }
+                ]
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {
@@ -222,15 +229,30 @@
         <Layout.Stack gap="l">
             <Layout.Stack direction="row">
                 <Layout.Stack direction="row" gap="s">
-                    <Button secondary on:mousedown={() => (showEditorModal = true)}>
+                    <Button
+                        secondary
+                        on:mousedown={() => {
+                            showEditorModal = true;
+                            trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
+                        }}>
                         <Icon slot="start" icon={IconCode} /> Editor
                     </Button>
-                    <Button secondary on:mousedown={() => (showVariablesUpload = true)}>
+                    <Button
+                        secondary
+                        on:mousedown={() => {
+                            showEditorModal = true;
+                            trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
+                        }}>
                         <Icon slot="start" icon={IconUpload} /> Import .env
                     </Button>
                 </Layout.Stack>
                 {#if variableList.total}
-                    <Button secondary on:mousedown={() => (showVariablesModal = true)}>
+                    <Button
+                        secondary
+                        on:mousedown={() => {
+                            showVariablesModal = true;
+                            trackEvent(Click.VariablesCreateClick, { source: 'project_settings' });
+                        }}>
                         <Icon slot="start" icon={IconPlus} /> Create variable
                     </Button>
                 {/if}

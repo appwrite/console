@@ -10,6 +10,7 @@
     import ScheduleModal from './scheduleModal.svelte';
     import CancelModal from './cancelModal.svelte';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let message: Models.Message & { data: Record<string, string> };
     export let topics: Models.Topic[];
@@ -45,7 +46,12 @@
     <svelte:fragment slot="actions">
         {#if message.status === 'draft'}
             <div class="u-flex u-gap-16">
-                <Button text on:click={() => (showSchedule = true)}>Schedule</Button>
+                <Button
+                    text
+                    on:click={() => {
+                        showSchedule = true;
+                        trackEvent(Click.MessagingScheduleClick);
+                    }}>Schedule</Button>
                 <Button secondary on:click={() => (showSend = true)}>Send message</Button>
             </div>
         {:else if message.status === 'scheduled'}

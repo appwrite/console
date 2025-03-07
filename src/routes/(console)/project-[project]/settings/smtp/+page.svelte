@@ -8,7 +8,7 @@
     import { invalidate } from '$app/navigation';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
     import { base } from '$app/paths';
     import deepEqual from 'deep-equal';
@@ -127,7 +127,14 @@
                         status="info"
                         title="Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.">
                         <svelte:fragment slot="actions">
-                            <Button compact href={$upgradeURL}>Upgrade plan</Button>
+                            <Button
+                                compact
+                                href={$upgradeURL}
+                                on:click={() => {
+                                    trackEvent(Click.OrganizationClickUpgrade, {
+                                        source: 'project_settings'
+                                    });
+                                }}>Upgrade plan</Button>
                         </svelte:fragment>
                     </Alert.Inline>
                 {:else}

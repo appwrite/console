@@ -65,7 +65,8 @@
         isGlobal={false}
         globalVariableList={data.globalVariables}
         variableList={data.variables}
-        product="site" />
+        product="site"
+        analyticsSource="site_settings" />
     <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateTimeout site={data.site} />
     <DangerZone site={data.site} />

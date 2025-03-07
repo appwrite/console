@@ -16,7 +16,7 @@
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { BillingPlan } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import { formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
@@ -45,7 +45,7 @@
             <Button
                 href={$upgradeURL}
                 on:click={() => {
-                    trackEvent('click_organization_upgrade', {
+                    trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',
                         source: 'organization_usage'
                     });

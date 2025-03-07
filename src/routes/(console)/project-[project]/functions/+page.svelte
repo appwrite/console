@@ -77,6 +77,7 @@
         title="Functions"
         buttonText={$canWriteFunctions ? 'Create function' : ''}
         buttonEvent="create_function"
+        buttonEventData={{ source: 'functions_overview' }}
         buttonHref={`${base}/project-${project}/functions/create-function`}
         total={data.functions.total} />
 

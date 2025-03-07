@@ -22,6 +22,7 @@
     import { onMount } from 'svelte';
     import { canWriteFunctions } from '$lib/stores/roles';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
 
@@ -186,6 +187,7 @@
                                 on:click={() => {
                                     selectedDeployment = activeDeployment;
                                     showRedeploy = true;
+                                    trackEvent(Click.FunctionsRedeployClick);
                                 }}>
                                 Redeploy
                             </Button>
@@ -243,7 +245,13 @@
             <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
                 <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
                     <QuickFilters {columns} />
-                    <Filters query={data.query} {columns} let:disabled let:toggle singleCondition>
+                    <Filters
+                        query={data.query}
+                        {columns}
+                        let:disabled
+                        let:toggle
+                        singleCondition
+                        analyticsSource="function_filters">
                         <div class="u-flex u-gap-4">
                             <Button
                                 text
@@ -286,7 +294,11 @@
                     class=" u-gap-8 u-flex-wrap u-margin-block-start-16">
                     <QuickFilters {columns} />
 
-                    <Filters query={data.query} {columns} clearOnClick>
+                    <Filters
+                        query={data.query}
+                        {columns}
+                        clearOnClick
+                        analyticsSource="function_filters">
                         <svelte:fragment slot="mobile" let:disabled let:toggle>
                             <Pill
                                 button

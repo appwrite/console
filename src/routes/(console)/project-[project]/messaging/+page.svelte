@@ -88,10 +88,10 @@
                 placeholder="Search by ID, description, type, or status" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Filters query={data.query} {columns} />
+            <Filters query={data.query} {columns} analyticsSource="messaging_messages" />
             <ViewSelector view={data.view} {columns} hideView allowNoColumns />
             {#if $canWriteMessages}
-                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
+                <CreateMessageDropdown />
             {/if}
         </Layout.Stack>
     </Layout.Stack>

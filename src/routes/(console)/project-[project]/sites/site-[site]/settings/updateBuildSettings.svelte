@@ -79,7 +79,8 @@
         buildCommand === site?.buildCommand &&
         outputDirectory === site?.outputDirectory &&
         selectedFramework?.key === site?.framework &&
-        fallback === site?.fallbackFile
+        fallback === site?.fallbackFile &&
+        adapter === site?.adapter
     ) {
         isButtonDisabled = true;
     } else {

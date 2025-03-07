@@ -25,7 +25,8 @@
                 <span>
                     Choose who can execute this function using the client API. <Link
                         external
-                        href="#">Learn more</Link>
+                        href="https://appwrite.io/docs/advanced/platform/permissions"
+                        >Learn more</Link>
                 </span>
 
                 <Roles bind:roles={scopes} />

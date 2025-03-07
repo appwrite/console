@@ -262,6 +262,7 @@
                                             buttonMethod={() => connectTemplate(template)}
                                             showIcon={false}
                                             buttonText="Create function"
+                                            buttonEventData={{ source: 'functions_template' }}
                                             buttonEvent="create_function" />
                                     {/if}
                                 </div>

@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { Alert } from '$lib/components';
     import { Form } from '$lib/elements/forms';
     import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
-    import { Layout, Modal } from '@appwrite.io/pink-svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     export let error: string = null;
@@ -28,7 +27,7 @@
             event.preventDefault();
             if (show) {
                 formComponent.triggerSubmit();
-                trackEvent('click_submit_form', { from: 'enter' });
+                trackEvent(Click.SubmitFormClick, { from: 'enter' });
             }
         }
     }
@@ -47,14 +46,14 @@
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>
-                <Alert
+                <Alert.Inline
                     dismissible
-                    type="warning"
+                    status="warning"
                     on:dismiss={() => {
                         error = null;
                     }}>
                     {error}
-                </Alert>
+                </Alert.Inline>
             </div>
         {/if}
         <slot />
