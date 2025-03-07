@@ -46,10 +46,11 @@
     let repositoryPrivate = true;
     let selectedInstallationId = '';
     let selectedRepository = '';
-    let showSiteConfig = false;
+    let showConfig = false;
     let silentMode = false;
     let entrypoint = '';
-    let scopes: string[] = [];
+    let selectedScopes: string[] = [];
+    let execute = false;
     let variables: Partial<Models.Variable>[] = [];
 
     onMount(async () => {
@@ -83,7 +84,7 @@
             );
             repository.set(repo);
             selectedRepository = repo.id;
-            showSiteConfig = true;
+            showConfig = true;
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -107,7 +108,7 @@
                     id,
                     name,
                     runtime as Runtime,
-                    undefined,
+                    undefined, //excute ? permissions  || undefined : undefined,
                     undefined,
                     undefined,
                     undefined,
@@ -115,7 +116,7 @@
                     undefined,
                     entrypoint,
                     undefined,
-                    scopes,
+                    selectedScopes?.length ? selectedScopes : undefined,
                     $installation.$id,
                     $repository.id,
                     branch,
@@ -206,7 +207,7 @@
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
-            {#if selectedRepository && showSiteConfig}
+            {#if selectedRepository && showConfig}
                 <Layout.Stack gap="xxl">
                     <Card isTile padding="s" radius="s">
                         <Layout.Stack
@@ -224,7 +225,7 @@
                                 size="s"
                                 secondary
                                 on:click={() => {
-                                    showSiteConfig = false;
+                                    showConfig = false;
                                 }}>
                                 Update
                             </Button>
@@ -265,7 +266,10 @@
                 <Layout.Stack gap="xxl">
                     <Details bind:name bind:id bind:runtime bind:entrypoint {options} />
 
-                    <Permissions bind:templateScopes={data.template.scopes} />
+                    <Permissions
+                        templateScopes={data.template.scopes}
+                        bind:selectedScopes
+                        bind:execute />
 
                     <ConnectBehaviour bind:connectBehaviour />
                 </Layout.Stack>
@@ -308,7 +312,7 @@
                                             repository.set(e.detail);
                                             repositoryName = e.detail.name;
                                             selectedRepository = e.detail.id;
-                                            showSiteConfig = true;
+                                            showConfig = true;
                                         }} />
                                 {/if}
                             </Layout.Stack>

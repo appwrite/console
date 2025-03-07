@@ -3,24 +3,17 @@
     import { Fieldset, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let templateScopes: string[];
+    export let selectedScopes: string[];
+    export let execute = false;
 
-    let execute = false;
-    // onMount(() => {
-    //     $templateConfig.execute = $template.permissions.includes('any');
-    //     templateScopes = scopes
-    //         .filter((scope) => $template.scopes.includes(scope.scope))
-    //         .map((scope) => ({
-    //             ...scope,
-    //             active: true
-    //         }));
-    // });
-
-    // $: $templateConfig.scopes = templateScopes
-    //     ?.filter((scope) => scope.active)
-    //     ?.map((scope) => scope.scope);
-
-    $: console.log(templateScopes);
-    $: console.log(scopes);
+    let scopeList = scopes
+        .filter((s) => templateScopes.includes(s.scope))
+        .map((s) => {
+            return {
+                value: s,
+                checked: false
+            };
+        });
 </script>
 
 <Fieldset legend="Permissions">
@@ -33,14 +26,18 @@
             bind:checked={execute}>
         </Selector.Switch>
 
-        {#if templateScopes.length > 0}
-            {#each templateScopes as s}
-                {@const scope = scopes.find((sc) => sc.scope === s)}
+        {#if scopeList.length > 0}
+            {#each scopeList as scope}
                 <Selector.Switch
-                    id={scope.scope}
-                    label={scope.scope}
-                    description={scope.description}
-                    bind:checked={execute}>
+                    id={scope.value.scope}
+                    label={scope.value.scope}
+                    description={scope.value.description}
+                    bind:checked={scope.checked}
+                    on:change={() => {
+                        selectedScopes = scopeList
+                            .filter((s) => s.checked)
+                            .map((s) => s.value.scope);
+                    }}>
                 </Selector.Switch>
             {/each}
         {/if}
