@@ -22,13 +22,9 @@
 </script>
 
 <CardGrid hideFooter={['processing', 'sent'].includes(message.status)}>
-    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
-        <ProviderType type={message.providerType} size="l">
-            <Typography.Title size="s">
-                <ProviderType type={message.providerType} noIcon />
-            </Typography.Title>
-        </ProviderType>
-    </div>
+    <ProviderType type={message.providerType} size="s" let:text>
+        <Typography.Title size="s">{text}</Typography.Title>
+    </ProviderType>
     <svelte:fragment slot="aside">
         <div class="u-flex u-main-space-between">
             <div data-private>

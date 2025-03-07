@@ -61,6 +61,7 @@
                 </Alert>
             {/if}
             <InputNumber
+                required
                 id="size"
                 label="Size"
                 disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
@@ -68,7 +69,7 @@
                 min={0}
                 max={isCloud ? maxValue() : Infinity}
                 bind:value={$value} />
-            <InputSelect id="bytes" label="Bytes" {options} bind:value={$unit} />
+            <InputSelect required id="bytes" label="Bytes" {options} bind:value={$unit} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

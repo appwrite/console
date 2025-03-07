@@ -9,38 +9,27 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        Avatar,
-        DropList,
-        DropListItem,
-        DropListLink,
-        Empty,
-        EmptySearch,
-        PaginationWithLimit,
-        SearchQuery
-    } from '$lib/components';
+    import { Avatar, Empty, EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import {
-        bytesToSize,
-        calculateSize,
-        humanFileSize,
-        sizeToBytes
-    } from '$lib/helpers/sizeConvertion';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
-    import { getServiceLimit } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
     import DeleteFile from './deleteFile.svelte';
-    import { isCloud } from '$lib/system';
-    import { Layout, Table, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Icon, Popover, ActionMenu } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconPencil,
+        IconPlus,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -50,13 +39,13 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const usedStorage =
-        isCloud && data?.organizationUsage?.storageTotal
-            ? bytesToSize(data.organizationUsage.storageTotal, 'GB')
-            : null;
-    const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview(bucketId, fileId, 128, 128).toString() +
-        '&mode=admin';
+
+    function getPreview(fileId: string) {
+        return (
+            sdk.forProject.storage.getFilePreview(bucketId, fileId, 128, 128).toString() +
+            '&mode=admin'
+        );
+    }
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -78,10 +67,6 @@
             trackError(error, Submit.FileDelete);
         }
     }
-
-    $: maxFileSize = isCloud
-        ? humanFileSize(sizeToBytes(getServiceLimit('fileSize'), 'MB', 1000))
-        : null;
 
     let isUploading = false;
 
@@ -165,8 +150,8 @@
                         </Table.Cell>
                     </Table.Row>
                 {:else}
-                    <Table.Link
-                        href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
+                    {@const href = `${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
+                    <Table.Link {href}>
                         <Table.Cell>
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar size="xs" src={getPreview(file.$id)} alt={file.name} />
@@ -181,34 +166,24 @@
                             {toLocaleDate(file.$createdAt)}
                         </Table.Cell>
                         <Table.Cell>
-                            <DropList
-                                bind:show={showDropdown[index]}
-                                placement="bottom-start"
-                                noArrow>
-                                <button
-                                    class="button is-only-icon is-text"
-                                    aria-label="More options"
-                                    on:click|preventDefault={() => {
-                                        showDropdown[index] = !showDropdown[index];
-                                    }}>
-                                    <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
-                                <svelte:fragment slot="list">
-                                    <DropListLink
+                            <Popover let:toggle placement="bottom-start" padding="none">
+                                <Button text icon ariaLabel="more options" on:click={toggle}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                                <ActionMenu.Root slot="tooltip">
+                                    <ActionMenu.Item.Anchor {href} leadingIcon={IconPencil}>
+                                        Update
+                                    </ActionMenu.Item.Anchor>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconTrash}
                                         on:click={() => {
-                                            showDropdown[index] = false;
-                                        }}
-                                        href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
-                                        icon="pencil">Update</DropListLink>
-                                    <DropListItem
-                                        icon="trash"
-                                        on:click={() => {
-                                            showDropdown[index] = false;
                                             selectedFile = file;
                                             showDelete = true;
-                                        }}>Delete</DropListItem>
-                                </svelte:fragment>
-                            </DropList>
+                                        }}>
+                                        Delete
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </Popover>
                         </Table.Cell>
                     </Table.Link>
                 {/if}

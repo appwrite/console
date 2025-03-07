@@ -3,17 +3,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { FloatingActionBar, Id, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellCheck,
-        TableCellHead,
-        TableCellHeadCheck,
-        TableCellText,
-        TableHeader,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import { columns } from './store';
@@ -25,6 +14,8 @@
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { canWriteProviders } from '$lib/stores/roles';
+    import { Badge, Icon, Selector, Table } from '@appwrite.io/pink-svelte';
+    import { IconCheckCircle } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -62,66 +53,66 @@
     }
 </script>
 
-<TableScroll>
-    <TableHeader>
+<Table.Root>
+    <svelte:fragment slot="header">
         {#if $canWriteProviders}
-            <TableCellHeadCheck
-                bind:selected={selectedIds}
-                pageItemsIds={data.providers.providers.map((d) => d.$id)} />
+            <Table.Header.Selector width="40px" />
         {/if}
         {#each $columns as column}
             {#if column.show}
-                <TableCellHead width={column.width}>{column.title}</TableCellHead>
+                <Table.Header.Cell width={column.width}>{column.title}</Table.Header.Cell>
             {/if}
         {/each}
-    </TableHeader>
-    <TableBody>
-        {#each data.providers.providers as provider (provider.$id)}
-            <TableRowLink
-                href={$canWriteProviders
-                    ? `${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}`
-                    : '#'}>
-                {#if $canWriteProviders}
-                    <TableCellCheck bind:selectedIds id={provider.$id} />
-                {/if}
-                {#each $columns as column}
-                    {#if column.show}
-                        {#if column.id === '$id'}
-                            {#key $columns}
-                                <TableCell title={column.title} width={column.width}>
-                                    <Id value={provider.$id}>{provider.$id}</Id>
-                                </TableCell>
-                            {/key}
-                        {:else if column.id === 'provider'}
-                            <TableCellText title={column.title} width={column.width}>
-                                <Provider provider={provider.provider} size="s" />
-                            </TableCellText>
-                        {:else if column.id === 'type'}
-                            <TableCellText title={column.title} width={column.width}>
-                                <ProviderType type={provider.type} size="s" />
-                            </TableCellText>
-                        {:else if column.id === 'enabled'}
-                            <TableCellText title={column.title} width={column.width}>
-                                <Pill success={provider.enabled}>
+    </svelte:fragment>
+    {#each data.providers.providers as provider (provider.$id)}
+        <Table.Link
+            href={$canWriteProviders
+                ? `${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}`
+                : '#'}>
+            {#if $canWriteProviders}
+                <Table.Cell>
+                    <Selector.Checkbox size="s" id={provider.$id} />
+                </Table.Cell>
+            {/if}
+            {#each $columns as column}
+                {#if column.show}
+                    {#if column.id === '$id'}
+                        {#key $columns}
+                            <Table.Cell>
+                                <Id value={provider.$id}>{provider.$id}</Id>
+                            </Table.Cell>
+                        {/key}
+                    {:else if column.id === 'provider'}
+                        <Table.Cell>
+                            <Provider provider={provider.provider} />
+                        </Table.Cell>
+                    {:else if column.id === 'type'}
+                        <Table.Cell>
+                            <ProviderType type={provider.type} size="xs" />
+                        </Table.Cell>
+                    {:else if column.id === 'enabled'}
+                        <Table.Cell>
+                            <Badge
+                                variant="secondary"
+                                type={provider.enabled ? 'success' : undefined}
+                                content={provider.enabled ? 'enabled' : 'disabled'}>
+                                <svelte:fragment slot="start">
                                     {#if provider.enabled}
-                                        <span class="icon-check-circle" aria-hidden="true"></span>
+                                        <Icon icon={IconCheckCircle} size="s" />
                                     {/if}
-                                    <span class="text u-trim">
-                                        {provider.enabled ? 'enabled' : 'disabled'}
-                                    </span>
-                                </Pill>
-                            </TableCellText>
-                        {:else}
-                            <TableCellText title={column.title} width={column.width}>
-                                {provider[column.id]}
-                            </TableCellText>
-                        {/if}
+                                </svelte:fragment>
+                            </Badge>
+                        </Table.Cell>
+                    {:else}
+                        <Table.Cell>
+                            {provider[column.id]}
+                        </Table.Cell>
                     {/if}
-                {/each}
-            </TableRowLink>
-        {/each}
-    </TableBody>
-</TableScroll>
+                {/if}
+            {/each}
+        </Table.Link>
+    {/each}
+</Table.Root>
 
 <FloatingActionBar show={selectedIds.length > 0}>
     <div class="u-flex u-cross-center u-main-space-between actions">
@@ -146,7 +137,6 @@
 
 <Modal
     title="Delete providers"
-    icon="exclamation"
     state="warning"
     bind:show={showDelete}
     onSubmit={handleDelete}

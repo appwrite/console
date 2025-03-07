@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Alert, CopyInput } from '$lib/components';
+    import { CardGrid, BoxAvatar, CopyInput } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { file } from './store';
@@ -15,7 +15,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { bucket } from '../store';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Typography } from '@appwrite.io/pink-svelte';
 
     let showFileAlert = true;
     onMount(async () => {
@@ -27,7 +27,7 @@
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 410, 250).toString() +
+        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 640, 300).toString() +
         '&mode=admin';
     const getView = (fileId: string) =>
         sdk.forProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
@@ -79,6 +79,7 @@
                     class="file-preview is-with-image"
                     target="_blank"
                     rel="noopener noreferrer"
+                    style:inline-size="100%"
                     aria-label="open file in new window">
                     <div class="file-preview-image">
                         <img
@@ -93,13 +94,11 @@
                         </div>
                     </div>
                 </a>
-                <div class="u-flex u-flex-vertical u-gap-4">
-                    <Typography.Title size="s">{$file.name}</Typography.Title>
-                    <p>{$file.mimeType}</p>
-                </div>
             </div>
             <svelte:fragment slot="aside">
                 <div>
+                    <p><span class="u-bold">Filename:</span> {$file.name}</p>
+                    <p><span class="u-bold">MIME type:</span> {$file.mimeType}</p>
                     <p><span class="u-bold">Size:</span> {calculateSize($file.sizeOriginal)}</p>
                     <p><span class="u-bold">Created:</span> {toLocaleDate($file.$createdAt)}</p>
                     <p>
@@ -107,7 +106,7 @@
                         {toLocaleDate($file.$updatedAt)}
                     </p>
                 </div>
-                <CopyInput label="File URL" showLabel={true} value={getView($file.$id)} />
+                <CopyInput label="File URL" value={getView($file.$id)} />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
@@ -124,24 +123,22 @@
             <svelte:fragment slot="aside">
                 {#if $bucket.fileSecurity}
                     {#if showFileAlert}
-                        <Alert type="info" dismissible on:dismiss={() => (showFileAlert = false)}>
-                            <svelte:fragment slot="title">File security is enabled</svelte:fragment>
-                            <p class="text">
+                        <Alert.Inline status="info" title="File security is enabled">
+                            <Typography.Text>
                                 Users will be able to access this file if they have been granted <b
                                     >either File or Bucket permissions.
                                 </b>
-                            </p>
-                        </Alert>
+                            </Typography.Text>
+                        </Alert.Inline>
                     {/if}
                     <Permissions bind:permissions={filePermissions} />
                 {:else}
-                    <Alert type="info">
-                        <svelte:fragment slot="title">File security is disabled</svelte:fragment>
-                        <p class="text">
+                    <Alert.Inline status="info" title="File security is disabled">
+                        <Typography.Text>
                             If you want to assign document permissions. Go to Bucket settings and
                             enable file security. Otherwise, only Bucket permissions will be used.
-                        </p>
-                    </Alert>
+                        </Typography.Text>
+                    </Alert.Inline>
                 {/if}
             </svelte:fragment>
 
