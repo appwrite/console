@@ -21,7 +21,7 @@
     import { functionsList } from './store';
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
-    import { Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconClock, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { goto } from '$app/navigation';
     import { Button } from '$lib/elements/forms';
@@ -123,7 +123,6 @@
             offset={data.offset}
             total={data.functions.total} />
     {:else}
-        <!-- TODO: use new empty state -->
         <Empty
             single
             allowCreate={$canWriteFunctions}

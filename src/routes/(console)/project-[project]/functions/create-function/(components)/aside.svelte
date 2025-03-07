@@ -5,9 +5,9 @@
     import type { Models, Runtime } from '@appwrite.io/console';
 
     export let runtime: Runtime;
-    export let repositoryName: string;
-    export let branch: string;
-    export let rootDir: string;
+    export let repositoryName: string = undefined;
+    export let branch: string = undefined;
+    export let rootDir: string = undefined;
     export let showGitData = true;
     export let runtimes: Models.RuntimeList;
 

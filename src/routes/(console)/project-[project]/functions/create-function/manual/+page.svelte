@@ -12,16 +12,12 @@
     import { writable } from 'svelte/store';
     import { ID, Runtime, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
-    import { onMount } from 'svelte';
     import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
-    import ProductionBranchFieldset from '$lib/components/git/productionBranchFieldset.svelte';
-    import Configuration from './configuration.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
     import { getIconFromRuntime } from '../../store';
     import { Dependencies } from '$lib/constants';
-    import RepoCard from './repoCard.svelte';
 
     export let data;
     let showExitModal = false;
@@ -40,26 +36,13 @@
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
 
-    const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
-        return {
-            value: runtime.name,
-            label: `${runtime.name} - ${runtime.version}`,
-            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
-        };
-    });
-
-    onMount(async () => {
-        installation.set(data.installation);
-        repository.set(data.repository);
-        name = data.repository.name;
-    });
-
     async function create() {
         try {
+            const rt = Object.values(Runtime).find((r) => r === runtime);
             const func = await sdk.forProject.functions.create(
                 id,
                 name,
-                runtime,
+                rt,
                 undefined,
                 undefined,
                 undefined,
@@ -67,7 +50,7 @@
                 true,
                 undefined,
                 entrypoint,
-                buildCommand,
+                undefined,
                 scopes,
                 $installation.$id,
                 $repository.id,
@@ -112,6 +95,14 @@
             trackError(e, Submit.FunctionCreate);
         }
     }
+
+    const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
+        return {
+            value: runtime.name,
+            label: `${runtime.name} - ${runtime.version}`,
+            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+        };
+    });
 </script>
 
 <svelte:head>
@@ -125,8 +116,6 @@
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
-            <RepoCard repository={data.repository} />
-
             <Details
                 bind:name
                 bind:entrypoint
@@ -135,23 +124,11 @@
                 options={runtimeOptions}
                 showEntrypoint />
 
-            <ProductionBranchFieldset
-                bind:branch
-                bind:rootDir
-                bind:silentMode
-                installationId={data.installation.$id}
-                repositoryId={data.repository.id} />
-
-            <Configuration bind:buildCommand bind:scopes />
+            <!-- <Configuration bind:buildCommand bind:scopes /> -->
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside
-            {runtime}
-            runtimes={data.runtimesList}
-            repositoryName={data.repository.name}
-            {branch}
-            {rootDir} />
+        <Aside {runtime} runtimes={data.runtimesList} showGitData={false} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
