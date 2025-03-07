@@ -3,14 +3,12 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
-    import { Layout, Icon, Typography } from '@appwrite.io/pink-svelte';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
     import { ID, Runtime, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
@@ -23,6 +21,7 @@
     import { iconPath } from '$lib/stores/app';
     import { getIconFromRuntime } from '../../store';
     import { Dependencies } from '$lib/constants';
+    import RepoCard from './repoCard.svelte';
 
     export let data;
     let showExitModal = false;
@@ -110,7 +109,7 @@
     const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
         return {
             value: runtime.name,
-            label: runtime.name,
+            label: `${runtime.name} - ${runtime.version}`,
             leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
         };
     });
@@ -123,29 +122,12 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/functions/`}
+    href={`${base}/project-${$page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
-            <Card radius="s" padding="s">
-                <Layout.Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap="xs">
-                    <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
-                        <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            {data.repository?.organization}/{data.repository?.name}
-                        </Typography.Text>
-                    </Layout.Stack>
-                    <Button
-                        secondary
-                        href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
-                        Change
-                    </Button>
-                </Layout.Stack>
-            </Card>
+            <RepoCard repository={data.repository} />
+
             <Details bind:name bind:entrypoint bind:id bind:runtime options={runtimeOptions} />
 
             <ProductionBranchFieldset
