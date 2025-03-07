@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -26,6 +26,7 @@
     import Permissions from './permissions.svelte';
     import { connectGitHub } from '$lib/stores/git';
     import RepoCard from './repoCard.svelte';
+    import { Dependencies } from '$lib/constants';
 
     export let data;
 
@@ -160,6 +161,7 @@
                 await goto(
                     `${base}/project-${$page.params.project}/functions/function-${func.$id}`
                 );
+                invalidate(Dependencies.FUNCTION);
             } catch (e) {
                 addNotification({
                     type: 'error',

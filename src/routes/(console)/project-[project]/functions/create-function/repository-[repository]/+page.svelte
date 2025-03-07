@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -22,6 +22,7 @@
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
     import { getIconFromRuntime } from '../../store';
+    import { Dependencies } from '$lib/constants';
 
     export let data;
     let showExitModal = false;
@@ -31,7 +32,7 @@
 
     let name = '';
     let id = ID.unique();
-    let runtime: Models.Runtime = data.runtimesList.runtimes[0];
+    let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
     let scopes: string[] = [];
@@ -48,7 +49,7 @@
 
     async function create() {
         try {
-            const rt = Object.values(Runtime).find((r) => r === runtime.key);
+            const rt = Object.values(Runtime).find((r) => r === runtime);
             const func = await sdk.forProject.functions.create(
                 id,
                 name,
@@ -87,22 +88,16 @@
             );
             await Promise.all(promises);
 
-            const deployment = await sdk.forProject.functions.createVcsDeployment(
-                func.$id,
-                Type.Branch,
-                branch,
-                true
-            );
+            await sdk.forProject.functions.createVcsDeployment(func.$id, Type.Branch, branch, true);
 
             trackEvent(Submit.FunctionCreate, {
                 source: 'repository',
-                runtime: runtime,
-                framework: runtime.key
+                runtime: runtime
             });
 
-            await goto(
-                `${base}/project-${$page.params.project}/functions/create-function/deploying?function=${func.$id}&deployment=${deployment.$id}`
-            );
+            await goto(`${base}/project-${$page.params.project}/functions/function=${func.$id}`);
+
+            invalidate(Dependencies.FUNCTION);
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -164,7 +159,12 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {runtime} repositoryName={data.repository.name} {branch} {rootDir} />
+        <Aside
+            {runtime}
+            runtimes={data.runtimesList}
+            repositoryName={data.repository.name}
+            {branch}
+            {rootDir} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
