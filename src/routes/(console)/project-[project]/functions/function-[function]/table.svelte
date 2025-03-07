@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { DropListItem, DropListLink, Id } from '$lib/components';
+    import { Id } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
@@ -9,7 +9,7 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { func } from './store';
     import { page } from '$app/stores';
-    import Activate from './activate.svelte';
+    import Activate from './(modals)/activate.svelte';
     import RedeployModal from './redeployModal.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -18,7 +18,15 @@
     import { base } from '$app/paths';
     import { ActionMenu, Icon, Popover, Table } from '@appwrite.io/pink-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { IconDotsHorizontal } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconDownload,
+        IconLightningBolt,
+        IconRefresh,
+        IconTerminal,
+        IconTrash,
+        IconXCircle
+    } from '@appwrite.io/pink-icons-svelte';
     import { Button } from '$lib/elements/forms';
     import { DeploymentCreatedBy, DeploymentSource } from '$lib/components/git';
     import Delete from './(modals)/delete.svelte';
@@ -116,63 +124,66 @@
                     <Button icon text on:click={toggle}>
                         <Icon icon={IconDotsHorizontal} size="s" />
                     </Button>
-                    <svelte:fragment slot="tooltip">
+                    <svelte:fragment slot="tooltip" let:toggle>
                         <ActionMenu.Root>
-                            <DropListItem
-                                icon="refresh"
-                                on:click={() => {
+                            <ActionMenu.Item.Button
+                                trailingIcon={IconRefresh}
+                                on:click={(e) => {
                                     selectedDeployment = deployment;
                                     showRedeploy = true;
-                                    showDropdown = [];
+                                    toggle(e);
                                     trackEvent(Click.FunctionsRedeployClick);
                                 }}>
                                 Redeploy
-                            </DropListItem>
+                            </ActionMenu.Item.Button>
                             {#if deployment.status === 'ready' && deployment.$id !== $func.deployment}
-                                <DropListItem
-                                    icon="lightning-bolt"
-                                    on:click={() => {
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconLightningBolt}
+                                    on:click={(e) => {
                                         selectedDeployment = deployment;
                                         showActivate = true;
-                                        showDropdown = [];
+                                        toggle(e);
                                     }}>
                                     Activate
-                                </DropListItem>
+                                </ActionMenu.Item.Button>
                             {/if}
-                            <DropListLink
-                                icon="terminal"
+                            <ActionMenu.Item.Anchor
+                                trailingIcon={IconTerminal}
                                 href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                 Logs
-                            </DropListLink>
-                            <DropListLink
-                                icon="download"
+                            </ActionMenu.Item.Anchor>
+                            <ActionMenu.Item.Anchor
+                                trailingIcon={IconDownload}
                                 href={getDownload(deployment.$id)}
                                 on:click={() => (showDropdown[index] = false)}>
                                 Download
-                            </DropListLink>
+                            </ActionMenu.Item.Anchor>
                             {#if deployment.status === 'processing' || deployment.status === 'building' || deployment.status === 'waiting'}
-                                <DropListItem
-                                    icon="x-circle"
-                                    event="deployment_cancel"
-                                    on:click={() => {
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconXCircle}
+                                    on:click={(e) => {
                                         selectedDeployment = deployment;
-                                        showDropdown = [];
+                                        toggle(e);
+
                                         showCancel = true;
+                                        trackEvent(Click.FunctionsDeploymentCancelClick);
                                     }}>
                                     Cancel
-                                </DropListItem>
+                                </ActionMenu.Item.Button>
                             {/if}
                             {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment.status !== 'waiting'}
-                                <DropListItem
-                                    icon="trash"
-                                    on:click={() => {
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconTrash}
+                                    status="danger"
+                                    on:click={(e) => {
                                         selectedDeployment = deployment;
-                                        showDropdown = [];
+                                        toggle(e);
+
                                         showDelete = true;
                                         trackEvent(Click.FunctionsDeploymentDeleteClick);
                                     }}>
                                     Delete
-                                </DropListItem>
+                                </ActionMenu.Item.Button>
                             {/if}
                         </ActionMenu.Root>
                     </svelte:fragment>

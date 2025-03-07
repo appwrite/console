@@ -155,6 +155,7 @@ export enum Click {
     FilterApplyClick = 'click_apply_filter',
     FunctionsRedeployClick = 'click_function_redeploy',
     FunctionsDeploymentDeleteClick = 'click_deployment_delete',
+    FunctionsDeploymentCancelClick = 'click_deployment_cancel',
     KeyCreateClick = 'click_key_create',
     MenuDropDownClick = 'click_menu_dropdown',
     MenuOverviewClick = 'click_menu_overview',
