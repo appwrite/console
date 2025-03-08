@@ -13,7 +13,6 @@
     import UpdateRepository from './updateRepository.svelte';
     import { onMount } from 'svelte';
     import { showConnectRepo } from './store';
-    import UpdateSpa from './updateSPA.svelte';
 
     export let data;
 
@@ -66,9 +65,9 @@
         isGlobal={false}
         globalVariableList={data.globalVariables}
         variableList={data.variables}
-        product="site" />
-    <UpdateTimeout site={data.site} />
-    <UpdateSpa site={data.site} />
+        product="site"
+        analyticsSource="site_settings" />
     <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
+    <UpdateTimeout site={data.site} />
     <DangerZone site={data.site} />
 </Container>

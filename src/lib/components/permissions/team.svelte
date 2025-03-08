@@ -93,22 +93,13 @@
                         <Layout.Stack direction="row" alignItems="center" gap="s">
                             <AvatarInitials size="xs" name={team.name} />
                             <Layout.Stack gap="none">
-                                <Typography.Caption variant="400">Text</Typography.Caption>
+                                <Typography.Caption variant="400">{team.name}</Typography.Caption>
                                 <Typography.Caption
                                     variant="400"
                                     color="--fgcolor-neutral-tertiary">
-                                    Secondary Text
+                                    {team.$id}
                                 </Typography.Caption>
                             </Layout.Stack>
-                        </Layout.Stack>
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
-                            <AvatarInitials size="xs" name={team.name} />
-                            <span>
-                                {team.name}
-                            </span>
-                            <span>
-                                {team.$id}
-                            </span>
                         </Layout.Stack>
                     </Table.Cell>
                 </Table.Button>

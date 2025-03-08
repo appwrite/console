@@ -1,16 +1,14 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { Layout, Icon, Typography } from '@appwrite.io/pink-svelte';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
+    import { installation, repository } from '$lib/stores/vcs';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
     import { ID, Runtime, Type } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
@@ -20,6 +18,10 @@
     import ProductionBranchFieldset from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../(components)/aside.svelte';
+    import { iconPath } from '$lib/stores/app';
+    import { getIconFromRuntime } from '../../store';
+    import { Dependencies } from '$lib/constants';
+    import RepoCard from './repoCard.svelte';
 
     export let data;
     let showExitModal = false;
@@ -29,7 +31,7 @@
 
     let name = '';
     let id = ID.unique();
-    let runtime: Models.Runtime = data.runtimesList.runtimes[0];
+    let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
     let scopes: string[] = [];
@@ -37,7 +39,14 @@
     let rootDir = './';
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
-    let domain = id;
+
+    const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
+        return {
+            value: runtime.name,
+            label: `${runtime.name} - ${runtime.version}`,
+            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+        };
+    });
 
     onMount(async () => {
         installation.set(data.installation);
@@ -45,28 +54,12 @@
         name = data.repository.name;
     });
 
-    async function loadBranches() {
-        const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            data.installation.$id,
-            data.repository.id
-        );
-        const sorted = sortBranches(branches);
-        branch = sorted[0]?.name ?? null;
-
-        if (!branch) {
-            branch = 'main';
-        }
-
-        return sorted;
-    }
-
     async function create() {
         try {
-            const rt = Object.values(Runtime).find((r) => r === runtime.key);
             const func = await sdk.forProject.functions.create(
                 id,
                 name,
-                rt,
+                runtime,
                 undefined,
                 undefined,
                 undefined,
@@ -74,7 +67,7 @@
                 true,
                 undefined,
                 entrypoint,
-                undefined,
+                buildCommand,
                 scopes,
                 $installation.$id,
                 $repository.id,
@@ -86,7 +79,7 @@
 
             // Add domain
             await sdk.forProject.proxy.createFunctionRule(
-                `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_TARGET}`,
                 func.$id
             );
 
@@ -101,21 +94,16 @@
             );
             await Promise.all(promises);
 
-            const deployment = await sdk.forProject.functions.createVcsDeployment(
-                func.$id,
-                Type.Branch,
-                branch,
-                true
-            );
+            await sdk.forProject.functions.createVcsDeployment(func.$id, Type.Branch, branch, true);
 
             trackEvent(Submit.FunctionCreate, {
                 source: 'repository',
-                framework: runtime.key
+                runtime: runtime
             });
 
-            await goto(
-                `${base}/project-${$page.params.project}/functions/create-function/deploying?function=${func.$id}&deployment=${deployment.$id}`
-            );
+            await goto(`${base}/project-${$page.params.project}/functions/function=${func.$id}`);
+
+            invalidate(Dependencies.FUNCTION);
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -133,64 +121,47 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/functions/`}
+    href={`${base}/project-${$page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
-            <Card radius="s" padding="s">
-                <Layout.Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap="xs">
-                    <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
-                        <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            {data.repository?.organization}/{data.repository?.name}
-                        </Typography.Text>
-                    </Layout.Stack>
-                    <Button
-                        secondary
-                        href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
-                        Change
-                    </Button>
-                </Layout.Stack>
-            </Card>
-            <Details bind:name bind:entrypoint bind:id />
+            <RepoCard repository={data.repository} />
 
-            {#await loadBranches()}
-                <Layout.Stack justifyContent="center" alignItems="center">
-                    <div class="loader u-margin-32" />
-                </Layout.Stack>
-            {:then branches}
-                {@const options =
-                    branches
-                        ?.map((branch) => {
-                            return {
-                                value: branch.name,
-                                label: branch.name
-                            };
-                        })
-                        ?.sort((a, b) => {
-                            return a.label > b.label ? 1 : -1;
-                        }) ?? []}
-                <ProductionBranchFieldset bind:branch bind:rootDir {options} bind:silentMode />
-            {/await}
+            <Details
+                bind:name
+                bind:entrypoint
+                bind:id
+                bind:runtime
+                options={runtimeOptions}
+                showEntrypoint />
+
+            <ProductionBranchFieldset
+                bind:branch
+                bind:rootDir
+                bind:silentMode
+                installationId={data.installation.$id}
+                repositoryId={data.repository.id} />
 
             <Configuration bind:buildCommand bind:scopes />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {runtime} repositoryName={data.repository.name} {branch} {rootDir} />
+        <Aside
+            {runtime}
+            runtimes={data.runtimesList}
+            repositoryName={data.repository.name}
+            {branch}
+            {rootDir} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
+            submissionLoader
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
-            Deploy
+            Create
         </Button>
     </svelte:fragment>
 </Wizard>

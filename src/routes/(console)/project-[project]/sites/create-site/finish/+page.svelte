@@ -12,6 +12,7 @@
     import { onMount } from 'svelte';
     import AddCollaboratorModal from '../../(components)/addCollaboratorModal.svelte';
     import { protocol } from '$routes/(console)/store';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
 
@@ -91,6 +92,11 @@
                             <Card.Link
                                 radius="s"
                                 padding="s"
+                                on:click={() => {
+                                    trackEvent(Click.DomainCreateClick, {
+                                        source: 'sites_create_finish'
+                                    });
+                                }}
                                 href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}/domains`}>
                                 <Layout.Stack gap="s" style="height: 100%">
                                     <Layout.Stack

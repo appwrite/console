@@ -23,7 +23,6 @@
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
-    export let fullWidthMobile = false;
 
     onMount(async () => {
         if (isCustomCollection) {

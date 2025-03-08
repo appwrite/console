@@ -192,7 +192,13 @@
     <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
         <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
             <QuickFilters {columns} />
-            <Filters query={data.query} {columns} let:disabled let:toggle clearOnClick>
+            <Filters
+                query={data.query}
+                {columns}
+                let:disabled
+                let:toggle
+                clearOnClick
+                analyticsSource="executions_filters">
                 <div class="u-flex u-gap-4">
                     <Button
                         text
@@ -248,7 +254,7 @@
             class=" u-gap-8 u-flex-wrap u-margin-block-start-16">
             <QuickFilters {columns} />
 
-            <Filters query={data.query} {columns} clearOnClick>
+            <Filters query={data.query} {columns} clearOnClick analyticsSource="executions_filters">
                 <svelte:fragment slot="mobile" let:disabled let:toggle>
                     <Pill
                         button

@@ -281,14 +281,6 @@
         --logo-bg: #f2f2f8;
     }
 
-    :global(.theme-dark) .footer {
-        --sep-clr: hsl(var(--color-neutral-150));
-    }
-
-    :global(.theme-light) .footer {
-        --sep-clr: hsl(var(--color-neutral-30));
-    }
-
     .content {
         overflow: auto;
         padding: 1rem;
@@ -321,14 +313,6 @@
 
         :global(.answer a) {
             text-decoration: underline;
-        }
-    }
-
-    .footer {
-        .sep {
-            width: 1px;
-            height: 1.5rem;
-            background-color: var(--sep-clr);
         }
     }
 

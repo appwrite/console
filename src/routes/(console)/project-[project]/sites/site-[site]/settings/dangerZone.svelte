@@ -11,8 +11,7 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Delete site</svelte:fragment>
-    The site will be permanently deleted, including all deployments associated with it. This action is
-    irreversible.
+    The site will be permanently deleted, including all deployments associated with it.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

@@ -20,10 +20,14 @@
                     placeholder="npm install" />
             </Layout.Stack>
         </Accordion>
-        <Accordion title="Execute access" badge="Optional">
+        <Accordion title="Execute access" badge="Optional" hideDivider>
             <Layout.Stack gap="xl">
-                Choose who can execute this function using the client API. <Link external href="#"
-                    >Learn more</Link>
+                <span>
+                    Choose who can execute this function using the client API. <Link
+                        external
+                        href="https://appwrite.io/docs/advanced/platform/permissions"
+                        >Learn more</Link>
+                </span>
 
                 <Roles bind:roles={scopes} />
             </Layout.Stack>

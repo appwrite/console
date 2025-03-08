@@ -5,11 +5,10 @@
     import { Pill } from '$lib/elements';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
-    import DeploymentSource from './deploymentSource.svelte';
 
     import DeploymentDomains from './deploymentDomains.svelte';
     import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { DeploymentCreatedBy, DeploymentSource } from '$lib/components/git';
 
     export let deployment: Models.Deployment;
 </script>

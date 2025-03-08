@@ -9,7 +9,7 @@
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { type Models } from '@appwrite.io/console';
     import { Tooltip } from '@appwrite.io/pink-svelte';
 
@@ -212,7 +212,7 @@
                         disabled={$organization?.markedForDeletion}
                         href={$upgradeURL}
                         on:click={() =>
-                            trackEvent('click_organization_upgrade', {
+                            trackEvent(Click.OrganizationClickUpgrade, {
                                 from: 'button',
                                 source: 'billing_tab'
                             })}>

@@ -3,19 +3,11 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Alert, Modal, Trim } from '$lib/components';
+    import { Modal, Trim } from '$lib/components';
     import { Button, InputChoice } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Alert, Selector, Table } from '@appwrite.io/pink-svelte';
     import { attributes, collection } from '../store';
     import { isRelationship } from './attributes/store';
     import type { Models } from '@appwrite.io/console';
@@ -69,48 +61,45 @@
 
     {#if relAttributes?.length}
         <p class="text">This document contains the following relationships:</p>
-        <TableScroll noMargin>
-            <TableHeader>
-                <TableCellHead width={70}>Relation</TableCellHead>
-                <TableCellHead width={70}>Setting</TableCellHead>
-                <TableCellHead width={200} />
-            </TableHeader>
-            <TableBody>
-                {#each relAttributes as attr}
-                    <TableRow>
-                        <TableCell title="relation">
-                            <span class="u-flex u-cross-center u-gap-8">
-                                {#if attr.twoWay}
-                                    <span class="icon-switch-horizontal" />
-                                {:else}
-                                    <span class="icon-arrow-sm-right" />
-                                {/if}
-                                <Trim>{attr.key}</Trim>
-                            </span>
-                        </TableCell>
-                        <TableCellText title="Settings">
-                            {attr.onDelete}
-                        </TableCellText>
-                        <TableCellText title="description">
-                            {Deletion[attr.onDelete]}
-                        </TableCellText>
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </TableScroll>
+        <Table.Root>
+            <svelte:fragment slot="header">
+                <Table.Header.Cell width="70px">Relation</Table.Header.Cell>
+                <Table.Header.Cell width="70px">Setting</Table.Header.Cell>
+                <Table.Header.Cell />
+            </svelte:fragment>
+            {#each relAttributes as attr}
+                <Table.Row>
+                    <Table.Cell>
+                        <span class="u-flex u-cross-center u-gap-8">
+                            {#if attr.twoWay}
+                                <span class="icon-switch-horizontal" />
+                            {:else}
+                                <span class="icon-arrow-sm-right" />
+                            {/if}
+                            <Trim>{attr.key}</Trim>
+                        </span>
+                    </Table.Cell>
+                    <Table.Cell>
+                        {attr.onDelete}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {Deletion[attr.onDelete]}
+                    </Table.Cell>
+                </Table.Row>
+            {/each}
+        </Table.Root>
         <div class="u-flex u-flex-vertical u-gap-16">
-            <Alert>To change the selection edit the relationship settings.</Alert>
-
-            <ul>
-                <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                    Delete document from <span data-private>{$collection.name}</span>
-                </InputChoice>
-            </ul>
+            <Alert.Inline
+                title="To change these deletion behaviors edit the relationship settings." />
+            <Selector.Checkbox
+                id="delete"
+                label={`Delete document from ${$collection.name}`}
+                bind:checked />
         </div>
     {/if}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit disabled={relAttributes?.length && !checked}>Delete</Button>
+        <Button danger submit disabled={relAttributes?.length && !checked}>Delete</Button>
     </svelte:fragment>
 </Modal>

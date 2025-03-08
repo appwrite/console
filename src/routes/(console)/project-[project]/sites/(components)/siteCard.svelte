@@ -13,8 +13,8 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import DeploymentSource from './deploymentSource.svelte';
-    import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
+    import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
+
     import { Button } from '$lib/elements/forms';
     import { IconInfo, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';

@@ -1,39 +1,33 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { Helper, Label } from '.';
+    import { Input } from '@appwrite.io/pink-svelte';
 
-    export let label: string;
-    export let showLabel = true;
-    export let optionalText: string | undefined = undefined;
+    export let label: string = undefined;
     export let id: string;
+    export let name: string = id;
+    export let helper: string = undefined;
     export let value = '';
+    export let placeholder = '';
     export let required = false;
-    export let min: string | number | undefined = undefined;
-    export let max: string | number | undefined = undefined;
+    export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
-    export let step: number | 'any' = 60;
+    export let step: number | 'any' = 0.001;
+    export let min: string = undefined;
+    export let max: string = undefined;
 
-    let element: HTMLInputElement;
     let error: string;
-
-    onMount(() => {
-        if (element && autofocus) {
-            element.focus();
-        }
-    });
 
     function handleInvalid(event: Event) {
         event.preventDefault();
 
-        if (element.validity.valueMissing) {
+        if (event.currentTarget.validity.valueMissing) {
             error = 'This field is required';
             return;
         }
 
-        error = element.validationMessage;
+        error = event.currentTarget.validationMessage;
     }
 
     $: if (value) {
@@ -41,30 +35,27 @@
     }
 </script>
 
-<Label {required} {optionalText} hide={!showLabel} for={id}>
+<Input.DateTime
+    {id}
+    {name}
+    {placeholder}
+    {disabled}
+    {required}
     {label}
-</Label>
-
-<div class="input-text-wrapper" style="--amount-of-buttons:1; --button-size: 1rem">
-    <input
-        {id}
-        {disabled}
-        {readonly}
-        {required}
-        {min}
-        {max}
-        {step}
-        autocomplete={autocomplete ? 'on' : 'off'}
-        type="time"
-        class="input-text"
-        style={disabled ? '' : 'cursor: pointer;'}
-        bind:value
-        bind:this={element}
-        on:invalid={handleInvalid}
-        on:click={function () {
-            this.showPicker();
-        }} />
-</div>
-{#if error}
-    <Helper type="warning">{error}</Helper>
-{/if}
+    {step}
+    {nullable}
+    {readonly}
+    {min}
+    {max}
+    type="time"
+    autofocus={autofocus || undefined}
+    autocomplete={autocomplete ? 'on' : 'off'}
+    helper={error || helper}
+    state={error ? 'error' : 'default'}
+    on:invalid={handleInvalid}
+    on:input
+    bind:value>
+    <slot name="start" slot="start" />
+    <slot name="info" slot="info" />
+    <slot name="end" slot="end" />
+</Input.DateTime>

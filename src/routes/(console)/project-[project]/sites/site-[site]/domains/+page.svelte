@@ -25,34 +25,54 @@
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
-    import { queries } from '$lib/components/filters';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { RuleType } from '$lib/stores/sdk';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import CreateAppwriteDomainModal from './createAppwriteDomainModal.svelte';
 
     export let data;
 
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Models.ProxyRule = null;
+    let showAppwriteDomainModal = false;
 
     $: console.log(data.domains);
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search sites" />
-        <Button
-            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
-            <Icon icon={IconPlus} size="s" />
-            Add domain
-        </Button>
+        <SearchQuery search={data.search} placeholder="Search domain" />
+        <Popover padding="none" let:toggle placement="bottom-end">
+            <Button
+                on:click={(event) => {
+                    toggle(event);
+                    trackEvent(Click.DomainCreateClick, {
+                        source: 'sites_domain_overview'
+                    });
+                }}>
+                <Icon icon={IconPlus} size="s" />
+                Add domain
+            </Button>
+            <svelte:fragment slot="tooltip">
+                <ActionMenu.Root>
+                    <ActionMenu.Item.Anchor
+                        href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
+                        Custom domain
+                    </ActionMenu.Item.Anchor>
+                    <ActionMenu.Item.Button on:click={() => (showAppwriteDomainModal = true)}>
+                        Appwrite domain
+                    </ActionMenu.Item.Button>
+                </ActionMenu.Root>
+            </svelte:fragment>
+        </Popover>
     </Layout.Stack>
 
     {#if data.domains.total}
         <Table.Root>
             <svelte:fragment slot="header">
-                <Table.Header.Cell>Domain</Table.Header.Cell>
+                <Table.Header.Cell width="200px">Domain</Table.Header.Cell>
                 <Table.Header.Cell>Redirect to</Table.Header.Cell>
                 <Table.Header.Cell>Production branch</Table.Header.Cell>
                 <Table.Header.Cell />
@@ -60,11 +80,7 @@
             {#each data.domains.rules as domain}
                 <Table.Row>
                     <Table.Cell>
-                        <Link
-                            external
-                            href={`${$protocol}${domain.domain}`}
-                            size="s"
-                            variant="quiet">
+                        <Link external href={`${$protocol}${domain.domain}`} variant="quiet">
                             <Layout.Stack direction="row" alignItems="center" gap="xs">
                                 {domain.domain}
                                 <Icon icon={IconExternalLink} size="s" />
@@ -114,6 +130,9 @@
                                                 selectedDomain = domain;
                                                 showDelete = true;
                                                 toggle(e);
+                                                trackEvent(Click.DomainDeleteClick, {
+                                                    source: 'sites_domain_overview'
+                                                });
                                             }}>
                                             Delete
                                         </ActionMenu.Item.Button>
@@ -131,15 +150,14 @@
             limit={data.limit}
             offset={data.offset}
             total={data.domains.total} />
-    {:else if data?.query}
-        <EmptySearch hidePages bind:search={data.search} target="domains">
+    {:else if data?.search}
+        <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
             <svelte:fragment slot="actions">
                 <Button
                     secondary
                     on:click={() => {
-                        queries.clearAll();
-                        queries.apply();
-                    }}>Clear filters</Button>
+                        data.search = '';
+                    }}>Clear search</Button>
             </svelte:fragment>
         </EmptySearch>
     {:else}
@@ -148,8 +166,8 @@
                 src={$app.themeInUse === 'dark'
                     ? `${base}/images/domains/empty-domain-dark.svg`
                     : `${base}/images/domains/empty-domain-light.svg`}
-                title="Add your first domain"
-                description="Connect a domain you own to get your project up and running.">
+                title="Use a custom domain for your site"
+                description="Give your site a unique identity and make it easier to find by by assigning it a custom domain.">
                 <svelte:fragment slot="actions">
                     <Button
                         external
@@ -172,9 +190,13 @@
 </Container>
 
 {#if showDelete}
-    <DeleteDomainModal show={showDelete} {selectedDomain} />
+    <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal show={showRetry} {selectedDomain} />
+    <RetryDomainModal bind:show={showRetry} {selectedDomain} />
+{/if}
+
+{#if showAppwriteDomainModal}
+    <CreateAppwriteDomainModal bind:show={showAppwriteDomainModal} />
 {/if}

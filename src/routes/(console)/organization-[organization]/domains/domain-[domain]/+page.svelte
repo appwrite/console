@@ -8,7 +8,8 @@
         InlineCode,
         Layout,
         Button as PinkButton,
-        Popover
+        Popover,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
     import DomainMetrics from './domainMetrics.svelte';
     import { base } from '$app/paths';
@@ -21,41 +22,47 @@
     import CreateRecordModal from './createRecordModal.svelte';
     import Table from './table.svelte';
     import AddPresetModal from './addPresetModal.svelte';
+    import ImportRecordModal from './importRecordModal.svelte';
 
     export let data;
 
     let showCreate = false;
     let showPresetModal = false;
+    let showImportModal = false;
     let selectedPreset = '';
 
     const presets = ['Zoho', 'Mailgun', 'Outlook', 'Proton Mail', 'iCloud', 'Google Workspace'];
 </script>
 
 <Container>
-    <Layout.Stack gap="xxl">
+    <Layout.Stack gap="xxxl">
         <DomainMetrics domain={data.domain} />
 
         <Layout.Stack gap="l">
             {#if data.recordList.total}
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <Layout.Stack direction="row" gap="s" inline>
-                        <Button secondary>
+                        <Button secondary on:click={() => (showImportModal = true)}>
                             <Icon icon={IconUpload} size="s" slot="start" />
                             Import zone file
                         </Button>
-                        <PinkButton.Button variant="secondary" icon>
-                            <Icon icon={IconDownload} size="s" />
-                        </PinkButton.Button>
+                        <Tooltip>
+                            <PinkButton.Button variant="secondary" icon>
+                                <Icon icon={IconDownload} size="s" />
+                            </PinkButton.Button>
+                            <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
+                        </Tooltip>
                     </Layout.Stack>
                     <Layout.Stack direction="row" gap="s" inline>
                         <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
-                        <Popover let:toggle>
+                        <Popover let:toggle padding="none">
                             <Button secondary on:click={toggle}>Add preset</Button>
-                            <svelte:fragment slot="tooltip">
+                            <svelte:fragment slot="tooltip" let:toggle>
                                 <ActionMenu.Root>
                                     {#each presets as preset}
                                         <ActionMenu.Item.Button
-                                            on:click={() => {
+                                            on:click={(e) => {
+                                                toggle(e);
                                                 selectedPreset = preset;
                                                 showPresetModal = true;
                                             }}>{preset}</ActionMenu.Item.Button>
@@ -107,4 +114,8 @@
 
 {#if showPresetModal}
     <AddPresetModal bind:show={showPresetModal} {selectedPreset} />
+{/if}
+
+{#if showImportModal}
+    <ImportRecordModal bind:show={showImportModal} />
 {/if}

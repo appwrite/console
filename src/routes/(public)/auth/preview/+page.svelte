@@ -28,10 +28,12 @@
     <title>Preview - Appwrite</title>
 </svelte:head>
 
-<Layout.Stack alignItems="center" justifyContent="center">
-    <Layout.Stack direction="row" alignItems="center" justifyContent="center">
-        <Spinner size="l" />
+<Layout.Stack alignItems="center" justifyContent="center" style="max-width: 400px">
+    <Layout.Stack direction="row" alignItems="center" justifyContent="center" gap="s">
+        <Spinner size="s" />
         <Typography.Text>Authenticating...</Typography.Text>
     </Layout.Stack>
-    <Typography.Title>Please wait while we authenticate you</Typography.Title>
+    <Typography.Title size="xl" align="center">
+        Please wait while we verify your access
+    </Typography.Title>
 </Layout.Stack>

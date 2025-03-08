@@ -4,5 +4,13 @@
 </script>
 
 {#if $uploader?.isOpen}
-    <Upload.Box files={$uploader.files} on:close={() => uploader.close()} />
+    <Upload.Box
+        files={$uploader.files.map((file) => {
+            return {
+                name: file.name,
+                size: file.size,
+                status: file.status
+            };
+        })}
+        on:close={() => uploader.close()} />
 {/if}

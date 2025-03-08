@@ -14,9 +14,10 @@
               } plan`;
     export let disabled: boolean;
     export let buttonText: string;
-    export let buttonMethod: () => void | Promise<void>;
+    export let buttonMethod: () => void | Promise<void> = () => {};
     export let buttonHref: string = null;
     export let buttonEvent: string = buttonText?.toLocaleLowerCase();
+    export let buttonEventData: Record<string, unknown> = {};
     export let icon = 'plus';
     export let showIcon = true;
     export let buttonType: 'primary' | 'secondary' | 'text' = 'primary';
@@ -29,6 +30,7 @@
         secondary={buttonType === 'secondary'}
         on:click={buttonMethod}
         event={buttonEvent}
+        eventData={buttonEventData}
         {disabled}
         href={buttonHref}>
         {#if showIcon}

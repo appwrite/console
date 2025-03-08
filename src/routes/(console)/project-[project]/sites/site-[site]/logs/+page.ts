@@ -25,6 +25,7 @@ export const load = async ({ params, depends, url, route, parent }) => {
         logs: await sdk.forProject.sites.listLogs(
             params.site,
             [
+                // Query.search('requestPath', search),
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),

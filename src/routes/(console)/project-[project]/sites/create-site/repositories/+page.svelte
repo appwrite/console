@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics.js';
+    import { Click, trackEvent } from '$lib/actions/analytics.js';
     import Card from '$lib/components/card.svelte';
     import { Repositories } from '$lib/components/git/index.js';
     import Button from '$lib/elements/forms/button.svelte';
@@ -16,7 +16,7 @@
     let selectedRepository: string = null;
 
     function onConnect(e: CustomEvent<Models.ProviderRepository>) {
-        trackEvent('click_connect_repository', {
+        trackEvent(Click.ConnectRepositoryClick, {
             from: 'cover'
         });
         repository.set(e.detail);

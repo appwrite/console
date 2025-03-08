@@ -19,7 +19,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { ID, OAuthProvider } from '@appwrite.io/console';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import BGDark from './bg_dark.jpg';
     import BGLight from './bg_light.jpg';
@@ -126,90 +126,111 @@
     show
     hideFooter={state !== 'authenticated'}
     {error}>
+    <span slot="description">
+        {#if state === 'authenticated'}
+            Request access to view this preview. You'll gain access once your request is approved.
+        {/if}
+    </span>
     <Form onSubmit={handleSubmit}>
-        <Layout.Stack gap="l">
+        <Layout.Stack gap="xxl">
             {#if state === 'login'}
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Email"
-                    autofocus
-                    required
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Password"
-                    required
-                    bind:value={pass} />
-                <Button size="m" fullWidth submit>Sign in</Button>
-                {#if isCloud}
+                <Layout.Stack gap="l">
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder="Enter email"
+                        autofocus
+                        required
+                        bind:value={mail} />
+                    <InputPassword
+                        id="password"
+                        label="Password"
+                        placeholder="Enter password"
+                        required
+                        bind:value={pass} />
+                </Layout.Stack>
+
+                <Layout.Stack gap="l">
+                    <Button size="m" fullWidth submit>Sign in</Button>
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button size="m" secondary fullWidth on:click={onGithubAuth}>
-                        <span class="icon-github" aria-hidden="true" />
-                        <span class="text">Sign in with GitHub</span>
+                    {#if isCloud}
+                        <Button size="m" secondary fullWidth on:click={onGithubAuth}>
+                            <span class="icon-github" aria-hidden="true" />
+                            <span class="text">Sign in with GitHub</span>
+                        </Button>
+                    {/if}
+                    <Button size="m" text fullWidth on:click={() => (state = 'register')}>
+                        Sign up instead
                     </Button>
-                {/if}
-                <Button size="m" text fullWidth on:click={() => (state = 'register')}>
-                    Sign up instead
-                </Button>
+                </Layout.Stack>
             {:else if state === 'register'}
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Your name"
-                    autofocus
-                    required
-                    bind:value={name} />
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Email"
-                    required
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Password"
-                    required
-                    bind:value={pass} />
-                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                    By registering, you agree that you have read, understand, and acknowledge our <a
-                        class="link"
-                        href="https://appwrite.io/privacy"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Privacy Policy</a>
-                    and accept our
-                    <a
-                        class="link"
-                        href="https://appwrite.io/terms"
-                        target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</a
-                    >.</InputChoice>
-                <Button size="m" fullWidth submit>Sign up</Button>
-                {#if isCloud}
+                <Layout.Stack gap="l">
+                    <InputText
+                        id="name"
+                        label="Name"
+                        placeholder="Enter name"
+                        autofocus
+                        required
+                        bind:value={name} />
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder="Enter email"
+                        required
+                        bind:value={mail} />
+                    <InputPassword
+                        id="password"
+                        label="Password"
+                        placeholder="Enter password"
+                        required
+                        bind:value={pass} />
+
+                    <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                        By registering, you agree that you have read, understand, and acknowledge
+                        our <a
+                            class="link"
+                            href="https://appwrite.io/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Privacy Policy</a>
+                        and accept our
+                        <a
+                            class="link"
+                            href="https://appwrite.io/terms"
+                            target="_blank"
+                            rel="noopener noreferrer">General Terms of Use</a
+                        >.</InputChoice>
+                </Layout.Stack>
+
+                <Layout.Stack gap="l">
+                    <Button size="m" fullWidth submit>Sign up</Button>
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button size="m" secondary fullWidth on:click={onGithubAuth}>
-                        <span class="icon-github" aria-hidden="true" />
-                        <span class="text">Continue with GitHub</span>
+                    {#if isCloud}
+                        <Button size="m" secondary fullWidth on:click={onGithubAuth}>
+                            <span class="icon-github" aria-hidden="true" />
+                            <span class="text">Continue with GitHub</span>
+                        </Button>
+                    {/if}
+                    <Button size="m" text fullWidth on:click={() => (state = 'login')}>
+                        Sign in instead
                     </Button>
-                {/if}
-                <Button size="m" text fullWidth on:click={() => (state = 'login')}>
-                    Sign in instead
-                </Button>
+                </Layout.Stack>
             {:else if state === 'authenticated'}
-                <Card isTile>
+                <Card isTile variant="secondary" radius="s" padding="s">
                     <Layout.Stack gap="xxs">
-                        <p>
-                            You're signed in as <b>{data.account.email}</b>
-                        </p>
+                        <Layout.Stack direction="row" gap="xxs">
+                            <Typography.Text variant="m-400">You're signed in as</Typography.Text>
+
+                            <Typography.Text variant="m-500">
+                                {data.account.email}
+                            </Typography.Text>
+                        </Layout.Stack>
                         <Link
-                            size="s"
+                            variant="muted"
                             on:click={() => {
-                                logout();
+                                logout(false);
                                 state = 'login';
-                            }}>Swith account</Link>
+                            }}>Switch account</Link>
                     </Layout.Stack>
                 </Card>
             {/if}

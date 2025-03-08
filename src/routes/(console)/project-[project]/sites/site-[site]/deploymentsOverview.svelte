@@ -4,10 +4,8 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { type Models } from '@appwrite.io/console';
-    import DeploymentCreatedBy from '../(components)/deploymentCreatedBy.svelte';
-    import DeploymentSource from '../(components)/deploymentSource.svelte';
+    import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
     import Id from '$lib/components/id.svelte';
-
     import RedeployModal from '../redeployModal.svelte';
     import { Card } from '$lib/components';
     import ActivateDeploymentModal from '../activateDeploymentModal.svelte';

@@ -11,7 +11,7 @@
     import CreateMember from '../createMembership.svelte';
     import DeleteMembership from '../deleteMembership.svelte';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { Table, Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -66,7 +66,7 @@
                             on:click|preventDefault={() => {
                                 selectedMembership = membership;
                                 showDelete = true;
-                                trackEvent('click_delete_membership');
+                                trackEvent(Click.MembershipDeleteClick);
                             }}>
                             <span class="icon-trash" aria-hidden="true" />
                         </button>

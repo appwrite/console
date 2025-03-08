@@ -19,9 +19,8 @@
             label: 'Create file',
             async callback() {
                 if (!$page.url.pathname.endsWith($bucket.$id)) {
-                    goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}`);
+                    goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/create`);
                 }
-                showCreateFile();
             },
             keys: $page.url.pathname.endsWith($bucket.$id) ? ['c'] : ['c', 'f'],
             group: 'files',

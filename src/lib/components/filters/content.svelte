@@ -122,9 +122,7 @@
                             options={column?.elements?.map((e) => ({
                                 label: e?.label ?? e,
                                 value: e?.value ?? e
-                            }))}
-                            label="Value"
-                            showLabel={false} />
+                            }))} />
                     {:else if column.type === 'integer' || column.type === 'double'}
                         <InputNumber id="value" bind:value placeholder="Enter value" />
                     {:else if column.type === 'boolean'}
@@ -139,12 +137,7 @@
                             bind:value />
                     {:else if column.type === 'datetime'}
                         {#key value}
-                            <InputDateTime
-                                id="value"
-                                bind:value
-                                label="value"
-                                showLabel={false}
-                                step={60} />
+                            <InputDateTime id="value" bind:value step={60} />
                         {/key}
                     {:else}
                         <InputText id="value" bind:value placeholder="Enter value" />
@@ -166,17 +159,3 @@
         </ul>
     {/if}
 </div>
-
-<style lang="scss">
-    .selects {
-        :global(> *) {
-            flex: 1;
-        }
-    }
-
-    .tags {
-        :global(b) {
-            font-weight: bold;
-        }
-    }
-</style>

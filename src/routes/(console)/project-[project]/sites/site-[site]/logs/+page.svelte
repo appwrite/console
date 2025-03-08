@@ -65,7 +65,8 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search by ID"></SearchQuery>
+        <SearchQuery search={data.search} placeholder="Search by ID" disabled={!data.logs.total}
+        ></SearchQuery>
         {#if data.logs.total}
             <ViewSelector view={View.Table} {columns} hideView />
         {/if}
@@ -93,6 +94,7 @@
     {:else}
         <Card.Base padding="none">
             <Empty
+                type="secondary"
                 title="There are no logs to display at the moment"
                 description="Logs are automatically generated based on your site's activity.">
                 <svelte:fragment slot="actions">

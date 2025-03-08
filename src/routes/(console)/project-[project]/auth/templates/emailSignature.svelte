@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, EmptyCardImageCloud } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
     import { app } from '$lib/stores/app';
@@ -60,7 +60,7 @@
                     fullWidth
                     href={$upgradeURL}
                     on:click={() => {
-                        trackEvent('click_organization_upgrade', {
+                        trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source
                         });

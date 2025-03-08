@@ -54,6 +54,7 @@
                 type: 'success'
             });
             trackEvent(Submit.FunctionCreate, {
+                runtime: $createFunction.runtime,
                 customId: !!$createFunction.id
             });
             wizard.hide();

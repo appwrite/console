@@ -10,10 +10,10 @@
             }
             await sdk.forConsole.account.updateMfaChallenge(challenge.$id, code);
             await invalidate(Dependencies.ACCOUNT);
-            trackEvent(Submit.AccountCreate);
+            trackEvent(Submit.AccountLogin, { mfa_used: true });
         } catch (error) {
             inputDigitFields?.clearInputsAndRefocus();
-            trackError(error, Submit.AccountCreate);
+            trackError(error, Submit.AccountLogin);
             throw error;
         }
     }
@@ -33,7 +33,6 @@
 
     export let factors: Models.MfaFactors & { recoveryCode: boolean };
     /** If true, the form will be submitted automatically when the code is entered. */
-    export let autoSubmit: boolean = true;
     export let showVerifyButton: boolean = true;
     export let disabled: boolean = false;
     export let challenge: Models.MfaChallenge;

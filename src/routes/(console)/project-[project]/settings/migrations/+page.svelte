@@ -28,6 +28,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Link, Status, Table } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
     let migration: Models.Migration = null;
@@ -236,7 +237,12 @@
                         </Avatar>
                     </Layout.Stack>
                     <div>
-                        <Button secondary on:click={() => (showExport = true)}>Export data</Button>
+                        <Button
+                            secondary
+                            on:click={() => {
+                                showExport = true;
+                                trackEvent(Click.SettingsStartMigrationClick);
+                            }}>Export data</Button>
                     </div>
                 </Layout.Stack>
             </svelte:fragment>

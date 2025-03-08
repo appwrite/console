@@ -1,7 +1,8 @@
 <script lang="ts">
-    import Modal from '$lib/components/modal.svelte';
+    import { Confirm } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { InlineCode } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let showPromote = false;
@@ -11,23 +12,25 @@
     const dispatch = createEventDispatcher();
 </script>
 
-<Modal
-    bind:show={showPromote}
+<Confirm
+    title={isConflicting ? 'Overwrite global variable' : 'Promote variable'}
+    bind:open={showPromote}
     onSubmit={() => {
         dispatch('promoted');
     }}>
-    <svelte:fragment slot="title">
-        {isConflicting ? 'Overwrite global variable' : 'Promote variable'}
-    </svelte:fragment>
+    <svelte:fragment slot="title"></svelte:fragment>
     {#if isConflicting}
         <p data-private>
             Promoting this variable will overwrite your global variable with the same name. Are you
-            sure you want to promote <span class="inline-code">{selectedVar.key}</span>?
+            sure you want to promote <InlineCode code={selectedVar.key}
+                >{selectedVar.key}</InlineCode
+            >?
         </p>
     {:else}
         <p data-private>
-            Are you sure you want to promote <span class="inline-code">{selectedVar.key}</span>?
-            This will convert it to a global variable that can be accessed by other functions in
+            Are you sure you want to promote <InlineCode code={selectedVar.key}
+                >{selectedVar.key}</InlineCode
+            >? This will convert it to a global variable that can be accessed by other resources in
             your project.
         </p>
     {/if}
@@ -35,4 +38,4 @@
         <Button secondary on:click={() => (showPromote = false)}>Cancel</Button>
         <Button submit>{isConflicting ? 'Promote anyway' : 'Promote'}</Button>
     </svelte:fragment>
-</Modal>
+</Confirm>

@@ -17,6 +17,7 @@
     import Table from './table.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -45,7 +46,8 @@
             <Filters
                 query={data.query}
                 {columns}
-                disabled={!(hasAttributes && hasValidAttributes)} />
+                disabled={!(hasAttributes && hasValidAttributes)}
+                analyticsSource="database_documents" />
             <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                 <ViewSelector view={data.view} {columns} hideView allowNoColumns />
                 <Button
@@ -80,6 +82,9 @@
                                 on:click={() => {
                                     queries.clearAll();
                                     queries.apply();
+                                    trackEvent(Submit.FilterClear, {
+                                        source: 'database_documents'
+                                    });
                                 }}>
                                 Clear filters
                             </Button>

@@ -32,6 +32,7 @@
     import CreateVariableModal from './createVariableModal.svelte';
     import DeleteVariableModal from './deleteVariableModal.svelte';
     import UpdateVariableModal from './updateVariableModal.svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
@@ -134,18 +135,36 @@
                                 <Button
                                     secondary
                                     size="s"
-                                    on:mousedown={() => (showEditorModal = true)}>
+                                    on:mousedown={() => {
+                                        showEditorModal = true;
+                                        trackEvent(Click.VariablesUpdateClick, {
+                                            source: 'site_configuration'
+                                        });
+                                    }}>
                                     <Icon slot="start" icon={IconCode} /> Editor
                                 </Button>
                                 <Button
                                     secondary
                                     size="s"
-                                    on:mousedown={() => (showImportModal = true)}>
+                                    on:mousedown={() => {
+                                        showImportModal = true;
+                                        trackEvent(Click.VariablesImportClick, {
+                                            source: 'site_configuration'
+                                        });
+                                    }}>
                                     <Icon slot="start" icon={IconUpload} /> Import .env
                                 </Button>
                             </Layout.Stack>
                             {#if variables?.length}
-                                <Button secondary size="s" on:mousedown={() => (showCreate = true)}>
+                                <Button
+                                    secondary
+                                    size="s"
+                                    on:mousedown={() => {
+                                        showCreate = true;
+                                        trackEvent(Click.VariablesCreateClick, {
+                                            source: 'site_settings'
+                                        });
+                                    }}>
                                     <Icon slot="start" icon={IconPlus} /> Create variable
                                 </Button>
                             {/if}

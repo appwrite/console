@@ -33,7 +33,7 @@
             <SearchQuery search={data.search} placeholder="Search providers" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Filters query={data.query} {columns} />
+            <Filters query={data.query} {columns} analyticsSource="messaging_providers" />
             <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
             {#if $canWriteProviders}
                 <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />

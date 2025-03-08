@@ -5,8 +5,15 @@ import { RuleType } from '$lib/stores/sdk';
 export const load = async ({ parent }) => {
     const { site } = await parent();
 
+    const [domains, installations] = await Promise.all([
+        sdk.forProject.proxy.listRules([Query.equal('type', RuleType.DEPLOYMENT)]),
+        sdk.forProject.vcs.listInstallations()
+    ]);
+
     return {
-        domains: await sdk.forProject.proxy.listRules([Query.equal('type', RuleType.DEPLOYMENT)]),
+        site,
+        domains,
+        installations,
         branches:
             site?.installationId && site?.providerRepositoryId
                 ? await sdk.forProject.vcs.listRepositoryBranches(

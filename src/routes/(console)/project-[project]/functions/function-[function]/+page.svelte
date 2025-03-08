@@ -3,14 +3,12 @@
     import { page } from '$app/stores';
     import { Empty, PaginationWithLimit, Alert, ViewSelector, EmptySearch } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { deploymentList, func } from './store';
+    import { columns, deploymentList, func } from './store';
     import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import Create from './create.svelte';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
-    import { writable } from 'svelte/store';
-    import type { Column } from '$lib/helpers/types';
     import Table from './table.svelte';
     import { Filters } from '$lib/components/filters';
     import { queries, tags } from '$lib/components/filters/store';
@@ -21,7 +19,9 @@
     import { Pill } from '$lib/elements';
     import { onMount } from 'svelte';
     import { canWriteFunctions } from '$lib/stores/roles';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import { IconFilterLine } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -29,94 +29,6 @@
     let showAlert = true;
 
     let selectedDeployment: Models.Deployment = null;
-
-    const columns = writable<Column[]>([
-        { id: '$id', title: 'Deployment ID', type: 'string', show: true, width: 150 },
-        {
-            id: 'status',
-            title: 'Status',
-            type: 'enum',
-            show: true,
-            width: 110,
-            array: true,
-            format: 'enum',
-            elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed'],
-            filter: false
-        },
-        {
-            id: 'type',
-            title: 'Source',
-            type: 'string',
-            show: true,
-            width: 90,
-            array: true,
-            format: 'enum',
-            elements: [
-                { value: 'manual', label: 'Manual' },
-                { value: 'cli', label: 'CLI' },
-                { value: 'vcs', label: 'Git' }
-            ]
-        },
-        {
-            id: '$updatedAt',
-            title: 'Updated',
-            type: 'datetime',
-            show: true,
-            width: 150,
-            format: 'datetime'
-        },
-        {
-            id: 'buildTime',
-            title: 'Build time',
-            type: 'integer',
-            show: true,
-            width: 90,
-            elements: [
-                {
-                    value: 15,
-                    label: 'more than 15 seconds'
-                },
-                {
-                    value: 60,
-                    label: 'more than 1 minute'
-                },
-                {
-                    value: 5 * 60,
-                    label: 'more than 5 minutes'
-                }
-            ],
-            filter: false
-        },
-        {
-            id: 'size',
-            title: 'Source size',
-            type: 'integer',
-            show: true,
-            width: 140,
-            elements: [
-                {
-                    value: 2 * 1000 * 1000,
-                    label: 'more than 2MB'
-                },
-                {
-                    value: 10 * 1000 * 1000,
-                    label: 'more than 10MB'
-                },
-                {
-                    value: 50 * 1000 * 1000,
-                    label: 'more than 50MB'
-                }
-            ]
-        },
-        {
-            id: 'buildSize',
-            title: 'Build size',
-            type: 'integer',
-            show: false,
-            filter: false,
-            width: 80
-        }
-    ]);
 
     let showMobileFilters = false;
 
@@ -137,8 +49,9 @@
     {#if !data?.deploymentList?.total && !data?.query}
         <Empty single target="deployment">
             <div class="u-text-center">
-                <Typography.Title size="s"
-                    >Create your first deployment to get started.</Typography.Title>
+                <Typography.Title size="s">
+                    Create your first deployment to get started.
+                </Typography.Title>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
                     Learn more about deployments in our Documentation.
                 </p>
@@ -156,9 +69,7 @@
     {:else}
         {@const activeDeployment = data.activeDeployment}
 
-        <div class="common-section">
-            <Typography.Title size="s">Active</Typography.Title>
-        </div>
+        <Typography.Title size="s">Active</Typography.Title>
         {#if data?.activeDeployment && !$func.live && showAlert}
             <Alert
                 type="warning"
@@ -186,6 +97,7 @@
                                 on:click={() => {
                                     selectedDeployment = activeDeployment;
                                     showRedeploy = true;
+                                    trackEvent(Click.FunctionsRedeployClick);
                                 }}>
                                 Redeploy
                             </Button>
@@ -219,7 +131,7 @@
                 </div>
             </Empty>
         {:else}
-            <Empty noMedia single>
+            <Empty single>
                 <Create secondary round>
                     <i class="icon-plus" />
                 </Create>
@@ -238,69 +150,78 @@
                 </div>
             </Empty>
         {/if}
-        <div class="u-margin-block-start-48">
-            <Typography.Title size="s">All deployments</Typography.Title>
-            <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
-                <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
-                    <QuickFilters {columns} />
-                    <Filters query={data.query} {columns} let:disabled let:toggle singleCondition>
-                        <div class="u-flex u-gap-4">
-                            <Button
-                                text
-                                on:click={toggle}
-                                {disabled}
-                                ariaLabel="open filter"
-                                noMargin={!$tags?.length}>
-                                <span class="icon-filter-line" />
-                                <span class="text">More filters</span>
-                            </Button>
-                            {#if $tags?.length}
-                                <div
-                                    style="flex-basis:1px; background-color:hsl(var(--border)); width: 1px">
-                                </div>
-                                <Button text on:click={clearAll}>Clear all</Button>
-                            {/if}
-                        </div>
-                    </Filters>
-                </div>
-                <div class="u-flex u-gap-16">
-                    <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
-                </div>
+        <Typography.Title size="s">All deployments</Typography.Title>
+        <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
+            <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
+                <QuickFilters {columns} />
+                <Filters
+                    query={data.query}
+                    {columns}
+                    let:disabled
+                    let:toggle
+                    singleCondition
+                    analyticsSource="function_filters">
+                    <div class="u-flex u-gap-4">
+                        <Button
+                            text
+                            on:click={toggle}
+                            {disabled}
+                            ariaLabel="open filter"
+                            compact={!$tags?.length}>
+                            <Icon icon={IconFilterLine} size="s" slot="start" />
+                            <span class="text">More filters</span>
+                        </Button>
+                        {#if $tags?.length}
+                            <div
+                                style="flex-basis:1px; background-color:hsl(var(--border)); width: 1px">
+                            </div>
+                            <Button text on:click={clearAll}>Clear all</Button>
+                        {/if}
+                    </div>
+                </Filters>
             </div>
-            <div class="is-only-mobile">
-                <div class="u-flex u-main-space-between u-margin-block-start-16">
-                    <Button
-                        text
-                        on:click={() => (showMobileFilters = !showMobileFilters)}
-                        ariaLabel="toggle filters"
-                        noMargin>
-                        <span class="icon-filter-line" />
-                        <span class="text">Filters</span>
-                    </Button>
+            <div class="u-flex u-gap-16">
+                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+            </div>
+        </div>
+        <div class="is-only-mobile">
+            <div class="u-flex u-main-space-between u-margin-block-start-16">
+                <Button
+                    text
+                    on:click={() => (showMobileFilters = !showMobileFilters)}
+                    ariaLabel="toggle filters"
+                    compact>
+                    <Icon icon={IconFilterLine} size="s" slot="start" />
 
-                    <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
-                </div>
-                <div
-                    class:u-hide={!showMobileFilters}
-                    class:u-flex={showMobileFilters}
-                    class=" u-gap-8 u-flex-wrap u-margin-block-start-16">
-                    <QuickFilters {columns} />
+                    <span class="text">Filters</span>
+                </Button>
 
-                    <Filters query={data.query} {columns} clearOnClick>
-                        <svelte:fragment slot="mobile" let:disabled let:toggle>
-                            <Pill
-                                button
-                                on:click={toggle}
-                                {disabled}
-                                class="u-flex u-gap-4 u-cross-center"
-                                style="--p-tag-content-height: auto">
-                                <!-- <span class="icon-filter-line" /> -->
-                                <span class="text">More filters</span>
-                                <span class="icon-cheveron-down" />
-                            </Pill>
-                        </svelte:fragment>
-                    </Filters>
-                </div>
+                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+            </div>
+            <div
+                class:u-hide={!showMobileFilters}
+                class:u-flex={showMobileFilters}
+                class=" u-gap-8 u-flex-wrap u-margin-block-start-16">
+                <QuickFilters {columns} />
+
+                <Filters
+                    query={data.query}
+                    {columns}
+                    clearOnClick
+                    analyticsSource="function_filters">
+                    <svelte:fragment slot="mobile" let:disabled let:toggle>
+                        <Pill
+                            button
+                            on:click={toggle}
+                            {disabled}
+                            class="u-flex u-gap-4 u-cross-center"
+                            style="--p-tag-content-height: auto">
+                            <!-- <span class="icon-filter-line" /> -->
+                            <span class="text">More filters</span>
+                            <span class="icon-cheveron-down" />
+                        </Pill>
+                    </svelte:fragment>
+                </Filters>
             </div>
         </div>
         {#if $deploymentList.total}

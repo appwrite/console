@@ -22,7 +22,7 @@
     let verified = undefined;
 
     // TODO: split _APP_DOMAINS_NAMESERVERS?
-    let nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS ?? [
+    let nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',') ?? [
         'ns1.appwrite.io',
         'ns2.appwrite.io'
     ];
