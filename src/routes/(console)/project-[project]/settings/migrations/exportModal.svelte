@@ -1,15 +1,17 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Box, Modal } from '$lib/components';
-    import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
-    import { getFormData } from '$lib/helpers/form';
-    import { feedback } from '$lib/stores/feedback';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
-    import { Alert } from '@appwrite.io/pink-svelte';
+    import { Box, Modal } from '$lib/components';
+    import { getFormData } from '$lib/helpers/form';
+    import { feedback } from '$lib/stores/feedback';
+    import { Alert, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
 
     export let show = false;
-    let submitted = false;
+
+    let endpointUrl = '';
+    let redirecting = false;
 
     const isValidEndpoint = (endpoint: string) => {
         try {
@@ -46,7 +48,7 @@
 
     const onSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
-        submitted = true;
+        redirecting = true;
 
         const formData = getFormData<{ endpoint: string; feedback: string }>(e);
 
@@ -102,20 +104,9 @@
         const dest = `${removeTrailingSlash(endpoint)}/?migrate=${encodeURIComponent(
             JSON.stringify(migrationData)
         )}`;
+
+        redirecting = false;
         window.location.href = dest;
-    };
-
-    const validateInput = (e: Event) => {
-        if (!submitted) return;
-        const input = e.target as HTMLInputElement;
-        const value = input.value;
-
-        if (!isValidEndpoint(value)) {
-            input.setCustomValidity('Please enter a valid endpoint');
-        } else {
-            input.setCustomValidity('');
-        }
-        input.reportValidity();
     };
 </script>
 
@@ -128,32 +119,43 @@
         </Alert.Inline>
 
         <InputText
-            label="Endpoint self-hosted instance"
             required
             id="endpoint"
-            placeholder="https://[YOUR_APPWRITE_HOSTNAME]"
             autofocus
-            on:input={validateInput} />
+            bind:value={endpointUrl}
+            label="Endpoint self-hosted instance"
+            placeholder="https://<YOUR_APPWRITE_HOSTNAME>" />
 
         <Box>
-            <p class="u-bold">
-                Share your feedback: why our self-hosted solution works better for you
-            </p>
-            <p class="u-margin-block-start-8">
+            <Layout.Stack gap="xl">
+                <Typography.Text variant="m-600">
+                    Share your feedback: why our self-hosted solution works better for you
+                </Typography.Text>
+
                 We appreciate your continued support and we understand that our self-hosted solution
                 might better fit your needs. To help us improve our Cloud solution, please share why
                 it works better for you. Your feedback is important to us and we'll use it to make
                 our services better.
-            </p>
-            <div class="u-margin-block-start-24">
+
                 <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
-            </div>
+            </Layout.Stack>
         </Box>
     </FormList>
 
-    <div class="u-flex u-gap-16 u-cross-center" slot="footer">
-        <span> You will be redirected to your self-hosted instance </span>
+    <Layout.Stack
+        direction="row"
+        gap="l"
+        alignItems="center"
+        justifyContent="flex-end"
+        slot="footer">
+        You will be redirected to your self-hosted instance
 
-        <Button submit>Continue</Button>
-    </div>
+        <Button
+            submit
+            forceShowLoader
+            submissionLoader={redirecting}
+            disabled={!isValidEndpoint(endpointUrl)}>
+            Continue
+        </Button>
+    </Layout.Stack>
 </Modal>
