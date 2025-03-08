@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { FormList } from '$lib/elements/forms';
-    import { WizardStep } from '$lib/layout';
+    import { apiKey } from '../../store';
     import Scopes from '../scopes.svelte';
-    import { key } from './store';
+    import { WizardStep } from '$lib/layout';
+    import { FormList } from '$lib/elements/forms';
 </script>
 
 <WizardStep>
@@ -12,6 +12,6 @@
         the permissions you need to meet your project goals.
     </svelte:fragment>
     <FormList>
-        <Scopes bind:scopes={$key.scopes} />
+        <Scopes bind:scopes={$apiKey.scopes} />
     </FormList>
 </WizardStep>

@@ -27,6 +27,7 @@
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
+    import { createDevKey } from '$routes/(console)/project-[project]/overview/dev-keys/+page.svelte';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
@@ -67,6 +68,16 @@
                 createApiKey();
             },
             keys: ['c', 'k'],
+            group: 'integrations',
+            disabled: !$canWriteProjects
+        },
+        {
+            label: 'Create Dev Key',
+            icon: 'plus',
+            callback() {
+                createDevKey();
+            },
+            keys: ['c', 'd', 'k'],
             group: 'integrations',
             disabled: !$canWriteProjects
         }
@@ -227,6 +238,10 @@
                             href={`${path}/keys`}
                             selected={$page.url.pathname === `${path}/keys`}
                             event="keys">API keys</Tab>
+                        <Tab
+                            href={`${path}/dev-keys`}
+                            selected={$page.url.pathname === `${path}/dev-keys`}
+                            event="keys">Dev keys</Tab>
                     </ul>
                 </div>
 
