@@ -7,7 +7,7 @@
     import { formatNum } from '$lib/helpers/string';
     import type { Models } from '@appwrite.io/console';
     import { ResourcesFriendly } from '$lib/stores/migration';
-    import { Card, Layout, Typography, Code } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Typography, Code, Spinner, Tag } from '@appwrite.io/pink-svelte';
 
     export let migration: Models.Migration = null;
     export let show = false;
@@ -44,6 +44,7 @@
     };
 
     let tab = 'details' as 'details' | 'logs';
+    let logs = JSON.stringify(migration, null, 2);
 </script>
 
 <Modal
@@ -56,7 +57,7 @@
     </Tabs>
 
     {#if tab === 'logs'}
-        <Code code={JSON.stringify(migration, null, 2)} lang="json" hideHeader />
+        <Code code={logs} lang="json" hideHeader />
     {:else if tab === 'details'}
         <Card.Base variant="secondary" padding="s">
             <Layout.Stack>
@@ -94,14 +95,12 @@
             <div class="box">
                 {#each Object.keys(statusCounters) as entity}
                     {@const entityCounter = statusCounters[entity]}
-                    <div class="u-flex u-cross-center u-gap-16">
+                    <Layout.Stack direction="row" gap="l" alignItems="center" alignContent="center">
                         <div class="icon-wrapper">
                             {#if hasError(entityCounter)}
                                 <i class="icon-exclamation" />
                             {:else if isLoading(entityCounter)}
-                                <div class="u-flex">
-                                    <span class="loader" />
-                                </div>
+                                <Spinner size="s" />
                             {:else if hasSucceeded(entityCounter)}
                                 <i class="icon-check" />
                             {:else}
@@ -114,9 +113,10 @@
                                 >{total(Object.values(entityCounter)) > 1
                                     ? ResourcesFriendly[entity].plural
                                     : ResourcesFriendly[entity].singular}</span>
-                            <span class="inline-tag">{totalItems(entityCounter)}</span>
+
+                            <Tag size="xs" selected>{totalItems(entityCounter)}</Tag>
                         </div>
-                    </div>
+                    </Layout.Stack>
                 {/each}
             </div>
         {/if}
@@ -127,7 +127,7 @@
     .box {
         padding: 0;
 
-        > div {
+        > :global(div) {
             padding: 1.25rem;
 
             &:not(:last-child) {
@@ -142,10 +142,10 @@
         width: 1.5rem;
         height: 1.5rem;
 
-        > * {
-            position: absolute;
+        > :global(*) {
             top: 50%;
             left: 50%;
+            position: absolute;
 
             transform: translate(-50%, -50%);
         }
