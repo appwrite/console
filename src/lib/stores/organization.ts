@@ -1,8 +1,8 @@
 import { page } from '$app/stores';
-import { derived, writable } from 'svelte/store';
-import type { Models } from '@appwrite.io/console';
-import type { Tier } from './billing';
 import type { Plan } from '$lib/sdk/billing';
+import type { Models } from '@appwrite.io/console';
+import { derived, writable } from 'svelte/store';
+import type { Tier } from './billing';
 
 export type OrganizationError = {
     status: number;
@@ -32,11 +32,6 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingPlanDowngrade?: Tier;
     billingAggregationId: string;
     billingInvoiceId: string;
-};
-
-export type OrganizationList = {
-    teams: Organization[];
-    total: number;
 };
 
 export type BillingLimits = {

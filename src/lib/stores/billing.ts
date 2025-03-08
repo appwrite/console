@@ -12,18 +12,10 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
-import type {
-    AddressesList,
-    Aggregation,
-    Invoice,
-    InvoiceList,
-    PaymentList,
-    PaymentMethodData,
-    Plan,
-    PlansMap
-} from '$lib/sdk/billing';
+import type { AddressesList, Invoice, InvoiceList, Plan, PlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
+import type { Models } from '@appwrite.io/console';
 import { Query } from '@appwrite.io/console';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
@@ -58,7 +50,10 @@ export const roles = [
     }
 ];
 
-export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
+export const paymentMethods = derived(
+    page,
+    ($page) => $page.data.paymentMethods as Models.PaymentMethodList
+);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
 export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
 export const daysLeftInTrial = writable<number>(0);
@@ -414,12 +409,12 @@ export function checkForMarkedForDeletion(org: Organization) {
     }
 }
 
-export const paymentMissingMandate = writable<PaymentMethodData>(null);
+export const paymentMissingMandate = writable<Models.PaymentMethod>(null);
 
 export async function checkForMandate(org: Organization) {
     const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
     if (!paymentId) return;
-    const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentId);
+    const paymentMethod = await sdk.forConsole.account.getPaymentMethod(paymentId);
     if (paymentMethod?.mandateId === null && paymentMethod?.country.toLowerCase() === 'in') {
         headerAlert.add({
             id: 'paymentMandate',
@@ -433,7 +428,7 @@ export async function checkForMandate(org: Organization) {
 }
 
 export async function checkForMissingPaymentMethod() {
-    const orgs = await sdk.forConsole.billing.listOrganization([
+    const orgs = await sdk.forConsole.organizations.list([
         Query.notEqual('billingPlan', BillingPlan.FREE),
         Query.isNull('paymentMethodId'),
         Query.isNull('backupPaymentMethodId')
@@ -453,7 +448,7 @@ export async function checkForMissingPaymentMethod() {
 export async function checkForNewDevUpgradePro(org: Organization) {
     if (org?.billingPlan !== BillingPlan.FREE || !browser) return;
 
-    const orgs = await sdk.forConsole.billing.listOrganization([
+    const orgs = await sdk.forConsole.organizations.list([
         Query.notEqual('billingPlan', BillingPlan.FREE)
     ]);
     if (orgs?.total) return;
@@ -466,7 +461,7 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (isDismissed) return;
     // check if coupon already applied
     try {
-        await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
+        await sdk.forConsole.account.getCoupon(NEW_DEV_PRO_UPGRADE_COUPON);
     } catch (e) {
         return;
     }
@@ -488,7 +483,7 @@ export const billingURL = derived(
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(addon: Aggregation, plan: Plan) {
+export function calculateExcess(addon: Models.AggregationTeam, plan: Plan) {
     return {
         bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),

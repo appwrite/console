@@ -1,19 +1,19 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Alert, Modal, RadioBoxes } from '$lib/components';
-    import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
-    import { sdk } from '$lib/stores/sdk';
-    import { organization } from '$lib/stores/organization';
-    import { Dependencies } from '$lib/constants';
-    import { onMount } from 'svelte';
-    import type { AddressesList } from '$lib/sdk/billing';
-    import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Pill } from '$lib/elements';
     import { base } from '$app/paths';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Alert, Modal, RadioBoxes } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Pill } from '$lib/elements';
+    import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
 
     export let show = false;
-    let addresses: AddressesList;
+    let addresses: Models.BillingAddressList;
     let selectedAddress: string;
     let error: string;
     let country: string;
@@ -30,7 +30,7 @@
     ];
 
     onMount(async () => {
-        addresses = await sdk.forConsole.billing.listAddresses();
+        addresses = await sdk.forConsole.account.listBillingAddresses();
 
         const firstNonCurrentAddress = addresses?.billingAddresses?.find(
             (address) => address.$id !== $organization?.billingAddressId
@@ -58,7 +58,7 @@
             if (selectedAddress === $organization.billingAddressId) {
                 show = false;
             } else if (selectedAddress === null) {
-                const address = await sdk.forConsole.billing.createAddress(
+                const address = await sdk.forConsole.account.createBillingAddress(
                     country,
                     streetAddress,
                     city,

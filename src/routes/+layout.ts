@@ -1,16 +1,16 @@
+import { base } from '$app/paths';
+import { Dependencies } from '$lib/constants';
+import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+import { sdk } from '$lib/stores/sdk';
+import type { Account } from '$lib/stores/user';
+import { isCloud } from '$lib/system';
+import type { AppwriteException } from '@appwrite.io/console';
 import '@appwrite.io/pink';
 import '@appwrite.io/pink-icons';
-import 'tippy.js/dist/tippy.css';
-import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
-import { Dependencies } from '$lib/constants';
+import 'tippy.js/dist/tippy.css';
 import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
-import { base } from '$app/paths';
-import type { Account } from '$lib/stores/user';
-import type { AppwriteException } from '@appwrite.io/console';
-import { isCloud } from '$lib/system';
-import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
 export const ssr = false;
 
@@ -31,7 +31,7 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
         return {
             account,
             organizations: isCloud
-                ? await sdk.forConsole.billing.listOrganization()
+                ? await sdk.forConsole.organizations.list()
                 : await sdk.forConsole.teams.list()
         };
     }

@@ -1,8 +1,26 @@
-import type { Aggregation, Invoice } from '$lib/sdk/billing';
-import { accumulateUsage } from '$lib/sdk/usage';
+import type { Invoice } from '$lib/sdk/billing';
 import { getSdkForProject, sdk } from '$lib/stores/sdk';
+import type { Models } from '@appwrite.io/console';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+
+function accumulateUsage(usage: Models.Metric[], base: number): Models.Metric[] {
+    const accumulation = usage.reduce(
+        (carry, item) => {
+            const value = item.value + carry.currentTotal;
+            return {
+                currentTotal: value,
+                metrics: [...carry.metrics, { ...item, value }]
+            };
+        },
+        {
+            currentTotal: base,
+            metrics: []
+        }
+    );
+
+    return accumulation.metrics;
+}
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice, project } = params;
@@ -11,7 +29,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     let startDate: string = organization.billingCurrentInvoiceDate;
     let endDate: string = organization.billingNextInvoiceDate;
     let currentInvoice: Invoice = undefined;
-    let currentAggregation: Aggregation = undefined;
+    let currentAggregation: Models.AggregationTeam = undefined;
 
     if (invoice) {
         currentInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, invoice);

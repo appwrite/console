@@ -1,15 +1,14 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { RegionCard } from '$lib/components';
     import { Flag, Pill } from '$lib/elements';
     import { WizardStep } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { regions } from '$routes/(console)/organization-[organization]/store';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { createProject } from './store';
-    import type { Region } from '$lib/sdk/billing';
-    import { addNotification } from '$lib/stores/notifications';
-    import type { Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
-    import { regions } from '$routes/(console)/organization-[organization]/store';
 
     let prefs: Models.Preferences;
 
@@ -17,7 +16,7 @@
         prefs = $page.data.account.prefs;
     });
 
-    async function notifyRegion(selectedRegion: Region) {
+    async function notifyRegion(selectedRegion: Models.ConsoleRegion) {
         try {
             let newPrefs = { ...prefs };
             newPrefs.notifications ??= [];
@@ -36,7 +35,7 @@
             });
         }
     }
-    async function unNotifyRegion(selectedRegion: Region) {
+    async function unNotifyRegion(selectedRegion: Models.ConsoleRegion) {
         try {
             let newPrefs = { ...prefs };
             newPrefs.notifications = newPrefs.notifications ?? [];

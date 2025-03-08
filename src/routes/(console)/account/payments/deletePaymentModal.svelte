@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -15,7 +15,7 @@
 
     async function handleDelete() {
         try {
-            await sdk.forConsole.billing.deletePaymentMethod(method);
+            await sdk.forConsole.account.deletePaymentMethod(method);
             await invalidate(Dependencies.PAYMENT_METHODS);
             showDelete = false;
             addNotification({

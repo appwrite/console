@@ -1,8 +1,8 @@
-import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
-import type { PageLoad } from './$types';
 import { sdk } from '$lib/stores/sdk';
 import { VARS } from '$lib/system';
+import { redirect } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
 const handleGithubEducationMembership = async (name: string, email: string) => {
     const result = await sdk.forConsole.billing.setMembership('github-student-developer');

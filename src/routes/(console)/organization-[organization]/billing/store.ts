@@ -1,11 +1,12 @@
 import { page } from '$app/stores';
 import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-import type { AggregationList, Invoice } from '$lib/sdk/billing';
+import type { Invoice } from '$lib/sdk/billing';
+import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
 export const aggregationList = derived(
     page,
-    ($page) => $page.data.aggregationList as AggregationList
+    ($page) => $page.data.aggregationList as Models.AggregationTeamList
 );
 
 export const addCreditWizardSteps = writable<WizardStepsType>(new Map());

@@ -14,16 +14,16 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import type { Coupon, PaymentList } from '$lib/sdk/billing';
     import { isOrganization, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
         organizationList,
-        type OrganizationError,
-        type Organization
+        type Organization,
+        type OrganizationError
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
+    import type { Models } from '@appwrite.io/console';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
@@ -42,12 +42,12 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let name: string;
     let billingPlan: BillingPlan = BillingPlan.FREE;
     let paymentMethodId: string;
     let collaborators: string[] = [];
-    let couponData: Partial<Coupon> = {
+    let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null
@@ -61,7 +61,7 @@
         if ($page.url.searchParams.has('coupon')) {
             const coupon = $page.url.searchParams.get('coupon');
             try {
-                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
+                const response = await sdk.forConsole.account.getCoupon(coupon);
                 couponData = response;
             } catch (e) {
                 couponData = {
@@ -98,7 +98,7 @@
     });
 
     async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
         paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     }
 
