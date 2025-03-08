@@ -10,7 +10,15 @@
     import { started } from '../stores';
     import { showMigrationBox } from '$lib/components/migrationBox.svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import { Button, Card, Fieldset, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Button,
+        Card,
+        Divider,
+        Fieldset,
+        Icon,
+        Layout,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
     import { FormList } from '$lib/elements/forms';
     import { EyebrowHeading } from '$lib/components';
@@ -98,7 +106,7 @@
     onDestroy(onExit);
 
     const providers: Record<Provider, string> = {
-        appwrite: 'Appwrite Self-hosted',
+        appwrite: 'Appwrite self-hosted',
         firebase: 'Firebase',
         supabase: 'Supabase',
         nhost: 'NHost'
@@ -120,49 +128,49 @@
         <Layout.Stack gap="xxl">
             <Fieldset legend="Source">
                 <Layout.Stack gap="xl">
-                    <Typography.Text variant="m-400">
-                        Select a source platform with the project you want to migrate.
-                        <Link href="https://appwrite.io/docs/advanced/migrations" external>
-                            Learn about which platforms are supported.
-                        </Link>
-                    </Typography.Text>
-
-                    <div class="providers">
-                        {#each Object.entries(providers) as [key, platform]}
-                            <Card.Selector
-                                bind:group={$provider.provider}
-                                name={key}
-                                id={key}
-                                value={key}
-                                title={platform}
-                                imageRadius="s"
-                                disabled={showResources} />
-                        {/each}
-                    </div>
-                </Layout.Stack>
-            </Fieldset>
-
-            <Fieldset legend="Credentials">
-                {#if !showResources}
-                    <Credentials bind:formSubmitted={showResources} />
-                {:else}
-                    <Layout.Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        gap="xs">
-                        <Typography.Text variant="m-500">
-                            {capitalize($provider.provider)} credentials set successfully
+                    {#if !showResources}
+                        <Typography.Text variant="m-400">
+                            Select a source platform with the project you want to migrate.
+                            <Link href="https://appwrite.io/docs/advanced/migrations" external>
+                                Learn more.
+                            </Link>
                         </Typography.Text>
 
-                        <Button.Button
-                            size="s"
-                            variant="secondary"
-                            on:click={() => (showResources = !showResources)}>
-                            Update
-                        </Button.Button>
-                    </Layout.Stack>
-                {/if}
+                        <div class="providers">
+                            {#each Object.entries(providers) as [key, platform]}
+                                <Card.Selector
+                                    bind:group={$provider.provider}
+                                    name={key}
+                                    id={key}
+                                    value={key}
+                                    title={platform}
+                                    imageRadius="s"
+                                    disabled={showResources} />
+                            {/each}
+                        </div>
+
+                        <Divider />
+
+                        <Credentials bind:formSubmitted={showResources} />
+                    {:else}
+                        <Layout.Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            gap="xs">
+                            <Typography.Text variant="m-500">
+                                {capitalize($provider.provider)}
+                            </Typography.Text>
+
+                            <Button.Button
+                                size="s"
+                                variant="secondary"
+                                on:click={() => (showResources = !showResources)}>
+                                Update
+                            </Button.Button>
+                        </Layout.Stack>
+                    {/if}
+                </Layout.Stack>
             </Fieldset>
 
             {#if showResources}

@@ -77,7 +77,7 @@
         </FormList>
     {:else if $provider.provider === 'supabase'}
         <FormList>
-            <Typography.Title size="s">Postgres credentials</Typography.Title>
+            <Typography.Text size="m" variant="m-400">Postgres credentials</Typography.Text>
 
             <InputText
                 id="host"
@@ -101,7 +101,7 @@
                 placeholder="Enter password"
                 bind:value={$provider.password} />
 
-            <Typography.Title size="s">Supabase credentials</Typography.Title>
+            <Typography.Text size="m" variant="m-400">Supabase credentials</Typography.Text>
 
             <InputText
                 id="endpoint"
@@ -160,6 +160,7 @@
 
     <Layout.Stack direction="row" justifyContent="flex-end">
         <Button.Button
+            size="s"
             disabled={disableButton}
             on:click={() => {
                 formSubmitted = true;

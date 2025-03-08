@@ -1,11 +1,12 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Alert, Box, Modal } from '$lib/components';
+    import { Box, Modal } from '$lib/components';
     import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
     import { feedback } from '$lib/stores/feedback';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     let submitted = false;
@@ -103,15 +104,28 @@
         )}`;
         window.location.href = dest;
     };
+
+    const validateInput = (e: Event) => {
+        if (!submitted) return;
+        const input = e.target as HTMLInputElement;
+        const value = input.value;
+
+        if (!isValidEndpoint(value)) {
+            input.setCustomValidity('Please enter a valid endpoint');
+        } else {
+            input.setCustomValidity('');
+        }
+        input.reportValidity();
+    };
 </script>
 
 <Modal title="Export to self-hosted instance" bind:show {onSubmit}>
     <FormList>
-        <Alert isStandalone>
+        <Alert.Inline status="info">
             <svelte:fragment slot="title">API key creation</svelte:fragment>
             By initiating the transfer, an API key will be automatically generated in the background,
             which you can delete after completion
-        </Alert>
+        </Alert.Inline>
 
         <InputText
             label="Endpoint self-hosted instance"
@@ -119,18 +133,7 @@
             id="endpoint"
             placeholder="https://[YOUR_APPWRITE_HOSTNAME]"
             autofocus
-            on:input={(e) => {
-                if (!submitted) return;
-                const input = e.target;
-                const value = input.value;
-
-                if (!isValidEndpoint(value)) {
-                    input.setCustomValidity('Please enter a valid endpoint');
-                } else {
-                    input.setCustomValidity('');
-                }
-                input.reportValidity();
-            }} />
+            on:input={validateInput} />
 
         <Box>
             <p class="u-bold">

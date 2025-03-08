@@ -31,9 +31,9 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
-    let migration: Models.Migration = null;
     let showExport = false;
     let showMigration = false;
+    let migration: Models.Migration = null;
 
     onMount(async () => {
         sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -121,6 +121,25 @@
         showMigration = true;
         migration = m;
     }
+
+    function getTypedStatus(entry: Models.Migration) {
+        // migration > pending, processing, failed, completed
+        // status component = waiting, ready, processing, pending, failed, complete
+        switch (entry.status) {
+            case 'completed':
+                return 'complete';
+            case 'processing':
+                return 'processing';
+            case 'failed':
+                return 'failed';
+            case 'pending':
+                return 'pending';
+            default:
+                return 'waiting';
+        }
+    }
+
+    $: console.log(JSON.stringify(data.migrations, null, 2));
 </script>
 
 <Container>
@@ -156,7 +175,8 @@
                             </Table.Cell>
                             <Table.Cell>{entry.source}</Table.Cell>
                             <Table.Cell>
-                                <Status label={capitalize(entry.status)} status={entry.status} />
+                                {@const status = getTypedStatus(entry)}
+                                <Status label={capitalize(status)} {status} />
                             </Table.Cell>
                             <Table.Cell>
                                 <div class="u-flex u-main-end">

@@ -2,7 +2,7 @@
     import { deepMap } from '$lib/helpers/object';
     import type { WritableValue } from '$lib/helpers/types';
     import { type getSdkForProject } from '$lib/stores/sdk';
-    import { Alert, Button, Divider, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Divider, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import {
         createMigrationFormStore,
@@ -11,6 +11,7 @@
         providerResources,
         resourcesToMigrationForm
     } from '$lib/stores/migration';
+    import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import type { Models } from '@appwrite.io/console';
     import ImportReport from '$routes/(console)/project-[project]/settings/migrations/(import)/importReport.svelte';
@@ -155,20 +156,18 @@
     <!--TODO: FIX UI -->
     <Layout.Stack gap="l">
         <Layout.Stack direction="row">
-            <Button.Button
-                variant="text"
-                role="button"
+            <Button
+                compact
                 on:click={(event) => {
                     event.preventDefault();
                     deselectAll();
-                }}>Deselect all</Button.Button>
-            <Button.Button
-                variant="text"
-                role="button"
+                }}>Deselect all</Button>
+            <Button
+                compact
                 on:click={(event) => {
                     event.preventDefault();
                     selectAll();
-                }}>Select all</Button.Button>
+                }}>Select all</Button>
         </Layout.Stack>
         <Divider />
     </Layout.Stack>
