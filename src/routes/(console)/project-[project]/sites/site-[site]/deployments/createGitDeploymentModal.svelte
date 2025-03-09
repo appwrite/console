@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { Type, type Models } from '@appwrite.io/console';
+    import { VCSDeploymentType, type Models } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
 
@@ -72,7 +72,12 @@
 
     async function createDeployment() {
         try {
-            await sdk.forProject.sites.createVcsDeployment(site.$id, Type.Branch, branch, activate);
+            await sdk.forProject.sites.createVcsDeployment(
+                site.$id,
+                VCSDeploymentType.Branch,
+                branch,
+                activate
+            );
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);
             addNotification({

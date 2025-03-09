@@ -15,7 +15,7 @@
     import Details from '../../details.svelte';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Type } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, VCSDeploymentType } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
@@ -98,7 +98,7 @@
 
             const deployment = await sdk.forProject.sites.createVcsDeployment(
                 site.$id,
-                Type.Branch,
+                VCSDeploymentType.Branch,
                 branch,
                 true
             );

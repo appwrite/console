@@ -3,7 +3,7 @@
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -31,7 +31,8 @@
     function getDownload(deploymentId: string) {
         return (
             sdk.forProject.functions.getDeploymentDownload(data.func.$id, deploymentId).toString() +
-            '&mode=admin'
+                '&mode=admin',
+            DeploymentDownloadType.Source
         );
     }
 

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Id } from '$lib/components';
     import type { PageData } from './$types';
-    import { type Models } from '@appwrite.io/console';
+    import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
@@ -46,10 +46,12 @@
         invalidate(Dependencies.DEPLOYMENTS);
     }
 
+    //TODO: implement output download
     function getDownload(deploymentId: string) {
         return (
             sdk.forProject.functions.getDeploymentDownload($func.$id, deploymentId).toString() +
-            '&mode=admin'
+                '&mode=admin',
+            DeploymentDownloadType.Source
         );
     }
 </script>

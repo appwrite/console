@@ -13,7 +13,7 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forProject.functions.updateDeploymentBuild(
+            await sdk.forProject.functions.updateDeploymentStatus(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );

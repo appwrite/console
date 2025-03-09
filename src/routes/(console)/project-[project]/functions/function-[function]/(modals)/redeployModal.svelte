@@ -15,7 +15,7 @@
 
     async function redeploy() {
         try {
-            await sdk.forProject.functions.createBuild(
+            await sdk.forProject.functions.createDuplicateDeployment(
                 $func.$id,
                 selectedDeployment.$id,
                 selectedDeployment.buildId

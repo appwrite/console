@@ -14,7 +14,7 @@
 
     const handleSubmit = async () => {
         try {
-            await sdk.forProject.functions.updateDeployment(
+            await sdk.forProject.functions.updateFunctionDeployment(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );

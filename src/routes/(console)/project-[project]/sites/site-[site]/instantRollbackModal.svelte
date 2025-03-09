@@ -34,7 +34,7 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forProject.sites.updateDeployment(
+            await sdk.forProject.sites.updateSiteDeployment(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );
@@ -42,7 +42,7 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: `Deployment has been deleted`
+                message: `Deployment has been activated`
             });
             trackEvent(Submit.DeploymentCancel);
         } catch (error) {

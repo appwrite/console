@@ -10,7 +10,7 @@
     import { installation, repository } from '$lib/stores/vcs';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
-    import { ID, Runtime, Type } from '@appwrite.io/console';
+    import { ID, Runtime, VCSDeploymentType } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { consoleVariables } from '$routes/(console)/store';
@@ -103,7 +103,12 @@
             );
             await Promise.all(promises);
 
-            await sdk.forProject.functions.createVcsDeployment(func.$id, Type.Branch, branch, true);
+            await sdk.forProject.functions.createVcsDeployment(
+                func.$id,
+                VCSDeploymentType.Branch,
+                branch,
+                true
+            );
 
             trackEvent(Submit.FunctionCreate, {
                 source: 'repository',

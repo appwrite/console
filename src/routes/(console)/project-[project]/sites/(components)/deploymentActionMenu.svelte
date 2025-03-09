@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
     import {
         IconDotsHorizontal,
         IconDownload,
@@ -25,7 +25,8 @@
     function getDownload(deploymentId: string) {
         return (
             sdk.forProject.sites.getDeploymentDownload($page.params.site, deploymentId).toString() +
-            '&mode=admin'
+                '&mode=admin',
+            DeploymentDownloadType.Source
         );
     }
 </script>
