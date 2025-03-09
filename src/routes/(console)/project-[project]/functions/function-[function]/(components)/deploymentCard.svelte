@@ -13,7 +13,7 @@
     export let variant: 'primary' | 'secondary' = 'primary';
     export let activeDeployment = false;
 
-    $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
+    $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.sourceSize ?? 0));
 </script>
 
 <Card padding="s" radius="m" {variant}>
