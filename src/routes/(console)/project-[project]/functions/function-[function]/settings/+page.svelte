@@ -77,7 +77,7 @@
     {/if}
     <ExecuteFunction />
     <UpdateName />
-    <UpdateRuntime />
+    <UpdateRuntime runtimesList={data.runtimesList} />
     <UpdateConfiguration />
     <UpdateLogging />
     <UpdatePermissions />

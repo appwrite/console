@@ -22,19 +22,12 @@
     } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import {
-        WizardSecondaryContainer,
-        WizardSecondaryContent,
-        WizardSecondaryFooter
-    } from '$lib/layout';
+    import { WizardSecondaryContent, WizardSecondaryFooter } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ExecutionMethod, type Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
-    import DeploymentSource from '../../deploymentSource.svelte';
-    import DeploymentDomains from '../../deploymentDomains.svelte';
     import { proxyRuleList } from '../../store';
-    import DeploymentCreatedBy from '../../deploymentCreatedBy.svelte';
     import {
         isSameDay,
         toLocaleDateISO,
@@ -45,6 +38,7 @@
     import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Wizard from '$lib/layout/wizard.svelte';
+    import { DeploymentCreatedBy, DeploymentDomains, DeploymentSource } from '$lib/components/git';
 
     let previousPage: string = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/executions`;
 
@@ -377,7 +371,7 @@
                     <div class="u-flex-vertical u-gap-8">
                         <p class="u-color-text-offline">Domains</p>
                         <span>
-                            <DeploymentDomains domain={$proxyRuleList} />
+                            <DeploymentDomains domains={$proxyRuleList} />
                         </span>
                     </div>
                 {/if}

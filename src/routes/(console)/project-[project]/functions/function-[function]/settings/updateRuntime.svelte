@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -11,13 +11,10 @@
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { specificationsList } from '$lib/stores/specifications';
-    import { runtimesList } from '$lib/stores/runtimes';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime } from '@appwrite.io/console';
-    import { isCloud } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
-    import SpecificationsTooltip from '$lib/wizards/functions/components/specificationsTooltip.svelte';
+    import { Runtime, type Models } from '@appwrite.io/console';
 
+    export let runtimesList: Models.RuntimeList;
     const functionId = $page.params.function;
     let runtime: string = null;
     let specification: string = null;
@@ -29,9 +26,8 @@
         runtime ??= $func.runtime;
         specification ??= $func.specification;
 
-        let runtimes = await $runtimesList;
         let allowedSpecifications = (await $specificationsList).specifications;
-        options = runtimes.runtimes.map((runtime) => ({
+        options = runtimesList.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
@@ -99,19 +95,14 @@
                     placeholder="Select runtime"
                     bind:value={runtime}
                     {options}
-                    required
-                    hideRequired />
+                    required />
                 <InputSelect
                     label="CPU and memory"
                     id="size"
                     placeholder="Select runtime specification"
                     bind:value={specification}
                     options={specificationOptions}
-                    popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
-                        ? SpecificationsTooltip
-                        : null}
-                    required
-                    hideRequired />
+                    required />
             </FormList>
         </svelte:fragment>
 

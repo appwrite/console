@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -32,9 +32,7 @@
     import DisconnectRepo from './disconnectRepo.svelte';
     import { Pill } from '$lib/elements';
     import { wizard } from '$lib/stores/wizard';
-    import ConnectExisting from '$lib/wizards/functions/connectExisting.svelte';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
-    import { installations } from '$lib/wizards/functions/store';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
@@ -342,4 +340,4 @@
     <GitConfigurationModal bind:show={showGit} />
 {/if}
 
-<DisconnectRepo bind:show={showDisconnect} on:success={loadRepository} />
+<DisconnectRepo bind:show={showDisconnect} on:success={loadRepository} /> -->
