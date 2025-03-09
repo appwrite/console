@@ -33,7 +33,7 @@
 
 <Modal title="Activate deployment" bind:show bind:error onSubmit={activate}>
     <p class="text">
-        Are you sure you want to activate this deployment? This might affect your production code.
+        This deployment is ready but not yet live. Activate it to make it publicly accessible.
     </p>
 
     <svelte:fragment slot="footer">

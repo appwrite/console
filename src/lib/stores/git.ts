@@ -16,3 +16,17 @@ export function connectGitHub(callbackState: Record<string, string> = null) {
     target.searchParams.set('mode', 'admin');
     return target;
 }
+
+export function deploymentStatusConverter(status: string) {
+    // Status component possible values - status: 'waiting' | 'ready' | 'processing' | 'pending' | 'failed' | 'complete';
+    switch (status) {
+        case 'ready':
+            return 'ready';
+        case 'processing':
+            return 'processing';
+        case 'building':
+            return 'pending';
+        case 'failed':
+            return 'failed';
+    }
+}

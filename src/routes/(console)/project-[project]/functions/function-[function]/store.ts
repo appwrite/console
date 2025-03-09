@@ -39,28 +39,6 @@ export const columns = writable<Column[]>([
         filter: false
     },
     {
-        id: 'type',
-        title: 'Source',
-        type: 'string',
-        show: true,
-        width: 90,
-        array: true,
-        format: 'enum',
-        elements: [
-            { value: 'manual', label: 'Manual' },
-            { value: 'cli', label: 'CLI' },
-            { value: 'vcs', label: 'Git' }
-        ]
-    },
-    {
-        id: '$updatedAt',
-        title: 'Updated',
-        type: 'datetime',
-        show: true,
-        width: 150,
-        format: 'datetime'
-    },
-    {
         id: 'buildTime',
         title: 'Build time',
         type: 'integer',
@@ -110,5 +88,27 @@ export const columns = writable<Column[]>([
         show: false,
         filter: false,
         width: 80
+    },
+    {
+        id: 'type',
+        title: 'Source',
+        type: 'string',
+        show: true,
+        width: 90,
+        array: true,
+        format: 'enum',
+        elements: [
+            { value: 'manual', label: 'Manual' },
+            { value: 'cli', label: 'CLI' },
+            { value: 'vcs', label: 'Git' }
+        ]
+    },
+    {
+        id: '$updatedAt',
+        title: 'Updated',
+        type: 'datetime',
+        show: true,
+        width: 150,
+        format: 'datetime'
     }
 ]);

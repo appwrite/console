@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { type Models } from '@appwrite.io/console';
-    import DeploymentDomains from '../(components)/deploymentDomains.svelte';
+    import DeploymentDomains from '$lib/components/git/deploymentDomains.svelte';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';

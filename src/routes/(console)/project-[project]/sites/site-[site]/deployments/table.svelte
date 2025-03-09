@@ -14,9 +14,9 @@
     import { Layout, Status, Table } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
     import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
-    import { deploymentStatusConverter } from '../store';
     import { capitalize } from '$lib/helpers/string';
     import DeploymentActionMenu from '../../(components)/deploymentActionMenu.svelte';
+    import { deploymentStatusConverter } from '$lib/stores/git';
 
     export let data: PageData;
 

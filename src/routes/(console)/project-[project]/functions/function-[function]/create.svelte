@@ -27,14 +27,7 @@
 
 <Popover let:toggle placement="bottom-end" padding="none">
     {#if $canWriteFunctions}
-        <Button {secondary} icon={round} on:click={toggle} event="create_deployment">
-            <slot>
-                {#if !secondary}
-                    <Icon icon={IconPlus} size="s" />
-                {/if}
-                Create deployment
-            </slot>
-        </Button>
+        <slot {toggle} />
     {/if}
     <svelte:fragment slot="tooltip" let:toggle>
         <ActionMenu.Root>

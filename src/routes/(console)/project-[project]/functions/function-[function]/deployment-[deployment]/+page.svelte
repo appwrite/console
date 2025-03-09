@@ -12,10 +12,10 @@
     import { deployment } from './store';
     import BoxAvatar from '$lib/components/boxAvatar.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import Activate from '../(modals)/activate.svelte';
+    import Activate from '../(modals)/activateModal.svelte';
     import Cancel from '../(modals)/cancel.svelte';
     import DeploymentCard from '../deploymentCard.svelte';
-    import Delete from '../(modals)/delete.svelte';
+    import Delete from '../(modals)/deleteModal.svelte';
 
     export let data;
 
@@ -77,7 +77,7 @@
 </script>
 
 <Container>
-    <DeploymentCard deployment={$deployment}>
+    <DeploymentCard proxyRuleList={data.proxyRuleList} deployment={$deployment}>
         <svelte:fragment slot="actions">
             <div class="u-flex u-flex-wrap">
                 {#if $deployment.status === 'processing' || $deployment.status === 'building' || $deployment.status === 'waiting'}

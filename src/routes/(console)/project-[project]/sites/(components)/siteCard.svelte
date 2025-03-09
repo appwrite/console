@@ -18,7 +18,7 @@
     import { Button } from '$lib/elements/forms';
     import { IconInfo, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';
-    import DeploymentDomains from './deploymentDomains.svelte';
+    import DeploymentDomains from '$lib/components/git/deploymentDomains.svelte';
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
