@@ -70,7 +70,7 @@
                 installCommand,
                 buildCommand,
                 outputDirectory,
-                framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
+                undefined,
                 data.installation.$id,
                 undefined,
                 data.repository.id,
