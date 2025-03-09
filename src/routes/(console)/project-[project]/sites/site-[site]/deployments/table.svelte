@@ -69,17 +69,17 @@
                         <Table.Cell width={column?.width?.toString() ?? ''}>
                             <DeploymentCreatedBy {deployment} />
                         </Table.Cell>
-                    {:else if column.id === 'buildTime'}
+                    {:else if column.id === 'buildDuration'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
                             {#if ['processing', 'building'].includes(deployment.status)}
                                 <span use:timer={{ start: deployment.$createdAt }} />
                             {:else}
-                                {formatTimeDetailed(deployment.buildTime)}
+                                {formatTimeDetailed(deployment.buildDuration)}
                             {/if}
                         </Table.Cell>
-                    {:else if column.id === 'size'}
+                    {:else if column.id === 'sourceSize'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {calculateSize(deployment.size)}
+                            {calculateSize(deployment.sourceSize)}
                         </Table.Cell>
                     {:else if column.id === 'buildSize'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>

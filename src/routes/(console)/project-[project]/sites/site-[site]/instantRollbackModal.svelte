@@ -98,7 +98,7 @@
                             <circle cx="1" cy="1.5" r="1" fill="currentColor" />
                         </svg>
                         <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
-                            {calculateSize(deployment.size)}
+                            {calculateSize(deployment.sourceSize)}
                         </Typography.Caption>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

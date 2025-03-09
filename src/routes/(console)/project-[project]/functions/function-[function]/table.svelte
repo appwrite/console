@@ -98,17 +98,17 @@
                         <Table.Cell>
                             <DeploymentCreatedBy {deployment} />
                         </Table.Cell>
-                    {:else if column.id === 'buildTime'}
+                    {:else if column.id === 'buildDuration'}
                         <Table.Cell>
                             {#if ['processing', 'building'].includes(deployment.status)}
                                 <span use:timer={{ start: deployment.$createdAt }} />
                             {:else}
-                                {formatTimeDetailed(deployment.buildTime)}
+                                {formatTimeDetailed(deployment.buildDuration)}
                             {/if}
                         </Table.Cell>
-                    {:else if column.id === 'size'}
+                    {:else if column.id === 'sourceSize'}
                         <Table.Cell>
-                            {calculateSize(deployment.size)}
+                            {calculateSize(deployment.sourceSize)}
                         </Table.Cell>
                     {:else if column.id === 'buildSize'}
                         <Table.Cell>

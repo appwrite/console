@@ -106,13 +106,13 @@
 
                 <Layout.Stack gap="xxl" direction="row" wrap="wrap">
                     <Layout.Stack gap="xxl" direction="row" wrap="wrap" inline>
-                        {#if deployment?.buildTime}
+                        {#if deployment?.buildDuration}
                             <Layout.Stack gap="xxs" inline>
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Build time
+                                    Build duration
                                 </Typography.Text>
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {formatTimeDetailed(deployment.buildTime)}
+                                    {formatTimeDetailed(deployment.buildDuration)}
                                 </Typography.Text>
                             </Layout.Stack>
                         {/if}

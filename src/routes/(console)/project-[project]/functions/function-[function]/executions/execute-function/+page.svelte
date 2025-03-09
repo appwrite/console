@@ -327,20 +327,20 @@
                         </p>
                     </li>
                     <li class="u-flex-vertical u-gap-8">
-                        <p class="u-color-text-offline">Build time</p>
+                        <p class="u-color-text-offline">Build duration</p>
                         <p>
                             {#if ['processing', 'building'].includes(deployment.status)}
                                 <span use:timer={{ start: deployment.$createdAt }} />
                             {:else}
-                                {calculateTime(deployment.buildTime)}
+                                {calculateTime(deployment.buildDuration)}
                             {/if}
                         </p>
                     </li>
                     <li class="u-flex-vertical u-gap-8">
                         <p class="u-color-text-offline">Total size</p>
                         <p>
-                            {humanFileSize(deployment.size + deployment.buildSize).value +
-                                humanFileSize(deployment.size + deployment.buildSize).unit}
+                            {humanFileSize(deployment.sourceSize + deployment.buildSize).value +
+                                humanFileSize(deployment.sourceSize + deployment.buildSize).unit}
                             <Tooltip>
                                 <button
                                     type="button"
@@ -354,8 +354,8 @@
                                 <div slot="tooltip">
                                     <p>
                                         <b>Deployment size:</b>
-                                        {humanFileSize(deployment.size).value +
-                                            humanFileSize(deployment.size).unit}
+                                        {humanFileSize(deployment.sourceSize).value +
+                                            humanFileSize(deployment.sourceSize).unit}
                                     </p>
                                     <p>
                                         <b>Build size:</b>

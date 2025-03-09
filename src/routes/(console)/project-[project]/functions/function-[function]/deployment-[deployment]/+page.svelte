@@ -28,6 +28,7 @@
         invalidate(Dependencies.DEPLOYMENTS);
     }
 
+    //TODO: implement output download
     function getDownload(deploymentId: string) {
         return (
             sdk.forProject.functions.getDeploymentDownload(data.func.$id, deploymentId).toString() +
@@ -91,7 +92,7 @@
                         }}>Cancel</Button>
                 {/if}
 
-                {#if data.deployment.size > 0}
+                {#if data.deployment.sourceSize > 0}
                     <Button secondary href={getDownload(data.deployment.$id)}>Download</Button>
                 {/if}
 
@@ -133,7 +134,7 @@
                         </Typography.Code>
                     {:else}
                         <Typography.Code color="--fgcolor-neutral-secondary">
-                            {formatTimeDetailed(data.deployment.buildTime)}
+                            {formatTimeDetailed(data.deployment.buildDuration)}
                         </Typography.Code>
                     {/if}
                 </Layout.Stack>

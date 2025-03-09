@@ -27,7 +27,6 @@
     import RetryDomainModal from './retryDomainModal.svelte';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
-    import { RuleType } from '$lib/stores/sdk';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import CreateAppwriteDomainModal from './createAppwriteDomainModal.svelte';
 
@@ -87,13 +86,13 @@
                             </Layout.Stack>
                         </Link>
                     </Table.Cell>
+                    <!-- TODO design redirect status code -->
                     <Table.Cell>
-                        {domain.type === RuleType.REDIRECT ? (domain?.value ?? '-') : 'No redirect'}
+                        {domain?.redirectUrl || 'No redirect'}
+                        {domain?.redirectStatusCode ? `(${domain.redirectStatusCode})` : ''}
                     </Table.Cell>
                     <Table.Cell>
-                        {domain.automation.includes('branch')
-                            ? domain.automation.split('branch=')[1]
-                            : '-'}
+                        {domain.deploymentVcsProviderBranch || '-'}
                     </Table.Cell>
                     <Table.Cell>
                         <Layout.Stack direction="row" justifyContent="flex-end">

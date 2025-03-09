@@ -334,10 +334,11 @@
                 <Image
                     objectPosition="top"
                     border
-                    src={data?.template?.demoImage ||
-                        ($app.themeInUse === 'dark'
-                            ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                            : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                    src={$app.themeInUse === 'dark'
+                        ? data?.template?.screenshotDark ||
+                          `${base}/images/sites/screenshot-placeholder-dark.svg`
+                        : data?.template?.screenshotLight ||
+                          `${base}/images/sites/screenshot-placeholder-light.svg`}
                     alt={data.template.name}
                     ratio="16/9" />
             </Layout.Stack>

@@ -127,10 +127,11 @@
                         <Card.Media
                             title={template.name}
                             description={templateFrameworks.join(', ')}
-                            src={template.demoImage ||
-                                ($app.themeInUse === 'dark'
-                                    ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                                    : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                            src={$app.themeInUse === 'dark'
+                                ? template?.screenshotDark ||
+                                  `${base}/images/sites/screenshot-placeholder-dark.svg`
+                                : template?.screenshotDark ||
+                                  `${base}/images/sites/screenshot-placeholder-light.svg`}
                             alt={template.name}>
                         </Card.Media>
                     </Card.Link>

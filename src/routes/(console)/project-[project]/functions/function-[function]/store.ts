@@ -39,8 +39,8 @@ export const columns = writable<Column[]>([
         filter: false
     },
     {
-        id: 'buildTime',
-        title: 'Build time',
+        id: 'buildDuration',
+        title: 'Build duration',
         type: 'integer',
         show: true,
         width: 90,
@@ -61,7 +61,7 @@ export const columns = writable<Column[]>([
         filter: false
     },
     {
-        id: 'size',
+        id: 'sourceSize',
         title: 'Source size',
         type: 'integer',
         show: true,

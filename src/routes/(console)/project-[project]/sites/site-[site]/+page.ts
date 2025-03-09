@@ -2,6 +2,7 @@ import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import { Query } from '@appwrite.io/console';
 import { RuleType } from '$lib/stores/sdk';
+import { DeploymentResourceType } from '$lib/stores/sdk';
 
 export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.SITE);
@@ -10,16 +11,15 @@ export const load = async ({ params, depends, parent }) => {
 
     const [deploymentList, prodReadyDeployments, proxyRuleList] = await Promise.all([
         sdk.forProject.sites.listDeployments(params.site, [Query.limit(4), Query.orderDesc('')]),
-
         sdk.forProject.sites.listDeployments(params.site, [
-            Query.limit(1)
-            // Query.equal('status', 'ready')
-            // Query.equal('live', true)
+            Query.equal('status', 'ready'),
+            Query.equal('active', true)
         ]),
         sdk.forProject.proxy.listRules([
             Query.equal('type', RuleType.DEPLOYMENT),
-            Query.equal('automation', `site=${params.site}`),
-            Query.orderDesc('')
+            Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+            Query.equal('deploymentResourceId', site.$id),
+            Query.equal('deploymentId', site.deploymentId)
         ])
     ]);
     return {
