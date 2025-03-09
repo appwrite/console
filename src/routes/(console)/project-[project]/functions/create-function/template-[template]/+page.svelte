@@ -30,6 +30,14 @@
 
     export let data;
 
+    const specificationOptions = data.specificationsList.specifications.map((size) => ({
+        label:
+            `${size.cpus} CPU, ${size.memory} MB RAM` +
+            (!size.enabled ? ` (Upgrade to use this)` : ''),
+        value: size.slug,
+        disabled: !size.enabled
+    }));
+
     let showExitModal = false;
     let isCreatingRepository = false;
     let hasInstallations = !!data?.installations?.total;
@@ -54,8 +62,15 @@
     let selectedScopes: string[] = [];
     let execute = false;
     let variables: Partial<Models.TemplateVariable>[] = [];
+    let specification = specificationOptions[0].value;
 
     onMount(async () => {
+        if ($page.url.searchParams.has('runtime')) {
+            console.log(runtime);
+            console.log($page.url.searchParams.get('runtime'));
+            runtime = $page.url.searchParams.get('runtime') as Runtime;
+            console.log(runtime);
+        }
         if (!$installation?.$id) {
             $installation = data.installations.installations[0];
         }
@@ -125,7 +140,7 @@
                     branch,
                     silentMode,
                     rootDir,
-                    undefined //TODO: specs
+                    specification || undefined
                 );
 
                 // Add domain
@@ -228,7 +243,14 @@
                 })}
 
                 <Layout.Stack gap="xxl">
-                    <Details bind:name bind:id bind:runtime bind:entrypoint {options} />
+                    <Details
+                        bind:name
+                        bind:id
+                        bind:runtime
+                        bind:entrypoint
+                        bind:specification
+                        {specificationOptions}
+                        {options} />
 
                     <Permissions
                         templateScopes={data.template.scopes}
@@ -329,7 +351,7 @@
             size="s"
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting || (connectBehaviour === 'now' && !selectedRepository)}>
-            Create
+            Deploy
         </Button>
     </svelte:fragment>
 </Wizard>

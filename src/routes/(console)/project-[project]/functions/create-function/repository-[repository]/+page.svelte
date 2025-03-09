@@ -24,6 +24,22 @@
     import RepoCard from './repoCard.svelte';
 
     export let data;
+
+    const specificationOptions = data.specificationsList.specifications.map((size) => ({
+        label:
+            `${size.cpus} CPU, ${size.memory} MB RAM` +
+            (!size.enabled ? ` (Upgrade to use this)` : ''),
+        value: size.slug,
+        disabled: !size.enabled
+    }));
+    const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
+        return {
+            value: runtime.$id,
+            label: `${runtime.name} - ${runtime.version}`,
+            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+        };
+    });
+
     let showExitModal = false;
 
     let formComponent: Form;
@@ -39,14 +55,7 @@
     let rootDir = './';
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
-
-    const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
-        return {
-            value: runtime.name,
-            label: `${runtime.name} - ${runtime.version}`,
-            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
-        };
-    });
+    let specification = specificationOptions[0].value;
 
     onMount(async () => {
         installation.set(data.installation);
@@ -74,7 +83,7 @@
                 branch,
                 silentMode,
                 rootDir,
-                undefined //TODO: specs
+                specification || undefined
             );
 
             // Add domain
@@ -101,7 +110,7 @@
                 runtime: runtime
             });
 
-            await goto(`${base}/project-${$page.params.project}/functions/function=${func.$id}`);
+            await goto(`${base}/project-${$page.params.project}/functions/function-${func.$id}`);
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
@@ -132,6 +141,8 @@
                 bind:entrypoint
                 bind:id
                 bind:runtime
+                bind:specification
+                {specificationOptions}
                 options={runtimeOptions}
                 showEntrypoint />
 
@@ -161,7 +172,7 @@
             submissionLoader
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
-            Create
+            Deploy
         </Button>
     </svelte:fragment>
 </Wizard>

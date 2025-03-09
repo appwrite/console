@@ -79,6 +79,7 @@
                                         id={variable.name}
                                         value={variable.name}
                                         readonly
+                                        required
                                         label={i === 0 ? 'Key' : null} />
                                     <svelte:component
                                         this={selectComponent(variable.type)}
@@ -119,6 +120,7 @@
                                         id={variable.name}
                                         value={variable.name}
                                         readonly
+                                        required
                                         label={i === 0 ? 'Key' : null} />
                                     <svelte:component
                                         this={selectComponent(variable.type)}

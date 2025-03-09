@@ -125,7 +125,7 @@
                                             runtime: template.name
                                         });
                                     }}
-                                    href={`${wizardBase}/create-function/template-${starterTemplate.id}`}>
+                                    href={`${wizardBase}/create-function/template-${starterTemplate.id}?runtime=${runtimeDetail.$id}`}>
                                     <Layout.Stack direction="row" gap="s" alignItems="center">
                                         <Avatar
                                             size="xs"

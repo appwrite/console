@@ -3,9 +3,9 @@
     import { Button } from '$lib/elements/forms';
     import { canWriteFunctions } from '$lib/stores/roles';
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
-    import CreateCli from './createCli.svelte';
-    import CreateGit from './createGit.svelte';
-    import CreateManual from './createManual.svelte';
+    import CreateCli from './(modals)/createCli.svelte';
+    import CreateGit from './(modals)/createGit.svelte';
+    import CreateManual from './(modals)/createManual.svelte';
     import { showCreateDeployment } from './store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 

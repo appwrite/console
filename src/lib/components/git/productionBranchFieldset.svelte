@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
     import { Fieldset, Layout, Selector, Skeleton } from '@appwrite.io/pink-svelte';
-    import SelectRootModal from '../../../routes/(console)/project-[project]/sites/(components)/selectRootModal.svelte';
+    import SelectRootModal from './selectRootModal.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { sortBranches } from '$lib/stores/vcs';
 
