@@ -8,13 +8,12 @@
     import { protocol } from '$routes/(console)/store';
     import InstantRollbackDomain from './instantRollbackModal.svelte';
     import { app } from '$lib/stores/app';
-    import EmptyDeploymentDark from './empty-deployment-dark.svg';
-    import EmptyDeploymentLight from './empty-deployment-light.svg';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import { base } from '$app/paths';
 
     export let data;
     let showRollback = false;
@@ -58,7 +57,9 @@
             <Card.Base padding="none">
                 <Empty
                     title="Deployment is still building"
-                    src={$app.themeInUse === 'dark' ? EmptyDeploymentDark : EmptyDeploymentLight}>
+                    src={$app.themeInUse === 'dark'
+                        ? `${base}/images/empty-deployment-dark.svg`
+                        : `${base}/images/empty-deployment-light.svg`}>
                     <span slot="description">
                         Your build is running. When it completes, this page will automatically
                         update with the latest deployment.
@@ -69,7 +70,9 @@
             <Card.Base padding="none">
                 <Empty
                     title="There is no active deployment"
-                    src={$app.themeInUse === 'dark' ? EmptyDeploymentDark : EmptyDeploymentLight}>
+                    src={$app.themeInUse === 'dark'
+                        ? `${base}/images/empty-deployment-dark.svg`
+                        : `${base}/images/empty-deployment-light.svg`}>
                     <span slot="description">
                         Deploy your site to get started. Once deployed, you'll see your latest build
                         details here.

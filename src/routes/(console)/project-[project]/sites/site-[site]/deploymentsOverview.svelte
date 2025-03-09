@@ -11,9 +11,9 @@
     import ActivateDeploymentModal from '../activateDeploymentModal.svelte';
     import CancelDeploymentModal from './deployments/cancelDeploymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { deploymentStatusConverter } from './store';
     import DeleteDeploymentModal from './deployments/deleteDeploymentModal.svelte';
     import DeploymentActionMenu from '../(components)/deploymentActionMenu.svelte';
+    import { deploymentStatusConverter } from '$lib/stores/git';
 
     export let site: Models.Site;
     export let activeDeployment: Models.Deployment;

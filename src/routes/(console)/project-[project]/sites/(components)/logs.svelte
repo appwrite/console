@@ -97,9 +97,4 @@
             logs={buildLogs || 'No logs available yet...'}
             bind:theme={$app.themeInUse} />
     {/key}
-    <!-- {#if ['processing', 'building'].includes(status)}
-        <Layout.Stack alignItems="flex-end">
-            <Button size="s" text on:click={cancelDeployment}>Cancel deployment</Button>
-        </Layout.Stack>
-    {/if} -->
 </Layout.Stack>

@@ -22,7 +22,6 @@
         IconDownload,
         IconLightningBolt,
         IconRefresh,
-        IconTerminal,
         IconTrash,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
@@ -67,7 +66,8 @@
         <Table.Header.Cell width="40" />
     </svelte:fragment>
     {#each data.deploymentList.deployments as deployment, index (deployment.$id)}
-        <Table.Row>
+        <Table.Link
+            href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
             {#each columns as column}
                 {#if column.show}
                     {#if column.id === '$id'}
@@ -145,11 +145,7 @@
                                         Activate
                                     </ActionMenu.Item.Button>
                                 {/if}
-                                <ActionMenu.Item.Anchor
-                                    trailingIcon={IconTerminal}
-                                    href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
-                                    Logs
-                                </ActionMenu.Item.Anchor>
+
                                 <ActionMenu.Item.Anchor
                                     trailingIcon={IconDownload}
                                     href={getDownload(deployment.$id)}
@@ -188,7 +184,7 @@
                     </Popover>
                 </Layout.Stack>
             </Table.Cell>
-        </Table.Row>
+        </Table.Link>
     {/each}
 </Table.Root>
 

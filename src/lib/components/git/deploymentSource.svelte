@@ -16,7 +16,7 @@
 
 {#if deployment.type === 'vcs'}
     <Popover padding="none" let:toggle>
-        <Layout.Stack>
+        <div>
             <Link
                 on:click={(e) => {
                     e.preventDefault();
@@ -26,7 +26,7 @@
                     <Icon icon={IconGithub} size="s" /> GitHub
                 </Layout.Stack>
             </Link>
-        </Layout.Stack>
+        </div>
         <svelte:fragment slot="tooltip">
             <ActionMenu.Root>
                 <ActionMenu.Item.Anchor

@@ -11,7 +11,7 @@
     import { organization } from '$lib/stores/organization';
     import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
     import { project } from '$routes/(console)/project-[project]/store';
-    import Create from '../create.svelte';
+    import Create from '../(components)/createActionMenu.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
     import { Filters, queries } from '$lib/components/filters';

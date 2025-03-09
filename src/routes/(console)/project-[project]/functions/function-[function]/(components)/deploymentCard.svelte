@@ -6,11 +6,12 @@
     import { Divider, Layout, Status, Typography } from '@appwrite.io/pink-svelte';
     import { DeploymentSource, DeploymentCreatedBy, DeploymentDomains } from '$lib/components/git';
 
-    import { func } from './store';
+    import { func } from '../store';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList;
     export let variant: 'primary' | 'secondary' = 'primary';
+    export let activeDeployment = false;
 
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
 </script>
@@ -20,13 +21,25 @@
         <Layout.GridFraction start={4} end={6}>
             <Layout.Stack direction="row">
                 <Layout.Stack gap="xs">
-                    <Typography.Title size="s" variant="l-500" color="--fgcolor-neutral-primary">
-                        Active deployment
-                    </Typography.Title>
+                    {#if activeDeployment}
+                        <Typography.Title
+                            size="s"
+                            variant="l-500"
+                            color="--fgcolor-neutral-primary">
+                            Active deployment
+                        </Typography.Title>
 
-                    <Id value={deployment.$id}>
-                        {deployment.$id}
-                    </Id>
+                        <Id value={deployment.$id}>
+                            {deployment.$id}
+                        </Id>
+                    {:else}
+                        <Typography.Title
+                            size="s"
+                            variant="l-500"
+                            color="--fgcolor-neutral-primary">
+                            Deployment overview
+                        </Typography.Title>
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
             <Layout.Stack gap="xl">
@@ -99,12 +112,14 @@
                         </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
-                <Layout.Stack gap="xxs">
+                <Layout.Stack gap="xxs" inline>
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                         Source
                     </Typography.Text>
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                        <DeploymentSource {deployment} />
+                        <div>
+                            <DeploymentSource {deployment} />
+                        </div>
                     </Typography.Text>
                 </Layout.Stack>
             </Layout.Stack>

@@ -1,28 +1,17 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
-    import { Button } from '$lib/elements/forms';
     import { canWriteFunctions } from '$lib/stores/roles';
-    import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
-    import CreateCli from './(modals)/createCli.svelte';
-    import CreateGit from './(modals)/createGit.svelte';
-    import CreateManual from './(modals)/createManual.svelte';
-    import { showCreateDeployment } from './store';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { ActionMenu, Popover } from '@appwrite.io/pink-svelte';
+    import CreateCli from '../(modals)/createCli.svelte';
+    import CreateGit from '../(modals)/createGit.svelte';
+    import CreateManual from '../(modals)/createManual.svelte';
+    import { showCreateDeployment } from '../store';
 
-    export let secondary = false;
-    export let round = false;
-    // This allows us to know which one to open when the user uses the shortcut in the command center
-    export let main = false;
-    let show = false;
     let showCreateCli = false;
     let showCreateGit = false;
     let showCreateManual = false;
 
     beforeNavigate(() => ($showCreateDeployment = false));
-
-    $: if ($showCreateDeployment && main) {
-        show = true;
-    }
 </script>
 
 <Popover let:toggle placement="bottom-end" padding="none">
