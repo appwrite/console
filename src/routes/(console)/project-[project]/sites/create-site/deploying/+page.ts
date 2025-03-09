@@ -15,8 +15,7 @@ export const load: PageLoad = async ({ url }) => {
             Query.equal('type', RuleType.DEPLOYMENT),
             Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
             Query.equal('deploymentResourceId', siteId),
-            Query.equal('deploymentId', deploymentId),
-            Query.limit(1)
+            Query.equal('deploymentId', deploymentId)
         ])
     ]);
 

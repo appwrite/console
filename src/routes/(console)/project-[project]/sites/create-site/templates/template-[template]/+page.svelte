@@ -121,7 +121,7 @@
                     framework.outputDirectory,
                     framework.adapter as unknown as Adapter,
                     connectBehaviour === 'later' ? undefined : selectedInstallationId || undefined,
-                    framework.fallbackFile,
+                    framework?.fallbackFile || undefined,
                     selectedRepository || undefined,
                     branch || undefined,
                     selectedRepository ? silentMode : undefined,

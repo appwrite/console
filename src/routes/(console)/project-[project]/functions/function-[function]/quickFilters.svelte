@@ -50,9 +50,9 @@
     let statusFilter = buildFilterCol(statusCol);
     const typeCol = $columns.find((col) => col.id === 'type');
     let typeFilter = buildFilterCol(typeCol);
-    const sizeCol = $columns.find((col) => col.id === 'size');
+    const sizeCol = $columns.find((col) => col.id === 'sourceSize');
     let sizeFilter = buildFilterCol(sizeCol);
-    const buildTimeCol = $columns.find((col) => col.id === 'buildTime');
+    const buildTimeCol = $columns.find((col) => col.id === 'buildDuration');
     let buildTimeFilter = buildFilterCol(buildTimeCol);
 
     let localQueries = new Map<TagValue, string>();

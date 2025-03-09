@@ -13,7 +13,7 @@ export const load = async ({ params, depends, parent }) => {
         sdk.forProject.sites.listDeployments(params.site, [Query.limit(4), Query.orderDesc('')]),
         sdk.forProject.sites.listDeployments(params.site, [
             Query.equal('status', 'ready'),
-            Query.equal('active', true)
+            Query.equal('activate', true)
         ]),
         sdk.forProject.proxy.listRules([
             Query.equal('type', RuleType.DEPLOYMENT),
