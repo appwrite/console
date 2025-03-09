@@ -8,7 +8,7 @@
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Runtime, type Models } from '@appwrite.io/console';
+    import { Runtime, VCSDetectionType, type Models } from '@appwrite.io/console';
     import { func, repositories } from '../store';
     import { invalidate } from '$app/navigation';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
@@ -92,11 +92,12 @@
             $repositories.search !== search
         ) {
             $repositories.repositories = (
-                await sdk.forProject.vcs.listRepositories(
+                (await sdk.forProject.vcs.listRepositories(
                     selectedInstallationId,
+                    VCSDetectionType.Runtime,
                     search || undefined
-                )
-            ).providerRepositories;
+                )) as unknown as Models.ProviderRepositoryRuntimeList
+            ).runtimeProviderRepositories;
         }
 
         $repositories.search = search;

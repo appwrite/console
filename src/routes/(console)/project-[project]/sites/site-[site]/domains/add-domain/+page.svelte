@@ -18,6 +18,7 @@
     import ConnectRepoModal from '../../../(components)/connectRepoModal.svelte';
     import { isCloud } from '$lib/system';
     import { onMount } from 'svelte';
+    import { StatusCode } from '@appwrite.io/console';
 
     const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
 
@@ -29,8 +30,8 @@
     let showConnectRepo = false;
     let behaviour: 'REDIRECT' | 'CREATE' = 'CREATE';
     let domain = '';
-    let redirect = null;
-    let statusCode = null;
+    let redirect: string = null;
+    let statusCode: number = null;
     let branch = null;
 
     const redirectOptions = data.domains.rules
@@ -125,8 +126,10 @@
                             $organization.$id,
                             domain
                         );
-                        //TODO: add status once Matej fixes backend
-                        await sdk.forProject.proxy.createRedirectRule(domain, redirect);
+                        const sc = Object.values(StatusCode).find(
+                            (code) => parseInt(code) === statusCode
+                        );
+                        await sdk.forProject.proxy.createRedirectRule(domain, redirect, sc);
 
                         goto(
                             `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify-${domainData.$id}}`

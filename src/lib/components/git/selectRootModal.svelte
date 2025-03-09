@@ -1,8 +1,10 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { iconPath } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
+    import { VCSDetectionType } from '@appwrite.io/console';
     import { DirectoryPicker } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
 
@@ -16,6 +18,7 @@
 
     export let show = false;
     export let rootDir: string;
+    export let product: 'sites' | 'functions';
 
     let isLoading = true;
     let directories: Directory[] = [
@@ -82,17 +85,16 @@
                 fileCount: undefined,
                 thumbnailUrl: undefined
             }));
-            //     const runtime = await sdk.forProject.vcs.createRepositoryDetection(
-            //         $installation.$id,
-            //         $repository.id,
-            //         path
-            //     );
-
-            //     currentDir.children.forEach((dir)=>
-            //     {
-            //         dir.thumbnailHtml = $iconPath(runtime.runtime, 'color')
-            //     }
-            // )
+            const runtime = await sdk.forProject.vcs.createRepositoryDetection(
+                $installation.$id,
+                $repository.id,
+                VCSDetectionType.Framework, //TODO: add type: VCSDetectionType.Framework || VCSDetectionType.Runtime according to the product
+                path
+            );
+            //TODO: Fix runtime after passing type: runtime.framework || runtime.runtime
+            currentDir.children.forEach((dir) => {
+                dir.thumbnailUrl = $iconPath(runtime.framework, 'color');
+            });
             directories = [...directories];
         } catch (error) {
             console.error(error);

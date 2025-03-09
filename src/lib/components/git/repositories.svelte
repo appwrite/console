@@ -19,6 +19,7 @@
     import ConnectGit from './connectGit.svelte';
     import SvgIcon from '../svgIcon.svelte';
     import { getFrameworkIcon } from '$routes/(console)/project-[project]/sites/store';
+    import { VCSDetectionType, type Models } from '@appwrite.io/console';
 
     const dispatch = createEventDispatcher();
 
@@ -62,9 +63,24 @@
             $repositories.installationId !== installationId ||
             $repositories.search !== search
         ) {
-            $repositories.repositories = (
-                await sdk.forProject.vcs.listRepositories(installationId, search || undefined)
-            ).providerRepositories;
+            //TODO: remove forced cast after backend fixes
+            if (product === 'functions') {
+                $repositories.repositories = (
+                    (await sdk.forProject.vcs.listRepositories(
+                        installationId,
+                        VCSDetectionType.Runtime,
+                        search || undefined
+                    )) as unknown as Models.ProviderRepositoryRuntimeList
+                ).runtimeProviderRepositories;
+            } else {
+                $repositories.repositories = (
+                    await sdk.forProject.vcs.listRepositories(
+                        installationId,
+                        VCSDetectionType.Framework,
+                        search || undefined
+                    )
+                ).frameworkProviderRepositories;
+            }
         }
 
         $repositories.search = search;
