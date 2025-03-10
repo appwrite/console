@@ -28,11 +28,13 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (account) {
+        const organizations = !isCloud
+            ? await sdk.forConsole.teams.list()
+            : await sdk.forConsole.billing.listOrganization();
+
         return {
-            account: account,
-            organizations: !isCloud
-                ? await sdk.forConsole.teams.list()
-                : await sdk.forConsole.billing.listOrganization()
+            account,
+            organizations
         };
     }
 
