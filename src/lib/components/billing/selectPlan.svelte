@@ -2,7 +2,7 @@
     import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { plansInfo } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import { LabelCard } from '..';
 
     export let billingPlan: string;
@@ -10,16 +10,61 @@
     export let isNewOrg = false;
     let classes: string = '';
     export { classes as class };
+
+    let isCurrentPlanShown: boolean = false;
+
+    function currentPlanExists() {
+        let planFound = $plansInfo.values().find((plan) => plan.$id == $currentPlan?.$id);
+        if (planFound) {
+            return true;
+        }
+        return false;
+    }
+
+    $: isCurrentPlanShown = currentPlanExists();
 </script>
 
 {#if billingPlan}
     <ul class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-8 {classes}">
+        {#if !isCurrentPlanShown && $currentPlan}
+            <li>
+                <LabelCard
+                    name="plan"
+                    bind:group={billingPlan}
+                    disabled={($currentPlan.$id === BillingPlan.FREE && anyOrgFree) ||
+                        (!$currentPlan?.selfService && !isNewOrg)}
+                    value={$currentPlan.$id}
+                    tooltipShow={$currentPlan.$id === BillingPlan.FREE && anyOrgFree}
+                    tooltipText={$currentPlan.$id === BillingPlan.FREE
+                        ? 'You are limited to 1 Free organization per account.'
+                        : ''}
+                    padding={1.5}>
+                    <svelte:fragment slot="custom" let:disabled>
+                        <div
+                            class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
+                            class:u-opacity-50={disabled}>
+                            <h4 class="body-text-2 u-bold">
+                                {$currentPlan.name}
+                                <span class="inline-tag">Current plan</span>
+                            </h4>
+                            <p class="u-color-text-offline u-small">
+                                {$currentPlan.desc}
+                            </p>
+                            <p>
+                                {formatCurrency($currentPlan?.price ?? 0)}
+                            </p>
+                        </div>
+                    </svelte:fragment>
+                </LabelCard>
+            </li>
+        {/if}
         {#each $plansInfo.values() as plan}
             <li>
                 <LabelCard
                     name="plan"
                     bind:group={billingPlan}
-                    disabled={(plan.$id === BillingPlan.FREE && anyOrgFree) || !plan.selfService}
+                    disabled={(plan.$id === BillingPlan.FREE && anyOrgFree) ||
+                        (!$currentPlan?.selfService && !isNewOrg)}
                     value={plan.$id}
                     tooltipShow={plan.$id === BillingPlan.FREE && anyOrgFree}
                     tooltipText={plan.$id === BillingPlan.FREE
