@@ -11,11 +11,9 @@
         type TagValue
     } from '$lib/components/filters/store';
     import type { Column } from '$lib/helpers/types';
-    import { Card, Icon } from '@appwrite.io/pink-svelte';
-    import { melt, createMenubar } from '@melt-ui/svelte';
     import { type Writable } from 'svelte/store';
-    import { Button } from '$lib/elements/forms';
-    import { IconFilterLine } from '@appwrite.io/pink-icons-svelte';
+    import Menu from '$lib/components/filters/menu.svelte';
+    import { CustomFilters } from '$lib/components/filters';
 
     export let columns: Writable<Column[]>;
 
@@ -183,86 +181,53 @@
         addFilter($columns, colId, ValidOperators.GreaterThanOrEqual, isoValue.toISOString());
         addFilter($columns, colId, ValidOperators.LessThanOrEqual, now.toISOString());
     }
-
-    const {
-        elements: { menubar },
-        builders: { createMenu }
-    } = createMenubar();
-
-    const {
-        elements: { trigger: trigger, menu: menu }
-    } = createMenu();
 </script>
 
-<div use:melt={$menubar}>
-    <div use:melt={$trigger}>
-        {#if $tags.length}
-            <Button secondary badge={`${$tags.length}`}>
-                <Icon icon={IconFilterLine} slot="start" />
-                Filters
-            </Button>
-        {:else}
-            <Button secondary>
-                <Icon icon={IconFilterLine} slot="start" />
-                Filters
-            </Button>
-        {/if}
-    </div>
-
-    <div class="menu" use:melt={$menu}>
-        <Card.Base padding="xxxs" shadow={true}>
-            {#each [statusFilter, triggerFilter, methodFilter] as filter}
-                <MenuItem
-                    {filter}
-                    on:add={(e) => {
-                        console.log('test');
-                        addFilterAndApply(
-                            filter.id,
-                            filter.title,
-                            filter.operator,
-                            e.detail.value,
-                            filter?.array
-                                ? (filter.options
-                                      .filter((opt) => opt.checked)
-                                      .map((opt) => opt.value) ?? [])
-                                : []
-                        );
-                    }}
-                    on:clear={() => {
-                        filter.tag = null;
-                        addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
-                    }} />
-            {/each}
-            {#each [statusCodeFilter, createdAtFilter] as filter}
-                <MenuItem
-                    variant="radio"
-                    {filter}
-                    on:add={(e) => {
-                        console.log('test');
-                        addFilterAndApply(
-                            filter.id,
-                            filter.title,
-                            filter.operator,
-                            e.detail.value,
-                            filter?.array
-                                ? (filter.options
-                                      .filter((opt) => opt.checked)
-                                      .map((opt) => opt.value) ?? [])
-                                : []
-                        );
-                    }}
-                    on:clear={() => {
-                        filter.tag = null;
-                        addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
-                    }} />
-            {/each}
-        </Card.Base>
-    </div>
-</div>
-
-<style>
-    .menu {
-        min-width: 244px;
-        z-index: 20;
-    }
-</style>
+<Menu>
+    {#each [statusFilter, triggerFilter, methodFilter] as filter}
+        <MenuItem
+            {filter}
+            on:add={(e) => {
+                console.log('test');
+                addFilterAndApply(
+                    filter.id,
+                    filter.title,
+                    filter.operator,
+                    e.detail.value,
+                    filter?.array
+                        ? (filter.options.filter((opt) => opt.checked).map((opt) => opt.value) ??
+                              [])
+                        : []
+                );
+            }}
+            on:clear={() => {
+                filter.tag = null;
+                addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
+            }} />
+    {/each}
+    {#each [statusCodeFilter, createdAtFilter] as filter}
+        <MenuItem
+            variant="radio"
+            {filter}
+            on:add={(e) => {
+                console.log('test');
+                addFilterAndApply(
+                    filter.id,
+                    filter.title,
+                    filter.operator,
+                    e.detail.value,
+                    filter?.array
+                        ? (filter.options.filter((opt) => opt.checked).map((opt) => opt.value) ??
+                              [])
+                        : []
+                );
+            }}
+            on:clear={() => {
+                filter.tag = null;
+                addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
+            }} />
+    {/each}
+    <svelte:fragment slot="end">
+        <CustomFilters {columns} />
+    </svelte:fragment>
+</Menu>

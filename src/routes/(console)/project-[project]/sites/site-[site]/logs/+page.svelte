@@ -20,6 +20,15 @@
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Log ID', type: 'string', show: true, width: 150 },
+
+        {
+            id: 'requestPath',
+            title: 'Path',
+            type: 'string',
+            show: true,
+            width: 90,
+            format: 'string'
+        },
         {
             id: '$createdAt',
             title: 'Created',
@@ -41,15 +50,6 @@
                     label: 'last 24 hours'
                 }
             ]
-        },
-
-        {
-            id: 'requestPath',
-            title: 'Path',
-            type: 'string',
-            show: true,
-            width: 90,
-            format: 'string'
         }
     ]);
     let search = '';
