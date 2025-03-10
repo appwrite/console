@@ -1,18 +1,15 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { DropList, DropListItem } from '$lib/components';
     import MenuItem from '$lib/components/filters/subMenu.svelte';
     import {
         addFilter,
         queries,
         queryParamToMap,
-        tagFormat,
         tags,
         ValidOperators,
         type TagValue
     } from '$lib/components/filters/store';
-    import { Pill, SelectSearchCheckbox } from '$lib/elements';
     import type { Column } from '$lib/helpers/types';
     import { Card, Icon } from '@appwrite.io/pink-svelte';
     import { melt, createMenubar } from '@melt-ui/svelte';

@@ -1,6 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
+import { proxyRuleList } from '../../store';
 
 export const load: PageLoad = async ({ params, depends, parent }) => {
     const data = await parent();
@@ -13,6 +14,7 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
                   params.function,
                   data.function.deployment
               )
-            : null
+            : null,
+        proxyRuleList: data.proxyRuleList
     };
 };
