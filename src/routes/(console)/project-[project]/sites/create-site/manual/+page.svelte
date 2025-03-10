@@ -18,6 +18,7 @@
     import { buildVerboseDomain } from '../store';
     import { project } from '$routes/(console)/project-[project]/store';
     import { organization } from '$lib/stores/organization';
+    import { consoleVariables } from '$routes/(console)/store';
 
     export let data;
     let showExitModal = false;
@@ -56,13 +57,19 @@
                 installCommand || undefined,
                 buildCommand || undefined,
                 outputDirectory || undefined,
-                framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
+                undefined,
                 undefined,
                 undefined,
                 undefined,
                 undefined,
                 undefined,
                 undefined
+            );
+
+            // Add domain
+            await sdk.forProject.proxy.createSiteRule(
+                `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                site.$id
             );
 
             //Add variables
