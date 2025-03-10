@@ -67,7 +67,7 @@
 
 <Wizard
     href={`${base}/project-${$page.params.project}/sites/`}
-    title="Create Site"
+    title="Create site"
     invertColumns
     hideFooter>
     <svelte:fragment slot="aside">
