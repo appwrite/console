@@ -69,7 +69,7 @@
                 {/if}
             </div>
             <div>
-                <ActionMenu.Root>
+                <ActionMenu.Root noPadding>
                     <ActionMenu.Item.Button
                         on:click={() => {
                             $showCreate = true;
