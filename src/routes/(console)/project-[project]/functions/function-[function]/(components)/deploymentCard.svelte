@@ -16,11 +16,11 @@
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.sourceSize ?? 0));
 </script>
 
-<Card isTile padding="s" radius="m" {variant}>
-    <Layout.Stack gap="l">
+<Card isTile padding="m" radius="m" {variant}>
+    <Layout.Stack gap="xxl">
         <Layout.GridFraction start={4} end={6}>
-            <Layout.Stack direction="row">
-                <Layout.Stack gap="xs">
+            <Layout.Stack>
+                <Layout.Stack direction="row" alignItems="center" gap="s">
                     {#if activeDeployment}
                         <Typography.Title
                             size="s"
@@ -28,10 +28,11 @@
                             color="--fgcolor-neutral-primary">
                             Active deployment
                         </Typography.Title>
-
-                        <Id value={deployment.$id}>
-                            {deployment.$id}
-                        </Id>
+                        <div>
+                            <Id value={deployment.$id}>
+                                {deployment.$id}
+                            </Id>
+                        </div>
                     {:else}
                         <Typography.Title
                             size="s"
@@ -127,7 +128,7 @@
 
         {#if $$slots.footer}
             <span
-                style="margin-left: calc(-1* var(--space-7));margin-right: calc(-1* var(--space-7));width:auto;">
+                style="margin-left: calc(-1* var(--space-9));margin-right: calc(-1* var(--space-9));width:auto;">
                 <Divider />
             </span>
             <Layout.Stack direction="row-reverse">

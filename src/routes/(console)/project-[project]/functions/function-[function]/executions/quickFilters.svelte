@@ -2,6 +2,7 @@
     import { afterNavigate } from '$app/navigation';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { DropList, DropListItem } from '$lib/components';
+    import MenuItem from '$lib/components/filters/subMenu.svelte';
     import {
         addFilter,
         queries,
@@ -13,7 +14,11 @@
     } from '$lib/components/filters/store';
     import { Pill, SelectSearchCheckbox } from '$lib/elements';
     import type { Column } from '$lib/helpers/types';
+    import { Card, Icon } from '@appwrite.io/pink-svelte';
+    import { melt, createMenubar } from '@melt-ui/svelte';
     import { type Writable } from 'svelte/store';
+    import { Button } from '$lib/elements/forms';
+    import { IconFilterLine } from '@appwrite.io/pink-icons-svelte';
 
     export let columns: Writable<Column[]>;
 
@@ -181,103 +186,86 @@
         addFilter($columns, colId, ValidOperators.GreaterThanOrEqual, isoValue.toISOString());
         addFilter($columns, colId, ValidOperators.LessThanOrEqual, now.toISOString());
     }
+
+    const {
+        elements: { menubar },
+        builders: { createMenu }
+    } = createMenubar();
+
+    const {
+        elements: { trigger: trigger, menu: menu }
+    } = createMenu();
 </script>
 
-{#each [statusFilter, triggerFilter, methodFilter] as filter}
-    <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
-        <Pill
-            button
-            on:click={() => (filter.show = !filter.show)}
-            event="apply_quick_filter"
-            eventData={{ source: 'function_execution', column: filter.title }}>
-            {#key filter.tag}
-                <span use:tagFormat>
-                    {filter?.tag ?? filter.title}
-                </span>
-            {/key}
-            <span class:icon-cheveron-down={!filter.show} class:icon-cheveron-up={filter.show}>
-            </span>
-        </Pill>
-        <svelte:fragment slot="list">
-            {#each filter.options as option (option.value + option.checked)}
-                <SelectSearchCheckbox
-                    padding={8}
-                    bind:value={option.checked}
-                    on:click={() => {
-                        option.checked = !option.checked;
+<div use:melt={$menubar}>
+    <div use:melt={$trigger}>
+        {#if $tags.length}
+            <Button secondary badge={`${$tags.length}`}>
+                <Icon icon={IconFilterLine} slot="start" />
+                Filters
+            </Button>
+        {:else}
+            <Button secondary>
+                <Icon icon={IconFilterLine} slot="start" />
+                Filters
+            </Button>
+        {/if}
+    </div>
+
+    <div class="menu" use:melt={$menu}>
+        <Card.Base padding="xxxs" shadow={true}>
+            {#each [statusFilter, triggerFilter, methodFilter] as filter}
+                <MenuItem
+                    {filter}
+                    on:add={(e) => {
+                        console.log('test');
                         addFilterAndApply(
                             filter.id,
                             filter.title,
                             filter.operator,
-                            filter?.array ? null : option.checked ? option.value : null,
+                            e.detail.value,
                             filter?.array
                                 ? (filter.options
                                       .filter((opt) => opt.checked)
                                       .map((opt) => opt.value) ?? [])
                                 : []
                         );
-                    }}>
-                    {option.label}
-                </SelectSearchCheckbox>
-            {/each}
-            {#if filter.options.some((option) => option.checked)}
-                <DropListItem
-                    padding={8}
-                    on:click={() => {
-                        filter.show = false;
+                    }}
+                    on:clear={() => {
                         filter.tag = null;
                         addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
-                    }}>
-                    Clear selection
-                </DropListItem>
-            {/if}
-        </svelte:fragment>
-    </DropList>
-{/each}
-{#each [statusCodeFilter, createdAtFilter] as filter}
-    <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
-        <Pill
-            button
-            on:click={() => (filter.show = !filter.show)}
-            event="apply_quick_filter"
-            eventData={{ source: 'function_execution', column: filter.title }}>
-            {#key filter.tag}
-                <span use:tagFormat>
-                    {filter?.tag ?? filter.title}
-                </span>
-            {/key}
-            <span class:icon-cheveron-down={!filter.show} class:icon-cheveron-up={filter.show}>
-            </span>
-        </Pill>
-        <svelte:fragment slot="list">
-            {#each filter.options as option (option.value + option.checked)}
-                <DropListItem
-                    padding={8}
-                    on:click={() => {
-                        filter.show = false;
-
+                    }} />
+            {/each}
+            {#each [statusCodeFilter, createdAtFilter] as filter}
+                <MenuItem
+                    variant="radio"
+                    {filter}
+                    on:add={(e) => {
+                        console.log('test');
                         addFilterAndApply(
                             filter.id,
                             filter.title,
                             filter.operator,
-                            filter?.array ? null : option.value,
-                            []
+                            e.detail.value,
+                            filter?.array
+                                ? (filter.options
+                                      .filter((opt) => opt.checked)
+                                      .map((opt) => opt.value) ?? [])
+                                : []
                         );
-                    }}>
-                    {option.label}
-                </DropListItem>
-            {/each}
-            {#if filter?.tag}
-                <DropListItem
-                    padding={8}
-                    on:click={() => {
-                        filter.show = false;
+                    }}
+                    on:clear={() => {
                         filter.tag = null;
                         addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
-                    }}>
-                    Clear selection
-                </DropListItem>
-            {/if}
-        </svelte:fragment>
-    </DropList>
-{/each}
+                    }} />
+            {/each}
+        </Card.Base>
+    </div>
+</div>
+
+<style>
+    .menu {
+        min-width: 244px;
+        z-index: 20;
+    }
+</style>

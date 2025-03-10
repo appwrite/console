@@ -1,18 +1,13 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
-    import { Alert, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { goto, invalidate } from '$app/navigation';
+    import { Alert, Empty, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { hoursToDays } from '$lib/helpers/date';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
-    import { organization } from '$lib/stores/organization';
-    import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
     import { project } from '$routes/(console)/project-[project]/store';
-    import Create from '../(components)/createActionMenu.svelte';
-    import { abbreviateNumber } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
     import { Filters, queries } from '$lib/components/filters';
     import { writable } from 'svelte/store';
@@ -20,12 +15,10 @@
     import { View } from '$lib/helpers/load';
     import Table from './table.svelte';
     import QuickFilters from './quickFilters.svelte';
-    import { Pill } from '$lib/elements';
     import { tags } from '$lib/components/filters/store';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let data;
-
-    const logs = getServiceLimit('logs');
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Execution ID', type: 'string', show: true, width: 150 },
@@ -160,116 +153,43 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Executions">
-        <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
-            <p class="u-bold">The {tier} plan has limits</p>
-            <ul>
-                <li>
-                    {abbreviateNumber(limit)} function executions
-                </li>
-                <li>
-                    {hoursToDays(logs)} of logs
-                </li>
-            </ul>
-            {#if $organization?.billingPlan === BillingPlan.FREE}
-                <p class="text">
-                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                        >Upgrade</button>
-                    to increase your resource limits.
-                </p>
-            {:else}
-                <p class="text">
-                    After this amount, <button
-                        class="link"
-                        type="button"
-                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
-                        >usage fees will apply</button
-                    >.
-                </p>
-            {/if}
-        </svelte:fragment>
-    </ContainerHeader>
-    <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
-        <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
-            <QuickFilters {columns} />
-            <Filters
-                query={data.query}
-                {columns}
-                let:disabled
-                let:toggle
-                clearOnClick
-                analyticsSource="executions_filters">
-                <div class="u-flex u-gap-4">
-                    <Button
-                        text
-                        on:click={toggle}
-                        {disabled}
-                        ariaLabel="open filter"
-                        noMargin={!$tags?.length}>
-                        <span class="icon-filter-line" />
-                        <span class="text">More filters</span>
-                    </Button>
-                    {#if $tags?.length}
-                        <div
-                            style="flex-basis: 1px; background-color: hsl(var(--border)); width: 1px;">
-                        </div>
-                        <Button text on:click={clearAll}>Clear All</Button>
-                    {/if}
+    <Layout.Stack direction="row" alignItems="center" justifyContent="space-between">
+        <QuickFilters {columns} />
+        <!-- <Filters
+            query={data.query}
+            {columns}
+            let:disabled
+            let:toggle
+            clearOnClick
+            analyticsSource="executions_filters">
+            <div class="u-flex u-gap-4">
+                <Button
+                text
+                on:click={toggle}
+                {disabled}
+                ariaLabel="open filter"
+                noMargin={!$tags?.length}>
+                <span class="icon-filter-line" />
+                <span class="text">More filters</span>
+                </Button>
+                {#if $tags?.length}
+                <div
+                style="flex-basis: 1px; background-color: hsl(var(--border)); width: 1px;">
                 </div>
-            </Filters>
-        </div>
-        <div class="u-flex u-gap-16">
-            <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
+                <Button text on:click={clearAll}>Clear All</Button>
+                {/if}
+                </div>
+                </Filters> -->
+        <Layout.Stack gap="s" inline direction="row" alignItems="center">
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
             <Button
                 event="execute_function"
                 href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
                 disabled={!$func.$id || !$func?.deployment}>
-                <span class="text">Execute</span>
+                Execute
             </Button>
-        </div>
-    </div>
-    <div class="is-only-mobile">
-        <div class="u-flex u-main-space-between u-margin-block-start-16">
-            <Button
-                text
-                on:click={() => (showMobileFilters = !showMobileFilters)}
-                ariaLabel="toggle filters">
-                <span class="icon-filter-line" />
-                <span class="text">Filters</span>
-            </Button>
-
-            <div class=" u-flex u-gap-16">
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
-                <Button
-                    event="execute_function"
-                    href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
-                    disabled={!$func.$id || !$func?.deployment}>
-                    <span class="text">Execute</span>
-                </Button>
-            </div>
-        </div>
-        <div
-            class:u-hide={!showMobileFilters}
-            class:u-flex={showMobileFilters}
-            class=" u-gap-8 u-flex-wrap u-margin-block-start-16">
-            <QuickFilters {columns} />
-
-            <Filters query={data.query} {columns} clearOnClick analyticsSource="executions_filters">
-                <svelte:fragment slot="mobile" let:disabled let:toggle>
-                    <Pill
-                        button
-                        on:click={toggle}
-                        {disabled}
-                        class="u-flex u-gap-4 u-cross-center"
-                        style="--p-tag-content-height: auto">
-                        <!-- <span class="icon-filter-line" /> -->
-                        <span class="text">More filters</span>
-                        <span class="icon-cheveron-down" />
-                    </Pill>
-                </svelte:fragment>
-            </Filters>
-        </div>
-    </div>
+        </Layout.Stack>
+    </Layout.Stack>
 
     {#if !$func.logging}
         <div class="common-section">
@@ -310,19 +230,14 @@
             </div>
         </EmptySearch>
     {:else}
-        <EmptySearch>
-            <div class="u-text-center">
-                <p class="text u-line-height-1-5">
-                    You have no execution logs. Create and activate a deployment to see it here.
-                </p>
-                <p class="text u-line-height-1-5">Need a hand? Learn more in our documentation.</p>
-            </div>
-            <div class="u-flex u-gap-16">
-                <Button text external href="https://appwrite.io/docs/products/functions/execution">
-                    Documentation
-                </Button>
-                <Create secondary />
-            </div>
-        </EmptySearch>
+        <Empty
+            single
+            target="execution"
+            href="https://appwrite.io/docs/products/functions/execution"
+            on:click={() =>
+                goto(
+                    `${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`
+                )}>
+        </Empty>
     {/if}
 </Container>
