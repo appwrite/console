@@ -399,7 +399,7 @@
 
     :global(.item[data-highlighted]) {
         border-radius: var(--border-radius-S, 8px);
-        background: var(--color-overlay-neutral-hover, rgba(25, 25, 28, 0.03));
+        background: var(--overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
     .trigger {
         display: inline-flex;
@@ -424,7 +424,7 @@
     }
 
     .trigger:hover {
-        background: var(--color-overlay-neutral-hover, rgba(25, 25, 28, 0.03));
+        background: var(--overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
 
     :global(.trigger[data-highlighted]) {
