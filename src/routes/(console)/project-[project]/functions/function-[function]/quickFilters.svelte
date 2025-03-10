@@ -1,19 +1,18 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { CustomFilters } from '$lib/components/filters';
+    import Menu from '$lib/components/filters/menu.svelte';
     import {
         addFilter,
         queries,
         queryParamToMap,
-        tagFormat,
         tags,
         ValidOperators,
         type TagValue
     } from '$lib/components/filters/store';
-    import { SelectSearchCheckbox } from '$lib/elements';
+    import SubMenu from '$lib/components/filters/subMenu.svelte';
     import type { Column } from '$lib/helpers/types';
-    import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Icon, Popover, Tag } from '@appwrite.io/pink-svelte';
     import { type Writable } from 'svelte/store';
 
     export let columns: Writable<Column[]>;
@@ -182,96 +181,51 @@
     }
 </script>
 
-{#each [typeFilter] as filter}
-    <Popover let:toggle let:showing padding="none">
-        <Tag
-            on:click={toggle}
-            event="apply_quick_filter"
-            eventData={{ source: 'function_deployments', column: filter.title }}>
-            {#key filter.tag}
-                <span use:tagFormat>
-                    {filter?.tag ?? filter.title}
-                </span>
-            {/key}
-            <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" size="s" />
-        </Tag>
-        <svelte:fragment slot="tooltip" let:toggle>
-            <ActionMenu.Root>
-                {#each filter.options as option (option.value + option.checked)}
-                    <SelectSearchCheckbox
-                        bind:value={option.checked}
-                        on:click={() => {
-                            option.checked = !option.checked;
-                            addFilterAndApply(
-                                filter.id,
-                                filter.title,
-                                filter.operator,
-                                filter?.array ? null : option.checked ? option.value : null,
-                                filter?.array
-                                    ? (filter.options
-                                          .filter((opt) => opt.checked)
-                                          .map((opt) => opt.value) ?? [])
-                                    : []
-                            );
-                        }}>
-                        {option.label}
-                    </SelectSearchCheckbox>
-                {/each}
-                {#if filter.options.some((option) => option.checked)}
-                    <ActionMenu.Item.Button
-                        on:click={(e) => {
-                            toggle(e);
-                            filter.tag = null;
-                            addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
-                        }}>
-                        Clear selection
-                    </ActionMenu.Item.Button>
-                {/if}
-            </ActionMenu.Root>
-        </svelte:fragment>
-    </Popover>
-{/each}
-{#each [sizeFilter] as filter}
-    <Popover padding="none" let:toggle let:showing>
-        <Tag
-            on:click={toggle}
-            event="apply_quick_filter"
-            eventData={{ source: 'function_deployments', column: filter.title }}>
-            {#key filter.tag}
-                <span use:tagFormat>
-                    {filter?.tag ?? filter.title}
-                </span>
-            {/key}
-            <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" size="s" />
-        </Tag>
-        <svelte:fragment slot="tooltip" let:toggle>
-            <ActionMenu.Root>
-                {#each filter.options as option (option.value + option.checked)}
-                    <ActionMenu.Item.Button
-                        on:click={(e) => {
-                            addFilterAndApply(
-                                filter.id,
-                                filter.title,
-                                filter.operator,
-                                filter?.array ? null : option.value,
-                                []
-                            );
-                            toggle(e);
-                        }}>
-                        {option.label}
-                    </ActionMenu.Item.Button>
-                {/each}
-                {#if filter?.tag}
-                    <ActionMenu.Item.Button
-                        on:click={(e) => {
-                            filter.tag = null;
-                            addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
-                            toggle(e);
-                        }}>
-                        Clear selection
-                    </ActionMenu.Item.Button>
-                {/if}
-            </ActionMenu.Root>
-        </svelte:fragment>
-    </Popover>
-{/each}
+<Menu>
+    {#each [typeFilter] as filter}
+        <SubMenu
+            {filter}
+            on:add={(e) => {
+                console.log('test');
+                addFilterAndApply(
+                    filter.id,
+                    filter.title,
+                    filter.operator,
+                    e.detail.value,
+                    filter?.array
+                        ? (filter.options.filter((opt) => opt.checked).map((opt) => opt.value) ??
+                              [])
+                        : []
+                );
+            }}
+            on:clear={() => {
+                filter.tag = null;
+                addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
+            }} />
+    {/each}
+    {#each [sizeFilter] as filter}
+        <SubMenu
+            variant="radio"
+            {filter}
+            on:add={(e) => {
+                console.log('test');
+                addFilterAndApply(
+                    filter.id,
+                    filter.title,
+                    filter.operator,
+                    e.detail.value,
+                    filter?.array
+                        ? (filter.options.filter((opt) => opt.checked).map((opt) => opt.value) ??
+                              [])
+                        : []
+                );
+            }}
+            on:clear={() => {
+                filter.tag = null;
+                addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
+            }} />
+    {/each}
+    <svelte:fragment slot="end">
+        <CustomFilters {columns} />
+    </svelte:fragment>
+</Menu>

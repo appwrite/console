@@ -80,7 +80,7 @@
                             </Layout.Stack>
                             <Layout.Stack gap="xs" inline>
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Status
+                                    Status code
                                 </Typography.Text>
                                 <span>
                                     <Badge

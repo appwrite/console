@@ -197,7 +197,7 @@
 <style lang="scss">
     :global(.theme-dark) {
         --icon-content-background-color: var(--bgcolor-neutral-primary, #1d1d21);
-        --icon-content-border-color: var(--color-overlay-skeleton);
+        --icon-content-border-color: var(--overlay-skeleton);
         --icon-container-background-color: #242427;
         --icon-container-border-color: rgba(255, 255, 255, 0.02);
         --box-shadow: none;

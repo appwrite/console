@@ -56,7 +56,9 @@
 
 <Container>
     <UpdateName site={data.site} />
-    <UpdateRepository site={data.site} installations={data.installations} />
+    {#key data.site.providerRepositoryId}
+        <UpdateRepository site={data.site} installations={data.installations} />
+    {/key}
     <UpdateBuildSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateVariables
         {sdkCreateVariable}

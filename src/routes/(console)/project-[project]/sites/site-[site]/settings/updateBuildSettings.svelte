@@ -96,6 +96,10 @@
     $: if (fallback === '') {
         fallback = null;
     }
+
+    $: frameworkDataAdapter = frameworkData.adapters?.length
+        ? frameworkData.adapters[site.adapter]
+        : frameworks[0].adapters[site.adapter];
 </script>
 
 <Form onSubmit={updateName}>
@@ -127,7 +131,8 @@
                         variant="primary"
                         radius="s"
                         padding="s"
-                        value={Adapter.Ssr}
+                        name="adapter"
+                        value={`${Adapter.Ssr}`}
                         bind:group={adapter}>
                         Use <InlineCode code={`${frameworkKey}/node`} size="s" /> adapter in your {frameworkData.name}
                         config file. <Link external href="#">Learn more</Link>.
@@ -137,6 +142,7 @@
                         variant="primary"
                         radius="s"
                         padding="s"
+                        name="adapter"
                         value={Adapter.Static}
                         bind:group={adapter}>
                         Use <InlineCode code={`${frameworkKey}/static`} size="s" /> adapter in your {frameworkData.name}
@@ -150,8 +156,7 @@
                                 id="installCommand"
                                 label="Install command"
                                 bind:value={installCommand}
-                                placeholder={frameworkData.adapters[site.adapter]
-                                    .defaultInstallCommand} />
+                                placeholder={frameworkDataAdapter?.defaultInstallCommand} />
 
                             <Button
                                 secondary
@@ -160,7 +165,7 @@
                                     (installCommand =
                                         site?.installCommand ??
                                         selectedFramework.adapters[site.adapter]
-                                            .defaultInstallCommand)}>
+                                            ?.defaultInstallCommand)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -169,8 +174,7 @@
                                 id="buildCommand"
                                 label="Build command"
                                 bind:value={buildCommand}
-                                placeholder={frameworkData.adapters[site.adapter]
-                                    .defaultBuildCommand} />
+                                placeholder={frameworkDataAdapter?.defaultBuildCommand} />
                             <Button
                                 secondary
                                 size="s"
@@ -178,7 +182,7 @@
                                     (buildCommand =
                                         site?.buildCommand ??
                                         selectedFramework.adapters[site.adapter]
-                                            .defaultbuildCommand)}>
+                                            ?.defaultBuildCommand)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -187,8 +191,7 @@
                                 id="outputDirectory"
                                 label="Output directory"
                                 bind:value={outputDirectory}
-                                placeholder={frameworkData.adapters[site.adapter]
-                                    .defaultOutputDirectory} />
+                                placeholder={frameworkDataAdapter?.defaultOutputDirectory} />
                             <Button
                                 secondary
                                 size="s"
@@ -196,7 +199,7 @@
                                     (outputDirectory =
                                         site?.outputDirectory ??
                                         selectedFramework.adapters[site.adapter]
-                                            .defaultoutputDirectory)}>
+                                            ?.defaultOutputDirectory)}>
                                 Reset
                             </Button>
                         </Layout.Stack>

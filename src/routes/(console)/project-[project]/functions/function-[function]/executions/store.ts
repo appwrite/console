@@ -3,29 +3,15 @@ import { writable } from 'svelte/store';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Execution ID', type: 'string', show: true, width: 150 },
-
     {
-        id: '$createdAt',
-        title: 'Created',
-        type: 'datetime',
+        id: 'requestPath',
+        title: 'Path',
+        type: 'string',
         show: true,
-        width: 120,
-        format: 'datetime',
-        elements: [
-            {
-                value: 5 * 60 * 1000,
-                label: 'last 5 minutes'
-            },
-            {
-                value: 60 * 60 * 1000,
-                label: 'last 1 hour'
-            },
-            {
-                value: 24 * 60 * 60 * 1000,
-                label: 'last 24 hours'
-            }
-        ]
+        width: 90,
+        format: 'string'
     },
+
     {
         id: 'trigger',
         title: 'Trigger',
@@ -79,14 +65,7 @@ export const columns = writable<Column[]>([
         ],
         hide: true
     },
-    {
-        id: 'requestPath',
-        title: 'Path',
-        type: 'string',
-        show: true,
-        width: 90,
-        format: 'string'
-    },
+
     {
         id: 'status',
         title: 'Status',
@@ -118,5 +97,48 @@ export const columns = writable<Column[]>([
                 label: 'more than 30 seconds'
             }
         ]
+    },
+    {
+        id: '$createdAt',
+        title: 'Created',
+        type: 'datetime',
+        show: true,
+        width: 120,
+        format: 'datetime',
+        elements: [
+            {
+                value: 5 * 60 * 1000,
+                label: 'last 5 minutes'
+            },
+            {
+                value: 60 * 60 * 1000,
+                label: 'last 1 hour'
+            },
+            {
+                value: 24 * 60 * 60 * 1000,
+                label: 'last 24 hours'
+            }
+        ]
     }
 ]);
+
+export function logStatusConverter(status: string) {
+    // ['completed', 'failed', 'waiting', 'scheduled', 'processing', 'cancelled']
+
+    switch (status) {
+        case 'completed':
+            return 'complete';
+        case 'scheduled':
+            return 'processing';
+        case 'processing':
+            return 'processing';
+        case 'waiting':
+            return 'waiting';
+        case 'peding':
+            return 'pending';
+        case 'cancelled':
+            return 'waiting';
+        case 'failed':
+            return 'failed';
+    }
+}

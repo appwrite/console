@@ -42,11 +42,9 @@
                     `sites.${deployment.resourceId}.deployments.${deployment.$id}.update`
                 )
             ) {
-                const res = response.payload as Partial<Models.Deployment> & { logs: string };
-                console.log(res);
+                const res = response.payload as Partial<Models.Deployment>;
                 status = res.status;
-                // Models.Deployment has no `logs`, the payload sends `logs` though
-                buildLogs = res.logs;
+                buildLogs = res.buildLogs;
 
                 if (status === 'ready') {
                     goto(
@@ -57,23 +55,6 @@
         });
         return () => unsubscribe();
     });
-
-    // async function cancelDeployment() {
-    //     try {
-    //         await sdk.forProject.sites.updateDeploymentStatus(deployment.resourceId, deployment.$id);
-
-    //         await invalidate(Dependencies.DEPLOYMENTS);
-    //         addNotification({
-    //             type: 'success',
-    //             message: `Deployment has been canceled`
-    //         });
-    //     } catch (error) {
-    //         addNotification({
-    //             type: 'error',
-    //             message: error.message
-    //         });
-    //     }
-    // }
 </script>
 
 <Layout.Stack gap="xl">

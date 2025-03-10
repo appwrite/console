@@ -7,35 +7,13 @@
     import Sheet from './sheet.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { logStatusConverter } from './store';
 
     export let columns: Column[];
     export let logs: Models.ExecutionList;
 
     let openSheet = false;
     let selectedLogId: string = null;
-
-    $: console.log(columns);
-
-    export function logStatusConverter(status: string) {
-        // ['completed', 'failed', 'waiting', 'scheduled', 'processing', 'cancelled']
-
-        switch (status) {
-            case 'completed':
-                return 'complete';
-            case 'scheduled':
-                return 'ready';
-            case 'processing':
-                return 'processing';
-            case 'waiting':
-                return 'waiting';
-            case 'peding':
-                return 'pending';
-            case 'cancelled':
-                return 'waiting';
-            case 'failed':
-                return 'failed';
-        }
-    }
 </script>
 
 <Table.Root>
@@ -97,12 +75,7 @@
                                     <Status
                                         status={logStatusConverter(status)}
                                         label={capitalize(status)}>
-                                        {#if status === 'scheduled'}
-                                            <span class="icon-clock" aria-hidden="true" />
-                                            {timeFromNow(log.scheduledAt)}
-                                        {:else}
-                                            {status}
-                                        {/if}
+                                        {status}
                                     </Status>
                                 </div>
                                 <span slot="tooltip">

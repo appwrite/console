@@ -1,9 +1,7 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-
     import DangerZone from './dangerZone.svelte';
     import ExecuteFunction from './executeFunction.svelte';
-    import UpdateConfiguration from './updateConfiguration.svelte';
     import UpdateEvents from './updateEvents.svelte';
     import UpdateLogging from './updateLogging.svelte';
     import UpdateName from './updateName.svelte';
@@ -13,38 +11,35 @@
     import UpdateScopes from './updateScopes.svelte';
     import UpdateTimeout from './updateTimeout.svelte';
     import UpdateVariables from '../../../updateVariables.svelte';
-
-    import { func } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
     import { Alert } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import UpdateRepository from './updateRepository.svelte';
 
     export let data;
     let showAlert = true;
 
     const sdkCreateVariable = async (key: string, value: string, secret: boolean) => {
-        await sdk.forProject.functions.createVariable($func.$id, key, value, secret);
+        await sdk.forProject.functions.createVariable(data.function.$id, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
     const sdkUpdateVariable = async (variableId: string, key: string, value: string) => {
-        await sdk.forProject.functions.updateVariable($func.$id, variableId, key, value);
+        await sdk.forProject.functions.updateVariable(data.function.$id, variableId, key, value);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
     const sdkDeleteVariable = async (variableId: string) => {
-        await sdk.forProject.functions.deleteVariable($func.$id, variableId);
+        await sdk.forProject.functions.deleteVariable(data.function.$id, variableId);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 </script>
 
 <Container>
-    <Typography.Title>Settings</Typography.Title>
-    {#if $func.version === 'v2' && showAlert}
+    {#if data.function.version === 'v2' && showAlert}
         <Alert
             type="warning"
             dismissible
@@ -78,7 +73,9 @@
     <ExecuteFunction />
     <UpdateName />
     <UpdateRuntime runtimesList={data.runtimesList} />
-    <UpdateConfiguration />
+    {#key data.function.providerRepositoryId}
+        <UpdateRepository func={data.function} installations={data.installations} />
+    {/key}
     <UpdateLogging />
     <UpdatePermissions />
     <UpdateEvents />
