@@ -9,13 +9,14 @@
     import { organization, currentPlan } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
+    import BudgetAlert from './budgetAlert.svelte';
 
     let capActive = false;
     let budget: number;
 
     onMount(() => {
         budget = $organization?.billingBudget;
-        capActive = !!$organization?.billingBudget;
+        capActive = $organization?.billingBudget !== null;
     });
 
     async function updateBudget() {
@@ -44,7 +45,7 @@
     }
 
     $: if (!capActive) {
-        budget = 0;
+        budget = null;
     }
 </script>
 
@@ -113,3 +114,5 @@
         </svelte:fragment>
     </CardGrid>
 </Form>
+
+<BudgetAlert alertsEnabled={capActive && budget > 0} />
