@@ -10,7 +10,7 @@ export const orgSearcher = (async (query: string) => {
         : await sdk.forConsole.billing.listOrganization();
 
     return teams
-        .filter((organization) => organization.name.toLowerCase().includes(query?.toLowerCase()))
+        .filter((organization) => organization.name.toLowerCase().includes(query.toLowerCase()))
         .map((organization) => {
             return {
                 label: organization.name,
