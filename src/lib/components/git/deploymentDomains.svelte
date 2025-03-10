@@ -10,7 +10,7 @@
 </script>
 
 <Layout.Stack gap="xxs" direction="row" alignItems="center">
-    {#if domains.total}
+    {#if domains?.total}
         <Link external href={`${$protocol}${domains.rules[0]?.domain}`} variant="muted">
             <Layout.Stack gap="xxs" direction="row" alignItems="center">
                 <Trim alternativeTrim>

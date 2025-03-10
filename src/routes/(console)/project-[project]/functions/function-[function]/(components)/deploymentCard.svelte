@@ -16,7 +16,7 @@
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.sourceSize ?? 0));
 </script>
 
-<Card padding="s" radius="m" {variant}>
+<Card isTile padding="s" radius="m" {variant}>
     <Layout.Stack gap="l">
         <Layout.GridFraction start={4} end={6}>
             <Layout.Stack direction="row">

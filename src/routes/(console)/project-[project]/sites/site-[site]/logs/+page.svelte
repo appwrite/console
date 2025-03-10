@@ -65,8 +65,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search by ID" disabled={!data.logs.total}
-        ></SearchQuery>
+        <SearchQuery search={data.search} placeholder="Search by ID" disabled={!data.logs.total} />
         {#if data.logs.total}
             <ViewSelector view={View.Table} {columns} hideView />
         {/if}

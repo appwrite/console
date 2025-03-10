@@ -31,6 +31,7 @@
     export let deployment: Models.Deployment;
     export let hideTitle = false;
     export let hideScrollButtons = false;
+    export let fullHeight = false;
 
     let { status, buildLogs } = deployment;
 
@@ -93,6 +94,7 @@
     {/if}
     {#key buildLogs}
         <Logs
+            {fullHeight}
             showScrollButton={!hideScrollButtons}
             logs={buildLogs || 'No logs available yet...'}
             bind:theme={$app.themeInUse} />
