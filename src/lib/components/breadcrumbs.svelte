@@ -432,12 +432,12 @@
         background: var(--bgcolor-neutral-secondary, #f4f4f7);
     }
 
-    :global(.trigger[data-highlighted]:focus) {
+    :global(.trigger[data-highlighted]:focus-visible) {
         outline: none;
         box-shadow: 0 0 0 2px var(--bgcolor-neutral-secondary, #f4f4f7);
     }
 
-    .trigger:focus {
+    .trigger:focus-visible {
         z-index: 30;
         box-shadow:
             var(--shadow-offsetx-0, 0px) var(--shadow-offsety-0, 0px) 0 2px
