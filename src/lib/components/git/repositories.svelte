@@ -94,11 +94,7 @@
         return $repositories.repositories.slice(0, 4);
     }
 
-    async function detectFramework(repo) {
-        console.log(repo);
-        // TODO add code once backend is implemented
-        return '';
-    }
+    $: console.log($repositories);
 </script>
 
 {#if hasInstallations}
@@ -179,18 +175,15 @@
                                                     value={repo.id} />
                                             {/if}
                                             {#if product === 'sites'}
-                                                {#await detectFramework(repo)}
-                                                    <Avatar size="xs" alt={repo.name} empty />
-                                                {:then framework}
-                                                    <Avatar
-                                                        size="xs"
-                                                        alt={repo.name}
-                                                        empty={!framework}>
+                                                {#if repo?.framework && repo.framework !== 'other'}
+                                                    <Avatar size="xs" alt={repo.name}>
                                                         <SvgIcon
-                                                            name={getFrameworkIcon(framework)}
+                                                            name={getFrameworkIcon(repo.framework)}
                                                             iconSize="small" />
                                                     </Avatar>
-                                                {/await}
+                                                {:else}
+                                                    <Avatar size="xs" alt={repo.name} empty />
+                                                {/if}
                                             {:else}
                                                 {@const iconName = repo?.runtime
                                                     ? repo.runtime.split('-')[0]

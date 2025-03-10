@@ -127,7 +127,8 @@
                         variant="primary"
                         radius="s"
                         padding="s"
-                        value={Adapter.Ssr}
+                        name="adapter"
+                        value={`${Adapter.Ssr}`}
                         bind:group={adapter}>
                         Use <InlineCode code={`${frameworkKey}/node`} size="s" /> adapter in your {frameworkData.name}
                         config file. <Link external href="#">Learn more</Link>.
@@ -137,6 +138,7 @@
                         variant="primary"
                         radius="s"
                         padding="s"
+                        name="adapter"
                         value={Adapter.Static}
                         bind:group={adapter}>
                         Use <InlineCode code={`${frameworkKey}/static`} size="s" /> adapter in your {frameworkData.name}
