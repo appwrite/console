@@ -20,7 +20,7 @@
     $: collectionId = $page.params.collection;
 
     $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
-        a.$updatedAt > b.$updatedAt ? -1 : 1
+        a.name.localeCompare(b.name)
     );
 
     $: selectedCollection = sortedCollections?.find(
