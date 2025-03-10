@@ -7,6 +7,7 @@ import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
 import { organization } from './organization';
 import { base } from '$app/paths';
+import { ThemeLightCloud } from '$themes';
 
 export const stripe = writable<Stripe>();
 let paymentMethod: PaymentMethodData;
@@ -186,13 +187,13 @@ export async function confirmSetup(
 
 const appearanceLight = {
     variables: {
-        colorPrimary: '#606a7b',
-        colorText: 'rgb(107, 107, 112)',
-        colorBackground: '#FFFFFF',
-        color: '#606a7b',
-        colorDanger: '#df1b41',
-        fontFamily: 'Inter, arial, sans-serif',
-        borderRadius: '4px'
+        colorPrimary: ThemeLightCloud['fgcolor-neutral-primary'],
+        colorText: ThemeLightCloud['fgcolor-neutral-primary'],
+        colorBackground: ThemeLightCloud['bgcolor-neutral-primary'],
+        color: ThemeLightCloud['fgcolor-neutral-primary'],
+        colorDanger: ThemeLightCloud['fgcolor-error'],
+        fontFamily: ThemeLightCloud['font-family-sansserif'],
+        borderRadius: ThemeLightCloud['border-radius-s']
     },
     rules: {
         '.Input:hover': {

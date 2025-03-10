@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, CardGrid } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { Button, Form, FormList, InputSelectSearch } from '$lib/elements/forms';
@@ -19,7 +19,7 @@
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Alert, Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let search: string;
@@ -92,17 +92,15 @@
         {/if}
         <svelte:fragment slot="aside">
             {#if !$currentPlan.budgeting}
-                <Alert type="info">
-                    <svelte:fragment slot="title">
-                        Billing alerts are a Pro plan feature
-                    </svelte:fragment>
-                    Upgrade to a Pro plan to manage when you receive billing alerts for your organization.
-                </Alert>
+                <Alert.Inline status="info" title="Billing alerts are a Pro plan feature">
+                    Upgrade to a Pro plan to manage when you receive billing alerts for your
+                    organization.
+                </Alert.Inline>
             {:else}
                 <FormList>
-                    <Alert type="info">
+                    <Alert.Inline status="info">
                         You can set a maximum of 4 billing alerts per organization.
-                    </Alert>
+                    </Alert.Inline>
 
                     <div class="u-flex u-gap-16">
                         <InputSelectSearch
