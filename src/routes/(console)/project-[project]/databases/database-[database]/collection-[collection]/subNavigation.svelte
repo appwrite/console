@@ -4,8 +4,13 @@
     import { showCreate } from '../store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { Icon, Sidebar, Navbar, Layout, Link } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown, IconDatabase, IconTable } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Sidebar, Navbar, Layout, Link, ActionMenu } from '@appwrite.io/pink-svelte';
+    import {
+        IconChevronDown,
+        IconDatabase,
+        IconPlus,
+        IconTable
+    } from '@appwrite.io/pink-icons-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
 
@@ -63,15 +68,18 @@
                     </ul>
                 {/if}
             </div>
-            <button
-                class="new-button body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-8 is-full-width"
-                on:click={() => {
-                    $showCreate = true;
-                    $showSubNavigation = false;
-                }}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create collection</span>
-            </button>
+            <div>
+                <ActionMenu.Root>
+                    <ActionMenu.Item.Button
+                        on:click={() => {
+                            $showCreate = true;
+                            $showSubNavigation = false;
+                        }}
+                        leadingIcon={IconPlus}>
+                        Create collection
+                    </ActionMenu.Item.Button>
+                </ActionMenu.Root>
+            </div>
         </section>
     </Sidebar.Base>
 {:else}
@@ -191,10 +199,6 @@
             line-clamp: 1;
             color: var(--fgcolor-neutral-secondary, #56565c);
         }
-    }
-
-    .new-button {
-        flex-shrink: 0;
     }
 
     :global(.sub-navigation header) {
