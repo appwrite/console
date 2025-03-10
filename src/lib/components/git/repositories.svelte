@@ -93,8 +93,6 @@
 
         return $repositories.repositories.slice(0, 4);
     }
-
-    $: console.log($repositories);
 </script>
 
 {#if hasInstallations}

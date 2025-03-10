@@ -73,7 +73,7 @@
                             <Trim alternativeTrim>
                                 {$consoleVariables._APP_OPTIONS_FORCE_HTTPS
                                     ? 'https://'
-                                    : 'http://'}{domain}.{$consoleVariables._APP_DOMAIN_TARGET}
+                                    : 'http://'}{domain}
                             </Trim>
                         {/key}
                     </Typography.Text>
