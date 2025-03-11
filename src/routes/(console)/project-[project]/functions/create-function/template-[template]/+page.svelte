@@ -22,11 +22,11 @@
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
-    import { getIconFromRuntime } from '../../store';
     import Permissions from './permissions.svelte';
     import { connectGitHub } from '$lib/stores/git';
     import RepoCard from './repoCard.svelte';
     import { Dependencies } from '$lib/constants';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
 
     export let data;
 

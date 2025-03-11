@@ -19,9 +19,9 @@
     import Configuration from './configuration.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
-    import { getIconFromRuntime } from '../../store';
     import { Dependencies } from '$lib/constants';
     import RepoCard from './repoCard.svelte';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
 
     export let data;
 

@@ -37,7 +37,7 @@
 
     let name = '';
     let id = ID.unique();
-    let framework: Models.Framework = data.frameworks.frameworks[0];
+    let framework: Models.Framework = data.frameworks.frameworks.find((f) => f.key === 'other');
     let adapter = framework?.adapters[0];
     let branch: string;
     let rootDir = './';

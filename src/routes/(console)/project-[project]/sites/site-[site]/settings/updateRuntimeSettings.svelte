@@ -4,9 +4,10 @@
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
+    import { iconPath } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
@@ -16,12 +17,10 @@
 
     let buildRuntimeOptions = framework.runtimes.map((runtime) => ({
         label: runtime,
-        value: runtime
+        value: runtime,
+        leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime), 'color')}' style='inline-size: var(--icon-size-m)' />`
     }));
 
-    onMount(async () => {
-        buildRuntime ??= framework.buildRuntime;
-    });
     async function updateRuntime() {
         try {
             await sdk.forProject.sites.update(

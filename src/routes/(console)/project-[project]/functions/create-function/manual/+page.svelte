@@ -15,10 +15,10 @@
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
-    import { getIconFromRuntime } from '../../store';
     import { Dependencies } from '$lib/constants';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import Configuration from './configuration.svelte';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
 
     export let data;
 
