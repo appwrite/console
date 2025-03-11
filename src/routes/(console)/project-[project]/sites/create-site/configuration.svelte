@@ -52,7 +52,7 @@
     let currentVariable: Partial<Models.Variable>;
     let frameworkId = selectedFramework.key;
 
-    $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework.key);
+    $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework?.key);
 </script>
 
 <Fieldset legend="Settings">
@@ -81,11 +81,12 @@
                                 id="installCommand"
                                 label="Install command"
                                 bind:value={installCommand}
-                                placeholder={frameworkData?.defaultInstallCommand} />
+                                placeholder={frameworkData?.adapters?.ssr?.installCommand} />
                             <Button
                                 secondary
                                 size="s"
-                                disabled={frameworkData?.defaultInstallCommand === installCommand}
+                                disabled={frameworkData?.adapters?.ssr?.installCommand ===
+                                    installCommand}
                                 on:click={() => (installCommand = '')}>
                                 Reset
                             </Button>
@@ -95,11 +96,12 @@
                                 id="buildCommand"
                                 label="Build command"
                                 bind:value={buildCommand}
-                                placeholder={frameworkData?.defaultBuildCommand} />
+                                placeholder={frameworkData?.adapters?.ssr?.buildCommand} />
                             <Button
                                 secondary
                                 size="s"
-                                disabled={frameworkData?.defaultBuildCommand === buildCommand}
+                                disabled={frameworkData?.adapters?.ssr?.buildCommand ===
+                                    buildCommand}
                                 on:click={() => (buildCommand = '')}>
                                 Reset
                             </Button>
@@ -109,11 +111,12 @@
                                 id="outputDirectory"
                                 label="Output directory"
                                 bind:value={outputDirectory}
-                                placeholder={frameworkData?.defaultOutputDirectory} />
+                                placeholder={frameworkData?.adapters?.ssr?.outputDirectory} />
                             <Button
                                 secondary
                                 size="s"
-                                disabled={frameworkData?.defaultOutputDirectory === outputDirectory}
+                                disabled={frameworkData?.adapters?.ssr?.outputDirectory ===
+                                    outputDirectory}
                                 on:click={() => (outputDirectory = '')}>
                                 Reset
                             </Button>
