@@ -142,16 +142,16 @@
                         <Layout.Stack gap="xl">
                             <Layout.Stack gap="xs">
                                 <Skeleton variant="line" width={100} height={20} />
-                                <Skeleton variant="line" width={300} height={32} />
+                                <Skeleton variant="line" width="100%" height={32} />
                             </Layout.Stack>
                             <Layout.Stack gap="xs">
                                 <Skeleton variant="line" width={100} height={20} />
-                                <Skeleton variant="line" width={300} height={32} />
+                                <Skeleton variant="line" width="100%" height={32} />
                             </Layout.Stack>
                             <Layout.Stack gap="xs">
                                 <Skeleton variant="line" width={100} height={20} />
-                                <Skeleton variant="line" width={300} height={15} />
-                                <Skeleton variant="line" width={300} height={15} />
+                                <Skeleton variant="line" width="100%" height={15} />
+                                <Skeleton variant="line" width="100%" height={15} />
                             </Layout.Stack>
                         </Layout.Stack>
                     </Fieldset>

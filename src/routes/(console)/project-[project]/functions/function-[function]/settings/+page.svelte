@@ -18,6 +18,7 @@
     import { Button } from '$lib/elements/forms';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import UpdateRepository from './updateRepository.svelte';
+    import UpdateBuildCommand from './updateBuildCommand.svelte';
 
     export let data;
     let showAlert = true;
@@ -76,10 +77,7 @@
     {#key data.function.providerRepositoryId}
         <UpdateRepository func={data.function} installations={data.installations} />
     {/key}
-    <UpdateLogging />
-    <UpdatePermissions />
-    <UpdateEvents />
-    <UpdateSchedule />
+
     <UpdateVariables
         {sdkCreateVariable}
         {sdkUpdateVariable}
@@ -88,6 +86,12 @@
         globalVariableList={data.globalVariables}
         variableList={data.variables}
         analyticsSource="function_settings" />
+    <UpdateBuildCommand func={data.function} />
+
+    <UpdatePermissions />
+    <UpdateLogging />
+    <UpdateEvents />
+    <UpdateSchedule />
     <UpdateTimeout />
     <UpdateScopes />
     <DangerZone />

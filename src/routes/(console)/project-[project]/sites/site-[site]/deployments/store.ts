@@ -43,7 +43,7 @@ export const columns = writable<Column[]>([
         id: 'sourceSize',
         title: 'Source size',
         type: 'integer',
-        show: true,
+        show: false,
         width: 140,
         elements: [
             {
@@ -64,7 +64,7 @@ export const columns = writable<Column[]>([
         id: 'buildSize',
         title: 'Build size',
         type: 'integer',
-        show: false,
+        show: true,
         filter: false,
         width: 80
     },

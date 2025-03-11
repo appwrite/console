@@ -69,14 +69,8 @@
     {#if selectedLog}
         <Layout.Stack gap="xl">
             <Accordion title="Details" open>
-                <Layout.Stack gap="xl">
-                    <Layout.Grid
-                        columnsXXS={1}
-                        columnsXS={3}
-                        columnsS={3}
-                        columns={5}
-                        gap="xxxl"
-                        rowGap="xl">
+                <Layout.Stack gap="xxxl">
+                    <Layout.Stack gap="xxxl" direction="row" wrap="wrap">
                         <Layout.Stack gap="xs" inline>
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Method
@@ -100,26 +94,6 @@
                                           : 'success'} />
                             </span>
                         </Layout.Stack>
-
-                        <Layout.Stack gap="xs" inline alignItems="flex-start">
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                Path
-                            </Typography.Text>
-                            <div>
-                                <InteractiveText
-                                    text={selectedLog.requestPath}
-                                    variant="copy-code"
-                                    isVisible />
-                            </div>
-                        </Layout.Stack>
-                    </Layout.Grid>
-                    <Layout.Grid
-                        columnsXXS={1}
-                        columnsXS={3}
-                        columnsS={4}
-                        columns={4}
-                        gap="xxxl"
-                        rowGap="xl">
                         <Layout.Stack gap="xs" inline>
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Status
@@ -141,6 +115,16 @@
                                 </span>
                             </Tooltip>
                         </Layout.Stack>
+
+                        <Layout.Stack gap="xs" inline>
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                Triggered by
+                            </Typography.Text>
+                            <Typography.Text variant="m-400">
+                                {capitalize(selectedLog.trigger)}
+                            </Typography.Text>
+                        </Layout.Stack>
+
                         <Layout.Stack gap="xs" inline>
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Duration
@@ -149,14 +133,7 @@
                                 {calculateTime(selectedLog.duration)}
                             </Typography.Text>
                         </Layout.Stack>
-                        <Layout.Stack gap="xs" inline>
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                Triggered
-                            </Typography.Text>
-                            <Typography.Text variant="m-400">
-                                {capitalize(selectedLog.trigger)}
-                            </Typography.Text>
-                        </Layout.Stack>
+
                         <Layout.Stack gap="xs" inline>
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Created
@@ -165,7 +142,18 @@
                                 {capitalize(timeFromNow(selectedLog.$createdAt))}
                             </Typography.Text>
                         </Layout.Stack>
-                    </Layout.Grid>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xs" inline alignItems="flex-start">
+                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                            Path
+                        </Typography.Text>
+                        <div>
+                            <InteractiveText
+                                text={selectedLog.requestPath}
+                                variant="copy-code"
+                                isVisible />
+                        </div>
+                    </Layout.Stack>
                 </Layout.Stack>
             </Accordion>
             <Accordion title="Request" open>

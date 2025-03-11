@@ -293,6 +293,7 @@ export enum Submit {
     FunctionUpdateEvents = 'submit_function_update_events',
     FunctionUpdateScopes = 'submit_function_key_update_scopes',
     FunctionUpdateRuntime = 'submit_function_update_runtime',
+    FunctionUpdateBuildCommand = 'submit_function_update_build_command',
     FunctionConnectRepo = 'submit_function_connect_repo',
     FunctionDisconnectRepo = 'submit_function_disconnect_repo',
     FunctionRedeploy = 'submit_function_redeploy',
