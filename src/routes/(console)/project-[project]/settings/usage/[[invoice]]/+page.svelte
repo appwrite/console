@@ -21,7 +21,7 @@
     import { formatNum } from '$lib/helpers/string';
     import { Container } from '$lib/layout';
     import { total } from '$lib/layout/usage.svelte';
-    import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { showUsageRatesModal, tierToPlan, upgradeURL, type Tier } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
 
     export let data;
@@ -46,7 +46,7 @@
         { name: 'Writes', value: data.usage.databasesWritesTotal }
     ];
 
-    const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
+    const tier = (data?.currentInvoice?.plan as Tier) ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
 
     // let invoice = null;

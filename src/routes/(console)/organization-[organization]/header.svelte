@@ -118,7 +118,7 @@
                                 <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem"
                                     >FREE</Pill>
                             {/if}
-                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
+                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trial}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

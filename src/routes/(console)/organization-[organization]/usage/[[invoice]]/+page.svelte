@@ -25,7 +25,7 @@
 
     const tier = data?.plan
         ? (data.plan.$id as Tier)
-        : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
+        : ((data?.currentInvoice?.plan as Tier) ?? $organization?.billingPlan);
     const plan = data?.plan ?? undefined;
 
     $: projects = (data.organizationUsage as Models.UsageOrganization).projects;

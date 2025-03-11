@@ -1,4 +1,3 @@
-import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
 import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
@@ -54,18 +53,6 @@ export type AdditionalResource = {
     value: number;
     multiplier?: number;
 };
-
-export type PlanAddon = {
-    supported: boolean;
-    currency: string;
-    invoiceDesc: string;
-    price: number;
-    limit: number;
-    value: number;
-    type: string;
-};
-
-export type PlansMap = Map<Tier, Models.BillingPlan>;
 
 export class Billing {
     client: Client;
