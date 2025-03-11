@@ -22,7 +22,11 @@ export const load: PageLoad = async ({ depends, params, url, route }) => {
     queries.set(parsedQueries);
 
     return {
-        rules: await sdk.forProject.proxy.listRules(
+        offset,
+        limit,
+        query,
+        search,
+        domains: await sdk.forProject.proxy.listRules(
             [
                 Query.equal('type', [RuleType.DEPLOYMENT, RuleType.REDIRECT]),
                 Query.equal('deploymentResourceType', DeploymentResourceType.FUNCTION),

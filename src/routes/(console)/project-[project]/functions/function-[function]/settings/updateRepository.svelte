@@ -26,7 +26,7 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { ConnectGit } from '$lib/components/git';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import ConnectRepoModal from './connectRepoModal.svelte';
+    import ConnectRepoModal from '../(modals)/connectRepoModal.svelte';
 
     export let func: Models.Function;
     export let installations: Models.InstallationList;
