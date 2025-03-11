@@ -1,10 +1,8 @@
 <script lang="ts">
     import { Card } from '@appwrite.io/pink-svelte';
     import type { RegionList } from '$lib/sdk/billing';
-    import { onMount } from 'svelte';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Flag, ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
@@ -14,23 +12,13 @@
     import { addNotification } from '$lib/stores/notifications';
     import { tierToPlan } from '$lib/stores/billing';
     import CreateProject from '$lib/layout/createProject.svelte';
-    import { getFlagUrl } from '$lib/helpers/flag';
 
-    let showCustomId = false;
     let isLoading = false;
     let id: string;
     let startAnimation = false;
     let projectName = '';
     let region = Region.Default;
     export let data: { regions: RegionList | null };
-
-    onMount(() => {
-        if (isCloud) {
-            if (data.regions) {
-                data.regions.regions.forEach((region) => fetch(getFlagUrl(region.flag)));
-            }
-        }
-    });
 
     async function createProject() {
         isLoading = true;
@@ -121,7 +109,6 @@
         <Card.Base variant="primary" padding="l">
             <CreateProject
                 regions={data.regions.regions}
-                bind:showCustomId
                 bind:projectName
                 bind:id
                 bind:region

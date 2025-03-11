@@ -1,22 +1,22 @@
 <script lang="ts">
-    import { Wizard, WizardWithSteps } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import Step1 from './wizard/step1.svelte';
-    import Step2 from './wizard/step2.svelte';
-    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID, Region } from '@appwrite.io/console';
+    import { ID, Region as ConsoleRegion } from '@appwrite.io/console';
     import { createProject } from './wizard/store';
     import { wizard } from '$lib/stores/wizard';
     import { base } from '$app/paths';
+    import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
+    import type { Region } from '$lib/sdk/billing';
 
     const teamId = $page.params.organization;
+    export let regions: Array<Region> = [];
+    export let showCreateProjectCloud: boolean;
 
     async function onFinish() {
         await invalidate(Dependencies.FUNCTIONS);
@@ -29,7 +29,7 @@
                 $createProject?.id ?? ID.unique(),
                 $createProject.name,
                 teamId,
-                $createProject.region as Region
+                $createProject.region as ConsoleRegion
             );
             trackEvent(Submit.ProjectCreate, {
                 customId: !!$createProject?.id,
@@ -40,6 +40,7 @@
                 type: 'success',
                 message: `${$createProject.name} has been created`
             });
+            await onFinish();
             await goto(`${base}/project-${project.$id}`);
             wizard.hide();
         } catch (e) {
@@ -58,23 +59,14 @@
             region: 'fra'
         };
     });
-
-    const stepsComponents: WizardStepsType = new Map();
-    stepsComponents.set(1, {
-        label: 'Details',
-        component: Step1
-    });
-    stepsComponents.set(2, {
-        label: 'Region',
-        component: Step2
-    });
-    console.log($page.params);
 </script>
 
-<Wizard title="Create project">ayyy</Wizard>
-
-<!--<WizardWithSteps-->
-<!--    title="Create project"-->
-<!--    steps={stepsComponents}-->
-<!--    finalMethod={create}-->
-<!--    on:exit={onFinish} />-->
+<Modal bind:show={showCreateProjectCloud} title={'Create Project'}
+    ><CreateProject
+        createProject={create}
+        showTitle={false}
+        bind:id={$createProject.id}
+        bind:projectName={$createProject.name}
+        bind:region={$createProject.region}
+        {regions} /></Modal>
+<!--<Wizard title="Create project"></Wizard>-->

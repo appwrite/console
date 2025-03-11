@@ -7,11 +7,13 @@
     import { isCloud } from '$lib/system.js';
 
     export let projectName: string;
-    export let showCustomId: boolean;
     export let id: string;
     export let regions: Array<Region> = [];
     export let region: string;
+    export let showTitle = true;
     export let createProject: () => Promise<void>;
+
+    let showCustomId = false;
 
     function getRegions() {
         return regions
@@ -33,9 +35,16 @@
     }
 </script>
 
+<svelte:head>
+    {#each regions as region}
+        <link rel="preload" as="image" href={getFlagUrl(region.flag)} />
+    {/each}
+</svelte:head>
 <form>
     <Layout.Stack direction="column" gap="xxl">
-        <Typography.Title size="l">Create your project</Typography.Title>
+        {#if showTitle}
+            <Typography.Title size="l">Create your project</Typography.Title>
+        {/if}
         <Layout.Stack direction="column" gap="xxl">
             <Layout.Stack direction="column" gap="xxl">
                 <Layout.Stack direction="column" gap="s">

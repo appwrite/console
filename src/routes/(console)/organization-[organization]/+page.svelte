@@ -41,11 +41,13 @@
         IconUnity
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
+    import CreateProjectCloud from './createProjectCloud.svelte';
 
     export let data;
 
     let addOrganization = false;
     let showCreate = false;
+    let showCreateProjectCloud = false;
 
     function allServiceDisabled(project: Models.Project): boolean {
         let disabled = true;
@@ -66,7 +68,7 @@
 
     function handleCreateProject() {
         if (!$canWriteProjects) return;
-        if (isCloud) wizard.start(Create);
+        if (isCloud) showCreateProjectCloud = true;
         else showCreate = true;
     }
 
@@ -234,3 +236,6 @@
 
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={$page.params.organization} />
+{#if showCreateProjectCloud}
+    <CreateProjectCloud bind:showCreateProjectCloud regions={regions.regions} />
+{/if}
