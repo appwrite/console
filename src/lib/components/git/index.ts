@@ -6,3 +6,4 @@ export { default as DeploymentCreatedBy } from './deploymentCreatedBy.svelte';
 export { default as DeploymentSource } from './deploymentSource.svelte';
 export { default as DeploymentDomains } from './deploymentDomains.svelte';
 export { default as ConnectBehaviour } from './connectBehaviour.svelte';
+export { default as ProductionBranchFieldset } from './productionBranchFieldset.svelte';

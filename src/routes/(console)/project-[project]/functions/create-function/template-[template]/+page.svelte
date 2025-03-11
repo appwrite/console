@@ -16,7 +16,12 @@
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import { ID, Runtime, type Models } from '@appwrite.io/console';
-    import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
+    import {
+        ConnectBehaviour,
+        NewRepository,
+        Repositories,
+        RepositoryBehaviour
+    } from '$lib/components/git';
     import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
@@ -26,7 +31,6 @@
     import RepoCard from './repoCard.svelte';
     import { Dependencies } from '$lib/constants';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
-    import ConnectBehaviour from '$lib/components/git/connectBehaviour.svelte';
 
     export let data;
 
