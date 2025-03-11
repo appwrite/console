@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { Icon, Layout, Tag, Typography, Button } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tag, Typography, Button, Card } from '@appwrite.io/pink-svelte';
     import { supportData, isSupportOnline } from './wizard/support/store';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -163,29 +163,31 @@
     </Form>
 
     <svelte:fragment slot="aside">
-        <Layout.Stack gap="xl">
-            <Typography.Title size="s">Contact the Appwrite Team</Typography.Title>
-            <Typography.Text
-                >If you found a bug or have questions, please reach out to the Appwrite team. We try
-                to respond to all messages within our office hours.</Typography.Text>
-            <Layout.Stack direction="row" gap="s">
-                <Typography.Text>Available:</Typography.Text>
-                <Typography.Text variant="m-500"
-                    >{supportWeekDays}, {supportTimings}</Typography.Text>
+        <Card.Base padding="m">
+            <Layout.Stack gap="xl">
+                <Typography.Title size="s">Contact the Appwrite Team</Typography.Title>
+                <Typography.Text
+                    >If you found a bug or have questions, please reach out to the Appwrite team. We
+                    try to respond to all messages within our office hours.</Typography.Text>
+                <Layout.Stack direction="row" gap="s">
+                    <Typography.Text>Available:</Typography.Text>
+                    <Typography.Text variant="m-500"
+                        >{supportWeekDays}, {supportTimings}</Typography.Text>
+                </Layout.Stack>
+                <Layout.Stack direction="row" gap="s">
+                    <Typography.Text>Currently:</Typography.Text>
+                    {#if isSupportOnline()}
+                        <Layout.Stack direction="row" gap="xxxs" alignItems="center">
+                            <Icon icon={IconCheckCircle} color="--fgcolor-success" />
+                            <Typography.Text color="--fgcolor-success">Online</Typography.Text>
+                        </Layout.Stack>{:else}
+                        <Layout.Stack direction="row" gap="xxxs" alignItems="center">
+                            <Icon icon={IconXCircle} />
+                            <Typography.Text>Offline</Typography.Text>
+                        </Layout.Stack>
+                    {/if}
+                </Layout.Stack>
             </Layout.Stack>
-            <Layout.Stack direction="row" gap="s">
-                <Typography.Text>Currently:</Typography.Text>
-                {#if isSupportOnline()}
-                    <Layout.Stack direction="row" gap="xxxs" alignItems="center">
-                        <Icon icon={IconCheckCircle} color="--fgcolor-success" />
-                        <Typography.Text color="--fgcolor-success">Online</Typography.Text>
-                    </Layout.Stack>{:else}
-                    <Layout.Stack direction="row" gap="xxxs" alignItems="center">
-                        <Icon icon={IconXCircle} />
-                        <Typography.Text>Offline</Typography.Text>
-                    </Layout.Stack>
-                {/if}
-            </Layout.Stack>
-        </Layout.Stack>
+        </Card.Base>
     </svelte:fragment>
 </Wizard>
