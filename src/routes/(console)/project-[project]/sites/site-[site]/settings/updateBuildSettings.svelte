@@ -30,8 +30,8 @@
     let showFallback = site.adapter === Adapter.Static;
 
     onMount(async () => {
-        installCommand ??= installCommand =
-            site?.installCommand ?? selectedFramework.adapters[site.adapter].installCommand;
+        installCommand =
+            site?.installCommand ?? selectedFramework.adapters[site.adapter].defaultInstallCommand;
         buildCommand =
             site?.buildCommand ?? selectedFramework.adapters[site.adapter].defaultBuildCommand;
         outputDirectory =
