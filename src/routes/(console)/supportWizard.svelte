@@ -116,21 +116,13 @@
                 <Typography.Text color="--fgcolor-neutral-secondary"
                     >Choose a topic</Typography.Text>
                 <Layout.Stack gap="s" direction="row">
-                    <Tag
-                        on:click={() => {
-                            $supportData.category = 'general';
-                        }}
-                        selected={$supportData.category === 'general'}>general</Tag>
-                    <Tag
-                        on:click={() => {
-                            $supportData.category = 'billing';
-                        }}
-                        selected={$supportData.category === 'billing'}>billing</Tag>
-                    <Tag
-                        on:click={() => {
-                            $supportData.category = 'technical';
-                        }}
-                        selected={$supportData.category === 'technical'}>technical</Tag>
+                    {#each ['general', 'billing', 'technical'] as category}
+                        <Tag
+                            on:click={() => {
+                                $supportData.category = category;
+                            }}
+                            selected={$supportData.category === category}>{category}</Tag>
+                    {/each}
                 </Layout.Stack>
             </Layout.Stack>
             <InputSelect
