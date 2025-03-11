@@ -8,6 +8,7 @@
     export let show = false;
     export let error: string = null;
     export let dismissible = true;
+    export let size: 's' | 'm' | 'l' = 'm';
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
@@ -42,7 +43,7 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <Form isModal {onSubmit} bind:this={formComponent}>
-    <Modal {title} bind:open={show} {hideFooter} {dismissible}>
+    <Modal {title} bind:open={show} {hideFooter} {dismissible} {size}>
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>

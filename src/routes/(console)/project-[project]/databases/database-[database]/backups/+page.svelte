@@ -21,7 +21,7 @@
     import { showCreateBackup, showCreatePolicy } from './store';
     import { getProjectId } from '$lib/helpers/project';
     import { trackEvent } from '$lib/actions/analytics';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -243,12 +243,19 @@
     </svelte:fragment>
 </Modal>
 
-<Modal title="Create manual backup" bind:show={$showCreateBackup} onSubmit={createManualBackup}>
-    <p class="text" data-private>
-        Manual backups are <b>retained forever</b> unless manually deleted. Use for major data
-        changes or rollback safeguards.
+<Modal
+    size="s"
+    title="Create manual backup"
+    bind:show={$showCreateBackup}
+    onSubmit={createManualBackup}>
+    <Typography.Text variant="m-400">
+        Manual backups are <b>retained forever</b> unless manually deleted. Use for major data changes
+        or rollback safeguards.
+    </Typography.Text>
+
+    <Typography.Text variant="m-500">
         <b>Depending on the size of your data, this may take a while.</b>
-    </p>
+    </Typography.Text>
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => ($showCreateBackup = false)}>Cancel</Button>

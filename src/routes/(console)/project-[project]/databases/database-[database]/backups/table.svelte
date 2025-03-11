@@ -18,12 +18,14 @@
     import {
         ActionMenu,
         Icon,
+        Layout,
         Popover,
         Selector,
         Status,
         Table,
         Tag,
-        Tooltip
+        Tooltip,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
@@ -33,6 +35,7 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import { capitalize } from '$lib/helpers/string';
+    import Ellipse from './components/Ellipse.svelte';
 
     export let data: PageData;
 
@@ -290,25 +293,23 @@
 
 <Modal title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
     <Card
-        isTile
         class="restore-modal-inner-card u-width-full-line"
         style="border-radius: var(--border-radius-small, 8px); padding: 1rem;">
-        <div class="u-flex u-flex-vertical u-gap-4">
-            <span class="body-text-2 u-bold darker-neutral-color">
+        <Layout.Stack gap="xxs">
+            <Typography.Text variant="m-500">
                 {cleanBackupName(selectedBackup)}
-            </span>
-            <div class="u-flex u-cross-center u-gap-6 u-width-full-line">
-                <span class="u-flex u-cross-center u-gap-4">
-                    <span class="u-color-text-success u-font-size-12">●</span> Completed
-                </span>
-                <span class="small-ellipse">●</span>
-                {calculateSize(selectedBackup.size)}
-                <span class="small-ellipse">●</span>
+            </Typography.Text>
 
-                <!-- TODO: ellipsis-->
-                {timeFromNow(selectedBackup.$createdAt)}
-            </div>
-        </div>
+            <Typography.Caption variant="500">
+                <Layout.Stack direction="row" gap="xs">
+                    <Ellipse color="var(--bgcolor-success)" /> Completed
+                    <Ellipse size="s" />
+                    {calculateSize(selectedBackup.size)}
+                    <Ellipse size="s" />
+                    {timeFromNow(selectedBackup.$createdAt)}
+                </Layout.Stack>
+            </Typography.Caption>
+        </Layout.Stack>
     </Card>
 
     <FormList>

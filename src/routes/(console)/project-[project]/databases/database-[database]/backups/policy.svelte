@@ -26,6 +26,7 @@
     } from '@appwrite.io/pink-svelte';
     import { IconDotsHorizontal, IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { Confirm } from '$lib/components/index.js';
+    import Ellipse from './components/Ellipse.svelte';
 
     let showDelete = false;
     let selectedPolicy: BackupPolicy = null;
@@ -186,16 +187,7 @@
                                     {policyDescription}
                                 {/if}
 
-                                <span class="small-ellipse">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="2"
-                                        height="2"
-                                        viewBox="0 0 2 2"
-                                        fill="none">
-                                        <circle cx="1" cy="1" r="1" fill="currentColor" />
-                                    </svg>
-                                </span>
+                                <Ellipse size="s" />
 
                                 {formatRetentionMessage(policy.retention)}
                             </Layout.Stack>
@@ -207,15 +199,10 @@
                         <div style="width: 128px" class="u-flex-vertical policy-item-caption">
                             <span style="color: #97979B">Previous</span>
                             <div class="u-flex u-gap-4 u-cross-center darker-neutral-color">
-                                <span class="ellipse" class:success={!!lastBackupDates[policy.$id]}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        height="8"
-                                        width="8"
-                                        viewBox="0 0 8 8"
-                                        fill="none"
-                                        ><circle cx="4" cy="4" r="4" fill="currentColor" /></svg>
-                                </span>
+                                <Ellipse
+                                    color={lastBackupDates[policy.$id]
+                                        ? 'var(--bgcolor-success)'
+                                        : undefined} />
 
                                 <Typography.Caption variant="400">
                                     {#if lastBackupDates[policy.$id]}
@@ -323,18 +310,6 @@
 
         &.empty {
             block-size: 365px;
-        }
-    }
-
-    :global(.small-ellipse) {
-        line-height: 0;
-    }
-
-    :global(.ellipse) {
-        line-height: 8px;
-
-        &.success {
-            color: hsl(var(--color-success-100));
         }
     }
 
