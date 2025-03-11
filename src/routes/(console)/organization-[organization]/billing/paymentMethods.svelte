@@ -77,14 +77,14 @@
     }
 
     $: if ($organization?.backupPaymentMethodId) {
-        sdk.forConsole.billing
-            .getOrganizationPaymentMethod($organization.$id, $organization.backupPaymentMethodId)
+        sdk.forConsole.organizations
+            .getPaymentMethod($organization.$id, $organization.backupPaymentMethodId)
             .then((res) => (backupPaymentMethod = res));
     }
 
     $: if ($organization?.paymentMethodId) {
-        sdk.forConsole.billing
-            .getOrganizationPaymentMethod($organization.$id, $organization.paymentMethodId)
+        sdk.forConsole.organizations
+            .getPaymentMethod($organization.$id, $organization.paymentMethodId)
             .then((res) => (defaultPaymentMethod = res));
     }
 

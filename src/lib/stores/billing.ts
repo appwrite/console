@@ -361,7 +361,7 @@ export async function checkPaymentAuthorizationRequired(org: Organization) {
 
 export async function paymentExpired(org: Organization) {
     if (!org?.paymentMethodId) return;
-    const payment = await sdk.forConsole.billing.getOrganizationPaymentMethod(
+    const payment = await sdk.forConsole.organizations.getPaymentMethod(
         org.$id,
         org.paymentMethodId
     );

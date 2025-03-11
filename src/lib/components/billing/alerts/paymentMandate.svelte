@@ -8,8 +8,7 @@
     import { confirmSetup } from '$lib/stores/stripe';
 
     async function verifyPaymentMethod() {
-        const method = await sdk.forConsole.billing.setupPaymentMandate(
-            $organization.$id,
+        const method = await sdk.forConsole.account.updatePaymentMethodMandateOptions(
             $paymentMissingMandate.$id
         );
         await confirmSetup(method.clientSecret, method.$id);

@@ -93,9 +93,9 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
-            const method = await sdk.forConsole.billing.setPaymentMethod(
+            const method = await sdk.forConsole.account.updatePaymentMethodProvider(
                 paymentMethod.$id,
-                setupIntent.payment_method,
+                setupIntent.payment_method as string,
                 name
             );
             paymentElement.destroy();

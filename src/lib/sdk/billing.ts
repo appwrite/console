@@ -1,6 +1,5 @@
 import type { Campaign } from '$lib/stores/campaigns';
 import type { Client, Models } from '@appwrite.io/console';
-import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError } from '../stores/organization';
 
 export type Estimation = {
@@ -198,20 +197,6 @@ export class Billing {
         });
     }
 
-    async setMembership(
-        programId: string
-    ): Promise<{ $createdAt: string } | { error: { code: number; message: string } }> {
-        const path = `/console/programs/${programId}/memberships`;
-        const uri = new URL(this.client.config.endpoint + path);
-        try {
-            return await this.client.call('POST', uri, {
-                'content-type': 'application/json'
-            });
-        } catch (e) {
-            return { error: { code: e.code, message: e.message } };
-        }
-    }
-
     async setBillingAddress(
         organizationId: string,
         billingAddressId: string
@@ -249,71 +234,9 @@ export class Billing {
         );
     }
 
-    async getOrganizationPaymentMethod(
-        organizationId: string,
-        paymentMethodId: string
-    ): Promise<Models.PaymentMethod> {
-        const path = `/organizations/${organizationId}/payment-methods/${paymentMethodId}`;
-        const params = {
-            organizationId,
-            paymentMethodId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async setPaymentMethod(
-        paymentMethodId: string,
-        providerMethodId: string | PaymentMethod,
-        name: string
-    ): Promise<Models.PaymentMethod> {
-        const path = `/account/payment-methods/${paymentMethodId}/provider`;
-        const params = {
-            paymentMethodId,
-            providerMethodId,
-            name
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
     async setDefaultPaymentMethod(paymentMethodId: string): Promise<Models.PaymentMethod> {
         const path = `/account/payment-methods/${paymentMethodId}/default`;
         const params = {
-            paymentMethodId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async setupPaymentMandate(
-        organizationId: string,
-        paymentMethodId: string
-    ): Promise<Models.PaymentMethod> {
-        const path = `/account/payment-methods/${paymentMethodId}/setup`;
-        const params = {
-            organizationId,
             paymentMethodId
         };
         const uri = new URL(this.client.config.endpoint + path);

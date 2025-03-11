@@ -1,20 +1,19 @@
 import { base } from '$app/paths';
 import { sdk } from '$lib/stores/sdk';
 import { VARS } from '$lib/system';
+import type { AppwriteException } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 const handleGithubEducationMembership = async (name: string, email: string) => {
-    const result = await sdk.forConsole.billing.setMembership('github-student-developer');
+    const result = await sdk.forConsole.console.createProgramMembership('github-student-developer');
     if (result && 'error' in result) {
-        if (result.error.code === 409) {
+        const error = result.error as AppwriteException;
+        if (error.code === 409) {
             redirect(303, `${base}/account/organizations`);
         } else {
             await sdk.forConsole.account.deleteSession('current');
-            redirect(
-                303,
-                `${base}/education/error?message=${result.error.message}&code=${result.error.code}`
-            );
+            redirect(303, `${base}/education/error?message=${error.message}&code=${error.code}`);
         }
     } else if (result && '$createdAt' in result) {
         setToGhStudentMailingList(name, email);
