@@ -4,7 +4,6 @@
     import RestoreModal from './restoreModal.svelte';
     import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
-    import { Pill } from '$lib/elements';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
@@ -21,6 +20,7 @@
         Icon,
         Popover,
         Selector,
+        Status,
         Table,
         Tag,
         Tooltip
@@ -32,6 +32,7 @@
         IconRefresh,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let data: PageData;
 
@@ -175,13 +176,9 @@
                 {/if}
             </Table.Cell>
             <Table.Cell>
+                {@const backupStatus = backup.status.replaceAll('completed', 'complete')}
                 <div class="u-flex u-gap-8 u-cross-baseline">
-                    <Pill
-                        warning={backup.status === 'pending'}
-                        danger={backup.status === 'failed'}
-                        success={backup.status === 'completed'}>
-                        {backup.status.toLowerCase()}
-                    </Pill>
+                    <Status status={backupStatus} label={capitalize(backupStatus)} />
                     <!--{#if backup.status === 'Failed'}-->
                     <!--    <span class="u-underline">Get support</span>-->
                     <!--{/if}-->
