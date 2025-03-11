@@ -146,7 +146,7 @@
                             </CollapsibleItem>
                         {/if}
 
-                        {#if currentPlan.supportsCredit && availableCredit > 0}
+                        {#if currentPlan.supportsCredits && availableCredit > 0}
                             <CollapsibleItem noContent gap={4}>
                                 <span class="body-text-2 u-flex u-cross-center u-gap-2"
                                     ><svg

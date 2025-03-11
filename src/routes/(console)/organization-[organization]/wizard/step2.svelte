@@ -4,11 +4,12 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { createProject, regions } from './store';
+    import { createProject } from './store';
     import type { Region } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
+    import { regions } from '$routes/(console)/organization-[organization]/store';
 
     let prefs: Models.Preferences;
 

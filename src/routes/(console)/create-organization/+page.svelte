@@ -61,7 +61,7 @@
         if ($page.url.searchParams.has('coupon')) {
             const coupon = $page.url.searchParams.get('coupon');
             try {
-                const response = await sdk.forConsole.billing.getCoupon(coupon);
+                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
                 couponData = response;
             } catch (e) {
                 couponData = {
@@ -91,7 +91,7 @@
             const type = $page.url.searchParams.get('type');
             if (type === 'payment_confirmed') {
                 const organizationId = $page.url.searchParams.get('id');
-                const invites = $page.url.searchParams.getAll('invites');
+                const invites = $page.url.searchParams.get('invites').split(',');
                 await validate(organizationId, invites);
             }
         }
@@ -152,10 +152,12 @@
                     let params = new URLSearchParams();
                     params.append('type', 'payment_confirmed');
                     params.append('id', org.teamId);
-                    for (let index = 0; index < collaborators.length; index++) {
-                        const invite = collaborators[index];
-                        params.append('invites', invite);
+                    for (const [key, value] of $page.url.searchParams.entries()) {
+                        if (key !== 'type' && key !== 'id') {
+                            params.append(key, value);
+                        }
                     }
+                    params.append('invites', collaborators.join(','));
                     await confirmPayment(
                         '',
                         clientSecret,

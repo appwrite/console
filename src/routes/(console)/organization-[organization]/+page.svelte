@@ -28,16 +28,16 @@
     import { ID, Region } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
-    import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+    import { regions as regionsStore } from '$routes/(console)/organization-[organization]/store';
 
     export let data;
 
-    let addOrganization = false;
     let showCreate = false;
+    let addOrganization = false;
 
     const getPlatformInfo = (platform: string) => {
         let name: string, icon: string;
@@ -85,6 +85,7 @@
         if (isCloud) wizard.start(Create);
         else showCreate = true;
     }
+
     $: $registerCommands([
         {
             label: 'Create project',
@@ -120,17 +121,16 @@
         }
     };
 
-    let regions: RegionList;
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
+            const regions = await sdk.forConsole.billing.listRegions();
+            regionsStore.set(regions);
             checkPricingRefAndRedirect($page.url.searchParams);
         }
     });
 
     function findRegion(project: Models.Project) {
-        const region = regions.regions.find((region) => region.$id === project.region);
-        return region;
+        return $regionsStore?.regions?.find((region) => region.$id === project.region);
     }
 </script>
 
@@ -198,7 +198,7 @@
                                 </Pill>
                             {/if}
                             <svelte:fragment slot="icons">
-                                {#if isCloud && regions}
+                                {#if isCloud && $regionsStore?.regions}
                                     {@const region = findRegion(project)}
                                     <span class="u-color-text-gray u-medium u-line-height-2">
                                         {region?.name}
