@@ -107,7 +107,7 @@
             on:create={create}
             let:toggle>
             <div>
-                <Button text on:click={toggle}>
+                <Button compact on:click={toggle}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Add role
                 </Button>

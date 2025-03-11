@@ -13,6 +13,7 @@
     import { Runtime } from '@appwrite.io/console';
     import Scopes from '$routes/(console)/project-[project]/overview/keys/scopes.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
+    import { Link } from '$lib/elements';
 
     const functionId = $page.params.function;
     let functionScopes: string[] = null;
@@ -68,11 +69,8 @@
         <svelte:fragment slot="title">Scopes</svelte:fragment>
         Select scopes to grant the dynamic key generated temporarily for your function. It is best practice
         to allow only necessary permissions.
-        <a
-            href="https://appwrite.io/docs/advanced/platform/api-keys#scopes"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">Learn more</a
+        <Link href="https://appwrite.io/docs/advanced/platform/api-keys#scopes" external
+            >Learn more</Link
         >.
         <svelte:fragment slot="aside">
             {#if functionScopes !== null}

@@ -11,11 +11,16 @@
         Layout,
         Sheet,
         Tag,
-        Typography
+        Typography,
+        Tooltip,
+        Status
     } from '@appwrite.io/pink-svelte';
-    import { timeFromNow } from '$lib/helpers/date';
+    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { capitalize } from '$lib/helpers/string';
     import { Copy } from '$lib/components';
+    import { logStatusConverter } from './store';
+    import LogsResponse from './(components)/LogsResponse.svelte';
+    import LogsRequest from './(components)/LogsRequest.svelte';
 
     export let open = false;
     export let selectedLogId: string;
@@ -40,14 +45,13 @@
     $: selectedLog = logs?.find((log) => log.$id === selectedLogId);
     $: isFirstLog = logs.findIndex((log) => log.$id === selectedLogId) === 0;
     $: isLastLog = logs.findIndex((log) => log.$id === selectedLogId) === logs.length - 1;
-    $: console.log(selectedLog);
 </script>
 
 <Sheet bind:open>
     <div slot="header" style:width="100%">
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Layout.Stack direction="row" gap="m" alignItems="center">
-                <Typography.Text variant="m-400">Log ID</Typography.Text>
+                <Typography.Text variant="m-400">Execution ID</Typography.Text>
                 <Copy value={selectedLog?.$id}>
                     <Tag size="s" variant="code">{selectedLog?.$id}</Tag>
                 </Copy>
@@ -65,49 +69,80 @@
     {#if selectedLog}
         <Layout.Stack gap="xl">
             <Accordion title="Details" open>
-                <Layout.Stack gap="xl">
-                    <Layout.Stack direction="row">
-                        <Layout.Grid columnsXS={2} columns={4} gap="xxxl" rowGap="xl">
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Method
-                                </Typography.Text>
-                                <Typography.Text variant="m-400">
-                                    {selectedLog.requestMethod}
-                                </Typography.Text>
-                            </Layout.Stack>
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Status
-                                </Typography.Text>
-                                <span>
-                                    <Badge
-                                        content={selectedLog.responseStatusCode.toString()}
-                                        variant="secondary"
-                                        type={selectedLog?.responseStatusCode >= 400
-                                            ? 'error'
-                                            : 'success'} />
-                                </span>
-                            </Layout.Stack>
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Duration
-                                </Typography.Text>
-                                <Typography.Text variant="m-400">
-                                    {calculateTime(selectedLog.duration)}
-                                </Typography.Text>
-                            </Layout.Stack>
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Created
-                                </Typography.Text>
-                                <Typography.Text variant="m-400">
-                                    {capitalize(timeFromNow(selectedLog.$createdAt))}
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </Layout.Grid>
-                    </Layout.Stack>
+                <Layout.Stack gap="xxxl">
+                    <Layout.Stack gap="xxxl" direction="row" wrap="wrap">
+                        <Layout.Stack gap="xs" inline>
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                Method
+                            </Typography.Text>
+                            <Typography.Text variant="m-400">
+                                {selectedLog.requestMethod}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xs" inline>
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                Status code
+                            </Typography.Text>
+                            <span>
+                                <Badge
+                                    content={selectedLog.responseStatusCode.toString()}
+                                    variant="secondary"
+                                    type={selectedLog?.responseStatusCode >= 400
+                                        ? 'error'
+                                        : selectedLog.responseStatusCode === 0
+                                          ? undefined
+                                          : 'success'} />
+                            </span>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xs" inline>
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                Status
+                            </Typography.Text>
 
+                            <Tooltip
+                                disabled={!selectedLog?.scheduledAt ||
+                                    selectedLog.status !== 'scheduled'}
+                                maxWidth="400px">
+                                <div>
+                                    <Status
+                                        status={logStatusConverter(selectedLog.status)}
+                                        label={capitalize(selectedLog.status)}>
+                                        {capitalize(selectedLog.status)}
+                                    </Status>
+                                </div>
+                                <span slot="tooltip">
+                                    {`Scheduled to execute on ${toLocaleDateTime(selectedLog.scheduledAt)}`}
+                                </span>
+                            </Tooltip>
+                        </Layout.Stack>
+
+                        <Layout.Stack gap="xs" inline>
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                Triggered by
+                            </Typography.Text>
+                            <Typography.Text variant="m-400">
+                                {capitalize(selectedLog.trigger)}
+                            </Typography.Text>
+                        </Layout.Stack>
+
+                        <Layout.Stack gap="xs" inline>
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                Duration
+                            </Typography.Text>
+                            <Typography.Text variant="m-400">
+                                {calculateTime(selectedLog.duration)}
+                            </Typography.Text>
+                        </Layout.Stack>
+
+                        <Layout.Stack gap="xs" inline>
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                Created
+                            </Typography.Text>
+                            <Typography.Text variant="m-400">
+                                {capitalize(timeFromNow(selectedLog.$createdAt))}
+                            </Typography.Text>
+                        </Layout.Stack>
+                    </Layout.Stack>
                     <Layout.Stack gap="xs" inline alignItems="flex-start">
                         <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                             Path
@@ -122,10 +157,10 @@
                 </Layout.Stack>
             </Accordion>
             <Accordion title="Request" open>
-                <!-- <LogsRequest {selectedLog} /> -->
+                <LogsRequest {selectedLog} />
             </Accordion>
             <Accordion title="Response" open hideDivider>
-                <!-- <LogsResponse {selectedLog} /> -->
+                <LogsResponse {selectedLog} />
             </Accordion>
         </Layout.Stack>
     {/if}

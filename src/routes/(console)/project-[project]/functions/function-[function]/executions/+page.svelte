@@ -31,31 +31,7 @@
 <Container>
     <Layout.Stack direction="row" alignItems="center" justifyContent="space-between">
         <QuickFilters {columns} />
-        <!-- <Filters
-            query={data.query}
-            {columns}
-            let:disabled
-            let:toggle
-            clearOnClick
-            analyticsSource="executions_filters">
-            <div class="u-flex u-gap-4">
-                <Button
-                text
-                on:click={toggle}
-                {disabled}
-                ariaLabel="open filter"
-                noMargin={!$tags?.length}>
-                <span class="icon-filter-line" />
-                <span class="text">More filters</span>
-                </Button>
-                {#if $tags?.length}
-                <div
-                style="flex-basis: 1px; background-color: hsl(var(--border)); width: 1px;">
-                </div>
-                <Button text on:click={clearAll}>Clear All</Button>
-                {/if}
-                </div>
-                </Filters> -->
+
         <Layout.Stack gap="s" inline direction="row" alignItems="center">
             {#if data?.executions?.total}
                 <ViewSelector view={View.Table} {columns} hideView allowNoColumns />

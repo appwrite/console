@@ -1,12 +1,11 @@
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, depends, parent }) => {
+export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);
-    depends(Dependencies.FUNCTIONS);
+    depends(Dependencies.FUNCTION);
 
-    const { runtimesList } = await parent();
+    const { runtimesList, specificationsList } = await parent();
 
     const [globalVariables, variables] = await Promise.all([
         sdk.forProject.projectApi.listVariables(),
@@ -34,6 +33,7 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
     return {
         variables,
         globalVariables,
-        runtimesList
+        runtimesList,
+        specificationsList
     };
 };

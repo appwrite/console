@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, CardGrid, Empty, PaginationInline } from '$lib/components';
+    import { CardGrid, Empty, PaginationInline } from '$lib/components';
     import {
         TableBody,
         TableCellHead,
@@ -23,7 +23,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
     import { Pill } from '$lib/elements';
-    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Alert, Icon, Link, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     let offset = 0;
@@ -97,16 +97,14 @@
     Appwrite credit will automatically be applied to your next invoice.
     <svelte:fragment slot="aside">
         {#if $organization?.billingPlan === BillingPlan.FREE}
-            <Alert type="info">
-                <svelte:fragment slot="title">Upgrade to Pro to add credits</svelte:fragment>
-                Upgrade to a Pro plan to add credits to your organization. For more information on what
-                you can do with a Pro plan,
-                <a
-                    class="link"
+            <Alert.Inline status="info" title="Upgrade to Pro to add credits">
+                Upgrade to a Pro plan to add credits to your organization. For more information on
+                what you can do with a Pro plan,
+                <Link.Anchor
                     href="https://appwrite.io/pricing"
                     target="_blank"
-                    rel="noopener noreferrer">view our pricing guide.</a>
-            </Alert>
+                    rel="noopener noreferrer">view our pricing guide.</Link.Anchor>
+            </Alert.Inline>
         {:else}
             <div class="u-flex u-cross-center u-main-space-between">
                 <div class="u-flex u-gap-8 u-cross-center">

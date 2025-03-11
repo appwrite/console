@@ -4,7 +4,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import InputSwitch from '$lib/elements/forms/inputSwitch.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -14,6 +14,8 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
     import { base } from '$app/paths';
+    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Link } from '$lib/elements';
 
     const functionId = $page.params.function;
     let functionLogging: boolean = null;
@@ -68,20 +70,13 @@
 <Form onSubmit={updateLogging}>
     <CardGrid>
         <svelte:fragment slot="title">Execution logs</svelte:fragment>
-        Enable or disable execution logs. We recommend disabling them for better performance in production.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputSwitch label="Logs" id="logging" bind:value={functionLogging}>
-                    <svelte:fragment slot="description">
-                        <p>
-                            When disabled, execution logs and errors will not be shown in the <a
-                                href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions`}
-                                class="link">
-                                Executions</a> tab
-                        </p>
-                    </svelte:fragment>
-                </InputSwitch>
-            </FormList>
+            <InputSwitch label="Logs" id="logging" bind:value={functionLogging} />
+            <Typography.Text>
+                When disabled, execution logs and errors will not be shown in the <Link
+                    href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions`}>
+                    Executions</Link> tab. We recommend disabling them for better performance in production.
+            </Typography.Text>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

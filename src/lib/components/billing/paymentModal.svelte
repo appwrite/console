@@ -103,5 +103,9 @@
     .aw-stripe-container {
         display: flex;
         min-height: 295px;
+
+        #payment-element {
+            width: 100%;
+        }
     }
 </style>

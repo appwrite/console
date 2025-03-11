@@ -2,30 +2,45 @@
     import { base } from '$app/paths';
     import { CardGrid, SvgIcon } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { project } from '$routes/(console)/project-[project]/store';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
+    import { capitalize } from '$lib/helpers/string';
 </script>
 
 <CardGrid>
-    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-        <div class="avatar" style={`--p-image-size: ${32 / 16}rem`} aria-hidden="true">
-            <SvgIcon size={64} iconSize="large" name={$func.runtime.split('-')[0]}></SvgIcon>
-        </div>
-        <div class="u-flex-vertical u-gap-4">
-            <Typography.Title size="s">{$func.name}</Typography.Title>
+    <Typography.Title size="s">{$func.name}</Typography.Title>
 
-            <p class="text u-capitalize">{$func.runtime}</p>
-        </div>
-    </div>
     <svelte:fragment slot="aside">
-        <div class="u-flex u-main-space-between">
-            <div>
-                <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
-                <p>Last updated at: {toLocaleDateTime($func.$updatedAt)}</p>
-            </div>
-        </div>
+        <Layout.Stack gap="xxxl" direction="row" wrap="wrap">
+            <Layout.Stack gap="xxxs" inline>
+                <Typography.Caption variant="400">Runtime</Typography.Caption>
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                    <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                        <SvgIcon size={16} iconSize="small" name={$func.runtime.split('-')[0]} />
+                        {capitalize($func.runtime)}
+                    </Layout.Stack>
+                </Typography.Text>
+            </Layout.Stack>
+            <Layout.Stack gap="xxxs" inline>
+                <Typography.Caption variant="400">Updated</Typography.Caption>
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                    <Tooltip>
+                        {capitalize(timeFromNow($func.$updatedAt))}
+                        <span slot="tooltip">
+                            {toLocaleDateTime($func.$updatedAt)}
+                        </span>
+                    </Tooltip>
+                </Typography.Text>
+            </Layout.Stack>
+            <Layout.Stack gap="xxxs" inline>
+                <Typography.Caption variant="400">Created</Typography.Caption>
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                    {toLocaleDateTime($func.$createdAt)}
+                </Typography.Text>
+            </Layout.Stack>
+        </Layout.Stack>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

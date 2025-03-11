@@ -13,7 +13,8 @@ export const load = async ({ params, depends, parent }) => {
         sdk.forProject.sites.listDeployments(params.site, [Query.limit(4), Query.orderDesc('')]),
         sdk.forProject.sites.listDeployments(params.site, [
             Query.equal('status', 'ready'),
-            Query.equal('activate', true)
+            Query.equal('activate', true),
+            Query.orderDesc('')
         ]),
         sdk.forProject.proxy.listRules([
             Query.equal('type', RuleType.DEPLOYMENT),
@@ -22,13 +23,17 @@ export const load = async ({ params, depends, parent }) => {
             Query.equal('deploymentId', site.deploymentId)
         ])
     ]);
+
+    const deployment = deploymentList?.total
+        ? await sdk.forProject.sites.getDeployment(params.site, site.deploymentId)
+        : null;
     return {
         site,
         deploymentList,
-        deployment: deploymentList?.total
-            ? await sdk.forProject.sites.getDeployment(params.site, site.deploymentId)
-            : null,
+        deployment,
         proxyRuleList,
-        hasProdReadyDeployments: prodReadyDeployments?.deployments?.length > 0
+        prodReadyDeployments,
+        hasProdReadyDeployments:
+            prodReadyDeployments?.deployments?.filter((d) => d?.$id !== deployment?.$id).length > 0
     };
 };
