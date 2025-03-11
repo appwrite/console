@@ -4,6 +4,7 @@
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
+    import { capitalize } from '$lib/helpers/string';
     import { iconPath } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
@@ -16,7 +17,7 @@
     let buildRuntime = site?.buildRuntime;
 
     let buildRuntimeOptions = framework.runtimes.map((runtime) => ({
-        label: runtime,
+        label: capitalize(runtime),
         value: runtime,
         leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime), 'color')}' style='inline-size: var(--icon-size-m)' />`
     }));

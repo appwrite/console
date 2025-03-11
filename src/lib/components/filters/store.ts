@@ -1,5 +1,4 @@
 import { goto } from '$app/navigation';
-
 import { derived, get, writable } from 'svelte/store';
 import { page } from '$app/stores';
 import deepEqual from 'deep-equal';

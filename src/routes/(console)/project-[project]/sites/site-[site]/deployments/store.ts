@@ -13,8 +13,7 @@ export const columns = writable<Column[]>([
         width: 110,
         array: true,
         format: 'enum',
-        elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed'],
-        filter: false
+        elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed']
     },
 
     {
