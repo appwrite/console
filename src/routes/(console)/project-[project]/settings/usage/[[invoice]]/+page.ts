@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     let currentAggregation: Models.AggregationTeam = undefined;
 
     if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, invoice);
+        currentInvoice = await sdk.forConsole.organizations.getInvoice(organization.$id, invoice);
         currentAggregation = await sdk.forConsole.billing.getAggregation(
             organization.$id,
             currentInvoice.aggregationId
@@ -42,7 +42,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     }
 
     const [invoices, usage] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(organization.$id, [Query.orderDesc('from')]),
+        sdk.forConsole.organizations.listInvoices(organization.$id, [Query.orderDesc('from')]),
         /**
          * Workaround because project id might not be populated yet.
          */

@@ -225,7 +225,7 @@
     $: {
         if (selectedOrgId) {
             (async () => {
-                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
+                currentPlan = await sdk.forConsole.organizations.getPlan(selectedOrgId);
             })();
         }
     }

@@ -43,7 +43,7 @@
                 $page.url.searchParams.get('type') === 'confirmation'
             ) {
                 const invoiceId = $page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
+                const invoice = await sdk.forConsole.organizations.getInvoice(
                     $page.params.organization,
                     invoiceId
                 );
@@ -60,7 +60,7 @@
                 $page.url.searchParams.get('type') === 'retry'
             ) {
                 const invoiceId = $page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
+                const invoice = await sdk.forConsole.organizations.getInvoice(
                     $page.params.organization,
                     invoiceId
                 );

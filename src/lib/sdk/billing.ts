@@ -29,31 +29,6 @@ export type EstimationDeleteOrganization = {
     unpaidInvoices: Models.Invoice[];
 };
 
-export type Address = {
-    $id: string;
-    streetAddress: string;
-    addressLine2?: string;
-    country: string;
-    city: string;
-    state?: string;
-    postalCode: string;
-    userId: string;
-};
-
-export type AddressesList = {
-    billingAddresses: Address[];
-    total: number;
-};
-
-export type AdditionalResource = {
-    currency: string;
-    invoiceDesc: string;
-    price: number;
-    unit: string;
-    value: number;
-    multiplier?: number;
-};
-
 export class Billing {
     client: Client;
 
@@ -144,14 +119,6 @@ export class Billing {
         });
     }
 
-    async getOrganizationPlan(organizationId: string): Promise<Models.BillingPlan> {
-        const path = `/organizations/${organizationId}/plan`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json'
-        });
-    }
-
     async getPlan(planId: string): Promise<Models.BillingPlan> {
         const path = `/console/plans/${planId}`;
         const uri = new URL(this.client.config.endpoint + path);
@@ -221,44 +188,6 @@ export class Billing {
         return await this.client.call('patch', uri, {
             'content-type': 'application/json'
         });
-    }
-
-    async listInvoices(
-        organizationId: string,
-        queries: string[] = []
-    ): Promise<Models.InvoiceList> {
-        const path = `/organizations/${organizationId}/invoices`;
-        const params = {
-            organizationId,
-            queries
-        };
-
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async getInvoice(organizationId: string, invoiceId: string): Promise<Models.Invoice> {
-        const path = `/organizations/${organizationId}/invoices/${invoiceId}`;
-        const params = {
-            organizationId,
-            invoiceId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
     }
 
     async getInvoiceView(
@@ -385,22 +314,6 @@ export class Billing {
         );
     }
 
-    async removeBillingAddress(organizationId: string): Promise<void> {
-        const path = `/organizations/${organizationId}/billing-address`;
-        const params = {
-            organizationId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'DELETE',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
     async updateTaxId(organizationId: string, taxId: string): Promise<Organization> {
         const path = `/organizations/${organizationId}/taxId`;
         const params = {
@@ -426,26 +339,6 @@ export class Billing {
         const params = {
             organizationId,
             paymentMethodId
-        };
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async getOrganizationBillingAddress(
-        organizationId: string,
-        billingAddressId: string
-    ): Promise<Address> {
-        const path = `/organizations/${organizationId}/billing-addresses/${billingAddressId}`;
-        const params = {
-            organizationId,
-            billingAddressId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -508,20 +401,6 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'patch',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
-    async getPlansInfo(): Promise<Models.BillingPlanList> {
-        const path = `/console/plans`;
-        const params = {};
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
             uri,
             {
                 'content-type': 'application/json'

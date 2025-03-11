@@ -24,7 +24,7 @@ export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
 
     let plansInfo = new Map<Tier, Models.BillingPlan>();
     if (isCloud) {
-        const plansArray = await sdk.forConsole.billing.getPlansInfo();
+        const plansArray = await sdk.forConsole.console.plans();
         plansInfo = plansArray.plans.reduce((map, plan) => {
             map.set(plan.$id as Tier, plan);
             return map;

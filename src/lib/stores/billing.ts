@@ -12,7 +12,6 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
-import type { AddressesList } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import type { Models } from '@appwrite.io/console';
@@ -55,7 +54,10 @@ export const paymentMethods = derived(
     page,
     ($page) => $page.data.paymentMethods as Models.PaymentMethodList
 );
-export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
+export const addressList = derived(
+    page,
+    ($page) => $page.data.addressList as Models.BillingAddressList
+);
 export const plansInfo = derived(
     page,
     ($page) => $page.data.plansInfo as Map<Tier, Models.BillingPlan>
@@ -155,7 +157,7 @@ export const failedInvoice = cachedStore<
         load: async (orgId) => {
             if (!isCloud) set(null);
             if (!get(canSeeBilling)) set(null);
-            const failedInvoices = await sdk.forConsole.billing.listInvoices(orgId, [
+            const failedInvoices = await sdk.forConsole.organizations.listInvoices(orgId, [
                 Query.equal('status', 'failed')
             ]);
             // const failedInvoices = invoices.invoices;
@@ -340,7 +342,7 @@ export async function checkForUsageLimit(org: Organization) {
 export async function checkPaymentAuthorizationRequired(org: Organization) {
     if (org.billingPlan === BillingPlan.FREE) return;
 
-    const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
+    const invoices = await sdk.forConsole.organizations.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')
     ]);
 

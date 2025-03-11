@@ -1,12 +1,12 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { organization } from '$lib/stores/organization';
-    import { Dependencies } from '$lib/constants';
+    import { sdk } from '$lib/stores/sdk';
 
     export let show = false;
 
@@ -14,7 +14,7 @@
 
     async function removeAddress() {
         try {
-            await sdk.forConsole.billing.removeBillingAddress($organization.$id);
+            await sdk.forConsole.organizations.deleteBillingAddress($organization.$id);
             addNotification({
                 type: 'success',
                 message: `The billing address has been removed from ${$organization.name}`

@@ -26,7 +26,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             const res = await sdk.forConsole.organizations.getScopes(params.organization);
             roles = res.roles;
             scopes = res.scopes;
-            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(params.organization);
+            currentPlan = await sdk.forConsole.organizations.getPlan(params.organization);
             if (scopes.includes('billing.read')) {
                 await failedInvoice.load(params.organization);
                 if (get(failedInvoice)) {

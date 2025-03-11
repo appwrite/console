@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { CardGrid, DropList, DropListItem, Empty, Heading } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -10,20 +12,17 @@
         TableRow
     } from '$lib/elements/table';
     import { addressList } from '$lib/stores/billing';
+    import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import AddressModal from './addressModal.svelte';
-    import type { Models } from '@appwrite.io/console';
     import DeleteAddress from './deleteAddressModal.svelte';
     import EditAddressModal from './editAddressModal.svelte';
-    import type { Address } from '$lib/sdk/billing';
-    import { organizationList, type Organization } from '$lib/stores/organization';
-    import { base } from '$app/paths';
-    import { Pill } from '$lib/elements';
 
     let show = false;
     let showEdit = false;
-    let selectedAddress: Address;
+    let selectedAddress: Models.BillingAddress;
     let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
     let showDropdown = [];

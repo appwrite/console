@@ -44,7 +44,7 @@
     onMount(request);
 
     async function request() {
-        invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
+        invoiceList = await sdk.forConsole.organizations.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc('$createdAt')

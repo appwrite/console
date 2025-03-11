@@ -44,15 +44,15 @@ export const load: PageLoad = async ({ params, parent }) => {
     let currentInvoice: Models.Invoice = undefined;
 
     if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(org.$id, invoice);
+        currentInvoice = await sdk.forConsole.organizations.getInvoice(org.$id, invoice);
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     }
     const [invoices, usage, organizationMembers, plan] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
+        sdk.forConsole.organizations.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.organizations.getUsage(params.organization, startDate, endDate),
         sdk.forConsole.teams.listMemberships(params.organization),
-        sdk.forConsole.billing.getOrganizationPlan(org.$id)
+        sdk.forConsole.organizations.getPlan(org.$id)
     ]);
 
     const projectNames: { [key: string]: Models.Project } = {};
