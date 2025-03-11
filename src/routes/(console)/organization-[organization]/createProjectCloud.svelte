@@ -42,7 +42,6 @@
             });
             await onFinish();
             await goto(`${base}/project-${project.$id}`);
-            wizard.hide();
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -69,4 +68,3 @@
         bind:projectName={$createProject.name}
         bind:region={$createProject.region}
         {regions} /></Modal>
-<!--<Wizard title="Create project"></Wizard>-->
