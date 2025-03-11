@@ -4,7 +4,7 @@
     import { supportData, isSupportOnline } from './wizard/support/store';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { InputSelect, InputText, InputTextarea } from '$lib/elements/forms/index.js';
+    import { Form, InputSelect, InputText, InputTextarea } from '$lib/elements/forms/index.js';
 
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
@@ -41,21 +41,6 @@
     });
 
     async function handleSubmit() {
-        console.log({
-            email: $user.email,
-            subject: $supportData.subject,
-            firstName: $user?.name || 'Unknown',
-            message: $supportData.message,
-            tags: ['cloud'],
-            customFields: [
-                { id: '41612', value: $supportData.category },
-                { id: '48493', value: $user?.name ?? '' },
-                { id: '48492', value: $organization?.$id ?? '' },
-                { id: '48491', value: $supportData?.project ?? '' },
-                { id: '48490', value: $user?.$id ?? '' }
-            ]
-        });
-        return;
         const response = await fetch(`${VARS.GROWTH_ENDPOINT}/support`, {
             method: 'POST',
             headers: {
@@ -118,83 +103,64 @@
     $: supportWeekDays = `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`;
 </script>
 
-<!--<WizardWithSteps-->
-<!--    title="Contact us"-->
-<!--    steps={stepsComponents}-->
-<!--    finalAction="Submit"-->
-<!--    on:exit={resetData}>-->
-<!--    <svelte:fragment slot="aside">-->
-<!--        <h4 class="body-text-1 u-bold">Contact the Appwrite Team</h4>-->
-<!--        <p class="text u-margin-block-start-16">-->
-<!--            If you found a bug or have questions, please reach out to the Appwrite team. We try to-->
-<!--            respond to all messages within our office hours.-->
-<!--        </p>-->
-<!--        <p class="text u-margin-block-start-32">-->
-<!--            Available: <b>{supportWeekDays}, {supportTimings}</b>-->
-<!--        </p>-->
-<!--        <div class="u-flex u-gap-4 u-cross-center">-->
-<!--            <span>Currently:</span>-->
-<!--            {#if isSupportOnline()}-->
-<!--                <span class="icon-check-circle u-color-text-success" aria-hidden="true" />-->
-<!--                <span class="u-color-text-success text">Online</span>-->
-<!--            {:else}-->
-<!--                <span class="icon-x-circle" aria-hidden="true" />-->
-<!--                <span class="text">Offline</span>-->
-<!--            {/if}-->
-<!--        </div>-->
-<!--    </svelte:fragment>-->
-<!--</WizardWithSteps>-->
-
-<Wizard title="Contact us">
-    <Layout.Stack gap="xl">
-        <Layout.Stack gap="s">
-            <Typography.Title>How can we help you?</Typography.Title>
-            <Typography.Text
-                >Please describe your request in detail. If applicable, include steps for
-                reproduction of any in-app issues.</Typography.Text>
-        </Layout.Stack>
-        <Layout.Stack gap="s">
-            <Typography.Text color="--fgcolor-neutral-secondary">Choose a topic</Typography.Text>
-            <Layout.Stack gap="s" direction="row">
-                <Tag
+<Wizard title="Contact us" confirmExit={true}>
+    <Form onSubmit={handleSubmit}>
+        <Layout.Stack gap="xl">
+            <Layout.Stack gap="s">
+                <Typography.Title>How can we help you?</Typography.Title>
+                <Typography.Text
+                    >Please describe your request in detail. If applicable, include steps for
+                    reproduction of any in-app issues.</Typography.Text>
+            </Layout.Stack>
+            <Layout.Stack gap="s">
+                <Typography.Text color="--fgcolor-neutral-secondary"
+                    >Choose a topic</Typography.Text>
+                <Layout.Stack gap="s" direction="row">
+                    <Tag
+                        on:click={() => {
+                            $supportData.category = 'general';
+                        }}
+                        selected={$supportData.category === 'general'}>general</Tag>
+                    <Tag
+                        on:click={() => {
+                            $supportData.category = 'billing';
+                        }}
+                        selected={$supportData.category === 'billing'}>billing</Tag>
+                    <Tag
+                        on:click={() => {
+                            $supportData.category = 'technical';
+                        }}
+                        selected={$supportData.category === 'technical'}>technical</Tag>
+                </Layout.Stack>
+            </Layout.Stack>
+            <InputSelect
+                id="project"
+                label="Choose a project"
+                options={projectOptions ?? []}
+                bind:value={$supportData.project}
+                required={false}
+                placeholder="Select project" />
+            <InputText
+                id="subject"
+                label="Subject"
+                bind:value={$supportData.subject}
+                placeholder="What do you need help with?"
+                required />
+            <InputTextarea
+                id="message"
+                bind:value={$supportData.message}
+                placeholder="Type here..."
+                label="Tell us a bit more" />
+            <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
+                <Button.Button
+                    variant="secondary"
                     on:click={() => {
-                        $supportData.category = 'general';
-                    }}
-                    selected={$supportData.category === 'general'}>general</Tag>
-                <Tag
-                    on:click={() => {
-                        $supportData.category = 'billing';
-                    }}
-                    selected={$supportData.category === 'billing'}>billing</Tag>
-                <Tag
-                    on:click={() => {
-                        $supportData.category = 'technical';
-                    }}
-                    selected={$supportData.category === 'technical'}>technical</Tag>
+                        wizard.hide();
+                    }}>Cancel</Button.Button>
+                <Button.Button>Submit</Button.Button>
             </Layout.Stack>
         </Layout.Stack>
-        <InputSelect
-            id="project"
-            label="Choose a project"
-            options={projectOptions ?? []}
-            bind:value={$supportData.project}
-            required={false}
-            placeholder="Select project" />
-        <InputText
-            id="subject"
-            label="Subject"
-            bind:value={$supportData.subject}
-            placeholder="What do you need help with?"
-            required />
-        <InputTextarea
-            id="message"
-            bind:value={$supportData.message}
-            placeholder="Type here..."
-            label="Tell us a bit more" />
-        <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
-            <Button.Button on:click={handleSubmit}>Submit</Button.Button>
-        </Layout.Stack>
-    </Layout.Stack>
+    </Form>
 
     <svelte:fragment slot="aside">
         <Layout.Stack gap="xl">
