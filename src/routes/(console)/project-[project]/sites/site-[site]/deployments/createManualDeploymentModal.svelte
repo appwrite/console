@@ -3,7 +3,7 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import InputFile from '$lib/elements/forms/inputFile.svelte';
+    import { removeFile } from '$lib/helpers/files';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import type { Models } from '@appwrite.io/console';

@@ -14,13 +14,12 @@
     import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
-    import InputFile from '$lib/elements/forms/inputFile.svelte';
     import { buildVerboseDomain } from '../store';
     import { project } from '$routes/(console)/project-[project]/store';
     import { organization } from '$lib/stores/organization';
     import { consoleVariables } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { removeFile } from '$lib/stores/upload';
+    import { removeFile } from '$lib/helpers/files';
 
     export let data;
     let showExitModal = false;
