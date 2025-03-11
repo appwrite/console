@@ -22,7 +22,7 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
-    import ConnectBehaviour from './connectBehaviour.svelte';
+    import ConnectBehaviour from '$lib/components/git/connectBehaviour.svelte';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
