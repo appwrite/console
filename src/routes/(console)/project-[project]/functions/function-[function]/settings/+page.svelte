@@ -19,6 +19,8 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import UpdateRepository from './updateRepository.svelte';
     import UpdateBuildCommand from './updateBuildCommand.svelte';
+    import UpdateResourceLimits from './updateResourceLimits.svelte';
+    import { isCloud } from '$lib/system';
 
     export let data;
     let showAlert = true;
@@ -89,10 +91,13 @@
     <UpdateBuildCommand func={data.function} />
 
     <UpdatePermissions />
-    <UpdateLogging />
+    {#if isCloud}
+        <UpdateResourceLimits func={data.function} specs={data.specificationsList} />
+    {/if}
     <UpdateEvents />
     <UpdateSchedule />
     <UpdateTimeout />
+    <UpdateLogging />
     <UpdateScopes />
     <DangerZone />
 </Container>

@@ -13,6 +13,8 @@
     import UpdateRepository from './updateRepository.svelte';
     import { onMount } from 'svelte';
     import { showConnectRepo } from './store';
+    import { isCloud } from '$lib/system';
+    import UpdateResourceLimits from './updateResourceLimits.svelte';
 
     export let data;
 
@@ -60,6 +62,7 @@
         <UpdateRepository site={data.site} installations={data.installations} />
     {/key}
     <UpdateBuildSettings site={data.site} frameworks={data.frameworks.frameworks} />
+    <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateVariables
         {sdkCreateVariable}
         {sdkUpdateVariable}
@@ -69,7 +72,9 @@
         variableList={data.variables}
         product="site"
         analyticsSource="site_settings" />
-    <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
+    {#if isCloud}
+        <UpdateResourceLimits site={data.site} specs={data.specificationsList} />
+    {/if}
     <UpdateTimeout site={data.site} />
     <DangerZone site={data.site} />
 </Container>

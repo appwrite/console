@@ -5,7 +5,6 @@
     import { CardGrid, Empty, EventModal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
-    import { TableCell, TableCellText, TableList } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';

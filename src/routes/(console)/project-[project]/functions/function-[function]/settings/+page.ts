@@ -5,7 +5,7 @@ export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.VARIABLES);
     depends(Dependencies.FUNCTION);
 
-    const { runtimesList } = await parent();
+    const { runtimesList, specificationsList } = await parent();
 
     const [globalVariables, variables] = await Promise.all([
         sdk.forProject.projectApi.listVariables(),
@@ -33,6 +33,7 @@ export const load = async ({ params, depends, parent }) => {
     return {
         variables,
         globalVariables,
-        runtimesList
+        runtimesList,
+        specificationsList
     };
 };
