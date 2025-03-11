@@ -65,55 +65,7 @@ export type PlanAddon = {
     type: string;
 };
 
-export type Plan = {
-    $id: string;
-    name: string;
-    desc: string;
-    price: number;
-    order: number;
-    bandwidth: number;
-    storage: number;
-    imageTransformations: number;
-    webhooks: number;
-    users: number;
-    teams: number;
-    databases: number;
-    buckets: number;
-    fileSize: number;
-    functions: number;
-    executions: number;
-    realtime: number;
-    logs: number;
-    authPhone: number;
-    usage: {
-        bandwidth: AdditionalResource;
-        executions: AdditionalResource;
-        member: AdditionalResource;
-        realtime: AdditionalResource;
-        storage: AdditionalResource;
-        users: AdditionalResource;
-    };
-    addons: {
-        seats: PlanAddon;
-    };
-    trialDays: number;
-    isAvailable: boolean;
-    selfService: boolean;
-    premiumSupport: boolean;
-    budgeting: boolean;
-    supportsMockNumbers: boolean;
-    backupsEnabled: boolean;
-    backupPolicies: number;
-    emailBranding: boolean;
-    supportsCredits: boolean;
-};
-
-export type PlanList = {
-    plans: Plan[];
-    total: number;
-};
-
-export type PlansMap = Map<Tier, Plan>;
+export type PlansMap = Map<Tier, Models.BillingPlan>;
 
 export class Billing {
     client: Client;
@@ -205,7 +157,7 @@ export class Billing {
         });
     }
 
-    async getOrganizationPlan(organizationId: string): Promise<Plan> {
+    async getOrganizationPlan(organizationId: string): Promise<Models.BillingPlan> {
         const path = `/organizations/${organizationId}/plan`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('get', uri, {
@@ -213,7 +165,7 @@ export class Billing {
         });
     }
 
-    async getPlan(planId: string): Promise<Plan> {
+    async getPlan(planId: string): Promise<Models.BillingPlan> {
         const path = `/console/plans/${planId}`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('get', uri, {
@@ -577,7 +529,7 @@ export class Billing {
         );
     }
 
-    async getPlansInfo(): Promise<PlanList> {
+    async getPlansInfo(): Promise<Models.BillingPlanList> {
         const path = `/console/plans`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);

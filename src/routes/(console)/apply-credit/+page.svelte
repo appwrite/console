@@ -12,7 +12,6 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type Plan } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import { isOrganization } from '$lib/stores/billing.js';
     import { addNotification } from '$lib/stores/notifications';
@@ -72,7 +71,7 @@
     let couponData = data?.couponData;
     let campaign = data?.campaign;
     let billingPlan = BillingPlan.PRO;
-    let currentPlan: Plan;
+    let currentPlan: Models.BillingPlan;
 
     function isUpgrade() {
         const newPlan = $page.data.plansInfo.get(billingPlan);

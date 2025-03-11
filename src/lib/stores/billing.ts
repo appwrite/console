@@ -12,7 +12,7 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
-import type { AddressesList, Plan, PlansMap } from '$lib/sdk/billing';
+import type { AddressesList, PlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import type { Models } from '@appwrite.io/console';
@@ -129,7 +129,11 @@ export type PlanServices =
     | 'authPhone'
     | 'imageTransformations';
 
-export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
+export function getServiceLimit(
+    serviceId: PlanServices,
+    tier: Tier = null,
+    plan?: Models.BillingPlan
+): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
     const info = get(plansInfo);
@@ -484,7 +488,7 @@ export const billingURL = derived(
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(addon: Models.AggregationTeam, plan: Plan) {
+export function calculateExcess(addon: Models.AggregationTeam, plan: Models.BillingPlan) {
     return {
         bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),

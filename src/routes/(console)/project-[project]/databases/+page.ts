@@ -1,7 +1,6 @@
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import { timeFromNow } from '$lib/helpers/date';
 import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
-import type { Plan } from '$lib/sdk/billing';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import { type Models, Query } from '@appwrite.io/console';
@@ -35,7 +34,11 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
 };
 
 // TODO: @itznotabug we should improve this!
-async function fetchDatabasesAndBackups(limit: number, offset: number, currentPlan?: Plan) {
+async function fetchDatabasesAndBackups(
+    limit: number,
+    offset: number,
+    currentPlan?: Models.BillingPlan
+) {
     const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 
     const databases = await sdk.forProject.databases.list([

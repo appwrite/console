@@ -1,12 +1,12 @@
 import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte';
 import { defaultRoles, defaultScopes, Dependencies } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 import { failedInvoice } from '$lib/stores/billing';
 import { headerAlert } from '$lib/stores/headerAlert';
 import type { Organization } from '$lib/stores/organization';
 import { preferences } from '$lib/stores/preferences';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
+import type { Models } from '@appwrite.io/console';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import type { LayoutLoad } from './$types';
@@ -19,7 +19,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PAYMENT_METHODS);
     let roles = isCloud ? [] : defaultRoles;
     let scopes = isCloud ? [] : defaultScopes;
-    let currentPlan: Plan = null;
+    let currentPlan: Models.BillingPlan | null = null;
 
     try {
         if (isCloud) {

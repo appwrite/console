@@ -1,8 +1,8 @@
 import { Dependencies } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 import type { Tier } from '$lib/stores/billing';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
+import type { Models } from '@appwrite.io/console';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
@@ -22,13 +22,13 @@ export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
 
     const [data, variables] = await Promise.all([versionPromise, variablesPromise]);
 
-    let plansInfo = new Map<Tier, Plan>();
+    let plansInfo = new Map<Tier, Models.BillingPlan>();
     if (isCloud) {
         const plansArray = await sdk.forConsole.billing.getPlansInfo();
         plansInfo = plansArray.plans.reduce((map, plan) => {
             map.set(plan.$id as Tier, plan);
             return map;
-        }, new Map<Tier, Plan>());
+        }, new Map<Tier, Models.BillingPlan>());
     }
 
     return {

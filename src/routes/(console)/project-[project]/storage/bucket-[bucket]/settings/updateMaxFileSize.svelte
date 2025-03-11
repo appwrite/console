@@ -8,10 +8,11 @@
     import { readOnly, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import type { Models } from '@appwrite.io/console';
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
-    import type { Plan } from '$lib/sdk/billing';
-    export let currentPlan: Plan;
+
+    export let currentPlan: Models.BillingPlan;
 
     const service = currentPlan['fileSize'];
     const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize, 1000);

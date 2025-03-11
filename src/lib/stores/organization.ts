@@ -1,5 +1,4 @@
 import { page } from '$app/stores';
-import type { Plan } from '$lib/sdk/billing';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 import type { Tier } from './billing';
@@ -50,5 +49,5 @@ export const organizationList = derived(
 );
 
 export const organization = derived(page, ($page) => $page.data?.organization as Organization);
-export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Plan);
+export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Models.BillingPlan);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
