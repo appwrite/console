@@ -13,7 +13,6 @@
     import { onMount } from 'svelte';
     import AvailableCredit from './availableCredit.svelte';
     import BillingAddress from './billingAddress.svelte';
-    import BudgetAlert from './budgetAlert.svelte';
     import BudgetCap from './budgetCap.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import PaymentMethods from './paymentMethods.svelte';
@@ -128,7 +127,6 @@
     <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
-    <BudgetAlert />
     <AvailableCredit />
 </Container>
 
