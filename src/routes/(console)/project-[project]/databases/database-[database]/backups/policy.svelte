@@ -1,6 +1,6 @@
 <script lang="ts">
+    import { Modal } from '$lib/components';
     import Card from '$lib/components/card.svelte';
-    import { DropList, DropListItem, Modal } from '$lib/components';
     import { Button, FormList, InputCheckbox } from '$lib/elements/forms/index';
 
     import { app } from '$lib/stores/app';
@@ -16,10 +16,17 @@
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
     import { backupFrequencies } from '$lib/helpers/backups';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        ActionMenu,
+        Divider,
+        Icon,
+        Layout,
+        Popover,
+        Tooltip,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import { IconDotsHorizontal, IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
 
-    let showDropdown = [];
     let showDelete = false;
     let selectedPolicy: BackupPolicy = null;
 
@@ -130,9 +137,7 @@
 </script>
 
 <div class="u-flex u-flex-vertical u-gap-16">
-    <Card
-        class="backups-policy-list-card u-margin-block-start-24"
-        style="padding: 0; min-width: 21.5rem;">
+    <Card class="backups-policy-list-card" style="padding: 0; min-width: 21.5rem;">
         <div class="inner-card u-flex-vertical-mobile">
             {#each policies.policies as policy, index (policy.$id)}
                 {@const policyDescription = getPolicyDescription(policy.schedule)}
@@ -146,39 +151,37 @@
                     class:opacity-gradient-bottom={index === 2}
                     class:u-padding-block-start-10={index !== 0}
                     class:u-padding-block-end-10={index === 0 && policies.policies.length > 1}>
-                    <div class="u-flex-vertical u-gap-2">
-                        <div class="u-flex u-main-space-between">
-                            <h3 class="body-text-2 u-bold darker-neutral-color">{policy.name}</h3>
-                            <DropList
-                                noArrow
-                                bind:show={showDropdown[index]}
-                                placement="bottom-end">
-                                <button
-                                    class="is-only-icon is-text"
-                                    aria-label="More options"
-                                    on:click|preventDefault={() => {
-                                        showDropdown[index] = !showDropdown[index];
-                                    }}>
-                                    <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
+                    <Layout.Stack direction="column" gap="xxxs">
+                        <Layout.Stack direction="row" justifyContent="space-between">
+                            <Typography.Text variant="m-500">{policy.name}</Typography.Text>
+                            <Popover let:toggle padding="none" placement="bottom-end">
+                                <Button extraCompact on:click={toggle}>
+                                    <Icon icon={IconDotsHorizontal} />
+                                </Button>
 
-                                <svelte:fragment slot="list">
-                                    <DropListItem
-                                        on:click={() => {
-                                            showDelete = true;
-                                            selectedPolicy = policy;
-                                            showDropdown[index] = false;
-                                            trackEvent(Click.PolicyDeleteClick);
-                                        }}>
-                                        Delete
-                                    </DropListItem>
+                                <svelte:fragment slot="tooltip" let:toggle>
+                                    <ActionMenu.Root width="180px">
+                                        <ActionMenu.Item.Button
+                                            status="danger"
+                                            trailingIcon={IconTrash}
+                                            on:click={(e) => {
+                                                toggle(e);
+                                                showDelete = true;
+                                                selectedPolicy = policy;
+                                                trackEvent(Click.PolicyDeleteClick);
+                                            }}>
+                                            Delete
+                                        </ActionMenu.Item.Button>
+                                    </ActionMenu.Root>
                                 </svelte:fragment>
-                            </DropList>
-                        </div>
+                            </Popover>
+                        </Layout.Stack>
 
-                        <div
-                            class="policy-item-subtitles u-flex u-gap-6"
-                            style="width: fit-content;">
+                        <Layout.Stack
+                            class="policy-item-subtitles"
+                            direction="row"
+                            gap="xs"
+                            alignItems="center">
                             {#if shouldUseTooltip}
                                 <Tooltip>
                                     <span>
@@ -190,21 +193,37 @@
                                 {policyDescription}
                             {/if}
 
-                            <span class="small-ellipse">●</span>
+                            <span class="small-ellipse">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="2"
+                                    height="2"
+                                    viewBox="0 0 2 2"
+                                    fill="none">
+                                    <circle cx="1" cy="1" r="1" fill="currentColor" />
+                                </svg>
+                            </span>
 
                             {formatRetentionMessage(policy.retention)}
-                        </div>
-                    </div>
+                        </Layout.Stack>
+                    </Layout.Stack>
 
+                    <!-- Prev / Next section -->
                     <div
-                        class="policy-cycles u-flex u-main-space-between u-padding-block-2 policy-item-subtitles">
+                        class="policy-cycles u-flex u-gap-24 u-padding-block-2 policy-item-subtitles">
                         <div style="width: 128px" class="u-flex-vertical policy-item-caption">
                             <span style="color: #97979B">Previous</span>
                             <div
                                 class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
-                                <span
-                                    class="medium-ellipse"
-                                    class:success={!!lastBackupDates[policy.$id]}>●</span>
+                                <span class="ellipse" class:success={!!lastBackupDates[policy.$id]}>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        height="8"
+                                        width="8"
+                                        viewBox="0 0 8 8"
+                                        fill="none"
+                                        ><circle cx="4" cy="4" r="4" fill="currentColor" /></svg>
+                                </span>
                                 <span class="policy-item-subtitles">
                                     {#if lastBackupDates[policy.$id]}
                                         {toLocaleDateTime(lastBackupDates[policy.$id])}
@@ -215,7 +234,9 @@
                             </div>
                         </div>
 
-                        <div class="u-border-vertical" />
+                        <div>
+                            <Divider vertical />
+                        </div>
 
                         <div style="width: 128px" class="u-flex-vertical policy-item-caption">
                             <span style="color: #97979B">Next</span>
@@ -232,6 +253,10 @@
                         </div>
                     </div>
                 </div>
+
+                {#if index !== policies.total - 1}
+                    <Divider class="item-divider" />
+                {/if}
             {:else}
                 <div class="u-padding-24 u-flex-vertical u-gap-16 u-cross-center">
                     {#if $app.themeInUse === 'dark'}
@@ -286,6 +311,7 @@
     </Card>
 </div>
 
+<!-- TODO: Use the confirm component -->
 <Modal title="Delete policy" bind:show={showDelete} onSubmit={deletePolicy}>
     <FormList>
         <div class="u-flex-vertical u-gap-16">
@@ -314,29 +340,21 @@
     </svelte:fragment>
 </Modal>
 
-<style>
+<style lang="scss">
     .inner-card {
-        margin: 0 -1px;
         padding: 0.5rem;
     }
 
-    .u-border-vertical {
-        width: 1px;
-        height: 34px;
-        background-color: hsl(var(--border));
-    }
-
     :global(.small-ellipse) {
-        font-size: 0.25rem;
+        line-height: 0px;
     }
 
-    :global(.medium-ellipse) {
-        font-size: 0.5rem;
-        color: hsl(var(--color-neutral-20));
-    }
+    :global(.ellipse) {
+        line-height: 8px;
 
-    :global(.medium-ellipse.success) {
-        color: hsl(var(--color-success-100));
+        &.success {
+            color: hsl(var(--color-success-100));
+        }
     }
 
     :global(.u-gap-6) {
@@ -364,7 +382,7 @@
         padding-block-end: 10px;
     }
 
-    .policy-item-subtitles {
+    :global(.policy-item-subtitles) {
         font-size: 12px;
         font-weight: 400;
         line-height: 150%;
@@ -408,39 +426,48 @@
             visibility: hidden;
         }
 
+        .policy-cycles {
+            justify-content: space-between;
+        }
+
+        .policy-card-item-padding.opacity-gradient-bottom[data-show-every='false']
+            + :global(.item-divider) {
+            display: none;
+        }
+
         .policy-card-item-padding[data-visible='true'] {
             display: block;
             visibility: visible;
         }
 
-        .policy-card-item-padding[data-visible='true']:nth-child(3) {
+        .policy-card-item-padding[data-visible='true']:nth-child(4) {
             opacity: 0.25;
             border-block-end: none;
         }
 
-        .policy-card-item-padding[data-visible='true']:nth-child(3) .policy-cycles {
+        .policy-card-item-padding[data-visible='true']:nth-child(4) .policy-cycles {
             height: 0;
             margin: unset;
             padding: unset;
             visibility: hidden;
         }
 
-        .policy-card-item-padding[data-visible='false']:nth-child(n + 4) {
+        .policy-card-item-padding[data-visible='false']:nth-child(n + 5) {
             opacity: 0;
             height: 0;
             padding: unset;
             border-block-end: none;
         }
 
-        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3):not(
+        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(4):not(
                 :last-child
             ) {
             border-block-end: solid 0.0625rem hsl(var(--border));
         }
 
-        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3)
+        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(4)
             .policy-cycles,
-        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3),
+        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(4),
         .policy-cycles {
             opacity: 1;
             height: auto;

@@ -8,4 +8,6 @@
     export let description: string = undefined;
 </script>
 
-<Selector.Switch {id} {description} {label} {disabled} bind:checked={value} on:invalid on:change />
+<Selector.Switch {id} {description} {label} {disabled} bind:checked={value} on:invalid on:change>
+    <slot name="description" slot="description" />
+</Selector.Switch>

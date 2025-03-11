@@ -9,20 +9,20 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@640f09c
-        version: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@640f09c
+        specifier: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb
+        version: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
       '@appwrite.io/pink-icons-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@525e5be8
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@525e5be8(svelte@4.2.19)
+        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@3fd919a
+        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@3fd919a(svelte@4.2.19)
       '@appwrite.io/pink-legacy':
         specifier: ^1.0.2
         version: 1.0.2
       '@appwrite.io/pink-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@30b0f25
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@30b0f25(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
+        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@3fd919a
+        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@3fd919a(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -211,18 +211,18 @@ packages:
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@640f09c':
-    resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@640f09c}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb':
+    resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb}
     version: 1.2.1
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@30b0f25a639a53ffae787fda44a57e1335cc2d1c':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@30b0f25a639a53ffae787fda44a57e1335cc2d1c}
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@3fd919a':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@3fd919a}
     version: 1.0.0-next.7
     peerDependencies:
       svelte: ^4.0.0
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@525e5be8':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@525e5be8}
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@3fd919a00b71d85d8b630f22953d28aa28ae0050':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@3fd919a00b71d85d8b630f22953d28aa28ae0050}
     version: 1.0.0-next.7
     peerDependencies:
       svelte: ^4.0.0
@@ -236,8 +236,8 @@ packages:
   '@appwrite.io/pink-legacy@1.0.2':
     resolution: {integrity: sha512-1AYNcfbV+x0Tyj56CoieSq5g7+u+7F5/LDVN/z+Hx1kp9gj7xc1eT39Dy832xxfihImF6ksjp0FXEMVSBR8cew==}
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@30b0f25':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@30b0f25}
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@3fd919a':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@3fd919a}
     version: 1.0.0-next.85
     peerDependencies:
       react-dom: ^18.0.0
@@ -4097,13 +4097,13 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@640f09c': {}
+  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@ac51fcb': {}
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@30b0f25a639a53ffae787fda44a57e1335cc2d1c(svelte@4.2.19)':
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@3fd919a(svelte@4.2.19)':
     dependencies:
       svelte: 4.2.19
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@525e5be8(svelte@4.2.19)':
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@3fd919a00b71d85d8b630f22953d28aa28ae0050(svelte@4.2.19)':
     dependencies:
       svelte: 4.2.19
 
@@ -4116,9 +4116,9 @@ snapshots:
       '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@30b0f25(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@3fd919a(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
     dependencies:
-      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@30b0f25a639a53ffae787fda44a57e1335cc2d1c(svelte@4.2.19)
+      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@3fd919a00b71d85d8b630f22953d28aa28ae0050(svelte@4.2.19)
       '@floating-ui/dom': 1.6.13
       '@melt-ui/pp': 0.3.2(@melt-ui/svelte@0.86.3(svelte@4.2.19))(svelte@4.2.19)
       '@melt-ui/svelte': 0.86.3(svelte@4.2.19)

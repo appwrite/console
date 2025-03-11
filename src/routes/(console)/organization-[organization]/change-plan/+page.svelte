@@ -42,7 +42,7 @@
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Link } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
@@ -260,7 +260,7 @@
             <Label class="label u-margin-block-start-16">Select plan</Label>
             <p class="text">
                 For more details on our plans, visit our
-                <Button href="https://appwrite.io/pricing" external>pricing page</Button>.
+                <Link.Anchor href="https://appwrite.io/pricing">pricing page</Link.Anchor>.
             </p>
             {#if !selfService}
                 <Alert class="u-position-relative u-margin-block-start-16" type="info"

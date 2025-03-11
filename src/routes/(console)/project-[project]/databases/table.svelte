@@ -24,7 +24,8 @@
     <svelte:fragment slot="header">
         {#each $columns as column}
             {#if column.show}
-                <Table.Header.Cell width={column.width}>{column.title}</Table.Header.Cell>
+                <Table.Header.Cell width={column.width.toString()}
+                    >{column.title}</Table.Header.Cell>
             {/if}
         {/each}
     </svelte:fragment>
@@ -52,7 +53,10 @@
                             .join(', ')}
 
                         <Table.Cell width={column.width + 'px'}>
-                            <Tooltip placement="bottom" disabled={!policies || !lastBackup}>
+                            <Tooltip
+                                placement="bottom"
+                                disabled={!policies || !lastBackup}
+                                maxWidth="fit-content">
                                 <span class="u-trim">
                                     {#if !policies}
                                         <span class="icon-exclamation" /> No backup policies
@@ -60,7 +64,9 @@
                                         {description}
                                     {/if}
                                 </span>
-                                <span slot="tooltip">{`Last backup: ${lastBackup}`}</span>
+                                <span slot="tooltip">
+                                    {`Last backup: ${lastBackup}`}
+                                </span>
                             </Tooltip>
                         </Table.Cell>
                     {:else}
