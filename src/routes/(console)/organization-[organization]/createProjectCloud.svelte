@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { WizardWithSteps } from '$lib/layout';
+    import { Wizard, WizardWithSteps } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -14,6 +14,7 @@
     import { createProject } from './wizard/store';
     import { wizard } from '$lib/stores/wizard';
     import { base } from '$app/paths';
+    import { Modal } from '$lib/components';
 
     const teamId = $page.params.organization;
 
@@ -67,10 +68,13 @@
         label: 'Region',
         component: Step2
     });
+    console.log($page.params);
 </script>
 
-<WizardWithSteps
-    title="Create project"
-    steps={stepsComponents}
-    finalMethod={create}
-    on:exit={onFinish} />
+<Wizard title="Create project">ayyy</Wizard>
+
+<!--<WizardWithSteps-->
+<!--    title="Create project"-->
+<!--    steps={stepsComponents}-->
+<!--    finalMethod={create}-->
+<!--    on:exit={onFinish} />-->
