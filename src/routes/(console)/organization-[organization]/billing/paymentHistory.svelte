@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import {
         CardGrid,
         DropList,
@@ -22,19 +24,17 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Invoice, InvoiceList } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
-    import { base } from '$app/paths';
 
     let showDropdown = [];
     let showFailedError = false;
 
     let offset = 0;
-    let invoiceList: InvoiceList = {
+    let invoiceList: Models.InvoiceList = {
         invoices: [],
         total: 0
     };
@@ -51,7 +51,7 @@
         ]);
     }
 
-    function retryPayment(invoice: Invoice) {
+    function retryPayment(invoice: Models.Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
     }

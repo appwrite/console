@@ -1,4 +1,3 @@
-import type { Invoice } from '$lib/sdk/billing';
 import { getSdkForProject, sdk } from '$lib/stores/sdk';
 import type { Models } from '@appwrite.io/console';
 import { Query } from '@appwrite.io/console';
@@ -28,7 +27,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     let startDate: string = organization.billingCurrentInvoiceDate;
     let endDate: string = organization.billingNextInvoiceDate;
-    let currentInvoice: Invoice = undefined;
+    let currentInvoice: Models.Invoice = undefined;
     let currentAggregation: Models.AggregationTeam = undefined;
 
     if (invoice) {

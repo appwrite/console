@@ -12,11 +12,12 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
-import type { AddressesList, Invoice, InvoiceList, Plan, PlansMap } from '$lib/sdk/billing';
+import type { AddressesList, Plan, PlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import type { Models } from '@appwrite.io/console';
 import { Query } from '@appwrite.io/console';
+import type { SvelteComponent } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
@@ -138,7 +139,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
 }
 
 export const failedInvoice = cachedStore<
-    Invoice,
+    Models.Invoice,
     {
         load: (orgId: string) => Promise<void>;
     }
@@ -164,7 +165,7 @@ export const failedInvoice = cachedStore<
     };
 });
 
-export const actionRequiredInvoices = writable<InvoiceList>(null);
+export const actionRequiredInvoices = writable<Models.InvoiceList>(null);
 
 export type TierData = {
     name: string;
@@ -285,7 +286,7 @@ export async function checkForUsageLimit(org: Organization) {
         readOnly.set(true);
         headerAlert.add({
             id: 'limitReached',
-            component: LimitReached,
+            component: LimitReached as unknown as typeof SvelteComponent,
             show: true,
             importance: 7
         });
@@ -339,7 +340,7 @@ export async function checkPaymentAuthorizationRequired(org: Organization) {
     if (invoices?.invoices?.length > 0) {
         headerAlert.add({
             id: 'paymentAuthRequired',
-            component: PaymentAuthRequired,
+            component: PaymentAuthRequired as unknown as typeof SvelteComponent,
             show: true,
             importance: 8
         });
@@ -402,7 +403,7 @@ export function checkForMarkedForDeletion(org: Organization) {
     if (org?.markedForDeletion) {
         headerAlert.add({
             id: 'markedForDeletion',
-            component: MarkedForDeletion,
+            component: MarkedForDeletion as unknown as typeof SvelteComponent,
             show: true,
             importance: 10
         });
@@ -418,7 +419,7 @@ export async function checkForMandate(org: Organization) {
     if (paymentMethod?.mandateId === null && paymentMethod?.country.toLowerCase() === 'in') {
         headerAlert.add({
             id: 'paymentMandate',
-            component: PaymentMandate,
+            component: PaymentMandate as unknown as typeof SvelteComponent,
             show: true,
             importance: 8
         });
@@ -437,7 +438,7 @@ export async function checkForMissingPaymentMethod() {
         orgMissingPaymentMethod.set(orgs.teams[0]);
         headerAlert.add({
             id: 'missingPaymentMethod',
-            component: MissingPaymentMethod,
+            component: MissingPaymentMethod as unknown as typeof SvelteComponent,
             show: true,
             importance: 8
         });
@@ -467,7 +468,7 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     }
     headerAlert.add({
         id: 'newDevUpgradePro',
-        component: newDevUpgradePro,
+        component: newDevUpgradePro as unknown as typeof SvelteComponent,
         show: true,
         importance: 1
     });

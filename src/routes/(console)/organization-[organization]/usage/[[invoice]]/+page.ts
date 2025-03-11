@@ -1,4 +1,3 @@
-import type { Invoice } from '$lib/sdk/billing';
 import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
@@ -42,7 +41,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     let startDate: string = org.billingCurrentInvoiceDate;
     let endDate: string = org.billingNextInvoiceDate;
-    let currentInvoice: Invoice = undefined;
+    let currentInvoice: Models.Invoice = undefined;
 
     if (invoice) {
         currentInvoice = await sdk.forConsole.billing.getInvoice(org.$id, invoice);

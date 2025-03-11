@@ -4,42 +4,6 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Organization, OrganizationError } from '../stores/organization';
 
-export type Invoice = {
-    $id: string;
-    $createdAt: Date;
-    $updatedAt: Date;
-    permissions: string[];
-    teamId: string;
-    aggregationId: string;
-    plan: Tier;
-    amount: number;
-    tax: number;
-    taxAmount: number;
-    vat: number;
-    vatAmount: number;
-    grossAmount: number;
-    creditsUsed: number;
-    currency: string;
-    from: string;
-    to: string;
-    status: string;
-    dueAt: string;
-    clientSecret: string;
-    usage: {
-        name: string;
-        value: number /* service over the limit*/;
-        amount: number /* price of service over the limit*/;
-        rate: number;
-        desc: string;
-    }[];
-    lastError?: string;
-};
-
-export type InvoiceList = {
-    invoices: Invoice[];
-    total: number;
-};
-
 export type Estimation = {
     amount: number;
     grossAmount: number;
@@ -63,7 +27,7 @@ export type EstimationDeleteOrganization = {
     credits: number;
     discount: number;
     items: EstimationItem[];
-    unpaidInvoices: Invoice[];
+    unpaidInvoices: Models.Invoice[];
 };
 
 export type Address = {
@@ -320,7 +284,10 @@ export class Billing {
         });
     }
 
-    async listInvoices(organizationId: string, queries: string[] = []): Promise<InvoiceList> {
+    async listInvoices(
+        organizationId: string,
+        queries: string[] = []
+    ): Promise<Models.InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
@@ -338,7 +305,7 @@ export class Billing {
         );
     }
 
-    async getInvoice(organizationId: string, invoiceId: string): Promise<Invoice> {
+    async getInvoice(organizationId: string, invoiceId: string): Promise<Models.Invoice> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}`;
         const params = {
             organizationId,
@@ -399,7 +366,7 @@ export class Billing {
         organizationId: string,
         invoiceId: string,
         paymentMethodId: string
-    ): Promise<Invoice> {
+    ): Promise<Models.Invoice> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}/payments`;
         const params = {
             organizationId,

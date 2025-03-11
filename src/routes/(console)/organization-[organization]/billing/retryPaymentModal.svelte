@@ -8,7 +8,6 @@
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Invoice } from '$lib/sdk/billing';
     import { paymentMethods } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
@@ -19,9 +18,11 @@
         isStripeInitialized,
         submitStripeCard
     } from '$lib/stores/stripe';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     export let show = false;
-    export let invoice: Invoice;
+    export let invoice: Models.Invoice;
+
     let error: string = null;
     let isButtonDisabled = false;
     let name: string;
