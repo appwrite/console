@@ -63,14 +63,12 @@
     <CardGrid>
         <svelte:fragment slot="title">Name</svelte:fragment>
         <svelte:fragment slot="aside">
-            <ul>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Enter name"
-                    autocomplete={false}
-                    bind:value={functionName} />
-            </ul>
+            <InputText
+                id="name"
+                label="Name"
+                placeholder="Enter name"
+                required
+                bind:value={functionName} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

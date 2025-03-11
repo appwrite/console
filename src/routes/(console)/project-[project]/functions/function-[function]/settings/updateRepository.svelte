@@ -6,7 +6,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Runtime, type Models } from '@appwrite.io/console';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
@@ -25,10 +25,10 @@
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { ConnectGit } from '$lib/components/git';
-    import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
-    import { showConnectRepo } from './store';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
+    import ConnectRepoModal from './connectRepoModal.svelte';
 
-    export let site: Models.Site;
+    export let func: Models.Function;
     export let installations: Models.InstallationList;
 
     let branchesList: Models.BranchList;
@@ -36,22 +36,23 @@
     let silentMode = false;
     let selectedDir: string;
     let showDisconnect = false;
+    let showConnectRepo = false;
     let repository: Models.ProviderRepository | null | false = false;
 
     onMount(() => {
-        selectedBranch = site?.providerBranch;
-        silentMode = site?.providerSilentMode ?? false;
-        selectedDir = site?.providerRootDirectory;
+        selectedBranch = func?.providerBranch;
+        silentMode = func?.providerSilentMode ?? false;
+        selectedDir = func?.providerRootDirectory;
 
         loadRepository();
     });
 
     async function loadRepository() {
         try {
-            if (site.installationId && site.providerRepositoryId) {
+            if (func.installationId && func.providerRepositoryId) {
                 repository = await sdk.forProject.vcs.getRepository(
-                    site.installationId,
-                    site.providerRepositoryId
+                    func.installationId,
+                    func.providerRepositoryId
                 );
             }
         } catch (err) {
@@ -62,31 +63,34 @@
             }
         }
     }
-
     async function updateConfiguration() {
         try {
-            await sdk.forProject.sites.update(
-                site.$id,
-                site.name,
-                site?.framework as Framework,
-                site.enabled || undefined,
-                site.timeout || undefined,
-                site.installCommand || undefined,
-                site.buildCommand || undefined,
-                site.outputDirectory || undefined,
-                (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter as Adapter,
-                site.fallbackFile || undefined,
-                site.installationId || undefined,
-                site.providerRepositoryId || undefined,
-                selectedBranch || undefined,
-                silentMode || undefined,
-                selectedDir || undefined
+            if (!isValueOfStringEnum(Runtime, func.runtime)) {
+                throw new Error(`Invalid runtime: ${func.runtime}`);
+            }
+            await sdk.forProject.functions.update(
+                func.$id,
+                func.name,
+                func.runtime,
+                func.execute || undefined,
+                func.events || undefined,
+                func.schedule || undefined,
+                func.timeout || undefined,
+                func.enabled || undefined,
+                func.logging || undefined,
+                func.entrypoint || undefined,
+                func.commands || undefined,
+                func.scopes || undefined,
+                func.installationId || undefined,
+                func.providerRepositoryId || undefined,
+                selectedBranch,
+                silentMode,
+                selectedDir
             );
-            await invalidate(Dependencies.SITE);
+            await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
-                message: `${site.name} git configuration has been updated successfully`
+                message: `${func.name} git configuration has been updated successfully`
             });
             trackEvent(Submit.FunctionUpdateConfiguration);
         } catch (error) {
@@ -97,22 +101,21 @@
             trackError(error, Submit.FunctionUpdateConfiguration);
         }
     }
-
     async function getBranches(installation: string, repo: string) {
         branchesList = await sdk.forProject.vcs.listRepositoryBranches(installation, repo);
         branchesList.branches = sortBranches(branchesList.branches);
 
-        selectedBranch = site?.providerBranch ?? branchesList.branches[0].name;
+        selectedBranch = func?.providerBranch ?? branchesList.branches[0].name;
     }
 
-    $: if (site?.installationId && site?.providerRepositoryId) {
-        getBranches(site.installationId, site.providerRepositoryId);
+    $: if (func?.installationId && func?.providerRepositoryId) {
+        getBranches(func.installationId, func.providerRepositoryId);
     }
 
     $: isUpdateButtonEnabled =
-        selectedBranch !== site?.providerBranch ||
-        silentMode !== site?.providerSilentMode ||
-        selectedDir !== site?.providerRootDirectory;
+        selectedBranch !== func?.providerBranch ||
+        silentMode !== func?.providerSilentMode ||
+        selectedDir !== func?.providerRootDirectory;
 </script>
 
 <Form onSubmit={updateConfiguration}>
@@ -219,14 +222,14 @@
                         </Layout.Stack>
                     </Fieldset>
                 </Layout.Stack>
-            {:else if site.installationId || installations?.total}
+            {:else if func.installationId || installations?.total}
                 <PinkCard.Base padding="none" border="dashed">
                     <Empty
                         type="secondary"
-                        title="No repository is connected to this site yet"
+                        title="No repository is connected to this function yet"
                         description="Connect to enable automatic deployments">
                         <svelte:fragment slot="actions">
-                            <Button secondary on:click={() => showConnectRepo.set(true)}>
+                            <Button secondary on:click={() => (showConnectRepo = true)}>
                                 <Icon icon={IconGithub} size="s" slot="start" />
                                 Connect Git repository
                             </Button>
@@ -245,9 +248,9 @@
 </Form>
 
 {#if showConnectRepo}
-    <ConnectRepoModal bind:show={$showConnectRepo} {site} />
+    <ConnectRepoModal bind:show={showConnectRepo} {func} />
 {/if}
 
 {#if showDisconnect}
-    <DisconnectRepo bind:show={showDisconnect} {site} on:success={loadRepository} />
+    <DisconnectRepo bind:show={showDisconnect} on:success={loadRepository} />
 {/if}

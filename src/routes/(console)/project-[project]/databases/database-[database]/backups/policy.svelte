@@ -26,6 +26,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { IconDotsHorizontal, IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import { Confirm } from '$lib/components/index.js';
 
     let showDelete = false;
     let selectedPolicy: BackupPolicy = null;
@@ -136,7 +137,7 @@
     };
 </script>
 
-<div class="u-flex u-flex-vertical u-gap-16">
+<Layout.Stack gap="l">
     <Card class="backups-policy-list-card" style="padding: 0; min-width: 21.5rem;">
         <div class="inner-card u-flex-vertical-mobile">
             {#each policies.policies as policy, index (policy.$id)}
@@ -309,36 +310,22 @@
             </div>
         {/if}
     </Card>
-</div>
+</Layout.Stack>
 
-<!-- TODO: Use the confirm component -->
-<Modal title="Delete policy" bind:show={showDelete} onSubmit={deletePolicy}>
-    <FormList>
-        <div class="u-flex-vertical u-gap-16">
-            <p class="text" data-private>
-                Are you sure you want to delete the <b>{selectedPolicy.name}</b> policy?
-            </p>
 
-            <p class="text" data-private>
-                <b
-                    >This will also delete all backups associated with this policy. This action is
-                    irreversible.</b>
-            </p>
+<Confirm title="Delete policy" bind:open={showDelete} onSubmit={deletePolicy} confirmDeletion>
+    <Layout.Stack gap="l">
+        <p class="text" data-private>
+            Are you sure you want to delete the <b>{selectedPolicy.name}</b> policy?
+        </p>
 
-            <div class="input-check-box-friction">
-                <InputCheckbox
-                    required
-                    id="delete_policy"
-                    bind:checked={confirmedDeletion}
-                    label="I understand and confirm" />
-            </div>
-        </div>
-    </FormList>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit disabled={!confirmedDeletion}>Delete</Button>
-    </svelte:fragment>
-</Modal>
+        <p class="text" data-private>
+            <b
+                >This will also delete all backups associated with this policy. This action is
+                irreversible.</b>
+        </p>
+    </Layout.Stack>
+</Confirm>
 
 <style lang="scss">
     .inner-card {

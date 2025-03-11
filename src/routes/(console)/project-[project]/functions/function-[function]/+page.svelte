@@ -183,31 +183,6 @@
                     <Layout.Stack direction="row" gap="s" wrap="wrap">
                         {#if data.deploymentList.total}
                             <QuickFilters {columns} />
-                            <Filters
-                                query={data.query}
-                                {columns}
-                                let:disabled
-                                let:toggle
-                                singleCondition
-                                analyticsSource="function_filters">
-                                <div class="u-flex u-gap-4">
-                                    <Button
-                                        text
-                                        on:click={toggle}
-                                        {disabled}
-                                        ariaLabel="open filter"
-                                        compact={!$tags?.length}>
-                                        <Icon icon={IconFilterLine} size="s" slot="start" />
-                                        <span class="text">More filters</span>
-                                    </Button>
-                                    {#if $tags?.length}
-                                        <div
-                                            style="flex-basis:1px; background-color:hsl(var(--border)); width: 1px">
-                                        </div>
-                                        <Button text on:click={clearAll}>Clear all</Button>
-                                    {/if}
-                                </div>
-                            </Filters>
                         {/if}
                     </Layout.Stack>
                     <Layout.Stack direction="row" gap="s" inline>

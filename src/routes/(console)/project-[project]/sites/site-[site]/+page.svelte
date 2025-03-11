@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Card, Divider, Empty, Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Divider, Empty, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import SiteCard from '../(components)/siteCard.svelte';
     import DomainsOverview from './domainsOverview.svelte';
     import DeploymentsOverview from './deploymentsOverview.svelte';
@@ -31,7 +31,7 @@
 
     // $: console.log(data.site);
     $: console.log(data.deployment);
-    // $: console.log(data.deploymentList);
+    $: console.log(data.deploymentList);
     // $: console.log(data.proxyRuleList);
 </script>
 
@@ -47,10 +47,20 @@
                             Visit
                         </Button>
                     {/if}
-                    <!-- TODO: disable when disabled={data.hasProdReadyDeployments} -->
-                    <Button secondary on:click={() => (showRollback = true)}>
-                        Instant rollback
-                    </Button>
+                    <Tooltip disabled={data.hasProdReadyDeployments}>
+                        <div>
+                            <Button
+                                secondary
+                                on:click={() => (showRollback = true)}
+                                disabled={!data.hasProdReadyDeployments}>
+                                Instant rollback
+                            </Button>
+                        </div>
+                        <span slot="tooltip">
+                            Rollback is possible only if there is a deployment that is ready and was
+                            active.
+                        </span>
+                    </Tooltip>
                 </svelte:fragment>
             </SiteCard>
         {:else if data.deployment?.status === 'building'}
@@ -98,5 +108,6 @@
     <InstantRollbackDomain
         bind:show={showRollback}
         deployment={data.deployment}
-        proxyRuleList={data.proxyRuleList} />
+        proxyRuleList={data.proxyRuleList}
+        prodReadyDeployments={data.prodReadyDeployments} />
 {/if}
