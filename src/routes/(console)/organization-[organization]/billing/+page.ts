@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
      */
     let billingAggregation = null;
     try {
-        billingAggregation = await sdk.forConsole.billing.getAggregation(
+        billingAggregation = await sdk.forConsole.organizations.getAggregation(
             organization.$id,
             (organization as Organization)?.billingAggregationId
         );

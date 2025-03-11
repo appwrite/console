@@ -35,7 +35,7 @@
     let showExcess = false;
 
     onMount(async () => {
-        aggregation = await sdk.forConsole.billing.getAggregation(
+        aggregation = await sdk.forConsole.organizations.getAggregation(
             $organization.$id,
             $organization.billingAggregationId
         );

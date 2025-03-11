@@ -70,7 +70,7 @@
             if (setAsDefault) {
                 await sdk.forConsole.billing.setDefaultPaymentMethod(paymentMethodId);
             }
-            const { clientSecret } = await sdk.forConsole.billing.retryPayment(
+            const { clientSecret } = await sdk.forConsole.organizations.createInvoicePayment(
                 $organization.$id,
                 invoice.$id,
                 paymentMethodId

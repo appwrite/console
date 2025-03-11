@@ -32,7 +32,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     if (invoice) {
         currentInvoice = await sdk.forConsole.organizations.getInvoice(organization.$id, invoice);
-        currentAggregation = await sdk.forConsole.billing.getAggregation(
+        currentAggregation = await sdk.forConsole.organizations.getAggregation(
             organization.$id,
             currentInvoice.aggregationId
         );
