@@ -1,9 +1,9 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Empty, EmptySearch, Heading, PaginationWithLimit } from '$lib/components';
+    import { Empty, EmptySearch, Heading, Modal, PaginationWithLimit } from '$lib/components';
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
-    import { Button } from '$lib/elements/forms';
+    import { Button, FormList, InputFile } from '$lib/elements/forms';
     import type { ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
@@ -22,6 +22,9 @@
     let showCreateAttribute = false;
     let showCreateDropdown = false;
     let selectedAttribute: Option['name'] = null;
+
+    let files: FileList;
+    let showImportDocuments = false;
 
     $: selected = preferences.getCustomCollectionColumns($page.params.collection);
     $: columns.set(
@@ -73,13 +76,22 @@
                     hideView
                     allowNoColumns
                     showColsTextMobile />
-                <div class="is-not-mobile">
+                <div class="is-not-mobile u-flex u-gap-16">
                     <Button
                         disabled={!(hasAttributes && hasValidAttributes)}
                         on:click={openWizard}
                         event="create_document">
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="text">Create document</span>
+                    </Button>
+
+                    <Button
+                        on:click={() => {
+                            showImportDocuments = true;
+                        }}
+                        event="create_document">
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Import documents</span>
                     </Button>
                 </div>
             </div>
@@ -162,6 +174,33 @@
 {/key}
 
 <CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />
+
+<Modal
+    title="Import documents"
+    size="big"
+    bind:show={showImportDocuments}
+    onSubmit={() => {
+        showImportDocuments = false;
+        // todo: @itznotabug, import documents via csv files
+    }}
+    headerDivider={false}>
+    <p class="text">
+        <!-- // todo: @itznotabug, confirm copy -->
+        Upload a CSV file to import multiple documents at once. Any necessary attributes will be automatically
+        generated.
+    </p>
+    <FormList gap={16}>
+        <InputFile
+            label="CSV file (*.csv)"
+            allowedFileExtensions={['csv']}
+            bind:files
+            required={true} />
+    </FormList>
+    <svelte:fragment slot="footer">
+        <Button secondary on:click={() => (showImportDocuments = false)}>Close</Button>
+        <Button submit>Create</Button>
+    </svelte:fragment>
+</Modal>
 
 <style lang="scss">
     .heading-grid {
