@@ -135,6 +135,7 @@
     });
 </script>
 
+<!-- TODO: change the progress and its color based on states -->
 {#if showBackupRestoreBox}
     <div class="box-holder u-flex u-flex-vertical u-gap-16" style="align-items: end">
         {#each Object.keys(backupRestoreItems) as key}
@@ -218,6 +219,6 @@
         font-style: normal;
         letter-spacing: -0.12px;
         color: var(--mid-neutrals-50, #818186);
-        font-family: var(--font-family-sansSerif, Inter);
+        font-family: var(--font-family-sansserif, Inter);
     }
 </style>

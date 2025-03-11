@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
     import Card from '$lib/components/card.svelte';
-    import { Button, FormList, InputCheckbox } from '$lib/elements/forms/index';
+    import { Button } from '$lib/elements/forms/index';
 
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
@@ -32,7 +31,6 @@
     let selectedPolicy: BackupPolicy = null;
 
     let showEveryPolicy = false;
-    let confirmedDeletion = false;
 
     export let showCreatePolicy = false;
     export let policies: BackupPolicyList;
@@ -55,7 +53,6 @@
         } finally {
             showDelete = false;
             selectedPolicy = null;
-            confirmedDeletion = false;
         }
     }
 
@@ -139,7 +136,7 @@
 
 <Layout.Stack gap="l">
     <Card class="backups-policy-list-card" style="padding: 0; min-width: 21.5rem;">
-        <div class="inner-card u-flex-vertical-mobile">
+        <div class="inner-card u-flex-vertical-mobile" class:empty={policies.total === 0}>
             {#each policies.policies as policy, index (policy.$id)}
                 {@const policyDescription = getPolicyDescription(policy.schedule)}
                 {@const policyDescriptionShort = getTruncatedPolicyDescription(policyDescription)}
@@ -178,44 +175,38 @@
                             </Popover>
                         </Layout.Stack>
 
-                        <Layout.Stack
-                            class="policy-item-subtitles"
-                            direction="row"
-                            gap="xs"
-                            alignItems="center">
-                            {#if shouldUseTooltip}
-                                <Tooltip>
-                                    <span>
+                        <Typography.Caption variant="400">
+                            <Layout.Stack gap="xs" direction="row" alignItems="baseline">
+                                {#if shouldUseTooltip}
+                                    <Tooltip>
                                         {policyDescriptionShort}
-                                    </span>
-                                    <span slot="tooltip">{policyDescription}</span>
-                                </Tooltip>
-                            {:else}
-                                {policyDescription}
-                            {/if}
+                                        <span slot="tooltip">{policyDescription}</span>
+                                    </Tooltip>
+                                {:else}
+                                    {policyDescription}
+                                {/if}
 
-                            <span class="small-ellipse">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="2"
-                                    height="2"
-                                    viewBox="0 0 2 2"
-                                    fill="none">
-                                    <circle cx="1" cy="1" r="1" fill="currentColor" />
-                                </svg>
-                            </span>
+                                <span class="small-ellipse">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="2"
+                                        height="2"
+                                        viewBox="0 0 2 2"
+                                        fill="none">
+                                        <circle cx="1" cy="1" r="1" fill="currentColor" />
+                                    </svg>
+                                </span>
 
-                            {formatRetentionMessage(policy.retention)}
-                        </Layout.Stack>
+                                {formatRetentionMessage(policy.retention)}
+                            </Layout.Stack>
+                        </Typography.Caption>
                     </Layout.Stack>
 
                     <!-- Prev / Next section -->
-                    <div
-                        class="policy-cycles u-flex u-gap-24 u-padding-block-2 policy-item-subtitles">
+                    <div class="policy-cycles u-flex u-gap-24 u-padding-block-2">
                         <div style="width: 128px" class="u-flex-vertical policy-item-caption">
                             <span style="color: #97979B">Previous</span>
-                            <div
-                                class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
+                            <div class="u-flex u-gap-4 u-cross-center darker-neutral-color">
                                 <span class="ellipse" class:success={!!lastBackupDates[policy.$id]}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -225,13 +216,14 @@
                                         fill="none"
                                         ><circle cx="4" cy="4" r="4" fill="currentColor" /></svg>
                                 </span>
-                                <span class="policy-item-subtitles">
+
+                                <Typography.Caption variant="400">
                                     {#if lastBackupDates[policy.$id]}
                                         {toLocaleDateTime(lastBackupDates[policy.$id])}
                                     {:else}
                                         No backups yet
                                     {/if}
-                                </span>
+                                </Typography.Caption>
                             </div>
                         </div>
 
@@ -241,8 +233,8 @@
 
                         <div style="width: 128px" class="u-flex-vertical policy-item-caption">
                             <span style="color: #97979B">Next</span>
-                            <div
-                                class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
+
+                            <Typography.Caption variant="400">
                                 {toLocaleDateTime(
                                     parseExpression(policy.schedule, {
                                         utc: true
@@ -250,7 +242,7 @@
                                         .next()
                                         .toString()
                                 )}
-                            </div>
+                            </Typography.Caption>
                         </div>
                     </div>
                 </div>
@@ -312,28 +304,30 @@
     </Card>
 </Layout.Stack>
 
-
 <Confirm title="Delete policy" bind:open={showDelete} onSubmit={deletePolicy} confirmDeletion>
     <Layout.Stack gap="l">
-        <p class="text" data-private>
+        <Typography.Text variant="m-400">
             Are you sure you want to delete the <b>{selectedPolicy.name}</b> policy?
-        </p>
+        </Typography.Text>
 
-        <p class="text" data-private>
-            <b
-                >This will also delete all backups associated with this policy. This action is
-                irreversible.</b>
-        </p>
+        <Typography.Text variant="m-600">
+            This will also delete all backups associated with this policy. This action is
+            irreversible.
+        </Typography.Text>
     </Layout.Stack>
 </Confirm>
 
 <style lang="scss">
     .inner-card {
         padding: 0.5rem;
+
+        &.empty {
+            block-size: 365px;
+        }
     }
 
     :global(.small-ellipse) {
-        line-height: 0px;
+        line-height: 0;
     }
 
     :global(.ellipse) {
@@ -355,10 +349,10 @@
     .policy-card-item-padding {
         padding: var(--space-3, 6px) var(--space-4, 8px);
         border-block-end: solid 0.0625rem hsl(var(--border));
-    }
 
-    .policy-card-item-padding:last-child {
-        border-block-end: none;
+        &:last-child {
+            border-block-end: none;
+        }
     }
 
     .u-padding-block-start-10 {
@@ -369,20 +363,8 @@
         padding-block-end: 10px;
     }
 
-    :global(.policy-item-subtitles) {
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 150%;
-        font-style: normal;
-        font-family: Inter;
-    }
-
     :global(.input-check-box-friction .choice-item-title) {
         margin-block-start: 1px;
-    }
-
-    :global(.theme-light .policy-item-subtitles) {
-        color: var(--fgcolor-neutral-secondary, #56565c);
     }
 
     :global(.theme-light .policy-item-caption) {
