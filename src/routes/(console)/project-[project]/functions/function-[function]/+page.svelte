@@ -179,7 +179,7 @@
                     </Layout.Stack>
                     <Layout.Stack direction="row" gap="s" inline>
                         {#if data.deploymentList.total}
-                            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                            <ViewSelector view={View.Table} {columns} hideView />
                         {/if}
                         <CreateActionMenu let:toggle>
                             <Button on:click={toggle} event="create_deployment">

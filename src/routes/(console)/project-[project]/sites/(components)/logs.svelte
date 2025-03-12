@@ -77,7 +77,7 @@
         <Logs
             {fullHeight}
             showScrollButton={!hideScrollButtons}
-            logs={buildLogs || 'No logs available yet...'}
+            logs={buildLogs || 'No logs available'}
             bind:theme={$app.themeInUse} />
     {/key}
 </Layout.Stack>

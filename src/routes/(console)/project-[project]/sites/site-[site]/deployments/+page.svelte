@@ -54,7 +54,7 @@
 
                 <Layout.Stack direction="row" inline>
                     {#if data.deploymentList.total}
-                        <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                        <ViewSelector view={View.Table} {columns} hideView />
                     {/if}
                     <Popover padding="none" let:toggle>
                         <Button size="s" on:click={toggle}>

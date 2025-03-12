@@ -34,7 +34,7 @@
 
         <Layout.Stack gap="s" inline direction="row" alignItems="center">
             {#if data?.executions?.total}
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                <ViewSelector view={View.Table} {columns} hideView />
             {/if}
             <Button
                 event="execute_function"
