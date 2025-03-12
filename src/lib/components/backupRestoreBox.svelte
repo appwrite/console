@@ -196,7 +196,7 @@
     </div>
 {/if}
 
-<style>
+<style lang="scss">
     .upload-box-title {
         font-size: 11px;
     }
@@ -220,5 +220,19 @@
         letter-spacing: -0.12px;
         color: var(--mid-neutrals-50, #818186);
         font-family: var(--font-family-sansserif, Inter);
+    }
+
+    .progress-bar-container {
+        height: 4px;
+
+        &::before {
+            height: 4px;
+            background-color: var(--bgcolor-neutral-invert);
+        }
+
+        &.is-danger::before {
+            height: 4px;
+            background-color: var(--bgcolor-error);
+        }
     }
 </style>
