@@ -10,77 +10,37 @@
         SelectPaymentMethod
     } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
-    import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputTags, InputText, Label } from '$lib/elements/forms';
-    import {
-        WizardSecondaryContainer,
-        WizardSecondaryContent,
-        WizardSecondaryFooter
-    } from '$lib/layout';
+    import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
+    import { Wizard } from '$lib/layout';
     import type { Coupon, PaymentList } from '$lib/sdk/billing';
     import { tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organizationList, type Organization } from '$lib/stores/organization';
+    import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
+    import { Fieldset, Icon, Link, Typography } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
 
-    $: anyOrgFree = $organizationList.teams?.some(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
-    );
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
+    export let data;
+
+    let selectedPlan: BillingPlan = data.plan as BillingPlan;
+    let selectedCoupon: Partial<Coupon> | null = data.coupon;
     let previousPage: string = base;
     let showExitModal = false;
-
-    afterNavigate(({ from }) => {
-        previousPage = from?.url?.pathname || previousPage;
-    });
-
     let formComponent: Form;
     let isSubmitting = writable(false);
-
     let methods: PaymentList;
     let name: string;
-    let billingPlan: BillingPlan = BillingPlan.FREE;
     let paymentMethodId: string;
     let collaborators: string[] = [];
-    let couponData: Partial<Coupon> = {
-        code: null,
-        status: null,
-        credits: null
-    };
     let taxId: string;
-
     let billingBudget: number;
     let showCreditModal = false;
 
-    onMount(async () => {
-        if ($page.url.searchParams.has('coupon')) {
-            const coupon = $page.url.searchParams.get('coupon');
-            try {
-                const response = await sdk.forConsole.billing.getCoupon(coupon);
-                couponData = response;
-            } catch (e) {
-                couponData = {
-                    code: null,
-                    status: null,
-                    credits: null
-                };
-            }
-        }
-        if ($page.url.searchParams.has('name')) {
-            name = $page.url.searchParams.get('name');
-        }
-        if ($page.url.searchParams.has('plan')) {
-            const plan = $page.url.searchParams.get('plan');
-            if (plan && Object.values(BillingPlan).includes(plan as BillingPlan)) {
-                billingPlan = plan as BillingPlan;
-            }
-        }
+    afterNavigate(({ from }) => {
+        previousPage = from?.url?.pathname || previousPage;
     });
 
     async function loadPaymentMethods() {
@@ -92,7 +52,7 @@
         try {
             let org: Organization;
 
-            if (billingPlan === BillingPlan.FREE) {
+            if (selectedPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
@@ -104,7 +64,7 @@
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
-                    billingPlan,
+                    selectedPlan,
                     paymentMethodId,
                     null
                 );
@@ -115,8 +75,8 @@
                 }
 
                 //Add coupon
-                if (couponData?.code) {
-                    await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                if (selectedCoupon?.code) {
+                    await sdk.forConsole.billing.addCredit(org.$id, selectedCoupon.code);
                     trackEvent(Submit.CreditRedeem);
                 }
 
@@ -141,7 +101,7 @@
             }
 
             trackEvent(Submit.OrganizationCreate, {
-                plan: tierToPlan(billingPlan)?.name,
+                plan: tierToPlan(selectedPlan)?.name,
                 budget_cap_enabled: !!billingBudget,
                 members_invited: collaborators?.length
             });
@@ -162,7 +122,7 @@
         }
     }
 
-    $: if (billingPlan !== BillingPlan.FREE) {
+    $: if (selectedPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
 </script>
@@ -171,57 +131,60 @@
     <title>Create organization - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer bind:showExitModal href={previousPage} confirmExit>
-    <svelte:fragment slot="title">Create organization</svelte:fragment>
-    <WizardSecondaryContent>
-        <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
-            <FormList>
-                <InputText
-                    bind:value={name}
-                    label="Organization name"
-                    placeholder="Enter organization name"
-                    id="name"
-                    required />
-            </FormList>
-            <Label class="label u-margin-block-start-16">Select plan</Label>
-            <p class="text">
+<Wizard title="Create organization" href={previousPage} bind:showExitModal confirmExit>
+    <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
+        <Fieldset legend="Options">
+            <InputText
+                bind:value={name}
+                label="Organization name"
+                placeholder="Enter organization name"
+                id="name"
+                required />
+        </Fieldset>
+        <Fieldset legend="Select plan">
+            <Typography.Text>
                 For more details on our plans, visit our
-                <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
-            </p>
-            <PlanSelection bind:billingPlan {anyOrgFree} isNewOrg />
-            {#if billingPlan !== BillingPlan.FREE}
+                <Link.Anchor
+                    href="https://appwrite.io/pricing"
+                    target="_blank"
+                    rel="noopener noreferrer">pricing page</Link.Anchor
+                >.
+            </Typography.Text>
+            <PlanSelection
+                bind:billingPlan={selectedPlan}
+                anyOrgFree={data.hasFreeOrganizations}
+                isNewOrg />
+        </Fieldset>
+        {#if selectedPlan !== BillingPlan.FREE}
+            <Fieldset legend="Invite members">
                 <InputTags
                     bind:tags={collaborators}
                     label="Invite members by email"
-                    popover={Default}
                     placeholder="Enter email address(es)"
-                    validityRegex={emailRegex}
-                    validityMessage="Invalid email address"
                     id="members" />
-                <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId
-                ></SelectPaymentMethod>
-                {#if !couponData?.code}
-                    <Button text on:click={() => (showCreditModal = true)}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Add credits
-                    </Button>
-                {/if}
+            </Fieldset>
+            <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
+            {#if !selectedCoupon?.code}
+                <Button text on:click={() => (showCreditModal = true)}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add credits
+                </Button>
             {/if}
-        </Form>
-        <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE}
-                <EstimatedTotalBox
-                    {billingPlan}
-                    {collaborators}
-                    bind:couponData
-                    bind:billingBudget />
-            {:else}
-                <PlanComparisonBox />
-            {/if}
-        </svelte:fragment>
-    </WizardSecondaryContent>
-
-    <WizardSecondaryFooter>
+        {/if}
+    </Form>
+    <svelte:fragment slot="aside">
+        {#if selectedPlan !== BillingPlan.FREE}
+            <EstimatedTotalBox
+                billingPlan={selectedPlan}
+                {collaborators}
+                plans={data.plansInfo}
+                bind:couponData={selectedCoupon}
+                bind:billingBudget />
+        {:else}
+            <PlanComparisonBox />
+        {/if}
+    </svelte:fragment>
+    <svelte:fragment slot="footer">
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
@@ -229,7 +192,7 @@
             disabled={$isSubmitting}>
             Create organization
         </Button>
-    </WizardSecondaryFooter>
-</WizardSecondaryContainer>
+    </svelte:fragment>
+</Wizard>
 
-<ValidateCreditModal bind:show={showCreditModal} bind:couponData />
+<ValidateCreditModal bind:show={showCreditModal} bind:couponData={selectedCoupon} />

@@ -107,11 +107,7 @@
                                         <Link.Button on:click={toggle}>Details</Link.Button>
                                         <svelte:fragment slot="tooltip">
                                             The scheduled payment has failed.
-                                            <Link.Button
-                                                on:click={() => {
-                                                    retryPayment(invoice);
-                                                    showFailedError = false;
-                                                }}
+                                            <Link.Button on:click={() => retryPayment(invoice)}
                                                 >Try again
                                             </Link.Button>
                                         </svelte:fragment>

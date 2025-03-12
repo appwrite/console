@@ -41,7 +41,6 @@
     });
 
     $: filteredMethods = methods?.paymentMethods?.filter((method) => !!method?.last4);
-
     $: selectedPaymentMethod = methods?.paymentMethods?.find((method) => method.$id === value);
 </script>
 
