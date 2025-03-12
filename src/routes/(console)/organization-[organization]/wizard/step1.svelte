@@ -1,16 +1,16 @@
 <script lang="ts">
     import { CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { InputText, FormList } from '$lib/elements/forms';
+    import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { createProject } from './store';
     import { regionFlagUrls, regions } from '$routes/(console)/organization-[organization]/store';
+    import { createProject } from './store';
 
     let showCustomId = false;
 
     if (!$regions?.regions) {
-        sdk.forConsole.billing.listRegions().then(regions.set);
+        sdk.forConsole.console.regions().then(regions.set);
     }
 </script>
 

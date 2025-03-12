@@ -1,12 +1,10 @@
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
+import { timeFromNow } from '$lib/helpers/date';
 import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
-import { type Models, Query } from '@appwrite.io/console';
-import { timeFromNow } from '$lib/helpers/date';
-import type { PageLoad } from './$types';
-import type { BackupPolicy } from '$lib/sdk/backups';
 import { isCloud } from '$lib/system';
-import type { Plan } from '$lib/sdk/billing';
+import { type Models, Query } from '@appwrite.io/console';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ url, route, depends, parent }) => {
     depends(Dependencies.DATABASES);
@@ -36,7 +34,11 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
 };
 
 // TODO: @itznotabug we should improve this!
-async function fetchDatabasesAndBackups(limit: number, offset: number, currentPlan?: Plan) {
+async function fetchDatabasesAndBackups(
+    limit: number,
+    offset: number,
+    currentPlan?: Models.BillingPlan
+) {
     const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 
     const databases = await sdk.forProject.databases.list([
@@ -45,7 +47,7 @@ async function fetchDatabasesAndBackups(limit: number, offset: number, currentPl
         Query.orderDesc('$createdAt')
     ]);
 
-    let lastBackups: Record<string, string>, policies: Record<string, BackupPolicy[]>;
+    let lastBackups: Record<string, string>, policies: Record<string, Models.BackupPolicy[]>;
 
     if (isCloud && backupsEnabled) {
         [policies, lastBackups] = await Promise.all([
@@ -58,7 +60,7 @@ async function fetchDatabasesAndBackups(limit: number, offset: number, currentPl
 }
 
 async function fetchPolicies(databases: Models.DatabaseList) {
-    const databasePolicies: Record<string, BackupPolicy[]> = {};
+    const databasePolicies: Record<string, Models.BackupPolicy[]> = {};
 
     await Promise.all(
         databases.databases.map(async (database) => {

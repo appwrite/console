@@ -12,19 +12,11 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
 import { cachedStore } from '$lib/helpers/cache';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
-import type {
-    AddressesList,
-    Aggregation,
-    Invoice,
-    InvoiceList,
-    PaymentList,
-    PaymentMethodData,
-    Plan,
-    PlansMap
-} from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
+import type { Models } from '@appwrite.io/console';
 import { Query } from '@appwrite.io/console';
+import type { SvelteComponent } from 'svelte';
 import { derived, get, writable } from 'svelte/store';
 import { headerAlert } from './headerAlert';
 import { addNotification, notifications } from './notifications';
@@ -58,9 +50,18 @@ export const roles = [
     }
 ];
 
-export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
-export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
-export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
+export const paymentMethods = derived(
+    page,
+    ($page) => $page.data.paymentMethods as Models.PaymentMethodList
+);
+export const addressList = derived(
+    page,
+    ($page) => $page.data.addressList as Models.BillingAddressList
+);
+export const plansInfo = derived(
+    page,
+    ($page) => $page.data.plansInfo as Map<Tier, Models.BillingPlan>
+);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
 
@@ -133,7 +134,11 @@ export type PlanServices =
     | 'authPhone'
     | 'imageTransformations';
 
-export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
+export function getServiceLimit(
+    serviceId: PlanServices,
+    tier: Tier = null,
+    plan?: Models.BillingPlan
+): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
     const info = get(plansInfo);
@@ -143,7 +148,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
 }
 
 export const failedInvoice = cachedStore<
-    Invoice,
+    Models.Invoice,
     {
         load: (orgId: string) => Promise<void>;
     }
@@ -152,7 +157,7 @@ export const failedInvoice = cachedStore<
         load: async (orgId) => {
             if (!isCloud) set(null);
             if (!get(canSeeBilling)) set(null);
-            const failedInvoices = await sdk.forConsole.billing.listInvoices(orgId, [
+            const failedInvoices = await sdk.forConsole.organizations.listInvoices(orgId, [
                 Query.equal('status', 'failed')
             ]);
             // const failedInvoices = invoices.invoices;
@@ -169,7 +174,7 @@ export const failedInvoice = cachedStore<
     };
 });
 
-export const actionRequiredInvoices = writable<InvoiceList>(null);
+export const actionRequiredInvoices = writable<Models.InvoiceList>(null);
 
 export type TierData = {
     name: string;
@@ -272,13 +277,16 @@ export async function checkForUsageLimit(org: Organization) {
         readOnly.set(false);
         return;
     }
-    const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
+    const { bandwidth, executions, storage, users, GBHours, imageTransformations, authPhone } =
+        org?.billingLimits ?? {};
     const resources = [
         { value: bandwidth, name: 'bandwidth' },
-        { value: documents, name: 'documents' },
         { value: executions, name: 'executions' },
         { value: storage, name: 'storage' },
-        { value: users, name: 'users' }
+        { value: users, name: 'users' },
+        { value: GBHours, name: 'GBHours' },
+        { value: imageTransformations, name: 'imageTransformations' },
+        { value: authPhone, name: 'authPhone' }
     ];
 
     const members = org.total;
@@ -290,7 +298,7 @@ export async function checkForUsageLimit(org: Organization) {
         readOnly.set(true);
         headerAlert.add({
             id: 'limitReached',
-            component: LimitReached,
+            component: LimitReached as unknown as typeof SvelteComponent,
             show: true,
             importance: 7
         });
@@ -337,14 +345,14 @@ export async function checkForUsageLimit(org: Organization) {
 export async function checkPaymentAuthorizationRequired(org: Organization) {
     if (org.billingPlan === BillingPlan.FREE) return;
 
-    const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
+    const invoices = await sdk.forConsole.organizations.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')
     ]);
 
     if (invoices?.invoices?.length > 0) {
         headerAlert.add({
             id: 'paymentAuthRequired',
-            component: PaymentAuthRequired,
+            component: PaymentAuthRequired as unknown as typeof SvelteComponent,
             show: true,
             importance: 8
         });
@@ -356,7 +364,7 @@ export async function checkPaymentAuthorizationRequired(org: Organization) {
 
 export async function paymentExpired(org: Organization) {
     if (!org?.paymentMethodId) return;
-    const payment = await sdk.forConsole.billing.getOrganizationPaymentMethod(
+    const payment = await sdk.forConsole.organizations.getPaymentMethod(
         org.$id,
         org.paymentMethodId
     );
@@ -407,23 +415,23 @@ export function checkForMarkedForDeletion(org: Organization) {
     if (org?.markedForDeletion) {
         headerAlert.add({
             id: 'markedForDeletion',
-            component: MarkedForDeletion,
+            component: MarkedForDeletion as unknown as typeof SvelteComponent,
             show: true,
             importance: 10
         });
     }
 }
 
-export const paymentMissingMandate = writable<PaymentMethodData>(null);
+export const paymentMissingMandate = writable<Models.PaymentMethod>(null);
 
 export async function checkForMandate(org: Organization) {
     const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
     if (!paymentId) return;
-    const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentId);
+    const paymentMethod = await sdk.forConsole.account.getPaymentMethod(paymentId);
     if (paymentMethod?.mandateId === null && paymentMethod?.country.toLowerCase() === 'in') {
         headerAlert.add({
             id: 'paymentMandate',
-            component: PaymentMandate,
+            component: PaymentMandate as unknown as typeof SvelteComponent,
             show: true,
             importance: 8
         });
@@ -433,7 +441,7 @@ export async function checkForMandate(org: Organization) {
 }
 
 export async function checkForMissingPaymentMethod() {
-    const orgs = await sdk.forConsole.billing.listOrganization([
+    const orgs = await sdk.forConsole.organizations.list([
         Query.notEqual('billingPlan', BillingPlan.FREE),
         Query.isNull('paymentMethodId'),
         Query.isNull('backupPaymentMethodId')
@@ -442,7 +450,7 @@ export async function checkForMissingPaymentMethod() {
         orgMissingPaymentMethod.set(orgs.teams[0]);
         headerAlert.add({
             id: 'missingPaymentMethod',
-            component: MissingPaymentMethod,
+            component: MissingPaymentMethod as unknown as typeof SvelteComponent,
             show: true,
             importance: 8
         });
@@ -453,7 +461,7 @@ export async function checkForMissingPaymentMethod() {
 export async function checkForNewDevUpgradePro(org: Organization) {
     if (org?.billingPlan !== BillingPlan.FREE || !browser) return;
 
-    const orgs = await sdk.forConsole.billing.listOrganization([
+    const orgs = await sdk.forConsole.organizations.list([
         Query.notEqual('billingPlan', BillingPlan.FREE)
     ]);
     if (orgs?.total) return;
@@ -466,13 +474,13 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (isDismissed) return;
     // check if coupon already applied
     try {
-        await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
+        await sdk.forConsole.account.getCoupon(NEW_DEV_PRO_UPGRADE_COUPON);
     } catch (e) {
         return;
     }
     headerAlert.add({
         id: 'newDevUpgradePro',
-        component: newDevUpgradePro,
+        component: newDevUpgradePro as unknown as typeof SvelteComponent,
         show: true,
         importance: 1
     });
@@ -488,7 +496,7 @@ export const billingURL = derived(
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(addon: Aggregation, plan: Plan) {
+export function calculateExcess(addon: Models.AggregationTeam, plan: Models.BillingPlan) {
     return {
         bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),

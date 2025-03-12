@@ -5,18 +5,18 @@
     import DropListItem from '$lib/components/dropListItem.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import type { Address } from '$lib/sdk/billing';
     import { addressList } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import RemoveAddress from './removeAddress.svelte';
     import { user } from '$lib/stores/user';
     import AddressModal from '$routes/(console)/account/payments/addressModal.svelte';
     import EditAddressModal from '$routes/(console)/account/payments/editAddressModal.svelte';
+    import type { Models } from '@appwrite.io/console';
+    import RemoveAddress from './removeAddress.svelte';
     import ReplaceAddress from './replaceAddress.svelte';
 
-    export let billingAddress: Address = null;
+    export let billingAddress: Models.BillingAddress = null;
 
     let showDropdown = false;
     let showBillingAddressDropdown = false;

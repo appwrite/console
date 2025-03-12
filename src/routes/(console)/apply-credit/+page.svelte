@@ -12,7 +12,6 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type PaymentList, type Plan } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import { isOrganization } from '$lib/stores/billing.js';
     import { addNotification } from '$lib/stores/notifications';
@@ -23,10 +22,10 @@
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe.js';
-    import { ID } from '@appwrite.io/console';
+    import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
+    import { ID, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
 
     export let data;
 
@@ -51,7 +50,7 @@
     let formComponent: Form;
     let couponForm: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let paymentMethodId: string;
     let collaborators: string[];
     let taxId: string;
@@ -72,7 +71,7 @@
     let couponData = data?.couponData;
     let campaign = data?.campaign;
     let billingPlan = BillingPlan.PRO;
-    let currentPlan: Plan;
+    let currentPlan: Models.BillingPlan;
 
     function isUpgrade() {
         const newPlan = $page.data.plansInfo.get(billingPlan);
@@ -108,7 +107,7 @@
     });
 
     async function loadPaymentMethods() {
-        const methodList = await sdk.forConsole.billing.listPaymentMethods();
+        const methodList = await sdk.forConsole.account.listPaymentMethods();
         const filteredMethods = methodList.paymentMethods.filter((method) => !!method?.last4);
         methods = { paymentMethods: filteredMethods, total: filteredMethods.length };
         paymentMethodId =
@@ -199,7 +198,7 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.console.getCoupon(coupon);
             couponData = response;
             coupon = null;
             addNotification({
@@ -226,7 +225,7 @@
     $: {
         if (selectedOrgId) {
             (async () => {
-                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
+                currentPlan = await sdk.forConsole.organizations.getPlan(selectedOrgId);
             })();
         }
     }

@@ -1,7 +1,7 @@
 import { Dependencies } from '$lib/constants';
-import type { Address } from '$lib/sdk/billing';
 import type { Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
+import type { Models } from '@appwrite.io/console';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -18,9 +18,9 @@ export const load: PageLoad = async ({ parent, depends }) => {
     depends(Dependencies.ADDRESS);
 
     const billingAddressId = (organization as Organization)?.billingAddressId;
-    const billingAddressPromise: Promise<Address> = billingAddressId
-        ? sdk.forConsole.billing
-              .getOrganizationBillingAddress(organization.$id, billingAddressId)
+    const billingAddressPromise: Promise<Models.BillingAddress> = billingAddressId
+        ? sdk.forConsole.organizations
+              .getBillingAddress(organization.$id, billingAddressId)
               .catch(() => null)
         : null;
 
@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
      */
     let billingAggregation = null;
     try {
-        billingAggregation = await sdk.forConsole.billing.getAggregation(
+        billingAggregation = await sdk.forConsole.organizations.getAggregation(
             organization.$id,
             (organization as Organization)?.billingAggregationId
         );
@@ -41,7 +41,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
 
     let billingInvoice = null;
     try {
-        billingInvoice = await sdk.forConsole.billing.getInvoice(
+        billingInvoice = await sdk.forConsole.organizations.getInvoice(
             organization.$id,
             (organization as Organization)?.billingInvoiceId
         );
@@ -51,10 +51,10 @@ export const load: PageLoad = async ({ parent, depends }) => {
 
     const [paymentMethods, addressList, billingAddress, creditList, aggregationBillingPlan] =
         await Promise.all([
-            sdk.forConsole.billing.listPaymentMethods(),
-            sdk.forConsole.billing.listAddresses(),
+            sdk.forConsole.account.listPaymentMethods(),
+            sdk.forConsole.account.listBillingAddresses(),
             billingAddressPromise,
-            sdk.forConsole.billing.listCredits(organization.$id),
+            sdk.forConsole.organizations.listCredits(organization.$id),
             sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan)
         ]);
 

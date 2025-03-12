@@ -1,8 +1,25 @@
-import type { Aggregation, Invoice } from '$lib/sdk/billing';
-import { accumulateUsage } from '$lib/sdk/usage';
 import { getSdkForProject, sdk } from '$lib/stores/sdk';
+import type { Models } from '@appwrite.io/console';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
+
+function accumulateUsage(usage: Models.Metric[], base: number): Models.Metric[] {
+    const accumulation = usage.reduce(
+        (carry, item) => {
+            const value = item.value + carry.currentTotal;
+            return {
+                currentTotal: value,
+                metrics: [...carry.metrics, { ...item, value }]
+            };
+        },
+        {
+            currentTotal: base,
+            metrics: []
+        }
+    );
+
+    return accumulation.metrics;
+}
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice, project } = params;
@@ -10,12 +27,12 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     let startDate: string = organization.billingCurrentInvoiceDate;
     let endDate: string = organization.billingNextInvoiceDate;
-    let currentInvoice: Invoice = undefined;
-    let currentAggregation: Aggregation = undefined;
+    let currentInvoice: Models.Invoice = undefined;
+    let currentAggregation: Models.AggregationTeam = undefined;
 
     if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, invoice);
-        currentAggregation = await sdk.forConsole.billing.getAggregation(
+        currentInvoice = await sdk.forConsole.organizations.getInvoice(organization.$id, invoice);
+        currentAggregation = await sdk.forConsole.organizations.getAggregation(
             organization.$id,
             currentInvoice.aggregationId
         );
@@ -25,7 +42,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     }
 
     const [invoices, usage] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(organization.$id, [Query.orderDesc('from')]),
+        sdk.forConsole.organizations.listInvoices(organization.$id, [Query.orderDesc('from')]),
         /**
          * Workaround because project id might not be populated yet.
          */

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { trackEvent } from '$lib/actions/analytics';
     import { Alert, DropList, Heading } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -17,8 +19,6 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { createEventDispatcher, onMount } from 'svelte';
     import { ContainerButton } from '.';
-    import { trackEvent } from '$lib/actions/analytics';
-    import { goto } from '$app/navigation';
 
     export let isFlex = true;
     export let title: string;
@@ -38,19 +38,24 @@
     let showDropdown = false;
 
     // TODO: remove the default billing limits when backend is updated with billing code
-    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits ?? {
-        bandwidth: 1,
-        documents: 1,
-        storage: 1,
-        users: 1,
-        executions: 1
-    };
+    const { bandwidth, storage, users, executions, GBHours, imageTransformations, authPhone } =
+        $organization?.billingLimits ?? {
+            bandwidth: 1,
+            storage: 1,
+            users: 1,
+            executions: 1,
+            GBHours: 1,
+            imageTransformations: 1,
+            authPhone: 1
+        };
     const limitedServices = [
         { name: 'bandwidth', value: bandwidth },
-        { name: 'documents', value: documents },
         { name: 'storage', value: storage },
         { name: 'users', value: users },
-        { name: 'executions', value: executions }
+        { name: 'executions', value: executions },
+        { name: 'GBHours', value: GBHours },
+        { name: 'imageTransformations', value: imageTransformations },
+        { name: 'authPhone', value: authPhone }
     ];
 
     const limit = getServiceLimit(serviceId) || Infinity;

@@ -1,20 +1,19 @@
-import { Dependencies } from '$lib/constants';
-import { sdk } from '$lib/stores/sdk';
-import { error } from '@sveltejs/kit';
-import type { LayoutLoad } from './$types';
-import { preferences } from '$lib/stores/preferences';
-import { failedInvoice } from '$lib/stores/billing';
-import { isCloud } from '$lib/system';
-import type { Organization } from '$lib/stores/organization';
-import { defaultRoles, defaultScopes } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
-import { get } from 'svelte/store';
-import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
+import { defaultRoles, defaultScopes, Dependencies } from '$lib/constants';
+import { failedInvoice } from '$lib/stores/billing';
+import { headerAlert } from '$lib/stores/headerAlert';
+import type { Organization } from '$lib/stores/organization';
+import { preferences } from '$lib/stores/preferences';
+import { sdk } from '$lib/stores/sdk';
+import { isCloud } from '$lib/system';
+import type { Models } from '@appwrite.io/console';
+import { error } from '@sveltejs/kit';
+import { get } from 'svelte/store';
+import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
-    let currentPlan: Plan = null;
+    let currentPlan: Models.BillingPlan | null = null;
 
     try {
         const project = await sdk.forConsole.projects.get(params.project);
@@ -32,8 +31,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         let roles = isCloud ? [] : defaultRoles;
         let scopes = isCloud ? [] : defaultScopes;
         if (isCloud) {
-            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(project.teamId);
-            const res = await sdk.forConsole.billing.getRoles(project.teamId);
+            currentPlan = await sdk.forConsole.organizations.getPlan(project.teamId);
+            const res = await sdk.forConsole.organizations.getScopes(project.teamId);
             roles = res.roles;
             scopes = res.scopes;
             if (scopes.includes('billing.read')) {

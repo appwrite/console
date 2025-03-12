@@ -1,27 +1,27 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
+    import { tooltip } from '$lib/actions/tooltip';
     import {
-        GridItem1,
-        Empty,
         AvatarGroup,
         CardContainer,
+        Empty,
+        GridItem1,
         Heading,
         PaginationWithLimit
     } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
-    import CreateOrganization from '../../createOrganization.svelte';
-    import { sdk } from '$lib/stores/sdk';
-    import type { PageData } from './$types';
-    import { isCloud } from '$lib/system';
-    import { Pill } from '$lib/elements';
-    import type { Models } from '@appwrite.io/console';
-    import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
-    import { tooltip } from '$lib/actions/tooltip';
-    import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
-    import { goto } from '$app/navigation';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { Container } from '$lib/layout';
+    import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
+    import type { Organization } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+    import { isCloud } from '$lib/system';
+    import type { Models } from '@appwrite.io/console';
+    import CreateOrganization from '../../createOrganization.svelte';
+    import type { PageData } from './$types';
 
     export let data: PageData;
     let addOrganization = false;
@@ -82,7 +82,7 @@
                                         >{tierToPlan(organization?.billingPlan)?.name}</Pill>
                                 </div>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trial}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

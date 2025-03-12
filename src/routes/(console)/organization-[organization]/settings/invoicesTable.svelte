@@ -1,4 +1,9 @@
 <script lang="ts">
+    import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { DropList, DropListItem, DropListLink } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
@@ -8,24 +13,20 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { Pill } from '$lib/elements';
-    import { DropList, DropListItem, DropListLink } from '$lib/components';
-    import type { Invoice } from '$lib/sdk/billing';
-    import { getApiEndpoint } from '$lib/stores/sdk';
-    import { selectedInvoice, showRetryModal } from '../billing/store';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { Button } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { getApiEndpoint } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { selectedInvoice, showRetryModal } from '../billing/store';
+
     let showDropdown = [];
     let showFailedError = false;
     const endpoint = getApiEndpoint();
 
-    export let invoices: Invoice[];
+    export let invoices: Models.Invoice[];
     export let showActions = true;
 
-    function retryPayment(invoice: Invoice) {
+    function retryPayment(invoice: Models.Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
     }

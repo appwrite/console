@@ -1,34 +1,34 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
-    import { organization } from '$lib/stores/organization';
-    import BudgetCap from './budgetCap.svelte';
-    import PlanSummary from './planSummary.svelte';
-    import BillingAddress from './billingAddress.svelte';
-    import PaymentMethods from './paymentMethods.svelte';
-    import AvailableCredit from './availableCredit.svelte';
-    import PaymentHistory from './paymentHistory.svelte';
-    import TaxId from './taxId.svelte';
-    import { Alert, Heading } from '$lib/components';
-    import { failedInvoice, paymentMethods, tierToPlan, upgradeURL } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
-    import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { confirmPayment } from '$lib/stores/stripe';
-    import { sdk } from '$lib/stores/sdk';
+    import { Alert, Heading } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { Container } from '$lib/layout';
+    import { failedInvoice, paymentMethods, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
+    import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
+    import AvailableCredit from './availableCredit.svelte';
+    import BillingAddress from './billingAddress.svelte';
+    import BudgetCap from './budgetCap.svelte';
+    import PaymentHistory from './paymentHistory.svelte';
+    import PaymentMethods from './paymentMethods.svelte';
+    import PlanSummary from './planSummary.svelte';
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
-    import { Button } from '$lib/elements/forms';
-    import { goto } from '$app/navigation';
+    import TaxId from './taxId.svelte';
 
     export let data;
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
+        (method: Models.PaymentMethod) => method.$id === $organization?.paymentMethodId
     );
 
     $: backupPaymentMethod = $paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === $organization?.backupPaymentMethodId
+        (method: Models.PaymentMethod) => method.$id === $organization?.backupPaymentMethodId
     );
 
     onMount(async () => {
@@ -42,7 +42,7 @@
                 $page.url.searchParams.get('type') === 'confirmation'
             ) {
                 const invoiceId = $page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
+                const invoice = await sdk.forConsole.organizations.getInvoice(
                     $page.params.organization,
                     invoiceId
                 );
@@ -59,7 +59,7 @@
                 $page.url.searchParams.get('type') === 'retry'
             ) {
                 const invoiceId = $page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
+                const invoice = await sdk.forConsole.organizations.getInvoice(
                     $page.params.organization,
                     invoiceId
                 );

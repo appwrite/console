@@ -1,18 +1,17 @@
-import { Dependencies } from '$lib/constants';
+import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte';
+import { defaultRoles, defaultScopes, Dependencies } from '$lib/constants';
 import { failedInvoice } from '$lib/stores/billing';
-import { isCloud } from '$lib/system';
+import { headerAlert } from '$lib/stores/headerAlert';
+import type { Organization } from '$lib/stores/organization';
+import { preferences } from '$lib/stores/preferences';
 import { sdk } from '$lib/stores/sdk';
+import { isCloud } from '$lib/system';
+import type { Models } from '@appwrite.io/console';
 import { error } from '@sveltejs/kit';
+import { get } from 'svelte/store';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
-import { headerAlert } from '$lib/stores/headerAlert';
-import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte';
-import { get } from 'svelte/store';
-import { preferences } from '$lib/stores/preferences';
-import type { Organization } from '$lib/stores/organization';
-import { defaultRoles, defaultScopes } from '$lib/constants';
-import type { Plan } from '$lib/sdk/billing';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
@@ -20,14 +19,14 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PAYMENT_METHODS);
     let roles = isCloud ? [] : defaultRoles;
     let scopes = isCloud ? [] : defaultScopes;
-    let currentPlan: Plan = null;
+    let currentPlan: Models.BillingPlan | null = null;
 
     try {
         if (isCloud) {
-            const res = await sdk.forConsole.billing.getRoles(params.organization);
+            const res = await sdk.forConsole.organizations.getScopes(params.organization);
             roles = res.roles;
             scopes = res.scopes;
-            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(params.organization);
+            currentPlan = await sdk.forConsole.organizations.getPlan(params.organization);
             if (scopes.includes('billing.read')) {
                 await failedInvoice.load(params.organization);
                 if (get(failedInvoice)) {

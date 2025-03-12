@@ -1,5 +1,13 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
+    import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
+    import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
+    import { addSubPanel } from '$lib/commandCenter/subPanels';
+    import { BottomModalAlert } from '$lib/components';
+    import { UsageRates } from '$lib/components/billing';
     import { BillingPlan, INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
@@ -7,14 +15,6 @@
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
-    import { log } from '$lib/stores/logs';
-    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
-    import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
-    import { wizard } from '$lib/stores/wizard';
-    import { afterUpdate, onMount } from 'svelte';
-    import { loading } from '$routes/store';
-    import { requestedMigration } from '../store';
-    import Create from './createOrganization.svelte';
     import {
         calculateTrialDay,
         checkForMandate,
@@ -27,25 +27,25 @@
         plansInfo,
         showUsageRatesModal
     } from '$lib/stores/billing';
-    import { goto } from '$app/navigation';
-    import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
-    import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
-    import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
-    import { addSubPanel } from '$lib/commandCenter/subPanels';
-    import { addNotification } from '$lib/stores/notifications';
-    import { openMigrationWizard } from './(migration-wizard)';
-    import { project } from './project-[project]/store';
+    import { checkForDatabaseBackupPolicies, database } from '$lib/stores/database';
     import { feedback } from '$lib/stores/feedback';
-    import { hasStripePublicKey, isCloud, VARS } from '$lib/system';
+    import { headerAlert } from '$lib/stores/headerAlert';
+    import { log } from '$lib/stores/logs';
+    import { addNotification } from '$lib/stores/notifications';
+    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
+    import { canSeeProjects } from '$lib/stores/roles';
     import { stripe } from '$lib/stores/stripe';
+    import { wizard } from '$lib/stores/wizard';
+    import { hasStripePublicKey, isCloud, VARS } from '$lib/system';
+    import { loading } from '$routes/store';
+    import { afterUpdate, onMount } from 'svelte';
+    import { requestedMigration } from '../store';
+    import { openMigrationWizard } from './(migration-wizard)';
+    import Create from './createOrganization.svelte';
+    import { project } from './project-[project]/store';
+    import { activeHeaderAlert, consoleVariables } from './store';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
-    import { activeHeaderAlert, consoleVariables } from './store';
-    import { headerAlert } from '$lib/stores/headerAlert';
-    import { UsageRates } from '$lib/components/billing';
-    import { base } from '$app/paths';
-    import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert } from '$lib/components';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -289,7 +289,7 @@
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
 
-                if ($plansInfo.get(org.billingPlan)?.trialDays) {
+                if ($plansInfo.get(org.billingPlan)?.trial) {
                     calculateTrialDay(org);
                 }
             }

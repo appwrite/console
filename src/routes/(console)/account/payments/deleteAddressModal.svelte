@@ -1,23 +1,23 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import type { Address } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
-    export let selectedAddress: Address;
+    export let selectedAddress: Models.BillingAddress;
     export let linkedOrgs: Organization[] = [];
     let error: string = null;
 
     async function handleDelete() {
         try {
-            await sdk.forConsole.billing.deleteAddress(selectedAddress.$id);
+            await sdk.forConsole.account.deleteBillingAddress(selectedAddress.$id);
             await invalidate(Dependencies.PAYMENT_METHODS);
             showDelete = false;
             addNotification({
