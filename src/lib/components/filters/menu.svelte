@@ -1,9 +1,9 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { Card, Icon } from '@appwrite.io/pink-svelte';
-    import { tags } from './store';
     import { IconFilterLine } from '@appwrite.io/pink-icons-svelte';
     import { createMenubar, melt } from '@melt-ui/svelte';
+    import { parsedTags } from './setFilters';
 
     const {
         elements: { menubar },
@@ -17,8 +17,8 @@
 
 <div use:melt={$menubar}>
     <div use:melt={$trigger}>
-        {#if $tags.length}
-            <Button secondary badge={`${$tags.length}`}>
+        {#if $parsedTags?.length}
+            <Button secondary badge={`${$parsedTags?.length}`}>
                 <Icon icon={IconFilterLine} slot="start" size="s" />
                 Filters
             </Button>
