@@ -78,20 +78,21 @@
                     showColsTextMobile />
                 <div class="is-not-mobile u-flex u-gap-16">
                     <Button
-                        disabled={!(hasAttributes && hasValidAttributes)}
-                        on:click={openWizard}
-                        event="create_document">
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create document</span>
-                    </Button>
-
-                    <Button
+                        secondary
                         on:click={() => {
                             showImportDocuments = true;
                         }}
                         event="create_document">
                         <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Import documents</span>
+                        <span class="text">Import CSV</span>
+                    </Button>
+
+                    <Button
+                        disabled={!(hasAttributes && hasValidAttributes)}
+                        on:click={openWizard}
+                        event="create_document">
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create document</span>
                     </Button>
                 </div>
             </div>
