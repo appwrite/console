@@ -253,7 +253,6 @@
                             <InputText
                                 id="fallback"
                                 label="Fallback file"
-                                required
                                 placeholder="index.html"
                                 bind:value={fallback}>
                                 <Tooltip slot="info">

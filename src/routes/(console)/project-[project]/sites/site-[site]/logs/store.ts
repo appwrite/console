@@ -88,7 +88,8 @@ export const columns = writable<Column[]>([
                 value: 30,
                 label: 'more than 30 seconds'
             }
-        ]
+        ],
+        hide: true
     },
     {
         id: '$createdAt',

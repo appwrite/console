@@ -376,6 +376,18 @@ export const scopes: {
         description: "Access to create, update, and delete your project's sites and deployments",
         category: 'Sites',
         icon: 'globe'
+    },
+    {
+        scope: 'log.read',
+        description: "Access to read your sites's  logs",
+        category: 'Sites',
+        icon: 'globe'
+    },
+    {
+        scope: 'log.write',
+        description: "Access to execute your project's sites",
+        category: 'Sites',
+        icon: 'globe'
     }
 ];
 
