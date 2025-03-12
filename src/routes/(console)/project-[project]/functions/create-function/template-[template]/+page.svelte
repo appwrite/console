@@ -13,20 +13,24 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import { ID, Runtime, type Models } from '@appwrite.io/console';
-    import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
+    import {
+        ConnectBehaviour,
+        NewRepository,
+        Repositories,
+        RepositoryBehaviour
+    } from '$lib/components/git';
     import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
-    import { getIconFromRuntime } from '../../store';
     import Permissions from './permissions.svelte';
     import { connectGitHub } from '$lib/stores/git';
     import RepoCard from './repoCard.svelte';
     import { Dependencies } from '$lib/constants';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
 
     export let data;
 

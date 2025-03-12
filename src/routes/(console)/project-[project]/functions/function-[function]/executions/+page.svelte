@@ -9,11 +9,11 @@
     import { project } from '$routes/(console)/project-[project]/store';
     import { base } from '$app/paths';
     import { View } from '$lib/helpers/load';
-    import QuickFilters from './quickFilters.svelte';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Table from './table.svelte';
     import { columns } from './store';
+    import { QuickFilters } from '$lib/components/filters';
 
     export let data;
 
@@ -30,11 +30,11 @@
 
 <Container>
     <Layout.Stack direction="row" alignItems="center" justifyContent="space-between">
-        <QuickFilters {columns} />
+        <QuickFilters {columns} analyticsSource="function_executions" />
 
         <Layout.Stack gap="s" inline direction="row" alignItems="center">
             {#if data?.executions?.total}
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                <ViewSelector view={View.Table} {columns} hideView />
             {/if}
             <Button
                 event="execute_function"

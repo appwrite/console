@@ -107,7 +107,6 @@
     <Form onSubmit={handleSubmit}>
         <Layout.Stack gap="xl">
             <Layout.Stack gap="s">
-                <Typography.Title>How can we help you?</Typography.Title>
                 <Typography.Text
                     >Please describe your request in detail. If applicable, include steps for
                     reproduction of any in-app issues.</Typography.Text>
@@ -145,11 +144,12 @@
                 label="Tell us a bit more" />
             <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
                 <Button.Button
+                    size="s"
                     variant="secondary"
                     on:click={() => {
                         wizard.hide();
                     }}>Cancel</Button.Button>
-                <Button.Button>Submit</Button.Button>
+                <Button.Button size="s">Submit</Button.Button>
             </Layout.Stack>
         </Layout.Stack>
     </Form>

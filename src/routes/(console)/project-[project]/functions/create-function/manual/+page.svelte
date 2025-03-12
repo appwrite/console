@@ -15,10 +15,11 @@
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
-    import { getIconFromRuntime } from '../../store';
     import { Dependencies } from '$lib/constants';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import Configuration from './configuration.svelte';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
+    import { removeFile } from '$lib/helpers/files';
 
     export let data;
 
@@ -165,7 +166,7 @@
                     </Layout.Stack>
                 </Upload.Dropzone>
                 {#if files?.length}
-                    <Upload.List bind:files />
+                    <Upload.List bind:files on:remove={(e) => removeFile(e.detail, files)} />
                 {/if}
             </Layout.Stack>
 

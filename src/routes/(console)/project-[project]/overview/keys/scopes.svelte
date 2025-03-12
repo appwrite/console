@@ -77,6 +77,8 @@
             }
         }
     }
+
+    $: console.log(scopes);
 </script>
 
 <Layout.Stack>
@@ -90,7 +92,7 @@
     <Layout.Stack gap="none">
         <Divider />
 
-        {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Other] as category}
+        {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Sites, Category.Other] as category}
             {@const checked = categoryState(category, scopes)}
             {@const scopesLength = allScopes.filter(
                 (n) => n.category === category && scopes.includes(n.scope)

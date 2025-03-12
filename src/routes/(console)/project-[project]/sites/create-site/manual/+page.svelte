@@ -7,18 +7,19 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
     import Details from '../details.svelte';
     import Aside from './aside.svelte';
     import { BuildRuntime, Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
-    import InputFile from '$lib/elements/forms/inputFile.svelte';
     import { buildVerboseDomain } from '../store';
     import { project } from '$routes/(console)/project-[project]/store';
     import { organization } from '$lib/stores/organization';
     import { consoleVariables } from '$routes/(console)/store';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { removeFile } from '$lib/helpers/files';
 
     export let data;
     let showExitModal = false;
@@ -108,6 +109,14 @@
             trackError(e, Submit.SiteCreate);
         }
     }
+
+    $: filesList = files?.length
+        ? Array.from(files).map((file) => {
+              let f = file as Partial<File> & { removable: boolean };
+              f.removable = true;
+              return f;
+          })
+        : [];
 </script>
 
 <svelte:head>
@@ -121,12 +130,42 @@
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
-            <Layout.Stack gap="xxs">
-                <InputFile
-                    label="Upload a zip file (tar.gz) containing your function source code"
-                    allowedFileExtensions={['gz']}
-                    bind:files
-                    required />
+            <Layout.Stack gap="s">
+                <Typography.Text color="--fgcolor-neutral-primary">
+                    Upload a zip file (tar.gz) containing your function source code
+                </Typography.Text>
+                <Upload.Dropzone extensions={['gz', 'zip']} bind:files maxSize={10000000} required>
+                    <Layout.Stack alignItems="center" gap="s">
+                        <Layout.Stack alignItems="center" gap="s">
+                            <Layout.Stack
+                                alignItems="center"
+                                justifyContent="center"
+                                direction="row"
+                                gap="s">
+                                <Typography.Text variant="l-500">
+                                    Drag and drop file here or click to upload
+                                </Typography.Text>
+                                <Tooltip>
+                                    <Layout.Stack
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        inline>
+                                        <Icon icon={IconInfo} size="s" />
+                                    </Layout.Stack>
+                                    <svelte:fragment slot="tooltip"
+                                        >Only .tar.gz files allowed</svelte:fragment>
+                                </Tooltip>
+                            </Layout.Stack>
+                            <Typography.Caption variant="400"
+                                >Max file size 10MB</Typography.Caption>
+                        </Layout.Stack>
+                    </Layout.Stack>
+                </Upload.Dropzone>
+                {#if files?.length}
+                    <Upload.List
+                        bind:files={filesList}
+                        on:remove={(e) => removeFile(e.detail, files)} />
+                {/if}
             </Layout.Stack>
             <Details bind:name bind:id />
 

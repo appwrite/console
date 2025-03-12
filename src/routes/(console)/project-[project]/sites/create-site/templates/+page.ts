@@ -1,8 +1,9 @@
 import { sdk } from '$lib/stores/sdk';
 import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
+import { getLimit } from '$lib/helpers/load';
 
 export const load = async ({ url, route }) => {
-    const limit = 12;
+    const limit = getLimit(url, route, 12);
     const page = getPage(url);
     const search = getSearch(url);
     const view = getView(url, route, View.Grid);

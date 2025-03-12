@@ -15,7 +15,13 @@
     import Details from '../../details.svelte';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, VCSDeploymentType } from '@appwrite.io/console';
+    import {
+        BuildRuntime,
+        Framework,
+        ID,
+        VCSDeploymentType,
+        VCSDetectionType
+    } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
@@ -31,7 +37,7 @@
 
     let name = '';
     let id = ID.unique();
-    let framework: Models.Framework = data.frameworks.frameworks[0];
+    let framework: Models.Framework = data.frameworks.frameworks.find((f) => f.key === 'other');
     let adapter = framework?.adapters[0];
     let branch: string;
     let rootDir = './';
@@ -46,7 +52,29 @@
         installation.set(data.installation);
         repository.set(data.repository);
         name = data.repository.name;
+
+        await detectFramwork();
     });
+
+    async function detectFramwork() {
+        try {
+            const response = await sdk.forProject.vcs.createRepositoryDetection(
+                $installation.$id,
+                data.repository.id,
+                VCSDetectionType.Framework,
+                rootDir
+            );
+            framework = data.frameworks.frameworks.find((f) => f.key === response.framework);
+            adapter = framework?.adapters[0];
+            installCommand = adapter?.installCommand;
+            buildCommand = adapter?.buildCommand;
+            outputDirectory = adapter?.outputDirectory;
+            console.log(framework);
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     async function create() {
         try {
@@ -119,6 +147,8 @@
             trackError(e, Submit.SiteCreate);
         }
     }
+
+    $: console.log(framework);
 </script>
 
 <svelte:head>
@@ -160,13 +190,15 @@
                 installationId={data.installation.$id}
                 repositoryId={data.repository.id} />
 
-            <Configuration
-                bind:installCommand
-                bind:buildCommand
-                bind:outputDirectory
-                bind:selectedFramework={framework}
-                bind:variables
-                frameworks={data.frameworks.frameworks} />
+            {#key framework.key}
+                <Configuration
+                    bind:installCommand
+                    bind:buildCommand
+                    bind:outputDirectory
+                    bind:selectedFramework={framework}
+                    bind:variables
+                    frameworks={data.frameworks.frameworks} />
+            {/key}
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

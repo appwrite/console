@@ -414,7 +414,7 @@
         color: var(--fgcolor-neutral-primary, #2d2d31);
         border-radius: var(--corner-radius-medium, 8px);
 
-        cursor: default;
+        cursor: pointer;
         /* Body text/level 2 Regular */
         font-family: Inter;
         font-size: 14px;
