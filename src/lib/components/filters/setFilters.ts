@@ -19,7 +19,7 @@ export function setFiltersOnNavigate(
         filterCols.forEach((filter) => {
             if (filter.id === 'buildDuration') {
                 setTimeFilter(filter, $columns);
-            } else if (filter.id.includes('size')) {
+            } else if (filter.id.toLocaleLowerCase().includes('size')) {
                 setSizeFilter(filter, $columns);
             } else if (filter.id === 'statusCode') {
                 setStatusCodeFilter(filter, $columns);

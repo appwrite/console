@@ -31,7 +31,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { app } from '$lib/stores/app';
     import CreateActionMenu from './(components)/createActionMenu.svelte';
-    import { QuickFilters } from '$lib/components/filters';
+    import { ParsedTagList, QuickFilters } from '$lib/components/filters';
 
     export let data;
 
@@ -171,23 +171,26 @@
             {/if}
 
             <Layout.Stack gap="l">
-                <Layout.Stack direction="row" alignItems="center">
-                    <Layout.Stack direction="row" gap="s" wrap="wrap">
-                        {#if data.deploymentList.total}
-                            <QuickFilters {columns} analyticsSource="function_deployments" />
-                        {/if}
+                <Layout.Stack>
+                    <Layout.Stack direction="row" alignItems="center">
+                        <Layout.Stack direction="row" gap="s" wrap="wrap">
+                            {#if data.deploymentList.total}
+                                <QuickFilters {columns} analyticsSource="function_deployments" />
+                            {/if}
+                        </Layout.Stack>
+                        <Layout.Stack direction="row" gap="s" inline>
+                            {#if data.deploymentList.total}
+                                <ViewSelector view={View.Table} {columns} hideView />
+                            {/if}
+                            <CreateActionMenu let:toggle>
+                                <Button on:click={toggle} event="create_deployment">
+                                    <Icon icon={IconPlus} size="s" slot="start" />
+                                    Create deployment
+                                </Button>
+                            </CreateActionMenu>
+                        </Layout.Stack>
                     </Layout.Stack>
-                    <Layout.Stack direction="row" gap="s" inline>
-                        {#if data.deploymentList.total}
-                            <ViewSelector view={View.Table} {columns} hideView />
-                        {/if}
-                        <CreateActionMenu let:toggle>
-                            <Button on:click={toggle} event="create_deployment">
-                                <Icon icon={IconPlus} size="s" slot="start" />
-                                Create deployment
-                            </Button>
-                        </CreateActionMenu>
-                    </Layout.Stack>
+                    <ParsedTagList />
                 </Layout.Stack>
 
                 {#if data.deploymentList.total}

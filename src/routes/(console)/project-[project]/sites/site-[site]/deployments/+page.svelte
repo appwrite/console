@@ -18,7 +18,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import CreateCliModal from './createCliModal.svelte';
-    import { QuickFilters } from '$lib/components/filters';
+    import { ParsedTagList, QuickFilters } from '$lib/components/filters';
 
     export let data;
 
@@ -45,54 +45,57 @@
     <Layout.Stack gap="xxxl">
         <DeploymentMetrics deploymentList={data.deploymentList} />
         <Layout.Stack gap="l">
-            <Layout.Stack justifyContent="space-between" direction="row">
-                <Layout.Stack alignItems="center" direction="row">
-                    {#if data.deploymentList.total || data?.query}
-                        <QuickFilters {columns} analyticsSource="site_deployments" />
-                    {/if}
-                </Layout.Stack>
+            <Layout.Stack>
+                <Layout.Stack justifyContent="space-between" direction="row">
+                    <Layout.Stack alignItems="center" direction="row">
+                        {#if data.deploymentList.total || data?.query}
+                            <QuickFilters {columns} analyticsSource="site_deployments" />
+                        {/if}
+                    </Layout.Stack>
 
-                <Layout.Stack direction="row" inline>
-                    {#if data.deploymentList.total}
-                        <ViewSelector view={View.Table} {columns} hideView />
-                    {/if}
-                    <Popover padding="none" let:toggle>
-                        <Button size="s" on:click={toggle}>
-                            <Icon size="s" icon={IconPlus} />
-                            Create deployment
-                        </Button>
-                        <svelte:fragment slot="tooltip" let:toggle>
-                            <ActionMenu.Root>
-                                <ActionMenu.Item.Button
-                                    badge="Recommended"
-                                    on:click={(e) => {
-                                        toggle(e);
-                                        if (!hasInstallation) {
-                                            showConnectRepo = true;
-                                        } else {
-                                            showCreateDeployment = true;
-                                        }
-                                    }}>
-                                    Git
-                                </ActionMenu.Item.Button>
-                                <ActionMenu.Item.Button
-                                    on:click={(e) => {
-                                        toggle(e);
-                                        showConnectCLI = true;
-                                    }}>
-                                    CLI
-                                </ActionMenu.Item.Button>
-                                <ActionMenu.Item.Button
-                                    on:click={(e) => {
-                                        toggle(e);
-                                        showConnectManual = true;
-                                    }}>
-                                    Manual
-                                </ActionMenu.Item.Button>
-                            </ActionMenu.Root>
-                        </svelte:fragment>
-                    </Popover>
+                    <Layout.Stack direction="row" inline>
+                        {#if data.deploymentList.total}
+                            <ViewSelector view={View.Table} {columns} hideView />
+                        {/if}
+                        <Popover padding="none" let:toggle>
+                            <Button size="s" on:click={toggle}>
+                                <Icon size="s" icon={IconPlus} />
+                                Create deployment
+                            </Button>
+                            <svelte:fragment slot="tooltip" let:toggle>
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Button
+                                        badge="Recommended"
+                                        on:click={(e) => {
+                                            toggle(e);
+                                            if (!hasInstallation) {
+                                                showConnectRepo = true;
+                                            } else {
+                                                showCreateDeployment = true;
+                                            }
+                                        }}>
+                                        Git
+                                    </ActionMenu.Item.Button>
+                                    <ActionMenu.Item.Button
+                                        on:click={(e) => {
+                                            toggle(e);
+                                            showConnectCLI = true;
+                                        }}>
+                                        CLI
+                                    </ActionMenu.Item.Button>
+                                    <ActionMenu.Item.Button
+                                        on:click={(e) => {
+                                            toggle(e);
+                                            showConnectManual = true;
+                                        }}>
+                                        Manual
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </svelte:fragment>
+                        </Popover>
+                    </Layout.Stack>
                 </Layout.Stack>
+                <ParsedTagList />
             </Layout.Stack>
 
             {#if data.deploymentList.total}

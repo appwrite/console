@@ -13,7 +13,7 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Table from './table.svelte';
     import { columns } from './store';
-    import { QuickFilters } from '$lib/components/filters';
+    import { ParsedTagList, QuickFilters } from '$lib/components/filters';
 
     export let data;
 
@@ -29,21 +29,24 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" alignItems="center" justifyContent="space-between">
-        <QuickFilters {columns} analyticsSource="function_executions" />
+    <Layout.Stack>
+        <Layout.Stack direction="row" alignItems="center" justifyContent="space-between">
+            <QuickFilters {columns} analyticsSource="function_executions" />
 
-        <Layout.Stack gap="s" inline direction="row" alignItems="center">
-            {#if data?.executions?.total}
-                <ViewSelector view={View.Table} {columns} hideView />
-            {/if}
-            <Button
-                event="execute_function"
-                href={`${base}/project-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`}
-                disabled={!data.func.$id || !data.func?.deployment}>
-                <Icon icon={IconPlus} size="s" slot="start" />
-                Create execution
-            </Button>
+            <Layout.Stack gap="s" inline direction="row" alignItems="center">
+                {#if data?.executions?.total}
+                    <ViewSelector view={View.Table} {columns} hideView />
+                {/if}
+                <Button
+                    event="execute_function"
+                    href={`${base}/project-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`}
+                    disabled={!data.func.$id || !data.func?.deploymentId}>
+                    <Icon icon={IconPlus} size="s" slot="start" />
+                    Create execution
+                </Button>
+            </Layout.Stack>
         </Layout.Stack>
+        <ParsedTagList />
     </Layout.Stack>
 
     {#if !data.func.logging}
