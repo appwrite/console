@@ -1,18 +1,19 @@
 import type { Column } from '$lib/helpers/types';
 import { get, writable } from 'svelte/store';
-import { resetOptions, type FilterData } from './quickFilters';
+import { type FilterData } from './quickFilters';
 import { tags, type TagValue } from './store';
 
 export const parsedTags = writable<TagValue[]>([]);
 
 export function setFiltersOnNavigate(
-    tags: TagValue[],
+    localTags: TagValue[],
     filterCols: FilterData[],
     $columns: Column[]
 ) {
-    if (!tags?.length) {
+    if (!localTags?.length) {
         filterCols.forEach((filter) => {
             resetOptions(filter);
+            cleanOldTags(filter.title);
         });
     } else {
         filterCols.forEach((filter) => {
@@ -37,26 +38,25 @@ export function setFiltersOnNavigate(
 export function setFilterData(filter: FilterData) {
     const tagData = get(tags).find((tag) => tag.tag.includes(`**${filter.title}**`));
     if (tagData) {
-        cleanOldTags(filter.title);
-
-        filter.tag = tagData.tag;
         if (Array.isArray(tagData.value) && tagData.value?.length) {
             const values = tagData.value as string[];
             filter.options.forEach((option) => {
                 option.checked = values.includes(option.value);
             });
         }
+        cleanOldTags(filter.title);
         const newTag = {
             tag: tagData.tag.replace(',', ' or '),
             value: tagData.value
         };
+
         parsedTags.update((tags) => {
             tags.push(newTag);
             return tags;
         });
     } else {
-        filter.tag = null;
         resetOptions(filter);
+        cleanOldTags(filter.title);
     }
 }
 
@@ -64,7 +64,6 @@ export function setTimeFilter(filter: FilterData, columns: Column[]) {
     const col = columns.find((c) => c.id === filter.id);
     const timeTag = get(tags).find((tag) => tag.tag.includes(`**${filter.title}**`));
     if (timeTag) {
-        cleanOldTags(filter.title);
         const now = new Date();
 
         const diff = now.getTime() - new Date(timeTag.value as string).getTime();
@@ -80,15 +79,16 @@ export function setTimeFilter(filter: FilterData, columns: Column[]) {
                 tag: `**${filter.title}** is **${dateRange.label}**`,
                 value: timeTag.value
             };
-            filter.tag = `**${filter.title}** is **${dateRange.label}**`;
-            filter = filter;
+
+            cleanOldTags(filter.title);
+
             parsedTags.update((tags) => {
                 tags.push(newTag);
                 return tags;
             });
         }
     } else {
-        filter.tag = null;
+        cleanOldTags(filter.title);
     }
 }
 
@@ -106,11 +106,19 @@ export function setSizeFilter(filter: FilterData, columns: Column[]) {
             return prev;
         });
         if (sizeRange) {
-            filter.tag = `**${filter.title}** is **${sizeRange.label}**`;
-            filter = filter;
+            cleanOldTags(filter.title);
+
+            const newTag = {
+                tag: `**${filter.title}** is **${sizeRange.label}**`,
+                value: sizeTag.value
+            };
+            parsedTags.update((tags) => {
+                tags.push(newTag);
+                return tags;
+            });
         }
     } else {
-        filter.tag = null;
+        cleanOldTags(filter.title);
     }
 }
 
@@ -123,11 +131,18 @@ export function setStatusCodeFilter(filter: FilterData, columns: Column[]) {
 
         const codeRange = ranges.find((c) => c?.value && c.value === statusCodeTag.value);
         if (codeRange) {
-            filter.tag = `**${filter.title}** is **${codeRange.label}**`;
-            filter = filter;
+            cleanOldTags(filter.title);
+            const newTag = {
+                tag: `**${filter.title}** is **${codeRange.label}**`,
+                value: statusCodeTag.value
+            };
+            parsedTags.update((tags) => {
+                tags.push(newTag);
+                return tags;
+            });
         }
     } else {
-        filter.tag = null;
+        cleanOldTags(filter.title);
     }
 }
 
@@ -135,7 +150,6 @@ export function setDateFilter(filter: FilterData, columns: Column[]) {
     const dateTag = get(tags).find((tag) => tag.tag.includes(`**${filter.title}**`));
     const col = columns.find((c) => c.id === filter.id);
     if (dateTag) {
-        cleanOldTags(filter.title);
         const now = new Date();
 
         const diff = now.getTime() - new Date(dateTag.value as string).getTime();
@@ -147,6 +161,7 @@ export function setDateFilter(filter: FilterData, columns: Column[]) {
             return prev;
         });
         if (dateRange) {
+            cleanOldTags(filter.title);
             const newTag = {
                 tag: `**${filter.title}** is **${dateRange.label}**`,
                 value: dateTag.value
@@ -157,7 +172,7 @@ export function setDateFilter(filter: FilterData, columns: Column[]) {
             });
         }
     } else {
-        filter.tag = null;
+        cleanOldTags(filter.title);
     }
 }
 
@@ -165,5 +180,11 @@ function cleanOldTags(title: string) {
     parsedTags.update((tags) => {
         tags = tags.filter((tag) => !tag.tag.includes(`**${title}**`));
         return tags;
+    });
+}
+
+export function resetOptions(filter: FilterData) {
+    filter.options.forEach((option) => {
+        option.checked = false;
     });
 }

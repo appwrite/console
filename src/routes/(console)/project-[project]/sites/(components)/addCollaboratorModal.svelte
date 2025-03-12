@@ -12,7 +12,6 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { roles } from '$lib/stores/billing';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import Roles from '$lib/components/roles/roles.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
 
@@ -76,7 +75,6 @@
             bind:value={email} />
         {#if isCloud}
             <InputSelect
-                popover={Roles}
                 id="role"
                 label="Role"
                 placeholder="Select role"

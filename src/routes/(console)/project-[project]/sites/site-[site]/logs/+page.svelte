@@ -11,7 +11,7 @@
     import { Card, Empty, Layout } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { columns } from './store';
-    import AppliedFilter from '$lib/components/filters/appliedFilter.svelte';
+    import AppliedFilter from '$lib/components/filters/pasedTagList.svelte';
 
     export let data;
 

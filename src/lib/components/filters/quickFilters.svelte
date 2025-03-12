@@ -6,8 +6,8 @@
     import { type Writable } from 'svelte/store';
     import Menu from '$lib/components/filters/menu.svelte';
     import { CustomFilters } from '$lib/components/filters';
-    import { setFiltersOnNavigate } from '$lib/components/filters/setFilters';
-    import { addFilterAndApply, buildFilterCol } from '$lib/components/filters/quickFilters';
+    import { addFilterAndApply, buildFilterCol } from './quickFilters';
+    import { setFiltersOnNavigate } from './setFilters';
 
     export let columns: Writable<Column[]>;
     export let analyticsSource: string;
@@ -22,6 +22,7 @@
         const localTags = Array.from(localQueries.keys());
 
         setFiltersOnNavigate(localTags, filterCols, $columns);
+        filterCols = filterCols;
     });
 </script>
 
@@ -47,7 +48,6 @@
                     );
                 }}
                 on:clear={() => {
-                    filter.tag = null;
                     addFilterAndApply(
                         filter.id,
                         filter.title,
