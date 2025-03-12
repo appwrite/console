@@ -215,7 +215,7 @@
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Icon size="s" icon={IconGithub} />
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {$repository.name}
+                                    {$repository.organization}/{$repository.name}
                                 </Typography.Text>
                             </Layout.Stack>
                             <Button

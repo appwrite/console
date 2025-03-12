@@ -90,7 +90,13 @@
         </Accordion>
     </Card>
 </Container>
-<DeleteDeploymentModal selectedDeployment={data.deployment} bind:showDelete />
+
+{#if showDelete}
+    <DeleteDeploymentModal
+        selectedDeployment={data.deployment}
+        bind:showDelete
+        activeDeployment={data.site?.deploymentId} />
+{/if}
 
 <CancelDeploymentModal selectedDeployment={data.deployment} bind:showCancel />
 <RedeployModal
