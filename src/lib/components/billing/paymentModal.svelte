@@ -1,7 +1,7 @@
 <script lang="ts">
     import { FakeModal } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
-    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -15,10 +15,6 @@
 
     let name: string;
     let error: string;
-
-    onMount(async () => {
-        await initializeStripe();
-    });
 
     async function handleSubmit() {
         try {
@@ -41,6 +37,7 @@
     let observer: MutationObserver;
 
     onMount(() => {
+        initializeStripe(element);
         observer = new MutationObserver((mutationsList) => {
             for (let mutation of mutationsList) {
                 if (mutation.type === 'childList') {
@@ -57,11 +54,10 @@
                 }
             }
         });
-    });
 
-    onDestroy(() => {
-        observer.disconnect();
-        document.documentElement.classList.remove('u-overflow-hidden');
+        return () => {
+            observer.disconnect();
+        };
     });
 
     $: if (element) {
@@ -86,7 +82,7 @@
                     <Spinner />
                 {/if}
 
-                <div id="payment-element" bind:this={element}>
+                <div class="stripe-element" bind:this={element}>
                     <!-- Stripe will create form elements here -->
                 </div>
             </Layout.Stack>
@@ -104,7 +100,7 @@
         display: flex;
         min-height: 295px;
 
-        #payment-element {
+        .stripe-element {
             width: 100%;
         }
     }

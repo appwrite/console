@@ -16,6 +16,7 @@
     import ReplaceAddress from './replaceAddress.svelte';
     import { ActionMenu, Card, Divider, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import {
+        IconDotsHorizontal,
         IconPencil,
         IconPlus,
         IconSwitchHorizontal,
@@ -57,31 +58,45 @@
     <svelte:fragment slot="aside">
         {#if $organization?.billingAddressId && billingAddress}
             <Card.Base variant="secondary" padding="s">
-                <p class="text">{billingAddress.streetAddress}</p>
-                {#if billingAddress?.addressLine2}
-                    <p class="text">{billingAddress.addressLine2}</p>
-                {/if}
-                <p class="text">{billingAddress.city}</p>
-                <p class="text">{billingAddress.state}</p>
-                <p class="text">{billingAddress.postalCode}</p>
-                <p class="text">{billingAddress.country}</p>
+                <Layout.Stack direction="row" justifyContent="space-between">
+                    <div>
+                        <p class="text">{billingAddress.streetAddress}</p>
+                        {#if billingAddress?.addressLine2}
+                            <p class="text">{billingAddress.addressLine2}</p>
+                        {/if}
+                        <p class="text">{billingAddress.city}</p>
+                        <p class="text">{billingAddress.state}</p>
+                        <p class="text">{billingAddress.postalCode}</p>
+                        <p class="text">{billingAddress.country}</p>
+                    </div>
+                    <div>
+                        <Popover let:toggle placement="bottom-end" padding="none">
+                            <Button text icon ariaLabel="more options" on:click={toggle}>
+                                <Icon icon={IconDotsHorizontal} size="s" />
+                            </Button>
+                            <ActionMenu.Root slot="tooltip">
+                                {#if billingAddress.userId === $user.$id}
+                                    <ActionMenu.Item.Button
+                                        on:click={() => (showEdit = true)}
+                                        leadingIcon={IconPencil}>
+                                        Edit
+                                    </ActionMenu.Item.Button>
+                                {/if}
+                                <ActionMenu.Item.Button
+                                    on:click={() => (showReplace = true)}
+                                    leadingIcon={IconSwitchHorizontal}>
+                                    Replace
+                                </ActionMenu.Item.Button>
+                                <ActionMenu.Item.Button
+                                    on:click={() => (showRemove = true)}
+                                    leadingIcon={IconTrash}>
+                                    Remove
+                                </ActionMenu.Item.Button>
+                            </ActionMenu.Root>
+                        </Popover>
+                    </div>
+                </Layout.Stack>
             </Card.Base>
-            <Layout.Stack direction="row" justifyContent="flex-end">
-                {#if billingAddress.userId === $user.$id}
-                    <Button secondary on:click={() => (showEdit = true)}>
-                        <Icon icon={IconPencil} slot="start" size="s" />
-                        Edit
-                    </Button>
-                {/if}
-                <Button secondary on:click={() => (showReplace = true)}>
-                    <Icon icon={IconSwitchHorizontal} slot="start" size="s" />
-                    Replace
-                </Button>
-                <Button secondary on:click={() => (showRemove = true)}>
-                    <Icon icon={IconTrash} slot="start" size="s" />
-                    Remove
-                </Button>
-            </Layout.Stack>
         {:else}
             <Card.Base>
                 <Layout.Stack justifyContent="center" alignItems="center" gap="m">

@@ -78,6 +78,7 @@
                     </InputSwitch>
                     {#if capActive}
                         <InputNumber
+                            required
                             placeholder="Add budget cap"
                             id="cap"
                             autofocus

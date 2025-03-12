@@ -3,6 +3,7 @@
 
     export let hideOverflow = false;
     export let hideFooter = false;
+    export let gap: 'none' | 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl' | 'xxxl' = 'l';
 </script>
 
 <Card.Base>
@@ -16,7 +17,7 @@
                     </Typography.Text>
                 {/if}
             </Layout.Stack>
-            <Layout.Stack gap="l">
+            <Layout.Stack {gap}>
                 <slot name="aside" />
             </Layout.Stack>
         </Layout.GridFraction>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { InputChoice, InputText } from '$lib/elements/forms';
-    import { onDestroy, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { CreditCardBrandImage } from '..';
     import { initializeStripe, unmountPaymentElement } from '$lib/stores/stripe';
     import { Badge, Card, Layout } from '@appwrite.io/pink-svelte';
@@ -37,15 +37,15 @@
                 }
             }
         });
-    });
 
-    onDestroy(() => {
-        observer.disconnect();
-        unmountPaymentElement();
+        return () => {
+            observer.disconnect();
+            unmountPaymentElement();
+        };
     });
 
     $: if (element) {
-        initializeStripe();
+        initializeStripe(element);
         observer.observe(element, { childList: true });
     }
 
@@ -57,18 +57,18 @@
 
 <Layout.Stack>
     {#each methods as method}
-        {@const value = method.$id.toString()}
+        {@const value = method.$id}
         <Card.Selector
             title={method.name}
             name={value}
             bind:group
             {value}
             disabled={disabledCondition ? value === disabledCondition : false}>
-            <svelte:fragment slot="actions">
+            <svelte:fragment slot="action">
                 {#if method.$id === backupMethod}
-                    <Badge variant="secondary" content="Backup" />
+                    <Badge variant="secondary" content="Backup" size="xs" />
                 {:else if method.$id === defaultMethod}
-                    <Badge variant="secondary" content="Default" />
+                    <Badge variant="secondary" content="Default" size="xs" />
                 {/if}
             </svelte:fragment>
             <Layout.Stack direction="row" alignItems="center" gap="s">
@@ -91,9 +91,7 @@
             <div class="loader-container" bind:this={loader}>
                 <div class="loader"></div>
             </div>
-            <div id="payment-element" bind:this={element}>
-                <!-- Stripe will create form elements here -->
-            </div>
+            <div bind:this={element}></div>
         </div>
         {#if showSetAsDefault}
             <ul>

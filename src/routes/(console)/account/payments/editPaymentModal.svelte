@@ -69,9 +69,11 @@
             <svelte:fragment slot="title">This payment method has expired</svelte:fragment>
         </Alert>
     {/if}
-    {#if isLinked}
-        Updates to this payment method will be applied to any linked organizations.
-    {/if}
+    <svelte:fragment slot="description">
+        {#if isLinked}
+            Updates to this payment method will be applied to any linked organizations.
+        {/if}
+    </svelte:fragment>
     <FormList>
         <InputSelect
             id="month"

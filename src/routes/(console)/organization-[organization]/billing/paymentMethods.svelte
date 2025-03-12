@@ -153,47 +153,45 @@
                         </Popover>
                     </Table.Cell>
                 </Table.Row>
-                {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
-                    {#if $organization?.backupPaymentMethodId}
-                        <Table.Row>
-                            <CreditCardInfo isBackup paymentMethod={backupPaymentMethod} />
-                            <Table.Cell width="40px">
-                                <Popover let:toggle placement="bottom-start" padding="none">
-                                    <Button text icon ariaLabel="more options" on:click={toggle}>
-                                        <Icon icon={IconDotsHorizontal} size="s" />
-                                    </Button>
-                                    <ActionMenu.Root slot="tooltip">
-                                        {#if backupPaymentMethod?.userId === $user?.$id}
-                                            <ActionMenu.Item.Button
-                                                leadingIcon={IconPencil}
-                                                on:click={() => {
-                                                    isSelectedBackup = true;
-                                                    showEdit = true;
-                                                }}>
-                                                Edit
-                                            </ActionMenu.Item.Button>
-                                        {/if}
+                {#if $organization?.backupPaymentMethodId}
+                    <Table.Row>
+                        <CreditCardInfo isBackup paymentMethod={backupPaymentMethod} />
+                        <Table.Cell width="40px">
+                            <Popover let:toggle placement="bottom-start" padding="none">
+                                <Button text icon ariaLabel="more options" on:click={toggle}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                                <ActionMenu.Root slot="tooltip">
+                                    {#if backupPaymentMethod?.userId === $user?.$id}
                                         <ActionMenu.Item.Button
-                                            leadingIcon={IconSwitchHorizontal}
+                                            leadingIcon={IconPencil}
                                             on:click={() => {
                                                 isSelectedBackup = true;
-                                                showReplace = true;
+                                                showEdit = true;
                                             }}>
-                                            Replace
+                                            Edit
                                         </ActionMenu.Item.Button>
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconTrash}
-                                            on:click={() => {
-                                                isSelectedBackup = true;
-                                                showDelete = true;
-                                            }}>
-                                            Remove
-                                        </ActionMenu.Item.Button>
-                                    </ActionMenu.Root>
-                                </Popover>
-                            </Table.Cell>
-                        </Table.Row>
-                    {/if}
+                                    {/if}
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconSwitchHorizontal}
+                                        on:click={() => {
+                                            isSelectedBackup = true;
+                                            showReplace = true;
+                                        }}>
+                                        Replace
+                                    </ActionMenu.Item.Button>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconTrash}
+                                        on:click={() => {
+                                            isSelectedBackup = true;
+                                            showDelete = true;
+                                        }}>
+                                        Remove
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </Popover>
+                        </Table.Cell>
+                    </Table.Row>
                 {/if}
             </Table.Root>
             {#if !$organization?.backupPaymentMethodId}

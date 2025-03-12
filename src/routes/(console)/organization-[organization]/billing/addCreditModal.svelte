@@ -37,19 +37,20 @@
 </script>
 
 <Modal bind:show title="Add credits" onSubmit={redeem} bind:error>
-    Apply Appwrite credits to your organization.
+    <svelte:fragment slot="description">
+        Apply Appwrite credits to your organization.
+    </svelte:fragment>
 
-    <FormList>
-        <InputText
-            placeholder="Promo code"
-            id="code"
-            autofocus
-            label="Add promo code"
-            bind:value={coupon} />
-    </FormList>
+    <InputText
+        required
+        placeholder="Promo code"
+        id="code"
+        autofocus
+        label="Add promo code"
+        bind:value={coupon} />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Add credits</Button>
+        <Button disabled={!coupon} submit>Add credits</Button>
     </svelte:fragment>
 </Modal>
