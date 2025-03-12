@@ -11,6 +11,7 @@
     import { Card, Empty, Layout } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { columns } from './store';
+    import AppliedFilter from '$lib/components/filters/appliedFilter.svelte';
 
     export let data;
 
@@ -26,13 +27,16 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <QuickFilters {columns} analyticsSource="site_logs" />
-        {#if data.logs.total}
-            <ViewSelector view={View.Table} {columns} hideView />
-        {/if}
-    </Layout.Stack>
+    <Layout.Stack>
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <QuickFilters {columns} analyticsSource="site_logs" />
+            {#if data.logs.total}
+                <ViewSelector view={View.Table} {columns} hideView />
+            {/if}
+        </Layout.Stack>
 
+        <AppliedFilter />
+    </Layout.Stack>
     {#if data?.logs?.total}
         <Table columns={$columns} logs={data.logs} />
 

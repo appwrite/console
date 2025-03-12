@@ -1,6 +1,9 @@
 import type { Column } from '$lib/helpers/types';
+import { get, writable } from 'svelte/store';
 import { resetOptions, type FilterData } from './quickFilters';
-import type { TagValue } from './store';
+import { tags, type TagValue } from './store';
+
+export const parsedTags = writable<TagValue[]>([]);
 
 export function setFiltersOnNavigate(
     tags: TagValue[],
@@ -14,15 +17,15 @@ export function setFiltersOnNavigate(
     } else {
         filterCols.forEach((filter) => {
             if (filter.id === 'buildDuration') {
-                setTimeFilter(tags, filter, $columns);
+                setTimeFilter(filter, $columns);
             } else if (filter.id.includes('size')) {
-                setSizeFilter(tags, filter, $columns);
+                setSizeFilter(filter, $columns);
             } else if (filter.id === 'statusCode') {
-                setStatusCodeFilter(tags, filter, $columns);
+                setStatusCodeFilter(filter, $columns);
             } else if (filter.id === '$createdAt' || filter.id === '$updatedAt') {
-                setDateFilter(tags, filter, $columns);
+                setDateFilter(filter, $columns);
             } else {
-                setFilterData(filter, tags);
+                setFilterData(filter);
             }
         });
 
@@ -31,9 +34,11 @@ export function setFiltersOnNavigate(
     }
 }
 
-export function setFilterData(filter: FilterData, list: TagValue[]) {
-    const tagData = list.find((tag) => tag.tag.includes(`**${filter.title}**`));
+export function setFilterData(filter: FilterData) {
+    const tagData = get(tags).find((tag) => tag.tag.includes(`**${filter.title}**`));
     if (tagData) {
+        cleanOldTags(filter.title);
+
         filter.tag = tagData.tag;
         if (Array.isArray(tagData.value) && tagData.value?.length) {
             const values = tagData.value as string[];
@@ -41,16 +46,25 @@ export function setFilterData(filter: FilterData, list: TagValue[]) {
                 option.checked = values.includes(option.value);
             });
         }
+        const newTag = {
+            tag: tagData.tag.replace(',', ' or '),
+            value: tagData.value
+        };
+        parsedTags.update((tags) => {
+            tags.push(newTag);
+            return tags;
+        });
     } else {
         filter.tag = null;
         resetOptions(filter);
     }
 }
 
-export function setTimeFilter(localTags: TagValue[], filter: FilterData, columns: Column[]) {
+export function setTimeFilter(filter: FilterData, columns: Column[]) {
     const col = columns.find((c) => c.id === filter.id);
-    const timeTag = localTags.find((tag) => tag.tag.includes(`**${filter.title}**`));
+    const timeTag = get(tags).find((tag) => tag.tag.includes(`**${filter.title}**`));
     if (timeTag) {
+        cleanOldTags(filter.title);
         const now = new Date();
 
         const diff = now.getTime() - new Date(timeTag.value as string).getTime();
@@ -62,16 +76,24 @@ export function setTimeFilter(localTags: TagValue[], filter: FilterData, columns
             return prev;
         });
         if (dateRange) {
+            const newTag = {
+                tag: `**${filter.title}** is **${dateRange.label}**`,
+                value: timeTag.value
+            };
             filter.tag = `**${filter.title}** is **${dateRange.label}**`;
             filter = filter;
+            parsedTags.update((tags) => {
+                tags.push(newTag);
+                return tags;
+            });
         }
     } else {
         filter.tag = null;
     }
 }
 
-export function setSizeFilter(localTags: TagValue[], filter: FilterData, columns: Column[]) {
-    const sizeTag = localTags.find((tag) => tag.tag.includes(`**${filter.title}**`));
+export function setSizeFilter(filter: FilterData, columns: Column[]) {
+    const sizeTag = get(tags).find((tag) => tag.tag.includes(`**${filter.title}**`));
     const col = columns.find((c) => c.id === filter.id);
     if (sizeTag) {
         const size = sizeTag.value as string;
@@ -92,8 +114,8 @@ export function setSizeFilter(localTags: TagValue[], filter: FilterData, columns
     }
 }
 
-export function setStatusCodeFilter(localTags: TagValue[], filter: FilterData, columns: Column[]) {
-    const statusCodeTag = localTags.find((tag) => tag.tag.includes(`**${filter.title}**`));
+export function setStatusCodeFilter(filter: FilterData, columns: Column[]) {
+    const statusCodeTag = get(tags).find((tag) => tag.tag.includes(`**${filter.title}**`));
     const col = columns.find((c) => c.id === filter.id);
 
     if (statusCodeTag) {
@@ -109,13 +131,14 @@ export function setStatusCodeFilter(localTags: TagValue[], filter: FilterData, c
     }
 }
 
-export function setDateFilter(localTags: TagValue[], filter: FilterData, columns: Column[]) {
-    const dateTeag = localTags.find((tag) => tag.tag.includes(`**${filter.title}**`));
+export function setDateFilter(filter: FilterData, columns: Column[]) {
+    const dateTag = get(tags).find((tag) => tag.tag.includes(`**${filter.title}**`));
     const col = columns.find((c) => c.id === filter.id);
-    if (dateTeag) {
+    if (dateTag) {
+        cleanOldTags(filter.title);
         const now = new Date();
 
-        const diff = now.getTime() - new Date(dateTeag.value as string).getTime();
+        const diff = now.getTime() - new Date(dateTag.value as string).getTime();
         const ranges = col.elements as { value: string; label: string }[];
         const dateRange = ranges.reduce((prev, curr) => {
             if (parseInt(curr.value) < diff && curr.value > prev.value) {
@@ -124,10 +147,23 @@ export function setDateFilter(localTags: TagValue[], filter: FilterData, columns
             return prev;
         });
         if (dateRange) {
-            filter.tag = `**${filter.title}** is **${dateRange.label}**`;
-            filter = filter;
+            const newTag = {
+                tag: `**${filter.title}** is **${dateRange.label}**`,
+                value: dateTag.value
+            };
+            parsedTags.update((tags) => {
+                tags.push(newTag);
+                return tags;
+            });
         }
     } else {
         filter.tag = null;
     }
+}
+
+function cleanOldTags(title: string) {
+    parsedTags.update((tags) => {
+        tags = tags.filter((tag) => !tag.tag.includes(`**${title}**`));
+        return tags;
+    });
 }
