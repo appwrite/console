@@ -45,6 +45,7 @@ export type BillingLimits = {
     executions: number;
     storage: number;
     users: number;
+    budgetLimit: number;
 };
 
 export const newOrgModal = writable<boolean>(false);
