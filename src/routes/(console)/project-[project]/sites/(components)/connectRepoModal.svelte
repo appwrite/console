@@ -21,8 +21,9 @@
     export let show = false;
     export let site: Models.Site;
     export let callbackState: Record<string, string> = null;
+    export let onlyExisting = false;
 
-    let repositoryBehaviour: 'new' | 'existing' | undefined = undefined;
+    let repositoryBehaviour: 'new' | 'existing' | undefined = onlyExisting ? 'existing' : undefined;
     let repositoryName = '';
     let repositoryPrivate = true;
     let selectedInstallationId = '';
@@ -75,7 +76,6 @@
                 undefined,
                 undefined
             );
-            console.log('test');
             invalidate(Dependencies.SITE);
             show = false;
             dispatch('connect', s);
@@ -100,7 +100,9 @@
     </span>
     {#if hasInstallations}
         <Layout.Stack gap="xl">
-            <RepositoryBehaviour bind:repositoryBehaviour />
+            {#if !onlyExisting}
+                <RepositoryBehaviour bind:repositoryBehaviour />
+            {/if}
             {#if repositoryBehaviour === 'new'}
                 <NewRepository
                     bind:repositoryName
@@ -111,6 +113,7 @@
                 <Repositories
                     bind:hasInstallations
                     bind:selectedRepository
+                    product="sites"
                     action="button"
                     {callbackState}
                     on:connect={(e) => {

@@ -87,7 +87,7 @@
                                     });
                                 }}>
                                 <Layout.Stack direction="row" gap="s">
-                                    <Selector.Checkbox bind:checked={option.checked} />
+                                    <Selector.Checkbox bind:checked={option.checked} size="s" />
                                     {capitalize(option.label)}
                                 </Layout.Stack>
                             </ActionMenu.Item.Button>

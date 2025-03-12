@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Card, Divider, Icon } from '@appwrite.io/pink-svelte';
+    import { Card, Icon } from '@appwrite.io/pink-svelte';
     import { tags } from './store';
     import { IconFilterLine } from '@appwrite.io/pink-icons-svelte';
     import { createMenubar, melt } from '@melt-ui/svelte';
@@ -33,9 +33,7 @@
     <div class="menu" use:melt={$menu}>
         <Card.Base padding="xxxs">
             <slot />
-            <div use:melt={$separator}>
-                <Divider />
-            </div>
+            <div class="separator" use:melt={$separator} />
             <slot name="end" />
         </Card.Base>
     </div>
@@ -45,5 +43,13 @@
     .menu {
         min-width: 244px;
         z-index: 20;
+    }
+
+    .separator {
+        height: 1px;
+        margin-block: 2px;
+        margin-inline-start: calc(var(--base-4) * -1);
+        width: calc(100% + var(--base-8));
+        background-color: var(--border-neutral);
     }
 </style>
