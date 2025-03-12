@@ -7,11 +7,10 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Table from './table.svelte';
-    import { QuickFilters } from '$lib/components/filters';
+    import { ParsedTagList, QuickFilters } from '$lib/components/filters';
     import { Card, Empty, Layout } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { columns } from './store';
-    import AppliedFilter from '$lib/components/filters/appliedFilter.svelte';
 
     export let data;
 
@@ -35,7 +34,7 @@
             {/if}
         </Layout.Stack>
 
-        <AppliedFilter />
+        <ParsedTagList />
     </Layout.Stack>
     {#if data?.logs?.total}
         <Table columns={$columns} logs={data.logs} />

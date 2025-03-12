@@ -19,7 +19,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             Query.equal('type', RuleType.DEPLOYMENT),
             Query.equal('deploymentResourceType', DeploymentResourceType.FUNCTION),
             Query.equal('deploymentResourceId', params.function),
-            Query.equal('deploymentId', func.deployment),
+            Query.equal('deploymentId', func.deploymentId),
             Query.limit(1)
         ]);
 

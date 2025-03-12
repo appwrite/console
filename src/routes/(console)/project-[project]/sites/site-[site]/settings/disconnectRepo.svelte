@@ -27,7 +27,7 @@
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter as Adapter,
+                (site?.adapter as Adapter) || undefined,
                 site.fallbackFile || undefined,
                 '',
                 '',

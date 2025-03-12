@@ -1,13 +1,16 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
-    import MenuItem from '$lib/components/filters/subMenu.svelte';
     import { queryParamToMap } from '$lib/components/filters/store';
     import type { Column } from '$lib/helpers/types';
     import { type Writable } from 'svelte/store';
-    import Menu from '$lib/components/filters/menu.svelte';
     import { CustomFilters } from '$lib/components/filters';
-    import { setFiltersOnNavigate } from '$lib/components/filters/setFilters';
-    import { addFilterAndApply, buildFilterCol } from '$lib/components/filters/quickFilters';
+    import { addFilterAndApply, buildFilterCol } from './quickFilters';
+    import { parsedTags, setFiltersOnNavigate } from './setFilters';
+    import Menu from '../menu/menu.svelte';
+    import { Button } from '$lib/elements/forms';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconFilterLine } from '@appwrite.io/pink-icons-svelte';
+    import QuickfiltersSubMenu from './quickfiltersSubMenu.svelte';
 
     export let columns: Writable<Column[]>;
     export let analyticsSource: string;
@@ -22,44 +25,57 @@
         const localTags = Array.from(localQueries.keys());
 
         setFiltersOnNavigate(localTags, filterCols, $columns);
+        filterCols = filterCols;
     });
 </script>
 
 <Menu>
-    {#each filterCols as filter}
-        {#if filter.options}
-            <MenuItem
-                {filter}
-                variant={filter?.array ? 'checkbox' : 'radio'}
-                on:add={(e) => {
-                    addFilterAndApply(
-                        filter.id,
-                        filter.title,
-                        filter.operator,
-                        e.detail.value,
-                        filter?.array
-                            ? (filter.options
-                                  .filter((opt) => opt.checked)
-                                  .map((opt) => opt.value) ?? [])
-                            : [],
-                        $columns,
-                        analyticsSource
-                    );
-                }}
-                on:clear={() => {
-                    filter.tag = null;
-                    addFilterAndApply(
-                        filter.id,
-                        filter.title,
-                        filter.operator,
-                        null,
-                        [],
-                        $columns,
-                        analyticsSource
-                    );
-                }} />
-        {/if}
-    {/each}
+    {#if $parsedTags?.length}
+        <Button secondary badge={`${$parsedTags?.length}`}>
+            <Icon icon={IconFilterLine} slot="start" size="s" />
+            Filters
+        </Button>
+    {:else}
+        <Button secondary>
+            <Icon icon={IconFilterLine} slot="start" size="s" />
+            Filters
+        </Button>
+    {/if}
+    <svelte:fragment slot="menu">
+        {#each filterCols as filter}
+            {#if filter.options}
+                <QuickfiltersSubMenu
+                    {filter}
+                    variant={filter?.array ? 'checkbox' : 'radio'}
+                    on:add={(e) => {
+                        addFilterAndApply(
+                            filter.id,
+                            filter.title,
+                            filter.operator,
+                            e.detail.value,
+                            filter?.array
+                                ? (filter.options
+                                      .filter((opt) => opt.checked)
+                                      .map((opt) => opt.value) ?? [])
+                                : [],
+                            $columns,
+                            analyticsSource
+                        );
+                    }}
+                    on:clear={() => {
+                        addFilterAndApply(
+                            filter.id,
+                            filter.title,
+                            filter.operator,
+                            null,
+                            [],
+                            $columns,
+                            analyticsSource
+                        );
+                    }} />
+            {/if}
+        {/each}
+    </svelte:fragment>
 
     <svelte:fragment slot="end">
         <CustomFilters {columns} />

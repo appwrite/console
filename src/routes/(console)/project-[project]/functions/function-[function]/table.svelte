@@ -136,7 +136,7 @@
                                     }}>
                                     Redeploy
                                 </ActionMenu.Item.Button>
-                                {#if deployment.status === 'ready' && deployment.$id !== $func.deployment}
+                                {#if deployment.status === 'ready' && deployment.$id !== $func.deploymentId}
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconLightningBolt}
                                         on:click={(e) => {

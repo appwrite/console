@@ -61,12 +61,6 @@ export function addFilterAndApply(
     });
 }
 
-export function resetOptions(filter: FilterData) {
-    filter.options.forEach((option) => {
-        option.checked = false;
-    });
-}
-
 export function addStatusCodeFilter(value: string, colId: string, columns: Column[]) {
     addFilter(columns, colId, ValidOperators.LessThanOrEqual, parseInt(value));
     addFilter(columns, colId, ValidOperators.GreaterThanOrEqual, parseInt(value) - 99);

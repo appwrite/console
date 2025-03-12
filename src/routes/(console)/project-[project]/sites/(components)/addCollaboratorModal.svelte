@@ -12,8 +12,8 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { roles } from '$lib/stores/billing';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import Roles from '$lib/components/roles/roles.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { isCloud, isSelfHosted } from '$lib/system';
 
     export let show = false;
 
@@ -24,7 +24,7 @@
     let email: string,
         name: string,
         error: string,
-        role: string = 'viewer';
+        role: string = isSelfHosted ? 'owner' : 'viewer';
 
     async function create() {
         try {
@@ -59,8 +59,6 @@
         email = null;
         name = null;
     }
-
-    //TODO: fix popover
 </script>
 
 <Modal title="Add collaborator" {error} bind:show onSubmit={create}>
@@ -75,14 +73,15 @@
             placeholder="Enter email"
             autofocus={true}
             bind:value={email} />
-        <InputSelect
-            popover={Roles}
-            id="role"
-            label="Role"
-            placeholder="Select role"
-            required
-            options={roles}
-            bind:value={role} />
+        {#if isCloud}
+            <InputSelect
+                id="role"
+                label="Role"
+                placeholder="Select role"
+                required
+                options={roles}
+                bind:value={role} />
+        {/if}
     </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>

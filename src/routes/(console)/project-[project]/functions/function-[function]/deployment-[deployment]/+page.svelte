@@ -96,7 +96,7 @@
                     <Button secondary href={getDownload(data.deployment.$id)}>Download</Button>
                 {/if}
 
-                {#if data.func.deployment !== data.deployment.$id && data.deployment.status === 'ready'}
+                {#if data.func.deploymentId !== data.deployment.$id && data.deployment.status === 'ready'}
                     <Button
                         disabled={data.activeDeployment}
                         on:click={() => {
