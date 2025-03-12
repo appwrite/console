@@ -277,13 +277,16 @@ export async function checkForUsageLimit(org: Organization) {
         readOnly.set(false);
         return;
     }
-    const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
+    const { bandwidth, executions, storage, users, GBHours, imageTransformations, authPhone } =
+        org?.billingLimits ?? {};
     const resources = [
         { value: bandwidth, name: 'bandwidth' },
-        { value: documents, name: 'documents' },
         { value: executions, name: 'executions' },
         { value: storage, name: 'storage' },
-        { value: users, name: 'users' }
+        { value: users, name: 'users' },
+        { value: GBHours, name: 'GBHours' },
+        { value: imageTransformations, name: 'imageTransformations' },
+        { value: authPhone, name: 'authPhone' }
     ];
 
     const members = org.total;

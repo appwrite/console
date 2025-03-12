@@ -19,13 +19,13 @@
         "e2e:ui": "playwright test tests/e2e --ui"
     },
     "dependencies": {
-        "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@6c1a98e",
+        "@ai-sdk/svelte": "^1.1.22",
+        "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@7873496",
         "@appwrite.io/pink": "0.25.0",
         "@appwrite.io/pink-icons": "0.25.0",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",
-        "ai": "^2.2.37",
         "analytics": "^0.8.14",
         "cron-parser": "^4.9.0",
         "dayjs": "^1.11.13",
