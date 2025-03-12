@@ -9,18 +9,17 @@
 </script>
 
 {#if $organization?.$id && $organization?.billingPlan !== BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
-    <HeaderAlert
-        type="error"
-        title={`Budget limit reached`}>
+    <HeaderAlert type="error" title={`Budget limit reached`}>
         <svelte:fragment>
-            This organization has reached its budget limit and is now blocked. To continue using Appwrite services, update the budget limit.
+            This organization has reached its budget limit and is now blocked. To continue using
+            Appwrite services, update the budget limit.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
             <Button href={`${base}/organization-${$organization.$id}/usage`} text fullWidthMobile>
                 <span class="text">View usage</span>
             </Button>
             <Button
-                href='${base}/organization-${$organization.$id}/billing'
+                href={`${base}/organization-${$organization.$id}/billing`}
                 secondary
                 fullWidthMobile>
                 <span class="text">Update limit</span>
