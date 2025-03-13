@@ -10,7 +10,6 @@
     import UpdateSchedule from './updateSchedule.svelte';
     import UpdateScopes from './updateScopes.svelte';
     import UpdateTimeout from './updateTimeout.svelte';
-    import UpdateVariables from '../../../updateVariables.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
@@ -21,17 +20,29 @@
     import UpdateBuildCommand from './updateBuildCommand.svelte';
     import UpdateResourceLimits from './updateResourceLimits.svelte';
     import { isCloud } from '$lib/system';
+    import UpdateVariables from '$routes/(console)/project-[project]/updateVariables.svelte';
 
     export let data;
     let showAlert = true;
 
-    const sdkCreateVariable = async (key: string, value: string, secret: boolean) => {
+    const sdkCreateVariable = async (key: string, value: string, secret?: boolean) => {
         await sdk.forProject.functions.createVariable(data.function.$id, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
-    const sdkUpdateVariable = async (variableId: string, key: string, value: string) => {
-        await sdk.forProject.functions.updateVariable(data.function.$id, variableId, key, value);
+    const sdkUpdateVariable = async (
+        variableId: string,
+        key: string,
+        value: string,
+        secret?: boolean
+    ) => {
+        await sdk.forProject.functions.updateVariable(
+            data.function.$id,
+            variableId,
+            key,
+            value,
+            secret
+        );
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
