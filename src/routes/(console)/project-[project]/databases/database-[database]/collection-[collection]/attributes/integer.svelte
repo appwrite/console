@@ -32,8 +32,8 @@
             originalKey,
             data.required,
             data.default,
-            data.min,
-            data.max,
+            data.min === -9223372036854776000 ? undefined : data.min,
+            data.max === 9223372036854776000 ? undefined : data.max,
             data.key !== originalKey ? data.key : undefined
         );
     }
