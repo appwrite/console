@@ -77,7 +77,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
             label: 'React',
             icon: ReactFrameworkIcon,
             smallIcon: IconReact,
-            portNumber: 3000
+            portNumber: 5173
         },
         {
             key: 'nuxt',
