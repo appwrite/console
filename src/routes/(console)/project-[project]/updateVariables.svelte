@@ -26,7 +26,6 @@
     import {
         IconCode,
         IconDotsHorizontal,
-        IconEye,
         IconEyeOff,
         IconGlobeAlt,
         IconPencil,
