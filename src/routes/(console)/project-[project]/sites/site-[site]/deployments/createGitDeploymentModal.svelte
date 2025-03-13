@@ -81,7 +81,7 @@
             } else {
                 await sdk.forProject.sites.createVcsDeployment(
                     site.$id,
-                    'commit',
+                    VCSDeploymentType.Commit,
                     commit,
                     activate
                 );
