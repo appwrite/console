@@ -16,7 +16,7 @@
     export let show = false;
     export let site: Models.Site;
 
-    let installations = { installations: [], total: 0 };
+    export let installations: Models.InstallationList;
     let hasRepository = !!site?.providerRepositoryId;
     let selectedRepository: string = site.providerRepositoryId;
     let branch: string = null;
@@ -25,19 +25,14 @@
     let error = '';
 
     async function loadInstallations() {
-        try {
-            installations = await sdk.forProject.vcs.listInstallations();
-            if (!site?.installationId && installations.total > 0) {
-                installation.set(installations.installations[0]);
-            }
-            $installation = installations.installations.find(
-                (installation) => installation.$id === site.installationId
-            );
-            if (!$installation?.$id) {
-                $installation = installations.installations[0];
-            }
-        } catch (error) {
-            console.log(error);
+        if (!site?.installationId && installations?.total > 0) {
+            installation.set(installations.installations[0]);
+        }
+        $installation = installations.installations.find(
+            (installation) => installation.$id === site.installationId
+        );
+        if (!$installation?.$id) {
+            $installation = installations.installations[0];
         }
     }
 
@@ -50,6 +45,7 @@
                     site.providerRepositoryId
                 );
             }
+            selectedRepository = $repository?.id;
             const branchList = await sdk.forProject.vcs.listRepositoryBranches(
                 $installation.$id,
                 selectedRepository
@@ -98,6 +94,8 @@
             error = e.message;
         }
     }
+
+    $: console.log($repository);
 </script>
 
 <Modal title="Create Git deployment" bind:show onSubmit={createDeployment} bind:error>

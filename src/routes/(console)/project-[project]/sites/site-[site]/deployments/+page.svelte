@@ -142,7 +142,10 @@
 {/if}
 
 {#if showCreateDeployment}
-    <CreateGitDeploymentModal bind:show={showCreateDeployment} site={data.site} />
+    <CreateGitDeploymentModal
+        bind:show={showCreateDeployment}
+        site={data.site}
+        installations={data.installations} />
 {/if}
 {#if showConnectManual}
     <CreateManualDeploymentModal bind:show={showConnectManual} site={data.site} />

@@ -30,6 +30,8 @@ export function deploymentStatusConverter(status: string) {
             return 'waiting';
         case 'queued':
             return 'waiting';
+        case 'cancelled':
+            return 'failed';
         case 'failed':
             return 'failed';
     }
