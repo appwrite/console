@@ -9,7 +9,7 @@
     import { project } from '$routes/(console)/project-[project]/store';
     import { base } from '$app/paths';
     import { View } from '$lib/helpers/load';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Table from './table.svelte';
     import { columns } from './store';
@@ -37,13 +37,20 @@
                 {#if data?.executions?.total}
                     <ViewSelector view={View.Table} {columns} hideView />
                 {/if}
-                <Button
-                    event="execute_function"
-                    href={`${base}/project-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`}
-                    disabled={!data.func.$id || !data.func?.deploymentId}>
-                    <Icon icon={IconPlus} size="s" slot="start" />
-                    Create execution
-                </Button>
+                <Tooltip disabled={!!data.func?.deploymentId}>
+                    <div>
+                        <Button
+                            event="execute_function"
+                            href={`${base}/project-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`}
+                            disabled={!data.func.$id || !data.func?.deploymentId}>
+                            <Icon icon={IconPlus} size="s" slot="start" />
+                            Create execution
+                        </Button>
+                    </div>
+                    <span slot="tooltip">
+                        Execution cannot be created because there is no active deployment.
+                    </span>
+                </Tooltip>
             </Layout.Stack>
         </Layout.Stack>
         <ParsedTagList />
@@ -62,7 +69,7 @@
             </Alert>
         </div>
     {/if}
-    {#if data?.executions?.total}
+    {#if !data?.executions?.total}
         <Table columns={$columns} logs={data.executions} />
 
         <PaginationWithLimit
@@ -73,14 +80,30 @@
     {:else if data?.query}
         <EmptyFilter resource="executions"></EmptyFilter>
     {:else}
-        <Empty
-            single
-            target="execution"
-            href="https://appwrite.io/docs/products/functions/execution"
-            on:click={() =>
-                goto(
-                    `${base}/project-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`
-                )}>
+        <Empty single target="execution">
+            <svelte:fragment slot="actions">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/products/functions/execution"
+                    text
+                    event="empty_documentation"
+                    size="s"
+                    ariaLabel="create execution">Documentation</Button>
+                <Tooltip disabled={!!data.func?.deploymentId}>
+                    <div>
+                        <Button
+                            secondary
+                            event="execute_function"
+                            href={`${base}/project-${$project.$id}/functions/function-${data.func.$id}/executions/execute-function`}
+                            disabled={!data.func.$id || !data.func?.deploymentId}>
+                            Create execution
+                        </Button>
+                    </div>
+                    <span slot="tooltip">
+                        Execution cannot be created because there is no active deployment.
+                    </span>
+                </Tooltip>
+            </svelte:fragment>
         </Empty>
     {/if}
 </Container>
