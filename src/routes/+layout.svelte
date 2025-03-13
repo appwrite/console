@@ -259,7 +259,7 @@
     }
 
     .is-cloud {
-        --heading-font: 'Aeonik Pro', arial, sans-serif;
+        --heading-font: 'Aeonik Pro', 'Inter', sans-serif;
         .heading-level {
             @media #{devices.$break3open} {
                 &-1,
