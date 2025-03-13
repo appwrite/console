@@ -123,10 +123,13 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
+<!-- TODO: re enable aside -->
 <Wizard
     title="Create site"
     bind:showExitModal
     href={`${base}/project-${$page.params.project}/sites/`}
+    column
+    columnSize="s"
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
