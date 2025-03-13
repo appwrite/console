@@ -60,7 +60,7 @@
     });
 </script>
 
-<Modal bind:show={showCreateProjectCloud} title={'Create Project'}
+<Modal bind:show={showCreateProjectCloud} title={'Create project'}
     ><CreateProject
         createProject={create}
         showTitle={false}
