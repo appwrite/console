@@ -54,7 +54,7 @@ export const adapterDataList = [
         }
     },
     {
-        framework: 'next',
+        framework: 'nextjs',
         ssr: {
             desc: "Ensure you don't set $ in $ file.",
             code: ['output', 'next.config.js'],

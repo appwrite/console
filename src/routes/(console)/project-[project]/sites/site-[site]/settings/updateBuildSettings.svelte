@@ -104,6 +104,7 @@
         ? selectedFramework.adapters[site.adapter]
         : frameworks[0].adapters[site.adapter];
 
+    $: console.log(selectedFramework, frameworkDataAdapter);
     //TODO: fix after backend type is fixed
     $: if (selectedFramework?.adapters?.length <= 1 || !selectedFramework?.adapters?.ssr?.key) {
         adapter = Adapter.Static;
@@ -149,7 +150,7 @@
                             name="adapter"
                             value={`${Adapter.Ssr}`}
                             bind:group={adapter}>
-                            {#if adapterData.ssr.desc.includes('$')}
+                            {#if adapterData?.ssr?.desc?.includes('$')}
                                 {@const parts = adapterData.ssr.desc.split('$')}
                                 {#each parts as part, i}
                                     {#if i === 0}
