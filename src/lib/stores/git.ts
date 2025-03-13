@@ -31,8 +31,10 @@ export function deploymentStatusConverter(status: string) {
         case 'queued':
             return 'waiting';
         case 'cancelled':
-            return 'failed';
+            return 'processing';
         case 'failed':
             return 'failed';
+        default:
+            return 'processing';
     }
 }
