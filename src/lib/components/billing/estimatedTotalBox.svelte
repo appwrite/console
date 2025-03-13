@@ -82,6 +82,8 @@
             {#if budgetEnabled}
                 <div class="u-margin-block-start-16">
                     <InputNumber
+                        required
+                        autofocus
                         id="budget"
                         label="Budget cap (USD)"
                         placeholder="0"

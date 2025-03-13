@@ -70,7 +70,7 @@
     }
 </script>
 
-<Modal title="Select teams" bind:show onSubmit={create} on:close={reset} size="big">
+<Modal title="Select teams" bind:show onSubmit={create} on:close={reset}>
     <Typography.Text
         >Grant access to any member of a specific team. To grant access to team members with
         specific roles, you will need to set a <Link.Button on:click={() => dispatch('custom')}
