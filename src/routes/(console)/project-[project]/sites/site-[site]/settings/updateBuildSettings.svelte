@@ -104,7 +104,6 @@
         ? selectedFramework.adapters[site.adapter]
         : frameworks[0].adapters[site.adapter];
 
-    $: console.log(selectedFramework, frameworkDataAdapter);
     //TODO: fix after backend type is fixed
     $: if (selectedFramework?.adapters?.length <= 1 || !selectedFramework?.adapters?.ssr?.key) {
         adapter = Adapter.Static;
