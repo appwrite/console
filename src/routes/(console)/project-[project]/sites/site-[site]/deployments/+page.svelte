@@ -19,6 +19,7 @@
     import { Dependencies } from '$lib/constants';
     import CreateCliModal from './createCliModal.svelte';
     import { ParsedTagList, QuickFilters } from '$lib/components/filters';
+    import { page } from '$app/stores';
 
     export let data;
 
@@ -31,6 +32,10 @@
     let showConnectManual = false;
 
     onMount(() => {
+        if ($page.url.searchParams.has('createDeployment')) {
+            showConnectRepo = true;
+        }
+
         return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('sites.*.deployments.*')) {
                 invalidate(Dependencies.DEPLOYMENTS);
