@@ -17,7 +17,7 @@ export function setFilters(localTags: TagValue[], filterCols: FilterData[], $col
                 setTimeFilter(filter, $columns);
             } else if (filter.id.toLocaleLowerCase().includes('size')) {
                 setSizeFilter(filter, $columns);
-            } else if (filter.id === 'statusCode') {
+            } else if (filter.id.toLocaleLowerCase().includes('statuscode')) {
                 setStatusCodeFilter(filter, $columns);
             } else if (filter.id === '$createdAt' || filter.id === '$updatedAt') {
                 setDateFilter(filter, $columns);
@@ -132,6 +132,7 @@ export function setStatusCodeFilter(filter: FilterData, columns: Column[]) {
                 tag: `**${filter.title}** is **${codeRange.label}**`,
                 value: statusCodeTag.value
             };
+            console.log(codeRange);
             parsedTags.update((tags) => {
                 tags.push(newTag);
                 return tags;
