@@ -27,7 +27,6 @@
         "@stripe/stripe-js": "^3.5.0",
         "@ai-sdk/svelte": "^1.1.22",
         "analytics": "^0.8.14",
-        "appwrite": "^17.0.0",
         "cron-parser": "^4.9.0",
         "dayjs": "^1.11.13",
         "deep-equal": "^2.2.3",
