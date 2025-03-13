@@ -18,7 +18,7 @@
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
     import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization, organizationList, type Organization } from '$lib/stores/organization';
+    import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
@@ -30,16 +30,8 @@
 
     let selectedPlan: BillingPlan = data.plan as BillingPlan;
     let selectedCoupon: Partial<Coupon> | null = data.coupon;
-
-    $: anyOrgFree = $organizationList.teams?.find(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
-    );
     let previousPage: string = base;
     let showExitModal = false;
-    afterNavigate(({ from }) => {
-        previousPage = from?.url?.pathname || previousPage;
-    });
-
     let formComponent: Form;
     let isSubmitting = writable(false);
     let methods: PaymentList;
@@ -53,9 +45,12 @@
     let taxId: string;
     let billingBudget: number;
     let showCreditModal = false;
-
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+
+    afterNavigate(({ from }) => {
+        previousPage = from?.url?.pathname || previousPage;
+    });
 
     async function loadPaymentMethods() {
         methods = await sdk.forConsole.billing.listPaymentMethods();
@@ -224,7 +219,7 @@
                 <PlanSelection
                     bind:billingPlan={selectedPlan}
                     selfService={data.selfService}
-                    anyOrgFree={!!anyOrgFree} />
+                    anyOrgFree={data.hasFreeOrgs} />
 
                 {#if isDowngrade}
                     {#if selectedPlan === BillingPlan.FREE}
