@@ -71,18 +71,18 @@
 
     async function createDeployment() {
         try {
-            if (branch) {
-                await sdk.forProject.sites.createVcsDeployment(
-                    site.$id,
-                    VCSDeploymentType.Branch,
-                    branch,
-                    activate
-                );
-            } else {
+            if (commit) {
                 await sdk.forProject.sites.createVcsDeployment(
                     site.$id,
                     VCSDeploymentType.Commit,
                     commit,
+                    activate
+                );
+            } else if (branch) {
+                await sdk.forProject.sites.createVcsDeployment(
+                    site.$id,
+                    VCSDeploymentType.Branch,
+                    branch,
                     activate
                 );
             }
