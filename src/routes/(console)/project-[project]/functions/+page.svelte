@@ -100,7 +100,7 @@
                         </Layout.Stack>
                     </svelte:fragment>
                     <svelte:fragment slot="icons">
-                        {#if !func.schedule}
+                        {#if func.schedule}
                             <Tooltip>
                                 <Icon icon={IconClock} size="s" />
                                 <span slot="tooltip"
