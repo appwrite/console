@@ -87,7 +87,8 @@
             showEmpty={$canWriteFunctions}
             event="functions"
             total={data.functions.total}
-            service="functions">
+            service="functions"
+            on:click={() => goto(`${base}/project-${project}/functions/create-function`)}>
             {#each data.functions.functions as func}
                 <GridItem1 href={`${base}/project-${project}/functions/function-${func.$id}`}>
                     <svelte:fragment slot="title">
