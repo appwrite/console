@@ -69,9 +69,13 @@
             installCommand = adapter?.installCommand;
             buildCommand = adapter?.buildCommand;
             outputDirectory = adapter?.outputDirectory;
-            console.log(framework);
-            console.log(response);
+            trackEvent(Submit.FrameworkDetect, {
+                source: 'repository',
+                framework: framework.key
+            });
         } catch (error) {
+            framework = data.frameworks.frameworks.find((f) => f.key === 'other');
+            trackError(error, Submit.FrameworkDetect);
             console.log(error);
         }
     }

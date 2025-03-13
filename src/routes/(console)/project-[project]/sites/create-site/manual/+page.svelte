@@ -117,16 +117,21 @@
               return f;
           })
         : [];
+
+    $: console.log(files);
 </script>
 
 <svelte:head>
     <title>Create site - Appwrite</title>
 </svelte:head>
 
+<!-- TODO: re enable aside -->
 <Wizard
     title="Create site"
     bind:showExitModal
     href={`${base}/project-${$page.params.project}/sites/`}
+    column
+    columnSize="s"
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -164,7 +169,7 @@
                 {#if files?.length}
                     <Upload.List
                         bind:files={filesList}
-                        on:remove={(e) => removeFile(e.detail, files)} />
+                        on:remove={(e) => (files = removeFile(e.detail, files))} />
                 {/if}
             </Layout.Stack>
             <Details bind:name bind:id />
@@ -176,8 +181,6 @@
                 bind:selectedFramework={framework}
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
-
-            <!-- <Domain bind:domain bind:domainIsValid /> -->
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

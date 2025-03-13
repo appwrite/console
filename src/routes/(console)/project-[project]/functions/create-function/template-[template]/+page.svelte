@@ -64,7 +64,7 @@
     let silentMode = false;
     let entrypoint = '';
     let selectedScopes: string[] = [];
-    let execute = false;
+    let execute = true;
     let variables: Partial<Models.TemplateVariable>[] = [];
     let specification = specificationOptions[0].value;
 

@@ -105,7 +105,7 @@
 </Table.Root>
 
 {#if selectedDeployment}
-    <Delete {selectedDeployment} bind:showDelete />
+    <Delete {selectedDeployment} activeDeployment={data.site.deploymentId} bind:showDelete />
 
     <Cancel {selectedDeployment} bind:showCancel />
     <RedeployModal

@@ -2,10 +2,8 @@
     import { base } from '$app/paths';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import Create from './createProjectCloud.svelte';
     import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
-    import { wizard } from '$lib/stores/wizard';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { page } from '$app/stores';
     import { registerCommands } from '$lib/commandCenter';

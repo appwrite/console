@@ -11,7 +11,7 @@
     import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
     import { columns } from './store';
     import CreateManualDeploymentModal from './createManualDeploymentModal.svelte';
-    import DeploymentMetrics from './deploymentMetrics.svelte';
+    // import DeploymentMetrics from './deploymentMetrics.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -43,7 +43,8 @@
 
 <Container>
     <Layout.Stack gap="xxxl">
-        <DeploymentMetrics deploymentList={data.deploymentList} />
+        <!-- TODO: re-enable metrics after backend changes -->
+        <!-- <DeploymentMetrics deploymentList={data.deploymentList} /> -->
         <Layout.Stack gap="l">
             <Layout.Stack>
                 <Layout.Stack justifyContent="space-between" direction="row">
