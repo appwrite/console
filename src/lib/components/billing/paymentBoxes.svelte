@@ -94,12 +94,10 @@
             <div bind:this={element}></div>
         </div>
         {#if showSetAsDefault}
-            <ul>
-                <InputChoice
-                    bind:value={setAsDefault}
-                    id="default"
-                    label="Set as default payment method for this organization" />
-            </ul>
+            <InputChoice
+                bind:value={setAsDefault}
+                id="default"
+                label="Set as default payment method for this organization" />
         {/if}
     {/if}
 </Layout.Stack>

@@ -6,7 +6,10 @@ import type { Organization } from '$lib/stores/organization';
 
 export const load: PageLoad = async ({ url, parent }) => {
     const { organizations } = await parent();
-    const coupon = await getCoupon(url);
+    const [coupon, paymentMethods] = await Promise.all([
+        getCoupon(url),
+        sdk.forConsole.billing.listPaymentMethods()
+    ]);
     let plan = getPlanFromUrl(url);
     const hasFreeOrganizations = organizations.teams?.some(
         (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
@@ -19,6 +22,7 @@ export const load: PageLoad = async ({ url, parent }) => {
         plan,
         coupon,
         hasFreeOrganizations,
+        paymentMethods,
         name: url.searchParams.get('name') ?? ''
     };
 };

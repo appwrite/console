@@ -6,9 +6,13 @@ import type { Organization } from '$lib/stores/organization';
 
 export const load: PageLoad = async ({ depends, parent, url }) => {
     const { members, organization, currentPlan, organizations } = await parent();
-    depends(Dependencies.ORGANIZATION);
+    depends(Dependencies.UPGRADE_PLAN);
 
-    const coupon = await getCoupon(url);
+    const [coupon, paymentMethods] = await Promise.all([
+        getCoupon(url),
+        sdk.forConsole.billing.listPaymentMethods()
+    ]);
+
     let plan = getPlanFromUrl(url);
 
     if (organization?.billingPlan === BillingPlan.SCALE) {
@@ -18,7 +22,6 @@ export const load: PageLoad = async ({ depends, parent, url }) => {
     }
 
     const selfService = currentPlan?.selfService ?? true;
-
     const hasFreeOrgs = organizations.teams?.some(
         (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
     );
@@ -28,7 +31,8 @@ export const load: PageLoad = async ({ depends, parent, url }) => {
         plan,
         coupon,
         selfService,
-        hasFreeOrgs
+        hasFreeOrgs,
+        paymentMethods
     };
 };
 

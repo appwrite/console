@@ -8,9 +8,9 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
-    import Alert from '$lib/components/alert.svelte';
     import { isCloud } from '$lib/system';
     import { base } from '$app/paths';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
     export let show = false;
 
@@ -39,18 +39,17 @@
     }
 </script>
 
-<Modal title="Create new organization" {error} onSubmit={create} size="big" bind:show>
+<Modal title="Create new organization" {error} onSubmit={create} bind:show>
     {#if isCloud}
-        <Alert type="info">
-            <svelte:fragment slot="title">Get ready for Appwrite Pro</svelte:fragment>
+        <Alert.Inline status="info" title="Get ready for Appwrite Pro">
             We will soon introduce the much-anticipated Pro plan. Your account will continue to have
             access to <b>one free organization</b>. If you manage more than one organization, you
             will need to either upgrade to the Pro plan, transfer your projects to a Pro
             organization, or migrate to self-hosting.
-            <svelte:fragment slot="buttons">
+            <svelte:fragment slot="actions">
                 <Button href="https://appwrite.io/pricing" external text>Learn more</Button>
             </svelte:fragment>
-        </Alert>
+        </Alert.Inline>
     {/if}
     <FormList>
         <InputText

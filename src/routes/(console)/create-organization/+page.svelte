@@ -13,14 +13,14 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputTags, InputText } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
-    import type { Coupon, PaymentList } from '$lib/sdk/billing';
+    import type { Coupon } from '$lib/sdk/billing';
     import { tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Fieldset, Icon, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
 
     export let data;
@@ -31,9 +31,9 @@
     let showExitModal = false;
     let formComponent: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
     let name: string;
-    let paymentMethodId: string;
+    let paymentMethodId: string =
+        data.paymentMethods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     let collaborators: string[] = [];
     let taxId: string;
     let billingBudget: number;
@@ -42,11 +42,6 @@
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
     });
-
-    async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
-        paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
-    }
 
     async function create() {
         try {
@@ -121,10 +116,6 @@
             trackError(e, Submit.OrganizationCreate);
         }
     }
-
-    $: if (selectedPlan !== BillingPlan.FREE) {
-        loadPaymentMethods();
-    }
 </script>
 
 <svelte:head>
@@ -133,44 +124,49 @@
 
 <Wizard title="Create organization" href={previousPage} bind:showExitModal confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
-        <Fieldset legend="Options">
-            <InputText
-                bind:value={name}
-                label="Organization name"
-                placeholder="Enter organization name"
-                id="name"
-                required />
-        </Fieldset>
-        <Fieldset legend="Select plan">
-            <Typography.Text>
-                For more details on our plans, visit our
-                <Link.Anchor
-                    href="https://appwrite.io/pricing"
-                    target="_blank"
-                    rel="noopener noreferrer">pricing page</Link.Anchor
-                >.
-            </Typography.Text>
-            <PlanSelection
-                bind:billingPlan={selectedPlan}
-                anyOrgFree={data.hasFreeOrganizations}
-                isNewOrg />
-        </Fieldset>
-        {#if selectedPlan !== BillingPlan.FREE}
-            <Fieldset legend="Invite members">
-                <InputTags
-                    bind:tags={collaborators}
-                    label="Invite members by email"
-                    placeholder="Enter email address(es)"
-                    id="members" />
+        <Layout.Stack gap="xxl">
+            <Fieldset legend="Options">
+                <InputText
+                    bind:value={name}
+                    label="Organization name"
+                    placeholder="Enter organization name"
+                    id="name"
+                    required />
             </Fieldset>
-            <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
-            {#if !selectedCoupon?.code}
-                <Button text on:click={() => (showCreditModal = true)}>
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Add credits
-                </Button>
+            <Fieldset legend="Select plan">
+                <Typography.Text>
+                    For more details on our plans, visit our
+                    <Link.Anchor
+                        href="https://appwrite.io/pricing"
+                        target="_blank"
+                        rel="noopener noreferrer">pricing page</Link.Anchor
+                    >.
+                </Typography.Text>
+                <PlanSelection
+                    bind:billingPlan={selectedPlan}
+                    anyOrgFree={data.hasFreeOrganizations}
+                    isNewOrg />
+            </Fieldset>
+            {#if selectedPlan !== BillingPlan.FREE}
+                <SelectPaymentMethod
+                    methods={data.paymentMethods}
+                    bind:value={paymentMethodId}
+                    bind:taxId />
+                <Fieldset legend="Invite members">
+                    <InputTags
+                        bind:tags={collaborators}
+                        label="Invite members by email"
+                        placeholder="Enter email address(es)"
+                        id="members" />
+                </Fieldset>
+                {#if !selectedCoupon?.code}
+                    <Button text on:click={() => (showCreditModal = true)}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add credits
+                    </Button>
+                {/if}
             {/if}
-        {/if}
+        </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
         {#if selectedPlan !== BillingPlan.FREE}

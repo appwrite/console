@@ -12,14 +12,6 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isCloud } from '$lib/system';
     import type { InvoiceList } from '$lib/sdk/billing';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { tierToPlan } from '$lib/stores/billing';
     import { Table, Tabs, Alert } from '@appwrite.io/pink-svelte';
@@ -163,24 +155,22 @@
                 {/each}
             </SecondaryTabs>
 
-            <TableScroll dense noMargin>
-                <TableHeader>
+            <Table.Root>
+                <svelte:fragment slot="header">
                     {#each tabData.headers as header, index}
-                        <TableCellHead width={index === 1 ? columnWidthSmall : columnWidth}
-                            >{header}</TableCellHead>
+                        <Table.Header.Cell
+                            width={(index === 1 ? columnWidthSmall : columnWidth) + 'px'}
+                            >{header}</Table.Header.Cell>
                     {/each}
-                </TableHeader>
-                <TableBody>
-                    {#each tabData.rows as row}
-                        <TableRow>
-                            {#each row.cells as cell, index}
-                                <TableCell width={index === 1 ? columnWidthSmall : columnWidth}
-                                    >{cell}</TableCell>
-                            {/each}
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </TableScroll>
+                </svelte:fragment>
+                {#each tabData.rows as row}
+                    <Table.Row>
+                        {#each row.cells as cell}
+                            <Table.Cell>{cell}</Table.Cell>
+                        {/each}
+                    </Table.Row>
+                {/each}
+            </Table.Root>
         </div>
     {/if}
     <InputText

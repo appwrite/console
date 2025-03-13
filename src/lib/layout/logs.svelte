@@ -3,14 +3,6 @@
     import { log } from '$lib/stores/logs';
     import { Alert, Card, Code, Copy, Id, SvgIcon, Tab, Tabs } from '../components';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import {
-        TableBody,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
     import { beforeNavigate } from '$app/navigation';
     import { Pill } from '$lib/elements';
     import { isCloud } from '$lib/system';
@@ -18,7 +10,7 @@
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { BillingPlan } from '$lib/constants';
-    import { Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -223,26 +215,22 @@
                             </div>
                             {#if selectedRequest === 'parameters'}
                                 {#if parameters?.length}
-                                    <div class="u-margin-block-start-24">
-                                        <TableScroll noMargin>
-                                            <TableHeader>
-                                                <TableCellHead>Name</TableCellHead>
-                                                <TableCellHead>Value</TableCellHead>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {#each parameters as param}
-                                                    <TableRow>
-                                                        <TableCellText title="Key">
-                                                            {param.key}
-                                                        </TableCellText>
-                                                        <TableCellText title="Value">
-                                                            {param.value}
-                                                        </TableCellText>
-                                                    </TableRow>
-                                                {/each}
-                                            </TableBody>
-                                        </TableScroll>
-                                    </div>
+                                    <Table.Root>
+                                        <svelte:fragment slot="header">
+                                            <Table.Header.Cell>Name</Table.Header.Cell>
+                                            <Table.Header.Cell>Value</Table.Header.Cell>
+                                        </svelte:fragment>
+                                        {#each parameters as param}
+                                            <Table.Row>
+                                                <Table.Cell>
+                                                    {param.key}
+                                                </Table.Cell>
+                                                <Table.Cell>
+                                                    {param.value}
+                                                </Table.Cell>
+                                            </Table.Row>
+                                        {/each}
+                                    </Table.Root>
                                 {/if}
 
                                 <p class="text u-text-center u-padding-24">
@@ -261,26 +249,22 @@
                                 </p>
                             {:else if selectedRequest === 'headers'}
                                 {#if execution.requestHeaders.length}
-                                    <div class="u-margin-block-start-24">
-                                        <TableScroll noMargin>
-                                            <TableHeader>
-                                                <TableCellHead>Name</TableCellHead>
-                                                <TableCellHead>Value</TableCellHead>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {#each execution.requestHeaders as header}
-                                                    <TableRow>
-                                                        <TableCellText title="Name">
-                                                            {header.name}
-                                                        </TableCellText>
-                                                        <TableCellText title="Value">
-                                                            {header.value}
-                                                        </TableCellText>
-                                                    </TableRow>
-                                                {/each}
-                                            </TableBody>
-                                        </TableScroll>
-                                    </div>
+                                    <Table.Root>
+                                        <svelte:fragment slot="header">
+                                            <Table.Header.Cell>Name</Table.Header.Cell>
+                                            <Table.Header.Cell>Value</Table.Header.Cell>
+                                        </svelte:fragment>
+                                        {#each execution.requestHeaders as header}
+                                            <Table.Row>
+                                                <Table.Cell>
+                                                    {header.key}
+                                                </Table.Cell>
+                                                <Table.Cell>
+                                                    {header.value}
+                                                </Table.Cell>
+                                            </Table.Row>
+                                        {/each}
+                                    </Table.Root>
                                 {/if}
 
                                 <p class="text u-text-center u-padding-16">
@@ -379,23 +363,22 @@
                                 {/if}
                             {:else if selectedResponse === 'headers'}
                                 {#if execution.responseHeaders.length}
-                                    <TableScroll noMargin>
-                                        <TableHeader>
-                                            <TableCellHead>Name</TableCellHead>
-                                            <TableCellHead>Value</TableCellHead>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {#each execution.responseHeaders as header}
-                                                <TableRow>
-                                                    <TableCellText title="Name">
-                                                        {header.name}
-                                                    </TableCellText>
-                                                    <TableCellText title="Value"
-                                                        >{header.value}</TableCellText>
-                                                </TableRow>
-                                            {/each}
-                                        </TableBody>
-                                    </TableScroll>
+                                    <Table.Root>
+                                        <svelte:fragment slot="header">
+                                            <Table.Header.Cell>Name</Table.Header.Cell>
+                                            <Table.Header.Cell>Value</Table.Header.Cell>
+                                        </svelte:fragment>
+                                        {#each execution.responseHeaders as header}
+                                            <Table.Row>
+                                                <Table.Cell>
+                                                    {header.key}
+                                                </Table.Cell>
+                                                <Table.Cell>
+                                                    {header.value}
+                                                </Table.Cell>
+                                            </Table.Row>
+                                        {/each}
+                                    </Table.Root>
                                 {/if}
                                 <p class="text u-text-center u-padding-16">
                                     {execution.responseHeaders?.length

@@ -66,29 +66,25 @@
 </script>
 
 <FakeModal bind:show title="Add payment method" bind:error onSubmit={handleSubmit}>
-    <FormList>
-        <slot />
-        <InputText
-            id="name"
-            required
-            autofocus={true}
-            bind:value={name}
-            label="Cardholder name"
-            placeholder="Cardholder name" />
+    <slot />
+    <InputText
+        id="name"
+        required
+        autofocus={true}
+        bind:value={name}
+        label="Cardholder name"
+        placeholder="Cardholder name" />
 
-        <div class="aw-stripe-container" data-private>
-            <Layout.Stack gap="l" alignItems="center" justifyContent="center">
-                {#if isLoading}
-                    <Spinner />
-                {/if}
+    <div class="aw-stripe-container" data-private>
+        {#if isLoading}
+            <Spinner />
+        {/if}
 
-                <div class="stripe-element" bind:this={element}>
-                    <!-- Stripe will create form elements here -->
-                </div>
-            </Layout.Stack>
+        <div class="stripe-element" bind:this={element}>
+            <!-- Stripe will create form elements here -->
         </div>
-        <slot name="end"></slot>
-    </FormList>
+    </div>
+    <slot name="end"></slot>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit disabled={!name}>Add</Button>
@@ -98,7 +94,7 @@
 <style lang="scss">
     .aw-stripe-container {
         display: flex;
-        min-height: 295px;
+        min-height: 245px;
 
         .stripe-element {
             width: 100%;

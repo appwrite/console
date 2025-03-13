@@ -34,8 +34,9 @@
     let showExitModal = false;
     let formComponent: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
-    let paymentMethodId: string;
+    let paymentMethodId: string =
+        data.organization.paymentMethodId ??
+        data.paymentMethods.paymentMethods.find((method) => !!method?.last4)?.$id;
     let collaborators: string[] =
         data?.members?.memberships
             ?.map((m) => {
@@ -51,15 +52,6 @@
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
     });
-
-    async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
-
-        paymentMethodId =
-            data.organization.paymentMethodId ??
-            methods.paymentMethods.find((method) => !!method?.last4)?.$id ??
-            null;
-    }
 
     async function handleSubmit() {
         if (isDowngrade) {
@@ -184,10 +176,9 @@
 
     $: isUpgrade = data.plan > data.organization.billingPlan;
     $: isDowngrade = data.plan < data.organization.billingPlan;
-    $: if (selectedPlan !== BillingPlan.FREE) {
-        loadPaymentMethods();
-    }
     $: isButtonDisabled = $organization.billingPlan === selectedPlan;
+
+    $: console.log(data.paymentMethods);
 </script>
 
 <svelte:head>
@@ -248,6 +239,10 @@
 
             <!-- Show email input if upgrading from free plan -->
             {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan === BillingPlan.FREE}
+                <SelectPaymentMethod
+                    methods={data.paymentMethods}
+                    bind:value={paymentMethodId}
+                    bind:taxId />
                 <Fieldset legend="Invite members">
                     <InputTags
                         bind:tags={collaborators}
@@ -255,7 +250,6 @@
                         placeholder="Enter email address(es)"
                         id="members" />
                 </Fieldset>
-                <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
                 {#if !selectedCoupon?.code}
                     <Button text on:click={() => (showCreditModal = true)}>
                         <Icon icon={IconPlus} slot="start" size="s" />

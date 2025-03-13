@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { Alert, Empty, EmptyFilter, PaginationWithLimit, ViewSelector } from '$lib/components';
+    import { Empty, EmptyFilter, PaginationWithLimit, ViewSelector } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -9,7 +9,7 @@
     import { project } from '$routes/(console)/project-[project]/store';
     import { base } from '$app/paths';
     import { View } from '$lib/helpers/load';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Alert, Icon, Layout, Link } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Table from './table.svelte';
     import { columns } from './store';
@@ -17,9 +17,7 @@
 
     export let data;
 
-    let showMobileFilters = false;
     onMount(() => {
-        data?.query ? (showMobileFilters = true) : (showMobileFilters = false);
         return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('functions.*.executions.*')) {
                 invalidate(Dependencies.EXECUTIONS);
@@ -51,15 +49,13 @@
 
     {#if !data.func.logging}
         <div class="common-section">
-            <Alert type="info" isStandalone>
-                <svelte:fragment slot="title">Your execution logs are disabled</svelte:fragment>
+            <Alert.Inline status="info" title="Your execution logs are disabled">
                 To view execution logs and errors, enable them in your
-                <a
-                    href={`${base}/project-${$project.$id}/functions/function-${data.func.$id}/settings`}
-                    class="link">
-                    Function settings</a
+                <Link.Anchor
+                    href={`${base}/project-${$project.$id}/functions/function-${data.func.$id}/settings`}>
+                    Function settings</Link.Anchor
                 >.
-            </Alert>
+            </Alert.Inline>
         </div>
     {/if}
     {#if data?.executions?.total}

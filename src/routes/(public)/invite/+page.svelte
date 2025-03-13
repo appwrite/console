@@ -8,8 +8,7 @@
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Alert } from '$lib/components';
-    import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Link, Typography, Alert } from '@appwrite.io/pink-svelte';
 
     let teamId: string, membershipId: string, userId: string, secret: string;
     let terms = false;
@@ -54,13 +53,10 @@
     </svelte:fragment>
     <svelte:fragment>
         {#if !userId || !secret || !membershipId || !teamId}
-            <Alert type="warning">
-                <svelte:fragment slot="title">The invite link is not valid</svelte:fragment>
+            <Alert.Inline status="warning" title="The invite link is not valid">
                 Please ask the project owner to send you a new invite.
-            </Alert>
-            <div class="u-flex u-main-end u-margin-block-start-40">
-                <Button href={`${base}/register`}>Sign up to Appwrite</Button>
-            </div>
+            </Alert.Inline>
+            <Button href={`${base}/register`}>Sign up to Appwrite</Button>
         {:else}
             <Layout.Stack>
                 <Typography.Text>

@@ -1,11 +1,12 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Modal, Code, Alert } from '$lib/components';
+    import { Modal, Code } from '$lib/components';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { func } from '../store';
     import SecondaryTabs from '$lib/components/secondaryTabs.svelte';
     import SecondaryTabsItem from '$lib/components/secondaryTabsItem.svelte';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
     export let show = false;
 
@@ -89,14 +90,14 @@
         function's folder.
     </p>
 
-    <Alert dismissible={false} type="warning">
+    <Alert.Inline dismissible={false} status="warning">
         If you did not create your function using the CLI, initialize your function by following our <a
             href="https://appwrite.io/docs/tooling/command-line/installation"
             target="_blank"
             rel="noopener noreferrer"
             class="link">documentation</a
         >.
-    </Alert>
+    </Alert.Inline>
 
     <div class="editor-border box">
         <SecondaryTabs large class="u-sep-block-end u-padding-8">

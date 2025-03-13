@@ -7,7 +7,7 @@
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
-    import { Alert, Collapsible, CollapsibleItem, Modal } from '$lib/components';
+    import { Collapsible, CollapsibleItem, Modal } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
@@ -15,6 +15,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { func } from '../store';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
     export let show = false;
 
@@ -79,18 +80,15 @@
             required={true} />
 
         {#if $func.version === 'v2'}
-            <Alert type="info">
-                <svelte:fragment slot="title">
-                    Build commands now available for functions v3.0
-                </svelte:fragment>
+            <Alert.Inline status="info" title="Build commands now available for functions v3.0">
                 Update your function version to make use of new features including build commands.
-                <svelte:fragment slot="buttons">
+                <svelte:fragment slot="actions">
                     <Button
                         href="https://appwrite.io/docs/products/functions/development"
                         external
                         text>Learn more</Button>
                 </svelte:fragment>
-            </Alert>
+            </Alert.Inline>
         {:else}
             <Collapsible>
                 <CollapsibleItem>
