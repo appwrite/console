@@ -65,7 +65,7 @@
             </Alert.Inline>
         </div>
     {/if}
-    {#if !data?.executions?.total}
+    {#if data?.executions?.total}
         <Table columns={$columns} logs={data.executions} />
 
         <PaginationWithLimit
