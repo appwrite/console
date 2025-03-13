@@ -28,7 +28,7 @@
                             <SvgIcon iconSize="small" size={16} name={selectedRuntime.key} />
                         {/if}
                         <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            {selectedRuntime.name}
+                            {selectedRuntime.name} - {selectedRuntime.version}
                         </Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>

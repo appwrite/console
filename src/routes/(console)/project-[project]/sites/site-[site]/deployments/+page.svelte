@@ -29,10 +29,8 @@
     let hasInstallation = !!data.installations?.total;
     let showConnectCLI = false;
     let showConnectManual = false;
-    let showMobileFilters = false;
 
     onMount(() => {
-        data?.query ? (showMobileFilters = true) : (showMobileFilters = false);
         return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('sites.*.deployments.*')) {
                 invalidate(Dependencies.DEPLOYMENTS);

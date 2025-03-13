@@ -168,7 +168,7 @@
                         </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
-                <Layout.Stack gap="xxs">
+                <Layout.Stack gap="xxs" inline style="width: min-content;">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                         Source
                     </Typography.Text>
