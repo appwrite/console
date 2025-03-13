@@ -7,7 +7,7 @@
     export let navigateSubMenu: (menu: SheetMenu) => void;
 </script>
 
-{#if menu.title}
+{#if menu?.title}
     <span class="menu-title">{menu.title}</span>
 {/if}
 <ActionMenu.Root>
@@ -33,7 +33,9 @@
                         navigateSubMenu(menuItem.subMenu);
                     } else if (menuItem.onClick !== undefined) {
                         menuItem.onClick();
-                        isOpen = false;
+                        if (menuItem.closeOnClick !== false) {
+                            isOpen = false;
+                        }
                     }
                 }}>
                 {menuItem.name}

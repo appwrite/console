@@ -5,11 +5,7 @@ import { tags, type TagValue } from './store';
 
 export const parsedTags = writable<TagValue[]>([]);
 
-export function setFiltersOnNavigate(
-    localTags: TagValue[],
-    filterCols: FilterData[],
-    $columns: Column[]
-) {
+export function setFilters(localTags: TagValue[], filterCols: FilterData[], $columns: Column[]) {
     if (!localTags?.length) {
         filterCols.forEach((filter) => {
             resetOptions(filter);

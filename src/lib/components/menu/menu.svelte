@@ -31,7 +31,7 @@
             <slot name="menu" {toggle} />
             {#if $$slots.end}
                 <div class="separator" use:melt={$separator} />
-                <slot name="end" />
+                <slot name="end" {toggle} />
             {/if}
         </Card.Base>
     </div>

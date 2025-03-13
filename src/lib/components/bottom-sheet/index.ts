@@ -19,6 +19,7 @@ type MenuItem = {
     trailingIcon?: ComponentType;
     onClick?: () => void;
     href?: string;
+    closeOnClick?: boolean;
     subMenu?: { top: SubMenu; bottom: SubMenu };
 };
 

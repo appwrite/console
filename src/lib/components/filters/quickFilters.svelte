@@ -5,16 +5,24 @@
     import { type Writable } from 'svelte/store';
     import { CustomFilters } from '$lib/components/filters';
     import { addFilterAndApply, buildFilterCol } from './quickFilters';
-    import { parsedTags, setFiltersOnNavigate } from './setFilters';
+    import { parsedTags, setFilters } from './setFilters';
     import Menu from '../menu/menu.svelte';
     import { Button } from '$lib/elements/forms';
     import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconFilterLine } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChevronLeft,
+        IconChevronRight,
+        IconFilterLine
+    } from '@appwrite.io/pink-icons-svelte';
     import QuickfiltersSubMenu from './quickfiltersSubMenu.svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
+    import { BottomSheet } from '..';
+    import { capitalize } from '$lib/helpers/string';
 
     export let columns: Writable<Column[]>;
     export let analyticsSource: string;
 
+    let openBottomSheet = false;
     let filterCols = $columns
         .map((col) => (col.filter !== false ? buildFilterCol(col) : null))
         .filter((f) => f?.options);
@@ -23,20 +31,78 @@
         const paramQueries = p.to.url.searchParams.get('query');
         const localQueries = queryParamToMap(paramQueries || '[]');
         const localTags = Array.from(localQueries.keys());
-
-        setFiltersOnNavigate(localTags, filterCols, $columns);
+        console.log(paramQueries, localQueries, localTags);
+        setFilters(localTags, filterCols, $columns);
         filterCols = filterCols;
     });
+
+    const subSheets = filterCols.map((col) => {
+        return {
+            title: col.title,
+            top: {
+                title: col.title,
+                trailingIcon: IconChevronRight,
+                items: col.options.map((o) => {
+                    return {
+                        title: capitalize(o.label),
+                        name: capitalize(o.label),
+                        closeOnClick: false,
+                        onClick: () => {
+                            addFilterAndApply(
+                                col.id,
+                                col.title,
+                                col.operator,
+                                o.value,
+                                col.array ? [o.value] : [],
+                                $columns,
+                                analyticsSource
+                            );
+                        }
+                    };
+                })
+            },
+            bottom: {
+                name: 'Back',
+                items: [
+                    {
+                        name: 'Back',
+                        leadingIcon: IconChevronLeft,
+                        onClick: () => {
+                            // navigate to the previous menu
+                        }
+                    }
+                ]
+            }
+        };
+    });
+
+    $: organizationsBottomSheet = {
+        top: {
+            title: 'Filters',
+            items: filterCols.map((col) => {
+                return {
+                    name: col.title,
+                    onClick: () =>
+                        console.log(subSheets.find((sheet) => sheet?.title === col?.title)),
+                    subMenu: subSheets.find((sheet) => sheet?.title === col?.title),
+                    trailingIcon: IconChevronRight
+                };
+            })
+        }
+    };
 </script>
 
 <Menu>
     {#if $parsedTags?.length}
-        <Button secondary badge={`${$parsedTags?.length}`}>
+        <Button
+            secondary
+            badge={`${$parsedTags?.length}`}
+            on:click={() => (openBottomSheet = true)}>
             <Icon icon={IconFilterLine} slot="start" size="s" />
             Filters
         </Button>
     {:else}
-        <Button secondary>
+        <Button secondary on:click={() => (openBottomSheet = true)}>
             <Icon icon={IconFilterLine} slot="start" size="s" />
             Filters
         </Button>
@@ -81,3 +147,7 @@
         <CustomFilters {columns} />
     </svelte:fragment>
 </Menu>
+
+<!-- {#if $isSmallViewport}
+    <BottomSheet.Menu bind:isOpen={openBottomSheet} menu={organizationsBottomSheet} />
+{/if} -->
