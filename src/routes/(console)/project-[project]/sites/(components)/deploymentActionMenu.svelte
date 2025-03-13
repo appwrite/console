@@ -89,7 +89,9 @@
                                 external>
                                 Download source
                             </ActionMenu.Item.Anchor>
+
                             <ActionMenu.Item.Anchor
+                                disabled={deployment?.status !== 'ready'}
                                 on:click={toggle}
                                 href={getOutputDownload(deployment.$id)}
                                 external>
