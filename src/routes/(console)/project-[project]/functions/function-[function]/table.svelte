@@ -118,10 +118,14 @@
                 {/if}
             {/each}
             <Table.Cell>
-                <Layout.Stack justifyContent="flex-end">
+                <Layout.Stack
+                    direction="row"
+                    gap="s"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    inline>
                     <Popover let:toggle placement="bottom-start" padding="none">
-                        <!-- TODO: check why button style is broken -->
-                        <Button text icon on:click={toggle}>
+                        <Button text icon ariaLabel="more options" on:click={toggle}>
                             <Icon icon={IconDotsHorizontal} size="s" />
                         </Button>
                         <svelte:fragment slot="tooltip" let:toggle>
