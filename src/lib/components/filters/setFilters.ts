@@ -13,7 +13,7 @@ export function setFilters(localTags: TagValue[], filterCols: FilterData[], $col
         });
     } else {
         filterCols.forEach((filter) => {
-            if (filter.id === 'buildDuration') {
+            if (filter.id.toLowerCase().includes('duration')) {
                 setTimeFilter(filter, $columns);
             } else if (filter.id.toLocaleLowerCase().includes('size')) {
                 setSizeFilter(filter, $columns);
