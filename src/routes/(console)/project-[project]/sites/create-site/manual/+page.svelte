@@ -117,6 +117,8 @@
               return f;
           })
         : [];
+
+    $: console.log(files);
 </script>
 
 <svelte:head>
@@ -167,7 +169,7 @@
                 {#if files?.length}
                     <Upload.List
                         bind:files={filesList}
-                        on:remove={(e) => removeFile(e.detail, files)} />
+                        on:remove={(e) => (files = removeFile(e.detail, files))} />
                 {/if}
             </Layout.Stack>
             <Details bind:name bind:id />

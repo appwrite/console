@@ -72,7 +72,9 @@
             </Layout.Stack>
         </Upload.Dropzone>
         {#if files?.length}
-            <Upload.List bind:files={filesList} on:remove={(e) => removeFile(e.detail, files)} />
+            <Upload.List
+                bind:files={filesList}
+                on:remove={(e) => (files = removeFile(e.detail, files))} />
         {/if}
     </Layout.Stack>
     <svelte:fragment slot="footer">

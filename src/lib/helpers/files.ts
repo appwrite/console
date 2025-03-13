@@ -94,7 +94,7 @@ export function removeFile(file: File, files: FileList) {
         dataTransfer.items.add(file);
     });
 
-    files = dataTransfer.files;
+    return dataTransfer.files;
 }
 
 export const defaultIgnore = `

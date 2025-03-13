@@ -111,7 +111,7 @@
                                     removable: true
                                 };
                             })}
-                            on:remove={(e) => removeFile(e.detail, files)} />
+                            on:remove={(e) => (files = removeFile(e.detail, files))} />
                     {/if}
 
                     {#if !showCustomId}
