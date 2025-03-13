@@ -4,7 +4,7 @@
     import { Repositories } from '$lib/components/git';
     import { Dependencies } from '$lib/constants';
     import { Link } from '$lib/elements';
-    import { Button, InputCheckbox, InputSelect } from '$lib/elements/forms';
+    import { Button, InputCheckbox, InputSelect, InputText } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -20,6 +20,7 @@
     let hasRepository = !!site?.providerRepositoryId;
     let selectedRepository: string = site.providerRepositoryId;
     let branch: string = null;
+    let commit: string = null;
     let activate = true;
     let error = '';
 
@@ -54,8 +55,6 @@
                 selectedRepository
             );
 
-            console.log(branchList);
-
             const sorted = sortBranches(branchList.branches);
             branch = sorted[0]?.name ?? null;
 
@@ -72,12 +71,21 @@
 
     async function createDeployment() {
         try {
-            await sdk.forProject.sites.createVcsDeployment(
-                site.$id,
-                VCSDeploymentType.Branch,
-                branch,
-                activate
-            );
+            if (branch) {
+                await sdk.forProject.sites.createVcsDeployment(
+                    site.$id,
+                    VCSDeploymentType.Branch,
+                    branch,
+                    activate
+                );
+            } else {
+                await sdk.forProject.sites.createVcsDeployment(
+                    site.$id,
+                    'commit',
+                    commit,
+                    activate
+                );
+            }
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);
             addNotification({
@@ -158,6 +166,12 @@
                     branch = event.detail.value;
                 }}
                 {options} />
+            <!-- <InputText
+                required={true}
+                id="commit"
+                label="Commit hash"
+                placeholder="Select commit"
+                bind:value={commit} /> -->
             {#if branch}
                 <InputCheckbox
                     label="Activate deployment after build"

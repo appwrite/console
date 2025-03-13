@@ -26,6 +26,10 @@ export function deploymentStatusConverter(status: string) {
             return 'processing';
         case 'building':
             return 'pending';
+        case 'waiting':
+            return 'waiting';
+        case 'queued':
+            return 'waiting';
         case 'failed':
             return 'failed';
     }

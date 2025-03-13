@@ -71,7 +71,9 @@
                         </Table.Cell>
                     {:else if column.id === 'buildDuration'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {#if ['processing', 'building'].includes(deployment.status)}
+                            {#if ['waiting'].includes(deployment.status)}
+                                -
+                            {:else if ['processing', 'building'].includes(deployment.status)}
                                 <span use:timer={{ start: deployment.$createdAt }} />
                             {:else}
                                 {formatTimeDetailed(deployment.buildDuration)}
