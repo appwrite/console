@@ -28,14 +28,14 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import CreateAppwriteDomainModal from './createAppwriteDomainModal.svelte';
+    import CreatePreviewDomainModal from './createPreviewDomainModal.svelte';
 
     export let data;
 
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Models.ProxyRule = null;
-    let showAppwriteDomainModal = false;
+    let showPreviewDomainModal = false;
 
     $: console.log(data.domains);
 </script>
@@ -60,8 +60,8 @@
                         href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
                         Custom domain
                     </ActionMenu.Item.Anchor>
-                    <ActionMenu.Item.Button on:click={() => (showAppwriteDomainModal = true)}>
-                        Appwrite domain
+                    <ActionMenu.Item.Button on:click={() => (showPreviewDomainModal = true)}>
+                        Preview domain
                     </ActionMenu.Item.Button>
                 </ActionMenu.Root>
             </svelte:fragment>
@@ -196,6 +196,6 @@
     <RetryDomainModal bind:show={showRetry} {selectedDomain} />
 {/if}
 
-{#if showAppwriteDomainModal}
-    <CreateAppwriteDomainModal bind:show={showAppwriteDomainModal} />
+{#if showPreviewDomainModal}
+    <CreatePreviewDomainModal bind:show={showPreviewDomainModal} />
 {/if}

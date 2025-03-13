@@ -74,12 +74,12 @@
     });
 
     async function addDomain() {
-        const isAppwriteDomain = domain.endsWith($consoleVariables._APP_DOMAIN_SITES);
+        const isPreviewDomain = domain.endsWith($consoleVariables._APP_DOMAIN_SITES);
         const isNewDomain = data.domains.rules.findIndex((rule) => rule.domain === domain) === -1;
         const isSubDomain = domain.split('.').length >= 2;
         try {
             if (behaviour === 'CREATE') {
-                if (isCloud && !isAppwriteDomain) {
+                if (isCloud && !isPreviewDomain) {
                     //Redirect if subdomain so user can choose how to proceed
                     if (isSubDomain) {
                         goto(
@@ -102,7 +102,7 @@
                         );
                     }
                 }
-                //if selfhosted or appwrite domain create site rule
+                //if selfhosted or preview domain create site rule
                 else {
                     await sdk.forProject.proxy.createSiteRule(domain, $page.params.site, branch);
                     addNotification({
@@ -113,7 +113,7 @@
                     await invalidate(Dependencies.SITES_DOMAINS);
                 }
             } else if (behaviour === 'REDIRECT') {
-                if (isCloud && !isAppwriteDomain) {
+                if (isCloud && !isPreviewDomain) {
                     //Redirect if subdomain so user can choose how to proceed
                     if (isSubDomain) {
                         goto(

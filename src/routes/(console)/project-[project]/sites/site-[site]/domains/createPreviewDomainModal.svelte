@@ -30,7 +30,7 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: 'Appwrite domain has been added'
+                message: 'Preview domain has been added'
             });
             trackEvent(Submit.DomainCreate);
         } catch (e) {
@@ -79,7 +79,7 @@
     }
 </script>
 
-<Modal title="Add Appwrite domain" bind:show {onSubmit} bind:error>
+<Modal title="Add preview domain" bind:show {onSubmit} bind:error>
     <span slot="description">
         Get an auto-generated domain to quickly access your project. You can customize its prefix.
     </span>
