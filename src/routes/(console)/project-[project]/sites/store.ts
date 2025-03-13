@@ -36,6 +36,10 @@ export function getFrameworkIcon(framework: string) {
             return 'remix';
         case framework.toLocaleLowerCase().includes('flutter'):
             return 'flutter';
+        case framework.toLocaleLowerCase().includes('analog'):
+            return 'analog';
+        case framework.toLocaleLowerCase().includes('vite'):
+            return 'vite';
         case framework.toLocaleLowerCase().includes('other'):
             return 'empty';
 
