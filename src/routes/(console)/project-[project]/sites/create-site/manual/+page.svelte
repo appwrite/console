@@ -176,8 +176,6 @@
                 bind:selectedFramework={framework}
                 bind:variables
                 frameworks={data.frameworks.frameworks} />
-
-            <!-- <Domain bind:domain bind:domainIsValid /> -->
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

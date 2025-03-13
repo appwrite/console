@@ -36,6 +36,7 @@
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
+    $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework?.key);
 
     export let variables: Partial<Models.Variable>[] = [];
     export let installCommand = '';
@@ -52,7 +53,11 @@
     let currentVariable: Partial<Models.Variable>;
     let frameworkId = selectedFramework.key;
 
-    $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework?.key);
+    $: if (!installCommand || !buildCommand || !outputDirectory) {
+        installCommand ||= frameworkData?.adapters?.ssr?.installCommand;
+        buildCommand ||= frameworkData?.adapters?.ssr?.buildCommand;
+        outputDirectory ||= frameworkData?.adapters?.ssr?.outputDirectory;
+    }
 </script>
 
 <Fieldset legend="Settings">
@@ -87,7 +92,9 @@
                                 size="s"
                                 disabled={frameworkData?.adapters?.ssr?.installCommand ===
                                     installCommand}
-                                on:click={() => (installCommand = '')}>
+                                on:click={() =>
+                                    (installCommand =
+                                        frameworkData?.adapters?.ssr?.installCommand)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -102,7 +109,8 @@
                                 size="s"
                                 disabled={frameworkData?.adapters?.ssr?.buildCommand ===
                                     buildCommand}
-                                on:click={() => (buildCommand = '')}>
+                                on:click={() =>
+                                    (buildCommand = frameworkData?.adapters?.ssr?.buildCommand)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -117,7 +125,9 @@
                                 size="s"
                                 disabled={frameworkData?.adapters?.ssr?.outputDirectory ===
                                     outputDirectory}
-                                on:click={() => (outputDirectory = '')}>
+                                on:click={() =>
+                                    (outputDirectory =
+                                        frameworkData?.adapters?.ssr?.outputDirectory)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
