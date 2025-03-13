@@ -32,6 +32,19 @@
             if (ref || referrer || utmSource || utmCampaign || utmMedium) {
                 sdk.forConsole.sources.create(ref, referrer, utmSource, utmCampaign, utmMedium);
             }
+
+            if (referrer || ref) {
+                sessionStorage.setItem('utmReferral', referrer ? referrer : (ref ?? ''));
+            }
+            if (utmSource) {
+                sessionStorage.setItem('utmSource', utmSource);
+            }
+            if (utmMedium) {
+                sessionStorage.setItem('utmMedium', utmMedium);
+            }
+            if (utmCampaign) {
+                sessionStorage.setItem('utmCampaign', utmCampaign);
+            }
         }
 
         if ($page.url.searchParams.has('migrate')) {
