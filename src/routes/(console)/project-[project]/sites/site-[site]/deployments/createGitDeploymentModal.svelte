@@ -9,7 +9,13 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { VCSDeploymentType, type Models } from '@appwrite.io/console';
+    import {
+        Adapter,
+        BuildRuntime,
+        Framework,
+        VCSDeploymentType,
+        type Models
+    } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
 
@@ -67,6 +73,26 @@
 
     async function createDeployment() {
         try {
+            if (!site?.providerRepositoryId) {
+                await sdk.forProject.sites.update(
+                    site.$id,
+                    site.name,
+                    site.framework as Framework,
+                    site.enabled || undefined,
+                    site.timeout || undefined,
+                    site.installCommand || undefined,
+                    site.buildCommand || undefined,
+                    site.outputDirectory || undefined,
+                    (site?.buildRuntime as BuildRuntime) || undefined,
+                    (site.adapter as Adapter) || undefined,
+                    site.fallbackFile || undefined,
+                    $installation.$id || undefined,
+                    selectedRepository || undefined,
+                    branch || undefined,
+                    site.providerSilentMode || undefined,
+                    site.providerRootDirectory || undefined
+                );
+            }
             if (commit) {
                 await sdk.forProject.sites.createVcsDeployment(
                     site.$id,
@@ -165,7 +191,6 @@
                 }}
                 {options} />
             <!-- <InputText
-                required={true}
                 id="commit"
                 label="Commit hash"
                 placeholder="Select commit"
