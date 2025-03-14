@@ -32,8 +32,8 @@
             originalKey,
             data.required,
             data.default,
-            data.min,
-            data.max,
+            Math.abs(data.min) > Number.MAX_SAFE_INTEGER ? undefined : data.min,
+            Math.abs(data.max) > Number.MAX_SAFE_INTEGER ? undefined : data.max,
             data.key !== originalKey ? data.key : undefined
         );
     }
