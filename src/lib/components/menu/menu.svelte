@@ -19,7 +19,7 @@
 
 <div use:melt={$menubar}>
     <div use:melt={$trigger}>
-        <slot {toggle} />
+        <slot />
     </div>
 
     <div class="menu" use:melt={$menu}>

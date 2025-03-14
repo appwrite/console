@@ -20,6 +20,8 @@ type MenuItem = {
     onClick?: () => void;
     href?: string;
     closeOnClick?: boolean;
+    navigatePrevious?: boolean;
+    checked?: boolean;
     subMenu?: { top: SubMenu; bottom: SubMenu };
 };
 

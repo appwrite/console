@@ -4,7 +4,7 @@
     import type { Column } from '$lib/helpers/types';
     import { type Writable } from 'svelte/store';
     import { CustomFilters } from '$lib/components/filters';
-    import { addFilterAndApply, buildFilterCol } from './quickFilters';
+    import { addFilterAndApply, buildFilterCol, type FilterData } from './quickFilters';
     import { parsedTags, setFilters } from './setFilters';
     import Menu from '../menu/menu.svelte';
     import { Button } from '$lib/elements/forms';
@@ -31,12 +31,12 @@
         const paramQueries = p.to.url.searchParams.get('query');
         const localQueries = queryParamToMap(paramQueries || '[]');
         const localTags = Array.from(localQueries.keys());
-        console.log(paramQueries, localQueries, localTags);
+        // console.log(paramQueries, localQueries, localTags);
         setFilters(localTags, filterCols, $columns);
         filterCols = filterCols;
     });
 
-    const subSheets = filterCols.map((col) => {
+    $: subSheets = filterCols.map((col) => {
         return {
             title: col.title,
             top: {
@@ -46,17 +46,19 @@
                     return {
                         title: capitalize(o.label),
                         name: capitalize(o.label),
-                        closeOnClick: false,
+                        options: col.options,
+                        checked: o.checked,
                         onClick: () => {
                             addFilterAndApply(
                                 col.id,
                                 col.title,
                                 col.operator,
                                 o.value,
-                                col.array ? [o.value] : [],
+                                generateFilterArrayValue(col, o.value),
                                 $columns,
                                 analyticsSource
                             );
+                            subSheets = subSheets;
                         }
                     };
                 })
@@ -67,6 +69,7 @@
                     {
                         name: 'Back',
                         leadingIcon: IconChevronLeft,
+                        navigatePrevious: true,
                         onClick: () => {
                             // navigate to the previous menu
                         }
@@ -88,11 +91,49 @@
                     trailingIcon: IconChevronRight
                 };
             })
+        },
+        bottom: {
+            name: 'Clear All',
+            items: [
+                {
+                    name: 'Clear All',
+                    onClick: () => {
+                        filterCols.forEach((col) => {
+                            addFilterAndApply(
+                                col.id,
+                                col.title,
+                                col.operator,
+                                null,
+                                [],
+                                $columns,
+                                analyticsSource
+                            );
+                        });
+                    }
+                }
+            ]
         }
     };
+
+    function generateFilterArrayValue(col: FilterData, value: string) {
+        if (!col?.array) return [];
+
+        if (col.options?.find((opt) => opt.value === value)?.checked) {
+            return col.options
+                ?.filter((opt) => opt?.checked)
+                .map((opt) => opt.value)
+                .filter((item) => item !== value);
+        } else {
+            let arrayValue =
+                col.options?.filter((opt) => opt?.checked)?.map((opt) => opt.value) ?? [];
+            arrayValue = [...arrayValue, value];
+
+            return arrayValue;
+        }
+    }
 </script>
 
-<Menu>
+{#if $isSmallViewport}
     {#if $parsedTags?.length}
         <Button
             secondary
@@ -107,47 +148,61 @@
             Filters
         </Button>
     {/if}
-    <svelte:fragment slot="menu">
-        {#each filterCols as filter}
-            {#if filter.options}
-                <QuickfiltersSubMenu
-                    {filter}
-                    variant={filter?.array ? 'checkbox' : 'radio'}
-                    on:add={(e) => {
-                        addFilterAndApply(
-                            filter.id,
-                            filter.title,
-                            filter.operator,
-                            e.detail.value,
-                            filter?.array
-                                ? (filter.options
-                                      .filter((opt) => opt.checked)
-                                      .map((opt) => opt.value) ?? [])
-                                : [],
-                            $columns,
-                            analyticsSource
-                        );
-                    }}
-                    on:clear={() => {
-                        addFilterAndApply(
-                            filter.id,
-                            filter.title,
-                            filter.operator,
-                            null,
-                            [],
-                            $columns,
-                            analyticsSource
-                        );
-                    }} />
-            {/if}
-        {/each}
-    </svelte:fragment>
+{:else}
+    <Menu>
+        {#if $parsedTags?.length}
+            <Button secondary badge={`${$parsedTags?.length}`}>
+                <Icon icon={IconFilterLine} slot="start" size="s" />
+                Filters
+            </Button>
+        {:else}
+            <Button secondary>
+                <Icon icon={IconFilterLine} slot="start" size="s" />
+                Filters
+            </Button>
+        {/if}
+        <svelte:fragment slot="menu">
+            {#each filterCols as filter}
+                {#if filter.options}
+                    <QuickfiltersSubMenu
+                        {filter}
+                        variant={filter?.array ? 'checkbox' : 'radio'}
+                        on:add={(e) => {
+                            addFilterAndApply(
+                                filter.id,
+                                filter.title,
+                                filter.operator,
+                                e.detail.value,
+                                filter?.array
+                                    ? (filter.options
+                                          .filter((opt) => opt.checked)
+                                          .map((opt) => opt.value) ?? [])
+                                    : [],
+                                $columns,
+                                analyticsSource
+                            );
+                        }}
+                        on:clear={() => {
+                            addFilterAndApply(
+                                filter.id,
+                                filter.title,
+                                filter.operator,
+                                null,
+                                [],
+                                $columns,
+                                analyticsSource
+                            );
+                        }} />
+                {/if}
+            {/each}
+        </svelte:fragment>
 
-    <svelte:fragment slot="end">
-        <CustomFilters {columns} />
-    </svelte:fragment>
-</Menu>
+        <svelte:fragment slot="end">
+            <CustomFilters {columns} />
+        </svelte:fragment>
+    </Menu>
+{/if}
 
-<!-- {#if $isSmallViewport}
+{#if $isSmallViewport && openBottomSheet}
     <BottomSheet.Menu bind:isOpen={openBottomSheet} menu={organizationsBottomSheet} />
-{/if} -->
+{/if}

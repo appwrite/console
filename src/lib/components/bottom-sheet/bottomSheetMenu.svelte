@@ -8,8 +8,10 @@
     let sheetContainerRef: $$Props['sheetContainerRef'];
     let activeMenu = menu;
     let showDivider = true;
+    let previousMenu = activeMenu;
 
     function navigateSubMenu(subMenu: SheetMenu) {
+        previousMenu = activeMenu;
         if (sheetContainerRef) {
             const currentHeight = sheetContainerRef.offsetHeight;
             sheetContainerRef.style.overflowY = 'hidden';
@@ -27,6 +29,11 @@
         showDivider = activeMenu.bottom !== undefined;
     }
 
+    function navigatePreviousMenu() {
+        activeMenu = previousMenu;
+        showDivider = activeMenu.bottom !== undefined;
+    }
+
     function restoreMenu(isOpenState: boolean) {
         showDivider = activeMenu.bottom !== undefined;
         if (!isOpenState) {
@@ -41,12 +48,18 @@
 
 <BottomSheet.Default bind:isOpen useSlots={true} bind:sheetContainerRef bind:showDivider>
     <div slot="top">
-        <SheetMenuBlock menu={activeMenu.top} {navigateSubMenu} bind:isOpen />
+        <SheetMenuBlock
+            menu={activeMenu.top}
+            {navigateSubMenu}
+            {navigatePreviousMenu}
+            bind:isOpen />
     </div>
     <div slot="bottom">
-        {#if activeMenu.bottom}<SheetMenuBlock
+        {#if activeMenu.bottom}
+            <SheetMenuBlock
                 menu={activeMenu.bottom}
                 {navigateSubMenu}
+                {navigatePreviousMenu}
                 bind:isOpen />
         {/if}
     </div>
