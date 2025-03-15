@@ -7,6 +7,7 @@ export const scopes = derived(page, ($page) => $page.data?.scopes ?? []);
 export const isDeveloper = derived(roles, ($roles) => $roles.includes('developer'));
 export const isBilling = derived(roles, ($roles) => $roles.includes('billing'));
 export const isOwner = derived(roles, ($roles) => $roles.includes('owner'));
+export const isAnalyst = derived(roles, ($roles) => $roles.includes('analyst'));
 
 export const canWriteDatabases = derived(scopes, ($scopes) => $scopes.includes('databases.write'));
 export const canWriteProjects = derived(scopes, ($scopes) => $scopes.includes('projects.write'));
