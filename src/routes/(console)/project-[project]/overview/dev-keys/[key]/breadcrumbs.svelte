@@ -3,7 +3,7 @@
     import { Breadcrumbs } from '$lib/layout';
     import { organization } from '$lib/stores/organization';
     import { project } from '../../../store';
-    import { apiKey } from './store';
+    import { devKey } from './store';
 
     $: breadcrumbs = [
         {
@@ -15,12 +15,12 @@
             title: $project?.name
         },
         {
-            href: `${base}/project-${$project?.$id}/overview/keys`,
-            title: 'API keys'
+            href: `${base}/project-${$project?.$id}/overview/dev-keys`,
+            title: 'Dev keys'
         },
         {
-            href: `${base}/project-${$project?.$id}/overview/keys/${$apiKey?.$id}`,
-            title: $apiKey?.name
+            href: `${base}/project-${$project?.$id}/overview/dev-keys/${$devKey?.$id}`,
+            title: $devKey?.name
         }
     ];
 </script>

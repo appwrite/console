@@ -12,9 +12,9 @@
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import Scopes from '../scopes.svelte';
-    import Delete from './delete.svelte';
-    import { key } from './store';
-    import UpdateExpirationDate from './updateExpirationDate.svelte';
+    import { apiKey } from './store';
+    import Delete from '../../components/delete.svelte';
+    import UpdateExpirationDate from '../../components/updateExpirationDate.svelte';
 
     let showDelete = false;
     let name: string = null;
@@ -22,19 +22,43 @@
     let scopes: string[] = null;
 
     onMount(() => {
-        name ??= $key.name;
-        secret ??= $key.secret;
-        scopes ??= $key.scopes;
+        name ??= $apiKey.name;
+        secret ??= $apiKey.secret;
+        scopes ??= $apiKey.scopes;
     });
+
+    async function updateExpire() {
+        try {
+            await sdk.forConsole.projects.updateKey(
+                $project.$id,
+                $apiKey.$id,
+                $apiKey.name,
+                $apiKey.scopes,
+                $apiKey.expire
+            );
+            await invalidate(Dependencies.KEY);
+            trackEvent(Submit.KeyUpdateExpire);
+            addNotification({
+                type: 'success',
+                message: 'API key expiration has been updated'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.KeyUpdateExpire);
+        }
+    }
 
     async function updateName() {
         try {
             await sdk.forConsole.projects.updateKey(
                 $project.$id,
-                $key.$id,
+                $apiKey.$id,
                 name,
-                $key.scopes,
-                $key.expire
+                $apiKey.scopes,
+                $apiKey.expire
             );
             await invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateName);
@@ -55,10 +79,10 @@
         try {
             await sdk.forConsole.projects.updateKey(
                 $project.$id,
-                $key.$id,
-                $key.name,
+                $apiKey.$id,
+                $apiKey.name,
                 scopes,
-                $key.expire
+                $apiKey.expire
             );
             await invalidate(Dependencies.KEY);
             trackEvent(Submit.KeyUpdateScopes, {
@@ -83,15 +107,15 @@
 </svelte:head>
 
 <Container>
-    {@const accessedAt = $key.accessedAt ? toLocaleDate($key.accessedAt) : 'never'}
+    {@const accessedAt = $apiKey.accessedAt ? toLocaleDate($apiKey.accessedAt) : 'never'}
     <CardGrid>
         <div data-private>
-            <Heading tag="h6" size="7">{$key.name}</Heading>
+            <Heading tag="h6" size="7">{$apiKey.name}</Heading>
         </div>
         <svelte:fragment slot="aside">
             <p>
                 Last accessed: {accessedAt}<br />
-                Scopes granted: {$key.scopes.length}
+                Scopes granted: {$apiKey.scopes.length}
             </p>
         </svelte:fragment>
     </CardGrid>
@@ -119,7 +143,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button disabled={name === $key.name} submit>Update</Button>
+                <Button disabled={name === $apiKey.name} submit>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
@@ -140,13 +164,13 @@
                 <Button
                     submit
                     disabled={scopes &&
-                        $key?.scopes &&
-                        !symmetricDifference(scopes, $key.scopes).length}>Update</Button>
+                        $apiKey?.scopes &&
+                        !symmetricDifference(scopes, $apiKey.scopes).length}>Update</Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
 
-    <UpdateExpirationDate />
+    <UpdateExpirationDate key={$apiKey} resourceType="API" onSubmit={updateExpire} />
 
     <CardGrid danger>
         <div>
@@ -157,7 +181,7 @@
             <Box>
                 <div class="u-flex u-gap-16">
                     <div class="u-cross-child-center u-line-height-1-5">
-                        <h6 class="u-bold" data-private>{$key.name}</h6>
+                        <h6 class="u-bold" data-private>{$apiKey.name}</h6>
                         <p>Last accessed: {accessedAt}</p>
                     </div>
                 </div>
@@ -170,4 +194,4 @@
     </CardGrid>
 </Container>
 
-<Delete bind:showDelete />
+<Delete bind:showDelete key={$apiKey} resourceType="API" />

@@ -3,16 +3,16 @@
     import { page } from '$app/stores';
     import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { apiKey } from './store';
+    import { devKey } from './store';
 
     const projectId = $page.params.project;
 </script>
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/overview/keys`}>
-            {$apiKey?.name}
+        <CoverTitle href={`${base}/project-${projectId}/overview/dev-keys`}>
+            {$devKey?.name}
         </CoverTitle>
-        <Id value={$apiKey?.secret}>API key secret</Id>
+        <Id value={$devKey?.secret}>Dev key secret</Id>
     </svelte:fragment>
 </Cover>
