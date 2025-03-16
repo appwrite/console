@@ -22,10 +22,6 @@
 
     onMount(async () => {
         const countryList = await sdk.forProject.locale.listCountries();
-        const locale = await sdk.forProject.locale.get();
-        if (locale.countryCode) {
-            selectedAddress.country = locale.countryCode;
-        }
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,
@@ -56,6 +52,21 @@
             error = e.message;
             trackError(e, Submit.BillingAddressCreate);
         }
+    }
+
+    /**
+     * This component isn't a modal, so it mounts with its parent.
+     * On mount, `selectedAddress` can be `null`, so we set the country when the modal shows.
+     *
+     * And we only run this if the selected address has no country set,
+     * which really shouldn't happen, but here we are, playing it safe!
+     */
+    $: if (show && !selectedAddress.country) {
+        sdk.forProject.locale.get().then((locale) => {
+            if (locale.countryCode) {
+                selectedAddress.country = locale.countryCode;
+            }
+        });
     }
 </script>
 
