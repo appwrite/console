@@ -56,7 +56,7 @@ export { default as Limit } from './limit.svelte';
 export { default as PaginationWithLimit } from './paginationWithLimit.svelte';
 export { default as ClickableList } from './clickableList.svelte';
 export { default as ClickableListItem } from './clickableListItem.svelte';
-export { default as Id, truncateText } from './id.svelte';
+export { default as Id } from './id.svelte';
 export * from './progressbar';
 export { default as ProgressBarBig } from './progressBarBig.svelte';
 export { default as CreditCardInfo } from './creditCardInfo.svelte';

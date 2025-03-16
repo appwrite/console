@@ -2,7 +2,7 @@
     import { Copy } from '.';
     import { sdk } from '$lib/stores/sdk';
     import { Flag } from '@appwrite.io/console';
-    import { truncateText } from '$lib/components';
+    import { truncateText } from '$lib/components/id.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { getProjectEndpoint } from '$lib/helpers/project';
     import { projectRegion } from '$routes/(console)/project-[region]-[project]/store';
