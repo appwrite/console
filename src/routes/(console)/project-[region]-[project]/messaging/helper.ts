@@ -1,14 +1,17 @@
+import { page } from '$app/stores';
 import { sdk } from '$lib/stores/sdk';
 import { type Models } from '@appwrite.io/console';
+import { get } from 'svelte/store';
 
 /** Stores active polling intervals for messages. */
 const messageIntervals = new Map<string, ReturnType<typeof setInterval>>();
 
-// TODO: @itznotabug - use the page to get project and regions.
-
 /** Checks the status of a message and stops polling if it's no longer processing. */
 function checkMessageStatus(message: Models.Message) {
-    sdk.forProject.messaging
+    const $page = get(page);
+    sdk
+        .forProject($page.params.region, $page.params.project)
+        .messaging
         .getMessage(message.$id)
         .then((msg) => {
             if (msg.status !== 'processing') {
