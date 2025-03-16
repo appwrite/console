@@ -13,14 +13,16 @@
 
     $: writes = data.databasesWrites;
     $: writesTotal = data.databasesWritesTotal;
+
+    $: path = `${base}/project-${$page.params.region}-${$page.params.project}/databases/usage`;
 </script>
 
 <div class="u-flex u-flex-vertical u-gap-16">
     <Usage
-        title="Usage"
-        path={`${base}/project-${$page.params.region}-${$page.params.project}/databases/usage`}
+        {path}
         {total}
         {count}
+        title="Usage"
         countMetadata={{
             legend: 'Databases',
             title: 'Total databases'
