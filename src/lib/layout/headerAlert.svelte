@@ -5,17 +5,22 @@
     export let title: string;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
 
-    let container;
+    let container: HTMLElement | null = null;
 
     function setNavigationHeight() {
         const alertHeight = container ? container.getBoundingClientRect().height : 0;
         const header: HTMLHeadingElement = document.querySelector('main > header');
         const sidebar: HTMLElement = document.querySelector('main > div > nav');
+        const contentSection: HTMLElement = document.querySelector('main > div > section');
+
         if (header) {
             header.style.top = `${alertHeight}px`;
         }
         if (sidebar) {
             sidebar.style.top = `${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px`;
+        }
+        if (contentSection) {
+            contentSection.style.paddingBlockStart = `${alertHeight}px`;
         }
     }
 
@@ -30,6 +35,7 @@
 </script>
 
 <svelte:window on:resize={setNavigationHeight} />
+
 <section
     bind:this={container}
     class="alert is-action is-action-and-top-sticky u-sep-block-end"
