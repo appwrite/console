@@ -25,20 +25,20 @@ export const load = async ({ params, url, route, depends, parent }) => {
                 sdk
                     .forProject(params.region, params.project)
                     .backups.listArchives([
-                    Query.limit(limit),
-                    Query.offset(offset),
-                    Query.orderDesc('$createdAt'),
-                    Query.equal('resourceType', 'database'),
-                    Query.equal('resourceId', params.database)
-                ]),
+                        Query.limit(limit),
+                        Query.offset(offset),
+                        Query.orderDesc('$createdAt'),
+                        Query.equal('resourceType', 'database'),
+                        Query.equal('resourceId', params.database)
+                    ]),
 
                 sdk
                     .forProject(params.region, params.project)
                     .backups.listPolicies([
-                    Query.orderDesc('$createdAt'),
-                    Query.equal('resourceType', 'database'),
-                    Query.equal('resourceId', params.database)
-                ])
+                        Query.orderDesc('$createdAt'),
+                        Query.equal('resourceType', 'database'),
+                        Query.equal('resourceId', params.database)
+                    ])
             ]);
         } catch (e) {
             // ignore

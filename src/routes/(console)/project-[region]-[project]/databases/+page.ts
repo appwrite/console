@@ -36,16 +36,17 @@ export const load: PageLoad = async ({ url, route, depends, params, parent }) =>
     };
 };
 
-async function fetchDatabasesAndBackups(limit: number, offset: number, params: RouteParams, currentPlan?: Plan) {
+async function fetchDatabasesAndBackups(
+    limit: number,
+    offset: number,
+    params: RouteParams,
+    currentPlan?: Plan
+) {
     const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 
     const databases = await sdk
         .forProject(params.region, params.project)
-        .databases.list([
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc('$createdAt')
-        ]);
+        .databases.list([Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')]);
 
     let lastBackups: Record<string, string>, policies: Record<string, BackupPolicy[]>;
 

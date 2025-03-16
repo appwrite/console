@@ -49,7 +49,7 @@
                     $func.providerSilentMode || undefined,
                     $func.providerRootDirectory || undefined,
                     $func.specification || undefined
-            );
+                );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Permissions have been updated',

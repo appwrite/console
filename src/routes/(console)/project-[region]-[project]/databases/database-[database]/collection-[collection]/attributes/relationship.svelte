@@ -102,9 +102,7 @@
         } else {
             const collections = await sdk
                 .forProject($page.params.region, $page.params.project)
-                .databases.listCollections(databaseId, [
-                Query.limit(100)
-            ]);
+                .databases.listCollections(databaseId, [Query.limit(100)]);
             return collections;
         }
     }

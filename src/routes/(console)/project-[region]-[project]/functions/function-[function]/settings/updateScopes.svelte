@@ -46,8 +46,8 @@
                     $func.providerBranch || undefined,
                     $func.providerSilentMode || undefined,
                     $func.providerRootDirectory || undefined,
-                $func.specification || undefined
-            );
+                    $func.specification || undefined
+                );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',

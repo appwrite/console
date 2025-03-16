@@ -27,7 +27,8 @@
             }
 
             // an error is shown if invalid.
-            parseExpression(functionSchedule);            await sdk
+            parseExpression(functionSchedule);
+            await sdk
                 .forProject($page.params.region, $page.params.project)
                 .functions.update(
                     functionId,
@@ -48,7 +49,7 @@
                     $func.providerSilentMode || undefined,
                     $func.providerRootDirectory || undefined,
                     $func.specification || undefined
-            );
+                );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',
