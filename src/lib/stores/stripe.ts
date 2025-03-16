@@ -1,4 +1,4 @@
-import type { Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
+import type { Appearance, Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
 import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
@@ -17,7 +17,7 @@ let paymentElement: StripeElement;
 
 export const isStripeInitialized = writable(false);
 
-export async function initializeStripe() {
+export async function initializeStripe(node: HTMLElement) {
     if (!get(stripe)) return;
     isStripeInitialized.set(true);
 
@@ -42,7 +42,7 @@ export async function initializeStripe() {
     // Set up Elements and then create form
     elements = get(stripe).elements(options);
     paymentElement = elements.create('payment');
-    paymentElement.mount('#payment-element');
+    paymentElement.mount(node);
 }
 
 export async function unmountPaymentElement() {
@@ -61,7 +61,7 @@ export async function submitStripeCard(name: string, organizationId?: string) {
             clientSecret = paymentMethod.clientSecret;
         }
 
-        // // Element needs to be submitted before confirming the setup intent
+        // Element needs to be submitted before confirming the setup intent
         elements.submit();
 
         const baseUrl = 'https://cloud.appwrite.io/console';
@@ -185,17 +185,27 @@ export async function confirmSetup(
     }
 }
 
-const appearanceLight = {
+const appearanceLight: Appearance = {
     variables: {
-        colorPrimary: ThemeLightCloud['fgcolor-neutral-primary'],
-        colorText: ThemeLightCloud['fgcolor-neutral-primary'],
-        colorBackground: ThemeLightCloud['bgcolor-neutral-primary'],
-        color: ThemeLightCloud['fgcolor-neutral-primary'],
+        fontSizeBase: ThemeLightCloud['font-size-s'],
+        fontSizeSm: ThemeLightCloud['font-size-s'],
+        colorPrimary: ThemeLightCloud['neutral-700'],
+        colorText: ThemeLightCloud['neutral-700'],
+        colorBackground: 'rgb(250, 250, 251)',
         colorDanger: ThemeLightCloud['fgcolor-error'],
         fontFamily: ThemeLightCloud['font-family-sansserif'],
-        borderRadius: ThemeLightCloud['border-radius-s']
+        borderRadius: ThemeLightCloud['base-8']
     },
     rules: {
+        '.Label': {
+            color: ThemeLightCloud['neutral-700'],
+            marginBottom: ThemeLightCloud['base-8'],
+            fontWeight: '500'
+        },
+        '.Input': {
+            padding: ThemeLightCloud['base-6'],
+            paddingLeft: ThemeLightCloud['base-12']
+        },
         '.Input:hover': {
             border: 'solid 1px rgb(195, 195, 198)',
             boxShadow: 'none'

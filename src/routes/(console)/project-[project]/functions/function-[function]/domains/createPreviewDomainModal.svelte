@@ -21,16 +21,16 @@
     let error = null;
     async function onSubmit() {
         try {
-            await sdk.forProject.proxy.createSiteRule(
-                `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                $page.params.site
+            await sdk.forProject.proxy.createFunctionRule(
+                `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                $page.params.function
             );
 
-            await invalidate(Dependencies.SITES_DOMAINS);
+            await invalidate(Dependencies.FUNCTION_DOMAINS);
             show = false;
             addNotification({
                 type: 'success',
-                message: 'Appwrite domain has been added'
+                message: 'Preview domain has been added'
             });
             trackEvent(Submit.DomainCreate);
         } catch (e) {
@@ -57,7 +57,7 @@
         }
         try {
             await sdk.forConsole.console.getResource(
-                `${value}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                `${value}.${$consoleVariables._APP_DOMAIN_TARGET}`,
                 ConsoleResourceType.Rules
             );
             domainStatus = 'complete';
@@ -79,7 +79,7 @@
     }
 </script>
 
-<Modal title="Add Appwrite domain" bind:show {onSubmit} bind:error>
+<Modal title="Add preview domain" bind:show {onSubmit} bind:error>
     <span slot="description">
         Get an auto-generated domain to quickly access your project. You can customize its prefix.
     </span>
@@ -89,7 +89,7 @@
             <InputText id="domain" placeholder="my-domain" bind:value={domain}>
                 <svelte:fragment slot="end">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                        .{$consoleVariables._APP_DOMAIN_SITES}
+                        .{$consoleVariables._APP_DOMAIN_TARGET}
                     </Typography.Text>
                 </svelte:fragment>
             </InputText>

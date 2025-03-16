@@ -9,32 +9,23 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
     import Table from './table.svelte';
-    import { Filters } from '$lib/components/filters';
-    import { queries, tags } from '$lib/components/filters/store';
     import { View } from '$lib/helpers/load';
     import DeploymentCard from './(components)/deploymentCard.svelte';
     import RedeployModal from './(modals)/redeployModal.svelte';
-    import QuickFilters from './quickFilters.svelte';
     import { canWriteFunctions } from '$lib/stores/roles';
-    import {
-        ActionMenu,
-        Alert,
-        Card,
-        Empty,
-        Icon,
-        Layout,
-        Popover
-    } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Alert, Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         IconDotsHorizontal,
-        IconFilterLine,
         IconPlus,
         IconRefresh,
         IconTerminal
     } from '@appwrite.io/pink-icons-svelte';
     import { app } from '$lib/stores/app';
     import CreateActionMenu from './(components)/createActionMenu.svelte';
+    import { ParsedTagList, QuickFilters } from '$lib/components/filters';
+    import { Menu } from '$lib/components/menu';
+    import DownloadActionMenuItem from './(components)/downloadActionMenuItem.svelte';
 
     export let data;
 
@@ -42,11 +33,6 @@
     let showAlert = true;
 
     let selectedDeployment: Models.Deployment = null;
-
-    function clearAll() {
-        queries.clearAll();
-        queries.apply();
-    }
 </script>
 
 <Container>
@@ -90,24 +76,27 @@
                     activeDeployment>
                     <svelte:fragment slot="footer">
                         <Layout.Stack direction="row" gap="s" alignItems="center" inline>
-                            <Popover let:toggle placement="bottom-start" padding="none">
-                                <Button secondary icon text on:click={toggle}>
+                            <Menu>
+                                <Button secondary icon text>
                                     <Icon icon={IconDotsHorizontal} size="s" />
                                 </Button>
-                                <svelte:fragment slot="tooltip" let:toggle>
+                                <svelte:fragment slot="menu" let:toggle>
                                     <ActionMenu.Root>
                                         {#if $canWriteFunctions}
                                             <ActionMenu.Item.Button
                                                 trailingIcon={IconRefresh}
-                                                on:click={(e) => {
+                                                on:click={() => {
                                                     selectedDeployment = activeDeployment;
                                                     showRedeploy = true;
                                                     trackEvent(Click.FunctionsRedeployClick);
-                                                    toggle(e);
+                                                    toggle();
                                                 }}>
                                                 Redeploy
                                             </ActionMenu.Item.Button>
                                         {/if}
+                                        <DownloadActionMenuItem
+                                            deployment={activeDeployment}
+                                            {toggle} />
                                         <ActionMenu.Item.Anchor
                                             trailingIcon={IconTerminal}
                                             href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
@@ -115,7 +104,7 @@
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>
                                 </svelte:fragment>
-                            </Popover>
+                            </Menu>
                             <Button
                                 secondary
                                 href={`${base}/project-${$page.params.project}/functions/function-${$func.$id}/executions/execute-function`}
@@ -179,23 +168,26 @@
             {/if}
 
             <Layout.Stack gap="l">
-                <Layout.Stack direction="row" alignItems="center">
-                    <Layout.Stack direction="row" gap="s" wrap="wrap">
-                        {#if data.deploymentList.total}
-                            <QuickFilters {columns} />
-                        {/if}
+                <Layout.Stack>
+                    <Layout.Stack direction="row" alignItems="center">
+                        <Layout.Stack direction="row" gap="s" wrap="wrap">
+                            {#if data.deploymentList.total}
+                                <QuickFilters {columns} analyticsSource="function_deployments" />
+                            {/if}
+                        </Layout.Stack>
+                        <Layout.Stack direction="row" gap="s" inline>
+                            {#if data.deploymentList.total}
+                                <ViewSelector view={View.Table} {columns} hideView />
+                            {/if}
+                            <CreateActionMenu let:toggle>
+                                <Button on:click={toggle} event="create_deployment">
+                                    <Icon icon={IconPlus} size="s" slot="start" />
+                                    Create deployment
+                                </Button>
+                            </CreateActionMenu>
+                        </Layout.Stack>
                     </Layout.Stack>
-                    <Layout.Stack direction="row" gap="s" inline>
-                        {#if data.deploymentList.total}
-                            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
-                        {/if}
-                        <CreateActionMenu let:toggle>
-                            <Button on:click={toggle} event="create_deployment">
-                                <Icon icon={IconPlus} size="s" slot="start" />
-                                Create deployment
-                            </Button>
-                        </CreateActionMenu>
-                    </Layout.Stack>
+                    <ParsedTagList />
                 </Layout.Stack>
 
                 {#if data.deploymentList.total}

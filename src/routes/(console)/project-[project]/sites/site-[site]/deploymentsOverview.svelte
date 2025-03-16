@@ -116,5 +116,8 @@
     <CancelDeploymentModal {selectedDeployment} bind:showCancel />
 {/if}
 {#if selectedDeployment && showDelete}
-    <DeleteDeploymentModal {selectedDeployment} bind:showDelete />
+    <DeleteDeploymentModal
+        {selectedDeployment}
+        bind:showDelete
+        activeDeployment={site?.deploymentId} />
 {/if}

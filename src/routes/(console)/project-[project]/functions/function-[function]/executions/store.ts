@@ -134,6 +134,8 @@ export function logStatusConverter(status: string) {
             return 'processing';
         case 'waiting':
             return 'waiting';
+        case 'queued':
+            return 'waiting';
         case 'peding':
             return 'pending';
         case 'cancelled':

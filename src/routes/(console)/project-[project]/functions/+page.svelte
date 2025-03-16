@@ -18,7 +18,6 @@
 
     import { parseExpression } from 'cron-parser';
     import { onMount } from 'svelte';
-    import { functionsList } from './store';
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
     import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
@@ -64,7 +63,7 @@
             keys: ['c'],
             disabled:
                 $wizard.show ||
-                isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total) ||
+                isServiceLimited('functions', $organization?.billingPlan, data.functions?.total) ||
                 !$canWriteFunctions,
             icon: IconPlus,
             group: 'functions'
@@ -88,7 +87,8 @@
             showEmpty={$canWriteFunctions}
             event="functions"
             total={data.functions.total}
-            service="functions">
+            service="functions"
+            on:click={() => goto(`${base}/project-${project}/functions/create-function`)}>
             {#each data.functions.functions as func}
                 <GridItem1 href={`${base}/project-${project}/functions/function-${func.$id}`}>
                     <svelte:fragment slot="title">
@@ -100,7 +100,7 @@
                         </Layout.Stack>
                     </svelte:fragment>
                     <svelte:fragment slot="icons">
-                        {#if !func.schedule}
+                        {#if func.schedule}
                             <Tooltip>
                                 <Icon icon={IconClock} size="s" />
                                 <span slot="tooltip"

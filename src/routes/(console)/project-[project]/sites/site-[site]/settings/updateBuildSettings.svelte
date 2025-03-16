@@ -13,22 +13,23 @@
     import { getFrameworkIcon } from '../../store';
     import { Link } from '$lib/elements';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { adapterDataList } from './store';
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];
-    let selectedFramework: Models.Framework = null;
+    let selectedFramework: Models.Framework = frameworks.find(
+        (framework) => framework.key === site.framework
+    );
+    let frameworkKey = site.framework;
+    let adapter: Adapter = site.adapter as Adapter;
     let installCommand = undefined;
     let buildCommand = undefined;
     let outputDirectory = undefined;
-    let frameworkKey = site.framework;
-    let adapter: Adapter = site.adapter as Adapter;
     let fallback = site.fallbackFile;
     let isButtonDisabled = true;
     let showFallback = site.adapter === Adapter.Static;
 
     onMount(async () => {
-        selectedFramework ??= frameworks.find((framework) => framework.key === site.framework);
-
         installCommand =
             site?.installCommand ?? selectedFramework.adapters[site.adapter].defaultInstallCommand;
         buildCommand =
@@ -73,7 +74,6 @@
         }
     }
 
-    $: frameworkData = frameworks.find((framework) => framework.key === frameworkKey);
     $: if (
         installCommand === site?.installCommand &&
         buildCommand === site?.buildCommand &&
@@ -89,17 +89,28 @@
 
     $: if (adapter === Adapter.Static) {
         showFallback = true;
+        fallback ||= selectedFramework.adapters.static.fallbackFile;
+        console.log(fallback, selectedFramework.adapters.static);
     } else {
         showFallback = false;
+        fallback = undefined;
     }
 
     $: if (fallback === '') {
         fallback = null;
     }
 
-    $: frameworkDataAdapter = frameworkData.adapters?.length
-        ? frameworkData.adapters[site.adapter]
+    $: frameworkDataAdapter = selectedFramework.adapters?.length
+        ? selectedFramework.adapters[site.adapter]
         : frameworks[0].adapters[site.adapter];
+
+    //TODO: fix after backend type is fixed
+    $: if (selectedFramework?.adapters?.length <= 1 || !selectedFramework?.adapters?.ssr?.key) {
+        adapter = Adapter.Static;
+    }
+    $: if (selectedFramework?.adapters?.length <= 1 || !selectedFramework?.adapters?.static?.key) {
+        adapter = Adapter.Ssr;
+    }
 </script>
 
 <Form onSubmit={updateName}>
@@ -108,6 +119,9 @@
         Default build settings are configured based on your framework, ensuring optimal performance.
         Adjust the settings here if needed.
         <svelte:fragment slot="aside">
+            {@const adapterData = adapterDataList.find(
+                (adapterData) => adapterData.framework === frameworkKey.toLowerCase()
+            )}
             <Layout.Stack gap="xl">
                 <InputSelect
                     required
@@ -125,30 +139,62 @@
                             (framework) => framework.key === frameworkKey
                         );
                     }} />
-                <Layout.Grid columnsXS={1} columns={2} gap="l">
-                    <Card.Selector
-                        title="Server side rendering"
-                        variant="primary"
-                        radius="s"
-                        padding="s"
-                        name="adapter"
-                        value={`${Adapter.Ssr}`}
-                        bind:group={adapter}>
-                        Use <InlineCode code={`${frameworkKey}/node`} size="s" /> adapter in your {frameworkData.name}
-                        config file. <Link external href="#">Learn more</Link>.
-                    </Card.Selector>
-                    <Card.Selector
-                        title="Static site"
-                        variant="primary"
-                        radius="s"
-                        padding="s"
-                        name="adapter"
-                        value={Adapter.Static}
-                        bind:group={adapter}>
-                        Use <InlineCode code={`${frameworkKey}/static`} size="s" /> adapter in your {frameworkData.name}
-                        config file. <Link external href="#">Learn more</Link>.
-                    </Card.Selector>
-                </Layout.Grid>
+                {#if selectedFramework.adapters?.length || (selectedFramework.adapters?.ssr?.key && selectedFramework.adapters?.static?.key)}
+                    <Layout.Grid columnsXS={1} columns={2} gap="l">
+                        <Card.Selector
+                            title="Server side rendering"
+                            variant="primary"
+                            radius="s"
+                            padding="s"
+                            name="adapter"
+                            value={`${Adapter.Ssr}`}
+                            bind:group={adapter}>
+                            {#if adapterData?.ssr?.desc?.includes('$')}
+                                {@const parts = adapterData.ssr.desc.split('$')}
+                                {#each parts as part, i}
+                                    {#if i === 0}
+                                        {part}
+                                    {:else}
+                                        <InlineCode code={adapterData.ssr.code[i - 1]} size="s" />
+                                        {part}
+                                    {/if}
+                                {/each}
+                            {:else}
+                                {adapterData.ssr.desc}
+                            {/if}
+                            {#if adapterData.ssr.url}
+                                <Link external href={adapterData.ssr.url}>Learn more</Link>
+                            {/if}
+                        </Card.Selector>
+                        <Card.Selector
+                            title="Static site"
+                            variant="primary"
+                            radius="s"
+                            padding="s"
+                            name="adapter"
+                            value={Adapter.Static}
+                            bind:group={adapter}>
+                            {#if adapterData.static.desc.includes('$')}
+                                {@const parts = adapterData.static.desc.split('$')}
+                                {#each parts as part, i}
+                                    {#if i === 0}
+                                        {part}
+                                    {:else}
+                                        <InlineCode
+                                            code={adapterData.static.code[i - 1]}
+                                            size="s" />
+                                        {part}
+                                    {/if}
+                                {/each}
+                            {:else}
+                                {adapterData.static.desc}
+                            {/if}
+                            {#if adapterData.static.url}
+                                <Link external href={adapterData.static.url}>Learn more</Link>
+                            {/if}
+                        </Card.Selector>
+                    </Layout.Grid>
+                {/if}
                 <Fieldset legend="Settings">
                     <Layout.Stack gap="xl">
                         <Layout.Stack gap="s" direction="row" alignItems="flex-end">
@@ -207,7 +253,6 @@
                             <InputText
                                 id="fallback"
                                 label="Fallback file"
-                                required
                                 placeholder="index.html"
                                 bind:value={fallback}>
                                 <Tooltip slot="info">

@@ -150,6 +150,6 @@
             name="Templates"
             limit={data.limit}
             offset={data.offset}
-            total={data.templates?.length} />
+            total={data.sum} />
     </Layout.Stack>
 </Wizard>

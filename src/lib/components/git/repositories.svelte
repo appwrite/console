@@ -30,11 +30,13 @@
     export let installationList = $installations;
     export let product: 'functions' | 'sites' = 'functions';
 
+    let search = '';
+    let selectedInstallation = null;
+
     $: {
         hasInstallations = installationList?.total > 0;
     }
 
-    let selectedInstallation = null;
     async function loadInstallations() {
         if (installationList) {
             if (installationList.installations.length) {
@@ -56,7 +58,6 @@
         }
     }
 
-    let search = '';
     async function loadRepositories(installationId: string, search: string) {
         if (
             !$repositories ||
@@ -91,7 +92,7 @@
             $repository = $repositories.repositories[0];
         }
 
-        return $repositories.repositories.slice(0, 4);
+        return $repositories.repositories;
     }
 </script>
 

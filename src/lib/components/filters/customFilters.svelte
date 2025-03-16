@@ -9,7 +9,10 @@
 </script>
 
 <ActionMenu.Root>
-    <ActionMenu.Item.Button on:click={() => (show = true)}>Custom filters</ActionMenu.Item.Button>
+    <ActionMenu.Item.Button
+        on:click={() => {
+            show = true;
+        }}>Custom filters</ActionMenu.Item.Button>
 </ActionMenu.Root>
 
 {#if show}

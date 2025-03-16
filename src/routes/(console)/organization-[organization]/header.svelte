@@ -20,8 +20,8 @@
         isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Tooltip, Typography, Layout } from '@appwrite.io/pink-svelte';
+    import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tooltip, Typography, Layout, Badge } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -91,27 +91,24 @@
     <Cover>
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
-                <span class="u-trim">
-                    <Typography.Title color="--fgcolor-neutral-primary" size="xl"
-                        >{$organization.name}</Typography.Title>
-                </span>
+                <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
+                    {$organization.name}
+                </Typography.Title>
                 {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                    <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem">
-                        <span class="icon-github" aria-hidden="true" />EDUCATION
-                    </Pill>
+                    <Badge variant="secondary" content="Education">
+                        <Icon icon={IconGithub} size="s" slot="start" />
+                    </Badge>
                 {:else if isCloud && $organization?.billingPlan === BillingPlan.FREE}
-                    <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem">FREE</Pill>
+                    <Badge variant="secondary" content="Free"></Badge>
                 {/if}
                 {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
                     <Tooltip>
-                        <div class="u-flex u-cross-center">
-                            <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem"
-                                >TRIAL</Pill>
-                        </div>
-                        <span slot="tooltip"
-                            >{`Your trial ends on ${toLocaleDate(
+                        <Badge variant="secondary" content="Trial" />
+                        <svelte:fragment slot="tooltip">
+                            {`Your trial ends on ${toLocaleDate(
                                 $organization.billingStartDate
-                            )}. ${$daysLeftInTrial} days remaining.`}</span>
+                            )}. ${$daysLeftInTrial} days remaining.`}
+                        </svelte:fragment>
                     </Tooltip>
                 {/if}
             </span>

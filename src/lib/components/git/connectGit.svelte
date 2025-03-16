@@ -20,7 +20,11 @@
                     environment variables are configured.
                 </p>
                 <div>
-                    <Button compact external href="#/">Learn more</Button>
+                    <Button
+                        compact
+                        external
+                        href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
+                        >Learn more</Button>
                 </div>
             </Layout.Stack>
         </Alert.Inline>

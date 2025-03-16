@@ -1,6 +1,6 @@
 <script lang="ts">
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
-    import { CardGrid, Empty, PaginationInline, EmptySearch, Alert } from '$lib/components';
+    import { CardGrid, Empty, PaginationInline, EmptySearch } from '$lib/components';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -12,7 +12,7 @@
     import UserTargetsModal from '../userTargetsModal.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
 
     export let message: Models.Message & { data: Record<string, unknown> };
     export let selectedTargetsById: Record<string, Models.Target>;
@@ -130,20 +130,18 @@
             {#if hasDeletedUsers}
                 <div class:u-padding-block-end-16={dataSource.length}>
                     {#if hasDeletedUsers && !dataSource.length}
-                        <Alert type="info">
-                            <svelte:fragment slot="title"
-                                >There are no targets to show</svelte:fragment>
-                            This message was sent to users who are no longer available, so their information
-                            cannot be displayed.
-                        </Alert>
+                        <Alert.Inline status="info" title="There are no targets to show">
+                            This message was sent to users who are no longer available, so their
+                            information cannot be displayed.
+                        </Alert.Inline>
                     {:else}
-                        <Alert
-                            type="info"
+                        <Alert.Inline
+                            status="info"
                             dismissible={dataSource.length > 0}
                             on:dismiss={() => (hasDeletedUsers = false)}>
                             This message was sent to users who are no longer available, so their
                             information cannot be displayed.
-                        </Alert>
+                        </Alert.Inline>
                     {/if}
                 </div>
             {/if}

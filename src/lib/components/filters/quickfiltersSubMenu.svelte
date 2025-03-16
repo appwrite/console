@@ -4,17 +4,7 @@
     import { ActionMenu, Card, Layout, Selector } from '@appwrite.io/pink-svelte';
     import { createMenubar, melt } from '@melt-ui/svelte';
     import { createEventDispatcher } from 'svelte';
-    import type { ValidOperators } from './store';
-
-    type FilterData = {
-        title: string;
-        id: string;
-        array: boolean;
-        show: boolean;
-        tag: string;
-        operator: ValidOperators;
-        options: { value: string; label: string; checked: boolean }[];
-    };
+    import type { FilterData } from './quickFilters';
 
     export let filter: FilterData;
     export let variant: 'checkbox' | 'radio' = 'checkbox';
@@ -44,7 +34,7 @@
 </script>
 
 <div use:melt={$subTrigger}>
-    <ActionMenu.Root>
+    <ActionMenu.Root noPadding>
         <ActionMenu.Item.Button trailingIcon={IconChevronRight}
             >{filter.title}</ActionMenu.Item.Button>
     </ActionMenu.Root>
@@ -61,11 +51,7 @@
                                 on:click={() => {
                                     option.checked = !option.checked;
                                     dispatch('add', {
-                                        value: filter?.array
-                                            ? null
-                                            : option.checked
-                                              ? option.value
-                                              : null
+                                        value: option.value
                                     });
                                 }}>
                                 {capitalize(option.label)}
@@ -79,15 +65,11 @@
                                 on:click={() => {
                                     option.checked = !option.checked;
                                     dispatch('add', {
-                                        value: filter?.array
-                                            ? null
-                                            : option.checked
-                                              ? option.value
-                                              : null
+                                        value: option.checked
                                     });
                                 }}>
                                 <Layout.Stack direction="row" gap="s">
-                                    <Selector.Checkbox bind:checked={option.checked} />
+                                    <Selector.Checkbox checked={option.checked} size="s" />
                                     {capitalize(option.label)}
                                 </Layout.Stack>
                             </ActionMenu.Item.Button>

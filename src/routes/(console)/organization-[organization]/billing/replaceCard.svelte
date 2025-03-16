@@ -40,7 +40,7 @@
 
     async function handleSubmit() {
         try {
-            if (!selectedPaymentMethodId) {
+            if (selectedPaymentMethodId === '$new') {
                 const method = await submitStripeCard(name, $organization.$id);
                 selectedPaymentMethodId = method.$id;
             }
@@ -89,10 +89,6 @@
     }
 
     $: filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);
-
-    $: if (!show) {
-        selectedPaymentMethodId = null;
-    }
 </script>
 
 <FakeModal bind:show bind:error onSubmit={handleSubmit} size="big" title="Replace payment method">

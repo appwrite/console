@@ -22,12 +22,16 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
-    import ConnectBehaviour from './connectBehaviour.svelte';
-    import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
-    import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
+    import {
+        ConnectBehaviour,
+        NewRepository,
+        ProductionBranchFieldset,
+        Repositories,
+        RepositoryBehaviour
+    } from '$lib/components/git';
     import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
     import { consoleVariables } from '$routes/(console)/store';
@@ -211,7 +215,7 @@
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Icon size="s" icon={IconGithub} />
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {$repository.name}
+                                    {$repository.organization}/{$repository.name}
                                 </Typography.Text>
                             </Layout.Stack>
                             <Button
@@ -224,7 +228,7 @@
                             </Button>
                         </Layout.Stack>
                     </Card>
-                    <ProductionBranch
+                    <ProductionBranchFieldset
                         bind:branch
                         bind:rootDir
                         bind:silentMode

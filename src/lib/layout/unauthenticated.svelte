@@ -270,7 +270,7 @@
         }
 
         .tag-line {
-            font-family: 'Aeonik Pro';
+            font-family: 'Aeonik Pro', 'Inter', sans-serif;
             font-size: 4rem;
             font-style: normal;
             font-weight: 400;

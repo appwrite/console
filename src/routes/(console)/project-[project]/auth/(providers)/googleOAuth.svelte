@@ -1,12 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Alert, CopyInput, Modal } from '$lib/components';
+    import { CopyInput, Modal } from '$lib/components';
     import { Button, FormList, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
     import type { Models } from '@appwrite.io/console';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
     const projectId = $page.params.project;
 
@@ -59,12 +60,11 @@
             label="App Secret"
             placeholder="Enter App Secret"
             minlength={0}
-            showPasswordButton
             bind:value={secret} />
-        <Alert type="info">
+        <Alert.Inline status="info">
             To complete the setup, create an OAuth2 client ID with "Web application" as the
             application type, then add this redirect URI to your {provider.name} configuration.
-        </Alert>
+        </Alert.Inline>
         <div>
             <p>URI</p>
             <CopyInput

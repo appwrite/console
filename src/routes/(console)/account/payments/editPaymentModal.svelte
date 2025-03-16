@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { Button, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -7,6 +7,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let selectedPaymentMethod: PaymentMethodData;
@@ -65,13 +66,13 @@
 
 <Modal bind:error onSubmit={handleSubmit} bind:show title="Update payment method">
     {#if selectedPaymentMethod?.expired}
-        <Alert type="error">
-            <svelte:fragment slot="title">This payment method has expired</svelte:fragment>
-        </Alert>
+        <Alert.Inline status="error" title="This payment method has expired" />
     {/if}
-    {#if isLinked}
-        Updates to this payment method will be applied to any linked organizations.
-    {/if}
+    <svelte:fragment slot="description">
+        {#if isLinked}
+            Updates to this payment method will be applied to any linked organizations.
+        {/if}
+    </svelte:fragment>
     <FormList>
         <InputSelect
             id="month"

@@ -65,26 +65,24 @@
                         rel="noopener noreferrer">view our pricing guide.</Link.Anchor>
                 </Alert.Inline>
             {:else}
-                <FormList>
-                    <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
-                        <svelte:fragment slot="description">
-                            Budget cap limits do not include the base amount of your plan. <button
-                                class="link"
-                                type="button"
-                                on:click={() => ($showUsageRatesModal = true)}
-                                >Learn more about usage rates.
-                            </button>
-                        </svelte:fragment>
-                    </InputSwitch>
-                    {#if capActive}
-                        <InputNumber
-                            placeholder="Add budget cap"
-                            id="cap"
-                            autofocus
-                            label="Budget cap (USD)"
-                            bind:value={budget} />
-                    {/if}
-                </FormList>
+                <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
+                    <svelte:fragment slot="description">
+                        Budget cap limits do not include the base amount of your plan. <button
+                            class="link"
+                            type="button"
+                            on:click={() => ($showUsageRatesModal = true)}
+                            >Learn more about usage rates.
+                        </button>
+                    </svelte:fragment>
+                </InputSwitch>
+                {#if capActive}
+                    <InputNumber
+                        required
+                        placeholder="Add budget cap"
+                        id="cap"
+                        label="Budget cap (USD)"
+                        bind:value={budget} />
+                {/if}
             {/if}
         </svelte:fragment>
 

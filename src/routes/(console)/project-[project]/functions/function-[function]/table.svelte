@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Id } from '$lib/components';
     import type { PageData } from './$types';
-    import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
@@ -13,13 +13,11 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Cancel from './(modals)/cancel.svelte';
-    import { sdk } from '$lib/stores/sdk';
     import { base } from '$app/paths';
-    import { ActionMenu, Icon, Layout, Popover, Status, Table } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Layout, Status, Table } from '@appwrite.io/pink-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         IconDotsHorizontal,
-        IconDownload,
         IconLightningBolt,
         IconRefresh,
         IconTrash,
@@ -30,11 +28,12 @@
     import Delete from './(modals)/deleteModal.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { deploymentStatusConverter } from '$lib/stores/git';
+    import DownloadActionMenuItem from './(components)/downloadActionMenuItem.svelte';
+    import { Menu } from '$lib/components/menu';
 
     export let columns: Column[];
     export let data: PageData;
 
-    let showDropdown = [];
     let showDelete = false;
     let showActivate = false;
     let showRedeploy = false;
@@ -44,15 +43,6 @@
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
-    }
-
-    //TODO: implement output download
-    function getDownload(deploymentId: string) {
-        return (
-            sdk.forProject.functions.getDeploymentDownload($func.$id, deploymentId).toString() +
-                '&mode=admin',
-            DeploymentDownloadType.Source
-        );
     }
 </script>
 
@@ -67,7 +57,7 @@
         {/each}
         <Table.Header.Cell width="40" />
     </svelte:fragment>
-    {#each data.deploymentList.deployments as deployment, index (deployment.$id)}
+    {#each data.deploymentList.deployments as deployment (deployment.$id)}
         <Table.Link
             href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
             {#each columns as column}
@@ -100,7 +90,9 @@
                         </Table.Cell>
                     {:else if column.id === 'buildDuration'}
                         <Table.Cell>
-                            {#if ['processing', 'building'].includes(deployment.status)}
+                            {#if ['waiting'].includes(deployment.status)}
+                                -
+                            {:else if ['processing', 'building'].includes(deployment.status)}
                                 <span use:timer={{ start: deployment.$createdAt }} />
                             {:else}
                                 {formatTimeDetailed(deployment.buildDuration)}
@@ -118,48 +110,49 @@
                 {/if}
             {/each}
             <Table.Cell>
-                <Layout.Stack justifyContent="flex-end">
-                    <Popover let:toggle placement="bottom-start" padding="none">
-                        <!-- TODO: check why button style is broken -->
-                        <Button text icon on:click={toggle}>
-                            <Icon icon={IconDotsHorizontal} size="s" />
+                <Layout.Stack
+                    direction="row"
+                    gap="s"
+                    alignItems="center"
+                    justifyContent="flex-end"
+                    inline>
+                    <Menu>
+                        <Button text icon size="s">
+                            <Icon size="s" icon={IconDotsHorizontal} />
                         </Button>
-                        <svelte:fragment slot="tooltip" let:toggle>
+
+                        <svelte:fragment slot="menu" let:toggle>
                             <ActionMenu.Root>
                                 <ActionMenu.Item.Button
                                     trailingIcon={IconRefresh}
-                                    on:click={(e) => {
+                                    on:click={() => {
                                         selectedDeployment = deployment;
                                         showRedeploy = true;
-                                        toggle(e);
+                                        toggle();
                                         trackEvent(Click.FunctionsRedeployClick);
                                     }}>
                                     Redeploy
                                 </ActionMenu.Item.Button>
-                                {#if deployment.status === 'ready' && deployment.$id !== $func.deployment}
+                                {#if deployment.status === 'ready' && deployment.$id !== $func.deploymentId}
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconLightningBolt}
-                                        on:click={(e) => {
+                                        on:click={() => {
                                             selectedDeployment = deployment;
                                             showActivate = true;
-                                            toggle(e);
+                                            toggle();
                                         }}>
                                         Activate
                                     </ActionMenu.Item.Button>
                                 {/if}
 
-                                <ActionMenu.Item.Anchor
-                                    trailingIcon={IconDownload}
-                                    href={getDownload(deployment.$id)}
-                                    on:click={() => (showDropdown[index] = false)}>
-                                    Download
-                                </ActionMenu.Item.Anchor>
+                                <DownloadActionMenuItem {deployment} {toggle} />
+
                                 {#if deployment.status === 'processing' || deployment.status === 'building' || deployment.status === 'waiting'}
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconXCircle}
-                                        on:click={(e) => {
+                                        on:click={() => {
                                             selectedDeployment = deployment;
-                                            toggle(e);
+                                            toggle();
 
                                             showCancel = true;
                                             trackEvent(Click.FunctionsDeploymentCancelClick);
@@ -171,9 +164,9 @@
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconTrash}
                                         status="danger"
-                                        on:click={(e) => {
+                                        on:click={() => {
                                             selectedDeployment = deployment;
-                                            toggle(e);
+                                            toggle();
 
                                             showDelete = true;
                                             trackEvent(Click.FunctionsDeploymentDeleteClick);
@@ -183,7 +176,7 @@
                                 {/if}
                             </ActionMenu.Root>
                         </svelte:fragment>
-                    </Popover>
+                    </Menu>
                 </Layout.Stack>
             </Table.Cell>
         </Table.Link>

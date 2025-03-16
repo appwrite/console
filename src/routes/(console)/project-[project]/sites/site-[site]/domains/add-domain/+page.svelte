@@ -74,12 +74,12 @@
     });
 
     async function addDomain() {
-        const isAppwriteDomain = domain.endsWith($consoleVariables._APP_DOMAIN_SITES);
+        const isPreviewDomain = domain.endsWith($consoleVariables._APP_DOMAIN_SITES);
         const isNewDomain = data.domains.rules.findIndex((rule) => rule.domain === domain) === -1;
         const isSubDomain = domain.split('.').length >= 2;
         try {
             if (behaviour === 'CREATE') {
-                if (isCloud && !isAppwriteDomain) {
+                if (isCloud && !isPreviewDomain) {
                     //Redirect if subdomain so user can choose how to proceed
                     if (isSubDomain) {
                         goto(
@@ -102,7 +102,7 @@
                         );
                     }
                 }
-                //if selfhosted or appwrite domain create site rule
+                //if selfhosted or preview domain create site rule
                 else {
                     await sdk.forProject.proxy.createSiteRule(domain, $page.params.site, branch);
                     addNotification({
@@ -113,7 +113,7 @@
                     await invalidate(Dependencies.SITES_DOMAINS);
                 }
             } else if (behaviour === 'REDIRECT') {
-                if (isCloud && !isAppwriteDomain) {
+                if (isCloud && !isPreviewDomain) {
                     //Redirect if subdomain so user can choose how to proceed
                     if (isSubDomain) {
                         goto(
@@ -188,19 +188,27 @@
             {#if behaviour === 'CREATE'}
                 <Fieldset legend="Configuration">
                     <Layout.Stack gap="xl">
-                        {#if data.branches?.total}
+                        {#if data.site?.providerRepositoryId}
                             {@const sortedBranches = sortBranches(data.branches.branches)}
                             {@const options = sortedBranches.map((branch) => ({
                                 label: branch.name,
                                 value: branch.name
                             }))}
-                            <InputSelect
-                                {options}
-                                label="Production branch"
-                                id="branch"
-                                required
-                                bind:value={branch}
-                                placeholder="Select branch" />
+                            <Layout.Stack gap="s">
+                                <InputSelect
+                                    {options}
+                                    label="Production branch"
+                                    id="branch"
+                                    required
+                                    bind:value={branch}
+                                    placeholder="Select branch" />
+                                {#if !data.branches?.total}
+                                    <Input.Helper state="default">
+                                        No branches found in the selected repository. Create a
+                                        branch to see it here.
+                                    </Input.Helper>
+                                {/if}
+                            </Layout.Stack>
                         {:else}
                             <InputSelect
                                 disabled
@@ -210,7 +218,6 @@
                                 required
                                 value="main"
                                 placeholder="Select branch" />
-
                             <Alert.Inline title=" There is no repository connected to your site">
                                 <Layout.Stack>
                                     <p>
@@ -287,5 +294,6 @@
     <ConnectRepoModal
         bind:show={showConnectRepo}
         site={data.site}
+        onlyExisting
         callbackState={{ connectRepo: 'true' }} />
 {/if}

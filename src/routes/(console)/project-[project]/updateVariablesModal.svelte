@@ -11,8 +11,8 @@
 
     export let isGlobal: boolean;
     export let product: 'function' | 'site' = 'function';
-    export let showCreate = false;
-    export let selectedVar: Partial<Models.Variable> = null;
+    export let show = false;
+    export let selectedVar: Partial<Models.Variable>;
 
     let pair = {
         $id: selectedVar?.$id,
@@ -24,29 +24,25 @@
     const dispatch = createEventDispatcher();
 
     function close() {
-        showCreate = false;
+        show = false;
         selectedVar = null;
     }
 
     function handleVariable() {
-        if (selectedVar) {
-            dispatch('updated', pair);
-        } else {
-            dispatch('created', pair);
-        }
+        dispatch('updated', pair);
+
         close();
     }
 
-    $: if (!showCreate) {
-        console.log('test');
+    $: if (!show) {
         selectedVar = null;
     }
 </script>
 
 <Modal
-    bind:show={showCreate}
+    bind:show
     onSubmit={handleVariable}
-    title={`${selectedVar ? 'Update' : 'Create'} ${isGlobal ? 'global' : 'environment'} variable`}>
+    title={`Update ${isGlobal ? 'global' : 'environment'} variable`}>
     <svelte:fragment slot="description">
         <span>
             Set the environment variables or secret keys that will be passed to {!isGlobal
@@ -85,6 +81,6 @@
     </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button secondary on:click={close}>Cancel</Button>
-        <Button submit>{selectedVar ? 'Update' : 'Create'}</Button>
+        <Button submit>Update</Button>
     </svelte:fragment>
 </Modal>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Modal } from '$lib/components';
+    import { Confirm } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -31,7 +31,7 @@
     }
 </script>
 
-<Modal title="Activate deployment" bind:show bind:error onSubmit={activate}>
+<Confirm title="Activate deployment" bind:open={show} bind:error onSubmit={activate}>
     <p class="text">
         This deployment is ready but not yet live. Activate it to make it publicly accessible.
     </p>
@@ -40,4 +40,4 @@
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit>Activate</Button>
     </svelte:fragment>
-</Modal>
+</Confirm>

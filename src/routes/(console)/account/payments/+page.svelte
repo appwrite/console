@@ -19,9 +19,7 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Typography.Title size="s">Payment details</Typography.Title>
-    </div>
+    <Typography.Title size="s">Payment details</Typography.Title>
     <PaymentMethods bind:showPayment />
     <BillingAddress />
 </Container>

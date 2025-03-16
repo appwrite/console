@@ -41,11 +41,6 @@
     ]);
 
     $updateCommandGroupRanks({ sites: 1000 });
-
-    // TODO: remove
-    const TMPSITEROLES = true;
-
-    $: console.log(data.siteList);
 </script>
 
 <Container>
@@ -79,7 +74,7 @@
     {:else}
         <Empty
             single
-            allowCreate={TMPSITEROLES}
+            allowCreate={$canWriteSites}
             href="https://appwrite.io/docs/products/sites"
             description="Deploy, manage, and scale your web applications effortlessly with Sites. "
             target="site"

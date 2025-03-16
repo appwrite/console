@@ -74,7 +74,7 @@
 <style>
     .alert {
         padding: 1rem 1rem 0.75rem 1.5rem;
-        position: absolute;
+        position: fixed;
         top: 0;
         width: 100%;
         z-index: 100;

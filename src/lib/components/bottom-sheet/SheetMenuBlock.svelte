@@ -1,13 +1,14 @@
 <script lang="ts">
     import type { SheetMenu, SubMenu } from '$lib/components/bottom-sheet/index.js';
-    import { ActionMenu } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let menu: SubMenu;
     export let isOpen: boolean;
     export let navigateSubMenu: (menu: SheetMenu) => void;
+    export let navigatePreviousMenu: () => void;
 </script>
 
-{#if menu.title}
+{#if menu?.title}
     <span class="menu-title">{menu.title}</span>
 {/if}
 <ActionMenu.Root>
@@ -31,12 +32,23 @@
                 on:click={() => {
                     if (menuItem.subMenu) {
                         navigateSubMenu(menuItem.subMenu);
+                    } else if (menuItem.navigatePrevious) {
+                        navigatePreviousMenu();
                     } else if (menuItem.onClick !== undefined) {
                         menuItem.onClick();
-                        isOpen = false;
+                        if (menuItem.closeOnClick !== false) {
+                            isOpen = false;
+                        }
                     }
                 }}>
-                {menuItem.name}
+                {#if menuItem?.checked !== undefined}
+                    <Layout.Stack direction="row" gap="s">
+                        <Selector.Checkbox checked={menuItem.checked} size="s" />
+                        {menuItem.name}
+                    </Layout.Stack>
+                {:else}
+                    {menuItem.name}
+                {/if}
             </ActionMenu.Item.Button>
         {/if}
     {/each}

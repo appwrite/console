@@ -23,6 +23,7 @@
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
     import { getApiEndpoint } from '$lib/stores/sdk';
+    import { capitalize } from '$lib/helpers/string';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList;
@@ -86,7 +87,9 @@
                                 Status
                             </Typography.Text>
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                <Status status={deployment.status} label={deployment.status} />
+                                <Status
+                                    status={deployment.status}
+                                    label={capitalize(deployment.status)} />
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}
@@ -165,7 +168,7 @@
                         </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
-                <Layout.Stack gap="xxs">
+                <Layout.Stack gap="xxs" inline style="width: min-content;">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                         Source
                     </Typography.Text>

@@ -9,7 +9,7 @@
     import { organization } from '$lib/stores/organization';
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
-    import { functionsList, getIconFromRuntime } from '../store';
+    import { functionsList } from '../store';
     import { debounce } from '$lib/helpers/debounce';
     import {
         Accordion,
@@ -25,6 +25,7 @@
     import Link from '$lib/elements/link.svelte';
     import Avatar from '$lib/components/avatar.svelte';
     import PaginationWithLimit from '$lib/components/paginationWithLimit.svelte';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
 
     export let data;
 

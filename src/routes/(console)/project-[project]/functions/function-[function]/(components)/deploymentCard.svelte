@@ -7,6 +7,7 @@
     import { DeploymentSource, DeploymentCreatedBy, DeploymentDomains } from '$lib/components/git';
 
     import { func } from '../store';
+    import { capitalize } from '$lib/helpers/string';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList;
@@ -106,14 +107,13 @@
                                         size={16}
                                         iconSize="small"
                                         name={$func.runtime.split('-')[0]} />
-                                    <!-- TODO: add correct name here -->
-                                    {$func.runtime}
+                                    {capitalize($func.runtime)}
                                 </Layout.Stack>
                             </Typography.Text>
                         </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
-                <Layout.Stack gap="xxs" inline>
+                <Layout.Stack gap="xxs" inline style="width: min-content;">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                         Source
                     </Typography.Text>

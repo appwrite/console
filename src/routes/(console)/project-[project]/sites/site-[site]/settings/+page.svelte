@@ -2,7 +2,6 @@
     import { Container } from '$lib/layout';
     import DangerZone from './dangerZone.svelte';
     import UpdateName from './updateName.svelte';
-    import UpdateVariables from '../../../updateVariables.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
@@ -15,6 +14,7 @@
     import { showConnectRepo } from './store';
     import { isCloud } from '$lib/system';
     import UpdateResourceLimits from './updateResourceLimits.svelte';
+    import UpdateVariables from '$routes/(console)/project-[project]/updateVariables.svelte';
 
     export let data;
 

@@ -4,16 +4,19 @@
 
     export let templateScopes: string[];
     export let selectedScopes: string[];
-    export let execute = false;
+    export let execute = true;
 
     let scopeList = scopes
         .filter((s) => templateScopes.includes(s.scope))
         .map((s) => {
+            selectedScopes.push(s.scope);
             return {
                 value: s,
-                checked: false
+                checked: true
             };
         });
+
+    $: console.log(selectedScopes);
 </script>
 
 <Fieldset legend="Permissions">
