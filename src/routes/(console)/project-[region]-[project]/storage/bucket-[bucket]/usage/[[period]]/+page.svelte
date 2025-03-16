@@ -9,21 +9,23 @@
     $: files = data.files;
     $: transformationsTotal = data.imageTransformationsTotal;
     $: transformations = data.imageTransformations;
+
+    $: path = `${base}/project-${$page.params.region}-${$page.params.project}/storage/bucket-${$page.params.bucket}/usage`;
 </script>
 
 <Usage
+    {path}
     title="Files"
-    path={`${base}/project-${$page.params.region}-${$page.params.project}/storage/bucket-${$page.params.bucket}/usage`}
-    total={filesTotal}
     count={files}
+    total={filesTotal}
     countMetadata={{
         legend: 'Files',
         title: 'Total files'
     }} />
 
 <Usage
+    {path}
     title="Image transformations"
-    path={`${base}/project-${$page.params.region}-${$page.params.project}/storage/bucket-${$page.params.bucket}/usage`}
     total={transformationsTotal}
     count={transformations}
     countMetadata={{
