@@ -16,6 +16,7 @@
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
+        // TODO: @itznotabug extract const $page = get(page);
         const $page = get(page);
         await sdk
             .forProject($page.params.region, $page.params.project)
@@ -40,6 +41,8 @@
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
+        // TODO: @itznotabug extract const $page = get(page);
+
         const $page = get(page);
         await sdk
             .forProject($page.params.region, $page.params.project)
@@ -91,6 +94,7 @@
     // Lifecycle hooks
     async function getCollections(search: string = null) {
         if (search) {
+            // TODO: @itznotabug inline `collections`.
             const collections = await sdk
                 .forProject($page.params.region, $page.params.project)
                 .databases.listCollections(databaseId, [Query.orderDesc('')], search);
@@ -98,7 +102,9 @@
         } else {
             const collections = await sdk
                 .forProject($page.params.region, $page.params.project)
-                .databases.listCollections(databaseId);
+                .databases.listCollections(databaseId, [
+                Query.limit(100)
+            ]);
             return collections;
         }
     }

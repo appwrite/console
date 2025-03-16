@@ -8,12 +8,14 @@
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';
+    import { createEventDispatcher } from 'svelte';
 
     export let show = false;
     export let message: Models.Message & { data: Record<string, unknown> };
     export let topics: Models.Topic[];
 
-    let totalTargets = message.targets?.length ?? 0;
+    const dispatch = createEventDispatcher();
+    $: totalTargets = message.targets?.length ?? 0;
 
     for (const topic of topics) {
         if (message.providerType == MessagingProviderType.Push) {
@@ -87,6 +89,8 @@
                 type: 'error'
             });
             trackError(error, Submit.MessagingMessageUpdate);
+        } finally {
+            dispatch('update');
         }
     };
 </script>

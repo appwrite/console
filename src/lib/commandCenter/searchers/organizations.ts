@@ -4,7 +4,7 @@ import { sdk } from '$lib/stores/sdk';
 import type { Searcher } from '../commands';
 
 export const orgSearcher = (async (query: string) => {
-    const { teams } = await sdk.forConsole.teams.list();
+    const { teams } = await sdk.forConsole.billing.listOrganization();
     return teams
         .filter((organization) => organization.name.toLowerCase().includes(query.toLowerCase()))
         .map((organization) => {

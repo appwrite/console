@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputText } from '$lib/elements/forms';
@@ -12,7 +12,7 @@
 
     let userName: string = null;
     onMount(async () => {
-        userName ??= $user.name;
+        userName ??= $user.name ?? '';
     });
 
     async function updateName() {

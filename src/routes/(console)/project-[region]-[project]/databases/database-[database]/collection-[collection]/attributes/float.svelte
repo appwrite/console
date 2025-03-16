@@ -4,6 +4,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
+    // TODO: @itznotabug extract const $page = get(page);
     export async function submitFloat(
         databaseId: string,
         collectionId: string,
@@ -39,9 +40,9 @@
                 collectionId,
                 originalKey,
                 data.required,
+                data.default,
                 data.min,
                 data.max,
-                data.default,
                 data.key !== originalKey ? data.key : undefined
             );
     }

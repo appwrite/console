@@ -63,25 +63,21 @@
         subject === message.data.subject &&
         content === message.data.content &&
         html === ((message.data['html'] ?? false) as boolean);
+
+    $: isDraft = message.status === 'draft';
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid hideFooter={message.status !== 'draft'}>
+    <CardGrid hideFooter={!isDraft}>
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
             <Heading tag="h6" size="7">Message</Heading>
         </div>
         <svelte:fragment slot="aside">
             <FormList>
-                <InputText
-                    id="subject"
-                    label="Subject"
-                    disabled={message.status !== 'draft'}
-                    bind:value={subject}></InputText>
-                <InputTextarea
-                    id="message"
-                    label="Message"
-                    disabled={message.status !== 'draft'}
-                    bind:value={content}></InputTextarea>
+                <InputText id="subject" label="Subject" disabled={!isDraft} bind:value={subject}
+                ></InputText>
+                <InputTextarea id="message" label="Message" disabled={!isDraft} bind:value={content}
+                ></InputTextarea>
                 <InputSwitch label="HTML mode" id="html" bind:value={html}>
                     <svelte:fragment slot="description">
                         Enable the HTML mode if your message contains HTML tags.

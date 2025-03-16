@@ -69,7 +69,7 @@
         ? checkForUsageFees($organization?.billingPlan, serviceId)
         : false;
     $: isLimited = limit !== 0 && limit < Infinity;
-    $: overflowingServices = limitedServices.filter((service) => service.value >= 0);
+    $: overflowingServices = limitedServices.filter((service) => service.value > 0);
     $: isButtonDisabled =
         buttonDisabled ||
         ($readOnly && !GRACE_PERIOD_OVERRIDE) ||
@@ -86,12 +86,14 @@
 
 <!-- Show only if on Cloud, alerts are enabled, and it isn't a project limited service -->
 {#if isCloud && showAlert}
-    {#if $readOnly}
-        {@const services = overflowingServices
-            .map((s) => {
-                return s.name.toLocaleLowerCase();
-            })
-            .join(', ')}
+    <!-- some services are above limit -->
+    {@const services = overflowingServices
+        .map((s) => {
+            return s.name.toLocaleLowerCase();
+        })
+        .join(', ')}
+
+    {#if services.length}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
             {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
                 <Alert type="info" isStandalone>
@@ -129,7 +131,7 @@
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
                         <span class="icon-info" />{total}/{limit} created
                     </Pill>
-                {:else}
+                {:else if $organization?.billingPlan !== BillingPlan.SCALE}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
                         <span class="icon-info" />Limits applied
                     </Pill>

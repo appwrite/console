@@ -3,8 +3,9 @@ import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { BackupArchive, BackupArchiveList, BackupPolicyList } from '$lib/sdk/backups';
+import { isCloud } from '$lib/system';
 
-export const load = async ({ params, url, route, depends }) => {
+export const load = async ({ params, url, route, depends, parent }) => {
     depends(Dependencies.BACKUPS);
     const page = getPage(url);
     const limit = getLimit(params.project, url, route, CARD_LIMIT);
@@ -14,11 +15,16 @@ export const load = async ({ params, url, route, depends }) => {
     let backups: BackupArchiveList = { total: 0, archives: [] };
     let policies: BackupPolicyList = { total: 0, policies: [] };
 
-    try {
-        [backups, policies] = await Promise.all([
-            sdk
-                .forProject(params.region, params.project)
-                .backups.listArchives([
+    // already loaded by parent.
+    const { currentPlan } = await parent();
+    const backupsEnabled = currentPlan?.backupsEnabled ?? true;
+
+    if (isCloud && backupsEnabled) {
+        try {
+            [backups, policies] = await Promise.all([
+                sdk
+                    .forProject(params.region, params.project)
+                    .backups.listArchives([
                     Query.limit(limit),
                     Query.offset(offset),
                     Query.orderDesc('$createdAt'),
@@ -26,16 +32,17 @@ export const load = async ({ params, url, route, depends }) => {
                     Query.equal('resourceId', params.database)
                 ]),
 
-            sdk
-                .forProject(params.region, params.project)
-                .backups.listPolicies([
+                sdk
+                    .forProject(params.region, params.project)
+                    .backups.listPolicies([
                     Query.orderDesc('$createdAt'),
                     Query.equal('resourceType', 'database'),
                     Query.equal('resourceId', params.database)
                 ])
-        ]);
-    } catch (e) {
-        // ignore
+            ]);
+        } catch (e) {
+            // ignore
+        }
     }
 
     const archivesByPolicy = groupArchivesByPolicy(backups.archives);

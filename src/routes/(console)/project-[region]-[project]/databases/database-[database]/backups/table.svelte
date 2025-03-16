@@ -147,7 +147,7 @@
         <TableCellHead width={192}>Backups</TableCellHead>
         <TableCellHead width={80}>Size</TableCellHead>
         <TableCellHead width={120}>Status</TableCellHead>
-        <TableCellHead width={80}>Policy</TableCellHead>
+        <TableCellHead width={120}>Policy</TableCellHead>
         <TableCellHead width={48} />
     </TableHeader>
     <TableBody>

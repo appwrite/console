@@ -43,8 +43,9 @@
                     $func.providerRepositoryId || undefined,
                     $func.providerBranch || undefined,
                     $func.providerSilentMode || undefined,
-                    $func.providerRootDirectory || undefined
-                );
+                    $func.providerRootDirectory || undefined,
+                    $func.specification || undefined
+            );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Name has been updated',

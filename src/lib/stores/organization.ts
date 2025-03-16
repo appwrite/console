@@ -4,6 +4,15 @@ import type { Models } from '@appwrite.io/console';
 import type { Tier } from './billing';
 import type { Plan, RegionList } from '$lib/sdk/billing';
 
+export type OrganizationError = {
+    status: number;
+    message: string;
+    teamId: string;
+    invoiceId: string;
+    clientSecret: string;
+    type: string;
+};
+
 export type Organization = Models.Team<Record<string, unknown>> & {
     billingBudget: number;
     billingPlan: Tier;
@@ -21,6 +30,8 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     amount: number;
     billingTaxId?: string;
     billingPlanDowngrade?: Tier;
+    billingAggregationId: string;
+    billingInvoiceId: string;
 };
 
 export type OrganizationList = {

@@ -12,18 +12,16 @@
     import { calculateExcess, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { Button } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { formatNum } from '$lib/helpers/string';
     import { onMount } from 'svelte';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
+    import type { Aggregation } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlan } from '$lib/constants';
     import { tooltip } from '$lib/actions/tooltip';
 
     export let tier: Tier;
-    export let members: number;
 
     const plan = $plansInfo?.get(tier);
     let excess: {
@@ -33,43 +31,39 @@
         executions?: number;
         members?: number;
     } = null;
-    let usage: OrganizationUsage = null;
+    let aggregation: Aggregation = null;
     let showExcess = false;
 
     onMount(async () => {
-        usage = await sdk.forConsole.billing.listUsage(
+        aggregation = await sdk.forConsole.billing.getAggregation(
             $organization.$id,
-            $organization.billingCurrentInvoiceDate,
-            new Date().toISOString()
+            $organization.billingAggregationId
         );
-        excess = calculateExcess(usage, plan, members);
+        excess = calculateExcess(aggregation, plan);
         showExcess = Object.values(excess).some((value) => value > 0);
     });
 </script>
 
+<Alert type="warning" {...$$restProps}>
+    <svelte:fragment slot="title">
+        Your organization will switch to {tierToPlan(BillingPlan.FREE).name} plan on {toLocaleDate(
+            $organization.billingNextInvoiceDate
+        )}.
+    </svelte:fragment>
+    {#if !showExcess}
+        You will retain access to your {tierToPlan($organization.billingPlan).name} plan features until
+        your billing period ends. After that, your organization will be limited to Free plan resources,
+        and service disruptions may occur if usage exceeds plan limits.
+    {:else}
+        You will retain access to {tierToPlan($organization.billingPlan).name} plan features until your
+        billing period ends. After that,
+        {#if excess?.members > 0}<span class="u-bold">
+                all team members except the owner will be removed,</span>
+        {/if} and service disruptions may occur if usage exceeds Free plan limits.
+    {/if}
+</Alert>
 {#if showExcess}
-    <Alert type="error" {...$$restProps}>
-        <svelte:fragment slot="title">
-            Your {tierToPlan($organization.billingPlan).name} plan subscription will end on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}
-        </svelte:fragment>
-        Following payment of your final invoice, your organization will switch to the {tierToPlan(
-            BillingPlan.FREE
-        ).name} plan. {#if excess?.members > 0}All team members except the owner will be removed on
-            that date.{/if} Service disruptions may occur unless resource usage is reduced.
-        <!-- Any executions, bandwidth, or messaging usage will be reset at that time. -->
-        <svelte:fragment slot="buttons">
-            <Button
-                text
-                external
-                href="https://appwrite.io/docs/advanced/platform/free#reaching-resource-limits">
-                Learn more
-            </Button>
-        </svelte:fragment>
-    </Alert>
-
-    <TableScroll noMargin dense class="u-margin-block-start-16">
+    <TableScroll dense class="u-margin-block-start-16">
         <TableHeader>
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Free limit</TableCellHead>
@@ -83,7 +77,8 @@
             {#if excess?.members}
                 <TableRow>
                     <TableCellText title="members">Organization members</TableCellText>
-                    <TableCellText title="limit">{plan.addons.seats.limit} members</TableCellText>
+                    <TableCellText title="limit"
+                        >{plan.addons.seats.limit || 0} members</TableCellText>
                     <TableCell title="excess">
                         <p class="u-color-text-danger u-flex u-cross-center u-gap-4">
                             <span class="icon-arrow-up" />

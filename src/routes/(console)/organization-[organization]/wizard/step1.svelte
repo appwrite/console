@@ -1,16 +1,24 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { FormList, InputText } from '$lib/elements/forms';
+    import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
+    import { sdk } from '$lib/stores/sdk';
     import { createProject } from './store';
-    import { loadAvailableRegions } from '$routes/(console)/regions';
+    import { regionFlagUrls, regions } from '$routes/(console)/organization-[organization]/store';
 
     let showCustomId = false;
 
-    loadAvailableRegions($page.params.organization);
+    if (!$regions?.regions) {
+        sdk.forConsole.billing.listRegions().then(regions.set);
+    }
 </script>
+
+<svelte:head>
+    {#each $regionFlagUrls as image}
+        <link rel="preload" as="image" href={image} />
+    {/each}
+</svelte:head>
 
 <WizardStep>
     <svelte:fragment slot="title">Details</svelte:fragment>

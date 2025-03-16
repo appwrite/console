@@ -43,6 +43,8 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
+    import { onDestroy, onMount } from 'svelte';
+    import { stopPolling, pollMessagesStatus } from './helper';
 
     export let data: PageData;
     let selected: string[] = [];
@@ -92,6 +94,16 @@
             showDelete = false;
         }
     }
+
+    onMount(() => {
+        const processingMessages = data.messages.messages.filter(
+            (message) => message.status === 'processing'
+        );
+
+        pollMessagesStatus(processingMessages);
+    });
+
+    onDestroy(stopPolling);
 </script>
 
 <Container>
