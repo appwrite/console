@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
-    import { Code, Id } from '$lib/components';
     import { getProjectEndpoint } from '$lib/helpers/project';
 
     const project = $page.params.project;

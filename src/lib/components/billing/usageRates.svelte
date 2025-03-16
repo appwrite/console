@@ -85,7 +85,7 @@
                         </TableCellText>
                         {#if !isFree}
                             <TableCellText title="rate">
-                                {formatCurrency(plan.addons.member.price)}/{usage?.unit}
+                                {formatCurrency(plan.addons.seats.price)}/{usage?.unit}
                             </TableCellText>
                         {/if}
                     </TableRow>

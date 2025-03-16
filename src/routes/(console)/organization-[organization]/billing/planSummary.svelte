@@ -87,8 +87,7 @@
                                                 <div>
                                                     {formatCurrency(
                                                         extraMembers *
-                                                            (currentPlan?.addons?.member?.price ??
-                                                                0)
+                                                            (currentPlan?.addons?.seats?.price ?? 0)
                                                     )}
                                                 </div>
                                             </div>

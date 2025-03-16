@@ -273,7 +273,8 @@ export async function checkForUsageLimit(org: Organization) {
 
     const members = org.total;
     const plan = get(plansInfo)?.get(org.billingPlan);
-    const membersOverflow = members > plan.members ? members - (plan.members || members) : 0;
+    const membersOverflow =
+        members > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
@@ -476,7 +477,7 @@ export function calculateExcess(usage: OrganizationUsage, plan: Plan, members: n
         storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
         users: calculateResourceSurplus(usage?.usersTotal, plan.users),
         executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
-        members: calculateResourceSurplus(members, plan.members)
+        members: calculateResourceSurplus(members, plan.addons.seats.limit)
     };
 }
 

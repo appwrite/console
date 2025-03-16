@@ -257,13 +257,25 @@ export type AdditionalResource = {
     multiplier?: number;
 };
 
+export type PlanAddon = {
+    supported: boolean;
+    currency: string;
+    invoiceDesc: string;
+    price: number;
+    limit: number;
+    value: number;
+    type: string;
+};
+
 export type Plan = {
     $id: string;
     name: string;
+    desc: string;
     price: number;
+    order: number;
     bandwidth: number;
     storage: number;
-    members: number;
+    imageTransformations: number;
     webhooks: number;
     users: number;
     teams: number;
@@ -275,13 +287,16 @@ export type Plan = {
     realtime: number;
     logs: number;
     authPhone: number;
-    addons: {
+    usage: {
         bandwidth: AdditionalResource;
         executions: AdditionalResource;
         member: AdditionalResource;
         realtime: AdditionalResource;
         storage: AdditionalResource;
         users: AdditionalResource;
+    };
+    addons: {
+        seats: PlanAddon;
     };
     trialDays: number;
     isAvailable: boolean;
@@ -292,6 +307,7 @@ export type Plan = {
     backupsEnabled: boolean;
     backupPolicies: number;
     emailBranding: boolean;
+    supportsCredits: boolean;
 };
 
 export type PlansInfo = {

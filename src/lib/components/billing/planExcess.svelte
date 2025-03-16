@@ -83,7 +83,7 @@
             {#if excess?.members}
                 <TableRow>
                     <TableCellText title="members">Organization members</TableCellText>
-                    <TableCellText title="limit">{plan.members} members</TableCellText>
+                    <TableCellText title="limit">{plan.addons.seats.limit} members</TableCellText>
                     <TableCell title="excess">
                         <p class="u-color-text-danger u-flex u-cross-center u-gap-4">
                             <span class="icon-arrow-up" />
