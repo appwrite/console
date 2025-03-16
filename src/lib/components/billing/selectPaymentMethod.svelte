@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, InputChoice, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import { onMount } from 'svelte';
