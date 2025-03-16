@@ -48,7 +48,10 @@
 </script>
 
 <script lang="ts">
+    import { createConservative } from '$lib/helpers/stores';
     import { InputNumber, InputChoice } from '$lib/elements/forms';
+
+    export let editing = false;
 
     export let data: Partial<Models.AttributeInteger> = {
         required: false,
@@ -57,9 +60,6 @@
         default: 0,
         array: false
     };
-    export let editing = false;
-
-    import { createConservative } from '$lib/helpers/stores';
 
     let savedDefault = data.default;
 
