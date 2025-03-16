@@ -7,6 +7,7 @@ export const load: PageLoad = async ({ params }) => {
     const period = isValueOfStringEnum(StorageUsageRange, params.period)
         ? params.period
         : StorageUsageRange.ThirtyDays;
+
     const response = (await sdk
         .forProject(params.region, params.project)
         .storage.getBucketUsage(params.bucket, period)) as unknown as Models.UsageBuckets;
