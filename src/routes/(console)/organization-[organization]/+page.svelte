@@ -121,8 +121,8 @@
         }
     };
     onMount(async () => {
-        if (isCloud) {
-            const regions = await sdk.forConsole.billing.listRegions();
+        if (isCloud && $organization.$id) {
+            const regions = await sdk.forConsole.billing.listRegions($organization.$id);
             regionsStore.set(regions);
             checkPricingRefAndRedirect($page.url.searchParams);
         }
