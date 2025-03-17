@@ -24,7 +24,7 @@ export async function createFreeProject(page: Page): Promise<Metadata> {
         await page.getByRole('button', { name: 'next' }).click();
         await page.locator('label').filter({ hasText: 'Frankfurt' }).click();
         await page.getByRole('button', { name: 'create' }).click();
-        await page.waitForURL('./project-**/overview/platforms');
+        await page.waitForURL(/\/project-(?:[a-z0-9]+-)?([^/]+)\/overview\/platforms/);
         expect(page.url()).toContain('/console/project-');
 
         return getProjectIdFromUrl(page.url());
