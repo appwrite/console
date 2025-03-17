@@ -95,6 +95,7 @@
                     overflow: hidden;
                     display: -webkit-box;
                     word-break: break-word;
+                    line-clamp: 4;
                     -webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;
                 }
