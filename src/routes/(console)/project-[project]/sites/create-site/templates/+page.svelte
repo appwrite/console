@@ -70,6 +70,7 @@
     href={`${base}/project-${$page.params.project}/sites/`}
     title="Create site"
     invertColumns
+    stickySide
     hideFooter>
     <svelte:fragment slot="aside">
         <Layout.Stack gap="xl">
