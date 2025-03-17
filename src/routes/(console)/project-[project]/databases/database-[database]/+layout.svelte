@@ -16,6 +16,7 @@
     import { CollectionsPanel } from '$lib/commandCenter/panels';
     import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
+    import { currentPlan } from '$lib/stores/organization';
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
@@ -28,7 +29,7 @@
         );
     }
 
-    $: $registerCommands([
+    $: shortcutCommands = [
         {
             label: 'Create collection',
             callback() {
@@ -120,7 +121,13 @@
             group: 'databases',
             rank: -1
         }
-    ]);
+    ].filter((command) =>
+        !$currentPlan.backupsEnabled
+            ? !['Create backup policy', 'Create manual backup'].includes(command.label)
+            : true
+    );
+
+    $: $registerCommands(shortcutCommands);
 
     $registerSearchers(collectionsSearcher);
 
