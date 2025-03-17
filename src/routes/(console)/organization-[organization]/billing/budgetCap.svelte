@@ -4,7 +4,7 @@
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
-    import { showBudgetAlert, showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
+    import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, currentPlan } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
