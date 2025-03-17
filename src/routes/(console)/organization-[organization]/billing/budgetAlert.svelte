@@ -94,7 +94,7 @@
     }
 </script>
 
-<div bind:this={formHolderElement} style:padding-block-start="1.5rem">
+<div id="update-budget-section" bind:this={formHolderElement} style:padding-block-start="1.5rem">
     <Form onSubmit={updateBudget}>
         <CardGrid>
             <Heading tag="h2" size="6">Billing alerts</Heading>
