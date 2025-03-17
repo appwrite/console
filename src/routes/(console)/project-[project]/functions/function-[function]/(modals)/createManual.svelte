@@ -63,8 +63,8 @@
 
 <Modal title="Create manual deployment" {error} bind:show onSubmit={create}>
     <p class="text">
-        Manually deploy a function by uploading a zip file containing the source code and a relative
-        path to the entry point.
+        Manually deploy a function by uploading a tar.gz file containing the source code and a
+        relative path to the entry point.
         <a
             href="https://appwrite.io/docs/products/functions/deployment"
             target="_blank"
