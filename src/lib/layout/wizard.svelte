@@ -69,6 +69,7 @@
             if (confirmExit) {
                 showExitModal = true;
             } else {
+                goto(href);
                 trackEvent('wizard_exit', {
                     from: 'button'
                 });

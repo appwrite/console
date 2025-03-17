@@ -165,7 +165,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     });
 </script>
 
-<Wizard title="Add web platform" bind:showExitModal confirmExit>
+<Wizard title="Add web platform" bind:showExitModal>
     <Form onSubmit={createWebPlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
