@@ -65,7 +65,7 @@ export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansM
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
 
-export const showBudgetAlert = writable<boolean>(false);
+export const showBudgetAlert = derived(page, ($page) => ($page.data.organization?.billingLimits.budgetLimit ?? 0) >= 100);
 
 export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
@@ -279,7 +279,6 @@ export async function checkForUsageLimit(org: Organization) {
             return;
         }
 
-        showBudgetAlert.set(true);
         headerAlert.add({
             id: 'budgetLimit',
             component: BudgetLimitAlert,
