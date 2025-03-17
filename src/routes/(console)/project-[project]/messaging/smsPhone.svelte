@@ -92,6 +92,11 @@
                     padding-block: 7px;
                     margin-inline-start: 6px;
                     margin-inline-end: 33px;
+                    overflow: hidden;
+                    display: -webkit-box;
+                    word-break: break-word;
+                    -webkit-line-clamp: 4;
+                    -webkit-box-orient: vertical;
                 }
             }
         }

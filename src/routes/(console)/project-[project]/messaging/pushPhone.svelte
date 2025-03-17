@@ -18,7 +18,7 @@
         </div>
         <div>
             <p class="body-text-1 u-small u-bold">{title || 'Message Title'}</p>
-            <p class="body-text-2 u-x-small">
+            <p class="notification-bubble body-text-2 u-x-small">
                 {body || 'Enter your message in the input field on the left to see it here'}
             </p>
         </div>
@@ -47,6 +47,14 @@
                 }
             }
         }
+    }
+
+    .notification-bubble {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        word-break: break-word;
+        -webkit-box-orient: vertical;
     }
 
     :global(.theme-dark) .phone {
