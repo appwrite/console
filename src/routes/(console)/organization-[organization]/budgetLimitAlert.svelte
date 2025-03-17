@@ -9,7 +9,7 @@
 </script>
 
 {#if $organization?.$id && $organization?.billingPlan !== BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
-    <HeaderAlert type="error" title={`Budget limit reached`}>
+    <HeaderAlert type="error" title="Budget limit reached">
         <svelte:fragment>
             This organization has reached its budget limit and is now blocked. To continue using
             Appwrite services, update the budget limit.

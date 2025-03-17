@@ -26,7 +26,7 @@
                 budget,
                 $organization.budgetAlerts
             );
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
                 isHtml: true,
