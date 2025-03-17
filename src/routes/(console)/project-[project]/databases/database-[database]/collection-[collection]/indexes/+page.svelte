@@ -31,6 +31,7 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -128,6 +129,7 @@
                                         on:click={() => {
                                             selectedIndex = index;
                                             showDelete = true;
+                                            trackEvent(Click.DatabaseIndexDelete);
                                         }}>Delete</ActionMenu.Item.Button>
                                 </ActionMenu.Root>
                             </Popover>

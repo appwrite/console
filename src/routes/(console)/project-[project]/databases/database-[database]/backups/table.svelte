@@ -22,7 +22,7 @@
     import { ID } from '@appwrite.io/console';
     import { database } from '../store';
     import type { BackupArchive } from '$lib/sdk/backups';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
     import { Dependencies } from '$lib/constants';
@@ -220,7 +220,7 @@
                                         showRestore = true;
                                         selectedBackup = backup;
                                         showDropdown[index] = false;
-                                        trackEvent('click_backup_restore');
+                                        trackEvent(Click.BackupRestoreClick);
                                     }}>
                                     Restore
                                 </DropListItem>

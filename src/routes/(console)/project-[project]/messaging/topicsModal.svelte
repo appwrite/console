@@ -1,12 +1,20 @@
 <script lang="ts">
     import { EmptySearch, Modal, PaginationInline } from '$lib/components';
-    import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
-    import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
+    import { Button, InputSearch } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { MessagingProviderType, type Models, Query } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { getTotal } from './wizard/store';
-    import ProviderType from './providerType.svelte';
+    import {
+        Badge,
+        Card,
+        Empty,
+        Layout,
+        Selector,
+        Table,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import { getProviderText } from './helper';
 
     export let providerType: MessagingProviderType;
     export let show: boolean;
@@ -64,10 +72,8 @@
         });
     }
 
-    function onTopicSelection(event: Event, topic: Models.Topic) {
-        const { checked } = event.currentTarget as HTMLInputElement;
-
-        if (checked) {
+    function onTopicSelection(event: CustomEvent<boolean>, topic: Models.Topic) {
+        if (event.detail) {
             selected = {
                 ...selected,
                 [topic.$id]: topic
@@ -98,115 +104,74 @@
     }
 </script>
 
-<Modal {title} bind:show onSubmit={submit} on:close={reset} size="big">
-    <div class="u-flex u-flex-vertical u-gap-32">
-        <p class="text">
-            Select existing topics you want to send this message to its targets. The message will be
-            sent only to
-            <ProviderType type={providerType} noIcon />
-            targets.
-        </p>
-        <div class="u-flex u-flex-vertical u-gap-16">
-            <InputSearch
-                autofocus
-                disabled={totalResults === 0 && !search}
-                placeholder="Search for topics"
-                bind:value={search} />
-            <div>
-                {#if Object.keys(topicResultsById).length > 0 && !emptyTopicsExists}
-                    <div class="u-flex-vertical u-gap-8">
-                        <FormList>
-                            <Table noMargin noStyles>
-                                <TableBody>
-                                    {#each Object.entries(topicResultsById) as [topicId, topic]}
-                                        <TableRow>
-                                            <TableCell>
-                                                <InputCheckbox
-                                                    id={topicId}
-                                                    disabled={!!topicsById[topicId]}
-                                                    checked={!!selected[topicId]}
-                                                    on:change={(event) =>
-                                                        onTopicSelection(event, topic)}>
-                                                    <svelte:fragment slot="description">
-                                                        <span class="title">
-                                                            <span class="u-line-height-1-5">
-                                                                <span
-                                                                    class="body-text-1 u-bold"
-                                                                    data-private>
-                                                                    {topic.name}
-                                                                </span>
-                                                                <span
-                                                                    class="collapsible-button-optional"
-                                                                    style="--p-toggle-optional-color: var(--color-neutral-50);">
-                                                                    ({getTotal(topic)} targets)
-                                                                </span>
-                                                            </span></span>
-                                                    </svelte:fragment>
-                                                </InputCheckbox>
-                                            </TableCell>
-                                        </TableRow>
-                                    {/each}
-                                </TableBody>
-                            </Table>
-                        </FormList>
-                        <div class="u-flex u-main-space-between u-cross-center">
-                            <p class="text">Total results: {totalResults}</p>
-                            <PaginationInline limit={5} bind:offset sum={totalResults} hidePages />
-                        </div>
-                    </div>
-                {:else if search}
-                    <EmptySearch hidePagination>
-                        <div class="common-section">
-                            <div class="u-text-center common-section">
-                                <b class="body-text-2 u-bold">Sorry we couldn't find "{search}"</b>
-                                <p>There are no topics that match your search.</p>
-                            </div>
-                            <div class="u-flex u-gap-16 common-section u-main-center">
-                                <Button
-                                    external
-                                    href="https://appwrite.io/docs/products/messaging/topics"
-                                    text
-                                    >Documentation
-                                </Button>
-                                <Button secondary on:click={() => (search = '')}
-                                    >Clear search
-                                </Button>
-                            </div>
-                        </div>
-                    </EmptySearch>
-                {:else}
-                    <EmptySearch hidePagination>
-                        <div class="common-section">
-                            <div class="u-text-center common-section">
-                                <p class="text u-line-height-1-5">
-                                    You have no topics{emptyTopicsExists
-                                        ? ` with ${providerType.toUpperCase()} targets`
-                                        : ''}. Create a topic to see them here.
-                                </p>
-                                <p class="text u-line-height-1-5">
-                                    Need a hand? Learn more in our
-                                    <Button
-                                        link
-                                        external
-                                        href="https://appwrite.io/docs/products/messaging/topics"
-                                        >documentation
-                                    </Button>
-                                    .
-                                </p>
-                            </div>
-                        </div>
-                    </EmptySearch>
-                {/if}
+<Modal {title} bind:show onSubmit={submit} on:close={reset}>
+    <Typography.Text>
+        Select existing topics you want to send this message to its targets. The message will be
+        sent only to {getProviderText(providerType)} targets.
+    </Typography.Text>
+    <Layout.Stack>
+        <InputSearch
+            autofocus
+            disabled={totalResults === 0 && !search}
+            placeholder="Search for topics"
+            bind:value={search} />
+        {#if Object.keys(topicResultsById).length > 0 && !emptyTopicsExists}
+            <Table.Root>
+                {#each Object.entries(topicResultsById) as [topicId, topic]}
+                    <Table.Row>
+                        <Table.Cell>
+                            <Layout.Stack direction="row" alignItems="center" gap="s">
+                                <Selector.Checkbox
+                                    id={topicId}
+                                    label={topic.name}
+                                    disabled={!!topicsById[topicId]}
+                                    checked={!!selected[topicId]}
+                                    on:change={(event) => onTopicSelection(event, topic)}>
+                                </Selector.Checkbox>
+                                <span>
+                                    ({getTotal(topic)} targets)
+                                </span>
+                            </Layout.Stack>
+                        </Table.Cell>
+                    </Table.Row>
+                {/each}
+            </Table.Root>
+            <div class="u-flex u-main-space-between u-cross-center">
+                <p class="text">Total results: {totalResults}</p>
+                <PaginationInline limit={5} bind:offset sum={totalResults} hidePages />
             </div>
-        </div>
-    </div>
+        {:else if search}
+            <EmptySearch hidePagination {search}>
+                <Button size="s" secondary external on:click={() => (search = '')}>
+                    Clear search
+                </Button>
+            </EmptySearch>
+        {:else}
+            <Card.Base padding="none">
+                <Empty
+                    type="secondary"
+                    title={`You have no topics${
+                        emptyTopicsExists ? ` with ${providerType.toUpperCase()} targets` : ''
+                    }`}
+                    description={`Create a topic to see them here.`}>
+                    <Button
+                        size="s"
+                        slot="actions"
+                        secondary
+                        external
+                        href="https://appwrite.io/docs/products/messaging/topics"
+                        >Documentation</Button>
+                </Empty>
+            </Card.Base>
+        {/if}
+    </Layout.Stack>
     <svelte:fragment slot="footer">
-        <div class="u-flex u-gap-16 u-cross-center">
-            <div class="u-flex u-gap-8">
-                <span class="inline-tag"><span class="text">{selectedSize}</span></span>
-                <span class="body-text-2">Topics selected</span>
-            </div>
+        <Layout.Stack direction="row" justifyContent="flex-end" alignItems="center">
+            <Layout.Stack inline direction="row" gap="xs" alignItems="center">
+                <Badge variant="secondary" content={selectedSize.toString()} />
+                <span>Topics selected</span>
+            </Layout.Stack>
             <Button submit disabled={!hasSelection}>Add</Button>
-        </div>
+        </Layout.Stack>
     </svelte:fragment>
 </Modal>

@@ -7,7 +7,7 @@
     import Aside from '../aside.svelte';
     import Logs from '../../(components)/logs.svelte';
     import { getFrameworkIcon } from '../../store';
-    import { SvgIcon } from '$lib/components';
+    import { Copy, SvgIcon } from '$lib/components';
 
     export let data;
 
@@ -28,12 +28,14 @@
                     <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                         {data.site.name}
                     </Typography.Text>
-                    <Tag variant="code" size="xs">{data.site.$id}</Tag>
+                    <Copy value={data.site.$id}>
+                        <Tag variant="code" size="xs">{data.site.$id}</Tag>
+                    </Copy>
                 </Layout.Stack>
             </Layout.Stack>
         </Card.Base>
         <Fieldset legend="Deploy">
-            <Logs bind:deployment={data.deployment} bind:site={data.site} />
+            <Logs bind:deployment={data.deployment} bind:site={data.site} hideScrollButtons />
         </Fieldset>
     </Layout.Stack>
     <svelte:fragment slot="aside">

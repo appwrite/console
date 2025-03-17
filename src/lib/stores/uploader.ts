@@ -8,6 +8,7 @@ type UploaderFile = {
     resourceId: string;
     name: string;
     progress: number;
+    size: number;
     status: 'failed' | 'pending' | 'success';
     error?: string;
 };
@@ -73,6 +74,7 @@ const createUploader = () => {
                 $id: id,
                 resourceId: bucketId,
                 name: file.name,
+                size: file.size,
                 progress: 0,
                 status: 'pending'
             };
@@ -104,6 +106,7 @@ const createUploader = () => {
                 $id: '',
                 resourceId: siteId,
                 name: code.name,
+                size: code.size,
                 progress: 0,
                 status: 'pending'
             };

@@ -24,6 +24,7 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
 
@@ -56,10 +57,15 @@
             <SearchQuery search={data.search} placeholder="Search by name or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Filters query={data.query} {columns} />
+            <Filters query={data.query} {columns} analyticsSource="messaging_topics_filter" />
             <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
             {#if $canWriteTopics}
-                <Button on:click={() => ($showCreate = true)} event="create_topic">
+                <Button
+                    on:click={() => {
+                        $showCreate = true;
+                        trackEvent(Click.MessagingTopicCreateClick);
+                    }}
+                    event="create_topic">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create topic
                 </Button>

@@ -69,11 +69,23 @@
         <svelte:fragment slot="title">Message</svelte:fragment>
         <svelte:fragment slot="aside">
             <FormList>
-                <InputText id="subject" label="Subject" disabled={!isDraft} bind:value={subject}
-                ></InputText>
-                <InputTextarea id="message" label="Message" disabled={!isDraft} bind:value={content}
-                ></InputTextarea>
-                <InputSwitch label="HTML mode" id="html" bind:value={html}>
+                <InputText
+                    required
+                    id="subject"
+                    label="Subject"
+                    disabled={!isDraft}
+                    bind:value={subject}></InputText>
+                <InputTextarea
+                    required
+                    id="message"
+                    label="Message"
+                    disabled={!isDraft}
+                    bind:value={content}></InputTextarea>
+                <InputSwitch
+                    label="HTML mode"
+                    id="html"
+                    bind:value={html}
+                    on:change={() => trackEvent(Submit.MessagingUpdateHtmlMode)}>
                     <svelte:fragment slot="description">
                         Enable the HTML mode if your message contains HTML tags.
                     </svelte:fragment>

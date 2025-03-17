@@ -278,35 +278,33 @@
         </p>
 
         {#if relAttributes?.length}
-            <TableScroll noMargin>
-                <TableHeader>
-                    <TableCellHead width={50}>Relation</TableCellHead>
-                    <TableCellHead width={50}>Setting</TableCellHead>
-                    <TableCellHead width={200} />
-                </TableHeader>
-                <TableBody>
-                    {#each relAttributes as attr}
-                        <TableRow>
-                            <TableCell title="relation">
-                                <span class="u-flex u-cross-center u-gap-8">
-                                    {#if attr.twoWay}
-                                        <span class="icon-switch-horizontal" />
-                                    {:else}
-                                        <span class="icon-arrow-sm-right" />
-                                    {/if}
-                                    <span data-private>{attr.key}</span>
-                                </span>
-                            </TableCell>
-                            <TableCellText title="Settings">
-                                {attr.onDelete}
-                            </TableCellText>
-                            <TableCellText title="description">
-                                {Deletion[attr.onDelete]}
-                            </TableCellText>
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </TableScroll>
+            <Table.Root>
+                <svelte:fragment slot="header">
+                    <Table.Header.Cell width="50px">Relation</Table.Header.Cell>
+                    <Table.Header.Cell width="50px">Setting</Table.Header.Cell>
+                    <Table.Header.Cell />
+                </svelte:fragment>
+                {#each relAttributes as attr}
+                    <Table.Row>
+                        <Table.Cell>
+                            <span class="u-flex u-cross-center u-gap-8">
+                                {#if attr.twoWay}
+                                    <span class="icon-switch-horizontal" />
+                                {:else}
+                                    <span class="icon-arrow-sm-right" />
+                                {/if}
+                                <span data-private>{attr.key}</span>
+                            </span>
+                        </Table.Cell>
+                        <Table.Cell>
+                            {attr.onDelete}
+                        </Table.Cell>
+                        <Table.Cell>
+                            {Deletion[attr.onDelete]}
+                        </Table.Cell>
+                    </Table.Row>
+                {/each}
+            </Table.Root>
             <div class="u-flex u-flex-vertical u-gap-16">
                 <Alert>To change the selection edit the relationship settings.</Alert>
 

@@ -1,72 +1,26 @@
 <script lang="ts">
-    import { DropList, DropListItem } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { wizard } from '$lib/stores/wizard';
     import { providers } from './providers/store';
-    import Create from './create.svelte';
-    import { messageParams, providerType, targetsById } from './wizard/store';
-    import { topicsById } from './store';
-    import { MessagingProviderType } from '@appwrite.io/console';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-
-    export let showCreateDropdown = false;
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 </script>
 
-<DropList bind:show={showCreateDropdown} scrollable placement="bottom-end">
-    <slot>
-        <Button on:click={() => (showCreateDropdown = !showCreateDropdown)} event="create_message">
+<Popover let:toggle padding="none" placement="bottom-end">
+    <slot {toggle}>
+        <Button on:click={toggle} event="create_message">
             <Icon icon={IconPlus} slot="start" size="s" />
             Create message
         </Button>
     </slot>
-    <svelte:fragment slot="list">
+    <ActionMenu.Root slot="tooltip">
         {#each Object.entries(providers) as [type, option]}
-            <DropListItem
-                icon={option.icon}
-                on:click={() => {
-                    if (
-                        type !== MessagingProviderType.Email &&
-                        type !== MessagingProviderType.Sms &&
-                        type !== MessagingProviderType.Push
-                    )
-                        return;
-                    $providerType = type;
-                    $topicsById = {};
-                    $targetsById = {};
-                    const common = {
-                        topics: [],
-                        users: [],
-                        targets: []
-                    };
-                    switch (type) {
-                        case MessagingProviderType.Email:
-                            $messageParams[$providerType] = {
-                                ...common,
-                                subject: '',
-                                content: ''
-                            };
-                            break;
-                        case MessagingProviderType.Sms:
-                            $messageParams[$providerType] = {
-                                ...common,
-                                content: ''
-                            };
-                            break;
-                        case MessagingProviderType.Push:
-                            $messageParams[$providerType] = {
-                                ...common,
-                                title: '',
-                                body: '',
-                                data: [['', '']]
-                            };
-                            break;
-                    }
-                    showCreateDropdown = false;
-                    wizard.start(Create);
-                }}>
+            <ActionMenu.Item.Anchor
+                leadingIcon={option.icon}
+                href={`${base}/project-${$page.params.project}/messaging/create-${type}`}>
                 {option.name}
-            </DropListItem>
+            </ActionMenu.Item.Anchor>
         {/each}
-    </svelte:fragment>
-</DropList>
+    </ActionMenu.Root>
+</Popover>

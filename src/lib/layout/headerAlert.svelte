@@ -1,9 +1,37 @@
 <script lang="ts">
+    import { onDestroy, onMount } from 'svelte';
+    import { isTabletViewport } from '$lib/stores/viewport';
+
     export let title: string;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
+
+    let container;
+
+    function setNavigationHeight() {
+        const alertHeight = container ? container.getBoundingClientRect().height : 0;
+        const header: HTMLHeadingElement = document.querySelector('main > header');
+        const sidebar: HTMLElement = document.querySelector('main > div > nav');
+        if (header) {
+            header.style.top = `${alertHeight}px`;
+        }
+        if (sidebar) {
+            sidebar.style.top = `${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px`;
+        }
+    }
+
+    onMount(() => {
+        setNavigationHeight();
+    });
+
+    onDestroy(() => {
+        container = null;
+        setNavigationHeight();
+    });
 </script>
 
+<svelte:window on:resize={setNavigationHeight} />
 <section
+    bind:this={container}
     class="alert is-action is-action-and-top-sticky u-sep-block-end"
     class:is-success={type === 'success'}
     class:is-warning={type === 'warning'}
@@ -40,7 +68,10 @@
 <style>
     .alert {
         padding: 1rem 1rem 0.75rem 1.5rem;
-        margin-block-start: 18px;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100;
     }
 
     .alert-content {

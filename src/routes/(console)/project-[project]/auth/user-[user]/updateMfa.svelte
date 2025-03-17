@@ -27,13 +27,13 @@
                 message: `Multi-factor authentication has been ${userMfa ? 'enabled' : 'disabled'}`,
                 type: 'success'
             });
-            trackEvent(Submit.UserUpdateEmail);
+            trackEvent(Submit.UserUpdateMfa);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.UserUpdateEmail);
+            trackError(error, Submit.UserUpdateMfa);
         }
     }
 </script>

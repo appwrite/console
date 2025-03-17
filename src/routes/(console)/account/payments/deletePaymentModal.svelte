@@ -9,6 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
 
     export let linkedOrgs: Organization[] = [];
     export let showDelete = false;
@@ -40,23 +41,23 @@
     bind:open={showDelete}
     bind:error>
     {#if linkedOrgs.length === 1}
-        <p class="text">
+        <Typography.Text>
             This payment method is set as the default for the <span class="u-bold"
                 >{linkedOrgs[0].name}</span
             >. As it has upcoming invoices it cannot be deleted from your account.
-        </p>
+        </Typography.Text>
     {:else if linkedOrgs.length > 1}
-        <p class="text">
+        <Typography.Text>
             This payment method is set as the default for the following organisations. As they have
             upcoming invoices it cannot be deleted from your account.
-        </p>
-        <ul>
+        </Typography.Text>
+        <Layout.Stack gap="none">
             {#each linkedOrgs as org}
-                <li class="text">
-                    <a class="link" href={`${base}/organization-${org.$id}/billing`}>{org.name}</a>
-                </li>
+                <Link.Anchor href={`${base}/organization-${org.$id}/billing`}>
+                    {org.name}
+                </Link.Anchor>
             {/each}
-        </ul>
+        </Layout.Stack>
     {:else}
         <p class="text">Are you sure you want to delete this payment method from your account?</p>
     {/if}

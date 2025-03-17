@@ -5,15 +5,19 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Skeleton, Table } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
 
     export let show = false;
     export let selectedPreset;
     let error = '';
 
     async function fetchPreset() {
-        //TODO: fetch preset data
-        let presetData;
-        return presetData;
+        switch (selectedPreset.toLowerCase()) {
+            //TODO: finish switch statement
+            case 'zoho':
+                return await sdk.forConsole.domains.getPresetZoho($page.params.domain);
+        }
     }
 
     async function handleSubmit() {
@@ -33,6 +37,8 @@
             trackError(e, Submit.RecordCreate);
         }
     }
+
+    $: console.log(selectedPreset);
 </script>
 
 <Modal
@@ -63,6 +69,7 @@
                 </Table.Row>
             {/each}
         {:then presetData}
+            {JSON.stringify(presetData)}
             {#each presetData as record}
                 <Table.Row>
                     <Table.Cell>{record.type}</Table.Cell>

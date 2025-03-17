@@ -3,7 +3,6 @@
     import InputCheckbox from './forms/inputCheckbox.svelte';
 
     export let value = false;
-    export let padding: number | null = null;
 </script>
 
 <ActionMenu.Item.Button on:click>

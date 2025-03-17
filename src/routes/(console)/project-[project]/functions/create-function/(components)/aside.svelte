@@ -2,29 +2,33 @@
     import { Card, SvgIcon } from '$lib/components';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
-    import type { Models } from '@appwrite.io/console';
+    import type { Models, Runtime } from '@appwrite.io/console';
 
-    export let runtime: Partial<Models.Runtime>;
-    export let repositoryName: string;
-    export let branch: string;
-    export let rootDir: string;
-    export let domain: string = '';
+    export let runtime: Runtime;
+    export let repositoryName: string = undefined;
+    export let branch: string = undefined;
+    export let rootDir: string = undefined;
     export let showGitData = true;
+    export let runtimes: Models.RuntimeList;
+
+    $: selectedRuntime = runtimes?.runtimes.find((r) => r.$id === runtime);
+
+    $: console.log(runtimes);
 </script>
 
 <Card padding="s" radius="s">
     <Layout.Stack gap="xl">
         <slot />
         <Layout.Stack gap="l">
-            {#if runtime?.name}
+            {#if selectedRuntime?.name}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Runtime</Typography.Caption>
                     <Layout.Stack gap="xxs" alignItems="center" direction="row">
-                        {#if runtime?.key}
-                            <SvgIcon iconSize="small" size={16} name={runtime.key} />
+                        {#if selectedRuntime?.key}
+                            <SvgIcon iconSize="small" size={16} name={selectedRuntime.key} />
                         {/if}
                         <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                            {runtime.name}
+                            {selectedRuntime.name} - {selectedRuntime.version}
                         </Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>

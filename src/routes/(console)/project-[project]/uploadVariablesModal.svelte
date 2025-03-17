@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import Alert from '$lib/components/alert.svelte';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import {
+        Alert,
         Icon,
         InlineCode,
         Layout,
@@ -104,9 +104,9 @@
     </Upload.Dropzone>
 
     {#if variableList.total > 0}
-        <Alert type="info">
+        <Alert.Inline>
             This action can create and update variables but can not delete them.
-        </Alert>
+        </Alert.Inline>
     {/if}
 
     <Selector.Checkbox

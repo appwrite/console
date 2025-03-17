@@ -14,7 +14,7 @@
               invertColumns?: boolean;
               hideFooter?: boolean;
               column?: boolean;
-              columnSize?: 's' | 'm';
+              columnSize?: 's' | 'm' | 'l';
               onExit?: () => void;
           }
         | {
@@ -25,7 +25,7 @@
               invertColumns?: boolean;
               hideFooter?: boolean;
               column?: boolean;
-              columnSize?: 's' | 'm';
+              columnSize?: 's' | 'm' | 'l';
               onExit?: () => void;
           };
 

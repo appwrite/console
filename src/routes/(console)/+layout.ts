@@ -34,7 +34,9 @@ export const load: LayoutLoad = async ({ params, fetch, depends, parent }) => {
         }, new Map<Tier, Plan>());
     }
 
-    const organizations = await sdk.forConsole.teams.list();
+    const organizations = !isCloud
+        ? await sdk.forConsole.teams.list()
+        : await sdk.forConsole.billing.listOrganization();
 
     let projects = [];
     let currentOrgId = params.organization ? params.organization : prefs.organization;

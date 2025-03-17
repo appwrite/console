@@ -11,6 +11,7 @@
     export let disabled = false;
     export let tooltip: string = null;
     export let fullWidth = false;
+    export let description = '';
 
     let element: HTMLInputElement;
     let error: string;
@@ -36,6 +37,7 @@
                 {id}
                 {disabled}
                 {required}
+                {description}
                 bind:checked={value}
                 on:change
                 on:invalid={handleInvalid} />
@@ -43,6 +45,7 @@
             <Selector.Checkbox
                 {id}
                 {disabled}
+                {description}
                 size="s"
                 {required}
                 bind:checked={value}

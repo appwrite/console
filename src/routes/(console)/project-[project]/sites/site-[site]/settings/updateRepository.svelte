@@ -6,7 +6,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
@@ -75,7 +75,7 @@
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter,
+                site.adapter as Adapter,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
@@ -116,7 +116,7 @@
 </script>
 
 <Form onSubmit={updateConfiguration}>
-    <CardGrid>
+    <CardGrid hideFooter={!repository}>
         <svelte:fragment slot="title">Git repository</svelte:fragment>
         Automatically deploy changes for every commit pushed to your Git repository.
         <svelte:fragment slot="aside">
@@ -142,16 +142,16 @@
                         <Layout.Stack gap="xl">
                             <Layout.Stack gap="xs">
                                 <Skeleton variant="line" width={100} height={20} />
-                                <Skeleton variant="line" width={300} height={32} />
+                                <Skeleton variant="line" width="100%" height={32} />
                             </Layout.Stack>
                             <Layout.Stack gap="xs">
                                 <Skeleton variant="line" width={100} height={20} />
-                                <Skeleton variant="line" width={300} height={32} />
+                                <Skeleton variant="line" width="100%" height={32} />
                             </Layout.Stack>
                             <Layout.Stack gap="xs">
                                 <Skeleton variant="line" width={100} height={20} />
-                                <Skeleton variant="line" width={300} height={15} />
-                                <Skeleton variant="line" width={300} height={15} />
+                                <Skeleton variant="line" width="100%" height={15} />
+                                <Skeleton variant="line" width="100%" height={15} />
                             </Layout.Stack>
                         </Layout.Stack>
                     </Fieldset>

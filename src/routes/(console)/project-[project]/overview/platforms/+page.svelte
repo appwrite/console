@@ -6,7 +6,7 @@
     import CreateReactNative from './createReactNative.svelte';
     import CreateWeb from './createWeb.svelte';
     import { createPlatform, versions } from './wizard/store';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export enum Platform {
         Web,
@@ -19,9 +19,9 @@
     export async function addPlatform(type: Platform) {
         await versions.load();
         createPlatform.reset();
-        trackEvent('onboarding_hub_platform', {
+        trackEvent(Click.PlatformCreateClick, {
             platform: platforms[type],
-            state: 'add'
+            source: 'platforms_page'
         });
         wizard.start(platforms[type]);
     }
@@ -38,7 +38,7 @@
             key: key,
             type: type
         });
-        trackEvent('onboarding_hub_platform', {
+        trackEvent(Click.PlatformCreateClick, {
             platform: platforms[platform],
             state: 'continue'
         });

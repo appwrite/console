@@ -8,6 +8,7 @@ export enum Dependencies {
     CREDIT = 'dependency:credit',
     INVOICES = 'dependency:invoices',
     ADDRESS = 'dependency:address',
+    UPGRADE_PLAN = 'dependency:upgrade_plan',
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     MEMBERS = 'dependency:members',
@@ -374,6 +375,18 @@ export const scopes: {
     {
         scope: 'sites.write',
         description: "Access to create, update, and delete your project's sites and deployments",
+        category: 'Sites',
+        icon: 'globe'
+    },
+    {
+        scope: 'log.read',
+        description: "Access to read your sites's  logs",
+        category: 'Sites',
+        icon: 'globe'
+    },
+    {
+        scope: 'log.write',
+        description: "Access to execute your project's sites",
         category: 'Sites',
         icon: 'globe'
     }

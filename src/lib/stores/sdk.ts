@@ -98,3 +98,13 @@ export enum RuleType {
     API = 'api',
     REDIRECT = 'redirect'
 }
+
+export enum DeploymentResourceType {
+    FUNCTION = 'function',
+    SITE = 'site'
+}
+
+export enum RuleTrigger {
+    DEPLOYMENT = 'deployment',
+    MANUAL = 'manual'
+}

@@ -1,4 +1,4 @@
-import type { Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
+import type { Appearance, Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
 import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
@@ -7,6 +7,7 @@ import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
 import { organization } from './organization';
 import { base } from '$app/paths';
+import { ThemeLightCloud } from '$themes';
 
 export const stripe = writable<Stripe>();
 let paymentMethod: PaymentMethodData;
@@ -16,7 +17,7 @@ let paymentElement: StripeElement;
 
 export const isStripeInitialized = writable(false);
 
-export async function initializeStripe() {
+export async function initializeStripe(node: HTMLElement) {
     if (!get(stripe)) return;
     isStripeInitialized.set(true);
 
@@ -41,7 +42,7 @@ export async function initializeStripe() {
     // Set up Elements and then create form
     elements = get(stripe).elements(options);
     paymentElement = elements.create('payment');
-    paymentElement.mount('#payment-element');
+    paymentElement.mount(node);
 }
 
 export async function unmountPaymentElement() {
@@ -60,7 +61,7 @@ export async function submitStripeCard(name: string, organizationId?: string) {
             clientSecret = paymentMethod.clientSecret;
         }
 
-        // // Element needs to be submitted before confirming the setup intent
+        // Element needs to be submitted before confirming the setup intent
         elements.submit();
 
         const baseUrl = 'https://cloud.appwrite.io/console';
@@ -184,17 +185,27 @@ export async function confirmSetup(
     }
 }
 
-const appearanceLight = {
+const appearanceLight: Appearance = {
     variables: {
-        colorPrimary: '#606a7b',
-        colorText: 'rgb(107, 107, 112)',
-        colorBackground: '#FFFFFF',
-        color: '#606a7b',
-        colorDanger: '#df1b41',
-        fontFamily: 'Inter, arial, sans-serif',
-        borderRadius: '4px'
+        fontSizeBase: ThemeLightCloud['font-size-s'],
+        fontSizeSm: ThemeLightCloud['font-size-s'],
+        colorPrimary: ThemeLightCloud['neutral-700'],
+        colorText: ThemeLightCloud['neutral-700'],
+        colorBackground: 'rgb(250, 250, 251)',
+        colorDanger: ThemeLightCloud['fgcolor-error'],
+        fontFamily: ThemeLightCloud['font-family-sansserif'],
+        borderRadius: ThemeLightCloud['base-8']
     },
     rules: {
+        '.Label': {
+            color: ThemeLightCloud['neutral-700'],
+            marginBottom: ThemeLightCloud['base-8'],
+            fontWeight: '500'
+        },
+        '.Input': {
+            padding: ThemeLightCloud['base-6'],
+            paddingLeft: ThemeLightCloud['base-12']
+        },
         '.Input:hover': {
             border: 'solid 1px rgb(195, 195, 198)',
             boxShadow: 'none'

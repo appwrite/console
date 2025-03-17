@@ -70,7 +70,7 @@
     }
 </script>
 
-<Modal title="Select teams" bind:show onSubmit={create} on:close={reset} size="big">
+<Modal title="Select teams" bind:show onSubmit={create} on:close={reset}>
     <Typography.Text
         >Grant access to any member of a specific team. To grant access to team members with
         specific roles, you will need to set a <Link.Button on:click={() => dispatch('custom')}
@@ -93,22 +93,13 @@
                         <Layout.Stack direction="row" alignItems="center" gap="s">
                             <AvatarInitials size="xs" name={team.name} />
                             <Layout.Stack gap="none">
-                                <Typography.Caption variant="400">Text</Typography.Caption>
+                                <Typography.Caption variant="400">{team.name}</Typography.Caption>
                                 <Typography.Caption
                                     variant="400"
                                     color="--fgcolor-neutral-tertiary">
-                                    Secondary Text
+                                    {team.$id}
                                 </Typography.Caption>
                             </Layout.Stack>
-                        </Layout.Stack>
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
-                            <AvatarInitials size="xs" name={team.name} />
-                            <span>
-                                {team.name}
-                            </span>
-                            <span>
-                                {team.$id}
-                            </span>
                         </Layout.Stack>
                     </Table.Cell>
                 </Table.Button>

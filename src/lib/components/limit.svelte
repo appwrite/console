@@ -36,6 +36,6 @@
 <Layout.Stack direction="row" alignItems="center" inline>
     <InputSelect id="rows" {options} bind:value={limit} on:change={limitChange} />
     <p class="text" style:white-space="nowrap">
-        {name} per page. Total results: {sum >= 5000 ? `${sum}+` : sum}
+        {name} per page. Total: {sum >= 5000 ? `${sum}+` : sum}
     </p>
 </Layout.Stack>

@@ -15,7 +15,7 @@
     import { timeFromNow } from '$lib/helpers/date';
     import DeleteRecordModal from './deleteRecordModal.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import EditRecordModal from './editRecordModal.svelte';
+    import EditRecordModal from './updateRecordModal.svelte';
     import type { DnsRecord } from '$lib/sdk/domains';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
@@ -57,7 +57,7 @@
                             </Table.Cell>
                         {:else if column.id === 'value'}
                             <Table.Cell>
-                                <InteractiveText variant="secret" text={record.value} isVisible />
+                                <InteractiveText variant="copy" text={record.value} isVisible />
                             </Table.Cell>
                         {:else if column.id === 'ttl'}
                             <Table.Cell>
@@ -108,7 +108,7 @@
                                             showEdit = true;
                                             toggle(e);
                                         }}>
-                                        Edit
+                                        Update
                                     </ActionMenu.Item.Button>
                                     <ActionMenu.Item.Button
                                         status="danger"

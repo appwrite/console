@@ -23,7 +23,6 @@
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
-    export let fullWidthMobile = false;
 
     onMount(async () => {
         if (isCustomCollection) {
@@ -76,12 +75,14 @@
         });
     }
 
-    $: selectedColumnsNumber = $columns.reduce((acc, column) => {
-        if (column.show) {
-            acc++;
-        }
-        return acc;
-    }, 0);
+    $: selectedColumnsNumber = $columns
+        .filter((c) => !c.hide)
+        .reduce((acc, column) => {
+            if (column.show) {
+                acc++;
+            }
+            return acc;
+        }, 0);
 </script>
 
 {#if !hideColumns && view === View.Table}
@@ -97,7 +98,7 @@
             <svelte:fragment slot="tooltip">
                 <ActionMenu.Root>
                     <Layout.Stack>
-                        {#each $columns as column}
+                        {#each $columns.filter((c) => !c.hide) as column}
                             <InputCheckbox
                                 id={column.id}
                                 label={column.title}

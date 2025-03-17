@@ -1,5 +1,4 @@
-<script>
-    import { Container } from '$lib/layout';
+<script lang="ts">
     import { app } from '$lib/stores/app';
     import { loading } from '$routes/store';
     import { Typography } from '@appwrite.io/pink-svelte';
@@ -8,14 +7,13 @@
 </script>
 
 <div class="auth-bg">
-    <div>
-        <Container size="xxl">
+    <section>
+        <div class="console-container">
             <slot />
-        </Container>
-    </div>
+        </div>
+    </section>
     <footer>
-        <!-- TODO: change text style to eyebrow -->
-        <Typography.Text size="s" color="--fgcolor-neutral-secondary">POWERED BY</Typography.Text>
+        <Typography.Eyebrow color="--fgcolor-neutral-secondary">POWERED BY</Typography.Eyebrow>
         {#if $app.themeInUse === 'dark'}
             <img
                 src="/console/images/appwrite-logo-dark.svg"
@@ -46,7 +44,7 @@
         align-items: center;
         justify-content: center;
         justify-content: space-between;
-        div {
+        section {
             flex: 1;
             display: flex;
             align-items: center;
@@ -57,6 +55,7 @@
             gap: 0.5rem;
             justify-content: center;
             align-items: center;
+            flex-wrap: wrap;
         }
     }
 </style>

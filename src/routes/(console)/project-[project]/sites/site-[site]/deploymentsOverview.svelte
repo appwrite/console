@@ -4,18 +4,16 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { type Models } from '@appwrite.io/console';
-    import DeploymentCreatedBy from '../(components)/deploymentCreatedBy.svelte';
-    import DeploymentSource from '../(components)/deploymentSource.svelte';
+    import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
     import Id from '$lib/components/id.svelte';
-
     import RedeployModal from '../redeployModal.svelte';
     import { Card } from '$lib/components';
     import ActivateDeploymentModal from '../activateDeploymentModal.svelte';
     import CancelDeploymentModal from './deployments/cancelDeploymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { deploymentStatusConverter } from './store';
     import DeleteDeploymentModal from './deployments/deleteDeploymentModal.svelte';
     import DeploymentActionMenu from '../(components)/deploymentActionMenu.svelte';
+    import { deploymentStatusConverter } from '$lib/stores/git';
 
     export let site: Models.Site;
     export let activeDeployment: Models.Deployment;
@@ -118,5 +116,8 @@
     <CancelDeploymentModal {selectedDeployment} bind:showCancel />
 {/if}
 {#if selectedDeployment && showDelete}
-    <DeleteDeploymentModal {selectedDeployment} bind:showDelete />
+    <DeleteDeploymentModal
+        {selectedDeployment}
+        bind:showDelete
+        activeDeployment={site?.deploymentId} />
 {/if}

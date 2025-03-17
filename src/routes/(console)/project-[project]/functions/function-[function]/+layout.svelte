@@ -10,6 +10,14 @@
     import type { Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
     import { canWriteFunctions } from '$lib/stores/roles';
+    import {
+        IconCalendar,
+        IconClock,
+        IconList,
+        IconPlus,
+        IconSearch,
+        IconXCircle
+    } from '@appwrite.io/pink-icons-svelte';
 
     onMount(() => {
         let previousStatus = null;
@@ -48,7 +56,7 @@
             },
             keys: $page.url.pathname.endsWith($func.$id) ? ['c'] : ['c', 'd'],
             group: 'functions',
-            icon: 'plus',
+            icon: IconPlus,
             disabled: !$canWriteFunctions
         },
         {
@@ -59,7 +67,7 @@
                 );
                 scrollBy({ top: -100 });
             },
-            icon: 'search',
+            icon: IconSearch,
             group: 'functions',
             disabled: !$canWriteFunctions
         },
@@ -71,7 +79,7 @@
                 );
                 scrollBy({ top: -100 });
             },
-            icon: 'calendar',
+            icon: IconCalendar,
             group: 'functions',
             disabled: !$canWriteFunctions
         },
@@ -82,7 +90,7 @@
                     `${base}/project-${$project.$id}/functions/function-${$func.$id}/settings#variables`
                 );
             },
-            icon: 'list',
+            icon: IconList,
             group: 'functions',
             disabled: !$canWriteFunctions
         },
@@ -93,7 +101,7 @@
                     `${base}/project-${$project.$id}/functions/function-${$func.$id}/settings#timeout`
                 );
             },
-            icon: 'x-circle',
+            icon: IconXCircle,
             group: 'functions',
             disabled: !$canWriteFunctions
         },
@@ -105,7 +113,7 @@
                 );
                 scrollBy({ top: -100 });
             },
-            icon: 'clock',
+            icon: IconClock,
             group: 'functions',
             disabled: !$canWriteFunctions
         },

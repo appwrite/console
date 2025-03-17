@@ -1,17 +1,17 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { Alert, CardGrid, PaginationInline } from '$lib/components';
+    import { Avatar, CardGrid, PaginationInline } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import GitInstallationModal from './GitInstallationModal.svelte';
     import GitDisconnectModal from './GitDisconnectModal.svelte';
     import dayjs from 'dayjs';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import {
         ActionMenu,
+        Alert,
         Card,
         Empty,
         Icon,
@@ -26,13 +26,15 @@
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import type { ComponentType } from 'svelte';
+    import { Link } from '$lib/elements';
 
     export let total: number;
     export let limit: number;
     export let offset: number;
     export let installations: Models.Installation[];
 
-    let showGitIstall = false;
     let showGitDisconnect = false;
     let showInstallationDropdown: boolean[] = [];
     let selectedInstallation: Models.Installation;
@@ -47,12 +49,10 @@
         }
     }
 
-    function getProviderIcon(provider: string): string {
+    function getProviderIcon(provider: string): ComponentType {
         switch (provider) {
             case 'github':
-                return 'icon-github';
-            default:
-                return '';
+                return IconGithub;
         }
     }
 
@@ -78,20 +78,22 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Git configuration</svelte:fragment>
-    Add a Git installation to your project. You can connect a repository in your function settings.
+    Add a Git installation to your project so you can connect repositories later through your function
+    or site settings.
     <svelte:fragment slot="aside">
         {#if total > 0}
-            <div>
-                <div class="u-flex u-flex-vertical-mobile u-main-end u-padding-block-end-16">
-                    <ul class="buttons-list">
-                        <li class="buttons-list-item">
-                            <Button secondary on:click={() => (showGitIstall = true)}>
-                                <Icon icon={IconPlus} slot="start" size="s" />
-                                Add installation
-                            </Button>
-                        </li>
-                    </ul>
-                </div>
+            <Layout.Stack gap="l">
+                <Layout.Stack direction="row" justifyContent="flex-end">
+                    <Button
+                        secondary
+                        href={configureGitHub()}
+                        on:click={() => {
+                            trackEvent(Click.SettingsInstallProviderClick);
+                        }}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add installation
+                    </Button>
+                </Layout.Stack>
 
                 <Table.Root>
                     <svelte:fragment slot="header">
@@ -102,20 +104,16 @@
                     {#each installations as installation, i}
                         <Table.Row>
                             <Table.Cell>
-                                <div class="u-flex u-gap-8 u-cross-center">
-                                    <div class="avatar is-size-small">
-                                        <span
-                                            class={getProviderIcon(installation.provider)}
-                                            style="font-size: var(--icon-size-medium)!important" />
-                                    </div>
-                                    <a
-                                        href={getInstallationLink(installation)}
-                                        target="_blank"
-                                        class="u-flex u-gap-4 u-cross-center">
-                                        <span>{installation.organization}</span><span
-                                            style="font-size: 1rem; color: hsl(var(--color-neutral-70));"
-                                            class="icon-external-link" /></a>
-                                </div>
+                                <Layout.Stack direction="row" gap="s" alignItems="center">
+                                    <Avatar alt={installation.provider} size="xs">
+                                        <Icon
+                                            icon={getProviderIcon(installation.provider)}
+                                            size="s" />
+                                    </Avatar>
+                                    <Link href={getInstallationLink(installation)} external icon>
+                                        {installation.organization}
+                                    </Link>
+                                </Layout.Stack>
                             </Table.Cell>
                             <Table.Cell>
                                 <DualTimeView time={installation.$updatedAt} />
@@ -151,45 +149,42 @@
                         </Table.Row>
                     {/each}
                 </Table.Root>
-            </div>
-            {#if total > limit}
-                <Layout.Stack justifyContent="space-between">
-                    <p class="text">Total installations: {total}</p>
-                    <PaginationInline
-                        {limit}
-                        sum={total}
-                        on:change={navigateInstallations}
-                        bind:offset />
-                </Layout.Stack>
-            {/if}
+                {#if total > limit}
+                    <Layout.Stack justifyContent="space-between">
+                        <p class="text">Total installations: {total}</p>
+                        <PaginationInline
+                            {limit}
+                            sum={total}
+                            on:change={navigateInstallations}
+                            bind:offset />
+                    </Layout.Stack>
+                {/if}
+            </Layout.Stack>
         {:else if isSelfHosted && !isVcsEnabled}
-            <Alert type="info">
-                <svelte:fragment slot="title">
-                    Installing Git to a self-hosted instance
-                </svelte:fragment>
-                Before installing Git in a locally hosted Appwrite project, ensure your environment variables
-                are configured.
-            </Alert>
-        {/if}
-        <Card.Base padding="none" border="dashed">
-            <Empty
-                type="secondary"
-                title="No installation was added to the project yet"
-                description="Add an installation to connect repositories">
+            <Alert.Inline status="info" title="Installing Git on a self-hosted instance">
+                Before installing Git in a locally hosted Appwrite project, ensure your environment
+                variables are configured.
                 <svelte:fragment slot="actions">
-                    <Button secondary href={configureGitHub()} external>
-                        <Icon icon={IconGithub} size="s" slot="start" />
-                        Add installation
-                    </Button>
+                    <Button compact href="#" external>Learn more</Button>
                 </svelte:fragment>
-            </Empty>
-        </Card.Base>
+            </Alert.Inline>
+        {:else}
+            <Card.Base padding="none" border="dashed">
+                <Empty
+                    type="secondary"
+                    title="No installation was added to the project yet"
+                    description="Add an installation to connect repositories">
+                    <svelte:fragment slot="actions">
+                        <Button secondary href={configureGitHub()} external>
+                            <Icon icon={IconGithub} size="s" slot="start" />
+                            Connect to GitHub
+                        </Button>
+                    </svelte:fragment>
+                </Empty>
+            </Card.Base>
+        {/if}
     </svelte:fragment>
 </CardGrid>
-
-{#if showGitIstall}
-    <GitInstallationModal bind:showGitInstall={showGitIstall} />
-{/if}
 
 {#if showGitDisconnect}
     <GitDisconnectModal bind:showGitDisconnect {selectedInstallation} />

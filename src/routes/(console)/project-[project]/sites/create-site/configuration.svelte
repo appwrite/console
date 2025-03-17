@@ -32,9 +32,11 @@
     import CreateVariableModal from './createVariableModal.svelte';
     import DeleteVariableModal from './deleteVariableModal.svelte';
     import UpdateVariableModal from './updateVariableModal.svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;
+    $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework?.key);
 
     export let variables: Partial<Models.Variable>[] = [];
     export let installCommand = '';
@@ -51,7 +53,11 @@
     let currentVariable: Partial<Models.Variable>;
     let frameworkId = selectedFramework.key;
 
-    $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework.key);
+    $: if (!installCommand || !buildCommand || !outputDirectory) {
+        installCommand ||= frameworkData?.adapters?.ssr?.installCommand;
+        buildCommand ||= frameworkData?.adapters?.ssr?.buildCommand;
+        outputDirectory ||= frameworkData?.adapters?.ssr?.outputDirectory;
+    }
 </script>
 
 <Fieldset legend="Settings">
@@ -80,12 +86,15 @@
                                 id="installCommand"
                                 label="Install command"
                                 bind:value={installCommand}
-                                placeholder={frameworkData?.defaultInstallCommand} />
+                                placeholder={frameworkData?.adapters?.ssr?.installCommand} />
                             <Button
                                 secondary
                                 size="s"
-                                disabled={frameworkData?.defaultInstallCommand === installCommand}
-                                on:click={() => (installCommand = '')}>
+                                disabled={frameworkData?.adapters?.ssr?.installCommand ===
+                                    installCommand}
+                                on:click={() =>
+                                    (installCommand =
+                                        frameworkData?.adapters?.ssr?.installCommand)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -94,12 +103,14 @@
                                 id="buildCommand"
                                 label="Build command"
                                 bind:value={buildCommand}
-                                placeholder={frameworkData?.defaultBuildCommand} />
+                                placeholder={frameworkData?.adapters?.ssr?.buildCommand} />
                             <Button
                                 secondary
                                 size="s"
-                                disabled={frameworkData?.defaultBuildCommand === buildCommand}
-                                on:click={() => (buildCommand = '')}>
+                                disabled={frameworkData?.adapters?.ssr?.buildCommand ===
+                                    buildCommand}
+                                on:click={() =>
+                                    (buildCommand = frameworkData?.adapters?.ssr?.buildCommand)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -108,12 +119,15 @@
                                 id="outputDirectory"
                                 label="Output directory"
                                 bind:value={outputDirectory}
-                                placeholder={frameworkData?.defaultOutputDirectory} />
+                                placeholder={frameworkData?.adapters?.ssr?.outputDirectory} />
                             <Button
                                 secondary
                                 size="s"
-                                disabled={frameworkData?.defaultOutputDirectory === outputDirectory}
-                                on:click={() => (outputDirectory = '')}>
+                                disabled={frameworkData?.adapters?.ssr?.outputDirectory ===
+                                    outputDirectory}
+                                on:click={() =>
+                                    (outputDirectory =
+                                        frameworkData?.adapters?.ssr?.outputDirectory)}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -134,18 +148,36 @@
                                 <Button
                                     secondary
                                     size="s"
-                                    on:mousedown={() => (showEditorModal = true)}>
+                                    on:mousedown={() => {
+                                        showEditorModal = true;
+                                        trackEvent(Click.VariablesUpdateClick, {
+                                            source: 'site_configuration'
+                                        });
+                                    }}>
                                     <Icon slot="start" icon={IconCode} /> Editor
                                 </Button>
                                 <Button
                                     secondary
                                     size="s"
-                                    on:mousedown={() => (showImportModal = true)}>
+                                    on:mousedown={() => {
+                                        showImportModal = true;
+                                        trackEvent(Click.VariablesImportClick, {
+                                            source: 'site_configuration'
+                                        });
+                                    }}>
                                     <Icon slot="start" icon={IconUpload} /> Import .env
                                 </Button>
                             </Layout.Stack>
                             {#if variables?.length}
-                                <Button secondary size="s" on:mousedown={() => (showCreate = true)}>
+                                <Button
+                                    secondary
+                                    size="s"
+                                    on:mousedown={() => {
+                                        showCreate = true;
+                                        trackEvent(Click.VariablesCreateClick, {
+                                            source: 'site_settings'
+                                        });
+                                    }}>
                                     <Icon slot="start" icon={IconPlus} /> Create variable
                                 </Button>
                             {/if}

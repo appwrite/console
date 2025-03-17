@@ -16,14 +16,11 @@
 </script>
 
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app';
-    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { Badge, Layout, Logs, Typography } from '@appwrite.io/pink-svelte';
@@ -33,6 +30,8 @@
     export let site: Models.Site;
     export let deployment: Models.Deployment;
     export let hideTitle = false;
+    export let hideScrollButtons = false;
+    export let fullHeight = false;
 
     let { status, buildLogs } = deployment;
 
@@ -43,11 +42,9 @@
                     `sites.${deployment.resourceId}.deployments.${deployment.$id}.update`
                 )
             ) {
-                const res = response.payload as Partial<Models.Deployment> & { logs: string };
-                console.log(res);
+                const res = response.payload as Partial<Models.Deployment>;
                 status = res.status;
-                // Models.Deployment has no `logs`, the payload sends `logs` though
-                buildLogs = res.logs;
+                buildLogs = res.buildLogs;
 
                 if (status === 'ready') {
                     goto(
@@ -58,23 +55,6 @@
         });
         return () => unsubscribe();
     });
-
-    async function cancelDeployment() {
-        try {
-            await sdk.forProject.sites.updateDeploymentBuild(deployment.resourceId, deployment.$id);
-
-            await invalidate(Dependencies.DEPLOYMENTS);
-            addNotification({
-                type: 'success',
-                message: `Deployment has been canceled`
-            });
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-        }
-    }
 </script>
 
 <Layout.Stack gap="xl">
@@ -94,11 +74,10 @@
         </Layout.Stack>
     {/if}
     {#key buildLogs}
-        <Logs logs={buildLogs || 'Waiting for build to start...'} bind:theme={$app.themeInUse} />
+        <Logs
+            {fullHeight}
+            showScrollButton={!hideScrollButtons}
+            logs={buildLogs || 'No logs available'}
+            bind:theme={$app.themeInUse} />
     {/key}
-    {#if ['processing', 'building'].includes(status)}
-        <Layout.Stack alignItems="flex-end">
-            <Button size="s" text on:click={cancelDeployment}>Cancel deployment</Button>
-        </Layout.Stack>
-    {/if}
 </Layout.Stack>

@@ -4,6 +4,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { collection } from '../store';
     import Delete from './deleteCollection.svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
 </script>
@@ -22,7 +23,12 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        <Button
+            secondary
+            on:click={() => {
+                trackEvent(Click.DatabaseCollectionDelete);
+                showDelete = true;
+            }}>Delete</Button>
     </svelte:fragment>
 </CardGrid>
 

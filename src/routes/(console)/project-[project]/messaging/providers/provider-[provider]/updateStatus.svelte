@@ -12,6 +12,7 @@
     import ProviderType from '../../providerType.svelte';
     import { provider as providerData } from './store';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { getProviderText } from '../../helper';
 
     let enabled: boolean = null;
 
@@ -146,7 +147,7 @@
                     <p class="title">
                         Provider: <Provider noIcon provider={$providerData.provider} />
                     </p>
-                    <p class="title">Type: <ProviderType noIcon type={$providerData.type} /></p>
+                    <p class="title">Type: {getProviderText($providerData.type)}</p>
                     <p>Created: {toLocaleDateTime($providerData.$createdAt)}</p>
                 </div>
             </div>

@@ -17,6 +17,7 @@
     import LogsRequest from './(components)/LogsRequest.svelte';
     import LogsResponse from './(components)/LogsResponse.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { Copy } from '$lib/components';
 
     export let open = false;
     export let selectedLogId: string;
@@ -49,7 +50,9 @@
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Layout.Stack direction="row" gap="m" alignItems="center">
                 <Typography.Text variant="m-400">Log ID</Typography.Text>
-                <Tag size="s" variant="code">{selectedLog?.$id}</Tag>
+                <Copy value={selectedLog?.$id}>
+                    <Tag size="s" variant="code">{selectedLog?.$id}</Tag>
+                </Copy>
             </Layout.Stack>
             <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
                 <Button icon text size="xs" on:click={previousLog} disabled={isFirstLog}>
@@ -65,45 +68,48 @@
         <Layout.Stack gap="xl">
             <Accordion title="Details" open>
                 <Layout.Stack gap="xl">
-                    <Layout.Stack direction="row" gap="xxxl">
-                        <Layout.Stack gap="xs" inline>
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                Method
-                            </Typography.Text>
-                            <Typography.Text variant="m-400">
-                                {selectedLog.requestMethod}
-                            </Typography.Text>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xs" inline>
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                Status code
-                            </Typography.Text>
-                            <span>
-                                <Badge
-                                    content={selectedLog.responseStatusCode.toString()}
-                                    variant="secondary"
-                                    type={selectedLog?.responseStatusCode >= 400
-                                        ? 'error'
-                                        : 'success'} />
-                            </span>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xs" inline>
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                Duration
-                            </Typography.Text>
-                            <Typography.Text variant="m-400">
-                                {calculateTime(selectedLog.duration)}
-                            </Typography.Text>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xs" inline>
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                Created
-                            </Typography.Text>
-                            <Typography.Text variant="m-400">
-                                {capitalize(timeFromNow(selectedLog.$createdAt))}
-                            </Typography.Text>
-                        </Layout.Stack>
+                    <Layout.Stack direction="row">
+                        <Layout.Grid columnsXS={2} columns={4} gap="xxxl" rowGap="xl">
+                            <Layout.Stack gap="xs" inline>
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                    Method
+                                </Typography.Text>
+                                <Typography.Text variant="m-400">
+                                    {selectedLog.requestMethod}
+                                </Typography.Text>
+                            </Layout.Stack>
+                            <Layout.Stack gap="xs" inline>
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                    Status code
+                                </Typography.Text>
+                                <span>
+                                    <Badge
+                                        content={selectedLog.responseStatusCode.toString()}
+                                        variant="secondary"
+                                        type={selectedLog?.responseStatusCode >= 400
+                                            ? 'error'
+                                            : 'success'} />
+                                </span>
+                            </Layout.Stack>
+                            <Layout.Stack gap="xs" inline>
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                    Duration
+                                </Typography.Text>
+                                <Typography.Text variant="m-400">
+                                    {calculateTime(selectedLog.duration)}
+                                </Typography.Text>
+                            </Layout.Stack>
+                            <Layout.Stack gap="xs" inline>
+                                <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                    Created
+                                </Typography.Text>
+                                <Typography.Text variant="m-400">
+                                    {capitalize(timeFromNow(selectedLog.$createdAt))}
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </Layout.Grid>
                     </Layout.Stack>
+
                     <Layout.Stack gap="xs" inline alignItems="flex-start">
                         <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                             Path
@@ -111,7 +117,7 @@
                         <div>
                             <InteractiveText
                                 text={selectedLog.requestPath}
-                                variant="copy"
+                                variant="copy-code"
                                 isVisible />
                         </div>
                     </Layout.Stack>

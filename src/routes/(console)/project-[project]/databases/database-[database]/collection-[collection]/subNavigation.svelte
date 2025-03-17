@@ -4,8 +4,13 @@
     import { showCreate } from '../store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { Icon, Sidebar, Navbar, Layout, Link } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown, IconDatabase, IconTable } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Sidebar, Navbar, Layout, Link, ActionMenu } from '@appwrite.io/pink-svelte';
+    import {
+        IconChevronDown,
+        IconDatabase,
+        IconPlus,
+        IconTable
+    } from '@appwrite.io/pink-icons-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
 
@@ -15,7 +20,7 @@
     $: collectionId = $page.params.collection;
 
     $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
-        a.$updatedAt > b.$updatedAt ? -1 : 1
+        a.name.localeCompare(b.name)
     );
 
     $: selectedCollection = sortedCollections?.find(
@@ -49,7 +54,7 @@
                             {@const isSelected = collectionId === collection.$id}
                             <li class:is-selected={isSelected}>
                                 <a
-                                    class="u-padding-block-4 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
+                                    class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
                                     {href}>
                                     <Icon
                                         icon={IconTable}
@@ -63,15 +68,16 @@
                     </ul>
                 {/if}
             </div>
-            <button
-                class="new-button body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-8 is-full-width"
-                on:click={() => {
-                    $showCreate = true;
-                    $showSubNavigation = false;
-                }}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create collection</span>
-            </button>
+            <ActionMenu.Root noPadding width="167">
+                <ActionMenu.Item.Button
+                    on:click={() => {
+                        $showCreate = true;
+                        $showSubNavigation = false;
+                    }}
+                    leadingIcon={IconPlus}>
+                    Create collection
+                </ActionMenu.Item.Button>
+            </ActionMenu.Root>
         </section>
     </Sidebar.Base>
 {:else}
@@ -191,10 +197,6 @@
             line-clamp: 1;
             color: var(--fgcolor-neutral-secondary, #56565c);
         }
-    }
-
-    .new-button {
-        flex-shrink: 0;
     }
 
     :global(.sub-navigation header) {

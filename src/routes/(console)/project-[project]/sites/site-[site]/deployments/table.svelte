@@ -3,8 +3,7 @@
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
-    import DeploymentSource from '../../(components)/deploymentSource.svelte';
-    import DeploymentCreatedBy from '../../(components)/deploymentCreatedBy.svelte';
+    import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
     import { timer } from '$lib/actions/timer';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { page } from '$app/stores';
@@ -15,9 +14,9 @@
     import { Layout, Status, Table } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
     import ActivateDeploymentModal from '../../activateDeploymentModal.svelte';
-    import { deploymentStatusConverter } from '../store';
     import { capitalize } from '$lib/helpers/string';
     import DeploymentActionMenu from '../../(components)/deploymentActionMenu.svelte';
+    import { deploymentStatusConverter } from '$lib/stores/git';
 
     export let data: PageData;
 
@@ -70,17 +69,19 @@
                         <Table.Cell width={column?.width?.toString() ?? ''}>
                             <DeploymentCreatedBy {deployment} />
                         </Table.Cell>
-                    {:else if column.id === 'buildTime'}
+                    {:else if column.id === 'buildDuration'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {#if ['processing', 'building'].includes(deployment.status)}
+                            {#if ['waiting'].includes(deployment.status)}
+                                -
+                            {:else if ['processing', 'building'].includes(deployment.status)}
                                 <span use:timer={{ start: deployment.$createdAt }} />
                             {:else}
-                                {formatTimeDetailed(deployment.buildTime)}
+                                {formatTimeDetailed(deployment.buildDuration)}
                             {/if}
                         </Table.Cell>
-                    {:else if column.id === 'size'}
+                    {:else if column.id === 'sourceSize'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {calculateSize(deployment.size)}
+                            {calculateSize(deployment.sourceSize)}
                         </Table.Cell>
                     {:else if column.id === 'buildSize'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
@@ -106,7 +107,7 @@
 </Table.Root>
 
 {#if selectedDeployment}
-    <Delete {selectedDeployment} bind:showDelete />
+    <Delete {selectedDeployment} activeDeployment={data.site.deploymentId} bind:showDelete />
 
     <Cancel {selectedDeployment} bind:showCancel />
     <RedeployModal

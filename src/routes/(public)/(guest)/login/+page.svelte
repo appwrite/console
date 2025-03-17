@@ -22,8 +22,8 @@
             disabled = true;
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
-            trackEvent(Submit.AccountLogin);
             if ($user) {
+                trackEvent(Submit.AccountLogin, { mfa_used: 'none' });
                 addNotification({
                     type: 'success',
                     message: 'Successfully logged in.'

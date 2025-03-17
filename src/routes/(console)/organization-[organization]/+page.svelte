@@ -2,10 +2,8 @@
     import { base } from '$app/paths';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import Create from './createProjectCloud.svelte';
     import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
-    import { wizard } from '$lib/stores/wizard';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { page } from '$app/stores';
     import { registerCommands } from '$lib/commandCenter';
@@ -41,11 +39,13 @@
         IconUnity
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
+    import CreateProjectCloud from './createProjectCloud.svelte';
 
     export let data;
 
     let addOrganization = false;
     let showCreate = false;
+    let showCreateProjectCloud = false;
 
     function allServiceDisabled(project: Models.Project): boolean {
         let disabled = true;
@@ -66,7 +66,7 @@
 
     function handleCreateProject() {
         if (!$canWriteProjects) return;
-        if (isCloud) wizard.start(Create);
+        if (isCloud) showCreateProjectCloud = true;
         else showCreate = true;
     }
 
@@ -234,3 +234,6 @@
 
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={$page.params.organization} />
+{#if showCreateProjectCloud}
+    <CreateProjectCloud bind:showCreateProjectCloud regions={regions.regions} />
+{/if}

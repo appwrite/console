@@ -3,17 +3,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { FloatingActionBar, Id, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellCheck,
-        TableCellHead,
-        TableCellHeadCheck,
-        TableCellText,
-        TableHeader,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
@@ -23,6 +12,7 @@
     import type { Column } from '$lib/helpers/types';
     import { page } from '$app/stores';
     import { canWriteTopics } from '$lib/stores/roles';
+    import { Selector, Table } from '@appwrite.io/pink-svelte';
 
     export let columns: Column[];
     export let data: PageData;
@@ -59,57 +49,55 @@
     }
 </script>
 
-<TableScroll>
-    <TableHeader>
+<Table.Root>
+    <svelte:fragment slot="header">
         {#if $canWriteTopics}
-            <TableCellHeadCheck
-                bind:selected={selectedIds}
-                pageItemsIds={data.topics.topics.map((d) => d.$id)} />
+            <Table.Header.Selector width="40px" />
         {/if}
         {#each columns as column}
             {#if column.show}
-                <TableCellHead width={column.width}>{column.title}</TableCellHead>
+                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
             {/if}
         {/each}
-    </TableHeader>
-    <TableBody>
-        {#each data.topics.topics as topic (topic.$id)}
-            <TableRowLink
-                href={`${base}/project-${$page.params.project}/messaging/topics/topic-${topic.$id}`}>
-                {#if $canWriteTopics}
-                    <TableCellCheck bind:selectedIds id={topic.$id} />
-                {/if}
-                {#each columns as column (column.id)}
-                    {#if column.show}
-                        {#if column.id === '$id'}
-                            {#key column.id}
-                                <TableCell title={column.title} width={column.width}>
-                                    <Id value={topic.$id}>{topic.$id}</Id>
-                                </TableCell>
-                            {/key}
-                        {:else if column.type === 'datetime'}
-                            <TableCellText title={column.title} width={column.width}>
-                                {#if !topic[column.id]}
-                                    -
-                                {:else}
-                                    {toLocaleDateTime(topic[column.id])}
-                                {/if}
-                            </TableCellText>
-                        {:else if column.id === 'total'}
-                            <TableCellText title={column.title} width={column.width}>
-                                {topic.emailTotal + topic.smsTotal + topic.pushTotal}
-                            </TableCellText>
-                        {:else}
-                            <TableCellText title={column.title} width={column.width}>
-                                {topic[column.id]}
-                            </TableCellText>
-                        {/if}
+    </svelte:fragment>
+    {#each data.topics.topics as topic (topic.$id)}
+        <Table.Link
+            href={`${base}/project-${$page.params.project}/messaging/topics/topic-${topic.$id}`}>
+            {#if $canWriteTopics}
+                <Table.Cell>
+                    <Selector.Checkbox size="s" />
+                </Table.Cell>
+            {/if}
+            {#each columns as column (column.id)}
+                {#if column.show}
+                    {#if column.id === '$id'}
+                        {#key column.id}
+                            <Table.Cell>
+                                <Id value={topic.$id}>{topic.$id}</Id>
+                            </Table.Cell>
+                        {/key}
+                    {:else if column.type === 'datetime'}
+                        <Table.Cell>
+                            {#if !topic[column.id]}
+                                -
+                            {:else}
+                                {toLocaleDateTime(topic[column.id])}
+                            {/if}
+                        </Table.Cell>
+                    {:else if column.id === 'total'}
+                        <Table.Cell>
+                            {topic.emailTotal + topic.smsTotal + topic.pushTotal}
+                        </Table.Cell>
+                    {:else}
+                        <Table.Cell>
+                            {topic[column.id]}
+                        </Table.Cell>
                     {/if}
-                {/each}
-            </TableRowLink>
-        {/each}
-    </TableBody>
-</TableScroll>
+                {/if}
+            {/each}
+        </Table.Link>
+    {/each}
+</Table.Root>
 
 <FloatingActionBar show={selectedIds.length > 0}>
     <div class="u-flex u-cross-center u-main-space-between actions">

@@ -13,13 +13,12 @@ export const columns = writable<Column[]>([
         width: 110,
         array: true,
         format: 'enum',
-        elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed'],
-        filter: false
+        elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed']
     },
 
     {
-        id: 'buildTime',
-        title: 'Build time',
+        id: 'buildDuration',
+        title: 'Build duration',
         type: 'integer',
         show: true,
         width: 90,
@@ -40,10 +39,10 @@ export const columns = writable<Column[]>([
         filter: false
     },
     {
-        id: 'size',
+        id: 'sourceSize',
         title: 'Source size',
         type: 'integer',
-        show: true,
+        show: false,
         width: 140,
         elements: [
             {
@@ -64,7 +63,7 @@ export const columns = writable<Column[]>([
         id: 'buildSize',
         title: 'Build size',
         type: 'integer',
-        show: false,
+        show: true,
         filter: false,
         width: 80
     },

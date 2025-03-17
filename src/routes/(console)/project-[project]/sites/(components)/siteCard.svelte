@@ -13,16 +13,17 @@
         Tooltip,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import DeploymentSource from './deploymentSource.svelte';
+    import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
+
     import { Button } from '$lib/elements/forms';
     import { IconInfo, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';
-    import DeploymentDomains from './deploymentDomains.svelte';
+    import DeploymentDomains from '$lib/components/git/deploymentDomains.svelte';
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
     import { getApiEndpoint } from '$lib/stores/sdk';
-    import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList;
@@ -32,7 +33,7 @@
     let show = false;
     const siteUrl = proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : undefined;
 
-    $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
+    $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.sourceSize ?? 0));
 
     function getScreenshot(theme: string, deployment: Models.Deployment) {
         if (theme === 'dark') {
@@ -49,10 +50,7 @@
     function getFilePreview(fileId: string) {
         // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
         const endpoint = getApiEndpoint();
-        return (
-            endpoint +
-            `/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`
-        );
+        return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
     }
 </script>
 
@@ -89,7 +87,9 @@
                                 Status
                             </Typography.Text>
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                <Status status={deployment.status} label={deployment.status} />
+                                <Status
+                                    status={deployment.status}
+                                    label={capitalize(deployment.status)} />
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}
@@ -97,10 +97,8 @@
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                                 Deployed
                             </Typography.Text>
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-primary">
-                                <DualTimeView time={deployment.$updatedAt} />
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
+                                <DeploymentCreatedBy {deployment} />
                             </Typography.Text>
                         </Layout.Stack>
                     {/if}
@@ -108,13 +106,13 @@
 
                 <Layout.Stack gap="xxl" direction="row" wrap="wrap">
                     <Layout.Stack gap="xxl" direction="row" wrap="wrap" inline>
-                        {#if deployment?.buildTime}
+                        {#if deployment?.buildDuration}
                             <Layout.Stack gap="xxs" inline>
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Build time
+                                    Build duration
                                 </Typography.Text>
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {formatTimeDetailed(deployment.buildTime)}
+                                    {formatTimeDetailed(deployment.buildDuration)}
                                 </Typography.Text>
                             </Layout.Stack>
                         {/if}
@@ -170,7 +168,7 @@
                         </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
-                <Layout.Stack gap="xxs">
+                <Layout.Stack gap="xxs" inline style="width: min-content;">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                         Source
                     </Typography.Text>

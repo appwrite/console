@@ -1,4 +1,4 @@
-import { RuleType, sdk } from '$lib/stores/sdk';
+import { DeploymentResourceType, RuleTrigger, RuleType, sdk } from '$lib/stores/sdk';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { Query } from '@appwrite.io/console';
@@ -12,8 +12,11 @@ export const load: PageLoad = async ({ url }) => {
         sdk.forProject.sites.get(siteId),
         sdk.forProject.sites.getDeployment(siteId, deploymentId),
         sdk.forProject.proxy.listRules([
-            Query.equal('type', [RuleType.DEPLOYMENT]),
-            Query.equal('automation', `site=${siteId}`)
+            Query.equal('type', RuleType.DEPLOYMENT),
+            Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+            Query.equal('deploymentResourceId', siteId),
+            Query.equal('deploymentId', deploymentId),
+            Query.equal('trigger', RuleTrigger.MANUAL)
         ])
     ]);
 

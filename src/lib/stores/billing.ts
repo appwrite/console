@@ -26,7 +26,7 @@ import { BillingPlan } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
-import { trackEvent } from '$lib/actions/analytics';
+import { Click, trackEvent } from '$lib/actions/analytics';
 import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
 import { last } from '$lib/helpers/array';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
@@ -313,7 +313,7 @@ export async function checkForUsageLimit(org: Organization) {
                     name: 'Upgrade plan',
                     method: () => {
                         goto(`${base}/organization-${org.$id}/change-plan`);
-                        trackEvent('click_organization_upgrade', {
+                        trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source: 'limit_reached_notification'
                         });

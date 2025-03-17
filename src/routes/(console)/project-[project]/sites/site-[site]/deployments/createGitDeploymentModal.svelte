@@ -4,39 +4,41 @@
     import { Repositories } from '$lib/components/git';
     import { Dependencies } from '$lib/constants';
     import { Link } from '$lib/elements';
-    import { Button, InputCheckbox, InputSelect } from '$lib/elements/forms';
+    import { Button, InputCheckbox, InputSelect, InputText } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { Type, type Models } from '@appwrite.io/console';
+    import {
+        Adapter,
+        BuildRuntime,
+        Framework,
+        VCSDeploymentType,
+        type Models
+    } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let site: Models.Site;
 
-    let installations = { installations: [], total: 0 };
+    export let installations: Models.InstallationList;
     let hasRepository = !!site?.providerRepositoryId;
     let selectedRepository: string = site.providerRepositoryId;
     let branch: string = null;
+    let commit: string = null;
     let activate = true;
     let error = '';
 
     async function loadInstallations() {
-        try {
-            installations = await sdk.forProject.vcs.listInstallations();
-            if (!site?.installationId && installations.total > 0) {
-                installation.set(installations.installations[0]);
-            }
-            $installation = installations.installations.find(
-                (installation) => installation.$id === site.installationId
-            );
-            if (!$installation?.$id) {
-                $installation = installations.installations[0];
-            }
-        } catch (error) {
-            console.log(error);
+        if (!site?.installationId && installations?.total > 0) {
+            installation.set(installations.installations[0]);
+        }
+        $installation = installations.installations.find(
+            (installation) => installation.$id === site.installationId
+        );
+        if (!$installation?.$id) {
+            $installation = installations.installations[0];
         }
     }
 
@@ -49,12 +51,11 @@
                     site.providerRepositoryId
                 );
             }
+            selectedRepository = $repository?.id;
             const branchList = await sdk.forProject.vcs.listRepositoryBranches(
                 $installation.$id,
                 selectedRepository
             );
-
-            console.log(branchList);
 
             const sorted = sortBranches(branchList.branches);
             branch = sorted[0]?.name ?? null;
@@ -72,7 +73,41 @@
 
     async function createDeployment() {
         try {
-            await sdk.forProject.sites.createVcsDeployment(site.$id, Type.Branch, branch, activate);
+            if (!site?.providerRepositoryId) {
+                await sdk.forProject.sites.update(
+                    site.$id,
+                    site.name,
+                    site.framework as Framework,
+                    site.enabled || undefined,
+                    site.timeout || undefined,
+                    site.installCommand || undefined,
+                    site.buildCommand || undefined,
+                    site.outputDirectory || undefined,
+                    (site?.buildRuntime as BuildRuntime) || undefined,
+                    (site.adapter as Adapter) || undefined,
+                    site.fallbackFile || undefined,
+                    $installation.$id || undefined,
+                    selectedRepository || undefined,
+                    branch || undefined,
+                    site.providerSilentMode || undefined,
+                    site.providerRootDirectory || undefined
+                );
+            }
+            if (commit) {
+                await sdk.forProject.sites.createVcsDeployment(
+                    site.$id,
+                    VCSDeploymentType.Commit,
+                    commit,
+                    activate
+                );
+            } else if (branch) {
+                await sdk.forProject.sites.createVcsDeployment(
+                    site.$id,
+                    VCSDeploymentType.Branch,
+                    branch,
+                    activate
+                );
+            }
             show = false;
             invalidate(Dependencies.DEPLOYMENTS);
             addNotification({
@@ -85,6 +120,8 @@
             error = e.message;
         }
     }
+
+    $: console.log($repository);
 </script>
 
 <Modal title="Create Git deployment" bind:show onSubmit={createDeployment} bind:error>
@@ -153,6 +190,11 @@
                     branch = event.detail.value;
                 }}
                 {options} />
+            <!-- <InputText
+                id="commit"
+                label="Commit hash"
+                placeholder="Select commit"
+                bind:value={commit} /> -->
             {#if branch}
                 <InputCheckbox
                     label="Activate deployment after build"

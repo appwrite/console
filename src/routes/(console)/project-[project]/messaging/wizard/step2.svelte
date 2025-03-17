@@ -1,21 +1,13 @@
 <script lang="ts">
     import { Card } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
     import { WizardStep } from '$lib/layout';
     import { messageParams, providerType, targetsById, getTotal } from './store';
     import Actions from '../actions.svelte';
     import { topicsById } from '../store';
     import type { Models } from '@appwrite.io/console';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Table } from '@appwrite.io/pink-svelte';
 
     let showTopics = false;
     let showUserTargets = false;
@@ -24,7 +16,6 @@
 
     function addTopics(event: CustomEvent<Record<string, Models.Topic>>) {
         $topicsById = event.detail;
-        showDropdown = false;
     }
 
     function removeTopic(topicId: string) {
@@ -34,7 +25,6 @@
 
     function addTargets(event: CustomEvent<Record<string, Models.Target>>) {
         $targetsById = event.detail;
-        showDropdown = false;
     }
 
     function removeTarget(targetId: string) {
@@ -80,65 +70,63 @@
         </Card>
     {:else}
         <div class="table-wrapper">
-            <Table noMargin noStyles>
-                <TableHeader>
-                    <TableCellHead width={140}>Target</TableCellHead>
-                    <TableCellHead width={32} />
-                </TableHeader>
-                <TableBody>
-                    {#each Object.entries($topicsById) as [topicId, topic] (topicId)}
-                        <TableRow>
-                            <TableCell title="Target">
-                                <div class="u-flex u-cross-center">
-                                    <span class="title">
-                                        <span class="u-line-height-1-5">
-                                            <span class="body-text-2 u-bold" data-private>
-                                                {topic.name}
-                                            </span>
-                                            <span class="collapsible-button-optional">
-                                                ({getTotal(topic)} targets)
-                                            </span>
-                                        </span></span>
-                                </div>
-                            </TableCell>
-                            <TableCell title="Remove" width={40}>
-                                <div class="u-flex u-main-end">
-                                    <button
-                                        class="button is-text is-only-icon"
-                                        type="button"
-                                        aria-label="delete"
-                                        on:click={() => removeTopic(topicId)}>
-                                        <span class="icon-x u-font-size-20" aria-hidden="true" />
-                                    </button>
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    {/each}
-                    {#each Object.entries($targetsById) as [targetId, target] (targetId)}
-                        <TableRow>
-                            <TableCell title="Target">
-                                <div class="u-flex u-cross-center">
-                                    <span class="text">
-                                        {target.name ? target.name : target.identifier}
-                                    </span>
-                                </div>
-                            </TableCell>
+            <Table.Root>
+                <svelte:fragment slot="header">
+                    <Table.Header.Cell>Target</Table.Header.Cell>
+                    <Table.Header.Cell width="32px" />
+                </svelte:fragment>
+                {#each Object.entries($topicsById) as [topicId, topic] (topicId)}
+                    <Table.Row>
+                        <Table.Cell>
+                            <div class="u-flex u-cross-center">
+                                <span class="title">
+                                    <span class="u-line-height-1-5">
+                                        <span class="body-text-2 u-bold" data-private>
+                                            {topic.name}
+                                        </span>
+                                        <span class="collapsible-button-optional">
+                                            ({getTotal(topic)} targets)
+                                        </span>
+                                    </span></span>
+                            </div>
+                        </Table.Cell>
+                        <Table.Cell>
+                            <div class="u-flex u-main-end">
+                                <button
+                                    class="button is-text is-only-icon"
+                                    type="button"
+                                    aria-label="delete"
+                                    on:click={() => removeTopic(topicId)}>
+                                    <span class="icon-x u-font-size-20" aria-hidden="true" />
+                                </button>
+                            </div>
+                        </Table.Cell>
+                    </Table.Row>
+                {/each}
+                {#each Object.entries($targetsById) as [targetId, target] (targetId)}
+                    <Table.Row>
+                        <Table.Cell>
+                            <div class="u-flex u-cross-center">
+                                <span class="text">
+                                    {target.name ? target.name : target.identifier}
+                                </span>
+                            </div>
+                        </Table.Cell>
 
-                            <TableCell title="Remove" width={40}>
-                                <div class="u-flex u-main-end">
-                                    <button
-                                        class="button is-text is-only-icon"
-                                        type="button"
-                                        aria-label="delete"
-                                        on:click={() => removeTarget(targetId)}>
-                                        <span class="icon-x u-font-size-20" aria-hidden="true" />
-                                    </button>
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </Table>
+                        <Table.Cell>
+                            <div class="u-flex u-main-end">
+                                <button
+                                    class="button is-text is-only-icon"
+                                    type="button"
+                                    aria-label="delete"
+                                    on:click={() => removeTarget(targetId)}>
+                                    <span class="icon-x u-font-size-20" aria-hidden="true" />
+                                </button>
+                            </div>
+                        </Table.Cell>
+                    </Table.Row>
+                {/each}
+            </Table.Root>
         </div>
         <Actions
             providerType={$providerType}

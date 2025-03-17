@@ -29,6 +29,7 @@
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import type { Domain } from '$lib/sdk/domains';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
 
@@ -42,7 +43,13 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery search={data.search} placeholder="Search domains" />
-        <Button href={`${base}/organization-${$page.params.organization}/domains/add-domain`}>
+        <Button
+            on:click={() => {
+                trackEvent(Click.DomainCreateClick, {
+                    source: 'organization_domain_overview'
+                });
+            }}
+            href={`${base}/organization-${$page.params.organization}/domains/add-domain`}>
             <Icon icon={IconPlus} size="s" />
             Add domain
         </Button>
@@ -63,18 +70,9 @@
                 <Table.Link
                     href={`${base}/organization-${$page.params.organization}/domains/domain-${domain.$id}`}>
                     <Table.Cell>
-                        <Layout.Stack direction="row" alignItems="center" gap="xs">
-                            <Link
-                                external
-                                href={`${$protocol}${domain.domain}`}
-                                size="s"
-                                variant="quiet">
-                                <Layout.Stack direction="row" alignItems="center" gap="xs">
-                                    {domain.domain}
-                                    <Icon icon={IconExternalLink} size="s" />
-                                </Layout.Stack>
-                            </Link>
-                        </Layout.Stack>
+                        <Link external icon href={`${$protocol}${domain.domain}`} variant="quiet">
+                            {domain.domain}
+                        </Link>
                     </Table.Cell>
                     <Table.Cell>{domain?.registrar || '-'}</Table.Cell>
                     <Table.Cell>{domain?.nameservers || '-'}</Table.Cell>
@@ -86,7 +84,7 @@
                     <Table.Cell>{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
                     <Table.Cell>
                         <Layout.Stack direction="row" justifyContent="flex-end">
-                            <Popover let:toggle placement="bottom-start" padding="none">
+                            <Popover let:toggle placement="bottom-end" padding="none">
                                 <Button
                                     text
                                     icon
@@ -107,6 +105,9 @@
                                                     selectedDomain = domain;
                                                     showRetry = true;
                                                     toggle(e);
+                                                    trackEvent(Click.DomainRetryDomainVerificationClick, {
+                                                    source: 'organization_domain_overview'
+                                                });
                                                 }}>
                                                 Retry
                                             </ActionMenu.Item.Button>
@@ -119,6 +120,9 @@
                                                 selectedDomain = domain;
                                                 showDelete = true;
                                                 toggle(e);
+                                                trackEvent(Click.DomainDeleteClick, {
+                                                    source: 'organization_domain_overview'
+                                                });
                                             }}>
                                             Delete
                                         </ActionMenu.Item.Button>
@@ -166,6 +170,11 @@
 
                     <Button
                         secondary
+                        on:click={() => {
+                            trackEvent(Click.DomainCreateClick, {
+                                source: 'organization_domain_overview'
+                            });
+                        }}
                         href={`${base}/organization-${$page.params.organization}/domains/add-domain`}
                         size="s">
                         Add domain
@@ -177,7 +186,7 @@
 </Container>
 
 {#if showDelete}
-    <DeleteDomainModal show={showDelete} {selectedDomain} />
+    <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
 {/if}
 
 <!-- {#if showRetry}

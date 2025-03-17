@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { InputPhone, InputOTP } from '$lib/elements/forms';
     import { Button, Form } from '$lib/elements/forms';
@@ -136,7 +136,7 @@
                             external={isSelfHosted}
                             href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}
                             on:click={() => {
-                                trackEvent('click_cloud_signup', {
+                                trackEvent(Click.CloudSignupClick, {
                                     from: 'button',
                                     source
                                 });

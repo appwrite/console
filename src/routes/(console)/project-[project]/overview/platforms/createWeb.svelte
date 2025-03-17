@@ -77,7 +77,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
             label: 'React',
             icon: ReactFrameworkIcon,
             smallIcon: IconReact,
-            portNumber: 3000
+            portNumber: 5173
         },
         {
             key: 'nuxt',
@@ -231,7 +231,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             <Code
                                 lang="bash"
                                 lineNumbers
-                                code={`\ngit clone https://github.com/appwrite/starter-for-${selectedFramework.key}\ncd starter-for--${selectedFramework.key}`} />
+                                code={`\ngit clone https://github.com/appwrite/starter-for-${selectedFramework.key}\ncd starter-for-${selectedFramework.key}`} />
                         </div>
 
                         {#if selectedFramework.key === 'angular'}

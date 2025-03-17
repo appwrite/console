@@ -39,6 +39,10 @@ export type Column = {
     array?: boolean;
     format?: string;
     elements?: string[] | { value: string | number; label: string }[];
+    /**
+     * Set to true to hide this column by default
+     */
+    hide?: boolean;
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(

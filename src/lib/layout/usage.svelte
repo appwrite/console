@@ -78,32 +78,35 @@
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;
     export let path: string = null;
+    export let hidePeriodSelect = false;
 </script>
 
 <Container>
     <Layout.Stack gap="s">
-        <div
-            style:max-width="250px"
-            style:--input-background-color="var(--bgcolor-neutral-primary)">
-            <InputSelect
-                on:change={(e) => goto(`${path}/${e.detail}`)}
-                id="period"
-                options={[
-                    {
-                        label: '24 hours',
-                        value: '24h'
-                    },
-                    {
-                        label: '30 days',
-                        value: '30d'
-                    },
-                    {
-                        label: '90 days',
-                        value: '90d'
-                    }
-                ]}
-                value={$page.params.period ?? '30d'} />
-        </div>
+        {#if !hidePeriodSelect}
+            <div
+                style:max-width="250px"
+                style:--input-background-color="var(--bgcolor-neutral-primary)">
+                <InputSelect
+                    on:change={(e) => goto(`${path}/${e.detail}`)}
+                    id="period"
+                    options={[
+                        {
+                            label: '24 hours',
+                            value: '24h'
+                        },
+                        {
+                            label: '30 days',
+                            value: '30d'
+                        },
+                        {
+                            label: '90 days',
+                            value: '90d'
+                        }
+                    ]}
+                    value={$page.params.period ?? '30d'} />
+            </div>
+        {/if}
         <Card>
             {#if count}
                 <Layout.Stack gap="xs">

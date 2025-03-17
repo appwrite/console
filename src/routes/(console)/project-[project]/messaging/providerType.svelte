@@ -1,36 +1,27 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
     import { MessagingProviderType } from '@appwrite.io/console';
+    import { IconAnnotation, IconDeviceMobile, IconMail } from '@appwrite.io/pink-icons-svelte';
+    import { Avatar, Icon, Layout } from '@appwrite.io/pink-svelte';
+    import type { ComponentType } from 'svelte';
+    import { getProviderText } from './helper';
 
     export let type: MessagingProviderType | Models.Provider['type'];
     export let noIcon = false;
-    export let size: 's' | 'm' | 'l' = 'm';
+    export let size: 'xs' | 's' | 'm' | 'l' = 'm';
 
-    let icon = '';
-    let text = '';
+    const text = getProviderText(type);
+    let icon: ComponentType;
 
     switch (type) {
         case MessagingProviderType.Email:
-            icon = 'icon-mail';
-            text = 'Email';
+            icon = IconMail;
             break;
         case MessagingProviderType.Sms:
-            icon = 'icon-annotation';
-            text = 'SMS';
+            icon = IconAnnotation;
             break;
         case MessagingProviderType.Push:
-            icon = 'icon-device-mobile';
-            text = 'Push';
-            break;
-    }
-
-    let textSize = '1.25rem';
-    switch (size) {
-        case 's':
-            textSize = '1rem';
-            break;
-        case 'l':
-            textSize = '1.5rem';
+            icon = IconDeviceMobile;
             break;
     }
 </script>
@@ -38,17 +29,14 @@
 {#if text === ''}
     Invalid provider type
 {:else}
-    <div class="u-inline-flex u-cross-center u-gap-8">
+    <Layout.Stack inline direction="row" alignItems="center">
         {#if !noIcon}
-            <div
-                class="avatar"
-                class:is-size-large={size === 'l'}
-                class:is-size-small={size === 's'}>
-                <span class={icon} style:font-size={textSize} aria-hidden="true" />
-            </div>
+            <Avatar {size}>
+                <Icon {icon} size="s" />
+            </Avatar>
         {/if}
-        <slot>
+        <slot {text}>
             {text}
         </slot>
-    </div>
+    </Layout.Stack>
 {/if}

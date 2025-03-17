@@ -13,10 +13,10 @@
     import { canWriteSites } from '$lib/stores/roles.js';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
-    import CreateSiteModal from './createSiteModal.svelte';
-    import EmptyLight from './(images)/empty-light.png';
     import { app } from '$lib/stores/app';
-    import EmptyDark from './(images)/empty-dark.png';
+    import CreateSiteModal from './createSiteModal.svelte';
+    import EmptyLight from './(images)/empty-sites-light.svg';
+    import EmptyDark from './(images)/empty-sites-dark.svg';
     import Grid from './grid.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { columns } from './store';
@@ -41,11 +41,6 @@
     ]);
 
     $updateCommandGroupRanks({ sites: 1000 });
-
-    // TODO: remove
-    const TMPSITEROLES = true;
-
-    $: console.log(data.siteList);
 </script>
 
 <Container>
@@ -79,7 +74,7 @@
     {:else}
         <Empty
             single
-            allowCreate={TMPSITEROLES}
+            allowCreate={$canWriteSites}
             href="https://appwrite.io/docs/products/sites"
             description="Deploy, manage, and scale your web applications effortlessly with Sites. "
             target="site"

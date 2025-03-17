@@ -11,6 +11,7 @@
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
+    import { Link } from '$lib/elements';
 
     const functionId = $page.params.function;
     let functionSchedule: string = null;
@@ -63,18 +64,14 @@
     <CardGrid>
         <svelte:fragment slot="title">Schedule</svelte:fragment>
         Set a Cron schedule to trigger your function. Leave blank for no schedule.
-        <a
-            href="https://appwrite.io/docs/products/functions/execution#schedule"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">
-            More details on Cron syntax here</a
+        <Link href="https://appwrite.io/docs/products/functions/execution#schedule" external>
+            Learn more</Link
         >.
         <svelte:fragment slot="aside">
             <FormList>
                 <InputCron
                     bind:value={functionSchedule}
-                    label="Schedule (Cron Syntax)"
+                    label="Schedule (Cron syntax)"
                     id="schedule" />
             </FormList>
         </svelte:fragment>

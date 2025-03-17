@@ -19,6 +19,11 @@
             href: `${path}/templates`,
             title: 'Templates',
             event: 'templates'
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage',
+            event: 'usage'
         }
     ];
 </script>

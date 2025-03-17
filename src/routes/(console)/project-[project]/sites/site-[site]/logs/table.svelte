@@ -19,7 +19,7 @@
     <svelte:fragment slot="header">
         {#each columns as column}
             {#if column.show}
-                <Table.Header.Cell>{column.title}</Table.Header.Cell>
+                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
             {/if}
         {/each}
     </svelte:fragment>

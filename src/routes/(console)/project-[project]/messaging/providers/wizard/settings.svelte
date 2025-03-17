@@ -15,6 +15,7 @@
         ClickableList,
         ClickableListItem
     } from '$lib/components';
+    import { getProviderText } from '../../helper';
 
     let files: Record<string, FileList> = {};
     const inputs = providers[$providerType].providers[$provider].configure;
@@ -84,10 +85,10 @@
                                             aria-hidden="true" />
                                     </div>
                                     <span class="title body-text-2 u-small" class:u-bold={open}
-                                        >How to enable <Provider provider={$provider} noIcon />
-                                        {#if $providerType == MessagingProviderType.Push}notifications{:else}<ProviderTypeComponent
-                                                type={$providerType}
-                                                noIcon />{/if} service?</span>
+                                        >How to enable {getProviderText($provider)}
+                                        {#if $providerType == MessagingProviderType.Push}notifications{:else}{getProviderText(
+                                                $provider
+                                            )}{/if} service?</span>
                                 </div>
                             </svelte:fragment>
                             <div class="u-flex-vertical u-gap-16">

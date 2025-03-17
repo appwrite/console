@@ -17,13 +17,7 @@
         Table,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import {
-        IconAnonymous,
-        IconChartSquareBar,
-        IconCheck,
-        IconMinus,
-        IconMinusSm
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconAnonymous, IconMinusSm } from '@appwrite.io/pink-icons-svelte';
 
     export let show: boolean;
     export let groups: Writable<Map<string, Permission>>;
