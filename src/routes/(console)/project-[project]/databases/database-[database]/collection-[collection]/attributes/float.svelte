@@ -31,9 +31,9 @@
             collectionId,
             originalKey,
             data.required,
+            data.default,
             data.min,
             data.max,
-            data.default,
             data.key !== originalKey ? data.key : undefined
         );
     }

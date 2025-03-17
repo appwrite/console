@@ -6,7 +6,7 @@
 
     import { Alert, AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
-    import { useCompletion } from 'ai/svelte';
+    import { useCompletion } from '@ai-sdk/svelte';
     import { subPanels } from '../subPanels';
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
@@ -19,7 +19,8 @@
         headers: {
             'x-appwrite-project': 'console'
         },
-        credentials: 'include'
+        credentials: 'include',
+        streamProtocol: 'text'
     });
 
     const examples = [
