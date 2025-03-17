@@ -8,7 +8,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID, Region as ConsoleRegion } from '@appwrite.io/console';
     import { createProject } from './wizard/store';
-    import { wizard } from '$lib/stores/wizard';
+    import { Button } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
@@ -67,4 +67,9 @@
         bind:id={$createProject.id}
         bind:projectName={$createProject.name}
         bind:region={$createProject.region}
-        {regions} /></Modal>
+        {regions} />
+    <svelte:fragment slot="footer"
+        ><Button.Button type="button" variant="primary" size="s" on:click={create}>
+            Create</Button.Button
+        ></svelte:fragment>
+</Modal>

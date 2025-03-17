@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Card } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
     import type { RegionList } from '$lib/sdk/billing';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
@@ -111,8 +111,18 @@
                 regions={isCloud ? data.regions.regions : []}
                 bind:projectName
                 bind:id
-                bind:region
-                {createProject} /></Card.Base>
+                bind:region>
+                <svelte:fragment slot="submit"
+                    ><Layout.Stack direction="row" justifyContent="flex-end"
+                        ><Button.Button
+                            type="button"
+                            variant="primary"
+                            size="s"
+                            on:click={createProject}>
+                            Create</Button.Button>
+                    </Layout.Stack></svelte:fragment>
+            </CreateProject>
+        </Card.Base>
     {/if}
 </div>
 
