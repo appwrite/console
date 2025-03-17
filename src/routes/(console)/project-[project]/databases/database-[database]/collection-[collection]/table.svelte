@@ -269,7 +269,11 @@
     </div>
 </FloatingActionBar>
 
-<Modal title="Delete Documents" bind:show={showDelete} onSubmit={handleDelete} dismissible={!deleting}>
+<Modal
+    title="Delete Documents"
+    bind:show={showDelete}
+    onSubmit={handleDelete}
+    dismissible={!deleting}>
     <div>
         <p class="text" data-private>
             Are you sure you want to delete <b>{selectedDb.length}</b>

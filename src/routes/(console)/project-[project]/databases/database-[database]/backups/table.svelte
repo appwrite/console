@@ -27,6 +27,7 @@
     import { LabelCard } from '$lib/components/index.js';
     import { Dependencies } from '$lib/constants';
     import { Tooltip } from '@appwrite.io/pink-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
 
@@ -155,13 +156,9 @@
             <TableRow>
                 <TableCellCheck id={backup.$id} bind:selectedIds={selectedBackups} />
                 <TableCell title={backup.$createdAt}>
-                    <!-- TODO: @itznotabug, use DualTimeView and use a slot for custom title -->
-                    <Tooltip>
-                        <span>
-                            {cleanBackupName(backup)}
-                        </span>
-                        <span slot="tooltip">{timeFromNow(backup.$createdAt)}</span>
-                    </Tooltip>
+                    <DualTimeView time={backup.$createdAt}>
+                        {cleanBackupName(backup)}
+                    </DualTimeView>
                 </TableCell>
                 <TableCell title="Backup Size">
                     {#if backup.status === 'completed'}

@@ -39,7 +39,7 @@
 
 <Popover let:toggle {placement} portal>
     <button on:mouseenter={(e) => toggle(e)}>
-        {timeFromNow(time)}
+        <slot>{timeFromNow(time)}</slot>
     </button>
 
     <Layout.Stack gap="m" alignContent="flex-start" slot="tooltip">
