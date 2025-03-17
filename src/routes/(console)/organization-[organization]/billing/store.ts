@@ -16,3 +16,5 @@ export const addCreditWizardStore = writable<{ coupon: string; paymentMethodId: 
 
 export const selectedInvoice = writable<Invoice>(null);
 export const showRetryModal = writable(false);
+
+export const scrollToUpdateBudget = derived(page, ($page) => $page.url.hash.includes('#update-budget'));

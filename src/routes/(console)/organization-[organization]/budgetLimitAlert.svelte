@@ -19,7 +19,7 @@
                 <span class="text">View usage</span>
             </Button>
             <Button
-                href={`${base}/organization-${$organization.$id}/billing`}
+                href={`${base}/organization-${$organization.$id}/billing#update-budget`}
                 secondary
                 fullWidthMobile>
                 <span class="text">Update limit</span>
