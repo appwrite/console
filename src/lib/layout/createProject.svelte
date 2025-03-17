@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Layout, Typography, Input, Tag, Icon, Button } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Input, Tag, Icon } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { CustomId } from '$lib/components/index.js';
     import type { Region } from '$lib/sdk/billing';
@@ -11,7 +11,6 @@
     export let regions: Array<Region> = [];
     export let region: string;
     export let showTitle = true;
-    export let createProject: () => Promise<void>;
 
     let showCustomId = false;
 
@@ -81,9 +80,6 @@
                 {/if}
             </Layout.Stack>
         </Layout.Stack>
-        <Layout.Stack direction="row" justifyContent="flex-end"
-            ><Button.Button type="button" variant="primary" size="s" on:click={createProject}>
-                Create</Button.Button>
-        </Layout.Stack>
+        <slot name="submit"></slot>
     </Layout.Stack>
 </form>
