@@ -32,18 +32,18 @@ export async function createProProject(page: Page): Promise<Metadata> {
         await page.locator('id=name').fill('test org');
         await page.locator('id=plan').selectOption('tier-1');
         await page.getByRole('button', { name: 'get started' }).click();
-        await page.waitForURL('./create-organization**');
+        await page.waitForURL(/\/create-organization.*/);
         await page.getByRole('button', { name: 'add' }).first().click();
         await enterCreditCard(page);
         // skip members
         await page.getByRole('button', { name: 'create organization' }).click();
-        await page.waitForURL('./organization-**');
+        await page.waitForURL(/\/organization-[^/]+/);
 
         return getOrganizationIdFromUrl(page.url());
     });
 
     const projectId = await test.step('create project', async () => {
-        await page.waitForURL('./organization-**');
+        await page.waitForURL(/\/organization-[^/]+/);
         await page.getByRole('button', { name: 'create project' }).first().click();
         await page.getByPlaceholder('project name').fill('test project');
         await page.getByRole('button', { name: 'next' }).click();
