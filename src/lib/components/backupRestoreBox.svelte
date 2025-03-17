@@ -135,7 +135,6 @@
     });
 </script>
 
-<!-- TODO: change the progress and its color based on states -->
 {#if showBackupRestoreBox}
     <div class="box-holder u-flex u-flex-vertical u-gap-16" style="align-items: end">
         {#each Object.keys(backupRestoreItems) as key}
