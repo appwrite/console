@@ -29,7 +29,7 @@
         );
     }
 
-    $: shortcutCommands = [
+    $: $registerCommands([
         {
             label: 'Create collection',
             callback() {
@@ -54,7 +54,8 @@
             keys: $page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'p'],
             group: 'databases',
             icon: 'plus',
-            rank: $page.url.pathname.endsWith('backups') ? 10 : 0
+            rank: $page.url.pathname.endsWith('backups') ? 10 : 0,
+            disabled: !$currentPlan.backupsEnabled
         },
         {
             label: 'Create manual backup',
@@ -67,7 +68,8 @@
             keys: $page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'b'],
             group: 'databases',
             icon: 'plus',
-            rank: $page.url.pathname.endsWith('backups') ? 10 : 0
+            rank: $page.url.pathname.endsWith('backups') ? 10 : 0,
+            disabled: !$currentPlan.backupsEnabled
         },
         {
             label: 'Go to collections',
@@ -121,13 +123,7 @@
             group: 'databases',
             rank: -1
         }
-    ].filter((command) =>
-        !$currentPlan.backupsEnabled
-            ? !['Create backup policy', 'Create manual backup'].includes(command.label)
-            : true
-    );
-
-    $: $registerCommands(shortcutCommands);
+    ]);
 
     $registerSearchers(collectionsSearcher);
 
