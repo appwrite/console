@@ -1,11 +1,9 @@
 <script lang="ts">
     import { Id } from '$lib/components';
-    import { timeFromNow } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
     import { Badge, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
     import Sheet from './sheet.svelte';
-    import { capitalize } from '$lib/helpers/string';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let columns: Column[];

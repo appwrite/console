@@ -4,7 +4,7 @@
     import { Arrow, Avatar, AvatarGroup, CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { isSameDay, toLocaleDate } from '$lib/helpers/date';
+    import { isSameDay } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { GRACE_PERIOD_OVERRIDE, isSelfHosted } from '$lib/system';

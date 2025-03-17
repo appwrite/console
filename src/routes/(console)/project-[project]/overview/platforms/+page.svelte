@@ -62,7 +62,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
     import type { PageData } from './$types';
     import { canWritePlatforms } from '$lib/stores/roles';
     import { setOverviewAction } from '../context';
@@ -143,7 +142,7 @@
                 </Table.Cell>
                 <Table.Cell>
                     {#if platform.$updatedAt}
-                        <DualTimeView time={platform.updatedAt} />
+                        <DualTimeView time={platform.$updatedAt} />
                     {:else}
                         never
                     {/if}

@@ -1,15 +1,13 @@
 <script lang="ts">
-    import { Id, Trim } from '.';
+    import { Id } from '.';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Query, Permission, Role } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { toLocaleDate } from '$lib/helpers/date';
     import InputSearch from '$lib/elements/forms/inputSearch.svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
-    import { clickOnEnter } from '$lib/helpers/a11y';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import DualTimeView from './dualTimeView.svelte';

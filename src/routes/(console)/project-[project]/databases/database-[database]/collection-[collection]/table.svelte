@@ -16,7 +16,6 @@
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
     import type { ColumnType } from '$lib/helpers/types';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Tooltip, Table, Selector, Button, Link } from '@appwrite.io/pink-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
@@ -270,7 +269,7 @@
     </div>
 </FloatingActionBar>
 
-<Modal title="Delete Documents" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
+<Modal title="Delete Documents" bind:show={showDelete} onSubmit={handleDelete} dismissible={!deleting}>
     <div>
         <p class="text" data-private>
             Are you sure you want to delete <b>{selectedDb.length}</b>

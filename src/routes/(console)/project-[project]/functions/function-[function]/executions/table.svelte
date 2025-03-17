@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Id } from '$lib/components';
-    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
     import { Badge, Layout, Status, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
