@@ -22,7 +22,8 @@
         IconNuxt,
         IconInfo,
         IconExternalLink,
-        IconAngular
+        IconAngular,
+        IconJs
     } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/stores';
     import { type ComponentType, onMount } from 'svelte';
@@ -33,13 +34,16 @@
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
-    import ReactFrameworkIcon from './components/ReactFrameworkIcon.svelte';
-    import SvelteFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/SvelteFrameworkIcon.svelte';
-    import NuxtFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/NuxtFrameworkIcon.svelte';
-    import NextjsFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/NextjsFrameworkIcon.svelte';
-    import VueFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/VueFrameworkIcon.svelte';
-    import NoFrameworkIcon from './components/NoFrameworkIcon.svelte';
-    import AngularFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/AngularFrameworkIcon.svelte';
+    import {
+        ReactFrameworkIcon,
+        SvelteFrameworkIcon,
+        NuxtFrameworkIcon,
+        NextjsFrameworkIcon,
+        VueFrameworkIcon,
+        NoFrameworkIcon,
+        AngularFrameworkIcon,
+        JavascriptFrameworkIcon
+    } from './components/index';
 
     export let key;
 
@@ -51,8 +55,8 @@
 
     const projectId = $page.params.project;
 
-    const updateConfigCode = `APPWRITE_PROJECT_ID = "${projectId}"
-APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
+    const updateConfigCode = (prefix = '') => `${prefix}APPWRITE_PROJECT_ID = "${projectId}"
+${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
         `;
     type FrameworkType = {
         key: string;
@@ -60,6 +64,8 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
         icon: ComponentType;
         smallIcon: ComponentType;
         portNumber: number;
+        runCommand: string;
+        updateConfigCode: string;
     };
     export let platform: PlatformType = PlatformType.Flutterandroid;
     export let selectedFrameworkKey: string | undefined = key ? key : undefined;
@@ -70,42 +76,63 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
             label: 'Svelte',
             icon: SvelteFrameworkIcon,
             smallIcon: IconSvelte,
-            portNumber: 5173
+            portNumber: 5173,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('PUBLIC_')
         },
         {
             key: 'react',
             label: 'React',
             icon: ReactFrameworkIcon,
             smallIcon: IconReact,
-            portNumber: 5173
+            portNumber: 5173,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('VITE_')
         },
         {
             key: 'nuxt',
             label: 'Nuxt',
             icon: NuxtFrameworkIcon,
             smallIcon: IconNuxt,
-            portNumber: 3000
+            portNumber: 3000,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('NUXT_')
         },
         {
             key: 'nextjs',
             label: 'Next.js',
             icon: NextjsFrameworkIcon,
             smallIcon: NextjsFrameworkIcon,
-            portNumber: 3000
+            portNumber: 3000,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('NEXT_PUBLIC_')
         },
         {
             key: 'vue',
             label: 'Vue',
             icon: VueFrameworkIcon,
             smallIcon: IconVue,
-            portNumber: 5173
+            portNumber: 5173,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('VITE_')
         },
         {
             key: 'angular',
             label: 'Angular',
             icon: AngularFrameworkIcon,
             smallIcon: IconAngular,
-            portNumber: 4200
+            portNumber: 4200,
+            runCommand: 'npm run start',
+            updateConfigCode: `appwriteEndpoint: '${sdk.forProject.client.config.endpoint}',\nappwriteProjectId:'${projectId}'`
+        },
+        {
+            key: 'js',
+            label: 'Javascript',
+            icon: JavascriptFrameworkIcon,
+            smallIcon: IconJs,
+            portNumber: 5173,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('VITE_')
         }
     ];
 
@@ -165,7 +192,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     });
 </script>
 
-<Wizard title="Add web platform" bind:showExitModal confirmExit>
+<Wizard title="Add web platform" bind:showExitModal>
     <Form onSubmit={createWebPlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
@@ -249,7 +276,10 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                         <div class="pink2-code-margin-fix">
-                            <Code lang="bash" lineNumbers code={updateConfigCode} />
+                            <Code
+                                lang="bash"
+                                lineNumbers
+                                code={selectedFramework.updateConfigCode} />
                         </div>
 
                         <Typography.Text variant="m-500"
@@ -261,9 +291,13 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                         </div>
 
                         <Typography.Text variant="m-500"
-                            >3. Run the app, then click the <InlineCode
+                            >4. Run the app, then click the <InlineCode
                                 size="s"
                                 code="Send a ping" /> button to verify the setup.</Typography.Text>
+                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                        <div class="pink2-code-margin-fix">
+                            <Code lang="bash" lineNumbers code={selectedFramework.runCommand} />
+                        </div>
                     </Layout.Stack>
                 </Fieldset>
                 <Card.Base padding="s"
