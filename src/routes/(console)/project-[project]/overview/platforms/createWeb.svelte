@@ -45,6 +45,7 @@
         AngularFrameworkIcon,
         JavascriptFrameworkIcon
     } from './components/index';
+    import { hostnameRegex } from '$lib/helpers/string';
 
     export let key;
 
@@ -71,6 +72,7 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     export let platform: PlatformType = PlatformType.Flutterandroid;
     export let selectedFrameworkKey: string | undefined = key ? key : undefined;
     let hostname;
+    let hostnameError = false;
 
     let frameworks: Array<FrameworkType> = [
         {
@@ -142,6 +144,11 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
 
     async function createWebPlatform() {
+        hostnameError = !new RegExp(hostnameRegex).test(hostname);
+        if (hostnameError) {
+            return;
+        }
+
         try {
             isCreatingPlatform = true;
             await sdk.forConsole.projects.createPlatform(
@@ -150,7 +157,7 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                 `${selectedFramework.label} app`,
                 selectedFrameworkKey,
                 undefined,
-                undefined
+                hostname
             );
 
             isPlatformCreated = true;
@@ -230,6 +237,7 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             helper="The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required."
                             placeholder="localhost"
                             bind:value={hostname}
+                            state={hostnameError ? 'error' : 'default'}
                             required /></Fieldset>
                     <Layout.Stack direction="row" justifyContent="flex-end"
                         ><Button.Button type="submit" disabled={!selectedFramework || !hostname}
