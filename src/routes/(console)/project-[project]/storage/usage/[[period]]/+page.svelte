@@ -1,20 +1,21 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Usage } from '$lib/layout';
-    import type { PageData } from './$types';
+    import { Container, Usage } from '$lib/layout';
 
-    export let data: PageData;
+    export let data;
     $: total = data.bucketsTotal;
     $: count = data.buckets;
 </script>
 
-<Usage
-    title="Buckets"
-    path={`${base}/project-${$page.params.project}/storage/usage`}
-    {total}
-    {count}
-    countMetadata={{
-        legend: 'Buckets',
-        title: 'Total buckets'
-    }} />
+<Container>
+    <Usage
+        title="Buckets"
+        path={`${base}/project-${$page.params.project}/storage/usage`}
+        {total}
+        {count}
+        countMetadata={{
+            legend: 'Buckets',
+            title: 'Total buckets'
+        }} />
+</Container>

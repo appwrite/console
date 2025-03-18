@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Usage } from '$lib/layout';
+    import { Container, Usage } from '$lib/layout';
     import { page } from '$app/stores';
     import type { PageData } from './$types';
     import { base } from '$app/paths';
@@ -12,29 +12,31 @@
     $: mbSecondsCount = data.executionsMbSeconds;
 </script>
 
-<Layout.Stack gap="l">
-    {#if count}
-        <Usage
-            title="Executions"
-            path={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/usage`}
-            countMetadata={{
-                legend: 'Executions',
-                title: 'Total executions'
-            }}
-            {total}
-            {count} />
-    {/if}
+<Container>
+    <Layout.Stack gap="l">
+        {#if count}
+            <Usage
+                title="Executions"
+                path={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/usage`}
+                countMetadata={{
+                    legend: 'Executions',
+                    title: 'Total executions'
+                }}
+                {total}
+                {count} />
+        {/if}
 
-    {#if mbSecondsCount}
-        <Usage
-            hidePeriodSelect
-            title="GB hours"
-            path={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/usage`}
-            countMetadata={{
-                legend: 'GB hours',
-                title: 'Total GB hours'
-            }}
-            total={gbHoursTotal}
-            count={mbSecondsCount} />
-    {/if}
-</Layout.Stack>
+        {#if mbSecondsCount}
+            <Usage
+                hidePeriodSelect
+                title="GB hours"
+                path={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/usage`}
+                countMetadata={{
+                    legend: 'GB hours',
+                    title: 'Total GB hours'
+                }}
+                total={gbHoursTotal}
+                count={mbSecondsCount} />
+        {/if}
+    </Layout.Stack>
+</Container>
