@@ -35,7 +35,11 @@
             </Layout.Stack>
         </Card.Base>
         <Fieldset legend="Deploy">
-            <Logs bind:deployment={data.deployment} bind:site={data.site} hideScrollButtons />
+            <Logs
+                bind:deployment={data.deployment}
+                bind:site={data.site}
+                hideScrollButtons
+                height="calc(100dvh - 430px)" />
         </Fieldset>
     </Layout.Stack>
     <svelte:fragment slot="aside">
