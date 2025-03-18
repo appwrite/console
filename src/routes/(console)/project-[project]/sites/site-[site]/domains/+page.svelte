@@ -43,29 +43,16 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery search={data.search} placeholder="Search domain" />
-        <Popover padding="none" let:toggle placement="bottom-end">
-            <Button
-                on:click={(event) => {
-                    toggle(event);
-                    trackEvent(Click.DomainCreateClick, {
-                        source: 'sites_domain_overview'
-                    });
-                }}>
-                <Icon icon={IconPlus} size="s" />
-                Add domain
-            </Button>
-            <svelte:fragment slot="tooltip">
-                <ActionMenu.Root>
-                    <ActionMenu.Item.Anchor
-                        href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
-                        Custom domain
-                    </ActionMenu.Item.Anchor>
-                    <ActionMenu.Item.Button on:click={() => (showPreviewDomainModal = true)}>
-                        Preview domain
-                    </ActionMenu.Item.Button>
-                </ActionMenu.Root>
-            </svelte:fragment>
-        </Popover>
+        <Button
+            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}
+            on:click={() => {
+                trackEvent(Click.DomainCreateClick, {
+                    source: 'sites_domain_overview'
+                });
+            }}>
+            <Icon icon={IconPlus} size="s" />
+            Add domain
+        </Button>
     </Layout.Stack>
 
     {#if data.domains.total}
