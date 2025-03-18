@@ -6,6 +6,8 @@
     import { HeaderAlert } from '$lib/layout';
     import { hideBillingHeaderRoutes, readOnly, showBudgetAlert } from '$lib/stores/billing';
     import { base } from '$app/paths';
+
+    $: redirectUrl = `${base}/organization-${$organization.$id}/billing#update-budget`;
 </script>
 
 {#if $showBudgetAlert && $organization?.$id && $organization?.billingPlan !== BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
@@ -18,10 +20,7 @@
             <Button href={`${base}/organization-${$organization.$id}/usage`} text fullWidthMobile>
                 <span class="text">View usage</span>
             </Button>
-            <Button
-                href={`${base}/organization-${$organization.$id}/billing`}
-                secondary
-                fullWidthMobile>
+            <Button secondary fullWidthMobile href={redirectUrl}>
                 <span class="text">Update limit</span>
             </Button>
         </svelte:fragment>
