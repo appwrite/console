@@ -1,9 +1,3 @@
-<script lang="ts" context="module">
-    export const showCreateFile = () => {
-        wizard.start(Create);
-    };
-</script>
-
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
@@ -13,17 +7,16 @@
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
-    import { wizard } from '$lib/stores/wizard';
     import { sdk } from '$lib/stores/sdk.js';
     import DeleteFile from './deleteFile.svelte';
     import { Layout, Table, Icon, Popover, ActionMenu } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import {
         IconDotsHorizontal,
         IconPencil,
@@ -34,7 +27,6 @@
     export let data;
 
     let showDelete = false;
-    let showDropdown = [];
     let selectedFile: Models.File = null;
 
     const projectId = $page.params.project;
@@ -84,7 +76,8 @@
     onMount(() => {
         return uploader.subscribe(() => {
             isUploading = $uploader.files.some(
-                (file) => !file.completed && file.progress < 100 && !file.failed
+                (file) =>
+                    file.status !== 'success' && file.progress < 100 && file.status !== 'failed'
             );
         });
     });
@@ -117,7 +110,7 @@
                 <Table.Header.Cell width="120px">Created</Table.Header.Cell>
                 <Table.Header.Cell width="40px" />
             </svelte:fragment>
-            {#each data.files.files as file, index}
+            {#each data.files.files as file}
                 {#if file.chunksTotal / file.chunksUploaded !== 1}
                     <Table.Row>
                         <Table.Cell>
@@ -134,7 +127,7 @@
                             {calculateSize(file.sizeOriginal)}
                         </Table.Cell>
                         <Table.Cell>
-                            {toLocaleDate(file.$createdAt)}
+                            <DualTimeView time={file.$createdAt} />
                         </Table.Cell>
                         <Table.Cell>
                             <div class="u-flex u-main-center">
@@ -163,7 +156,7 @@
                             {calculateSize(file.sizeOriginal)}
                         </Table.Cell>
                         <Table.Cell>
-                            {toLocaleDate(file.$createdAt)}
+                            <DualTimeView time={file.$createdAt} />
                         </Table.Cell>
                         <Table.Cell>
                             <Popover let:toggle placement="bottom-start" padding="none">

@@ -14,7 +14,6 @@
     } from '$lib/components';
     import Create from '../createTeam.svelte';
     import { goto } from '$app/navigation';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
@@ -23,6 +22,7 @@
     import { canWriteTeams } from '$lib/stores/roles';
     import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
 
@@ -64,7 +64,7 @@
                         {team.total} members
                     </Table.Cell>
                     <Table.Cell>
-                        {toLocaleDateTime(team.$createdAt)}
+                        <DualTimeView time={team.$createdAt} />
                     </Table.Cell>
                 </Table.Link>
             {/each}

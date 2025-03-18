@@ -12,11 +12,10 @@
     } from '@appwrite.io/pink-svelte';
     import { IconDotsHorizontal, IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { columns } from './store';
-    import { timeFromNow } from '$lib/helpers/date';
     import DeleteRecordModal from './deleteRecordModal.svelte';
-    import { capitalize } from '$lib/helpers/string';
     import EditRecordModal from './updateRecordModal.svelte';
     import type { DnsRecord } from '$lib/sdk/domains';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data;
 
@@ -78,9 +77,7 @@
                             </Table.Cell>
                         {:else if column.id === '$createdAt'}
                             <Table.Cell>
-                                <Typography.Text>
-                                    {capitalize(timeFromNow(record.$createdAt))}
-                                </Typography.Text>
+                                <DualTimeView time={record.$createdAt} />
                             </Table.Cell>
                         {/if}
                     {/if}

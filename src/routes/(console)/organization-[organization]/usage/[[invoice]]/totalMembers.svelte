@@ -3,13 +3,13 @@
     import { EmptyCardCloud } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { newMemberModal, organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let members: Models.MembershipList;
 
@@ -78,9 +78,7 @@
                                 </Layout.Stack>
                             </Table.Cell>
                             <Table.Cell>
-                                {member.joined
-                                    ? toLocaleDate(member.joined)
-                                    : toLocaleDate(member.$createdAt)}
+                                <DualTimeView time={member.joined ?? member.$createdAt} />
                             </Table.Cell>
                         </Table.Row>
                     {/each}

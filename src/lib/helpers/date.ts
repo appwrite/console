@@ -31,7 +31,10 @@ export const toLocaleDate = (datetime: string) => {
     return date.toLocaleDateString('en', options);
 };
 
-export const toLocaleDateTime = (datetime: string | number) => {
+export const toLocaleDateTime = (
+    datetime: string | number,
+    timeZone: string | undefined = undefined
+) => {
     const date = new Date(datetime);
 
     if (isNaN(date.getTime())) {
@@ -39,6 +42,7 @@ export const toLocaleDateTime = (datetime: string | number) => {
     }
 
     const options: Intl.DateTimeFormatOptions = {
+        timeZone,
         year: 'numeric',
         month: 'short',
         day: 'numeric',
@@ -180,4 +184,12 @@ export function getTomorrow(date: Date) {
     tomorrow.setHours(0, 0, 0, 0);
 
     return tomorrow;
+}
+
+export function getUTCOffset(): string {
+    const offsetMinutes = -new Date().getTimezoneOffset();
+    const hours = Math.floor(offsetMinutes / 60);
+    const minutes = Math.abs(offsetMinutes % 60);
+
+    return `${hours >= 0 ? '+' : ''}${hours}${minutes ? `:${minutes.toString().padStart(2, '0')}` : ''}`;
 }

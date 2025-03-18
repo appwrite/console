@@ -6,7 +6,6 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import GitDisconnectModal from './GitDisconnectModal.svelte';
-    import dayjs from 'dayjs';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import {
@@ -25,6 +24,7 @@
         IconPlus,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { ComponentType } from 'svelte';
     import { Link } from '$lib/elements';
@@ -115,7 +115,7 @@
                                 </Layout.Stack>
                             </Table.Cell>
                             <Table.Cell>
-                                {dayjs().to(installation.$updatedAt)}
+                                <DualTimeView time={installation.$updatedAt} />
                             </Table.Cell>
                             <Table.Cell>
                                 <Popover let:toggle padding="none" placement="bottom-end">
