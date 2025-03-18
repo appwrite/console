@@ -11,6 +11,7 @@
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { Card, Empty, Icon, Layout, Table } from '@appwrite.io/pink-svelte';
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     async function deleteIdentity(id: string) {
         try {
@@ -78,7 +79,7 @@
                             {identity.providerEmail}
                         </Table.Cell>
                         <Table.Cell column="createdAt" {root}>
-                            {toLocaleDateTime(identity.$createdAt)}
+                            <DualTimeView time={identity.$createdAt} />
                         </Table.Cell>
                         <Table.Cell column="expiryDate" {root}>
                             {toLocaleDateTime(identity.providerAccessTokenExpiry)}

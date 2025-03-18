@@ -7,23 +7,57 @@
     import { capitalize } from '$lib/helpers/string';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
+    import type { DnsRecordsList } from '$lib/sdk/domains';
+    import { presets } from './store';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let show = false;
-    export let selectedPreset;
+    export let selectedPreset: (typeof presets)[number];
+    let records: DnsRecordsList;
     let error = '';
-
     async function fetchPreset() {
         switch (selectedPreset.toLowerCase()) {
             //TODO: finish switch statement
             case 'zoho':
-                return await sdk.forConsole.domains.getPresetZoho($page.params.domain);
+                records = await sdk.forConsole.domains.getPresetZoho($page.params.domain);
+                return records;
+            case 'google workspace':
+                records = await sdk.forConsole.domains.getPresetGoogleWorkspace(
+                    $page.params.domain
+                );
+                return records;
+            case 'outlook':
+                records = await sdk.forConsole.domains.getPresetOutlook($page.params.domain);
+                return records;
+            case 'proton mail':
+                records = await sdk.forConsole.domains.getPresetProtonMail($page.params.domain);
+                return records;
+            case 'mailgun':
+                records = await sdk.forConsole.domains.getPresetMailgun($page.params.domain);
+                return records;
+            case 'icloud':
+                records = await sdk.forConsole.domains.getPresetICloud($page.params.domain);
+                return records;
         }
     }
 
     async function handleSubmit() {
         try {
             //TODO: create DNS records
-
+            if (records.total) {
+                const promises = records.dnsRecords.map((record) =>
+                    sdk.forConsole.domains.createRecordMX(
+                        $page.params.domain,
+                        record.name,
+                        record.value,
+                        record.ttl,
+                        record.priority
+                    )
+                );
+                await Promise.all(promises);
+            }
+            invalidate(Dependencies.DOMAIN);
             show = false;
             addNotification({
                 type: 'success',
@@ -69,8 +103,7 @@
                 </Table.Row.Base>
             {/each}
         {:then presetData}
-            {JSON.stringify(presetData)}
-            {#each presetData as record}
+            {#each presetData.dnsRecords as record}
                 <Table.Row.Base {root}>
                     <Table.Cell {root}>{record.type}</Table.Cell>
                     <Table.Cell {root}>{record.name}</Table.Cell>

@@ -5,12 +5,12 @@
     import { ID, Query, Permission, Role } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { toLocaleDate } from '$lib/helpers/date';
     import InputSearch from '$lib/elements/forms/inputSearch.svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import DualTimeView from './dualTimeView.svelte';
     import {
         Layout,
         Typography,
@@ -318,7 +318,7 @@
                                                             {calculateSize(file.sizeOriginal)}
                                                         </Table.Cell>
                                                         <Table.Cell column="created" {root}>
-                                                            {toLocaleDate(file.$createdAt)}
+                                                            <DualTimeView time={file.$createdAt} />
                                                         </Table.Cell>
                                                     </Table.Row.Button>
                                                 {/each}

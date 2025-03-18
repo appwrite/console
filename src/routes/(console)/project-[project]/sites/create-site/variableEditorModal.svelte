@@ -30,11 +30,12 @@
         null,
         2
     );
-    const baseEnvCode = envCode;
-    const baseJsonCode = jsonCode;
+    let baseEnvCode = envCode;
+    let baseJsonCode = jsonCode;
 
     if (jsonCode === '{}') {
         jsonCode = '';
+        baseJsonCode = '';
     }
 
     let tab: 'env' | 'json' = 'env';
@@ -108,30 +109,13 @@
         window.URL.revokeObjectURL(url);
     }
 
-    function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
-            if (tab === 'env') {
-                envCode += '\n';
-            } else {
-                jsonCode += '\n';
-            }
-        }
-    }
-
     $: isButtonDisabled =
         (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
 
     // TODO: merge this component with the rawVariableEditor?
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
-
-<Modal
-    title="Editor"
-    bind:show={showEditor}
-    onSubmit={handleSubmit}
-    bind:error
-    submitOnEnter={false}>
+<Modal title="Editor" bind:show={showEditor} onSubmit={handleSubmit} bind:error>
     <p slot="description">Add, edit, or delete environment variables using a raw editor.</p>
 
     <Layout.Stack gap="l">

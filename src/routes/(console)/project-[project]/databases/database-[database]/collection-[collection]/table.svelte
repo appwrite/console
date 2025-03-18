@@ -18,6 +18,8 @@
     import type { ColumnType } from '$lib/helpers/types';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Tooltip, Table, Button, Link } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Table, Selector, Button, Link } from '@appwrite.io/pink-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
 
@@ -233,10 +235,10 @@
                 </Table.Cell>
             {/each}
             <Table.Cell column="$created" {root}>
-                {toLocaleDateTime(document.$createdAt)}
+                <DualTimeView time={document.$createdAt} />
             </Table.Cell>
             <Table.Cell column="$updated" {root}>
-                {toLocaleDateTime(document.$updatedAt)}
+                <DualTimeView time={document.$updatedAt} />
             </Table.Cell>
         </Table.Row.Link>
     {/each}
@@ -265,7 +267,11 @@
     </div>
 </FloatingActionBar>
 
-<Modal title="Delete Documents" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
+<Modal
+    title="Delete Documents"
+    bind:show={showDelete}
+    onSubmit={handleDelete}
+    dismissible={!deleting}>
     <div>
         <p class="text" data-private>
             Are you sure you want to delete <b>{selectedRows.length}</b>

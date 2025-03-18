@@ -109,7 +109,7 @@
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        <!-- {#if domain.status !== 'verified'}
+                                        {#if domain.nameservers !== 'Appwrite'}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconRefresh}
                                                 on:click={(e) => {
@@ -117,13 +117,16 @@
                                                     selectedDomain = domain;
                                                     showRetry = true;
                                                     toggle(e);
-                                                    trackEvent(Click.DomainRetryDomainVerificationClick, {
-                                                    source: 'organization_domain_overview'
-                                                });
+                                                    trackEvent(
+                                                        Click.DomainRetryDomainVerificationClick,
+                                                        {
+                                                            source: 'organization_domain_overview'
+                                                        }
+                                                    );
                                                 }}>
                                                 Retry
                                             </ActionMenu.Item.Button>
-                                        {/if} -->
+                                        {/if}
                                         <ActionMenu.Item.Button
                                             status="danger"
                                             leadingIcon={IconTrash}
@@ -201,6 +204,6 @@
     <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
 {/if}
 
-<!-- {#if showRetry}
+{#if showRetry}
     <RetryDomainModal show={showRetry} {selectedDomain} />
-{/if} -->
+{/if}

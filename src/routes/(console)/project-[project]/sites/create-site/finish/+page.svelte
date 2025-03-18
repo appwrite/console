@@ -34,7 +34,7 @@
 
 <Wizard column href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
     <!-- Creating a new stack -->
-    <div style:position="relative" style="z-index: 1;">
+    <div style:position="relative" style="z-index: 6;">
         <Layout.Stack gap="xxxl">
             <Layout.Stack gap="xxxl">
                 <Layout.Stack gap="l" direction="column" alignItems="center">

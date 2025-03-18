@@ -20,8 +20,7 @@ export const load = async ({ params, depends, parent }) => {
             Query.equal('type', RuleType.DEPLOYMENT),
             Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
             Query.equal('deploymentResourceId', site.$id),
-            Query.equal('deploymentId', site.deploymentId),
-            Query.equal('trigger', 'manual')
+            Query.equal('deploymentId', site.deploymentId)
         ])
     ]);
 
