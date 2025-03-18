@@ -5,7 +5,6 @@
         Empty,
         EmptyFilter,
         EmptySearch,
-        FloatingActionBar,
         Id,
         Modal,
         PaginationWithLimit,
@@ -30,7 +29,7 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
-    import { Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Layout, Table } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -161,26 +160,21 @@
             {/each}
         </Table.Root>
 
-        <FloatingActionBar show={selected.length > 0}>
-            <div class="u-flex u-cross-center u-main-space-between actions">
-                <div class="u-flex u-cross-center u-gap-8">
-                    <span class="indicator body-text-2 u-bold">{selected.length}</span>
-                    <p>
-                        <span class="is-only-desktop">
-                            {selected.length > 1 ? 'messages' : 'message'}
-                        </span>
+        {#if selected.length > 0}
+            <FloatingActionBar>
+                <svelte:fragment slot="start">
+                    <Badge content={selected.length.toString()} />
+                    <span>
+                        {selected.length > 1 ? 'messages' : 'message'}
                         selected
-                    </p>
-                </div>
-
-                <div class="u-flex u-cross-center u-gap-8">
+                    </span>
+                </svelte:fragment>
+                <svelte:fragment slot="end">
                     <Button text on:click={() => (selected = [])}>Cancel</Button>
-                    <Button secondary on:click={() => (showDelete = true)}>
-                        <p>Delete</p>
-                    </Button>
-                </div>
-            </div>
-        </FloatingActionBar>
+                    <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                </svelte:fragment>
+            </FloatingActionBar>
+        {/if}
 
         <PaginationWithLimit
             name="Messages"

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FloatingActionBar, Id, Modal } from '$lib/components';
+    import { Id } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import type { PageData } from './$types';
     import { columns } from './store';
@@ -13,14 +13,13 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { MessagingProviderType } from '@appwrite.io/console';
-    import { Badge, Selector, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
 
     let selectedIds: string[] = [];
     let showDelete = false;
-    let deleting = false;
 
     async function handleDelete() {
         showDelete = false;
@@ -92,21 +91,21 @@
     {/each}
 </Table.Root>
 
-<FloatingActionBar show={selectedIds.length > 0}>
-    <svelte:fragment slot="start">
-        <Badge content={selectedIds.length.toString()} />
-        <span>
-            <span class="is-only-desktop">
+{#if selectedIds.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedIds.length.toString()} />
+            <span>
                 {selectedIds.length > 1 ? 'subscribers' : 'subscriber'}
+                selected
             </span>
-            selected
-        </span>
-    </svelte:fragment>
-    <svelte:fragment slot="end">
-        <Button text on:click={() => (selectedIds = [])}>Cancel</Button>
-        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-    </svelte:fragment>
-</FloatingActionBar>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
+            <Button text on:click={() => (selectedIds = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
 
 <Confirm title="Delete Identity" bind:open={showDelete} onSubmit={handleDelete}>
     <Typography.Text>

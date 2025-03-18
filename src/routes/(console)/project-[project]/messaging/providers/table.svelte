@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { FloatingActionBar, Id, Modal } from '$lib/components';
+    import { Id, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
@@ -9,12 +9,11 @@
     import { project } from '$routes/(console)/project-[project]/store';
     import Provider from '../provider.svelte';
     import ProviderType from '../providerType.svelte';
-    import { Pill } from '$lib/elements';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { canWriteProviders } from '$lib/stores/roles';
-    import { Badge, Icon, Selector, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Icon, Table } from '@appwrite.io/pink-svelte';
     import { IconCheckCircle } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
@@ -101,33 +100,23 @@
     {/each}
 </Table.Root>
 
-<FloatingActionBar show={selectedIds.length > 0}>
-    <div class="u-flex u-cross-center u-main-space-between actions">
-        <div class="u-flex u-cross-center u-gap-8">
-            <span class="indicator body-text-2 u-bold">{selectedIds.length}</span>
-            <p>
-                <span class="is-only-desktop">
-                    {selectedIds.length > 1 ? 'providers' : 'provider'}
-                </span>
+{#if selectedIds.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedIds.length.toString()} />
+            <span>
+                {selectedIds.length > 1 ? 'providers' : 'provider'}
                 selected
-            </p>
-        </div>
-
-        <div class="u-flex u-cross-center u-gap-8">
+            </span>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
             <Button text on:click={() => (selectedIds = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>
-                <p>Delete</p>
-            </Button>
-        </div>
-    </div>
-</FloatingActionBar>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
 
-<Modal
-    title="Delete providers"
-    state="warning"
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    closable={!deleting}>
+<Modal title="Delete providers" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'providers' : 'provider'}?

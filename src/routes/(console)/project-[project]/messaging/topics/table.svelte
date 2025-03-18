@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { FloatingActionBar, Id, Modal } from '$lib/components';
+    import { Id, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
@@ -12,7 +12,7 @@
     import type { Column } from '$lib/helpers/types';
     import { page } from '$app/stores';
     import { canWriteTopics } from '$lib/stores/roles';
-    import { Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Table } from '@appwrite.io/pink-svelte';
 
     export let columns: Column[];
     export let data: PageData;
@@ -79,34 +79,23 @@
     {/each}
 </Table.Root>
 
-<FloatingActionBar show={selectedIds.length > 0}>
-    <div class="u-flex u-cross-center u-main-space-between actions">
-        <div class="u-flex u-cross-center u-gap-8">
-            <span class="indicator body-text-2 u-bold">{selectedIds.length}</span>
-            <p>
-                <span class="is-only-desktop">
-                    {selectedIds.length > 1 ? 'topics' : 'topic'}
-                </span>
+{#if selectedIds.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedIds.length.toString()} />
+            <span>
+                {selectedIds.length > 1 ? 'topics' : 'topic'}
                 selected
-            </p>
-        </div>
-
-        <div class="u-flex u-cross-center u-gap-8">
+            </span>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
             <Button text on:click={() => (selectedIds = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>
-                <p>Delete</p>
-            </Button>
-        </div>
-    </div>
-</FloatingActionBar>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
 
-<Modal
-    title="Delete topics"
-    icon="exclamation"
-    state="warning"
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    closable={!deleting}>
+<Modal title="Delete topics" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'topics' : 'topic'}?

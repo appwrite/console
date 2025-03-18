@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, FloatingActionBar, Id, Modal } from '$lib/components';
+    import { Alert, Id, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button as ConsoleButton, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -16,7 +16,14 @@
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
     import type { ColumnType } from '$lib/helpers/types';
-    import { Tooltip, Table, Button, Link } from '@appwrite.io/pink-svelte';
+    import {
+        Tooltip,
+        Table,
+        Button,
+        Link,
+        Badge,
+        FloatingActionBar
+    } from '@appwrite.io/pink-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
@@ -244,26 +251,21 @@
 
 <RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
 
-<FloatingActionBar show={selectedRows.length > 0}>
-    <div class="u-flex u-cross-center u-main-space-between actions">
-        <div class="u-flex u-cross-center u-gap-8">
-            <span class="indicator body-text-2 u-bold">{selectedRows.length}</span>
-            <p>
-                <span class="is-only-desktop">
-                    {selectedRows.length > 1 ? 'documents' : 'document'}
-                </span>
+{#if selectedRows.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedRows.length.toString()} />
+            <span>
+                {selectedRows.length > 1 ? 'documents' : 'document'}
                 selected
-            </p>
-        </div>
-
-        <div class="u-flex u-cross-center u-gap-8">
+            </span>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
             <ConsoleButton text on:click={() => (selectedRows = [])}>Cancel</ConsoleButton>
-            <ConsoleButton secondary on:click={() => (showDelete = true)}>
-                <p>Delete</p>
-            </ConsoleButton>
-        </div>
-    </div>
-</FloatingActionBar>
+            <ConsoleButton secondary on:click={() => (showDelete = true)}>Delete</ConsoleButton>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
 
 <Modal
     title="Delete Documents"

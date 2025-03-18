@@ -4,14 +4,13 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Id, Modal } from '$lib/components';
-    import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { canWriteCollections } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
-    import { Badge, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Table } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import { columns } from './store';
 
@@ -78,21 +77,21 @@
     {/each}
 </Table.Root>
 
-<FloatingActionBar show={selectedRows.length > 0}>
-    <svelte:fragment slot="start">
-        <Badge content={selectedRows.length.toString()} />
-        <span>
-            <span class="is-only-desktop">
+{#if selectedRows.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedRows.length.toString()} />
+            <span>
                 {selectedRows.length > 1 ? 'collections' : 'collection'}
+                selected
             </span>
-            selected
-        </span>
-    </svelte:fragment>
-    <svelte:fragment slot="end">
-        <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
-        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-    </svelte:fragment>
-</FloatingActionBar>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
+            <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
 
 <Modal
     title="Delete Collections"
