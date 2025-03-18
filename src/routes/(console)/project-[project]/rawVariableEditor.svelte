@@ -131,12 +131,7 @@
         (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
 </script>
 
-<Modal
-    title="Editor"
-    bind:show={showEditor}
-    onSubmit={handleSubmit}
-    bind:error
-    submitOnEnter={false}>
+<Modal title="Editor" bind:show={showEditor} onSubmit={handleSubmit} bind:error>
     <p slot="description">
         Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
         <InlineCode size="s" code={`.${tab}`} /> file.

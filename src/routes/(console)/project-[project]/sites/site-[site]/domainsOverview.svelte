@@ -17,13 +17,7 @@
     let showDomainQR = false;
     let selectedDomainURL: string;
 
-    $: rules = proxyRuleList?.rules?.filter((rule) => rule.trigger === 'manual');
-
-    // $: hasCustomDomain = proxyRuleList?.total
-    //     ? proxyRuleList.rules.some((rule) =>
-    //           rule.domain.includes($consoleVariables._APP_DOMAIN_TARGET)
-    //       )
-    //     : false;
+    $: rules = proxyRuleList?.rules?.filter((rule) => rule.trigger === 'manual') ?? [];
 </script>
 
 <Layout.Stack>
