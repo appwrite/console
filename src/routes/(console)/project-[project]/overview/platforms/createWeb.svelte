@@ -12,9 +12,10 @@
         InlineCode,
         Card,
         Button,
-        Input
+        Input,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
-    import { Form } from '$lib/elements/forms';
+    import { Form, InputText } from '$lib/elements/forms';
     import {
         IconVue,
         IconAppwrite,
@@ -231,14 +232,22 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                     </Layout.Stack>
                 </Fieldset>
                 {#if !isChangingFramework}
-                    <Fieldset legend="Details"
-                        ><Input.Text
+                    <Fieldset legend="Details">
+                        <InputText
+                            id="hostname"
                             label="Hostname"
-                            helper="The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required."
                             placeholder="localhost"
-                            bind:value={hostname}
-                            state={hostnameError ? 'error' : 'default'}
-                            required /></Fieldset>
+                            error={hostnameError && 'Please enter a valid hostname'}
+                            bind:value={hostname}>
+                            <Tooltip slot="info">
+                                <Icon icon={IconInfo} size="s" />
+                                <span slot="tooltip">
+                                    The hostname that your website will use to interact with the
+                                    Appwrite APIs in production or development environments. No
+                                    protocol or port number required.
+                                </span>
+                            </Tooltip>
+                        </InputText></Fieldset>
                     <Layout.Stack direction="row" justifyContent="flex-end"
                         ><Button.Button type="submit" disabled={!selectedFramework || !hostname}
                             >Create platform</Button.Button
