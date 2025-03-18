@@ -6,18 +6,9 @@
     import { HeaderAlert } from '$lib/layout';
     import { hideBillingHeaderRoutes, readOnly, showBudgetAlert } from '$lib/stores/billing';
     import { base } from '$app/paths';
-    import { goto } from '$app/navigation';
 
-    $: isSameUrl = $page.url.pathname === redirectUrl;
-    $: redirectUrl = `${base}/organization-${$organization.$id}/billing`;
-
-    function scrollOrNavigate() {
-        if (isSameUrl) {
-            document.querySelector('#update-budget-section')?.scrollIntoView({ block: 'nearest' });
-        } else {
-            goto(`${redirectUrl}#update-budget`);
-        }
-    }
+    $: redirectUrl = `${base}/organization-${$organization.$id}/billing#update-budget`;
+    $: isSameUrl = $page.url.pathname === new URL(redirectUrl, window.location.origin).pathname;
 </script>
 
 {#if $showBudgetAlert && $organization?.$id && $organization?.billingPlan !== BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
@@ -30,7 +21,9 @@
             <Button href={`${base}/organization-${$organization.$id}/usage`} text fullWidthMobile>
                 <span class="text">View usage</span>
             </Button>
-            <Button secondary fullWidthMobile on:click={scrollOrNavigate}>
+
+            <!-- target="_self" for same page navigation -->
+            <Button secondary fullWidthMobile href={redirectUrl} target={isSameUrl ? '_self' : ''}>
                 <span class="text">Update limit</span>
             </Button>
         </svelte:fragment>

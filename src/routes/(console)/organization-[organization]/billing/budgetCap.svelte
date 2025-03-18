@@ -8,8 +8,10 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization, currentPlan } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
     import BudgetAlert from './budgetAlert.svelte';
+    import { page } from '$app/stores';
+    import { scrollToUpdateBudget } from './store';
 
     let capActive = false;
     let budget: number;
@@ -47,72 +49,91 @@
     $: if (!capActive) {
         budget = null;
     }
+
+    let formHolderElement: HTMLDivElement;
+
+    $: if ($scrollToUpdateBudget) {
+        // clean the url in the search bar.
+        history.replaceState(null, '', $page.url.pathname);
+
+        tick().then(() => {
+            const elementTop = formHolderElement.getBoundingClientRect().top + window.scrollY;
+            // Offset 60 to prevent misalignment.
+            window.scrollTo({ top: elementTop - 60 });
+        });
+    }
 </script>
 
-<Form onSubmit={updateBudget}>
-    <CardGrid>
-        <Heading tag="h2" size="6">Budget cap</Heading>
+<div id="update-budget-section" bind:this={formHolderElement} style:padding-block-start="1.5rem">
+    <Form onSubmit={updateBudget}>
+        <CardGrid>
+            <Heading tag="h2" size="6">Budget cap</Heading>
 
-        <p class="text">
-            Restrict your resource usage by setting a budget cap. Cap usage is reset at the
-            beginning of each billing cycle.
-        </p>
-        <svelte:fragment slot="aside">
-            {#if !$currentPlan.budgeting}
-                <Alert type="info">
-                    <svelte:fragment slot="title">
-                        Budget caps are a Pro plan feature
-                    </svelte:fragment>
-                    Upgrade to a Pro plan to set a budget cap for your organization. For more information
-                    on what you can do with a Pro plan,
-                    <a
-                        class="link"
-                        href="https://appwrite.io/pricing"
-                        target="_blank"
-                        rel="noopener noreferrer">view our pricing guide.</a>
-                </Alert>
-            {:else}
-                <FormList>
-                    <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
-                        <svelte:fragment slot="description">
-                            Budget cap limits do not include the base amount of your plan. <button
-                                class="link"
-                                type="button"
-                                on:click={() => ($showUsageRatesModal = true)}
-                                >Learn more about usage rates.
-                            </button>
+            <p class="text">
+                Restrict your resource usage by setting a budget cap. Cap usage is reset at the
+                beginning of each billing cycle.
+            </p>
+            <svelte:fragment slot="aside">
+                {#if !$currentPlan.budgeting}
+                    <Alert type="info">
+                        <svelte:fragment slot="title">
+                            Budget caps are a Pro plan feature
                         </svelte:fragment>
-                    </InputSwitch>
-                    {#if capActive}
-                        <InputNumber
-                            placeholder="Add budget cap"
-                            id="cap"
-                            autofocus
-                            label="Budget cap (USD)"
-                            bind:value={budget} />
-                    {/if}
-                </FormList>
-            {/if}
-        </svelte:fragment>
+                        Upgrade to a Pro plan to set a budget cap for your organization. For more information
+                        on what you can do with a Pro plan,
+                        <a
+                            class="link"
+                            href="https://appwrite.io/pricing"
+                            target="_blank"
+                            rel="noopener noreferrer">view our pricing guide.</a>
+                    </Alert>
+                {:else}
+                    <FormList>
+                        <InputSwitch
+                            id="cap-active"
+                            label="Enable budget cap"
+                            bind:value={capActive}>
+                            <svelte:fragment slot="description">
+                                Budget cap limits do not include the base amount of your plan. <button
+                                    class="link"
+                                    type="button"
+                                    on:click={() => ($showUsageRatesModal = true)}
+                                    >Learn more about usage rates.
+                                </button>
+                            </svelte:fragment>
+                        </InputSwitch>
+                        {#if capActive}
+                            <InputNumber
+                                placeholder="Add budget cap"
+                                id="cap"
+                                autofocus
+                                label="Budget cap (USD)"
+                                bind:value={budget} />
+                        {/if}
+                    </FormList>
+                {/if}
+            </svelte:fragment>
 
-        <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
-                <Button
-                    secondary
-                    href={$upgradeURL}
-                    on:click={() => {
-                        trackEvent('click_organization_upgrade', {
-                            from: 'button',
-                            source: 'billing_budget_cap'
-                        });
-                    }}
-                    >Upgrade to Pro
-                </Button>
-            {:else}
-                <Button disabled={$organization?.billingBudget === budget} submit>Update</Button>
-            {/if}
-        </svelte:fragment>
-    </CardGrid>
-</Form>
+            <svelte:fragment slot="actions">
+                {#if $organization?.billingPlan === BillingPlan.FREE}
+                    <Button
+                        secondary
+                        href={$upgradeURL}
+                        on:click={() => {
+                            trackEvent('click_organization_upgrade', {
+                                from: 'button',
+                                source: 'billing_budget_cap'
+                            });
+                        }}
+                        >Upgrade to Pro
+                    </Button>
+                {:else}
+                    <Button disabled={$organization?.billingBudget === budget} submit
+                        >Update</Button>
+                {/if}
+            </svelte:fragment>
+        </CardGrid>
+    </Form>
+</div>
 
 <BudgetAlert alertsEnabled={capActive && budget > 0} />
