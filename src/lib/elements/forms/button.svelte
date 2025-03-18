@@ -70,8 +70,7 @@
         class={resolvedClasses}
         style="pointer-events: {internalDisabled ? 'none' : 'auto'};"
         aria-label={ariaLabel}
-        use:multiAction={actions}
-        {...$$restProps}>
+        use:multiAction={actions}>
         <slot />
     </a>
 {:else}
@@ -82,8 +81,7 @@
         class={resolvedClasses}
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
-        use:multiAction={actions}
-        {...$$restProps}>
+        use:multiAction={actions}>
         {#if $isSubmitting && submissionLoader}
             <span
                 class="loader is-small"

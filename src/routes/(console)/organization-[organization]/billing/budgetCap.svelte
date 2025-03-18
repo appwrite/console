@@ -8,10 +8,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization, currentPlan } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount, tick } from 'svelte';
+    import { onMount } from 'svelte';
     import BudgetAlert from './budgetAlert.svelte';
-    import { page } from '$app/stores';
-    import { scrollToUpdateBudget } from './store';
 
     let capActive = false;
     let budget: number;
@@ -49,22 +47,9 @@
     $: if (!capActive) {
         budget = null;
     }
-
-    let formHolderElement: HTMLDivElement;
-
-    $: if ($scrollToUpdateBudget) {
-        // clean the url in the search bar.
-        history.replaceState(null, '', $page.url.pathname);
-
-        tick().then(() => {
-            const elementTop = formHolderElement.getBoundingClientRect().top + window.scrollY;
-            // Offset 60 to prevent misalignment.
-            window.scrollTo({ top: elementTop - 60 });
-        });
-    }
 </script>
 
-<div id="update-budget-section" bind:this={formHolderElement} style:padding-block-start="1.5rem">
+<div id="update-budget" style:padding-block-start="1.5rem">
     <Form onSubmit={updateBudget}>
         <CardGrid>
             <Heading tag="h2" size="6">Budget cap</Heading>

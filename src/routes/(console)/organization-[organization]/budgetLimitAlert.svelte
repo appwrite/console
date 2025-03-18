@@ -8,7 +8,6 @@
     import { base } from '$app/paths';
 
     $: redirectUrl = `${base}/organization-${$organization.$id}/billing#update-budget`;
-    $: isSameUrl = $page.url.pathname === new URL(redirectUrl, window.location.origin).pathname;
 </script>
 
 {#if $showBudgetAlert && $organization?.$id && $organization?.billingPlan !== BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
@@ -21,9 +20,7 @@
             <Button href={`${base}/organization-${$organization.$id}/usage`} text fullWidthMobile>
                 <span class="text">View usage</span>
             </Button>
-
-            <!-- target="_self" for same page navigation -->
-            <Button secondary fullWidthMobile href={redirectUrl} target={isSameUrl ? '_self' : ''}>
+            <Button secondary fullWidthMobile href={redirectUrl}>
                 <span class="text">Update limit</span>
             </Button>
         </svelte:fragment>
