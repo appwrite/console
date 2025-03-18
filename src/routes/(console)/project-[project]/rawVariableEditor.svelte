@@ -127,20 +127,9 @@
         window.URL.revokeObjectURL(url);
     }
 
-    function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
-            if (tab === 'env') {
-                envCode += '\n';
-            } else {
-                jsonCode += '\n';
-            }
-        }
-    }
     $: isButtonDisabled =
         (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
 </script>
-
-<svelte:window on:keydown={handleKeydown} />
 
 <Modal
     title="Editor"
