@@ -59,7 +59,7 @@
                         name,
                         value,
                         ttl,
-                        comment
+                        comment || undefined
                     );
 
                     break;
@@ -69,7 +69,7 @@
                         name,
                         value,
                         ttl,
-                        comment
+                        comment || undefined
                     );
 
                     break;
@@ -80,7 +80,7 @@
                         value,
                         ttl,
                         priority,
-                        comment
+                        comment || undefined
                     );
 
                     break;
@@ -90,7 +90,7 @@
                         name,
                         value,
                         ttl,
-                        comment
+                        comment || undefined
                     );
 
                     break;
@@ -100,7 +100,7 @@
                         name,
                         value,
                         ttl,
-                        comment
+                        comment || undefined
                     );
 
                     break;
@@ -111,7 +111,7 @@
                         name,
                         value,
                         ttl,
-                        comment
+                        comment || undefined
                     );
 
                     break;
@@ -121,7 +121,7 @@
                         name,
                         value,
                         ttl,
-                        comment
+                        comment || undefined
                     );
 
                     break;
@@ -131,7 +131,7 @@
                         name,
                         value,
                         ttl,
-                        comment
+                        comment || undefined
                     );
 
                     break;
