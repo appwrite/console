@@ -11,7 +11,8 @@
         Fieldset,
         InlineCode,
         Card,
-        Button
+        Button,
+        Input
     } from '@appwrite.io/pink-svelte';
     import { Form } from '$lib/elements/forms';
     import {
@@ -63,6 +64,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     };
     export let platform: PlatformType = PlatformType.Flutterandroid;
     export let selectedFrameworkKey: string | undefined = key ? key : undefined;
+    let hostname;
 
     let frameworks: Array<FrameworkType> = [
         {
@@ -184,20 +186,29 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                                     imageRadius="s" />
                             {/each}
                         </div>
-
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             {#if isChangingFramework}
                                 <Button.Button
                                     disabled={!selectedFramework}
                                     on:click={() => (isChangingFramework = false)}>
                                     Save</Button.Button>
-                            {:else}
-                                <Button.Button type="submit" disabled={!selectedFramework}
-                                    >Create platform</Button.Button>
                             {/if}
                         </Layout.Stack>
                     </Layout.Stack>
                 </Fieldset>
+                {#if !isChangingFramework}
+                    <Fieldset legend="Details"
+                        ><Input.Text
+                            label="Hostname"
+                            helper="The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required."
+                            placeholder="localhost"
+                            bind:value={hostname}
+                            required /></Fieldset>
+                    <Layout.Stack direction="row" justifyContent="flex-end"
+                        ><Button.Button type="submit" disabled={!selectedFramework || !hostname}
+                            >Create platform</Button.Button
+                        ></Layout.Stack>
+                {/if}
             {:else}
                 <Card.Base padding="s"
                     ><Layout.Stack
