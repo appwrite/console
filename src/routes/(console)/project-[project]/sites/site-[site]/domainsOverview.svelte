@@ -17,6 +17,8 @@
     let showDomainQR = false;
     let selectedDomainURL: string;
 
+    $: rules = proxyRuleList?.rules?.filter((rule) => rule.trigger === 'manual');
+
     // $: hasCustomDomain = proxyRuleList?.total
     //     ? proxyRuleList.rules.some((rule) =>
     //           rule.domain.includes($consoleVariables._APP_DOMAIN_TARGET)
@@ -40,7 +42,7 @@
     </Layout.Stack>
     <Card padding="xs" radius="s" isTile>
         <Layout.Stack>
-            {#if proxyRuleList?.rules?.length <= 1}
+            {#if rules.length <= 1}
                 <Layout.Stack gap="l">
                     <Layout.Stack gap="xxs">
                         <Typography.Text variant="m-500">
@@ -65,11 +67,11 @@
                         </Button>
                     </div>
                 </Layout.Stack>
-                {#if proxyRuleList?.rules?.length}
+                {#if rules?.length}
                     <Divider />
                 {/if}
             {/if}
-            {#each proxyRuleList?.rules?.slice(0, 3) as rule, i}
+            {#each rules?.slice(0, 3) as rule, i}
                 <Layout.Stack
                     alignItems="center"
                     justifyContent="space-between"
