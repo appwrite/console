@@ -1,16 +1,16 @@
 <script lang="ts">
     import { CustomId } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
-    import { InputText, InputSelect, FormList } from '$lib/elements/forms';
+    import { FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { onMount } from 'svelte';
-    import { createFunction } from '../store';
+    import { organization } from '$lib/stores/organization';
     import { runtimesList } from '$lib/stores/runtimes';
     import { specificationsList } from '$lib/stores/specifications';
     import { isCloud } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { onMount } from 'svelte';
     import SpecificationsTooltip from '../components/specificationsTooltip.svelte';
+    import { createFunction } from '../store';
 
     let showCustomId = false;
 
@@ -53,17 +53,19 @@
             {options}
             required />
 
-        <InputSelect
-            label="CPU and memory"
-            id="specification"
-            placeholder="Select specification"
-            required
-            disabled={specificationOptions.length < 1}
-            options={specificationOptions}
-            popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
-                ? SpecificationsTooltip
-                : null}
-            bind:value={$createFunction.specification} />
+        {#if isCloud}
+            <InputSelect
+                label="CPU and memory"
+                id="specification"
+                placeholder="Select specification"
+                required
+                disabled={specificationOptions.length < 1}
+                options={specificationOptions}
+                popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
+                    ? SpecificationsTooltip
+                    : null}
+                bind:value={$createFunction.specification} />
+        {/if}
 
         {#if !showCustomId}
             <div>
