@@ -5,17 +5,6 @@
     import { FloatingActionBar, Id, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellCheck,
-        TableCellHead,
-        TableCellHeadCheck,
-        TableCellText,
-        TableHeader,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import ProviderType from '../../providerType.svelte';
@@ -26,7 +15,7 @@
     import { targetsById } from '../../store';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
-    import { Selector, Table } from '@appwrite.io/pink-svelte';
+    import { Table } from '@appwrite.io/pink-svelte';
 
     export let columns: Column[];
     export let data: PageData;
@@ -81,52 +70,46 @@
     });
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        <Table.Header.Selector width="40px" />
-        {#each columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root {columns} allowSelection let:root bind:selectedRows={selectedIds}>
+    <svelte:fragment slot="header" let:root>
+        {#each columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each data.subscribers.subscribers as subscriber (subscriber.$id)}
         {@const target = subscriber.target}
-        <Table.Link href={`${base}/project-${$project.$id}/auth/user-${subscriber.target.userId}`}>
-            <Table.Cell>
-                <Selector.Checkbox size="s" />
-            </Table.Cell>
-
+        <Table.Row.Link
+            {root}
+            id={subscriber.$id}
+            href={`${base}/project-${$project.$id}/auth/user-${subscriber.target.userId}`}>
             {#each columns as column}
-                {#if column.show}
-                    <Table.Cell>
-                        {#if column.id === '$id'}
-                            {#key column.id}
-                                <Id value={subscriber.$id}>
-                                    {subscriber.$id}
-                                </Id>
-                            {/key}
-                        {:else if column.id === 'targetId'}
-                            <Id value={subscriber[column.id]}>
-                                {subscriber[column.id]}
+                <Table.Cell column={column.id} {root}>
+                    {#if column.id === '$id'}
+                        {#key column.id}
+                            <Id value={subscriber.$id}>
+                                {subscriber.$id}
                             </Id>
-                        {:else if column.id === 'target'}
-                            {#if target.providerType === MessagingProviderType.Push}
-                                {target.name}
-                            {:else}
-                                {target.identifier}
-                            {/if}
-                        {:else if column.id === 'type'}
-                            <ProviderType type={subscriber.target.providerType} size="s" />
-                        {:else if column.id === '$createdAt'}
-                            {toLocaleDateTime(subscriber[column.id])}
-                        {:else}
+                        {/key}
+                    {:else if column.id === 'targetId'}
+                        <Id value={subscriber[column.id]}>
                             {subscriber[column.id]}
+                        </Id>
+                    {:else if column.id === 'target'}
+                        {#if target.providerType === MessagingProviderType.Push}
+                            {target.name}
+                        {:else}
+                            {target.identifier}
                         {/if}
-                    </Table.Cell>
-                {/if}
+                    {:else if column.id === 'type'}
+                        <ProviderType type={subscriber.target.providerType} size="s" />
+                    {:else if column.id === '$createdAt'}
+                        {toLocaleDateTime(subscriber[column.id])}
+                    {:else}
+                        {subscriber[column.id]}
+                    {/if}
+                </Table.Cell>
             {/each}
-        </Table.Link>
+        </Table.Row.Link>
     {/each}
 </Table.Root>
 
@@ -153,8 +136,6 @@
 
 <Modal
     title="Delete subscriber"
-    icon="exclamation"
-    state="warning"
     bind:show={showDelete}
     onSubmit={handleDelete}
     closable={!deleting}>

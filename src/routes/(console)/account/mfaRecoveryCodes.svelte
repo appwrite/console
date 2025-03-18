@@ -37,18 +37,18 @@
                 </Button>
             </Copy>
         </Layout.Stack>
-        <Table.Root>
+        <Table.Root columns={[{ id: 'code' }, { id: 'action', width: 24 }]} let:root>
             {#each codes.recoveryCodes as code}
-                <Table.Row>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="code" {root}>
                         <Output value={code} hideCopyIcon>{code}</Output>
                     </Table.Cell>
-                    <Table.Cell width="24px">
+                    <Table.Cell column="action" {root}>
                         <Copy value={code}>
                             <Icon icon={IconDuplicate} />
                         </Copy>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         </Table.Root>
     {/if}

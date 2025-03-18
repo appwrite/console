@@ -12,7 +12,7 @@
     import type { Column } from '$lib/helpers/types';
     import { page } from '$app/stores';
     import { canWriteTopics } from '$lib/stores/roles';
-    import { Selector, Table } from '@appwrite.io/pink-svelte';
+    import { Table } from '@appwrite.io/pink-svelte';
 
     export let columns: Column[];
     export let data: PageData;
@@ -49,53 +49,33 @@
     }
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        {#if $canWriteTopics}
-            <Table.Header.Selector width="40px" />
-        {/if}
-        {#each columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root {columns} allowSelection={$canWriteTopics} let:root bind:selectedRows={selectedIds}>
+    <svelte:fragment slot="header" let:root>
+        {#each columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each data.topics.topics as topic (topic.$id)}
-        <Table.Link
+        <Table.Row.Link
+            {root}
+            id={topic.$id}
             href={`${base}/project-${$page.params.project}/messaging/topics/topic-${topic.$id}`}>
-            {#if $canWriteTopics}
-                <Table.Cell>
-                    <Selector.Checkbox size="s" />
-                </Table.Cell>
-            {/if}
             {#each columns as column (column.id)}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key column.id}
-                            <Table.Cell>
-                                <Id value={topic.$id}>{topic.$id}</Id>
-                            </Table.Cell>
+                            <Id value={topic.$id}>{topic.$id}</Id>
                         {/key}
                     {:else if column.type === 'datetime'}
-                        <Table.Cell>
-                            {#if !topic[column.id]}
-                                -
-                            {:else}
-                                {toLocaleDateTime(topic[column.id])}
-                            {/if}
-                        </Table.Cell>
+                        {topic[column.id] ? toLocaleDateTime(topic[column.id]) : '-'}
                     {:else if column.id === 'total'}
-                        <Table.Cell>
-                            {topic.emailTotal + topic.smsTotal + topic.pushTotal}
-                        </Table.Cell>
+                        {topic.emailTotal + topic.smsTotal + topic.pushTotal}
                     {:else}
-                        <Table.Cell>
-                            {topic[column.id]}
-                        </Table.Cell>
+                        {topic[column.id]}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-        </Table.Link>
+        </Table.Row.Link>
     {/each}
 </Table.Root>
 

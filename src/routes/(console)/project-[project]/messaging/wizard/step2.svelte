@@ -70,14 +70,14 @@
         </Card>
     {:else}
         <div class="table-wrapper">
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell>Target</Table.Header.Cell>
-                    <Table.Header.Cell width="32px" />
+            <Table.Root columns={[{ id: 'target' }, { id: 'actions', width: 40 }]} let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="target" {root}>Target</Table.Header.Cell>
+                    <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
                 {#each Object.entries($topicsById) as [topicId, topic] (topicId)}
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="target" {root}>
                             <div class="u-flex u-cross-center">
                                 <span class="title">
                                     <span class="u-line-height-1-5">
@@ -90,7 +90,7 @@
                                     </span></span>
                             </div>
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="actions" {root}>
                             <div class="u-flex u-main-end">
                                 <button
                                     class="button is-text is-only-icon"
@@ -101,19 +101,18 @@
                                 </button>
                             </div>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
                 {#each Object.entries($targetsById) as [targetId, target] (targetId)}
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="target" {root}>
                             <div class="u-flex u-cross-center">
                                 <span class="text">
                                     {target.name ? target.name : target.identifier}
                                 </span>
                             </div>
                         </Table.Cell>
-
-                        <Table.Cell>
+                        <Table.Cell column="actions" {root}>
                             <div class="u-flex u-main-end">
                                 <button
                                     class="button is-text is-only-icon"
@@ -124,7 +123,7 @@
                                 </button>
                             </div>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
         </div>

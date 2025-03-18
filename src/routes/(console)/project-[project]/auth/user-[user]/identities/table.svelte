@@ -50,62 +50,47 @@
     }
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        <Table.Header.Selector width="40px" />
-        {#each columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root {columns} allowSelection let:root>
+    <svelte:fragment slot="header" let:root>
+        {#each columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each data.identities.identities as identity (identity.$id)}
-        <Table.Row>
-            <Table.Cell>
-                <Selector.Checkbox size="s" />
-            </Table.Cell>
-
+        <Table.Row.Base {root}>
             {#each columns as column}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key columns}
-                            <Table.Cell>
-                                <Id value={identity[column.id]}>
-                                    {identity[column.id]}
-                                </Id>
-                            </Table.Cell>
+                            <Id value={identity[column.id]}>
+                                {identity[column.id]}
+                            </Id>
                         {/key}
                     {:else if column.id === 'provider'}
                         {@const provider = oAuthProviders[identity[column.id]]}
-                        <Table.Cell width={column.width + 'px'}>
-                            <div class="u-inline-flex u-cross-center u-gap-8">
-                                <div class="avatar is-size-small">
-                                    <img
-                                        style="--p-text-size: 1rem"
-                                        height="20"
-                                        width="20"
-                                        src={`${base}/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
-                                        alt={provider.name} />
-                                </div>
-                                {provider.name}
+                        <div class="u-inline-flex u-cross-center u-gap-8">
+                            <div class="avatar is-size-small">
+                                <img
+                                    style="--p-text-size: 1rem"
+                                    height="20"
+                                    width="20"
+                                    src={`${base}/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
+                                    alt={provider.name} />
                             </div>
-                        </Table.Cell>
+                            {provider.name}
+                        </div>
                     {:else if column.type === 'datetime'}
-                        <Table.Cell width={column.width + 'px'}>
-                            {#if !identity[column.id]}
-                                -
-                            {:else}
-                                {toLocaleDateTime(identity[column.id])}
-                            {/if}
-                        </Table.Cell>
+                        {#if !identity[column.id]}
+                            -
+                        {:else}
+                            {toLocaleDateTime(identity[column.id])}
+                        {/if}
                     {:else}
-                        <Table.Cell width={column.width + 'px'}>
-                            {identity[column.id]}
-                        </Table.Cell>
+                        {identity[column.id]}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-        </Table.Row>
+        </Table.Row.Base>
     {/each}
 </Table.Root>
 

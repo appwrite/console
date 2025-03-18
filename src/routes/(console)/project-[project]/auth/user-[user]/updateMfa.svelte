@@ -49,14 +49,14 @@
                 label="Multi-factor authentication"
                 bind:value={userMfa} />
             {#if $userFactors.totp}
-                <Table.Root>
-                    <svelte:fragment slot="header">
-                        <Table.Header.Cell>Authenticator</Table.Header.Cell>
-                        <Table.Header.Cell width="40px" />
+                <Table.Root columns={[{ id: 'type' }, { id: 'actions', width: 40 }]} let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell column="type" {root}>Authenticator</Table.Header.Cell>
+                        <Table.Header.Cell column="actions" {root} />
                     </svelte:fragment>
-                    <Table.Row>
-                        <Table.Cell>TOTP (One-time code)</Table.Cell>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="type" {root}>TOTP (One-time code)</Table.Cell>
+                        <Table.Cell column="actions" {root}>
                             <Button
                                 on:click={() => (showDelete = true)}
                                 icon
@@ -65,7 +65,7 @@
                                 <span class="icon-trash" aria-hidden="true" />
                             </Button>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 </Table.Root>
             {:else}
                 <Card.Base variant="primary">

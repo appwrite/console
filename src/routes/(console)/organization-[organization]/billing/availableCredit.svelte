@@ -114,22 +114,22 @@
                 {/if}
             </div>
             {#if creditList?.total}
-                <Table.Root>
-                    <svelte:fragment slot="header">
-                        <Table.Header.Cell>Code</Table.Header.Cell>
-                        <Table.Header.Cell>Total</Table.Header.Cell>
-                        <Table.Header.Cell>Remaining</Table.Header.Cell>
-                        <Table.Header.Cell>Expires at</Table.Header.Cell>
+                <Table.Root columns={4} let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell {root}>Code</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Total</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Remaining</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Expires at</Table.Header.Cell>
                     </svelte:fragment>
                     {#each creditList.credits as credit}
-                        <Table.Row>
-                            <Table.Cell>
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>
                                 {credit?.couponId ?? '-'}
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell {root}>
                                 {formatCurrency(credit.total)}
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell {root}>
                                 {#if credit.status === 'expired'}
                                     <span
                                         style="text-decoration: line-through;"
@@ -139,7 +139,7 @@
                                     {formatCurrency(credit.credits)}
                                 {/if}
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell {root}>
                                 {#if credit.status === 'expired'}
                                     <Tooltip>
                                         <span>
@@ -152,7 +152,7 @@
                                     {toLocaleDate(credit.expiration)}
                                 {/if}
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
                 {#if creditList?.total > limit}

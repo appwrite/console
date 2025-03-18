@@ -17,7 +17,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { MessagingProviderType } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
     import FailedModal from './failedModal.svelte';
     import MessageStatusPill from './messageStatusPill.svelte';
@@ -31,23 +30,30 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
-    import { Layout, Selector, Table } from '@appwrite.io/pink-svelte';
+    import { Layout, Table } from '@appwrite.io/pink-svelte';
 
     export let data;
+
     let selected: string[] = [];
     let showDelete = false;
     let deleting = false;
     let showFailed = false;
     let errors: string[] = [];
-    let showCreateDropdownMobile = false;
-    let showCreateDropdownEmpty = false;
+
     const columns = writable<Column[]>([
-        { id: '$id', title: 'Message ID', type: 'string', show: true, width: 140 },
-        { id: 'message', title: 'Message', type: 'string', show: false, filter: false, width: 140 },
-        { id: 'providerType', title: 'Type', type: 'string', show: true, width: 100 },
-        { id: 'status', title: 'Status', type: 'string', show: true, width: 120 },
-        { id: 'scheduledAt', title: 'Scheduled at', type: 'datetime', show: true, width: 120 },
-        { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', show: false, width: 120 }
+        { id: '$id', title: 'Message ID', type: 'string', width: 140 },
+        {
+            id: 'message',
+            title: 'Message',
+            type: 'string',
+            hide: true,
+            filter: false,
+            width: { min: 140 }
+        },
+        { id: 'providerType', title: 'Type', type: 'string', width: { min: 100 } },
+        { id: 'status', title: 'Status', type: 'string', width: { min: 120 } },
+        { id: 'scheduledAt', title: 'Scheduled at', type: 'datetime', width: { min: 120 } },
+        { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', width: { min: 120 } }
     ]);
 
     const project = $page.params.project;
@@ -97,78 +103,61 @@
     </Layout.Stack>
 
     {#if data.messages.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                {#if $canWriteMessages}
-                    <Table.Header.Selector width="40px" />
-                {/if}
-                {#each $columns as column}
-                    {#if column.show}
-                        <Table.Cell width={column.width + 'px'}>{column.title}</Table.Cell>
-                    {/if}
+        <Table.Root
+            columns={$columns}
+            allowSelection={$canWriteMessages}
+            let:root
+            bind:selectedRows={selected}>
+            <svelte:fragment slot="header" let:root>
+                {#each $columns as { id, title }}
+                    <Table.Cell column={id} {root}>{title}</Table.Cell>
                 {/each}
             </svelte:fragment>
             {#each data.messages.messages as message (message.$id)}
-                <Table.Link href={`${base}/project-${project}/messaging/message-${message.$id}`}>
-                    {#if $canWriteMessages}
-                        <Table.Cell>
-                            <Selector.Checkbox
-                                size="s"
-                                disabled={message.status === 'processing'} />
-                        </Table.Cell>
-                    {/if}
+                <Table.Row.Link
+                    {root}
+                    id={message.$id}
+                    href={`${base}/project-${project}/messaging/message-${message.$id}`}>
                     {#each $columns as column (column.id)}
-                        {#if column.show}
+                        <Table.Cell column={column.id} {root}>
                             {#if column.id === '$id'}
                                 {#key $columns}
-                                    <Table.Cell>
-                                        <Id value={message.$id}>{message.$id}</Id>
-                                    </Table.Cell>
+                                    <Id value={message.$id}>{message.$id}</Id>
                                 {/key}
                             {:else if column.id === 'message'}
-                                <Table.Cell>
-                                    {#if message.providerType === MessagingProviderType.Push}
-                                        {message.data.title}
-                                    {:else if message.providerType === MessagingProviderType.Sms}
-                                        {message.data.content}
-                                    {:else if message.providerType === MessagingProviderType.Email}
-                                        {message.data.subject}
-                                    {:else}
-                                        Invalid provider
-                                    {/if}
-                                </Table.Cell>
+                                {#if message.providerType === MessagingProviderType.Push}
+                                    {message.data.title}
+                                {:else if message.providerType === MessagingProviderType.Sms}
+                                    {message.data.content}
+                                {:else if message.providerType === MessagingProviderType.Email}
+                                    {message.data.subject}
+                                {:else}
+                                    Invalid provider
+                                {/if}
                             {:else if column.id === 'providerType'}
-                                <Table.Cell>
-                                    <ProviderType type={message.providerType} size="xs" />
-                                </Table.Cell>
+                                <ProviderType type={message.providerType} size="xs" />
                             {:else if column.id === 'status'}
-                                <Table.Cell>
-                                    <MessageStatusPill status={message.status} />
-                                    {#if message.status === 'failed'}
-                                        <Button
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                errors = message.deliveryErrors;
-                                                showFailed = true;
-                                            }}>Details</Button>
-                                    {/if}
-                                </Table.Cell>
+                                <MessageStatusPill status={message.status} />
+                                {#if message.status === 'failed'}
+                                    <Button
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            errors = message.deliveryErrors;
+                                            showFailed = true;
+                                        }}>Details</Button>
+                                {/if}
                             {:else if column.type === 'datetime'}
-                                <Table.Cell>
-                                    {#if !message[column.id]}
-                                        -
-                                    {:else}
-                                        {toLocaleDateTime(message[column.id])}
-                                    {/if}
-                                </Table.Cell>
+                                {#if !message[column.id]}
+                                    -
+                                {:else}
+                                    {toLocaleDateTime(message[column.id])}
+                                {/if}
                             {:else}
-                                <Table.Cell>
-                                    {message[column.id]}
-                                </Table.Cell>
+                                {message[column.id]}
                             {/if}
-                        {/if}
+                        </Table.Cell>
                     {/each}
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
 
@@ -227,9 +216,7 @@
                     Documentation
                 </Button>
                 {#if $canWriteMessages}
-                    <CreateMessageDropdown
-                        bind:showCreateDropdown={showCreateDropdownEmpty}
-                        let:toggle>
+                    <CreateMessageDropdown let:toggle>
                         <Button secondary on:click={toggle} event="create_message">
                             <span class="text">Create message</span>
                         </Button>

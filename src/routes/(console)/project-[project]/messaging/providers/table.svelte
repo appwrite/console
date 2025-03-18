@@ -53,64 +53,51 @@
     }
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        {#if $canWriteProviders}
-            <Table.Header.Selector width="40px" />
-        {/if}
-        {#each $columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column.width}>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root
+    columns={$columns}
+    allowSelection={$canWriteProviders}
+    let:root
+    bind:selectedRows={selectedIds}>
+    <svelte:fragment slot="header" let:root>
+        {#each $columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each data.providers.providers as provider (provider.$id)}
-        <Table.Link
+        <svelte:component
+            this={$canWriteProviders ? Table.Row.Link : Table.Row.Base}
+            id={provider.$id}
             href={$canWriteProviders
                 ? `${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}`
-                : '#'}>
-            {#if $canWriteProviders}
-                <Table.Cell>
-                    <Selector.Checkbox size="s" id={provider.$id} />
-                </Table.Cell>
-            {/if}
+                : undefined}
+            {root}>
             {#each $columns as column}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key $columns}
-                            <Table.Cell>
-                                <Id value={provider.$id}>{provider.$id}</Id>
-                            </Table.Cell>
+                            <Id value={provider.$id}>{provider.$id}</Id>
                         {/key}
                     {:else if column.id === 'provider'}
-                        <Table.Cell>
-                            <Provider provider={provider.provider} />
-                        </Table.Cell>
+                        <Provider provider={provider.provider} />
                     {:else if column.id === 'type'}
-                        <Table.Cell>
-                            <ProviderType type={provider.type} size="xs" />
-                        </Table.Cell>
+                        <ProviderType type={provider.type} size="xs" />
                     {:else if column.id === 'enabled'}
-                        <Table.Cell>
-                            <Badge
-                                variant="secondary"
-                                type={provider.enabled ? 'success' : undefined}
-                                content={provider.enabled ? 'enabled' : 'disabled'}>
-                                <svelte:fragment slot="start">
-                                    {#if provider.enabled}
-                                        <Icon icon={IconCheckCircle} size="s" />
-                                    {/if}
-                                </svelte:fragment>
-                            </Badge>
-                        </Table.Cell>
+                        <Badge
+                            variant="secondary"
+                            type={provider.enabled ? 'success' : undefined}
+                            content={provider.enabled ? 'enabled' : 'disabled'}>
+                            <svelte:fragment slot="start">
+                                {#if provider.enabled}
+                                    <Icon icon={IconCheckCircle} size="s" />
+                                {/if}
+                            </svelte:fragment>
+                        </Badge>
                     {:else}
-                        <Table.Cell>
-                            {provider[column.id]}
-                        </Table.Cell>
+                        {provider[column.id]}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-        </Table.Link>
+        </svelte:component>
     {/each}
 </Table.Root>
 

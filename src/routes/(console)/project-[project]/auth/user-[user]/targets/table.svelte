@@ -52,62 +52,43 @@
     }
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        <Table.Header.Selector width="40px" />
-        {#each $columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root columns={$columns} allowSelection let:root bind:selectedRows={selectedIds}>
+    <svelte:fragment slot="header" let:root>
+        {#each $columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each data.targets.targets as target (target.$id)}
         {@const provider = data.providersById[target.providerId]}
-        <Table.Row>
-            <Table.Cell>
-                <Selector.Checkbox size="s" />
-            </Table.Cell>
-
+        <Table.Row.Base {root} id={target.$id}>
             {#each $columns as column}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key $columns}
-                            <Table.Cell>
-                                <Id value={target[column.id]}>
-                                    {target[column.id]}
-                                </Id>
-                            </Table.Cell>
+                            <Id value={target[column.id]}>
+                                {target[column.id]}
+                            </Id>
                         {/key}
                     {:else if column.id === 'target'}
-                        <Table.Cell>
-                            {#if target.providerType === MessagingProviderType.Push}
-                                {target.name}
-                            {:else}
-                                {target.identifier}
-                            {/if}
-                        </Table.Cell>
+                        {#if target.providerType === MessagingProviderType.Push}
+                            {target.name}
+                        {:else}
+                            {target.identifier}
+                        {/if}
                     {:else if column.id === 'providerType'}
-                        <Table.Cell width={column.width + 'px'}>
-                            <ProviderType type={target.providerType} size="s" />
-                        </Table.Cell>
+                        <ProviderType type={target.providerType} size="s" />
                     {:else if column.id === 'provider'}
-                        <Table.Cell width={column.width + 'px'}>
-                            {#if provider}
-                                <Provider provider={provider.provider} size="s" />
-                            {/if}
-                        </Table.Cell>
+                        {#if provider}
+                            <Provider provider={provider.provider} />
+                        {/if}
                     {:else if column.id === '$createdAt'}
-                        <Table.Cell width={column.width + 'px'}>
-                            {toLocaleDateTime(target[column.id])}
-                        </Table.Cell>
+                        {toLocaleDateTime(target[column.id])}
                     {:else}
-                        <Table.Cell width={column.width + 'px'}>
-                            {target[column.id]}
-                        </Table.Cell>
+                        {target[column.id]}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-        </Table.Row>
+        </Table.Row.Base>
     {/each}
 </Table.Root>
 

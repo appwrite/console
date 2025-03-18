@@ -43,21 +43,22 @@
         </Button>
     </Layout.Stack>
     {#if deploymentList?.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Deployment ID</Table.Header.Cell>
-                <Table.Header.Cell>Status</Table.Header.Cell>
-                <Table.Header.Cell>Source</Table.Header.Cell>
-                <Table.Header.Cell>Updated</Table.Header.Cell>
-                <Table.Header.Cell />
+        <Table.Root columns={5} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell {root}>Deployment ID</Table.Header.Cell>
+                <Table.Header.Cell {root}>Status</Table.Header.Cell>
+                <Table.Header.Cell {root}>Source</Table.Header.Cell>
+                <Table.Header.Cell {root}>Updated</Table.Header.Cell>
+                <Table.Header.Cell {root} />
             </svelte:fragment>
             {#each deploymentList?.deployments as deployment}
-                <Table.Link
+                <Table.Row.Link
+                    {root}
                     href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         <Id value={deployment.$id}>{deployment.$id}</Id>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         {@const status = deployment.status}
                         {#if activeDeployment?.$id === deployment?.$id}
                             <Status status="complete" label="Active" />
@@ -68,13 +69,13 @@
                         {/if}
                     </Table.Cell>
 
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         <DeploymentSource {deployment} />
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         <DeploymentCreatedBy {deployment} />
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         <Layout.Stack alignItems="flex-end">
                             <DeploymentActionMenu
                                 {deployment}
@@ -86,7 +87,7 @@
                                 activeDeployment={site.deploymentId} />
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
     {:else}

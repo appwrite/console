@@ -92,10 +92,10 @@
         Set the events that will trigger your function. Maximum 100 events allowed.
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
-                <Table.Root>
+                <Table.Root columns={1} let:root>
                     {#each Array.from($eventSet) as event}
-                        <Table.Row>
-                            <Table.Cell>
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>
                                 <Layout.Stack
                                     direction="row"
                                     justifyContent="space-between"
@@ -112,7 +112,7 @@
                                     </Button>
                                 </Layout.Stack>
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
                 <div>

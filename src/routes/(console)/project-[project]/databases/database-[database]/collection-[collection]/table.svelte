@@ -17,7 +17,7 @@
     import { attributes, collection, columns } from './store';
     import type { ColumnType } from '$lib/helpers/types';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Tooltip, Table, Selector, Button, Link } from '@appwrite.io/pink-svelte';
+    import { Tooltip, Table, Button, Link } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
 
@@ -103,14 +103,14 @@
         );
     }
 
-    let selectedDb: string[] = [];
+    let selectedRows: string[] = [];
     let showDelete = false;
     let deleting = false;
 
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selectedDb.map((documentId) =>
+        const promises = selectedRows.map((documentId) =>
             sdk.forProject.databases.deleteDocument(databaseId, collectionId, documentId)
         );
         try {
@@ -118,7 +118,7 @@
             trackEvent(Submit.DocumentDelete);
             addNotification({
                 type: 'success',
-                message: `${selectedDb.length} document${selectedDb.length > 1 ? 's' : ''} deleted`
+                message: `${selectedRows.length} document${selectedRows.length > 1 ? 's' : ''} deleted`
             });
             invalidate(Dependencies.DOCUMENTS);
         } catch (error) {
@@ -128,7 +128,7 @@
             });
             trackError(error, Submit.DocumentDelete);
         } finally {
-            selectedDb = [];
+            selectedRows = [];
             showDelete = false;
         }
     }
@@ -146,25 +146,25 @@
     let checked = false;
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        <Table.Header.Selector width="40px" />
-        <Table.Header.Cell width="150px">Document ID</Table.Header.Cell>
-        {#each $columns.filter((n) => n.show) as column}
-            {#if column.show}
-                <Table.Header.Cell>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root
+    let:root
+    allowSelection
+    bind:selectedRows
+    columns={[{ id: '$id', width: 150 }, ...$columns, { id: '$created' }, { id: '$updated' }]}>
+    <svelte:fragment slot="header" let:root>
+        <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
+        {#each $columns as column}
+            <Table.Header.Cell column={column.id} {root}>{column.title}</Table.Header.Cell>
         {/each}
-        <Table.Header.Cell>Created</Table.Header.Cell>
-        <Table.Header.Cell>Updated</Table.Header.Cell>
+        <Table.Header.Cell column="$created" {root}>Created</Table.Header.Cell>
+        <Table.Header.Cell column="$updated" {root}>Updated</Table.Header.Cell>
     </svelte:fragment>
     {#each data.documents.documents as document}
-        <Table.Link
+        <Table.Row.Link
+            {root}
+            id={document.$id}
             href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
-            <Table.Cell>
-                <Selector.Checkbox size="s" />
-            </Table.Cell>
-            <Table.Cell width="150px">
+            <Table.Cell column="$id" {root}>
                 {#key document.$id}
                     <Id value={document.$id}>
                         {document.$id}
@@ -172,96 +172,92 @@
                 {/key}
             </Table.Cell>
 
-            {#each $columns as column}
-                {#if column.show}
-                    {@const attr = $attributes.find((n) => n.key === column.id)}
+            {#each $columns as { id }}
+                {@const attr = $attributes.find((n) => n.key === id)}
+                <Table.Cell column={id} {root}>
                     {#if isRelationship(attr)}
                         {@const args = displayNames?.[attr.relatedCollection] ?? ['$id']}
-                        <Table.Cell>
-                            {#if !isRelationshipToMany(attr)}
-                                {#if document[column.id]}
-                                    {@const related = document[column.id]}
-                                    <Link.Button
-                                        variant="muted"
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            goto(
-                                                `${base}/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
-                                            );
-                                        }}>
-                                        {#each args as arg, i}
-                                            {#if arg !== undefined}
-                                                {#if i}
-                                                    &nbsp;|
-                                                {/if}
-                                                <span class="text" data-private>
-                                                    {related?.[arg]}
-                                                </span>
-                                            {/if}
-                                        {/each}
-                                    </Link.Button>
-                                {:else}
-                                    <span class="text">n/a</span>
-                                {/if}
-                            {:else}
-                                {@const itemsNum = document[column.id]?.length}
-                                <Button.Button
-                                    variant="extra-compact"
-                                    disabled={!itemsNum}
-                                    badge={itemsNum ?? 0}
+                        {#if !isRelationshipToMany(attr)}
+                            {#if document[+id]}
+                                {@const related = document[id]}
+                                <Link.Button
+                                    variant="muted"
                                     on:click={(e) => {
-                                        e.stopPropagation();
                                         e.preventDefault();
-                                        relationshipData = document[column.id];
-                                        showRelationships = true;
-                                        selectedRelationship = attr;
+                                        e.stopPropagation();
+                                        goto(
+                                            `${base}/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                        );
                                     }}>
-                                    Items
-                                </Button.Button>
+                                    {#each args as arg, i}
+                                        {#if arg !== undefined}
+                                            {#if i}
+                                                &nbsp;|
+                                            {/if}
+                                            <span class="text" data-private>
+                                                {related?.[arg]}
+                                            </span>
+                                        {/if}
+                                    {/each}
+                                </Link.Button>
+                            {:else}
+                                <span class="text">n/a</span>
                             {/if}
-                        </Table.Cell>
+                        {:else}
+                            {@const itemsNum = document[id]?.length}
+                            <Button.Button
+                                variant="extra-compact"
+                                disabled={!itemsNum}
+                                badge={itemsNum ?? 0}
+                                on:click={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    relationshipData = document[id];
+                                    showRelationships = true;
+                                    selectedRelationship = attr;
+                                }}>
+                                Items
+                            </Button.Button>
+                        {/if}
                     {:else}
-                        {@const formatted = formatColumn(document[column.id])}
-                        <Table.Cell>
-                            <Tooltip disabled={!formatted.truncated} placement="bottom">
-                                <span>
-                                    {formatted.value}
-                                </span>
-                                <span style:white-space="pre-wrap" slot="tooltip">
-                                    {formatted.whole}
-                                </span>
-                            </Tooltip>
-                        </Table.Cell>
+                        {@const formatted = formatColumn(document[id])}
+                        <Tooltip disabled={!formatted.truncated} placement="bottom">
+                            <span>
+                                {formatted.value}
+                            </span>
+                            <span style:white-space="pre-wrap" slot="tooltip">
+                                {formatted.whole}
+                            </span>
+                        </Tooltip>
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-            <Table.Cell>
+            <Table.Cell column="$created" {root}>
                 {toLocaleDateTime(document.$createdAt)}
             </Table.Cell>
-            <Table.Cell>
+            <Table.Cell column="$updated" {root}>
                 {toLocaleDateTime(document.$updatedAt)}
             </Table.Cell>
-        </Table.Link>
+        </Table.Row.Link>
     {/each}
 </Table.Root>
 
 <RelationshipsModal bind:show={showRelationships} {selectedRelationship} data={relationshipData} />
 
-<FloatingActionBar show={selectedDb.length > 0}>
+<FloatingActionBar show={selectedRows.length > 0}>
     <div class="u-flex u-cross-center u-main-space-between actions">
         <div class="u-flex u-cross-center u-gap-8">
-            <span class="indicator body-text-2 u-bold">{selectedDb.length}</span>
+            <span class="indicator body-text-2 u-bold">{selectedRows.length}</span>
             <p>
                 <span class="is-only-desktop">
-                    {selectedDb.length > 1 ? 'documents' : 'document'}
+                    {selectedRows.length > 1 ? 'documents' : 'document'}
                 </span>
                 selected
             </p>
         </div>
 
         <div class="u-flex u-cross-center u-gap-8">
-            <ConsoleButton text on:click={() => (selectedDb = [])}>Cancel</ConsoleButton>
+            <ConsoleButton text on:click={() => (selectedRows = [])}>Cancel</ConsoleButton>
             <ConsoleButton secondary on:click={() => (showDelete = true)}>
                 <p>Delete</p>
             </ConsoleButton>
@@ -272,20 +268,26 @@
 <Modal title="Delete Documents" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
     <div>
         <p class="text" data-private>
-            Are you sure you want to delete <b>{selectedDb.length}</b>
-            {selectedDb.length > 1 ? 'documents' : 'document'}?
+            Are you sure you want to delete <b>{selectedRows.length}</b>
+            {selectedRows.length > 1 ? 'documents' : 'document'}?
         </p>
 
         {#if relAttributes?.length}
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell width="50px">Relation</Table.Header.Cell>
-                    <Table.Header.Cell width="50px">Setting</Table.Header.Cell>
-                    <Table.Header.Cell />
+            <Table.Root
+                let:root
+                columns={[
+                    { id: 'relation', width: 150 },
+                    { id: 'setting', width: 150 },
+                    { id: 'desc' }
+                ]}>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="relation" {root}>Relation</Table.Header.Cell>
+                    <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
+                    <Table.Header.Cell column="desc" {root} />
                 </svelte:fragment>
                 {#each relAttributes as attr}
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="relation" {root}>
                             <span class="u-flex u-cross-center u-gap-8">
                                 {#if attr.twoWay}
                                     <span class="icon-switch-horizontal" />
@@ -295,13 +297,13 @@
                                 <span data-private>{attr.key}</span>
                             </span>
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="setting" {root}>
                             {attr.onDelete}
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="desc" {root}>
                             {Deletion[attr.onDelete]}
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
             <div class="u-flex u-flex-vertical u-gap-16">
@@ -326,28 +328,3 @@
         </ConsoleButton>
     </svelte:fragment>
 </Modal>
-
-<style lang="scss">
-    .actions {
-        .indicator {
-            border-radius: 0.25rem;
-            background: hsl(var(--color-information-100));
-            color: hsl(var(--color-neutral-0));
-
-            padding: 0rem 0.375rem;
-            display: inline-block;
-        }
-    }
-
-    :global(.truncated-content-table-cell .truncated) {
-        max-width: 50vw;
-        overflow: hidden;
-        white-space: nowrap;
-        display: inline-block;
-        text-overflow: ellipsis;
-    }
-
-    :global(.truncated-content-table-cell:has(.truncated)) {
-        inline-size: 0;
-    }
-</style>

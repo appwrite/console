@@ -94,15 +94,17 @@
                     </Button>
                 </Layout.Stack>
 
-                <Table.Root>
-                    <svelte:fragment slot="header">
-                        <Table.Header.Cell>Repository</Table.Header.Cell>
-                        <Table.Header.Cell>Updated</Table.Header.Cell>
-                        <Table.Header.Cell width="20px" />
+                <Table.Root
+                    let:root
+                    columns={[{ id: 'repo' }, { id: 'updated' }, { id: 'actions', width: 20 }]}>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell column="repo" {root}>Repository</Table.Header.Cell>
+                        <Table.Header.Cell column="updated" {root}>Updated</Table.Header.Cell>
+                        <Table.Header.Cell column="actions" {root} />
                     </svelte:fragment>
                     {#each installations as installation, i}
-                        <Table.Row>
-                            <Table.Cell>
+                        <Table.Row.Base {root}>
+                            <Table.Cell column="repo" {root}>
                                 <Layout.Stack direction="row" gap="s" alignItems="center">
                                     <Avatar alt={installation.provider} size="xs">
                                         <Icon
@@ -114,10 +116,10 @@
                                     </Link>
                                 </Layout.Stack>
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell column="updated" {root}>
                                 {dayjs().to(installation.$updatedAt)}
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell column="actions" {root}>
                                 <Popover let:toggle padding="none" placement="bottom-end">
                                     <button
                                         type="button"
@@ -145,7 +147,7 @@
                                     </ActionMenu.Root>
                                 </Popover>
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
                 {#if total > limit}

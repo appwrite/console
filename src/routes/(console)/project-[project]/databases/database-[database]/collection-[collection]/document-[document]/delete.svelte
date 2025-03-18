@@ -61,15 +61,21 @@
 
     {#if relAttributes?.length}
         <p class="text">This document contains the following relationships:</p>
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell width="70px">Relation</Table.Header.Cell>
-                <Table.Header.Cell width="70px">Setting</Table.Header.Cell>
-                <Table.Header.Cell />
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'relations', width: 70 },
+                { id: 'setting', width: 70 },
+                { id: 'desc' }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="relations" {root}>Relation</Table.Header.Cell>
+                <Table.Header.Cell column="setting" {root}>Setting</Table.Header.Cell>
+                <Table.Header.Cell column="desc" {root} />
             </svelte:fragment>
             {#each relAttributes as attr}
-                <Table.Row>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="relations" {root}>
                         <span class="u-flex u-cross-center u-gap-8">
                             {#if attr.twoWay}
                                 <span class="icon-switch-horizontal" />
@@ -79,13 +85,13 @@
                             <Trim>{attr.key}</Trim>
                         </span>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="setting" {root}>
                         {attr.onDelete}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="desc" {root}>
                         {Deletion[attr.onDelete]}
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         </Table.Root>
         <div class="u-flex u-flex-vertical u-gap-16">

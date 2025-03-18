@@ -23,10 +23,6 @@
     let selectedTab = 'projects';
     let organizationName: string = null;
 
-    /* enable overflow-x */
-    const columnWidth = 120;
-    const columnWidthSmall = columnWidth / 4;
-
     async function deleteOrg() {
         try {
             if (isCloud) {
@@ -72,21 +68,6 @@
         }
     ];
 
-    $: tabData =
-        selectedTab === 'projects'
-            ? {
-                  headers: ['Project', '', 'Last Updated'],
-                  rows: $projects.projects.map((project) => ({
-                      cells: [project.name, '', toLocaleDate(project.$updatedAt)]
-                  }))
-              }
-            : {
-                  headers: ['Member', '', 'Last Activity'],
-                  rows: $members.memberships.map((member) => ({
-                      cells: [member.userName, '', toLocaleDate(member.$updatedAt)]
-                  }))
-              };
-
     $: upcomingInvoice = invoices?.invoices.find((i) => i.status === 'upcoming' && i.amount > 0);
 
     $: if (!showDelete) {
@@ -127,51 +108,35 @@
                 </Tabs.Item.Button>
             {/each}
         </Tabs.Root>
-
-        <Table.Root>
-            <svelte:fragment slot="header">
-                {#each tabData.headers as header}
-                    <Table.Header.Cell width={columnWidth + 'px'}>{header}</Table.Header.Cell>
-                {/each}
-            </svelte:fragment>
-            {#each tabData.rows as row}
-                <Table.Row>
-                    {#each row.cells as cell}
-                        <Table.Cell>{cell}</Table.Cell>
-                    {/each}
-                </Table.Row>
-            {/each}
-        </Table.Root>
-        <div class="box is-not-desktop">
-            <SecondaryTabs large stretch class="u-sep-block-end u-padding-8">
-                {#each tabs as { name, label, total }}
-                    <SecondaryTabsItem
-                        center
-                        fullWidth
-                        disabled={selectedTab === name}
-                        on:click={() => (selectedTab = name)}>
-                        {label.mobile} ({total})
-                    </SecondaryTabsItem>
-                {/each}
-            </SecondaryTabs>
-
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    {#each tabData.headers as header, index}
-                        <Table.Header.Cell
-                            width={(index === 1 ? columnWidthSmall : columnWidth) + 'px'}
-                            >{header}</Table.Header.Cell>
-                    {/each}
+        {#if selectedTab === 'projects'}
+            <Table.Root columns={[{ id: 'projects' }, { id: 'lastUpdated' }]} let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="projects" {root}>Projects</Table.Header.Cell>
+                    <Table.Header.Cell column="lastUpdated" {root}>Last updated</Table.Header.Cell>
                 </svelte:fragment>
-                {#each tabData.rows as row}
-                    <Table.Row>
-                        {#each row.cells as cell}
-                            <Table.Cell>{cell}</Table.Cell>
-                        {/each}
-                    </Table.Row>
+                {#each $projects.projects as project}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="projects" {root}>{project.name}</Table.Cell>
+                        <Table.Cell column="lastUpdated" {root}
+                            >{toLocaleDate(project.$updatedAt)}</Table.Cell>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
-        </div>
+        {:else}
+            <Table.Root columns={[{ id: 'member' }, { id: 'lastUpdated' }]} let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="member" {root}>Members</Table.Header.Cell>
+                    <Table.Header.Cell column="lastUpdated" {root}>Last updated</Table.Header.Cell>
+                </svelte:fragment>
+                {#each $members.memberships as membership}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="member" {root}>{membership.userName}</Table.Cell>
+                        <Table.Cell column="lastUpdated" {root}
+                            >{toLocaleDate(membership.$updatedAt)}</Table.Cell>
+                    </Table.Row.Base>
+                {/each}
+            </Table.Root>
+        {/if}
     {/if}
     <InputText
         label={`Confirm the organization name to continue`}

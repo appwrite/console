@@ -56,14 +56,14 @@
                 items={members.memberships}
                 let:paginatedItems
                 hideFooter={members?.total <= 5}>
-                <Table.Root>
-                    <svelte:fragment slot="header">
-                        <Table.Header.Cell>Members</Table.Header.Cell>
-                        <Table.Header.Cell>Joined</Table.Header.Cell>
+                <Table.Root columns={2} let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell {root}>Members</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Joined</Table.Header.Cell>
                     </svelte:fragment>
                     {#each paginatedItems as member}
-                        <Table.Row>
-                            <Table.Cell>
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>
                                 <Layout.Stack direction="row" alignItems="center" gap="s">
                                     <AvatarInitials
                                         size="xs"
@@ -77,12 +77,12 @@
                                     </Layout.Stack>
                                 </Layout.Stack>
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell {root}>
                                 {member.joined
                                     ? toLocaleDate(member.joined)
                                     : toLocaleDate(member.$createdAt)}
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
             </Paginator>

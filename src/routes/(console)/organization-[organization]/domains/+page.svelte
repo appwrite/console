@@ -36,8 +36,6 @@
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Domain = null;
-
-    $: console.log(data.domains);
 </script>
 
 <Container>
@@ -56,33 +54,47 @@
     </Layout.Stack>
 
     {#if data.domains.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Domain</Table.Header.Cell>
-                <Table.Header.Cell>Registrar</Table.Header.Cell>
-                <Table.Header.Cell>Nameservers</Table.Header.Cell>
-                <Table.Header.Cell>Expiry date</Table.Header.Cell>
-                <Table.Header.Cell>Renewal</Table.Header.Cell>
-                <Table.Header.Cell>Auto renewal</Table.Header.Cell>
-                <Table.Header.Cell />
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'domain' },
+                { id: 'registrar' },
+                { id: 'nameservers' },
+                { id: 'expiry_date' },
+                { id: 'renewal' },
+                { id: 'auto_renewal' },
+                { id: 'actions', width: 40 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="domain" {root}>Domain</Table.Header.Cell>
+                <Table.Header.Cell column="registrar" {root}>Registrar</Table.Header.Cell>
+                <Table.Header.Cell column="nameservers" {root}>Nameservers</Table.Header.Cell>
+                <Table.Header.Cell column="expiry_date" {root}>Expiry date</Table.Header.Cell>
+                <Table.Header.Cell column="renewal" {root}>Renewal</Table.Header.Cell>
+                <Table.Header.Cell column="auto_renewal" {root}>Auto renewal</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
             {#each data.domains.domains as domain}
-                <Table.Link
+                <Table.Row.Link
+                    {root}
                     href={`${base}/organization-${$page.params.organization}/domains/domain-${domain.$id}`}>
-                    <Table.Cell>
+                    <Table.Cell column="domain" {root}>
                         <Link external icon href={`${$protocol}${domain.domain}`} variant="quiet">
                             {domain.domain}
                         </Link>
                     </Table.Cell>
-                    <Table.Cell>{domain?.registrar || '-'}</Table.Cell>
-                    <Table.Cell>{domain?.nameservers || '-'}</Table.Cell>
-                    <Table.Cell>
-                        {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}</Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="registrar" {root}>{domain?.registrar || '-'}</Table.Cell>
+                    <Table.Cell column="nameservers" {root}
+                        >{domain?.nameservers || '-'}</Table.Cell>
+                    <Table.Cell column="expiry_date" {root}>
+                        {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
+                    </Table.Cell>
+                    <Table.Cell column="renewal" {root}>
                         {domain.renewal ? toLocaleDateTime(domain.renewal) : '-'}
                     </Table.Cell>
-                    <Table.Cell>{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="auto_renewal" {root}
+                        >{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
+                    <Table.Cell column="actions" {root}>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-end" padding="none">
                                 <Button
@@ -131,7 +143,7 @@
                             </Popover>
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
 

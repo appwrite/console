@@ -50,34 +50,34 @@
         Forward emails to your domain using the following {capitalize(selectedPreset)} DNS records.
     </span>
 
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Type</Table.Header.Cell>
-            <Table.Header.Cell>Name</Table.Header.Cell>
-            <Table.Header.Cell>Value</Table.Header.Cell>
-            <Table.Header.Cell>TTL</Table.Header.Cell>
-            <Table.Header.Cell>Priority</Table.Header.Cell>
+    <Table.Root columns={5} let:root>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell {root}>Type</Table.Header.Cell>
+            <Table.Header.Cell {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell {root}>Value</Table.Header.Cell>
+            <Table.Header.Cell {root}>TTL</Table.Header.Cell>
+            <Table.Header.Cell {root}>Priority</Table.Header.Cell>
         </svelte:fragment>
         {#await fetchPreset()}
             {#each Array(2) as _}
-                <Table.Row>
+                <Table.Row.Base {root}>
                     {#each Array(5) as _}
-                        <Table.Cell>
+                        <Table.Cell {root}>
                             <Skeleton variant="line" width={70} height={15} />
                         </Table.Cell>
                     {/each}
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         {:then presetData}
             {JSON.stringify(presetData)}
             {#each presetData as record}
-                <Table.Row>
-                    <Table.Cell>{record.type}</Table.Cell>
-                    <Table.Cell>{record.name}</Table.Cell>
-                    <Table.Cell>{record.value}</Table.Cell>
-                    <Table.Cell>{record.ttl}</Table.Cell>
-                    <Table.Cell>{record.priority}</Table.Cell>
-                </Table.Row>
+                <Table.Row.Base {root}>
+                    <Table.Cell {root}>{record.type}</Table.Cell>
+                    <Table.Cell {root}>{record.name}</Table.Cell>
+                    <Table.Cell {root}>{record.value}</Table.Cell>
+                    <Table.Cell {root}>{record.ttl}</Table.Cell>
+                    <Table.Cell {root}>{record.priority}</Table.Cell>
+                </Table.Row.Base>
             {/each}
         {/await}
     </Table.Root>

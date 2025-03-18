@@ -69,16 +69,16 @@
     </Layout.Stack>
 
     {#if data.domains.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell width="200px">Domain</Table.Header.Cell>
-                <Table.Header.Cell>Redirect to</Table.Header.Cell>
-                <Table.Header.Cell>Production branch</Table.Header.Cell>
-                <Table.Header.Cell />
+        <Table.Root columns={4} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell {root}>Domain</Table.Header.Cell>
+                <Table.Header.Cell {root}>Redirect to</Table.Header.Cell>
+                <Table.Header.Cell {root}>Production branch</Table.Header.Cell>
+                <Table.Header.Cell {root} />
             </svelte:fragment>
             {#each data.domains.rules as domain}
-                <Table.Row>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell {root}>
                         <Link external href={`${$protocol}${domain.domain}`} variant="quiet">
                             <Layout.Stack direction="row" alignItems="center" gap="xs">
                                 {domain.domain}
@@ -87,14 +87,14 @@
                         </Link>
                     </Table.Cell>
                     <!-- TODO design redirect status code -->
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         {domain?.redirectUrl || 'No redirect'}
                         {domain?.redirectStatusCode ? `(${domain.redirectStatusCode})` : ''}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         {domain.deploymentVcsProviderBranch || '-'}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-start" padding="none">
                                 <Button
@@ -140,7 +140,7 @@
                             </Popover>
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         </Table.Root>
 

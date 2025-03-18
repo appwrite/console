@@ -29,7 +29,7 @@
             const prefs = preferences.getCustomCollectionColumns($page.params.collection);
             columns.set(
                 $columns.map((column) => {
-                    column.show = prefs?.includes(column.id) ?? true;
+                    column.hide = prefs?.includes(column.id) ?? false;
                     return column;
                 })
             );
@@ -40,7 +40,7 @@
             if (prefs?.columns) {
                 columns.set(
                     $columns.map((column) => {
-                        column.show = prefs.columns?.includes(column.id) ?? true;
+                        column.hide = prefs.columns?.includes(column.id) ?? false;
                         return column;
                     })
                 );
@@ -48,7 +48,7 @@
         }
 
         columns.subscribe((ctx) => {
-            const columns = ctx.filter((n) => n.show).map((n) => n.id);
+            const columns = ctx.filter((n) => n.hide === true).map((n) => n.id);
 
             if (isCustomCollection) {
                 preferences.setCustomCollectionColumns(columns);
@@ -75,14 +75,11 @@
         });
     }
 
-    $: selectedColumnsNumber = $columns
-        .filter((c) => !c.hide)
-        .reduce((acc, column) => {
-            if (column.show) {
-                acc++;
-            }
-            return acc;
-        }, 0);
+    $: selectedColumnsNumber = $columns.reduce((acc, column) => {
+        if (column.hide === true) return acc;
+
+        return ++acc;
+    }, 0);
 </script>
 
 {#if !hideColumns && view === View.Table}
@@ -98,14 +95,15 @@
             <svelte:fragment slot="tooltip">
                 <ActionMenu.Root>
                     <Layout.Stack>
-                        {#each $columns.filter((c) => !c.hide) as column}
+                        {#each $columns as column}
                             <InputCheckbox
                                 id={column.id}
                                 label={column.title}
-                                bind:checked={column.show}
+                                on:change={() => (column.hide = !column.hide)}
+                                checked={!column.hide}
                                 disabled={allowNoColumns
                                     ? false
-                                    : selectedColumnsNumber <= 1 && column.show} />
+                                    : selectedColumnsNumber <= 1 && column.hide !== true} />
                         {/each}
                     </Layout.Stack>
                 </ActionMenu.Root>

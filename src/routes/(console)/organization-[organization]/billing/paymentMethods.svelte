@@ -106,18 +106,26 @@
     View or update your organization payment methods here.
     <svelte:fragment slot="aside">
         {#if $organization?.paymentMethodId}
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell>Credit card</Table.Header.Cell>
-                    <Table.Header.Cell>Name</Table.Header.Cell>
-                    <Table.Header.Cell>Expiration date</Table.Header.Cell>
-                    <Table.Header.Cell />
-                    <Table.Header.Cell width="40px" />
+            <Table.Root
+                let:root
+                columns={[
+                    { id: 'cc' },
+                    { id: 'name' },
+                    { id: 'expiry' },
+                    { id: 'status' },
+                    { id: 'actions', width: 40 }
+                ]}>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="cc" {root}>Credit card</Table.Header.Cell>
+                    <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+                    <Table.Header.Cell column="expiry" {root}>Expiration date</Table.Header.Cell>
+                    <Table.Header.Cell column="status" {root} />
+                    <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
 
-                <Table.Row>
-                    <CreditCardInfo paymentMethod={defaultPaymentMethod} />
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <CreditCardInfo {root} paymentMethod={defaultPaymentMethod} />
+                    <Table.Cell column="actions" {root}>
                         <Popover let:toggle placement="bottom-start" padding="none">
                             <Button text icon ariaLabel="more options" on:click={toggle}>
                                 <Icon icon={IconDotsHorizontal} size="s" />
@@ -152,11 +160,11 @@
                             </ActionMenu.Root>
                         </Popover>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
                 {#if $organization?.backupPaymentMethodId}
-                    <Table.Row>
-                        <CreditCardInfo isBackup paymentMethod={backupPaymentMethod} />
-                        <Table.Cell width="40px">
+                    <Table.Row.Base {root}>
+                        <CreditCardInfo {root} isBackup paymentMethod={backupPaymentMethod} />
+                        <Table.Cell column="actions" {root}>
                             <Popover let:toggle placement="bottom-start" padding="none">
                                 <Button text icon ariaLabel="more options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
@@ -191,7 +199,7 @@
                                 </ActionMenu.Root>
                             </Popover>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/if}
             </Table.Root>
             {#if !$organization?.backupPaymentMethodId}
