@@ -100,7 +100,7 @@
                         <Icon icon={IconQrcode} />
                     </Button>
                 </Layout.Stack>
-                {#if i < 2 && i < proxyRuleList.rules.length - 1}
+                {#if i < 2 && i < rules.length - 1}
                     <Divider />
                 {/if}
             {/each}
