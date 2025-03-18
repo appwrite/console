@@ -273,10 +273,8 @@
     onSubmit={handleDelete}
     dismissible={!deleting}>
     <div>
-        <p class="text" data-private>
-            Are you sure you want to delete <b>{selectedRows.length}</b>
-            {selectedRows.length > 1 ? 'documents' : 'document'}?
-        </p>
+        Are you sure you want to delete <b>{selectedRows.length}</b>
+        {selectedRows.length > 1 ? 'documents' : 'document'}?
 
         {#if relAttributes?.length}
             <Table.Root

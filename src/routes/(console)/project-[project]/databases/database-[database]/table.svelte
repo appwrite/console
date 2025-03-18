@@ -10,9 +10,10 @@
     import { addNotification } from '$lib/stores/notifications';
     import { canWriteCollections } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
-    import { Badge, FloatingActionBar, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import { columns } from './store';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
     const projectId = $page.params.project;
@@ -93,17 +94,13 @@
     </FloatingActionBar>
 {/if}
 
-<Modal
-    title="Delete Collections"
-    bind:show={showDelete}
+<Confirm
+    title="Delete collections"
+    bind:open={showDelete}
     onSubmit={handleDelete}
-    closable={!deleting}>
-    <p class="text" data-private>
+    disabled={deleting}>
+    <Typography.Text>
         Are you sure you want to delete <b>{selectedRows.length}</b>
         {selectedRows.length > 1 ? 'collections' : 'collection'}?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    </Typography.Text>
+</Confirm>

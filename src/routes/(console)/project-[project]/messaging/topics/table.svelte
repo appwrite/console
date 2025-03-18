@@ -12,7 +12,8 @@
     import type { Column } from '$lib/helpers/types';
     import { page } from '$app/stores';
     import { canWriteTopics } from '$lib/stores/roles';
-    import { Badge, FloatingActionBar, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let columns: Column[];
     export let data: PageData;
@@ -95,13 +96,9 @@
     </FloatingActionBar>
 {/if}
 
-<Modal title="Delete topics" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
-    <p class="text" data-private>
+<Confirm title="Delete topics" bind:open={showDelete} onSubmit={handleDelete} disabled={deleting}>
+    <Typography.Text>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'topics' : 'topic'}?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    </Typography.Text>
+</Confirm>

@@ -15,7 +15,8 @@
     import { targetsById } from '../../store';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
-    import { Badge, FloatingActionBar, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let columns: Column[];
     export let data: PageData;
@@ -129,17 +130,13 @@
     </FloatingActionBar>
 {/if}
 
-<Modal
-    title="Delete subscriber"
-    bind:show={showDelete}
+<Confirm
+    title="Delete subscribers"
+    bind:open={showDelete}
     onSubmit={handleDelete}
-    closable={!deleting}>
-    <p class="text" data-private>
+    disabled={deleting}>
+    <Typography.Text>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'subscribers' : 'subscriber'}?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    </Typography.Text>
+</Confirm>

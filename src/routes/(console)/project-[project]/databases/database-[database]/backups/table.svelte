@@ -264,6 +264,7 @@
         </svelte:fragment>
     </FloatingActionBar>
 {/if}
+
 <Modal
     title="Delete {selectedBackups.length ? 'backups' : 'backup'}"
     bind:show={showDelete}

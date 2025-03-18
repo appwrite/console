@@ -33,7 +33,7 @@
     let showAdd = false;
     let subscribersByTargetId: Record<string, Models.Subscriber> = {};
     const columns = writable<Column[]>([
-        { id: '$id', title: 'Subscriber ID', type: 'string', width: 140 },
+        { id: '$id', title: 'Subscriber ID', type: 'string', width: 200 },
         { id: 'userName', title: 'Name', type: 'string', filter: false, width: 100 },
         { id: 'targetId', title: 'Target ID', type: 'string', width: 140 },
         { id: 'target', title: 'Target', type: 'string', filter: false, width: 140 },

@@ -4,7 +4,7 @@ import type { Column } from '$lib/helpers/types';
 export const showCreateDeployment: Writable<boolean> = writable(false);
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Deployment ID', type: 'string', show: true, width: 150 },
+    { id: '$id', title: 'Deployment ID', type: 'string', width: 200 },
     {
         id: 'status',
         title: 'Status',

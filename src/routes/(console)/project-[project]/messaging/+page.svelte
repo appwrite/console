@@ -29,7 +29,8 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
-    import { Badge, FloatingActionBar, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let data;
 
@@ -40,7 +41,7 @@
     let errors: string[] = [];
 
     const columns = writable<Column[]>([
-        { id: '$id', title: 'Message ID', type: 'string', width: 140 },
+        { id: '$id', title: 'Message ID', type: 'string', width: 200 },
         {
             id: 'message',
             title: 'Message',
@@ -223,13 +224,9 @@
 
 <FailedModal bind:show={showFailed} {errors} />
 
-<Modal title="Delete messages" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
-    <p class="text" data-private>
+<Confirm title="Delete messages" bind:open={showDelete} onSubmit={handleDelete} disabled={deleting}>
+    <Typography.Text>
         Are you sure you want to delete <b>{selected.length}</b>
         {selected.length > 1 ? 'messages' : 'message'}?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    </Typography.Text>
+</Confirm>

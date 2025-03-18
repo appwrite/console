@@ -2,7 +2,7 @@ import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Log ID', type: 'string', width: 150 },
+    { id: '$id', title: 'Log ID', type: 'string', width: 200 },
     {
         id: 'requestPath',
         title: 'Path',

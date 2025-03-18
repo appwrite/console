@@ -14,7 +14,7 @@
     export let data: PageData;
 
     const columns = writable<Column[]>([
-        { id: '$id', title: 'Identity ID', type: 'string', width: 140 },
+        { id: '$id', title: 'Identity ID', type: 'string', width: 200 },
         { id: 'provider', title: 'Provider', type: 'string', width: 80 },
         { id: 'providerUid', title: 'Provider UID', type: 'string', hide: true, width: 80 },
         { id: 'providerEmail', title: 'Email', type: 'string', width: 80 },

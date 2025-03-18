@@ -13,8 +13,9 @@
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { canWriteProviders } from '$lib/stores/roles';
-    import { Badge, FloatingActionBar, Icon, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Icon, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconCheckCircle } from '@appwrite.io/pink-icons-svelte';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
 
@@ -116,13 +117,13 @@
     </FloatingActionBar>
 {/if}
 
-<Modal title="Delete providers" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
-    <p class="text" data-private>
+<Confirm
+    title="Delete providers"
+    bind:open={showDelete}
+    onSubmit={handleDelete}
+    disabled={deleting}>
+    <Typography.Text>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'providers' : 'provider'}?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    </Typography.Text>
+</Confirm>

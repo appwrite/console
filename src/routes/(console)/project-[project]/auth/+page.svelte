@@ -33,7 +33,7 @@
 
     const projectId = $page.params.project;
     const columns = writable<Column[]>([
-        { id: '$id', title: 'User ID', type: 'string', width: { min: 140 } },
+        { id: '$id', title: 'User ID', type: 'string', width: 200 },
         { id: 'name', title: 'Name', type: 'string', width: { min: 260 } },
         { id: 'identifiers', title: 'Identifiers', type: 'string', width: { min: 140 } },
         { id: 'status', title: 'Status', type: 'string', width: { min: 140 } },

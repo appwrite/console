@@ -30,19 +30,37 @@
 
     const project = $page.params.project;
     const columns = writable<Column[]>([
-        { id: '$id', title: 'Topic ID', type: 'string', width: 140 },
-        { id: 'name', title: 'Name', type: 'string', width: 140 },
-        { id: 'emailTotal', title: 'Email Subscribers', type: 'integer', hide: true, width: 140 },
-        { id: 'smsTotal', title: 'SMS Subscribers', type: 'integer', hide: true, width: 140 },
-        { id: 'pushTotal', title: 'Push Subscribers', type: 'integer', hide: true, width: 140 },
+        { id: '$id', title: 'Topic ID', type: 'string', width: 200 },
+        { id: 'name', title: 'Name', type: 'string', width: { min: 140 } },
+        {
+            id: 'emailTotal',
+            title: 'Email Subscribers',
+            type: 'integer',
+            hide: true,
+            width: { min: 140 }
+        },
+        {
+            id: 'smsTotal',
+            title: 'SMS Subscribers',
+            type: 'integer',
+            hide: true,
+            width: { min: 140 }
+        },
+        {
+            id: 'pushTotal',
+            title: 'Push Subscribers',
+            type: 'integer',
+            hide: true,
+            width: { min: 140 }
+        },
         {
             id: 'total',
             title: 'Subscribers',
             type: 'integer',
             filter: false,
-            width: 140
+            width: { min: 140 }
         },
-        { id: '$createdAt', title: 'Created', type: 'datetime', width: 140 }
+        { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 140 } }
     ]);
 
     const topicCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
