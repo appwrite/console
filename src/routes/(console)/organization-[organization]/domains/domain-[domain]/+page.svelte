@@ -18,7 +18,7 @@
     import { IconDownload, IconPlus, IconUpload } from '@appwrite.io/pink-icons-svelte';
     import { ViewSelector } from '$lib/components';
     import { View } from '$lib/helpers/load';
-    import { columns } from './store';
+    import { columns, presets } from './store';
     import CreateRecordModal from './createRecordModal.svelte';
     import Table from './table.svelte';
     import AddPresetModal from './addPresetModal.svelte';
@@ -30,8 +30,6 @@
     let showPresetModal = false;
     let showImportModal = false;
     let selectedPreset = '';
-
-    const presets = ['Zoho', 'Mailgun', 'Outlook', 'Proton Mail', 'iCloud', 'Google Workspace'];
 </script>
 
 <Container>
@@ -54,7 +52,7 @@
                         </Tooltip>
                     </Layout.Stack>
                     <Layout.Stack direction="row" gap="s" inline>
-                        <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                        <ViewSelector view={View.Table} {columns} hideView />
                         <Popover let:toggle padding="none">
                             <Button secondary on:click={toggle}>Add preset</Button>
                             <svelte:fragment slot="tooltip" let:toggle>

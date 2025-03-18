@@ -66,3 +66,5 @@ export const recordTypes = [
         helper: 'ALIAS records are similar to CNAMEs but can be used for the root domain, allowing you to point your domain to another domain or server.'
     }
 ];
+
+export const presets = ['Zoho', 'Mailgun', 'Outlook', 'Proton Mail', 'iCloud', 'Google Workspace'];

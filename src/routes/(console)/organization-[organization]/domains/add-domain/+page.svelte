@@ -12,7 +12,7 @@
     import { Dependencies } from '$lib/constants';
     import type { Domain } from '$lib/sdk/domains';
 
-    const backPage = `${base}/project-${$page.params.organization}/domains`;
+    const backPage = `${base}/organization-${$page.params.organization}/domains`;
 
     let domainName = '';
     let domain: Domain;
@@ -31,7 +31,7 @@
     }
 </script>
 
-<Wizard title="Add domain" href={backPage} column columnSize="s" hideFooter={!domain}>
+<Wizard title="Add domain" href={backPage} column columnSize="s" hideFooter>
     {#if domain}
         <RecordsCard {domain} />
     {:else}
@@ -54,11 +54,4 @@
             </Form>
         </Fieldset>
     {/if}
-
-    <svelte:fragment slot="footer">
-        <Button text href={backPage}>Cancel</Button>
-        {#if domain}
-            <Button secondary href={backPage}>Skip to console</Button>
-        {/if}
-    </svelte:fragment>
 </Wizard>
