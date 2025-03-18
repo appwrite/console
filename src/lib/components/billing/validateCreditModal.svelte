@@ -7,6 +7,7 @@
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
+    export let isNewOrg = false;
     export let couponData: Partial<Coupon> = {
         code: null,
         status: null,
@@ -20,13 +21,20 @@
         try {
             const response = await sdk.forConsole.billing.getCoupon(coupon);
             couponData = response;
-            dispatch('validation', couponData);
-            coupon = null;
-            show = false;
-            addNotification({
-                type: 'success',
-                message: 'Credits applied successfully'
-            });
+            if (response.onlyNewOrgs && !isNewOrg) {
+                addNotification({
+                    type: 'error',
+                    message: 'Coupon only valid for new organizations'
+                });
+            } else {
+                dispatch('validation', couponData);
+                coupon = null;
+                show = false;
+                addNotification({
+                    type: 'success',
+                    message: 'Credits applied successfully'
+                });
+            }
         } catch (e) {
             error = e.message;
         }

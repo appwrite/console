@@ -73,6 +73,7 @@ export type Coupon = {
     status: string; // 'active' | 'disabled' | 'expired'
     validity: number;
     campaign?: string;
+    onlyNewOrgs?: boolean;
 };
 
 export type Credit = {
