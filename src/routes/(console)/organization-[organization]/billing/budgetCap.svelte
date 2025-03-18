@@ -3,7 +3,7 @@
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
+    import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, currentPlan } from '$lib/stores/organization';
