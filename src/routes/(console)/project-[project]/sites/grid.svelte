@@ -3,13 +3,14 @@
     import { page } from '$app/stores';
     import { timeFromNow } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
-    import { Card, Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { getFrameworkIcon } from './store';
     import { SvgIcon } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
     import SitesActionMenu from './sitesActionMenu.svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let siteList: Models.SiteList;
     export let deployments: Models.Deployment[];
@@ -35,10 +36,7 @@
     function getFilePreview(fileId: string) {
         // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
         const endpoint = getApiEndpoint();
-        return (
-            endpoint +
-            `/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`
-        );
+        return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
     }
 </script>
 
@@ -54,7 +52,12 @@
                 alt={site.name}
                 avatar>
                 <svelte:fragment slot="avatar">
-                    <SvgIcon name={getFrameworkIcon(site.framework)} iconSize="small" />
+                    <Tooltip>
+                        <SvgIcon name={getFrameworkIcon(site.framework)} iconSize="small" />
+                        <svelte:fragment slot="tooltip">
+                            {capitalize(site.framework)}
+                        </svelte:fragment>
+                    </Tooltip>
                 </svelte:fragment>
                 <SitesActionMenu {site} bind:showAddCollaborator bind:selectedSite />
             </Card.Media>

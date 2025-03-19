@@ -1,12 +1,8 @@
 <script lang="ts">
-    import { Card, Layout, Typography, Input, Tag, Icon, Button } from '@appwrite.io/pink-svelte';
-    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
-    import { CustomId } from '$lib/components/index.js';
+    import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
     import type { RegionList } from '$lib/sdk/billing';
-    import { onMount } from 'svelte';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Flag, ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
@@ -15,26 +11,14 @@
     import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import { tierToPlan } from '$lib/stores/billing';
+    import CreateProject from '$lib/layout/createProject.svelte';
 
-    let showCustomId = false;
     let isLoading = false;
     let id: string;
     let startAnimation = false;
     let projectName = '';
+    let region = Region.Default;
     export let data: { regions: RegionList | null };
-
-    onMount(() => {
-        if (isCloud) {
-            if (data.regions) {
-                data.regions.regions.forEach((region) => fetch(getFlagUrl(region.flag)));
-            }
-        }
-    });
-
-    function getFlagUrl(countryCode: string) {
-        if (!isValueOfStringEnum(Flag, countryCode)) return '';
-        return sdk.forProject.avatars.getFlag(countryCode, 22, 15, 100)?.toString();
-    }
 
     async function createProject() {
         isLoading = true;
@@ -72,7 +56,7 @@
                     id ?? ID.unique(),
                     projectName,
                     teamId,
-                    Region.Default
+                    region
                 );
                 trackEvent(Submit.ProjectCreate, {
                     customId: !!id,
@@ -99,28 +83,6 @@
             }
         }
     }
-
-    function getRegions() {
-        if (!data.regions) {
-            return;
-        }
-        return data.regions.regions
-            .filter((region) => region.$id !== 'default')
-            .sort((regionA, regionB) => {
-                if (regionA.disabled && !regionB.disabled) {
-                    return 1;
-                }
-                return regionA.name > regionB.name ? 1 : -1;
-            })
-            .map((region) => {
-                return {
-                    label: region.name,
-                    value: region.$id,
-                    leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                    disabled: region.disabled
-                };
-            });
-    }
 </script>
 
 <svelte:head>
@@ -144,57 +106,23 @@
             height="22"
             class="u-only-dark"
             alt="Appwrite Logo" />
-        <Card.Base variant="primary" padding="l"
-            ><form>
-                <Layout.Stack direction="column" gap="xxl">
-                    <Typography.Title size="l">Create your project</Typography.Title>
-
-                    <Layout.Stack direction="column" gap="xxl">
-                        <Layout.Stack direction="column" gap="xxl">
-                            <Layout.Stack direction="column" gap="s">
-                                <Input.Text
-                                    label="Name"
-                                    placeholder="Project name"
-                                    required
-                                    bind:value={projectName} />
-                                {#if !showCustomId}
-                                    <div>
-                                        <Tag
-                                            size="s"
-                                            on:click={() => {
-                                                showCustomId = true;
-                                            }}><Icon icon={IconPencil} /> Project ID</Tag>
-                                    </div>
-                                {/if}
-                                <CustomId
-                                    bind:show={showCustomId}
-                                    name="Project"
-                                    isProject
-                                    bind:id
-                                    fullWidth={true} />
-                            </Layout.Stack>
-                            {#if data.regions}
-                                <Layout.Stack gap="xs"
-                                    ><Input.Select
-                                        placeholder="Select a region"
-                                        options={getRegions()}
-                                        label="Region" />
-                                    <Typography.Text
-                                        >Region cannot be changed after creation</Typography.Text>
-                                </Layout.Stack>
-                            {/if}
-                        </Layout.Stack>
-                    </Layout.Stack>
-                    <Layout.Stack direction="row" justifyContent="flex-end"
+        <Card.Base variant="primary" padding="l">
+            <CreateProject
+                regions={isCloud ? data.regions.regions : []}
+                bind:projectName
+                bind:id
+                bind:region>
+                <svelte:fragment slot="submit"
+                    ><Layout.Stack direction="row" justifyContent="flex-end"
                         ><Button.Button
                             type="button"
                             variant="primary"
                             size="s"
                             on:click={createProject}>
                             Create</Button.Button>
-                    </Layout.Stack>
-                </Layout.Stack>
-            </form></Card.Base>
+                    </Layout.Stack></svelte:fragment>
+            </CreateProject>
+        </Card.Base>
     {/if}
 </div>
 

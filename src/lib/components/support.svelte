@@ -3,7 +3,7 @@
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import { isSupportOnline, showSupportModal } from '$routes/(console)/wizard/support/store';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { localeShortTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
     import { Card } from '$lib/components/index';
@@ -82,7 +82,7 @@
                             <Button
                                 href={$upgradeURL}
                                 on:click={() => {
-                                    trackEvent('click_organization_upgrade', {
+                                    trackEvent(Click.OrganizationClickUpgrade, {
                                         from: 'button',
                                         source: 'support_menu'
                                     });
@@ -119,7 +119,7 @@
                         secondary
                         class="secondary-button u-flex u-cross-center u-gap-6"
                         on:click={() => {
-                            trackEvent('click_organization_upgrade', {
+                            trackEvent(Click.OrganizationClickUpgrade, {
                                 from: 'button',
                                 source: 'support_menu'
                             });

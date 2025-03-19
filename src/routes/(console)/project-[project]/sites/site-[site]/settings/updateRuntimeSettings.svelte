@@ -4,10 +4,12 @@
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
+    import { capitalize } from '$lib/helpers/string';
+    import { iconPath } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
-    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];
@@ -15,13 +17,11 @@
     let buildRuntime = site?.buildRuntime;
 
     let buildRuntimeOptions = framework.runtimes.map((runtime) => ({
-        label: runtime,
-        value: runtime
+        label: capitalize(runtime),
+        value: runtime,
+        leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime), 'color')}' style='inline-size: var(--icon-size-m)' />`
     }));
 
-    onMount(async () => {
-        buildRuntime ??= framework.buildRuntime;
-    });
     async function updateRuntime() {
         try {
             await sdk.forProject.sites.update(
@@ -34,7 +34,7 @@
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (buildRuntime as BuildRuntime) || undefined,
-                site.adapter,
+                site.adapter as Adapter,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,

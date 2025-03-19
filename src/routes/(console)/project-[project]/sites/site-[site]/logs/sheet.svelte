@@ -80,7 +80,7 @@
                             </Layout.Stack>
                             <Layout.Stack gap="xs" inline>
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Status
+                                    Status code
                                 </Typography.Text>
                                 <span>
                                     <Badge
@@ -117,7 +117,7 @@
                         <div>
                             <InteractiveText
                                 text={selectedLog.requestPath}
-                                variant="copy"
+                                variant="copy-code"
                                 isVisible />
                         </div>
                     </Layout.Stack>

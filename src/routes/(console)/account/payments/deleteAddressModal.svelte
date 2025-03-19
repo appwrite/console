@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { Layout, Link } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
     export let selectedAddress: Address;
@@ -48,13 +49,13 @@
             This billing address is set as the default for the following organisations. As they have
             upcoming invoices it cannot be deleted from your account.
         </p>
-        <ul>
+        <Layout.Stack gap="none">
             {#each linkedOrgs as org}
-                <li class="text">
-                    <a class="link" href={`${base}/organization-${org.$id}/billing`}>{org.name}</a>
-                </li>
+                <Link.Anchor href={`${base}/organization-${org.$id}/billing`}>
+                    {org.name}
+                </Link.Anchor>
             {/each}
-        </ul>
+        </Layout.Stack>
     {:else}
         <p>Are you sure you want to delete this billing address from your account?</p>
     {/if}

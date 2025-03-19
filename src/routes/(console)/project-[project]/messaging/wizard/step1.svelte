@@ -10,8 +10,6 @@
 
     let docsUrl = `https://appwrite.io/docs/products/messaging`;
 
-    async function beforeSubmit() {}
-
     const createMessage = (providerText: string) => {
         const vowels = ['a', 'e', 'i', 'o', 'u'];
         const firstLetter = providerText.toLowerCase().charAt(0);

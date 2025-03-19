@@ -6,6 +6,7 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Typography } from '@appwrite.io/pink-svelte';
     import { bucket } from './store';
 
     export let showDelete = false;
@@ -28,5 +29,7 @@
 </script>
 
 <Confirm {onSubmit} title="Delete execution" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{$bucket.name}</b>?
+    <Typography.Text>
+        Are you sure you want to delete <b>{$bucket.name}</b>?
+    </Typography.Text>
 </Confirm>

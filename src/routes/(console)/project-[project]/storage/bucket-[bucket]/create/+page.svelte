@@ -28,6 +28,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { removeFile } from '$lib/helpers/files';
 
     export let data: PageData;
 
@@ -109,7 +110,8 @@
                                     extension: b.type,
                                     removable: true
                                 };
-                            })} />
+                            })}
+                            on:remove={(e) => (files = removeFile(e.detail, files))} />
                     {/if}
 
                     {#if !showCustomId}

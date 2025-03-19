@@ -1,62 +1,43 @@
-<script lang="ts" context="module">
-    export const showCreateFile = () => {
-        wizard.start(Create);
-    };
-</script>
-
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        Avatar,
-        DropList,
-        DropListItem,
-        DropListLink,
-        Empty,
-        EmptySearch,
-        PaginationWithLimit,
-        SearchQuery
-    } from '$lib/components';
+    import { Avatar, Empty, EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
-    import {
-        bytesToSize,
-        calculateSize,
-        humanFileSize,
-        sizeToBytes
-    } from '$lib/helpers/sizeConvertion';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
-    import { wizard } from '$lib/stores/wizard';
-    import { getServiceLimit } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
     import DeleteFile from './deleteFile.svelte';
-    import { isCloud } from '$lib/system';
-    import { Layout, Table, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Icon, Popover, ActionMenu } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import {
+        IconDotsHorizontal,
+        IconPencil,
+        IconPlus,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
     let showDelete = false;
-    let showDropdown = [];
     let selectedFile: Models.File = null;
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const usedStorage =
-        isCloud && data?.organizationUsage?.storageTotal
-            ? bytesToSize(data.organizationUsage.storageTotal, 'GB')
-            : null;
-    const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview(bucketId, fileId, 128, 128).toString() +
-        '&mode=admin';
+
+    function getPreview(fileId: string) {
+        return (
+            sdk.forProject.storage.getFilePreview(bucketId, fileId, 128, 128).toString() +
+            '&mode=admin'
+        );
+    }
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -79,10 +60,6 @@
         }
     }
 
-    $: maxFileSize = isCloud
-        ? humanFileSize(sizeToBytes(getServiceLimit('fileSize'), 'MB', 1000))
-        : null;
-
     let isUploading = false;
 
     const beforeunload = (event: BeforeUnloadEvent) => {
@@ -99,7 +76,8 @@
     onMount(() => {
         return uploader.subscribe(() => {
             isUploading = $uploader.files.some(
-                (file) => !file.completed && file.progress < 100 && !file.failed
+                (file) =>
+                    file.status !== 'success' && file.progress < 100 && file.status !== 'failed'
             );
         });
     });
@@ -124,18 +102,26 @@
     </Layout.Stack>
 
     {#if data.files.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Filename</Table.Header.Cell>
-                <Table.Header.Cell width="140px">Type</Table.Header.Cell>
-                <Table.Header.Cell width="100px">Size</Table.Header.Cell>
-                <Table.Header.Cell width="120px">Created</Table.Header.Cell>
-                <Table.Header.Cell width="40px" />
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'filename' },
+                { id: 'type', width: { min: 140 } },
+                { id: 'size', width: { min: 100 } },
+                { id: 'created', width: { min: 120 } },
+                { id: 'actions', width: 40 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="filename" {root}>Filename</Table.Header.Cell>
+                <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+                <Table.Header.Cell column="size" {root}>Size</Table.Header.Cell>
+                <Table.Header.Cell column="created" {root}>Created</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
-            {#each data.files.files as file, index}
+            {#each data.files.files as file}
                 {#if file.chunksTotal / file.chunksUploaded !== 1}
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="filename" {root}>
                             <Layout.Stack direction="row" alignItems="center">
                                 <span class="avatar is-size-small is-color-empty" />
                                 <span class="text u-trim">{file.name}</span>
@@ -144,73 +130,61 @@
                                 </div>
                             </Layout.Stack>
                         </Table.Cell>
-                        <Table.Cell>{file.mimeType}</Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="type" {root}>{file.mimeType}</Table.Cell>
+                        <Table.Cell column="size" {root}>
                             {calculateSize(file.sizeOriginal)}
                         </Table.Cell>
-                        <Table.Cell>
-                            {toLocaleDate(file.$createdAt)}
+                        <Table.Cell column="created" {root}>
+                            <DualTimeView time={file.$createdAt} />
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="actions" {root}>
                             <div class="u-flex u-main-center">
                                 <button
                                     class="button is-only-icon is-text"
                                     aria-label="Delete item"
-                                    on:click|preventDefault={() => {
-                                        deleteFile(file);
-                                    }}>
+                                    on:click|preventDefault={() => deleteFile(file)}>
                                     <span class="icon-trash" aria-hidden="true" />
                                 </button>
                             </div>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {:else}
-                    <Table.Link
-                        href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
-                        <Table.Cell>
+                    {@const href = `${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
+                    <Table.Row.Link {href} {root}>
+                        <Table.Cell column="filename" {root}>
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <Avatar size="xs" src={getPreview(file.$id)} alt={file.name} />
                                 <span class="text u-trim">{file.name}</span>
                             </div>
                         </Table.Cell>
-                        <Table.Cell>{file.mimeType}</Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="type" {root}>{file.mimeType}</Table.Cell>
+                        <Table.Cell column="size" {root}>
                             {calculateSize(file.sizeOriginal)}
                         </Table.Cell>
-                        <Table.Cell>
-                            {toLocaleDate(file.$createdAt)}
+                        <Table.Cell column="created" {root}>
+                            <DualTimeView time={file.$createdAt} />
                         </Table.Cell>
-                        <Table.Cell>
-                            <DropList
-                                bind:show={showDropdown[index]}
-                                placement="bottom-start"
-                                noArrow>
-                                <button
-                                    class="button is-only-icon is-text"
-                                    aria-label="More options"
-                                    on:click|preventDefault={() => {
-                                        showDropdown[index] = !showDropdown[index];
-                                    }}>
-                                    <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
-                                <svelte:fragment slot="list">
-                                    <DropListLink
+                        <Table.Cell column="actions" {root}>
+                            <Popover let:toggle placement="bottom-start" padding="none">
+                                <Button text icon ariaLabel="more options" on:click={toggle}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                                <ActionMenu.Root slot="tooltip">
+                                    <ActionMenu.Item.Anchor {href} leadingIcon={IconPencil}>
+                                        Update
+                                    </ActionMenu.Item.Anchor>
+                                    <ActionMenu.Item.Button
+                                        leadingIcon={IconTrash}
                                         on:click={() => {
-                                            showDropdown[index] = false;
-                                        }}
-                                        href={`${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
-                                        icon="pencil">Update</DropListLink>
-                                    <DropListItem
-                                        icon="trash"
-                                        on:click={() => {
-                                            showDropdown[index] = false;
                                             selectedFile = file;
                                             showDelete = true;
-                                        }}>Delete</DropListItem>
-                                </svelte:fragment>
-                            </DropList>
+                                        }}>
+                                        Delete
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </Popover>
                         </Table.Cell>
-                    </Table.Link>
+                    </Table.Row.Link>
                 {/if}
             {/each}
         </Table.Root>

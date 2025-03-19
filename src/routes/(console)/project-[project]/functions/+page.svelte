@@ -11,19 +11,20 @@
         SvgIcon
     } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
 
     import { parseExpression } from 'cron-parser';
     import { onMount } from 'svelte';
-    import { functionsList } from './store';
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconClock, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { goto } from '$app/navigation';
+    import { Button } from '$lib/elements/forms';
+    import Avatar from '$lib/components/avatar.svelte';
 
     export let data;
 
@@ -62,7 +63,7 @@
             keys: ['c'],
             disabled:
                 $wizard.show ||
-                isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total) ||
+                isServiceLimited('functions', $organization?.billingPlan, data.functions?.total) ||
                 !$canWriteFunctions,
             icon: IconPlus,
             group: 'functions'
@@ -73,12 +74,12 @@
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Functions"
-        buttonText={$canWriteFunctions ? 'Create function' : ''}
-        buttonEvent="create_function"
-        buttonHref={`${base}/project-${project}/functions/create-function`}
-        total={data.functions.total} />
+    <Layout.Stack direction="row" justifyContent="flex-end">
+        <Button href={`${base}/project-${project}/functions/create-function`}>
+            <Icon icon={IconPlus} slot="start" />
+            Create function
+        </Button>
+    </Layout.Stack>
 
     {#if data.functions.total}
         <CardContainer
@@ -86,27 +87,26 @@
             showEmpty={$canWriteFunctions}
             event="functions"
             total={data.functions.total}
-            service="functions">
+            service="functions"
+            on:click={() => goto(`${base}/project-${project}/functions/create-function`)}>
             {#each data.functions.functions as func}
                 <GridItem1 href={`${base}/project-${project}/functions/function-${func.$id}`}>
                     <svelte:fragment slot="title">
-                        <div class="u-flex u-gap-16 u-cross-center">
-                            <div class="avatar is-medium">
-                                <SvgIcon name={func.runtime.split('-')[0]}></SvgIcon>
-                            </div>
-                            <span class="text">{func.name}</span>
-                        </div>
+                        <Layout.Stack gap="l" alignItems="center" direction="row" inline>
+                            <Avatar alt={func.name} size="m">
+                                <SvgIcon name={func.runtime.split('-')[0]} />
+                            </Avatar>
+                            {func.name}
+                        </Layout.Stack>
                     </svelte:fragment>
                     <svelte:fragment slot="icons">
                         {#if func.schedule}
-                            <li>
-                                <Tooltip>
-                                    <span class="icon-clock" aria-hidden="true" />
-                                    <span slot="tooltip"
-                                        >{`Next execution:
+                            <Tooltip>
+                                <Icon icon={IconClock} size="s" />
+                                <span slot="tooltip"
+                                    >{`Next execution:
                                         ${getNextScheduledExecution(func)}`}</span>
-                                </Tooltip>
-                            </li>
+                            </Tooltip>
                         {/if}
                     </svelte:fragment>
                     <Id value={func.$id} event="function">{func.$id}</Id>
@@ -123,7 +123,6 @@
             offset={data.offset}
             total={data.functions.total} />
     {:else}
-        <!-- TODO: use new empty state -->
         <Empty
             single
             allowCreate={$canWriteFunctions}

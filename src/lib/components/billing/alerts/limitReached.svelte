@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
@@ -26,7 +26,7 @@
             <Button
                 href={$upgradeURL}
                 on:click={() => {
-                    trackEvent('click_organization_upgrade', {
+                    trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',
                         source: 'limit_reached_banner'
                     });

@@ -25,61 +25,63 @@
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
-    import { queries } from '$lib/components/filters';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
-    import { RuleType } from '$lib/stores/sdk';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import CreatePreviewDomainModal from './createPreviewDomainModal.svelte';
 
     export let data;
 
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Models.ProxyRule = null;
+    let showPreviewDomainModal = false;
 
     $: console.log(data.domains);
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search sites" />
+        <SearchQuery search={data.search} placeholder="Search domain" />
         <Button
-            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
+            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}
+            on:click={() => {
+                trackEvent(Click.DomainCreateClick, {
+                    source: 'sites_domain_overview'
+                });
+            }}>
             <Icon icon={IconPlus} size="s" />
             Add domain
         </Button>
     </Layout.Stack>
 
     {#if data.domains.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Domain</Table.Header.Cell>
-                <Table.Header.Cell>Redirect to</Table.Header.Cell>
-                <Table.Header.Cell>Production branch</Table.Header.Cell>
-                <Table.Header.Cell />
+        <Table.Root columns={4} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell {root}>Domain</Table.Header.Cell>
+                <Table.Header.Cell {root}>Redirect to</Table.Header.Cell>
+                <Table.Header.Cell {root}>Production branch</Table.Header.Cell>
+                <Table.Header.Cell {root} />
             </svelte:fragment>
             {#each data.domains.rules as domain}
-                <Table.Row>
-                    <Table.Cell>
-                        <Link
-                            external
-                            href={`${$protocol}${domain.domain}`}
-                            size="s"
-                            variant="quiet">
+                <Table.Row.Base {root}>
+                    <Table.Cell {root}>
+                        <Link external href={`${$protocol}${domain.domain}`} variant="quiet">
                             <Layout.Stack direction="row" alignItems="center" gap="xs">
                                 {domain.domain}
                                 <Icon icon={IconExternalLink} size="s" />
                             </Layout.Stack>
                         </Link>
                     </Table.Cell>
-                    <Table.Cell>
-                        {domain.type === RuleType.REDIRECT ? (domain?.value ?? '-') : 'No redirect'}
+                    <!-- TODO design redirect status code -->
+                    <Table.Cell {root}>
+                        {domain?.redirectUrl || 'No redirect'}
+                        {domain?.redirectStatusCode ? `(${domain.redirectStatusCode})` : ''}
                     </Table.Cell>
-                    <Table.Cell>
-                        {domain.automation.includes('branch')
-                            ? domain.automation.split('branch=')[1]
-                            : '-'}
+                    <Table.Cell {root}>
+                        {domain.deploymentVcsProviderBranch || '-'}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-start" padding="none">
                                 <Button
@@ -114,6 +116,9 @@
                                                 selectedDomain = domain;
                                                 showDelete = true;
                                                 toggle(e);
+                                                trackEvent(Click.DomainDeleteClick, {
+                                                    source: 'sites_domain_overview'
+                                                });
                                             }}>
                                             Delete
                                         </ActionMenu.Item.Button>
@@ -122,7 +127,7 @@
                             </Popover>
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         </Table.Root>
 
@@ -131,15 +136,14 @@
             limit={data.limit}
             offset={data.offset}
             total={data.domains.total} />
-    {:else if data?.query}
-        <EmptySearch hidePages bind:search={data.search} target="domains">
+    {:else if data?.search}
+        <EmptySearch hidePages bind:search={data.search} target="domains" hidePagination>
             <svelte:fragment slot="actions">
                 <Button
                     secondary
                     on:click={() => {
-                        queries.clearAll();
-                        queries.apply();
-                    }}>Clear filters</Button>
+                        data.search = '';
+                    }}>Clear search</Button>
             </svelte:fragment>
         </EmptySearch>
     {:else}
@@ -148,8 +152,8 @@
                 src={$app.themeInUse === 'dark'
                     ? `${base}/images/domains/empty-domain-dark.svg`
                     : `${base}/images/domains/empty-domain-light.svg`}
-                title="Add your first domain"
-                description="Connect a domain you own to get your project up and running.">
+                title="Use a custom domain for your site"
+                description="Give your site a unique identity and make it easier to find by by assigning it a custom domain.">
                 <svelte:fragment slot="actions">
                     <Button
                         external
@@ -172,9 +176,13 @@
 </Container>
 
 {#if showDelete}
-    <DeleteDomainModal show={showDelete} {selectedDomain} />
+    <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
 {/if}
 
 {#if showRetry}
-    <RetryDomainModal show={showRetry} {selectedDomain} />
+    <RetryDomainModal bind:show={showRetry} {selectedDomain} />
+{/if}
+
+{#if showPreviewDomainModal}
+    <CreatePreviewDomainModal bind:show={showPreviewDomainModal} />
 {/if}

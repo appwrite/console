@@ -35,6 +35,7 @@
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -79,17 +80,24 @@
     </Layout.Stack>
 
     {#if $attributes.length}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Key</Table.Header.Cell>
-                <Table.Header.Cell>Type</Table.Header.Cell>
-                <Table.Header.Cell>Default value</Table.Header.Cell>
-                <Table.Header.Cell width="40px" />
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'key' },
+                { id: 'type' },
+                { id: 'default' },
+                { id: 'actions', width: 40 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
+                <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+                <Table.Header.Cell column="default" {root}>Default value</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
             {#each $attributes as attribute, index}
                 {@const option = attributeOptions.find((option) => option.type === attribute.type)}
-                <Table.Row>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="key" {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             {#if isRelationship(attribute)}
                                 <Icon
@@ -124,7 +132,7 @@
                             {/if}
                         </Layout.Stack>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="type" {root}>
                         {#if 'format' in attribute && attribute.format}
                             <span class="u-capitalize">{attribute.format}</span>
                         {:else}
@@ -141,12 +149,12 @@
                             {attribute.array ? '[]' : ''}
                         </span>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="default" {root}>
                         {attribute?.default !== null && attribute?.default !== undefined
                             ? attribute?.default
                             : '-'}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="actions" {root}>
                         <Popover let:toggle padding="none" placement="bottom-end">
                             <Button text icon ariaLabel="more options" on:click={toggle}>
                                 <Icon icon={IconDotsHorizontal} size="s" />
@@ -179,6 +187,7 @@
                                             selectedAttribute = attribute;
                                             showDelete = true;
                                             showDropdown[index] = false;
+                                            trackEvent(Click.DatabaseAttributeDelete);
                                         }}>
                                         Delete
                                     </ActionMenu.Item.Button>
@@ -186,7 +195,7 @@
                             </ActionMenu.Root>
                         </Popover>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         </Table.Root>
     {:else}

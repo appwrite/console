@@ -70,7 +70,7 @@
     }
 </script>
 
-<Modal title="Select teams" bind:show onSubmit={create} on:close={reset} size="big">
+<Modal title="Select teams" bind:show onSubmit={create} on:close={reset}>
     <Typography.Text
         >Grant access to any member of a specific team. To grant access to team members with
         specific roles, you will need to set a <Link.Button on:click={() => dispatch('custom')}
@@ -78,18 +78,18 @@
         >.</Typography.Text>
     <InputSearch autofocus placeholder="Search by name or ID" bind:value={search} />
     {#if results?.teams?.length}
-        <Table.Root>
+        <Table.Root columns={[{ id: 'checkbox', width: 40 }, { id: 'team' }]} let:root>
             {#each results.teams as team (team.$id)}
                 {@const role = `team:${team.$id}`}
                 {@const exists = $groups.has(role)}
-                <Table.Button on:click={() => onSelection(role)} disabled={exists}>
-                    <Table.Cell width="40px">
+                <Table.Row.Button {root} on:click={() => onSelection(role)} disabled={exists}>
+                    <Table.Cell column="checkbox" {root}>
                         <Selector.Checkbox
                             id={team.$id}
                             checked={exists || selected.has(role)}
                             disabled={exists} />
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="team" {root}>
                         <Layout.Stack direction="row" alignItems="center" gap="s">
                             <AvatarInitials size="xs" name={team.name} />
                             <Layout.Stack gap="none">
@@ -102,7 +102,7 @@
                             </Layout.Stack>
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Button>
+                </Table.Row.Button>
             {/each}
         </Table.Root>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">

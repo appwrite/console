@@ -16,7 +16,7 @@
                 <Typography.Text size="s" truncate color="--fgcolor-neutral-primary"
                     >{value}</Typography.Text>
             {:else}
-                <Skeleton variant="line" width={100} height={19.5} />
+                <Skeleton variant="line" width="100%" height={19.5} />
             {/if}
         </slot>
     </Layout.Stack>

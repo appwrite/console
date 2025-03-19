@@ -9,9 +9,9 @@
     import { Link } from '$lib/elements';
     import { NewRepository, Repositories } from '$lib/components/git';
     import ConnectGit from '$lib/components/git/connectGit.svelte';
-    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
@@ -21,8 +21,9 @@
     export let show = false;
     export let site: Models.Site;
     export let callbackState: Record<string, string> = null;
+    export let onlyExisting = false;
 
-    let repositoryBehaviour: 'new' | 'existing' | undefined = undefined;
+    let repositoryBehaviour: 'new' | 'existing' | undefined = onlyExisting ? 'existing' : undefined;
     let repositoryName = '';
     let repositoryPrivate = true;
     let selectedInstallationId = '';
@@ -66,12 +67,15 @@
                 site.buildCommand,
                 site.outputDirectory,
                 site.buildRuntime as BuildRuntime,
-                site.adapter,
+                site.adapter as Adapter,
                 site.fallbackFile,
                 selectedInstallationId,
-                selectedRepository
+                selectedRepository,
+                'main',
+                undefined,
+                undefined,
+                undefined
             );
-            console.log('test');
             invalidate(Dependencies.SITE);
             show = false;
             dispatch('connect', s);
@@ -83,8 +87,6 @@
             error = e.message;
         }
     }
-
-    $: console.log(selectedInstallationId);
 </script>
 
 <Modal
@@ -98,7 +100,9 @@
     </span>
     {#if hasInstallations}
         <Layout.Stack gap="xl">
-            <RepositoryBehaviour bind:repositoryBehaviour />
+            {#if !onlyExisting}
+                <RepositoryBehaviour bind:repositoryBehaviour />
+            {/if}
             {#if repositoryBehaviour === 'new'}
                 <NewRepository
                     bind:repositoryName
@@ -109,10 +113,11 @@
                 <Repositories
                     bind:hasInstallations
                     bind:selectedRepository
+                    product="sites"
                     action="button"
                     {callbackState}
                     on:connect={(e) => {
-                        trackEvent('click_connect_repository', {
+                        trackEvent(Click.ConnectRepositoryClick, {
                             from: 'sites'
                         });
                         repository.set(e.detail);

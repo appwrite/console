@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Remarkable } from 'remarkable';
     import Template from './template.svelte';
-    import { Keyboard, Layout } from '@appwrite.io/pink-svelte';
+    import { Alert, Keyboard, Layout } from '@appwrite.io/pink-svelte';
 
     const markdownInstance = new Remarkable();
 
-    import { Alert, AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
+    import { AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { useCompletion } from 'ai/svelte';
     import { subPanels } from '../subPanels';
@@ -218,13 +218,9 @@
 
     {#if $error}
         <div style="padding: 1rem; padding-block-end: 0;">
-            <Alert type="error">
-                <span slot="title">Something went wrong</span>
-                <p>
-                    An unexpected error occurred while handling your request. Please try again
-                    later.
-                </p>
-            </Alert>
+            <Alert.Inline status="error" title="Something went wrong">
+                An unexpected error occurred while handling your request. Please try again later.
+            </Alert.Inline>
         </div>
     {/if}
 

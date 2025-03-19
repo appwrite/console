@@ -1,14 +1,15 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { EmptySearch, PaginationWithLimit } from '$lib/components';
+    import { EmptySearch, PaginationWithLimit, SvgIcon } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import Wizard from '$lib/layout/wizard.svelte';
     import { goto } from '$app/navigation';
     import { debounce } from '$lib/helpers/debounce.js';
-    import { Card, Layout, Accordion, Selector } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Accordion, Selector, Tooltip } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app.js';
+    import { getFrameworkIcon } from '../../store.js';
 
     export let data;
 
@@ -67,8 +68,9 @@
 
 <Wizard
     href={`${base}/project-${$page.params.project}/sites/`}
-    title="Create Site"
+    title="Create site"
     invertColumns
+    stickySide
     hideFooter>
     <svelte:fragment slot="aside">
         <Layout.Stack gap="xl">
@@ -95,7 +97,7 @@
                         {/each}
                     </Layout.Stack>
                 </Accordion>
-                <Accordion title="Framework">
+                <Accordion title="Framework" open>
                     <Layout.Stack>
                         {#each [...data.frameworks] as framework}
                             <Layout.Stack direction="row" gap="s">
@@ -126,12 +128,23 @@
                         padding="xxs">
                         <Card.Media
                             title={template.name}
-                            description={templateFrameworks.join(', ')}
-                            src={template.demoImage ||
-                                ($app.themeInUse === 'dark'
-                                    ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                                    : `${base}/images/sites/screenshot-placeholder-light.svg`)}
-                            alt={template.name}>
+                            src={$app.themeInUse === 'dark'
+                                ? template?.screenshotDark ||
+                                  `${base}/images/sites/screenshot-placeholder-dark.svg`
+                                : template?.screenshotLight ||
+                                  `${base}/images/sites/screenshot-placeholder-light.svg`}
+                            alt={template.name}
+                            avatar>
+                            <svelte:fragment slot="avatar">
+                                <Tooltip>
+                                    <SvgIcon
+                                        name={getFrameworkIcon(templateFrameworks[0])}
+                                        iconSize="small" />
+                                    <svelte:fragment slot="tooltip">
+                                        {capitalize(templateFrameworks[0])}
+                                    </svelte:fragment>
+                                </Tooltip>
+                            </svelte:fragment>
                         </Card.Media>
                     </Card.Link>
                 {/each}
@@ -149,6 +162,6 @@
             name="Templates"
             limit={data.limit}
             offset={data.offset}
-            total={data.templates?.length} />
+            total={data.sum} />
     </Layout.Stack>
 </Wizard>

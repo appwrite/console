@@ -11,7 +11,7 @@
     import CreateMember from '../createMembership.svelte';
     import DeleteMembership from '../deleteMembership.svelte';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { Table, Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -37,41 +37,50 @@
     </Layout.Stack>
 
     {#if data.memberships.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Name</Table.Header.Cell>
-                <Table.Header.Cell>Roles</Table.Header.Cell>
-                <Table.Header.Cell>Joined</Table.Header.Cell>
-                <Table.Header.Cell width="40px" />
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'name' },
+                { id: 'roles' },
+                { id: 'joined' },
+                { id: 'actions', width: 40 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+                <Table.Header.Cell column="roles" {root}>Roles</Table.Header.Cell>
+                <Table.Header.Cell column="joined" {root}>Joined</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
             {#each data.memberships.memberships as membership}
                 {@const username = membership.userName ? membership.userName : '-'}
-                <Table.Link href={`${base}/project-${project}/auth/user-${membership.userId}`}>
-                    <Table.Cell>
+                <Table.Row.Link
+                    {root}
+                    href={`${base}/project-${project}/auth/user-${membership.userId}`}>
+                    <Table.Cell column="name" {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={username} />
                             <span>{username}</span>
                         </Layout.Stack>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="roles" {root}>
                         {membership.roles}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="joined" {root}>
                         {toLocaleDateTime(membership.joined)}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="actions" {root}>
                         <button
                             class="button is-only-icon is-text"
                             aria-label="Delete item"
                             on:click|preventDefault={() => {
                                 selectedMembership = membership;
                                 showDelete = true;
-                                trackEvent('click_delete_membership');
+                                trackEvent(Click.MembershipDeleteClick);
                             }}>
                             <span class="icon-trash" aria-hidden="true" />
                         </button>
                     </Table.Cell>
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
 

@@ -8,14 +8,20 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { installation, repository, sortBranches } from '$lib/stores/vcs';
+    import { installation, repository } from '$lib/stores/vcs';
     import { Layout, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Type } from '@appwrite.io/console';
+    import {
+        BuildRuntime,
+        Framework,
+        ID,
+        VCSDeploymentType,
+        VCSDetectionType
+    } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
@@ -31,7 +37,7 @@
 
     let name = '';
     let id = ID.unique();
-    let framework: Models.Framework = data.frameworks.frameworks[0];
+    let framework: Models.Framework = data.frameworks.frameworks.find((f) => f.key === 'other');
     let adapter = framework?.adapters[0];
     let branch: string;
     let rootDir = './';
@@ -46,21 +52,32 @@
         installation.set(data.installation);
         repository.set(data.repository);
         name = data.repository.name;
+
+        await detectFramwork();
     });
 
-    async function loadBranches() {
-        const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            data.installation.$id,
-            data.repository.id
-        );
-        const sorted = sortBranches(branches);
-        branch = sorted[0]?.name ?? null;
-
-        if (!branch) {
-            branch = 'main';
+    async function detectFramwork() {
+        try {
+            const response = await sdk.forProject.vcs.createRepositoryDetection(
+                $installation.$id,
+                data.repository.id,
+                VCSDetectionType.Framework,
+                rootDir
+            );
+            framework = data.frameworks.frameworks.find((f) => f.key === response.framework);
+            adapter = framework?.adapters[0];
+            installCommand = adapter?.installCommand;
+            buildCommand = adapter?.buildCommand;
+            outputDirectory = adapter?.outputDirectory;
+            trackEvent(Submit.FrameworkDetect, {
+                source: 'repository',
+                framework: framework.key
+            });
+        } catch (error) {
+            framework = data.frameworks.frameworks.find((f) => f.key === 'other');
+            trackError(error, Submit.FrameworkDetect);
+            console.log(error);
         }
-
-        return sorted;
     }
 
     async function create() {
@@ -85,9 +102,9 @@
                 installCommand,
                 buildCommand,
                 outputDirectory,
-                framework.adapters[Object.keys(framework.adapters)[0]].key, //TODO: fix this
+                undefined,
                 data.installation.$id,
-                null,
+                undefined,
                 data.repository.id,
                 branch,
                 silentMode,
@@ -113,7 +130,7 @@
 
             const deployment = await sdk.forProject.sites.createVcsDeployment(
                 site.$id,
-                Type.Branch,
+                VCSDeploymentType.Branch,
                 branch,
                 true
             );
@@ -134,6 +151,8 @@
             trackError(e, Submit.SiteCreate);
         }
     }
+
+    $: console.log(framework);
 </script>
 
 <svelte:head>
@@ -168,32 +187,22 @@
             </Card>
             <Details bind:name bind:id />
 
-            {#await loadBranches()}
-                <Layout.Stack justifyContent="center" alignItems="center">
-                    <div class="loader u-margin-32" />
-                </Layout.Stack>
-            {:then branches}
-                {@const options =
-                    branches
-                        ?.map((branch) => {
-                            return {
-                                value: branch.name,
-                                label: branch.name
-                            };
-                        })
-                        ?.sort((a, b) => {
-                            return a.label > b.label ? 1 : -1;
-                        }) ?? []}
-                <ProductionBranch bind:branch bind:rootDir {options} bind:silentMode />
-            {/await}
+            <ProductionBranch
+                bind:branch
+                bind:rootDir
+                bind:silentMode
+                installationId={data.installation.$id}
+                repositoryId={data.repository.id} />
 
-            <Configuration
-                bind:installCommand
-                bind:buildCommand
-                bind:outputDirectory
-                bind:selectedFramework={framework}
-                bind:variables
-                frameworks={data.frameworks.frameworks} />
+            {#key framework.key}
+                <Configuration
+                    bind:installCommand
+                    bind:buildCommand
+                    bind:outputDirectory
+                    bind:selectedFramework={framework}
+                    bind:variables
+                    frameworks={data.frameworks.frameworks} />
+            {/key}
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

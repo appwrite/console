@@ -53,8 +53,8 @@
 <Container>
     <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
         <svelte:fragment slot="footer">
-            {#if data.deployment?.status === 'ready'}
-                <Button href={`${$protocol}${data.proxyRuleList.rules[0].domain}`} external>
+            {#if data.deployment?.status === 'ready' && data.proxyRuleList?.total}
+                <Button href={`${$protocol}${data.proxyRuleList.rules[0]?.domain}`} external>
                     Visit
                 </Button>
             {/if}
@@ -75,17 +75,28 @@
         <Accordion
             title="Deployment logs"
             badge={capitalize(data.deployment.status)}
-            open={data.deployment.status !== 'ready'}
+            open
             badgeType={badgeTypeDeployment(data.deployment.status)}
             hideDivider>
-            <Logs site={data.site} deployment={data.deployment} hideTitle />
+            <Logs
+                site={data.site}
+                deployment={data.deployment}
+                hideTitle
+                hideScrollButtons
+                fullHeight />
             <svelte:fragment slot="end">
                 <LogsTimer status={data.deployment.status} deployment={data.deployment} />
             </svelte:fragment>
         </Accordion>
     </Card>
 </Container>
-<DeleteDeploymentModal selectedDeployment={data.deployment} bind:showDelete />
+
+{#if showDelete}
+    <DeleteDeploymentModal
+        selectedDeployment={data.deployment}
+        bind:showDelete
+        activeDeployment={data.site?.deploymentId} />
+{/if}
 
 <CancelDeploymentModal selectedDeployment={data.deployment} bind:showCancel />
 <RedeployModal

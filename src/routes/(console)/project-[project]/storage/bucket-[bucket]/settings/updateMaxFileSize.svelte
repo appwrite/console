@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Submit } from '$lib/actions/analytics';
+    import { Click, Submit, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
@@ -54,13 +54,21 @@
                     <svelte:fragment slot="action">
                         {#if $organization?.billingPlan === BillingPlan.FREE}
                             <div class="alert-buttons u-flex">
-                                <Button text href={$upgradeURL}>Upgrade plan</Button>
+                                <Button
+                                    text
+                                    href={$upgradeURL}
+                                    on:click={() => {
+                                        trackEvent(Click.OrganizationClickUpgrade, {
+                                            source: 'bucket_settings'
+                                        });
+                                    }}>Upgrade plan</Button>
                             </div>
                         {/if}
                     </svelte:fragment>
                 </Alert>
             {/if}
             <InputNumber
+                required
                 id="size"
                 label="Size"
                 disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
@@ -68,7 +76,7 @@
                 min={0}
                 max={isCloud ? maxValue() : Infinity}
                 bind:value={$value} />
-            <InputSelect id="bytes" label="Bytes" {options} bind:value={$unit} />
+            <InputSelect required id="bytes" label="Bytes" {options} bind:value={$unit} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

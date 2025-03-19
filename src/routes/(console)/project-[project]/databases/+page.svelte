@@ -37,7 +37,7 @@
             },
             keys: ['c'],
             disabled: showCreate || isCreationDisabled || !$canWriteDatabases,
-            icon: 'plus',
+            icon: IconPlus,
             group: 'databases',
             rank: 10
         }

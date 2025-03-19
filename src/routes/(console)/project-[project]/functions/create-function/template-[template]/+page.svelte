@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
@@ -13,16 +13,34 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
-    import { ID, Runtime, Type, type Models } from '@appwrite.io/console';
-    import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
+    import { ID, Runtime, type Models } from '@appwrite.io/console';
+    import {
+        ConnectBehaviour,
+        NewRepository,
+        Repositories,
+        RepositoryBehaviour
+    } from '$lib/components/git';
     import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
+    import { iconPath } from '$lib/stores/app';
+    import Permissions from './permissions.svelte';
+    import { connectGitHub } from '$lib/stores/git';
+    import RepoCard from './repoCard.svelte';
+    import { Dependencies } from '$lib/constants';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
 
     export let data;
+
+    const specificationOptions = data.specificationsList.specifications.map((size) => ({
+        label:
+            `${size.cpus} CPU, ${size.memory} MB RAM` +
+            (!size.enabled ? ` (Upgrade to use this)` : ''),
+        value: size.slug,
+        disabled: !size.enabled
+    }));
 
     let showExitModal = false;
     let isCreatingRepository = false;
@@ -33,7 +51,7 @@
 
     let name = data.template.name;
     let id = ID.unique();
-    let runtime: Models.Runtime = data.runtimesList.runtimes[0];
+    let runtime: Runtime;
     let branch = 'main';
     let rootDir = './';
     let connectBehaviour: 'now' | 'later' = 'now';
@@ -42,35 +60,39 @@
     let repositoryPrivate = true;
     let selectedInstallationId = '';
     let selectedRepository = '';
-    let showSiteConfig = false;
+    let showConfig = false;
     let silentMode = false;
     let entrypoint = '';
-    let scopes: string[] = [];
-    let variables: Partial<Models.Variable>[] = [];
+    let selectedScopes: string[] = [];
+    let execute = true;
+    let variables: Partial<Models.TemplateVariable>[] = [];
+    let specification = specificationOptions[0].value;
 
     onMount(async () => {
+        if ($page.url.searchParams.has('runtime')) {
+            console.log(runtime);
+            console.log($page.url.searchParams.get('runtime'));
+            runtime = $page.url.searchParams.get('runtime') as Runtime;
+            console.log(runtime);
+        }
         if (!$installation?.$id) {
             $installation = data.installations.installations[0];
         }
         selectedInstallationId = $installation?.$id;
-    });
+        if (data.template.runtimes && data.template.runtimes.length > 0) {
+            const targetRuntime = data.template.runtimes[0].name;
+            const matchingRuntimes = Object.values(Runtime).filter((r) =>
+                r.startsWith(targetRuntime.split('-')[0])
+            );
 
-    let callbackState: Record<string, string> = null;
-
-    function connectGitHub() {
-        const redirect = new URL($page.url);
-        if (callbackState) {
-            Object.keys(callbackState).forEach((key) => {
-                redirect.searchParams.append(key, callbackState[key]);
+            matchingRuntimes.sort((a, b) => {
+                const versionA = a.split('-')[1];
+                const versionB = b.split('-')[1];
+                return versionB.localeCompare(versionA, undefined, { numeric: true });
             });
+            runtime = matchingRuntimes[0];
         }
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('project', $page.params.project);
-        target.searchParams.set('success', redirect.toString());
-        target.searchParams.set('failure', redirect.toString());
-        target.searchParams.set('mode', 'admin');
-        return target;
-    }
+    });
 
     async function createRepository() {
         try {
@@ -82,7 +104,7 @@
             );
             repository.set(repo);
             selectedRepository = repo.id;
-            showSiteConfig = true;
+            showConfig = true;
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -102,26 +124,27 @@
             return;
         } else {
             try {
-                const rt = Object.values(Runtime).find((r) => r === runtime.key);
+                const rt = data.template.runtimes.find((r) => r.name === runtime);
+
                 const func = await sdk.forProject.functions.create(
                     id,
                     name,
-                    rt,
+                    runtime as Runtime,
+                    data.template.permissions?.length ? data.template.permissions : undefined,
+                    data.template.events?.length ? data.template.events : undefined,
+                    data.template.cron || undefined,
+                    data.template.timeout ? data.template.timeout : undefined,
                     undefined,
                     undefined,
+                    entrypoint || rt.entrypoint,
                     undefined,
-                    undefined,
-                    true,
-                    undefined,
-                    entrypoint,
-                    undefined,
-                    scopes,
-                    $installation.$id,
-                    $repository.id,
+                    selectedScopes?.length ? selectedScopes : undefined,
+                    connectBehaviour === 'later' ? undefined : $installation?.$id || undefined,
+                    connectBehaviour === 'later' ? undefined : $repository?.id || undefined,
                     branch,
                     silentMode,
                     rootDir,
-                    undefined //TODO: specs
+                    specification || undefined
                 );
 
                 // Add domain
@@ -130,32 +153,38 @@
                     func.$id
                 );
 
-                //Add variables
+                console.log(variables);
+
+                // Add variables
                 const promises = variables.map((variable) =>
                     sdk.forProject.functions.createVariable(
                         func.$id,
-                        variable.key,
+                        variable.name,
                         variable.value,
                         variable?.secret ?? false
                     )
                 );
                 await Promise.all(promises);
 
-                const deployment = await sdk.forProject.functions.createVcsDeployment(
+                await sdk.forProject.functions.createTemplateDeployment(
                     func.$id,
-                    Type.Branch,
-                    branch,
+                    data.template.providerRepositoryId || undefined,
+                    data.template.providerOwner || undefined,
+                    rt?.providerRootDirectory || undefined,
+                    data.template.providerVersion || undefined,
                     true
                 );
 
                 trackEvent(Submit.FunctionCreate, {
+                    runtime: runtime,
                     source: 'template',
                     framework: data.template.name
                 });
 
                 await goto(
-                    `${base}/project-${$page.params.project}/functions/create-function/deploying?function=${func.$id}&deployment=${deployment.$id}`
+                    `${base}/project-${$page.params.project}/functions/function-${func.$id}`
                 );
+                invalidate(Dependencies.FUNCTION);
             } catch (e) {
                 addNotification({
                     type: 'error',
@@ -167,7 +196,7 @@
     }
 
     $: if (repositoryBehaviour === 'new') {
-        selectedInstallationId = $installation?.$id;
+        selectedInstallationId ??= $installation?.$id;
         repositoryName ??= name.split(' ').join('-').toLowerCase();
     }
 
@@ -175,63 +204,63 @@
         selectedRepository = null;
     }
 
-    $: console.log(repositoryName);
-
     $: console.log(data.template);
-    $: console.log(variables);
+    $: availableRuntimes = data.runtimesList.runtimes.filter((runtime) =>
+        data.template.runtimes.some((templateRuntime) => templateRuntime.name === runtime.$id)
+    );
+    $: console.log(availableRuntimes);
 </script>
 
 <svelte:head>
-    <title>Create site - Appwrite</title>
+    <title>Create function - Appwrite</title>
 </svelte:head>
 
 <Wizard
-    title="Create site"
+    title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/sites/`}
+    href={`${base}/project-${$page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
-            {#if selectedRepository && showSiteConfig}
+            {#if selectedRepository && showConfig}
                 <Layout.Stack gap="xxl">
-                    <Card isTile padding="s" radius="s">
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            gap="xs">
-                            <Layout.Stack direction="row" alignItems="center" gap="s">
-                                <Icon size="s" icon={IconGithub} />
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {$repository.name}
-                                </Typography.Text>
-                            </Layout.Stack>
-                            <Button
-                                size="s"
-                                secondary
-                                on:click={() => {
-                                    showSiteConfig = false;
-                                }}>
-                                Update
-                            </Button>
-                        </Layout.Stack>
-                    </Card>
-                    <ProductionBranch bind:branch bind:rootDir bind:silentMode />
+                    <RepoCard bind:showConfig />
+
+                    <ProductionBranch
+                        bind:branch
+                        bind:rootDir
+                        bind:silentMode
+                        installationId={selectedInstallationId}
+                        repositoryId={selectedRepository} />
+
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <!-- <Domain bind:domain bind:domainIsValid /> -->
                 </Layout.Stack>
             {:else}
-                {@const options = data.template.runtimes.map((runtime) => {
+                {@const options = availableRuntimes.map((runtime) => {
                     return {
-                        value: runtime.name,
-                        label: runtime.name
-                        // leadingHtml: `<img src='${$iconPath(getruntimeIcon(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+                        value: runtime.$id,
+                        label: `${runtime.name} - ${runtime.version}`,
+                        leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.$id), 'color')}' style='inline-size: var(--icon-size-m)' />`
                     };
                 })}
+
                 <Layout.Stack gap="xxl">
-                    <Details bind:name bind:id bind:runtime bind:entrypoint {options} />
+                    <Details
+                        bind:name
+                        bind:id
+                        bind:runtime
+                        bind:entrypoint
+                        bind:specification
+                        {specificationOptions}
+                        {options} />
+
+                    <Permissions
+                        templateScopes={data.template.scopes}
+                        bind:selectedScopes
+                        bind:execute />
+
                     <ConnectBehaviour bind:connectBehaviour />
                 </Layout.Stack>
                 {#if connectBehaviour === 'now'}
@@ -264,16 +293,15 @@
                                     <Repositories
                                         bind:hasInstallations
                                         bind:selectedRepository
-                                        product="sites"
                                         action="button"
                                         on:connect={(e) => {
-                                            trackEvent('click_connect_repository', {
+                                            trackEvent(Click.ConnectRepositoryClick, {
                                                 from: 'template-wizard'
                                             });
                                             repository.set(e.detail);
                                             repositoryName = e.detail.name;
                                             selectedRepository = e.detail.id;
-                                            showSiteConfig = true;
+                                            showConfig = true;
                                         }} />
                                 {/if}
                             </Layout.Stack>
@@ -300,7 +328,22 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {runtime} {repositoryName} {branch} {rootDir} />
+        <Aside
+            {runtime}
+            {repositoryName}
+            {branch}
+            {rootDir}
+            runtimes={data.runtimesList}
+            bind:showGitData={showConfig}>
+            <Layout.Stack gap="xxxs">
+                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                    {data.template.name}
+                </Typography.Text>
+                <Typography.Text>
+                    {data.template.tagline}
+                </Typography.Text>
+            </Layout.Stack>
+        </Aside>
     </svelte:fragment>
 
     <svelte:fragment slot="footer">

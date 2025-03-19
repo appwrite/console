@@ -109,16 +109,16 @@
             </p>
         {:else if collectionItems.length > 0}
             <div class="u-flex-vertical u-gap-16">
-                <Table.Root>
-                    <svelte:fragment slot="header">
-                        <Table.Header.Cell>Collection</Table.Header.Cell>
-                        <Table.Header.Cell>Last Updated</Table.Header.Cell>
+                <Table.Root columns={2} let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell {root}>Collection</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Last Updated</Table.Header.Cell>
                     </svelte:fragment>
                     {#each collectionItems as collection}
-                        <Table.Row>
-                            <Table.Cell>{collection.name}</Table.Cell>
-                            <Table.Cell>{toLocaleDate(collection.updatedAt)}</Table.Cell>
-                        </Table.Row>
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>{collection.name}</Table.Cell>
+                            <Table.Cell {root}>{toLocaleDate(collection.updatedAt)}</Table.Cell>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
 

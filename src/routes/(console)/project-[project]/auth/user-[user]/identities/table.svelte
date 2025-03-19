@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FloatingActionBar, Id } from '$lib/components';
+    import { Id } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import type { PageData } from './$types';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -12,7 +12,7 @@
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
-    import { Badge, Selector, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import Confirm from '$lib/components/confirm.svelte';
 
     export let columns: Column[];
@@ -20,7 +20,6 @@
 
     let selectedIds: string[] = [];
     let showDelete = false;
-    let deleting = false;
 
     async function handleDelete() {
         showDelete = false;
@@ -50,80 +49,65 @@
     }
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        <Table.Header.Selector width="40px" />
-        {#each columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root {columns} allowSelection let:root bind:selectedRows={selectedIds}>
+    <svelte:fragment slot="header" let:root>
+        {#each columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each data.identities.identities as identity (identity.$id)}
-        <Table.Row>
-            <Table.Cell>
-                <Selector.Checkbox size="s" />
-            </Table.Cell>
-
+        <Table.Row.Base {root}>
             {#each columns as column}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key columns}
-                            <Table.Cell>
-                                <Id value={identity[column.id]}>
-                                    {identity[column.id]}
-                                </Id>
-                            </Table.Cell>
+                            <Id value={identity[column.id]}>
+                                {identity[column.id]}
+                            </Id>
                         {/key}
                     {:else if column.id === 'provider'}
                         {@const provider = oAuthProviders[identity[column.id]]}
-                        <Table.Cell width={column.width + 'px'}>
-                            <div class="u-inline-flex u-cross-center u-gap-8">
-                                <div class="avatar is-size-small">
-                                    <img
-                                        style="--p-text-size: 1rem"
-                                        height="20"
-                                        width="20"
-                                        src={`${base}/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
-                                        alt={provider.name} />
-                                </div>
-                                {provider.name}
+                        <div class="u-inline-flex u-cross-center u-gap-8">
+                            <div class="avatar is-size-small">
+                                <img
+                                    style="--p-text-size: 1rem"
+                                    height="20"
+                                    width="20"
+                                    src={`${base}/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
+                                    alt={provider.name} />
                             </div>
-                        </Table.Cell>
+                            {provider.name}
+                        </div>
                     {:else if column.type === 'datetime'}
-                        <Table.Cell width={column.width + 'px'}>
-                            {#if !identity[column.id]}
-                                -
-                            {:else}
-                                {toLocaleDateTime(identity[column.id])}
-                            {/if}
-                        </Table.Cell>
+                        {#if !identity[column.id]}
+                            -
+                        {:else}
+                            {toLocaleDateTime(identity[column.id])}
+                        {/if}
                     {:else}
-                        <Table.Cell width={column.width + 'px'}>
-                            {identity[column.id]}
-                        </Table.Cell>
+                        {identity[column.id]}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-        </Table.Row>
+        </Table.Row.Base>
     {/each}
 </Table.Root>
 
-<FloatingActionBar show={selectedIds.length > 0}>
-    <svelte:fragment slot="start">
-        <Badge content={selectedIds.length.toString()} />
-        <span>
-            <span class="is-only-desktop">
+{#if selectedIds.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedIds.length.toString()} />
+            <span>
                 {selectedIds.length > 1 ? 'identities' : 'identity'}
+                selected
             </span>
-            selected
-        </span>
-    </svelte:fragment>
-    <svelte:fragment slot="end">
-        <Button text on:click={() => (selectedIds = [])}>Cancel</Button>
-        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-    </svelte:fragment>
-</FloatingActionBar>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
+            <Button text on:click={() => (selectedIds = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
 
 <Confirm title="Delete Identity" bind:open={showDelete} onSubmit={handleDelete}>
     <Typography.Text>

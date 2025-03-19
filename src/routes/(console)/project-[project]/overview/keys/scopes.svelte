@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { Collapsible, CollapsibleItem } from '$lib/components';
-    import { Button, FormList, InputChoice } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { scopes as allScopes } from '$lib/constants';
     import { onMount } from 'svelte';
     import { symmetricDifference } from '$lib/helpers/array';
-    import Checkbox from './checkbox.svelte';
-    import { Accordion, Divider, Input, Layout, Selector } from '@appwrite.io/pink-svelte';
+    import { Accordion, Divider, Layout, Selector } from '@appwrite.io/pink-svelte';
 
     export let scopes: string[];
 
@@ -79,6 +77,8 @@
             }
         }
     }
+
+    $: console.log(scopes);
 </script>
 
 <Layout.Stack>
@@ -92,7 +92,7 @@
     <Layout.Stack gap="none">
         <Divider />
 
-        {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Other] as category}
+        {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Sites, Category.Other] as category}
             {@const checked = categoryState(category, scopes)}
             {@const scopesLength = allScopes.filter(
                 (n) => n.category === category && scopes.includes(n.scope)

@@ -79,6 +79,7 @@
                                         id={variable.name}
                                         value={variable.name}
                                         readonly
+                                        required
                                         label={i === 0 ? 'Key' : null} />
                                     <svelte:component
                                         this={selectComponent(variable.type)}
@@ -101,7 +102,7 @@
                                                 toggle(e);
                                             }}>
                                             <Icon size="s" icon={IconInfo} /></Button>
-                                        <p slot="tooltip">{variable.description}</p>
+                                        <p slot="tooltip">{@html variable.description}</p>
                                     </Popover>
                                 </Layout.Stack>
                             </Layout.Stack>
@@ -119,6 +120,7 @@
                                         id={variable.name}
                                         value={variable.name}
                                         readonly
+                                        required
                                         label={i === 0 ? 'Key' : null} />
                                     <svelte:component
                                         this={selectComponent(variable.type)}
@@ -140,8 +142,9 @@
                                                 e.preventDefault();
                                                 toggle(e);
                                             }}>
-                                            <Icon size="s" icon={IconInfo} /></Button>
-                                        <p slot="tooltip">{variable.description}</p>
+                                            <Icon size="s" icon={IconInfo} />
+                                        </Button>
+                                        <p slot="tooltip">{@html variable.description}</p>
                                     </Popover>
                                 </Layout.Stack>
                             </Layout.Stack>

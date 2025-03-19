@@ -11,7 +11,6 @@ export const load = async ({ params, depends, url, route, parent }) => {
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
-    const search = getSearch(url);
 
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
@@ -20,17 +19,12 @@ export const load = async ({ params, depends, url, route, parent }) => {
         offset,
         limit,
         query,
-        search,
         site,
-        logs: await sdk.forProject.sites.listLogs(
-            params.site,
-            [
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc(''),
-                ...parsedQueries.values()
-            ],
-            search
-        )
+        logs: await sdk.forProject.sites.listLogs(params.site, [
+            Query.limit(limit),
+            Query.offset(offset),
+            Query.orderDesc(''),
+            ...parsedQueries.values()
+        ])
     };
 };

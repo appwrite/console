@@ -15,7 +15,11 @@
         Layout,
         Button
     } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChartSquareBar,
+        IconChevronDown,
+        IconChevronUp
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let period: UsagePeriods;
 
@@ -80,12 +84,9 @@
     </div>
 {:else}
     <Card isDashed>
-        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-            <span
-                class="icon-chart-square-bar text-large"
-                aria-hidden="true"
-                style="font-size: 32px;" />
-            <p class="u-bold">No data to show</p>
-        </div>
+        <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+            <Icon icon={IconChartSquareBar} size="l" />
+            <Typography.Text variant="m-600">No data to show</Typography.Text>
+        </Layout.Stack>
     </Card>
 {/if}

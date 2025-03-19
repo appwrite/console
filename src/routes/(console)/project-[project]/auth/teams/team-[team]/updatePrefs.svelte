@@ -45,13 +45,13 @@
                 message: 'Preferences have been updated',
                 type: 'success'
             });
-            trackEvent(Submit.UserUpdatePreferences);
+            trackEvent(Submit.TeamUpdatePreferences);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.UserUpdatePreferences);
+            trackError(error, Submit.TeamUpdatePreferences);
         }
     }
 </script>

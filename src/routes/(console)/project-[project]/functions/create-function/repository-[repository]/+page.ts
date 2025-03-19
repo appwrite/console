@@ -1,7 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
 
 export const load = async ({ parent, params, url }) => {
-    const { installations, runtimesList } = await parent();
+    const { installations, runtimesList, specificationsList } = await parent();
 
     const [repository] = await Promise.all([
         sdk.forProject.vcs.getRepository(url.searchParams.get('installation'), params.repository)
@@ -13,6 +13,7 @@ export const load = async ({ parent, params, url }) => {
             (installation) => installation.$id === url.searchParams.get('installation')
         ),
         repository,
-        runtimesList
+        runtimesList,
+        specificationsList
     };
 };

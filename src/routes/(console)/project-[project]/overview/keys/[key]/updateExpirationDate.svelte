@@ -1,12 +1,13 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Alert, CardGrid } from '$lib/components';
+    import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import { diffDays } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { project } from '../../../store';
     import { ExpirationInput } from '$lib/components';
     import { key } from './store';
@@ -49,18 +50,20 @@
         Set a date after which your API key will expire.
         <svelte:fragment slot="aside">
             {#if isExpired}
-                <Alert type="error" dismissible on:dismiss={() => (alertsDismissed = true)}>
-                    <span slot="title">Your API key has expired</span>
-                    <p>
-                        For security reasons, we recommend you delete your expired key and create a
-                        new one.
-                    </p>
-                </Alert>
+                <Alert.Inline
+                    status="error"
+                    on:dismiss={() => (alertsDismissed = true)}
+                    title="Your API key has expired">
+                    For security reasons, we recommend you delete your expired key and create a new
+                    one.
+                </Alert.Inline>
             {:else if isExpiring}
-                <Alert type="warning" dismissible on:dismiss={() => (alertsDismissed = true)}>
-                    <span slot="title">Your API key is about to expire</span>
-                    <p>Update the expiration date to keep the key active</p>
-                </Alert>
+                <Alert.Inline
+                    status="warning"
+                    on:dismiss={() => (alertsDismissed = true)}
+                    title="Your API key is about to expire">
+                    Update the expiration date to keep the key active
+                </Alert.Inline>
             {/if}
             <ExpirationInput bind:value={expiration} />
         </svelte:fragment>

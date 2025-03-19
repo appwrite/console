@@ -2,7 +2,6 @@
     import { Container } from '$lib/layout';
     import DangerZone from './dangerZone.svelte';
     import UpdateName from './updateName.svelte';
-    import UpdateVariables from '../../../updateVariables.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
@@ -13,7 +12,9 @@
     import UpdateRepository from './updateRepository.svelte';
     import { onMount } from 'svelte';
     import { showConnectRepo } from './store';
-    import UpdateSpa from './updateSPA.svelte';
+    import { isCloud } from '$lib/system';
+    import UpdateResourceLimits from './updateResourceLimits.svelte';
+    import UpdateVariables from '$routes/(console)/project-[project]/updateVariables.svelte';
 
     export let data;
 
@@ -57,8 +58,11 @@
 
 <Container>
     <UpdateName site={data.site} />
-    <UpdateRepository site={data.site} installations={data.installations} />
+    {#key data.site.providerRepositoryId}
+        <UpdateRepository site={data.site} installations={data.installations} />
+    {/key}
     <UpdateBuildSettings site={data.site} frameworks={data.frameworks.frameworks} />
+    <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateVariables
         {sdkCreateVariable}
         {sdkUpdateVariable}
@@ -66,9 +70,11 @@
         isGlobal={false}
         globalVariableList={data.globalVariables}
         variableList={data.variables}
-        product="site" />
-    <UpdateSpa site={data.site} />
-    <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
+        product="site"
+        analyticsSource="site_settings" />
+    {#if isCloud}
+        <UpdateResourceLimits site={data.site} specs={data.specificationsList} />
+    {/if}
     <UpdateTimeout site={data.site} />
     <DangerZone site={data.site} />
 </Container>

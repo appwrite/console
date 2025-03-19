@@ -7,21 +7,29 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Card, Fieldset, Icon, InlineCode, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { iconPath } from '$lib/stores/app';
+    import { getFrameworkIcon } from '../../store';
+    import { Link } from '$lib/elements';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { adapterDataList } from './store';
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];
-    let selectedFramework: Models.Framework = null;
+    let selectedFramework: Models.Framework = frameworks.find(
+        (framework) => framework.key === site.framework
+    );
+    let frameworkKey = site.framework;
+    let adapter: Adapter = site.adapter as Adapter;
     let installCommand = undefined;
     let buildCommand = undefined;
     let outputDirectory = undefined;
-    let frameworkKey = site.framework;
+    let fallback = site.fallbackFile;
     let isButtonDisabled = true;
+    let showFallback = site.adapter === Adapter.Static;
 
     onMount(async () => {
-        selectedFramework ??= frameworks.find((framework) => framework.key === site.framework);
-
         installCommand =
             site?.installCommand ?? selectedFramework.adapters[site.adapter].defaultInstallCommand;
         buildCommand =
@@ -43,8 +51,8 @@
                 buildCommand || undefined,
                 outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter,
-                site.fallbackFile || undefined,
+                adapter || undefined,
+                fallback || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
                 site.providerBranch || undefined,
@@ -66,16 +74,42 @@
         }
     }
 
-    $: frameworkData = frameworks.find((framework) => framework.key === framework.key);
     $: if (
         installCommand === site?.installCommand &&
         buildCommand === site?.buildCommand &&
         outputDirectory === site?.outputDirectory &&
-        selectedFramework?.key === site?.framework
+        selectedFramework?.key === site?.framework &&
+        fallback === site?.fallbackFile &&
+        adapter === site?.adapter
     ) {
         isButtonDisabled = true;
     } else {
         isButtonDisabled = false;
+    }
+
+    $: if (adapter === Adapter.Static) {
+        showFallback = true;
+        fallback ||= selectedFramework.adapters.static.fallbackFile;
+        console.log(fallback, selectedFramework.adapters.static);
+    } else {
+        showFallback = false;
+        fallback = undefined;
+    }
+
+    $: if (fallback === '') {
+        fallback = null;
+    }
+
+    $: frameworkDataAdapter = selectedFramework.adapters?.length
+        ? selectedFramework.adapters[site.adapter]
+        : frameworks[0].adapters[site.adapter];
+
+    //TODO: fix after backend type is fixed
+    $: if (selectedFramework?.adapters?.length <= 1 || !selectedFramework?.adapters?.ssr?.key) {
+        adapter = Adapter.Static;
+    }
+    $: if (selectedFramework?.adapters?.length <= 1 || !selectedFramework?.adapters?.static?.key) {
+        adapter = Adapter.Ssr;
     }
 </script>
 
@@ -85,44 +119,153 @@
         Default build settings are configured based on your framework, ensuring optimal performance.
         Adjust the settings here if needed.
         <svelte:fragment slot="aside">
-            <InputSelect
-                id="framework"
-                label="Framework"
-                placeholder="Select framework"
-                bind:value={frameworkKey}
-                options={frameworks.map((framework) => ({
-                    value: framework.key,
-                    label: framework.name
-                }))}
-                on:change={() => {
-                    selectedFramework = frameworks.find(
-                        (framework) => framework.key === frameworkKey
-                    );
-                }} />
+            {@const adapterData = adapterDataList.find(
+                (adapterData) => adapterData.framework === frameworkKey.toLowerCase()
+            )}
+            <Layout.Stack gap="xl">
+                <InputSelect
+                    required
+                    id="framework"
+                    label="Framework"
+                    placeholder="Select framework"
+                    bind:value={frameworkKey}
+                    options={frameworks.map((framework) => ({
+                        value: framework.key,
+                        label: framework.name,
+                        leadingHtml: `<img src='${$iconPath(getFrameworkIcon(framework.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+                    }))}
+                    on:change={() => {
+                        selectedFramework = frameworks.find(
+                            (framework) => framework.key === frameworkKey
+                        );
+                    }} />
+                {#if selectedFramework.adapters?.length || (selectedFramework.adapters?.ssr?.key && selectedFramework.adapters?.static?.key)}
+                    <Layout.Grid columnsXS={1} columns={2} gap="l">
+                        <Card.Selector
+                            title="Server side rendering"
+                            variant="primary"
+                            radius="s"
+                            padding="s"
+                            name="adapter"
+                            value={`${Adapter.Ssr}`}
+                            bind:group={adapter}>
+                            {#if adapterData?.ssr?.desc?.includes('$')}
+                                {@const parts = adapterData.ssr.desc.split('$')}
+                                {#each parts as part, i}
+                                    {#if i === 0}
+                                        {part}
+                                    {:else}
+                                        <InlineCode code={adapterData.ssr.code[i - 1]} size="s" />
+                                        {part}
+                                    {/if}
+                                {/each}
+                            {:else}
+                                {adapterData.ssr.desc}
+                            {/if}
+                            {#if adapterData.ssr.url}
+                                <Link external href={adapterData.ssr.url}>Learn more</Link>
+                            {/if}
+                        </Card.Selector>
+                        <Card.Selector
+                            title="Static site"
+                            variant="primary"
+                            radius="s"
+                            padding="s"
+                            name="adapter"
+                            value={Adapter.Static}
+                            bind:group={adapter}>
+                            {#if adapterData.static.desc.includes('$')}
+                                {@const parts = adapterData.static.desc.split('$')}
+                                {#each parts as part, i}
+                                    {#if i === 0}
+                                        {part}
+                                    {:else}
+                                        <InlineCode
+                                            code={adapterData.static.code[i - 1]}
+                                            size="s" />
+                                        {part}
+                                    {/if}
+                                {/each}
+                            {:else}
+                                {adapterData.static.desc}
+                            {/if}
+                            {#if adapterData.static.url}
+                                <Link external href={adapterData.static.url}>Learn more</Link>
+                            {/if}
+                        </Card.Selector>
+                    </Layout.Grid>
+                {/if}
+                <Fieldset legend="Settings">
+                    <Layout.Stack gap="xl">
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="installCommand"
+                                label="Install command"
+                                bind:value={installCommand}
+                                placeholder={frameworkDataAdapter?.defaultInstallCommand} />
 
-            <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                <InputText
-                    id="installCommand"
-                    label="Install command"
-                    bind:value={installCommand}
-                    placeholder={frameworkData.adapters[site.adapter].defaultInstallCommand} />
-                <Button secondary size="s" on:click={() => (installCommand = '')}>Reset</Button>
-            </Layout.Stack>
-            <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                <InputText
-                    id="buildCommand"
-                    label="Build command"
-                    bind:value={buildCommand}
-                    placeholder={frameworkData.adapters[site.adapter].defaultBuildCommand} />
-                <Button secondary size="s" on:click={() => (buildCommand = '')}>Reset</Button>
-            </Layout.Stack>
-            <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                <InputText
-                    id="outputDirectory"
-                    label="Output directory"
-                    bind:value={outputDirectory}
-                    placeholder={frameworkData.adapters[site.adapter].defaultOutputDirectory} />
-                <Button secondary size="s" on:click={() => (outputDirectory = '')}>Reset</Button>
+                            <Button
+                                secondary
+                                size="s"
+                                on:click={() =>
+                                    (installCommand =
+                                        site?.installCommand ??
+                                        selectedFramework.adapters[site.adapter]
+                                            ?.defaultInstallCommand)}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="buildCommand"
+                                label="Build command"
+                                bind:value={buildCommand}
+                                placeholder={frameworkDataAdapter?.defaultBuildCommand} />
+                            <Button
+                                secondary
+                                size="s"
+                                on:click={() =>
+                                    (buildCommand =
+                                        site?.buildCommand ??
+                                        selectedFramework.adapters[site.adapter]
+                                            ?.defaultBuildCommand)}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                            <InputText
+                                id="outputDirectory"
+                                label="Output directory"
+                                bind:value={outputDirectory}
+                                placeholder={frameworkDataAdapter?.defaultOutputDirectory} />
+                            <Button
+                                secondary
+                                size="s"
+                                on:click={() =>
+                                    (outputDirectory =
+                                        site?.outputDirectory ??
+                                        selectedFramework.adapters[site.adapter]
+                                            ?.defaultOutputDirectory)}>
+                                Reset
+                            </Button>
+                        </Layout.Stack>
+                        {#if showFallback}
+                            <InputText
+                                id="fallback"
+                                label="Fallback file"
+                                placeholder="index.html"
+                                bind:value={fallback}>
+                                <Tooltip slot="info">
+                                    <Icon icon={IconInfo} size="s" />
+                                    <span slot="tooltip">
+                                        Provide a fallback file for advanced routing and proper page
+                                        handling in SPA mode.
+                                    </span>
+                                </Tooltip>
+                            </InputText>
+                        {/if}
+                    </Layout.Stack>
+                </Fieldset>
             </Layout.Stack>
         </svelte:fragment>
 

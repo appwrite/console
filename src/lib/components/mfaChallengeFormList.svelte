@@ -10,10 +10,10 @@
             }
             await sdk.forConsole.account.updateMfaChallenge(challenge.$id, code);
             await invalidate(Dependencies.ACCOUNT);
-            trackEvent(Submit.AccountCreate);
+            trackEvent(Submit.AccountLogin, { mfa_used: true });
         } catch (error) {
             inputDigitFields?.clearInputsAndRefocus();
-            trackError(error, Submit.AccountCreate);
+            trackError(error, Submit.AccountLogin);
             throw error;
         }
     }

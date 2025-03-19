@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
@@ -22,18 +22,23 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
-    import ConnectBehaviour from './connectBehaviour.svelte';
-    import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { Adapter, BuildRuntime, Framework, ID } from '@appwrite.io/console';
-    import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
+    import {
+        ConnectBehaviour,
+        NewRepository,
+        ProductionBranchFieldset,
+        Repositories,
+        RepositoryBehaviour
+    } from '$lib/components/git';
     import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
     import { consoleVariables } from '$routes/(console)/store';
     import { project } from '$routes/(console)/project-[project]/store';
     import { buildVerboseDomain } from '../../store';
     import { organization } from '$lib/stores/organization';
+    import { connectGitHub } from '$lib/stores/git';
 
     export let data;
 
@@ -47,7 +52,6 @@
     let name = data.template.name;
     let id = ID.unique();
     let domain = id;
-    // let domainIsValid = true;
     let framework = data?.template?.frameworks[0];
     let branch = 'main';
     let rootDir = './';
@@ -67,23 +71,6 @@
         }
         selectedInstallationId = $installation?.$id;
     });
-
-    let callbackState: Record<string, string> = null;
-
-    function connectGitHub() {
-        const redirect = new URL($page.url);
-        if (callbackState) {
-            Object.keys(callbackState).forEach((key) => {
-                redirect.searchParams.append(key, callbackState[key]);
-            });
-        }
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('project', $page.params.project);
-        target.searchParams.set('success', redirect.toString());
-        target.searchParams.set('failure', redirect.toString());
-        target.searchParams.set('mode', 'admin');
-        return target;
-    }
 
     async function createRepository() {
         try {
@@ -113,15 +100,7 @@
                 message: 'Please select a repository'
             });
             return;
-        }
-        // else if (!domainIsValid) {
-        //     addNotification({
-        //         type: 'error',
-        //         message: 'Please enter a valid domain'
-        //     });
-        //     return;
-        // }
-        else {
+        } else {
             try {
                 domain = await buildVerboseDomain(
                     data.template.name,
@@ -146,7 +125,7 @@
                     framework.outputDirectory,
                     framework.adapter as unknown as Adapter,
                     connectBehaviour === 'later' ? undefined : selectedInstallationId || undefined,
-                    framework.fallbackFile,
+                    framework?.fallbackFile || undefined,
                     selectedRepository || undefined,
                     branch || undefined,
                     selectedRepository ? silentMode : undefined,
@@ -236,7 +215,7 @@
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Icon size="s" icon={IconGithub} />
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {$repository.name}
+                                    {$repository.organization}/{$repository.name}
                                 </Typography.Text>
                             </Layout.Stack>
                             <Button
@@ -249,11 +228,15 @@
                             </Button>
                         </Layout.Stack>
                     </Card>
-                    <ProductionBranch bind:branch bind:rootDir bind:silentMode />
+                    <ProductionBranchFieldset
+                        bind:branch
+                        bind:rootDir
+                        bind:silentMode
+                        installationId={selectedInstallationId}
+                        repositoryId={selectedRepository} />
                     {#if data.template.variables?.length}
                         <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
-                    <!-- <Domain bind:domain bind:domainIsValid /> -->
                 </Layout.Stack>
             {:else}
                 {@const options = data.template.frameworks.map((framework) => {
@@ -305,7 +288,7 @@
                                         product="sites"
                                         action="button"
                                         on:connect={(e) => {
-                                            trackEvent('click_connect_repository', {
+                                            trackEvent(Click.ConnectRepositoryClick, {
                                                 from: 'template-wizard'
                                             });
                                             repository.set(e.detail);
@@ -355,10 +338,11 @@
                 <Image
                     objectPosition="top"
                     border
-                    src={data?.template?.demoImage ||
-                        ($app.themeInUse === 'dark'
-                            ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                            : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+                    src={$app.themeInUse === 'dark'
+                        ? data?.template?.screenshotDark ||
+                          `${base}/images/sites/screenshot-placeholder-dark.svg`
+                        : data?.template?.screenshotLight ||
+                          `${base}/images/sites/screenshot-placeholder-light.svg`}
                     alt={data.template.name}
                     ratio="16/9" />
             </Layout.Stack>

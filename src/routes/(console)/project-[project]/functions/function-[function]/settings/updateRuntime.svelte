@@ -3,35 +3,30 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, Form, FormList } from '$lib/elements/forms';
+    import { Dependencies } from '$lib/constants';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { specificationsList } from '$lib/stores/specifications';
-    import { runtimesList } from '$lib/stores/runtimes';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime } from '@appwrite.io/console';
-    import { isCloud } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
-    import SpecificationsTooltip from '$lib/wizards/functions/components/specificationsTooltip.svelte';
+    import { Runtime, type Models } from '@appwrite.io/console';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import Link from '$lib/elements/link.svelte';
 
+    export let runtimesList: Models.RuntimeList;
     const functionId = $page.params.function;
-    let runtime: string = null;
-    let specification: string = null;
+    let runtime: string = $func.runtime;
+    let entrypoint = $func.entrypoint;
 
     let options = [];
     let specificationOptions = [];
 
     onMount(async () => {
-        runtime ??= $func.runtime;
-        specification ??= $func.specification;
-
-        let runtimes = await $runtimesList;
         let allowedSpecifications = (await $specificationsList).specifications;
-        options = runtimes.runtimes.map((runtime) => ({
+        options = runtimesList.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
@@ -60,7 +55,7 @@
                 $func.timeout || undefined,
                 $func.enabled || undefined,
                 $func.logging || undefined,
-                $func.entrypoint || undefined,
+                entrypoint || undefined,
                 $func.commands || undefined,
                 $func.scopes || undefined,
                 $func.installationId || undefined,
@@ -68,51 +63,51 @@
                 $func.providerBranch || undefined,
                 $func.providerSilentMode || undefined,
                 $func.providerRootDirectory || undefined,
-                specification
+                $func.specification || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Runtime settings have been updated',
                 type: 'success'
             });
-            trackEvent(Submit.FunctionUpdateName);
+            trackEvent(Submit.FunctionUpdateRuntime, { runtime });
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.FunctionUpdateName);
+            trackError(error, Submit.FunctionUpdateRuntime);
         }
     }
 
-    $: isUpdateButtonEnabled = runtime !== $func?.runtime || specification !== $func?.specification;
+    $: isUpdateButtonEnabled = runtime !== $func?.runtime || entrypoint !== $func?.entrypoint;
 </script>
 
 <Form onSubmit={updateRuntime}>
     <CardGrid>
         <svelte:fragment slot="title">Runtime</svelte:fragment>
+        <Typography.Text>
+            Select the runtime for executing your function and define its entrypoint. Version
+            changes apply on redeploy and can be updated here. <Link external href="#"
+                >Learn more</Link
+            >.
+        </Typography.Text>
         <svelte:fragment slot="aside">
-            <FormList>
+            <Layout.Stack gap="l">
                 <InputSelect
                     label="Runtime"
                     id="runtime"
                     placeholder="Select runtime"
                     bind:value={runtime}
                     {options}
+                    required />
+                <InputText
+                    label="Entrypoint"
+                    id="entrypoint"
                     required
-                    hideRequired />
-                <InputSelect
-                    label="CPU and memory"
-                    id="size"
-                    placeholder="Select runtime specification"
-                    bind:value={specification}
-                    options={specificationOptions}
-                    popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
-                        ? SpecificationsTooltip
-                        : null}
-                    required
-                    hideRequired />
-            </FormList>
+                    placeholder="Enter entrypoint"
+                    bind:value={$func.entrypoint} />
+            </Layout.Stack>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

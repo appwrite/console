@@ -5,6 +5,7 @@
     import Delete from './delete.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Card, Typography } from '@appwrite.io/pink-svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let showDelete = false;
 </script>
@@ -20,7 +21,12 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        <Button
+            secondary
+            on:click={() => {
+                showDelete = true;
+                trackEvent(Click.SettingsWebhookDeleteClick);
+            }}>Delete</Button>
     </svelte:fragment>
 </CardGrid>
 

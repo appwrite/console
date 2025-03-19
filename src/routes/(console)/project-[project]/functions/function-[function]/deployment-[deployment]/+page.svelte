@@ -1,21 +1,21 @@
 <script lang="ts">
-    import { CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { func } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { deployment } from './store';
-    import BoxAvatar from '$lib/components/boxAvatar.svelte';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import Delete from '../delete.svelte';
-    import Activate from '../activate.svelte';
-    import Cancel from '../cancel.svelte';
-    import DeploymentCard from '../deploymentCard.svelte';
+    import Activate from '../(modals)/activateModal.svelte';
+    import Cancel from '../(modals)/cancel.svelte';
+    import DeploymentCard from '../(components)/deploymentCard.svelte';
+    import Delete from '../(modals)/deleteModal.svelte';
+    import { Accordion, Card, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
+    import { capitalize } from '$lib/helpers/string';
+    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
+    import { timer } from '$lib/actions/timer';
+    import { app } from '$lib/stores/app';
 
     export let data;
 
@@ -24,34 +24,21 @@
     let showCancel = false;
     let showActivate = false;
 
-    let enableScrollButton = false;
-    let codePanelContent: HTMLElement;
-
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
 
+    //TODO: implement output download
     function getDownload(deploymentId: string) {
         return (
-            sdk.forProject.functions.getDeploymentDownload($func.$id, deploymentId).toString() +
-            '&mode=admin'
+            sdk.forProject.functions.getDeploymentDownload(data.func.$id, deploymentId).toString() +
+                '&mode=admin',
+            DeploymentDownloadType.Source
         );
     }
 
-    function handleScroll() {
-        const threshold = codePanelContent.clientHeight * 0.25;
-        enableScrollButton = codePanelContent.scrollTop > threshold;
-    }
-
     onMount(() => {
-        logs = $deployment.buildLogs;
-
-        codePanelContent = document.querySelector('.code-panel-content');
-        codePanelContent.addEventListener('scroll', handleScroll);
-
-        if ($deployment.status === 'ready') {
-            return;
-        }
+        logs = data.deployment.buildLogs;
 
         const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
             'console',
@@ -71,16 +58,33 @@
 
         return () => {
             unsubscribe();
-            codePanelContent.removeEventListener('scroll', handleScroll);
         };
     });
+
+    export function badgeTypeDeployment(status: string) {
+        switch (status) {
+            case 'failed':
+                return 'error';
+            case 'ready':
+                return 'success';
+            case 'building':
+                return 'warning';
+            case 'processing':
+                return undefined;
+            default:
+                return undefined;
+        }
+    }
+
+    $: console.log(logs);
+    $: console.log(data.deployment);
 </script>
 
 <Container>
-    <DeploymentCard deployment={$deployment}>
-        <svelte:fragment slot="actions">
-            <div class="u-flex u-flex-wrap">
-                {#if $deployment.status === 'processing' || $deployment.status === 'building' || $deployment.status === 'waiting'}
+    <DeploymentCard proxyRuleList={data.proxyRuleList} deployment={data.deployment}>
+        <svelte:fragment slot="footer">
+            <Layout.Stack direction="row" inline>
+                {#if data.deployment.status === 'processing' || data.deployment.status === 'building' || data.deployment.status === 'waiting'}
                     <Button
                         text
                         on:click={() => {
@@ -88,81 +92,57 @@
                         }}>Cancel</Button>
                 {/if}
 
-                {#if $deployment.size > 0}
-                    <Button text href={getDownload($deployment.$id)}>Download code</Button>
+                {#if data.deployment.sourceSize > 0}
+                    <Button secondary href={getDownload(data.deployment.$id)}>Download</Button>
                 {/if}
 
-                {#if $func.deployment !== $deployment.$id && $deployment.status === 'ready'}
+                {#if data.func.deploymentId !== data.deployment.$id && data.deployment.status === 'ready'}
                     <Button
-                        secondary
                         disabled={data.activeDeployment}
                         on:click={() => {
                             showActivate = true;
                         }}>Activate</Button>
                 {/if}
-            </div>
+            </Layout.Stack>
         </svelte:fragment>
     </DeploymentCard>
 
-    <div class="u-stretch u-overflow-hidden u-padding-block-start-24">
-        <section class="code-panel" style="border-radius: var(--border-radius-medium);">
-            <header
-                class="code-panel-header u-flex u-main-space-between u-width-full-line u-flex-wrap u-gap-16">
-                <div class="u-flex u-flex-vertical">
-                    <h4 class="u-bold">Build {$func.name}</h4>
-                    {#if $deployment.status === 'building'}
-                        <span>Building...</span>
+    <Card.Base padding="s">
+        <Accordion
+            title="Deployment logs"
+            badge={capitalize(data.deployment.status)}
+            open={data.deployment.status !== 'ready'}
+            badgeType={badgeTypeDeployment(data.deployment.status)}
+            hideDivider>
+            <Layout.Stack gap="xl">
+                {#key data.deployment.buildLogs}
+                    <Logs
+                        showScrollButton
+                        logs={data.deployment.buildLogs || 'No logs available yet...'}
+                        bind:theme={$app.themeInUse} />
+                {/key}
+            </Layout.Stack>
+
+            <svelte:fragment slot="end">
+                <Layout.Stack direction="row" alignItems="center" inline>
+                    {#if ['processing', 'building'].includes(data.deployment.status)}
+                        <Typography.Code color="--fgcolor-neutral-secondary">
+                            <Layout.Stack direction="row" alignItems="center" inline>
+                                <p use:timer={{ start: data.deployment.$createdAt }} />
+                                <Spinner size="s" />
+                            </Layout.Stack>
+                        </Typography.Code>
                     {:else}
-                        <span class="u-capitalize">{$deployment.status}</span>
+                        <Typography.Code color="--fgcolor-neutral-secondary">
+                            {formatTimeDetailed(data.deployment.buildDuration)}
+                        </Typography.Code>
                     {/if}
-                </div>
-
-                <div class="u-flex u-gap-16">
-                    <!-- TODO: add button once function is implemented -->
-                    <!-- <Button disabled text>
-                            <span class="icon-external-link" aria-hidden="true" /> Raw data</Button> -->
-                    <Button
-                        secondary
-                        disabled={!enableScrollButton}
-                        on:click={() => codePanelContent?.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <span class="icon-arrow-sm-up" aria-hidden="true" /> Scroll to top</Button>
-                </div>
-            </header>
-            <div class="code-panel-content">
-                <pre><code>{logs}</code></pre>
-            </div>
-        </section>
-    </div>
-
-    {#if !data.activeDeployment}
-        <CardGrid>
-            <svelte:fragment slot="title">Delete deployment</svelte:fragment>
-            The deployment will be permanently deleted, including all data associated with it. This action
-            is irreversible.
-            <svelte:fragment slot="aside">
-                <BoxAvatar>
-                    <p>Last updated: {toLocaleDateTime($func.$updatedAt)}</p>
-                </BoxAvatar>
+                </Layout.Stack>
             </svelte:fragment>
-            <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-            </svelte:fragment>
-        </CardGrid>
-    {/if}
+        </Accordion>
+    </Card.Base>
 </Container>
 
-<Delete selectedDeployment={$deployment} bind:showDelete />
-<Cancel selectedDeployment={$deployment} bind:showCancel />
-<Activate selectedDeployment={$deployment} bind:showActivate on:activated={handleActivate} />
-
-<style>
-    @media (max-width: 768px) {
-        .code-panel-header {
-            flex-direction: column;
-        }
-    }
-
-    .code-panel-content {
-        max-height: 50vh;
-    }
-</style>
+<Delete selectedDeployment={data.deployment} bind:showDelete />
+<Cancel selectedDeployment={data.deployment} bind:showCancel />
+<Activate selectedDeployment={data.deployment} bind:showActivate on:activated={handleActivate} />

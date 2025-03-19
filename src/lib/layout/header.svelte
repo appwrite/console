@@ -6,7 +6,7 @@
     import { user } from '$lib/stores/user';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Click, trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -30,6 +30,7 @@
 
     function toggleFeedback() {
         feedback.toggleFeedback();
+        trackEvent(Click.FeedbackSubmitClick);
         if ($feedback.notification) {
             feedback.toggleNotification();
             feedback.addVisualization();
@@ -53,7 +54,7 @@
     }
 
     $: if (showDropdown) {
-        trackEvent('click_menu_dropdown');
+        trackEvent(Click.MenuDropDownClick);
     }
 
     const slideFade: typeof slide = (node, options) => {
@@ -97,7 +98,7 @@
                 disabled={$organization?.markedForDeletion}
                 href={$upgradeURL}
                 on:click={() => {
-                    trackEvent('click_organization_upgrade', {
+                    trackEvent(Click.OrganizationClickUpgrade, {
                         from: 'button',
                         source: 'top_nav'
                     });

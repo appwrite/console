@@ -106,47 +106,43 @@
 </script>
 
 <Modal title="Export to self-hosted instance" bind:show {onSubmit}>
-    <FormList>
-        <Alert isStandalone>
-            <svelte:fragment slot="title">API key creation</svelte:fragment>
-            By initiating the transfer, an API key will be automatically generated in the background,
-            which you can delete after completion
-        </Alert>
+    <Alert isStandalone>
+        <svelte:fragment slot="title">API key creation</svelte:fragment>
+        By initiating the transfer, an API key will be automatically generated in the background, which
+        you can delete after completion
+    </Alert>
 
-        <InputText
-            label="Endpoint self-hosted instance"
-            required
-            id="endpoint"
-            placeholder="https://[YOUR_APPWRITE_HOSTNAME]"
-            autofocus
-            on:input={(e) => {
-                if (!submitted) return;
-                const input = e.target;
-                const value = input.value;
+    <InputText
+        label="Endpoint self-hosted instance"
+        required
+        id="endpoint"
+        placeholder="https://[YOUR_APPWRITE_HOSTNAME]"
+        autofocus
+        on:input={(e) => {
+            if (!submitted) return;
+            const input = e.target;
+            const value = input.value;
 
-                if (!isValidEndpoint(value)) {
-                    input.setCustomValidity('Please enter a valid endpoint');
-                } else {
-                    input.setCustomValidity('');
-                }
-                input.reportValidity();
-            }} />
+            if (!isValidEndpoint(value)) {
+                input.setCustomValidity('Please enter a valid endpoint');
+            } else {
+                input.setCustomValidity('');
+            }
+            input.reportValidity();
+        }} />
 
-        <Box>
-            <p class="u-bold">
-                Share your feedback: why our self-hosted solution works better for you
-            </p>
-            <p class="u-margin-block-start-8">
-                We appreciate your continued support and we understand that our self-hosted solution
-                might better fit your needs. To help us improve our Cloud solution, please share why
-                it works better for you. Your feedback is important to us and we'll use it to make
-                our services better.
-            </p>
-            <div class="u-margin-block-start-24">
-                <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
-            </div>
-        </Box>
-    </FormList>
+    <Box>
+        <p class="u-bold">Share your feedback: why our self-hosted solution works better for you</p>
+        <p class="u-margin-block-start-8">
+            We appreciate your continued support and we understand that our self-hosted solution
+            might better fit your needs. To help us improve our Cloud solution, please share why it
+            works better for you. Your feedback is important to us and we'll use it to make our
+            services better.
+        </p>
+        <div class="u-margin-block-start-24">
+            <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
+        </div>
+    </Box>
 
     <div class="u-flex u-gap-16 u-cross-center" slot="footer">
         <span> You will be redirected to your self-hosted instance </span>

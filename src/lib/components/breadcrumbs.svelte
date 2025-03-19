@@ -13,6 +13,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { newOrgModal } from '$lib/stores/organization';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     type Project = {
         name: string;
@@ -68,6 +69,7 @@
     let projectsBottomSheetOpen = false;
 
     function createOrg() {
+        trackEvent(Click.OrganizationClickCreate, { source: 'breadcrumbs' });
         if (isCloud) {
             goto(`${base}/create-organization`);
         } else newOrgModal.set(true);
@@ -397,7 +399,7 @@
 
     :global(.item[data-highlighted]) {
         border-radius: var(--border-radius-S, 8px);
-        background: var(--color-overlay-neutral-hover, rgba(25, 25, 28, 0.03));
+        background: var(--overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
     .trigger {
         display: inline-flex;
@@ -412,7 +414,7 @@
         color: var(--fgcolor-neutral-primary, #2d2d31);
         border-radius: var(--corner-radius-medium, 8px);
 
-        cursor: default;
+        cursor: pointer;
         /* Body text/level 2 Regular */
         font-family: Inter;
         font-size: 14px;
@@ -422,7 +424,7 @@
     }
 
     .trigger:hover {
-        background: var(--color-overlay-neutral-hover, rgba(25, 25, 28, 0.03));
+        background: var(--overlay-neutral-hover, rgba(25, 25, 28, 0.03));
     }
 
     :global(.trigger[data-highlighted]) {
@@ -430,12 +432,12 @@
         background: var(--bgcolor-neutral-secondary, #f4f4f7);
     }
 
-    :global(.trigger[data-highlighted]:focus) {
+    :global(.trigger[data-highlighted]:focus-visible) {
         outline: none;
         box-shadow: 0 0 0 2px var(--bgcolor-neutral-secondary, #f4f4f7);
     }
 
-    .trigger:focus {
+    .trigger:focus-visible {
         z-index: 30;
         box-shadow:
             var(--shadow-offsetx-0, 0px) var(--shadow-offsety-0, 0px) 0 2px

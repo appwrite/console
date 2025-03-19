@@ -4,23 +4,20 @@
     import { Badge, Divider, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import OpenOnMobileModal from '../(components)/openOnMobileModal.svelte';
     import { timeFromNow } from '$lib/helpers/date';
-    import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
+    import { IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import { protocol } from '$routes/(console)/store';
     import { type Models } from '@appwrite.io/console';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Card, Trim } from '$lib/components';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let proxyRuleList: Models.ProxyRuleList;
 
     let showDomainQR = false;
     let selectedDomainURL: string;
 
-    // $: hasCustomDomain = proxyRuleList?.total
-    //     ? proxyRuleList.rules.some((rule) =>
-    //           rule.domain.includes($consoleVariables._APP_DOMAIN_TARGET)
-    //       )
-    //     : false;
+    $: rules = proxyRuleList?.rules?.filter((rule) => rule.trigger === 'manual') ?? [];
 </script>
 
 <Layout.Stack>
@@ -39,7 +36,7 @@
     </Layout.Stack>
     <Card padding="xs" radius="s" isTile>
         <Layout.Stack>
-            {#if proxyRuleList?.rules?.length <= 1}
+            {#if rules.length <= 1}
                 <Layout.Stack gap="l">
                     <Layout.Stack gap="xxs">
                         <Typography.Text variant="m-500">
@@ -54,28 +51,37 @@
                         <Button
                             secondary
                             size="s"
+                            on:click={() => {
+                                trackEvent(Click.DomainCreateClick, {
+                                    source: 'sites_domain_overview'
+                                });
+                            }}
                             href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
                             Add domain
                         </Button>
                     </div>
                 </Layout.Stack>
-                {#if proxyRuleList?.rules?.length}
+                {#if rules?.length}
                     <Divider />
                 {/if}
             {/if}
-            {#each proxyRuleList?.rules?.slice(0, 3) as rule, i}
+            {#each rules?.slice(0, 3) as rule, i}
                 <Layout.Stack
                     alignItems="center"
                     justifyContent="space-between"
                     direction="row"
                     gap="xl">
                     <Layout.Stack gap="xxs" inline>
-                        <Link variant="quiet" href={`${$protocol}${rule.domain}`} size="m" external>
+                        <Link
+                            variant="quiet"
+                            href={`${$protocol}${rule.domain}`}
+                            size="m"
+                            external
+                            icon>
                             <Layout.Stack gap="xs" inline direction="row" alignItems="center">
                                 <Trim alternativeTrim>
                                     {rule.domain}
                                 </Trim>
-                                <Icon icon={IconExternalLink} />
                             </Layout.Stack>
                         </Link>
                         <Typography.Caption variant="400" truncate>
@@ -94,7 +100,7 @@
                         <Icon icon={IconQrcode} />
                     </Button>
                 </Layout.Stack>
-                {#if i < 2 && i < proxyRuleList.rules.length - 1}
+                {#if i < 2 && i < rules.length - 1}
                     <Divider />
                 {/if}
             {/each}

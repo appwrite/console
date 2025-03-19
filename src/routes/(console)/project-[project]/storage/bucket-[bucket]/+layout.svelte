@@ -10,7 +10,6 @@
     import { fileSearcher } from '$lib/commandCenter/searchers';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { project } from '../../store';
-    import { showCreateFile } from './+page.svelte';
     import { bucket } from './store';
     import { IconKey, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Modal } from '$lib/components';
+    import { Confirm } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -14,7 +14,7 @@
 
     async function activate() {
         try {
-            await sdk.forProject.sites.updateDeployment(siteId, selectedDeploymentId);
+            await sdk.forProject.sites.updateSiteDeployment(siteId, selectedDeploymentId);
             addNotification({
                 type: 'success',
                 message: `Deployment has been activated`
@@ -31,13 +31,13 @@
     }
 </script>
 
-<Modal title="Activate deployment" bind:show bind:error onSubmit={activate}>
+<Confirm title="Activate deployment" bind:open={show} bind:error onSubmit={activate}>
     <p class="text">
-        Are you sure you want to activate this deployment? This might affect your production code.
+        This deployment is ready but not yet live. Activate it to make it publicly accessible.
     </p>
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit>Activate</Button>
     </svelte:fragment>
-</Modal>
+</Confirm>

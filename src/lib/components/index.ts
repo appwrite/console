@@ -66,7 +66,6 @@ export { default as NumericListItem } from './numericListItem.svelte';
 export { default as EyebrowHeading } from './eyebrowHeading.svelte';
 export { default as SvgIcon } from './svgIcon.svelte';
 export { default as MigrationBox } from './migrationBox.svelte';
-export { default as FloatingActionBar } from './floatingActionBar.svelte';
 export { default as LoadingDots } from './loadingDots.svelte';
 export { default as FakeModal } from './fakeModal.svelte';
 export { default as RadioBoxes } from './radioBoxes.svelte';

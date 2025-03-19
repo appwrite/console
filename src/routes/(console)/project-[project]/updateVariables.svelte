@@ -4,13 +4,13 @@
     import { Button } from '$lib/elements/forms';
     import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
-    import { invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { goto, invalidate } from '$app/navigation';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { project } from '$routes/(console)/project-[project]/store';
     import PromoteVariableModal from './promoteVariableModal.svelte';
-    import CreateVariable from './createVariable.svelte';
+    import CreateVariable from './createVariableModal.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
     import { base } from '$app/paths';
     import {
@@ -26,6 +26,7 @@
     import {
         IconCode,
         IconDotsHorizontal,
+        IconEyeOff,
         IconGlobeAlt,
         IconPencil,
         IconPlus,
@@ -34,10 +35,13 @@
     } from '@appwrite.io/pink-icons-svelte';
     import Link from '$lib/elements/link.svelte';
     import Copy from '$lib/components/copy.svelte';
+    import { page } from '$app/stores';
+    import UpdateVariablesModal from './updateVariablesModal.svelte';
+    import SecretVariableModal from './secretVariableModal.svelte';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
-
+    export let analyticsSource = '';
     export let isGlobal: boolean;
     export let sdkCreateVariable: (
         key: string,
@@ -53,20 +57,24 @@
     export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
     export let product: 'function' | 'site' = 'function';
 
-    let showVariablesDropdown = [];
     let selectedVar: Models.Variable = null;
     let showVariablesUpload = false;
     let showVariablesModal = false;
     let showPromoteModal = false;
     let showEditorModal = false;
+    let showUpdate = false;
+    let showSecretModal = false;
     let offset = 0;
     const limit = 10;
 
-    async function handleVariableCreated(event: CustomEvent<Models.Variable>) {
-        const variable = event.detail;
+    async function handleVariableCreated(event: CustomEvent<Models.Variable[]>) {
+        const variables = event.detail;
+        console.log(variables);
         try {
-            await sdkCreateVariable(variable.key, variable.value, variable.secret);
-            selectedVar = null;
+            const promises = variables.map((variable) =>
+                sdkCreateVariable(variable.key, variable.value, variable?.secret || false)
+            );
+            await Promise.all(promises);
             showVariablesModal = false;
             addNotification({
                 type: 'success',
@@ -95,6 +103,28 @@
                 message: `${$project.name} ${
                     isGlobal ? 'global variable' : 'variable'
                 } has been updated.`
+            });
+            trackEvent(Submit.VariableUpdate);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.VariableUpdate);
+        }
+    }
+    async function handleVariableSecret(event: CustomEvent<Models.Variable>) {
+        const variable = event.detail;
+        console.log(variable);
+        try {
+            await sdkUpdateVariable(variable.$id, variable.key, variable.value, variable.secret);
+            selectedVar = null;
+            showVariablesModal = false;
+            addNotification({
+                type: 'success',
+                message: `${$project.name} ${
+                    isGlobal ? 'global variable' : 'variable'
+                } has been marked as secret.`
             });
             trackEvent(Submit.VariableUpdate);
         } catch (error) {
@@ -177,7 +207,13 @@
 
             addNotification({
                 type: 'success',
-                message: `Variable has been ${isConflicting ? 'overwritten' : 'promoted'}.`
+                message: `Variable has been ${isConflicting ? 'overwritten' : 'promoted'}. You can find it in the project settings.`,
+                buttons: [
+                    {
+                        method: () => goto(`${base}/project-${$page.params.project}/settings`),
+                        name: 'Go to settings'
+                    }
+                ]
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {
@@ -222,15 +258,30 @@
         <Layout.Stack gap="l">
             <Layout.Stack direction="row">
                 <Layout.Stack direction="row" gap="s">
-                    <Button secondary on:mousedown={() => (showEditorModal = true)}>
+                    <Button
+                        secondary
+                        on:mousedown={() => {
+                            showEditorModal = true;
+                            trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
+                        }}>
                         <Icon slot="start" icon={IconCode} /> Editor
                     </Button>
-                    <Button secondary on:mousedown={() => (showVariablesUpload = true)}>
+                    <Button
+                        secondary
+                        on:mousedown={() => {
+                            showEditorModal = true;
+                            trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
+                        }}>
                         <Icon slot="start" icon={IconUpload} /> Import .env
                     </Button>
                 </Layout.Stack>
                 {#if variableList.total}
-                    <Button secondary on:mousedown={() => (showVariablesModal = true)}>
+                    <Button
+                        secondary
+                        on:mousedown={() => {
+                            showVariablesModal = true;
+                            trackEvent(Click.VariablesCreateClick, { source: 'project_settings' });
+                        }}>
                         <Icon slot="start" icon={IconPlus} /> Create variable
                     </Button>
                 {/if}
@@ -257,15 +308,17 @@
                         </p>
                     </Alert.Inline>
                 {/if}
-                <Table.Root>
-                    <svelte:fragment slot="header">
-                        <Table.Header.Cell width="180px">Key</Table.Header.Cell>
-                        <Table.Header.Cell>Value</Table.Header.Cell>
-                        <Table.Header.Cell width="30px" />
+                <Table.Root
+                    columns={[{ id: 'key' }, { id: 'value' }, { id: 'actions', width: 30 }]}
+                    let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
+                        <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
+                        <Table.Header.Cell column="actions" {root} />
                     </svelte:fragment>
-                    {#each variableList.variables.slice(offset, offset + limit) as variable, i}
-                        <Table.Row>
-                            <Table.Cell>
+                    {#each variableList.variables.slice(offset, offset + limit) as variable}
+                        <Table.Row.Base {root}>
+                            <Table.Cell column="key" {root}>
                                 {@const isConflicting = globalVariableList
                                     ? globalVariableList.variables.find(
                                           (globalVariable) => globalVariable.key === variable.key
@@ -285,19 +338,17 @@
                                 </Layout.Stack>
                             </Table.Cell>
 
-                            <Table.Cell>
-                                <div style="max-width: 20rem">
-                                    {#if variable.secret}
-                                        <Badge content="Secret" variant="secondary" />
-                                    {:else}
-                                        <InteractiveText
-                                            variant="secret"
-                                            isVisible={false}
-                                            text={variable.value} />
-                                    {/if}
-                                </div>
+                            <Table.Cell column="value" {root}>
+                                {#if variable.secret}
+                                    <Badge content="Secret" variant="secondary" />
+                                {:else}
+                                    <InteractiveText
+                                        variant="secret"
+                                        isVisible={false}
+                                        text={variable.value} />
+                                {/if}
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell column="actions" {root}>
                                 <Popover placement="bottom-end" let:toggle padding="none">
                                     <Button
                                         text
@@ -310,22 +361,31 @@
                                     </Button>
                                     <svelte:fragment slot="tooltip" let:toggle>
                                         <ActionMenu.Root>
-                                            <ActionMenu.Item.Button
-                                                trailingIcon={IconPencil}
-                                                on:click={(e) => {
-                                                    selectedVar = variable;
-                                                    showVariablesDropdown[i] = false;
-                                                    showVariablesModal = true;
-                                                    toggle(e);
-                                                }}>
-                                                Update
-                                            </ActionMenu.Item.Button>
+                                            {#if !variable.secret}
+                                                <ActionMenu.Item.Button
+                                                    trailingIcon={IconPencil}
+                                                    on:click={(e) => {
+                                                        selectedVar = variable;
+                                                        showUpdate = true;
+                                                        toggle(e);
+                                                    }}>
+                                                    Update
+                                                </ActionMenu.Item.Button>
+                                                <ActionMenu.Item.Button
+                                                    trailingIcon={IconEyeOff}
+                                                    on:click={(e) => {
+                                                        selectedVar = variable;
+                                                        showSecretModal = true;
+                                                        toggle(e);
+                                                    }}>
+                                                    Secret
+                                                </ActionMenu.Item.Button>
+                                            {/if}
                                             {#if !isGlobal}
                                                 <ActionMenu.Item.Button
                                                     trailingIcon={IconGlobeAlt}
                                                     on:click={async (e) => {
                                                         selectedVar = variable;
-                                                        showVariablesDropdown[i] = false;
                                                         showPromoteModal = true;
                                                         toggle(e);
                                                     }}>
@@ -337,7 +397,6 @@
                                                 trailingIcon={IconTrash}
                                                 on:click={async (e) => {
                                                     handleVariableDeleted(variable);
-                                                    showVariablesDropdown[i] = false;
                                                     toggle(e);
                                                 }}>
                                                 Delete
@@ -346,7 +405,7 @@
                                     </svelte:fragment>
                                 </Popover>
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
                 {#if sum > limit}
@@ -368,12 +427,24 @@
     <CreateVariable
         {isGlobal}
         {product}
-        bind:selectedVar
         bind:showCreate={showVariablesModal}
-        on:created={handleVariableCreated}
-        on:updated={handleVariableUpdated} />
+        on:created={handleVariableCreated} />
 {/if}
 
+{#if showUpdate}
+    <UpdateVariablesModal
+        {isGlobal}
+        {product}
+        bind:selectedVar
+        bind:show={showUpdate}
+        on:updated={handleVariableUpdated} />
+{/if}
+{#if showSecretModal}
+    <SecretVariableModal
+        bind:show={showSecretModal}
+        {selectedVar}
+        on:updated={handleVariableSecret} />
+{/if}
 {#if showEditorModal}
     <RawVariableEditor
         {isGlobal}

@@ -1,15 +1,6 @@
 <script lang="ts">
     import { CardGrid } from '$lib/components';
-    import {
-        Button,
-        Form,
-        FormList,
-        Helper,
-        InputFilePicker,
-        InputText,
-        InputTextarea,
-        Label
-    } from '$lib/elements/forms';
+    import { Button, Form, InputFilePicker, InputText, InputTextarea } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
@@ -19,10 +10,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { validateData } from '../wizard/pushFormList.svelte';
-    import { Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     export let message: Models.Message & { data: Record<string, any> };
 
     let title = '';
@@ -30,7 +20,6 @@
     let file: Models.File = null;
     let originalCustomData: [string, string][] = [['', '']];
     let customData: [string, string][] = [['', '']];
-    let dataError = '';
     let disabled = true;
 
     onMount(async () => {
@@ -109,74 +98,64 @@
             </div>
         </div>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="title"
-                    label="Title"
-                    disabled={message.status !== 'draft'}
-                    bind:value={title} />
-                <InputTextarea
-                    id="message"
-                    label="Message"
-                    disabled={message.status !== 'draft'}
-                    bind:value={body} />
-                <InputFilePicker
-                    disabled={message.status !== 'draft'}
-                    bind:value={file}
-                    label="Media"
-                    optionalText="(Optional)" />
-                <form class="form">
-                    <Label
-                        tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
-                        >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
-                    <div class=" u-grid u-gap-8">
-                        <ul class="form-list" style="--p-form-list-gap: 1rem">
-                            {#each customData || [] as _, rowIndex}
-                                <InputText
-                                    id={`${rowIndex}-key`}
-                                    disabled={message.status != 'draft'}
-                                    bind:value={customData[rowIndex][0]}
-                                    placeholder="Enter key"
-                                    label="Key"
-                                    showLabel={false} />
-                                <InputText
-                                    id={`${rowIndex}-value`}
-                                    disabled={message.status != 'draft'}
-                                    bind:value={customData[rowIndex][1]}
-                                    placeholder="Enter value"
-                                    label="Value"
-                                    showLabel={false}
-                                    required />
-                                <Button
-                                    text
-                                    disabled={message.status != 'draft'}
-                                    on:click={() => {
-                                        if (customData.length === 1) {
-                                            customData = [['', '']];
-                                            return;
-                                        }
-
-                                        customData = customData.filter((_, i) => i !== rowIndex);
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </Button>
-                            {/each}
-                        </ul>
-                        {#if dataError}
-                            <Helper type="warning">{dataError}</Helper>
-                        {/if}
-                        <Button
-                            text
-                            disabled={customData && customData[customData.length - 1][0] === ''}
-                            on:click={() => {
-                                customData = [...customData, ['', '']];
-                            }}>
-                            <Icon icon={IconPlus} slot="start" size="s" />
-                            Add data
-                        </Button>
-                    </div>
-                </form>
-            </FormList>
+            <InputText
+                required
+                id="title"
+                label="Title"
+                disabled={message.status !== 'draft'}
+                bind:value={title} />
+            <InputTextarea
+                required
+                id="message"
+                label="Message"
+                disabled={message.status !== 'draft'}
+                bind:value={body} />
+            <InputFilePicker
+                disabled={message.status !== 'draft'}
+                bind:value={file}
+                label="Media"
+                optionalText="(Optional)" />
+            <Layout.Stack>
+                {#each customData || [] as [key, value], index}
+                    <Layout.Stack direction="row" alignItems="flex-end">
+                        <InputText
+                            id={`key-${index}`}
+                            bind:value={key}
+                            placeholder="Enter key"
+                            label={index === 0 ? 'Key' : undefined} />
+                        <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                            <InputText
+                                id={`value-${index}`}
+                                bind:value
+                                placeholder="Enter value"
+                                label={index === 0 ? 'Value' : undefined} />
+                            <Button
+                                icon
+                                compact
+                                disabled={(!key || !value) && index === 0}
+                                on:click={() => {
+                                    if (customData.length === 1) {
+                                        customData = [['', '']];
+                                        return;
+                                    }
+                                    customData = customData.filter((_, i) => i !== index);
+                                }}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </Button>
+                        </Layout.Stack>
+                    </Layout.Stack>
+                {/each}
+                <div>
+                    <Button
+                        secondary
+                        disabled={customData.length > 0 &&
+                            customData[customData.length - 1][0] === ''}
+                        on:click={() => (customData = [...customData, ['', '']])}>
+                        <Icon icon={IconPlus} slot="start" size="s" />
+                        Add data
+                    </Button>
+                </div>
+            </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button {disabled} submit>Update</Button>

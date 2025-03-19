@@ -29,6 +29,7 @@
     export let buttonMethod: () => void = null;
     export let buttonHref: string = null;
     export let buttonEvent: string = buttonText?.toLocaleLowerCase();
+    export let buttonEventData: Record<string, unknown> = {};
     export let buttonDisabled = false;
 
     let showDropdown = false;
@@ -172,6 +173,7 @@
                 disabled={isButtonDisabled}
                 {buttonText}
                 {buttonEvent}
+                {buttonEventData}
                 {buttonMethod}
                 {buttonHref} />
         {/if}

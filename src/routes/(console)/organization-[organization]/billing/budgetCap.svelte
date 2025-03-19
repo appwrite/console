@@ -1,13 +1,14 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, CardGrid } from '$lib/components';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { CardGrid } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
+    import { Button, Form, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, currentPlan } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { Alert, Link } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
 
     let capActive = false;
@@ -55,39 +56,33 @@
         each billing cycle.
         <svelte:fragment slot="aside">
             {#if !$currentPlan.budgeting}
-                <Alert type="info">
-                    <svelte:fragment slot="title">
-                        Budget caps are a Pro plan feature
-                    </svelte:fragment>
-                    Upgrade to a Pro plan to set a budget cap for your organization. For more information
-                    on what you can do with a Pro plan,
-                    <a
-                        class="link"
+                <Alert.Inline status="info" title="Budget caps are a Pro plan feature">
+                    Upgrade to a Pro plan to set a budget cap for your organization. For more
+                    information on what you can do with a Pro plan,
+                    <Link.Anchor
                         href="https://appwrite.io/pricing"
                         target="_blank"
-                        rel="noopener noreferrer">view our pricing guide.</a>
-                </Alert>
+                        rel="noopener noreferrer">view our pricing guide.</Link.Anchor>
+                </Alert.Inline>
             {:else}
-                <FormList>
-                    <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
-                        <svelte:fragment slot="description">
-                            Budget cap limits do not include the base amount of your plan. <button
-                                class="link"
-                                type="button"
-                                on:click={() => ($showUsageRatesModal = true)}
-                                >Learn more about usage rates.
-                            </button>
-                        </svelte:fragment>
-                    </InputSwitch>
-                    {#if capActive}
-                        <InputNumber
-                            placeholder="Add budget cap"
-                            id="cap"
-                            autofocus
-                            label="Budget cap (USD)"
-                            bind:value={budget} />
-                    {/if}
-                </FormList>
+                <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
+                    <svelte:fragment slot="description">
+                        Budget cap limits do not include the base amount of your plan. <button
+                            class="link"
+                            type="button"
+                            on:click={() => ($showUsageRatesModal = true)}
+                            >Learn more about usage rates.
+                        </button>
+                    </svelte:fragment>
+                </InputSwitch>
+                {#if capActive}
+                    <InputNumber
+                        required
+                        placeholder="Add budget cap"
+                        id="cap"
+                        label="Budget cap (USD)"
+                        bind:value={budget} />
+                {/if}
             {/if}
         </svelte:fragment>
 
@@ -97,7 +92,7 @@
                     secondary
                     href={$upgradeURL}
                     on:click={() => {
-                        trackEvent('click_organization_upgrade', {
+                        trackEvent(Click.OrganizationClickUpgrade, {
                             from: 'button',
                             source: 'billing_budget_cap'
                         });

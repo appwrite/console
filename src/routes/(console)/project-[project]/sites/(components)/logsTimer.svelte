@@ -19,7 +19,7 @@
         </Typography.Code>
     {:else}
         <Typography.Code color="--fgcolor-neutral-secondary">
-            {formatTimeDetailed(deployment.buildTime)}
+            {formatTimeDetailed(deployment.buildDuration)}
         </Typography.Code>
     {/if}
 </Layout.Stack>

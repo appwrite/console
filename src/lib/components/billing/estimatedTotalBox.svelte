@@ -1,14 +1,16 @@
 <script lang="ts">
-    import { FormList, InputChoice, InputNumber } from '$lib/elements/forms';
+    import { InputChoice, InputNumber } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon } from '$lib/sdk/billing';
-    import { plansInfo, type Tier } from '$lib/stores/billing';
+    import type { Coupon, PlansMap } from '$lib/sdk/billing';
+    import { type Tier } from '$lib/stores/billing';
+    import { Card, Divider, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { CreditsApplied } from '.';
 
     export let billingPlan: Tier;
     export let collaborators: string[];
     export let couponData: Partial<Coupon>;
+    export let plans: PlansMap;
     export let billingBudget: number;
     export let fixedCoupon = false; // If true, the coupon cannot be removed
     export let isDowngrade = false;
@@ -18,7 +20,7 @@
 
     let budgetEnabled = false;
 
-    $: currentPlan = $plansInfo.get(billingPlan);
+    $: currentPlan = plans.get(billingPlan);
     $: extraSeatsCost = 0; // 0 untile trial period later replace (collaborators?.length ?? 0) * (currentPlan?.addons?.member?.price ?? 0);
     $: grossCost = currentPlan.price + extraSeatsCost;
     $: estimatedTotal =
@@ -32,51 +34,44 @@
     );
 </script>
 
-<section
-    class="card u-flex u-flex-vertical u-gap-8"
-    style:--p-card-padding="1.5rem"
-    style:--p-card-border-radius="var(--border-radius-small)">
-    <slot />
-    <span class="u-flex u-main-space-between">
-        <p class="text">{currentPlan.name} plan</p>
-        <p class="text">{formatCurrency(currentPlan.price)}</p>
-    </span>
-    <span class="u-flex u-main-space-between">
-        <p class="text" class:u-bold={isDowngrade}>Additional seats ({collaborators?.length})</p>
-        <p class="text" class:u-bold={isDowngrade}>
-            {formatCurrency(extraSeatsCost)}
-        </p>
-    </span>
-    {#if couponData?.status === 'active'}
-        <CreditsApplied bind:couponData {fixedCoupon} />
-    {/if}
-    <div class="u-sep-block-start" />
-    <span class="u-flex u-main-space-between">
-        <p class="text">
-            Upcoming charge<br /><span class="u-color-text-gray"
-                >Due on {!currentPlan.trialDays
-                    ? toLocaleDate(billingPayDate.toString())
-                    : toLocaleDate(trialEndDate.toString())}</span>
-        </p>
-        <p class="text">
-            {formatCurrency(estimatedTotal)}
-        </p>
-    </span>
-
-    <p class="text u-margin-block-start-16">
-        You'll pay <span class="u-bold">{formatCurrency(estimatedTotal)}</span> now, with your first
-        billing cycle starting on
-        <span class="u-bold"
-            >{!currentPlan.trialDays
-                ? toLocaleDate(billingPayDate.toString())
-                : toLocaleDate(trialEndDate.toString())}</span
-        >. {#if couponData?.status === 'active'}Once your credits run out, you'll be charged
-            <span class="u-bold">{formatCurrency(currentPlan.price)}</span> plus usage fees every 30
-            days.
+<Card.Base padding="s">
+    <Layout.Stack>
+        <slot />
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Typography.Text>{currentPlan.name} plan</Typography.Text>
+            <Typography.Text>{formatCurrency(currentPlan.price)}</Typography.Text>
+        </Layout.Stack>
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Typography.Text variant={isDowngrade ? 'm-500' : 'm-400'}
+                >Additional seats ({collaborators?.length})</Typography.Text>
+            <Typography.Text variant={isDowngrade ? 'm-500' : 'm-400'}
+                >{formatCurrency(extraSeatsCost)}</Typography.Text>
+        </Layout.Stack>
+        {#if couponData?.status === 'active'}
+            <CreditsApplied bind:couponData {fixedCoupon} />
         {/if}
-    </p>
+        <Divider />
+        <Layout.Stack direction="row" justifyContent="space-between">
+            <Typography.Text>
+                Upcoming charge<br />
+                Due on {!currentPlan.trialDays
+                    ? toLocaleDate(billingPayDate.toString())
+                    : toLocaleDate(trialEndDate.toString())}</Typography.Text>
+            <Typography.Text>{formatCurrency(estimatedTotal)}</Typography.Text>
+        </Layout.Stack>
 
-    <FormList class="u-margin-block-start-24">
+        <Typography.Text>
+            You'll pay <b>{formatCurrency(estimatedTotal)}</b> now, with your first billing cycle
+            starting on
+            <b
+                >{!currentPlan.trialDays
+                    ? toLocaleDate(billingPayDate.toString())
+                    : toLocaleDate(trialEndDate.toString())}</b
+            >. {#if couponData?.status === 'active'}Once your credits run out, you'll be charged
+                <b>{formatCurrency(currentPlan.price)}</b> plus usage fees every 30 days.
+            {/if}
+        </Typography.Text>
+
         <InputChoice
             type="switchbox"
             id="budget"
@@ -87,6 +82,8 @@
             {#if budgetEnabled}
                 <div class="u-margin-block-start-16">
                     <InputNumber
+                        required
+                        autofocus
                         id="budget"
                         label="Budget cap (USD)"
                         placeholder="0"
@@ -95,5 +92,5 @@
                 </div>
             {/if}
         </InputChoice>
-    </FormList>
-</section>
+    </Layout.Stack>
+</Card.Base>

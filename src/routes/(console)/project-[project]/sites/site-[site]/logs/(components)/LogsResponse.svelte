@@ -73,16 +73,16 @@
         {/if}
     {:else if responseTab === 'headers'}
         {#if selectedLog.responseHeaders?.length}
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell>Key</Table.Header.Cell>
-                    <Table.Header.Cell>Value</Table.Header.Cell>
+            <Table.Root columns={2} let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell {root}>Key</Table.Header.Cell>
+                    <Table.Header.Cell {root}>Value</Table.Header.Cell>
                 </svelte:fragment>
                 {#each selectedLog.responseHeaders as request}
-                    <Table.Row>
-                        <Table.Cell>{request.name}</Table.Cell>
-                        <Table.Cell>{request.value}</Table.Cell>
-                    </Table.Row>
+                    <Table.Row.Base {root}>
+                        <Table.Cell {root}>{request.name}</Table.Cell>
+                        <Table.Cell {root}>{request.value}</Table.Cell>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
 

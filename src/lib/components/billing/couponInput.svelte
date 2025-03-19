@@ -36,42 +36,34 @@
     }
 </script>
 
-<FormList gap={8}>
-    <InputText
-        placeholder="Coupon code"
-        id="code"
-        label="Add credits"
-        {required}
-        hideRequired
-        disabled={couponData?.status === 'active'}
-        bind:value={coupon}>
-        <Button
-            secondary
-            disabled={couponData?.status === 'active' || !coupon}
-            on:click={addCoupon}>
-            Apply
-        </Button>
-    </InputText>
-    {#if couponData?.status === 'error'}
+<InputText
+    placeholder="Coupon code"
+    id="code"
+    label="Add credits"
+    {required}
+    disabled={couponData?.status === 'active'}
+    bind:value={coupon}>
+    <Button secondary disabled={couponData?.status === 'active' || !coupon} on:click={addCoupon}>
+        Apply
+    </Button>
+</InputText>
+{#if couponData?.status === 'error'}
+    <div>
+        <span class="icon-exclamation-circle u-color-text-danger" />
+        <span>
+            {couponData.code.toUpperCase()} is not a valid promo code
+        </span>
+    </div>
+{:else if couponData?.status === 'active'}
+    <div class="u-flex u-main-space-between u-cross-center">
         <div>
-            <span class="icon-exclamation-circle u-color-text-danger" />
-            <span>
-                {couponData.code.toUpperCase()} is not a valid promo code
-            </span>
+            <span class="icon-tag u-color-text-success" />
+            <slot data={couponData}>
+                <span>
+                    {couponData.code.toUpperCase()} applied (-{formatCurrency(couponData.credits)})
+                </span>
+            </slot>
         </div>
-    {:else if couponData?.status === 'active'}
-        <div class="u-flex u-main-space-between u-cross-center">
-            <div>
-                <span class="icon-tag u-color-text-success" />
-                <slot data={couponData}>
-                    <span>
-                        {couponData.code.toUpperCase()} applied (-{formatCurrency(
-                            couponData.credits
-                        )})
-                    </span>
-                </slot>
-            </div>
-            <Button icon text on:click={removeCoupon}><span class="icon-x"></span></Button>
-        </div>
-    {/if}
-</FormList>
+        <Button icon text on:click={removeCoupon}><span class="icon-x"></span></Button>
+    </div>
+{/if}

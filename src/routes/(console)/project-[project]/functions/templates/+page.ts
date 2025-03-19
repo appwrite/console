@@ -1,12 +1,12 @@
-import { CARD_LIMIT, Dependencies } from '$lib/constants';
-import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ url, route, depends, parent }) => {
     depends(Dependencies.FUNCTIONS);
 
-    const limit = CARD_LIMIT;
+    const limit = getLimit(url, route, PAGE_LIMIT);
     const page = getPage(url);
     const search = getSearch(url);
     const view = getView(url, route, View.Grid);

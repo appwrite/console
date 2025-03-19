@@ -4,7 +4,7 @@
     import { Arrow, Avatar, AvatarGroup, CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { isSameDay, toLocaleDate } from '$lib/helpers/date';
+    import { isSameDay } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { GRACE_PERIOD_OVERRIDE, isSelfHosted } from '$lib/system';
@@ -28,6 +28,8 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Link, Status, Table } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
     let migration: Models.Migration = null;
@@ -151,32 +153,34 @@
                     </div>
                 </div>
 
-                <Table.Root>
-                    <svelte:fragment slot="header">
-                        <Table.Header.Cell>Date</Table.Header.Cell>
-                        <Table.Header.Cell>Source</Table.Header.Cell>
-                        <Table.Header.Cell>Status</Table.Header.Cell>
-                        <Table.Header.Cell />
+                <Table.Root columns={4} let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell {root}>Date</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Source</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Status</Table.Header.Cell>
+                        <Table.Header.Cell {root} />
                     </svelte:fragment>
                     {#each data.migrations as entry}
-                        <Table.Row>
+                        <Table.Row.Base {root}>
                             {@const status = getStatus(entry.status)}
-                            <Table.Cell>
-                                {isSameDay(new Date(), new Date(entry.$createdAt))
-                                    ? 'Today'
-                                    : toLocaleDate(entry.$createdAt)}
+                            <Table.Cell {root}>
+                                {#if isSameDay(new Date(), new Date(entry.$createdAt))}
+                                    Today
+                                {:else}
+                                    <DualTimeView time={entry.$createdAt} />
+                                {/if}
                             </Table.Cell>
-                            <Table.Cell>{entry.source}</Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell {root}>{entry.source}</Table.Cell>
+                            <Table.Cell {root}>
                                 <Status label={capitalize(status)} {status} />
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell {root}>
                                 <div class="u-flex u-main-end">
                                     <Button secondary on:click={() => showDetails(entry)}
                                         >Details</Button>
                                 </div>
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
             {:else}
@@ -249,7 +253,12 @@
                         </Avatar>
                     </Layout.Stack>
                     <div>
-                        <Button secondary on:click={() => (showExport = true)}>Export data</Button>
+                        <Button
+                            secondary
+                            on:click={() => {
+                                showExport = true;
+                                trackEvent(Click.SettingsStartMigrationClick);
+                            }}>Export data</Button>
                     </div>
                 </Layout.Stack>
             </svelte:fragment>

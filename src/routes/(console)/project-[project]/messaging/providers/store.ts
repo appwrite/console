@@ -3,13 +3,15 @@ import { MessagingProviderType, SmtpEncryption } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
 import { base } from '$app/paths';
+import type { ComponentType } from 'svelte';
+import { IconAnnotation, IconDeviceMobile, IconMail } from '@appwrite.io/pink-icons-svelte';
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Provider ID', type: 'string', show: true },
-    { id: 'name', title: 'Name', type: 'string', show: true },
-    { id: 'provider', title: 'Provider', type: 'string', show: true },
-    { id: 'type', title: 'Type', type: 'string', show: true },
-    { id: 'enabled', title: 'Status', type: 'boolean', show: true }
+    { id: '$id', title: 'Provider ID', type: 'string' },
+    { id: 'name', title: 'Name', type: 'string' },
+    { id: 'provider', title: 'Provider', type: 'string' },
+    { id: 'type', title: 'Type', type: 'string' },
+    { id: 'enabled', title: 'Status', type: 'boolean' }
 ]);
 
 export type ProviderInput = {
@@ -35,29 +37,31 @@ export type ProviderInput = {
     options?: { label: string; value: string | number | boolean }[];
 };
 
-type ProvidersMap = {
-    [key in MessagingProviderType]: {
-        name: string;
-        text: string;
-        icon: string;
-        providers: {
-            [key in Providers]?: {
-                imageIcon?: string;
-                classIcon?: string;
-                title: string;
-                description: string;
-                needAHand?: string[];
-                configure: (ProviderInput | ProviderInput[])[];
-            };
+export type ProviderMapValue = {
+    name: string;
+    text: string;
+    icon: ComponentType;
+    providers: {
+        [key in Providers]?: {
+            imageIcon?: string;
+            classIcon?: string;
+            title: string;
+            description: string;
+            needAHand?: string[];
+            configure: (ProviderInput | ProviderInput[])[];
         };
     };
+};
+
+export type ProvidersMap = {
+    [key in MessagingProviderType]: ProviderMapValue;
 };
 
 export const providers: ProvidersMap = {
     [MessagingProviderType.Push]: {
         name: 'Push notification',
         text: 'notifications',
-        icon: 'device-mobile',
+        icon: IconDeviceMobile,
         providers: {
             [Providers.FCM]: {
                 imageIcon: 'firebase',
@@ -185,7 +189,7 @@ export const providers: ProvidersMap = {
     [MessagingProviderType.Email]: {
         name: 'Email',
         text: 'emails',
-        icon: 'mail',
+        icon: IconMail,
         providers: {
             [Providers.Mailgun]: {
                 imageIcon: 'mailgun',
@@ -400,7 +404,7 @@ export const providers: ProvidersMap = {
     [MessagingProviderType.Sms]: {
         name: 'SMS',
         text: 'SMS',
-        icon: 'annotation',
+        icon: IconAnnotation,
         providers: {
             [Providers.Twilio]: {
                 imageIcon: 'twilio',

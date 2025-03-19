@@ -62,7 +62,7 @@
 <Form onSubmit={updateTimeout}>
     <CardGrid>
         <svelte:fragment slot="title">Timeout</svelte:fragment>
-        Limit the execution time of your function. Maximum value is 900 seconds (15 minutes).
+        Limit the execution time of your function. The maximum value is 900 seconds (15 minutes).
         <svelte:fragment slot="aside">
             <FormList>
                 <InputNumber

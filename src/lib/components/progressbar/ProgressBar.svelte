@@ -29,7 +29,7 @@
                 style:width={`${(item.size / maxSize) * 100}%`}>
             </div>
             <div slot="tooltip">
-                <span class="u-bold">${item.tooltip.title}</span> ${item.tooltip.label}
+                <span class="u-bold">{item.tooltip.title}</span> ${item.tooltip.label}
             </div>
         </Tooltip>
     {/each}

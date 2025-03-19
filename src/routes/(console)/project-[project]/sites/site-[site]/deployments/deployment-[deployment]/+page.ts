@@ -3,6 +3,7 @@ import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 import { Query } from '@appwrite.io/console';
 import { RuleType } from '$lib/stores/sdk';
+import { DeploymentResourceType } from '$lib/stores/sdk';
 
 export const load: PageLoad = async ({ params, depends, parent }) => {
     depends(Dependencies.DEPLOYMENT);
@@ -13,7 +14,9 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
         sdk.forProject.sites.getDeployment(params.site, params.deployment),
         sdk.forProject.proxy.listRules([
             Query.equal('type', RuleType.DEPLOYMENT),
-            Query.equal('value', params.deployment)
+            Query.equal('deploymentId', params.deployment),
+            Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+            Query.equal('deploymentResourceId', params.site)
         ])
     ]);
 

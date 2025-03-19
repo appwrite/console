@@ -8,10 +8,10 @@ export function getEnumFromModel(model: Models.Framework): Framework {
 }
 
 export const columns = writable<Column[]>([
-    { id: 'name', title: 'Name', type: 'string', show: true, width: 100 },
+    { id: 'name', title: 'Name', type: 'string', width: { min: 100 } },
     // { id: 'domains', title: 'Domains', type: 'string', show: true, width: 120 },
-    { id: '$updatedAt', title: 'Updated', type: 'datetime', show: true, width: 120 },
-    { id: '$createdAt', title: 'Created', type: 'datetime', show: true, width: 120 }
+    { id: '$updatedAt', title: 'Updated', type: 'datetime', width: { min: 120 } },
+    { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 120 } }
 ]);
 
 export function getFrameworkIcon(framework: string) {
@@ -36,6 +36,10 @@ export function getFrameworkIcon(framework: string) {
             return 'remix';
         case framework.toLocaleLowerCase().includes('flutter'):
             return 'flutter';
+        case framework.toLocaleLowerCase().includes('analog'):
+            return 'analog';
+        case framework.toLocaleLowerCase().includes('vite'):
+            return 'vite';
         case framework.toLocaleLowerCase().includes('other'):
             return 'empty';
 

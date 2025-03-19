@@ -58,7 +58,6 @@
 </script>
 
 <script lang="ts">
-    import { Container } from '$lib/layout';
     import { BarChart } from '$lib/charts';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Card } from '$lib/components';
@@ -78,10 +77,11 @@
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;
     export let path: string = null;
+    export let hidePeriodSelect = false;
 </script>
 
-<Container>
-    <Layout.Stack gap="s">
+<Layout.Stack gap="s">
+    {#if !hidePeriodSelect}
         <div
             style:max-width="250px"
             style:--input-background-color="var(--bgcolor-neutral-primary)">
@@ -104,26 +104,26 @@
                 ]}
                 value={$page.params.period ?? '30d'} />
         </div>
-        <Card>
-            {#if count}
-                <Layout.Stack gap="xs">
-                    <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
-                    <Typography.Text>{countMetadata.title}</Typography.Text>
-                </Layout.Stack>
-                <div class="chart-container">
-                    <BarChart
-                        formatted={$page.params.period === '24h' ? 'hours' : 'days'}
-                        series={[
-                            {
-                                name: countMetadata.legend,
-                                data: accumulateFromEndingTotal(count, total)
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-    </Layout.Stack>
-</Container>
+    {/if}
+    <Card>
+        {#if count}
+            <Layout.Stack gap="xs">
+                <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
+                <Typography.Text>{countMetadata.title}</Typography.Text>
+            </Layout.Stack>
+            <div class="chart-container">
+                <BarChart
+                    formatted={$page.params.period === '24h' ? 'hours' : 'days'}
+                    series={[
+                        {
+                            name: countMetadata.legend,
+                            data: accumulateFromEndingTotal(count, total)
+                        }
+                    ]} />
+            </div>
+        {/if}
+    </Card>
+</Layout.Stack>
 
 <style lang="scss">
     .chart-container {

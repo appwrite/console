@@ -11,6 +11,7 @@
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { Card, Empty, Icon, Layout, Table } from '@appwrite.io/pink-svelte';
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     async function deleteIdentity(id: string) {
         try {
@@ -45,18 +46,26 @@
                 it here." />
             </Card.Base>
         {:else}
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell>Provider</Table.Header.Cell>
-                    <Table.Header.Cell>Email</Table.Header.Cell>
-                    <Table.Header.Cell>Created At</Table.Header.Cell>
-                    <Table.Header.Cell>Expiry Date</Table.Header.Cell>
-                    <Table.Header.Cell width="40px" />
+            <Table.Root
+                let:root
+                columns={[
+                    { id: 'provider' },
+                    { id: 'email' },
+                    { id: 'createdAt' },
+                    { id: 'expiryDate' },
+                    { id: 'actions', width: 40 }
+                ]}>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="provider" {root}>Provider</Table.Header.Cell>
+                    <Table.Header.Cell column="email" {root}>Email</Table.Header.Cell>
+                    <Table.Header.Cell column="createdAt" {root}>Created At</Table.Header.Cell>
+                    <Table.Header.Cell column="expiryDate" {root}>Expiry Date</Table.Header.Cell>
+                    <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
                 {#each $identities as identity (identity.$id)}
                     {@const provider = oAuthProviders[identity.provider]}
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="provider" {root}>
                             <Layout.Stack direction="row" alignItems="center">
                                 <div class="avatar is-size-small">
                                     <span
@@ -66,24 +75,21 @@
                                 {provider.name}
                             </Layout.Stack>
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="email" {root}>
                             {identity.providerEmail}
                         </Table.Cell>
-                        <Table.Cell>
-                            {toLocaleDateTime(identity.$createdAt)}
+                        <Table.Cell column="createdAt" {root}>
+                            <DualTimeView time={identity.$createdAt} />
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="expiryDate" {root}>
                             {toLocaleDateTime(identity.providerAccessTokenExpiry)}
                         </Table.Cell>
-                        <Table.Cell>
-                            <Button
-                                text
-                                class="is-only-icon"
-                                on:click={() => deleteIdentity(identity.$id)}>
+                        <Table.Cell column="actions" {root}>
+                            <Button text on:click={() => deleteIdentity(identity.$id)}>
                                 <Icon icon={IconTrash} size="s" />
                             </Button>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
         {/if}

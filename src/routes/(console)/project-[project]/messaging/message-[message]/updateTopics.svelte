@@ -1,13 +1,5 @@
 <script lang="ts">
     import { type Models, MessagingProviderType } from '@appwrite.io/console';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
     import { CardGrid, Empty, PaginationInline, EmptySearch } from '$lib/components';
     import TopicsModal from '../topicsModal.svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -21,7 +13,7 @@
     import { getTotal } from '../wizard/store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
 
     export let message: Models.Message;
     export let selectedTopicsById: Record<string, Models.Topic>;
@@ -90,13 +82,10 @@
         <svelte:fragment slot="aside">
             {@const sum = topicIds.length}
             {#if sum}
-                <div class="u-flex u-cross-center u-main-space-between">
-                    <div>
-                        <span class="eyebrow-heading-3">Topic</span>
-                    </div>
+                <Layout.Stack direction="row-reverse">
                     {#if message.status == 'draft'}
                         <Button
-                            text
+                            secondary
                             on:click={() => {
                                 showTopics = true;
                             }}>
@@ -104,57 +93,43 @@
                             Add
                         </Button>
                     {/if}
-                </div>
-                <div class="u-flex u-flex-vertical u-gap-24">
-                    <Table noMargin noStyles>
-                        <TableHeader>
-                            <TableCellHead style="padding: 0" />
-                            <TableCellHead width={40} style="padding: 0" />
-                        </TableHeader>
-                        <TableBody>
-                            {#each topics.slice(offset, offset + limit) as topic (topic.$id)}
-                                <TableRow>
-                                    <TableCell title="Topic">
-                                        <div class="u-flex u-cross-center">
-                                            <span class="title">
-                                                <span class="u-line-height-1-5">
-                                                    <span class="body-text-2 u-bold" data-private>
-                                                        {topic.name}
-                                                    </span>
-                                                    <span class="collapsible-button-optional">
-                                                        ({getTotal(topic)} targets)
-                                                    </span>
-                                                </span>
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell title="Remove" width={40}>
-                                        {#if message.status === 'draft'}
-                                            <div
-                                                class="u-flex u-main-end"
-                                                style="--p-button-size: 1.25rem">
-                                                <Button
-                                                    text
-                                                    class="is-only-icon"
-                                                    ariaLabel="delete"
-                                                    disabled={message.status != 'draft'}
-                                                    on:click={() => removeTopic(topic.$id)}>
-                                                    <span
-                                                        class="icon-x u-font-size-20"
-                                                        aria-hidden="true" />
-                                                </Button>
-                                            </div>
-                                        {/if}
-                                    </TableCell>
-                                </TableRow>
-                            {/each}
-                        </TableBody>
-                    </Table>
+                </Layout.Stack>
+                <Table.Root columns={[{ id: 'topic' }, { id: 'actions', width: 40 }]} let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell column="topic" {root}>Topic</Table.Header.Cell>
+                        <Table.Header.Cell column="actions" {root} />
+                    </svelte:fragment>
+                    {#each topics.slice(offset, offset + limit) as topic (topic.$id)}
+                        <Table.Row.Base {root}>
+                            <Table.Cell column="topic" {root}>
+                                {topic.name}
+                                ({getTotal(topic)} targets)
+                            </Table.Cell>
+                            <Table.Cell column="actions" {root}>
+                                {#if message.status === 'draft'}
+                                    <div class="u-flex u-main-end" style="--p-button-size: 1.25rem">
+                                        <Button
+                                            text
+                                            class="is-only-icon"
+                                            ariaLabel="delete"
+                                            disabled={message.status != 'draft'}
+                                            on:click={() => removeTopic(topic.$id)}>
+                                            <span
+                                                class="icon-x u-font-size-20"
+                                                aria-hidden="true" />
+                                        </Button>
+                                    </div>
+                                {/if}
+                            </Table.Cell>
+                        </Table.Row.Base>
+                    {/each}
+                </Table.Root>
+                {#if sum > limit}
                     <div class="u-flex u-main-space-between">
                         <p class="text">Total topics: {sum}</p>
                         <PaginationInline {sum} {limit} bind:offset />
                     </div>
-                </div>
+                {/if}
             {:else if message.status == 'draft'}
                 <Empty on:click={() => (showTopics = true)}>Add a topic</Empty>
             {:else}

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert } from '$lib/components';
     import { Button, FormList, InputDomain } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
@@ -8,6 +7,7 @@
     import { func } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { domain } from './store';
     import { consoleVariables } from '$routes/(console)/store';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
     let error = null;
     const isDomainsEnabled = $consoleVariables?._APP_DOMAIN_ENABLED === true;
@@ -64,13 +64,10 @@
         </div>
     {/if}
     {#if isSelfHosted && !isDomainsEnabled}
-        <Alert class="common-section" type="info">
-            <svelte:fragment slot="title">
-                Adding a domain to a self-hosted instance
-            </svelte:fragment>
-            To add a domain to a locally hosted Appwrite project, you must first configure your server
-            domain.
-            <svelte:fragment slot="buttons">
+        <Alert.Inline status="info" title="Adding a domain to a self-hosted instance">
+            To add a domain to a locally hosted Appwrite project, you must first configure your
+            server domain.
+            <svelte:fragment slot="actions">
                 <Button
                     href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
                     external
@@ -78,6 +75,6 @@
                     Learn more
                 </Button>
             </svelte:fragment>
-        </Alert>
+        </Alert.Inline>
     {/if}
 </WizardStep>
