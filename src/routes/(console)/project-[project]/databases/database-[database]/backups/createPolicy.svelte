@@ -288,8 +288,8 @@
                                                         ? -1 // -1 is for custom policy
                                                         : policy.retained;
 
-                                                // re-add if edit is cancelled
-                                                policyBeingEdited = policy;
+                                                    // re-add if edit is cancelled
+                                                    policyBeingEdited = policy;
 
                                                     // do not show in the list can cause confusion.
                                                     listOfCustomPolicies = [
