@@ -12,6 +12,7 @@
     import { base } from '$app/paths';
     import { getProjectId } from '$lib/helpers/project';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     const backupRestoreItems: {
         archives: Map<string, BackupArchive>;
@@ -146,7 +147,9 @@
                 <section class="upload-box">
                     <header class="upload-box-header">
                         <h4 class="upload-box-title">
-                            <span class="text">{titleText} ({items.size})</span>
+                            <Typography.Text variant="m-500">
+                                {titleText} ({items.size})
+                            </Typography.Text>
                         </h4>
                         <button
                             class="upload-box-button"
@@ -172,13 +175,13 @@
                                     <section class="progress-bar u-width-full-line">
                                         <div
                                             class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
-                                            <span class="body-text-2">
+                                            <Typography.Text>
                                                 {text(item.status, key)}
-                                            </span>
+                                            </Typography.Text>
 
-                                            <span class="backup-name">
+                                            <Typography.Caption variant="400">
                                                 {backupName(item, key)}
-                                            </span>
+                                            </Typography.Caption>
                                         </div>
                                         <div
                                             class="progress-bar-container"
@@ -195,7 +198,7 @@
     </div>
 {/if}
 
-<style>
+<style lang="scss">
     .upload-box-title {
         font-size: 11px;
     }
@@ -211,13 +214,17 @@
         justify-content: center;
     }
 
-    .backup-name {
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 130%;
-        font-style: normal;
-        letter-spacing: -0.12px;
-        color: var(--mid-neutrals-50, #818186);
-        font-family: var(--font-family-sansSerif, Inter);
+    .progress-bar-container {
+        height: 4px;
+
+        &::before {
+            height: 4px;
+            background-color: var(--bgcolor-neutral-invert);
+        }
+
+        &.is-danger::before {
+            height: 4px;
+            background-color: var(--bgcolor-error);
+        }
     }
 </style>

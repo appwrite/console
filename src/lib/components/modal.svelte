@@ -5,9 +5,9 @@
     import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
 
     export let show = false;
-    export let size: 's' | 'm' | 'l' = 'm';
     export let error: string = null;
     export let dismissible = true;
+    export let size: 's' | 'm' | 'l' = 'm';
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
@@ -50,3 +50,10 @@
         </svelte:fragment>
     </Modal>
 </Form>
+
+<style>
+    /* temporary fix to modal width */
+    :global(dialog section) {
+        max-width: 100% !important;
+    }
+</style>

@@ -1,6 +1,8 @@
 <script lang="ts">
     import { DropList } from '$lib/components';
     import { SelectSearchCheckbox } from '..';
+    import { Icon } from '@appwrite.io/pink-svelte';
+    import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
 
     type Option = {
         value: string;
@@ -60,16 +62,11 @@
             </ul>
         </div>
 
-        <input
-            class="tags-input-text u-cursor-text"
-            {placeholder}
-            bind:value={search}
-            bind:this={input} />
-        <span
-            class:icon-cheveron-up={show}
-            class:icon-cheveron-down={!show}
-            class="chevron-icon u-position-absolute u-inset-inline-end-12"
-            aria-hidden="true"></span>
+        <div class="input">
+            <input {placeholder} bind:value={search} bind:this={input} />
+
+            <Icon size="m" icon={show ? IconChevronUp : IconChevronDown} />
+        </div>
     </button>
 
     <svelte:fragment slot="list">
@@ -88,13 +85,41 @@
 </DropList>
 
 <style>
-    @media (max-width: 768px) {
-        .chevron-icon {
-            inset-block-start: 0.25rem !important;
-        }
+    .tags-input {
+        width: 100%;
+    }
 
+    @media (max-width: 768px) {
         .tags-input {
             padding-right: 2rem;
         }
+    }
+
+    .input {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        transition: all 0.15s ease-in-out;
+        border: var(--border-width-s) solid var(--border-neutral);
+        border-radius: var(--border-radius-s);
+        background-color: var(--p-input-background-color);
+        padding-inline: var(--space-6);
+        outline-offset: calc(var(--border-width-s) * -1);
+        --p-input-background-color: var(--input-background-color, var(--bgcolor-neutral-default));
+    }
+    .input input {
+        inline-size: 100%;
+        padding-block: var(--space-3);
+        padding-inline: 0;
+        border: none;
+        display: block;
+        line-height: 140%;
+        background: none;
+    }
+    .input input::placeholder {
+        color: var(--fgcolor-neutral-tertiary);
+    }
+    .input:focus-within {
+        outline: var(--border-width-l) solid var(--border-focus);
     }
 </style>

@@ -15,6 +15,11 @@
 
     let confirm = false;
     let checkboxId = `delete_${title.replaceAll(' ', '_').toLowerCase()}`;
+
+    // reset checkbox status
+    $: if (open && confirmDeletion) {
+        confirm = false;
+    }
 </script>
 
 <Form isModal {onSubmit}>
