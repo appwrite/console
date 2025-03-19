@@ -5,7 +5,6 @@
         Empty,
         EmptyFilter,
         EmptySearch,
-        FloatingActionBar,
         Id,
         Modal,
         PaginationWithLimit,
@@ -30,21 +29,31 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
-    import { Layout, Selector, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { Confirm } from '$lib/components';
 
     export let data;
+
     let selected: string[] = [];
     let showDelete = false;
     let deleting = false;
     let showFailed = false;
     let errors: string[] = [];
+
     const columns = writable<Column[]>([
-        { id: '$id', title: 'Message ID', type: 'string', show: true, width: 140 },
-        { id: 'message', title: 'Message', type: 'string', show: false, filter: false, width: 140 },
-        { id: 'providerType', title: 'Type', type: 'string', show: true, width: 100 },
-        { id: 'status', title: 'Status', type: 'string', show: true, width: 120 },
-        { id: 'scheduledAt', title: 'Scheduled at', type: 'datetime', show: true, width: 120 },
-        { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', show: false, width: 120 }
+        { id: '$id', title: 'Message ID', type: 'string', width: 200 },
+        {
+            id: 'message',
+            title: 'Message',
+            type: 'string',
+            hide: true,
+            filter: false,
+            width: { min: 140 }
+        },
+        { id: 'providerType', title: 'Type', type: 'string', width: { min: 100 } },
+        { id: 'status', title: 'Status', type: 'string', width: { min: 120 } },
+        { id: 'scheduledAt', title: 'Scheduled at', type: 'datetime', width: { min: 120 } },
+        { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', width: { min: 120 } }
     ]);
 
     const project = $page.params.project;
@@ -94,101 +103,79 @@
     </Layout.Stack>
 
     {#if data.messages.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                {#if $canWriteMessages}
-                    <Table.Header.Selector width="40px" />
-                {/if}
-                {#each $columns as column}
-                    {#if column.show}
-                        <Table.Cell width={column.width + 'px'}>{column.title}</Table.Cell>
-                    {/if}
+        <Table.Root
+            columns={$columns}
+            allowSelection={$canWriteMessages}
+            let:root
+            bind:selectedRows={selected}>
+            <svelte:fragment slot="header" let:root>
+                {#each $columns as { id, title }}
+                    <Table.Cell column={id} {root}>{title}</Table.Cell>
                 {/each}
             </svelte:fragment>
             {#each data.messages.messages as message (message.$id)}
-                <Table.Link href={`${base}/project-${project}/messaging/message-${message.$id}`}>
-                    {#if $canWriteMessages}
-                        <Table.Cell>
-                            <Selector.Checkbox
-                                size="s"
-                                disabled={message.status === 'processing'} />
-                        </Table.Cell>
-                    {/if}
+                <Table.Row.Link
+                    {root}
+                    id={message.$id}
+                    href={`${base}/project-${project}/messaging/message-${message.$id}`}>
                     {#each $columns as column (column.id)}
-                        {#if column.show}
+                        <Table.Cell column={column.id} {root}>
                             {#if column.id === '$id'}
                                 {#key $columns}
-                                    <Table.Cell>
-                                        <Id value={message.$id}>{message.$id}</Id>
-                                    </Table.Cell>
+                                    <Id value={message.$id}>{message.$id}</Id>
                                 {/key}
                             {:else if column.id === 'message'}
-                                <Table.Cell>
-                                    {#if message.providerType === MessagingProviderType.Push}
-                                        {message.data.title}
-                                    {:else if message.providerType === MessagingProviderType.Sms}
-                                        {message.data.content}
-                                    {:else if message.providerType === MessagingProviderType.Email}
-                                        {message.data.subject}
-                                    {:else}
-                                        Invalid provider
-                                    {/if}
-                                </Table.Cell>
+                                {#if message.providerType === MessagingProviderType.Push}
+                                    {message.data.title}
+                                {:else if message.providerType === MessagingProviderType.Sms}
+                                    {message.data.content}
+                                {:else if message.providerType === MessagingProviderType.Email}
+                                    {message.data.subject}
+                                {:else}
+                                    Invalid provider
+                                {/if}
                             {:else if column.id === 'providerType'}
-                                <Table.Cell>
-                                    <ProviderType type={message.providerType} size="xs" />
-                                </Table.Cell>
+                                <ProviderType type={message.providerType} size="xs" />
                             {:else if column.id === 'status'}
-                                <Table.Cell>
-                                    <MessageStatusPill status={message.status} />
-                                    {#if message.status === 'failed'}
-                                        <Button
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                errors = message.deliveryErrors;
-                                                showFailed = true;
-                                            }}>Details</Button>
-                                    {/if}
-                                </Table.Cell>
+                                <MessageStatusPill status={message.status} />
+                                {#if message.status === 'failed'}
+                                    <Button
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            errors = message.deliveryErrors;
+                                            showFailed = true;
+                                        }}>Details</Button>
+                                {/if}
                             {:else if column.type === 'datetime'}
-                                <Table.Cell>
-                                    {#if !message[column.id]}
-                                        -
-                                    {:else}
-                                        {toLocaleDateTime(message[column.id])}
-                                    {/if}
-                                </Table.Cell>
+                                {#if !message[column.id]}
+                                    -
+                                {:else}
+                                    {toLocaleDateTime(message[column.id])}
+                                {/if}
                             {:else}
-                                <Table.Cell>
-                                    {message[column.id]}
-                                </Table.Cell>
+                                {message[column.id]}
                             {/if}
-                        {/if}
+                        </Table.Cell>
                     {/each}
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
 
-        <FloatingActionBar show={selected.length > 0}>
-            <div class="u-flex u-cross-center u-main-space-between actions">
-                <div class="u-flex u-cross-center u-gap-8">
-                    <span class="indicator body-text-2 u-bold">{selected.length}</span>
-                    <p>
-                        <span class="is-only-desktop">
-                            {selected.length > 1 ? 'messages' : 'message'}
-                        </span>
+        {#if selected.length > 0}
+            <FloatingActionBar>
+                <svelte:fragment slot="start">
+                    <Badge content={selected.length.toString()} />
+                    <span>
+                        {selected.length > 1 ? 'messages' : 'message'}
                         selected
-                    </p>
-                </div>
-
-                <div class="u-flex u-cross-center u-gap-8">
+                    </span>
+                </svelte:fragment>
+                <svelte:fragment slot="end">
                     <Button text on:click={() => (selected = [])}>Cancel</Button>
-                    <Button secondary on:click={() => (showDelete = true)}>
-                        <p>Delete</p>
-                    </Button>
-                </div>
-            </div>
-        </FloatingActionBar>
+                    <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                </svelte:fragment>
+            </FloatingActionBar>
+        {/if}
 
         <PaginationWithLimit
             name="Messages"
@@ -224,8 +211,7 @@
                     Documentation
                 </Button>
                 {#if $canWriteMessages}
-                    <CreateMessageDropdown
-                        let:toggle>
+                    <CreateMessageDropdown let:toggle>
                         <Button secondary on:click={toggle} event="create_message">
                             <span class="text">Create message</span>
                         </Button>
@@ -238,13 +224,9 @@
 
 <FailedModal bind:show={showFailed} {errors} />
 
-<Modal title="Delete messages" bind:show={showDelete} onSubmit={handleDelete} dismissible={!deleting}>
-    <p class="text" data-private>
+<Confirm title="Delete messages" bind:open={showDelete} onSubmit={handleDelete} disabled={deleting}>
+    <Typography.Text>
         Are you sure you want to delete <b>{selected.length}</b>
         {selected.length > 1 ? 'messages' : 'message'}?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    </Typography.Text>
+</Confirm>

@@ -136,10 +136,10 @@
         </Layout.Stack>
         {#if selectedInstallation}
             {#await loadRepositories(selectedInstallation, search)}
-                <Table.Root>
+                <Table.Root columns={1} let:root>
                     {#each Array(4) as _}
-                        <Table.Row>
-                            <Table.Cell>
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>
                                 <Layout.Stack direction="row" alignItems="center">
                                     <Skeleton variant="circle" width={24} />
 
@@ -149,7 +149,7 @@
                                     <Skeleton variant="line" width={76} height={32} />
                                 </Layout.Stack>
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
             {:then response}
@@ -159,10 +159,10 @@
                         let:paginatedItems
                         hideFooter={response?.length <= 6}
                         limit={6}>
-                        <Table.Root>
+                        <Table.Root columns={1} let:root>
                             {#each paginatedItems as repo}
-                                <Table.Row>
-                                    <Table.Cell>
+                                <Table.Row.Base {root}>
+                                    <Table.Cell {root}>
                                         <Layout.Stack direction="row" alignItems="center" gap="s">
                                             {#if action === 'select'}
                                                 <input
@@ -229,7 +229,7 @@
                                             {/if}
                                         </Layout.Stack>
                                     </Table.Cell>
-                                </Table.Row>
+                                </Table.Row.Base>
                             {/each}
                         </Table.Root>
                     </Paginator>

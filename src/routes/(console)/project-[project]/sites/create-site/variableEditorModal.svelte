@@ -115,12 +115,7 @@
     // TODO: merge this component with the rawVariableEditor?
 </script>
 
-<Modal
-    title="Editor"
-    bind:show={showEditor}
-    onSubmit={handleSubmit}
-    bind:error
-    submitOnEnter={false}>
+<Modal title="Editor" bind:show={showEditor} onSubmit={handleSubmit} bind:error>
     <p slot="description">Add, edit, or delete environment variables using a raw editor.</p>
 
     <Layout.Stack gap="l">

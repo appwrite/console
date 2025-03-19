@@ -47,14 +47,22 @@
     View or update your payment methods. These can be applied to any organizations you have created.
     <svelte:fragment slot="aside">
         {#if $paymentMethods?.total && filteredMethods?.length > 0}
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell>Credit card</Table.Header.Cell>
-                    <Table.Header.Cell>Name</Table.Header.Cell>
-                    <Table.Header.Cell>Expiration date</Table.Header.Cell>
-                    <Table.Header.Cell />
-                    <Table.Header.Cell />
-                    <Table.Header.Cell width="40px" />
+            <Table.Root
+                let:root
+                columns={[
+                    { id: 'cc' },
+                    { id: 'name' },
+                    { id: 'expiry' },
+                    { id: 'status' },
+                    { id: 'links' },
+                    { id: 'actions', width: 40 }
+                ]}>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="cc" {root}>Credit card</Table.Header.Cell>
+                    <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+                    <Table.Header.Cell column="expiration" {root}
+                        >Expiration date</Table.Header.Cell>
+                    <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
                 {#each filteredMethods as paymentMethod, i}
                     {@const linkedOrgs = orgList?.filter(
@@ -63,9 +71,9 @@
                             paymentMethod.$id === org.backupPaymentMethodId
                     )}
 
-                    <Table.Row>
-                        <CreditCardInfo {paymentMethod} />
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <CreditCardInfo {root} {paymentMethod} />
+                        <Table.Cell column="links" {root}>
                             {#if linkedOrgs?.length > 0}
                                 <Popover let:toggle>
                                     <Tag on:click={toggle} size="s">
@@ -91,7 +99,7 @@
                                 </Popover>
                             {/if}
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="actions" {root}>
                             <Popover let:toggle placement="bottom-start" padding="none">
                                 <Button icon text on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
@@ -122,7 +130,7 @@
                                 </svelte:fragment>
                             </Popover>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
             <div>

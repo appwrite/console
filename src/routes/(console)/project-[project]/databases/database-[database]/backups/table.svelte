@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Card, DropList, DropListItem, FloatingActionBar, Modal } from '$lib/components';
+    import { Card, DropList, DropListItem, Modal } from '$lib/components';
     import { Button, FormList, InputCheckbox, InputText } from '$lib/elements/forms';
     import {
         TableBody,
@@ -26,7 +26,7 @@
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
     import { Dependencies } from '$lib/constants';
-    import { Tooltip } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Tooltip } from '@appwrite.io/pink-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
@@ -249,26 +249,21 @@
     </TableBody>
 </TableScroll>
 
-<FloatingActionBar show={selectedBackups.length > 0}>
-    <div class="u-flex u-cross-center u-main-space-between actions">
-        <div class="u-flex u-cross-center u-gap-8">
-            <span class="indicator body-text-2 u-bold">{selectedBackups.length}</span>
-            <p>
-                <span class="is-only-desktop">
-                    {selectedBackups.length > 1 ? 'backups' : 'backup'}
-                </span>
+{#if selectedBackups.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedBackups.length.toString()} />
+            <span>
+                {selectedBackups.length > 1 ? 'backups' : 'backup'}
                 selected
-            </p>
-        </div>
-
-        <div class="u-flex u-cross-center u-gap-8">
+            </span>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
             <Button text on:click={() => (selectedBackups = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>
-                <p>Delete</p>
-            </Button>
-        </div>
-    </div>
-</FloatingActionBar>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
 
 <Modal
     title="Delete {selectedBackups.length ? 'backups' : 'backup'}"

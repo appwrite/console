@@ -1,5 +1,6 @@
 <script lang="ts">
     import { getUTCOffset, timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
+    import { capitalize } from '$lib/helpers/string';
     import { Badge, InteractiveText, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
 
     export let time: string = '';
@@ -39,7 +40,7 @@
 
 <Popover let:toggle {placement} portal>
     <button on:mouseenter={(e) => toggle(e)}>
-        <slot>{timeFromNow(time)}</slot>
+        <slot>{capitalize(timeFromNow(time))}</slot>
     </button>
 
     <Layout.Stack gap="m" alignContent="flex-start" slot="tooltip">

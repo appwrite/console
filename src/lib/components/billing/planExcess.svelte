@@ -59,11 +59,11 @@
         </svelte:fragment>
     </Alert.Inline>
 
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Resource</Table.Header.Cell>
-            <Table.Header.Cell>Free limit</Table.Header.Cell>
-            <Table.Header.Cell>
+    <Table.Root columns={3} let:root>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell {root}>Resource</Table.Header.Cell>
+            <Table.Header.Cell {root}>Free limit</Table.Header.Cell>
+            <Table.Header.Cell {root}>
                 Excess usage <Tooltip maxWidth="fit-content"
                     ><Icon icon={IconInfo} />
                     <span slot="tooltip">Metrics are estimates updated every 24 hours</span>
@@ -71,37 +71,37 @@
             </Table.Header.Cell>
         </svelte:fragment>
         {#if excess?.members}
-            <Table.Row>
-                <Table.Cell>Organization members</Table.Cell>
-                <Table.Cell>{plan.members} members</Table.Cell>
-                <Table.Cell>
+            <Table.Row.Base {root}>
+                <Table.Cell {root}>Organization members</Table.Cell>
+                <Table.Cell {root}>{plan.members} members</Table.Cell>
+                <Table.Cell {root}>
                     <p class="u-color-text-danger u-flex u-cross-center u-gap-4">
                         <span class="icon-arrow-up" />
                         {excess?.members} members
                     </p>
                 </Table.Cell>
-            </Table.Row>
+            </Table.Row.Base>
         {/if}
         {#if excess?.storage}
-            <Table.Row>
-                <Table.Cell>Storage</Table.Cell>
-                <Table.Cell>{plan.storage} GB</Table.Cell>
-                <Table.Cell>
+            <Table.Row.Base {root}>
+                <Table.Cell {root}>Storage</Table.Cell>
+                <Table.Cell {root}>{plan.storage} GB</Table.Cell>
+                <Table.Cell {root}>
                     <p class="u-color-text-danger">
                         <span class="icon-arrow-up" />
                         {humanFileSize(excess?.storage).value}
                         {humanFileSize(excess?.storage).unit}
                     </p>
                 </Table.Cell>
-            </Table.Row>
+            </Table.Row.Base>
         {/if}
         {#if excess?.executions}
-            <Table.Row>
-                <Table.Cell>Function executions</Table.Cell>
-                <Table.Cell>
+            <Table.Row.Base {root}>
+                <Table.Cell {root}>Function executions</Table.Cell>
+                <Table.Cell {root}>
                     {abbreviateNumber(plan.executions)} executions
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell {root}>
                     <p class="u-color-text-danger">
                         <span class="icon-arrow-up" />
                         <span
@@ -112,15 +112,15 @@
                         </span>
                     </p>
                 </Table.Cell>
-            </Table.Row>
+            </Table.Row.Base>
         {/if}
         {#if excess?.users}
-            <Table.Row>
-                <Table.Cell>Users</Table.Cell>
-                <Table.Cell>
+            <Table.Row.Base {root}>
+                <Table.Cell {root}>Users</Table.Cell>
+                <Table.Cell {root}>
                     {abbreviateNumber(plan.users)} users
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell column="usage" {root}>
                     <p class="u-color-text-danger">
                         <span class="icon-arrow-up" />
                         <span title={excess?.users ? excess.users.toString() : 'users'}>
@@ -128,7 +128,7 @@
                         </span>
                     </p>
                 </Table.Cell>
-            </Table.Row>
+            </Table.Row.Base>
         {/if}
     </Table.Root>
 {/if}

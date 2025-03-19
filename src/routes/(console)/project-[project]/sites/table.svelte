@@ -15,49 +15,41 @@
     let selectedSite: Models.Site = null;
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        {#each $columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column?.width?.toString() ?? ''}>
-                    {column.title}
-                </Table.Header.Cell>
-            {/if}
+<Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
+    <svelte:fragment slot="header" let:root>
+        {#each $columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>
+                {title}
+            </Table.Header.Cell>
         {/each}
-        <Table.Header.Cell width="40" />
+        <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
     {#each siteList.sites as site}
-        <Table.Link href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}>
+        <Table.Row.Link
+            {root}
+            href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}>
             {#each $columns as column}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === 'name'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            <Layout.Stack direction="row" alignItems="center" gap="s" inline>
-                                <Avatar size="xs" alt={site.name}>
-                                    <SvgIcon
-                                        iconSize="small"
-                                        name={getFrameworkIcon(site.framework)} />
-                                </Avatar>
-                                {site.name}
-                            </Layout.Stack>
-                        </Table.Cell>
+                        <Layout.Stack direction="row" alignItems="center" gap="s" inline>
+                            <Avatar size="xs" alt={site.name}>
+                                <SvgIcon iconSize="small" name={getFrameworkIcon(site.framework)} />
+                            </Avatar>
+                            {site.name}
+                        </Layout.Stack>
                     {:else if column.id === '$updatedAt'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {toLocaleDateTime(site[column.id])}
-                        </Table.Cell>
+                        {toLocaleDateTime(site[column.id])}
                     {:else if column.id === '$createdAt'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {toLocaleDateTime(site[column.id])}
-                        </Table.Cell>
+                        {toLocaleDateTime(site[column.id])}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-            <Table.Cell>
+            <Table.Cell column="actions" {root}>
                 <Layout.Stack alignItems="flex-end">
                     <SitesActionMenu {site} bind:showAddCollaborator bind:selectedSite />
                 </Layout.Stack>
             </Table.Cell>
-        </Table.Link>
+        </Table.Row.Link>
     {/each}
 </Table.Root>
 {#if selectedSite?.$id && showAddCollaborator}

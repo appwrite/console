@@ -123,31 +123,31 @@
 </script>
 
 {#if data.platforms.platforms.length}
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Name</Table.Header.Cell>
-            <Table.Header.Cell>Platform type</Table.Header.Cell>
-            <Table.Header.Cell>Last updated</Table.Header.Cell>
+    <Table.Root columns={3} let:root>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell {root}>Platform type</Table.Header.Cell>
+            <Table.Header.Cell {root}>Last updated</Table.Header.Cell>
         </svelte:fragment>
         {#each data.platforms.platforms as platform}
-            <Table.Link href={`${path}/${platform.$id}`}>
-                <Table.Cell>
+            <Table.Row.Link href={`${path}/${platform.$id}`} {root}>
+                <Table.Cell {root}>
                     {platform.name}
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell {root}>
                     <Layout.Stack direction="row" gap="s" alignItems="center">
                         <Icon icon={getPlatformInfo(platform.type)} />
                         {PlatformTypes[platform.type]}
                     </Layout.Stack>
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell {root}>
                     {#if platform.$updatedAt}
                         <DualTimeView time={platform.$updatedAt} />
                     {:else}
                         never
                     {/if}
                 </Table.Cell>
-            </Table.Link>
+            </Table.Row.Link>
         {/each}
     </Table.Root>
 {:else}

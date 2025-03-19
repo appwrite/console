@@ -1,3 +1,4 @@
+import type { Column as PinkColumn } from '@appwrite.io/pink-svelte/dist/table';
 import type { Writable } from 'svelte/store';
 
 export type WritableValue<T> = T extends Writable<infer U> ? U : never;
@@ -23,26 +24,13 @@ const columnTypes = [
     'enum'
 ] as const;
 export type ColumnType = (typeof columnTypes)[number];
-export type Column = {
-    id: string;
+export type Column = PinkColumn & {
     title: string;
     type: ColumnType;
-    /**
-     * Set to false to hide by default
-     */
-    show: boolean;
-    width?: number;
-    /**
-     * Set to false to disable filtering for this column
-     */
     filter?: boolean;
     array?: boolean;
     format?: string;
     elements?: string[] | { value: string | number; label: string }[];
-    /**
-     * Set to true to hide this column by default
-     */
-    hide?: boolean;
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(

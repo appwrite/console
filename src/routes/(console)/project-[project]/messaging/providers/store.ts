@@ -18,11 +18,11 @@ import {
 } from './components';
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Provider ID', type: 'string', show: true },
-    { id: 'name', title: 'Name', type: 'string', show: true },
-    { id: 'provider', title: 'Provider', type: 'string', show: true },
-    { id: 'type', title: 'Type', type: 'string', show: true },
-    { id: 'enabled', title: 'Status', type: 'boolean', show: true }
+    { id: '$id', title: 'Provider ID', type: 'string' },
+    { id: 'name', title: 'Name', type: 'string' },
+    { id: 'provider', title: 'Provider', type: 'string' },
+    { id: 'type', title: 'Type', type: 'string' },
+    { id: 'enabled', title: 'Status', type: 'boolean' }
 ]);
 
 export type ProviderInput = {

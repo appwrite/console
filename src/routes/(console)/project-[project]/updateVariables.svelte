@@ -308,15 +308,17 @@
                         </p>
                     </Alert.Inline>
                 {/if}
-                <Table.Root>
-                    <svelte:fragment slot="header">
-                        <Table.Header.Cell width="300px">Key</Table.Header.Cell>
-                        <Table.Header.Cell>Value</Table.Header.Cell>
-                        <Table.Header.Cell width="30px" />
+                <Table.Root
+                    columns={[{ id: 'key' }, { id: 'value' }, { id: 'actions', width: 30 }]}
+                    let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
+                        <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
+                        <Table.Header.Cell column="actions" {root} />
                     </svelte:fragment>
                     {#each variableList.variables.slice(offset, offset + limit) as variable}
-                        <Table.Row>
-                            <Table.Cell>
+                        <Table.Row.Base {root}>
+                            <Table.Cell column="key" {root}>
                                 {@const isConflicting = globalVariableList
                                     ? globalVariableList.variables.find(
                                           (globalVariable) => globalVariable.key === variable.key
@@ -336,19 +338,17 @@
                                 </Layout.Stack>
                             </Table.Cell>
 
-                            <Table.Cell>
-                                <div style="max-width: 20rem">
-                                    {#if variable.secret}
-                                        <Badge content="Secret" variant="secondary" />
-                                    {:else}
-                                        <InteractiveText
-                                            variant="secret"
-                                            isVisible={false}
-                                            text={variable.value} />
-                                    {/if}
-                                </div>
+                            <Table.Cell column="value" {root}>
+                                {#if variable.secret}
+                                    <Badge content="Secret" variant="secondary" />
+                                {:else}
+                                    <InteractiveText
+                                        variant="secret"
+                                        isVisible={false}
+                                        text={variable.value} />
+                                {/if}
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell column="actions" {root}>
                                 <Popover placement="bottom-end" let:toggle padding="none">
                                     <Button
                                         text
@@ -405,7 +405,7 @@
                                     </svelte:fragment>
                                 </Popover>
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
                 {#if sum > limit}

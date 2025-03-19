@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
     import { BarChart, Legend, type LegendData } from '$lib/charts';
     import { accumulateFromEndingTotal } from '$lib/layout/usage.svelte';
     import { Card, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
@@ -14,10 +13,9 @@
     export let count: Models.Metric[][];
     export let legendData: LegendData[];
     export let showHeader: boolean = true;
-    export let overlapContainerCover = false;
 </script>
 
-<Container overlapCover={overlapContainerCover}>
+<div>
     {#if showHeader}
         <div class="u-flex u-main-space-between common-section">
             <Typography.Title>{title}</Typography.Title>
@@ -66,7 +64,7 @@
             </div>
         {/if}
     </Card>
-</Container>
+</div>
 
 <style lang="scss">
     .multiple-chart-container {

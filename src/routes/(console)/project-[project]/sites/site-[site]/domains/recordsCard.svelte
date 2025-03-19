@@ -22,20 +22,20 @@
                 </Typography.Text>
             </Layout.Stack>
 
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell>Type</Table.Header.Cell>
-                    <Table.Header.Cell>Name</Table.Header.Cell>
-                    <Table.Header.Cell>Value</Table.Header.Cell>
+            <Table.Root columns={3} let:root>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell {root}>Type</Table.Header.Cell>
+                    <Table.Header.Cell {root}>Name</Table.Header.Cell>
+                    <Table.Header.Cell {root}>Value</Table.Header.Cell>
                 </svelte:fragment>
-                <Table.Row>
-                    <Table.Cell>CNAME</Table.Cell>
-                    <Table.Cell>{domain?.domain}</Table.Cell>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell {root}>CNAME</Table.Cell>
+                    <Table.Cell {root}>{domain?.domain}</Table.Cell>
+                    <Table.Cell {root}>
                         <Copy value={globalThis?.location?.origin}
                             >{globalThis?.location?.origin}</Copy>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             </Table.Root>
             <Layout.Stack gap="s" direction="row" alignItems="center">
                 <Icon icon={IconInfo} size="s" color="--fgcolor-neutral-secondary" />

@@ -58,7 +58,6 @@
 </script>
 
 <script lang="ts">
-    import { Container } from '$lib/layout';
     import { BarChart } from '$lib/charts';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Card } from '$lib/components';
@@ -80,52 +79,50 @@
     export let hidePeriodSelect = false;
 </script>
 
-<Container>
-    <Layout.Stack gap="s">
-        {#if !hidePeriodSelect}
-            <div
-                style:max-width="250px"
-                style:--input-background-color="var(--bgcolor-neutral-primary)">
-                <InputSelect
-                    on:change={(e) => goto(`${path}/${e.detail}`)}
-                    id="period"
-                    options={[
+<Layout.Stack gap="s">
+    {#if !hidePeriodSelect}
+        <div
+            style:max-width="250px"
+            style:--input-background-color="var(--bgcolor-neutral-primary)">
+            <InputSelect
+                on:change={(e) => goto(`${path}/${e.detail}`)}
+                id="period"
+                options={[
+                    {
+                        label: '24 hours',
+                        value: '24h'
+                    },
+                    {
+                        label: '30 days',
+                        value: '30d'
+                    },
+                    {
+                        label: '90 days',
+                        value: '90d'
+                    }
+                ]}
+                value={$page.params.period ?? '30d'} />
+        </div>
+    {/if}
+    <Card>
+        {#if count}
+            <Layout.Stack gap="xs">
+                <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
+                <Typography.Text>{countMetadata.title}</Typography.Text>
+            </Layout.Stack>
+            <div class="chart-container">
+                <BarChart
+                    formatted={$page.params.period === '24h' ? 'hours' : 'days'}
+                    series={[
                         {
-                            label: '24 hours',
-                            value: '24h'
-                        },
-                        {
-                            label: '30 days',
-                            value: '30d'
-                        },
-                        {
-                            label: '90 days',
-                            value: '90d'
+                            name: countMetadata.legend,
+                            data: accumulateFromEndingTotal(count, total)
                         }
-                    ]}
-                    value={$page.params.period ?? '30d'} />
+                    ]} />
             </div>
         {/if}
-        <Card>
-            {#if count}
-                <Layout.Stack gap="xs">
-                    <Typography.Title>{formatNumberWithCommas(total)}</Typography.Title>
-                    <Typography.Text>{countMetadata.title}</Typography.Text>
-                </Layout.Stack>
-                <div class="chart-container">
-                    <BarChart
-                        formatted={$page.params.period === '24h' ? 'hours' : 'days'}
-                        series={[
-                            {
-                                name: countMetadata.legend,
-                                data: accumulateFromEndingTotal(count, total)
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-    </Layout.Stack>
-</Container>
+    </Card>
+</Layout.Stack>
 
 <style lang="scss">
     .chart-container {

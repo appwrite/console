@@ -62,42 +62,40 @@
             following rates. Next billing period: {toLocaleDate(nextDate)}.
         </Typography.Text>
     {/if}
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Resource</Table.Header.Cell>
-            <Table.Header.Cell>Limit</Table.Header.Cell>
-            {#if !isFree}
-                <Table.Header.Cell>Rate</Table.Header.Cell>
-            {/if}
+    <Table.Root
+        columns={[{ id: 'resource' }, { id: 'limit' }, { id: 'rate', hide: isFree }]}
+        let:root>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell column="resource" {root}>Resource</Table.Header.Cell>
+            <Table.Header.Cell column="limit" {root}>Limit</Table.Header.Cell>
+            <Table.Header.Cell column="rate" {root}>Rate</Table.Header.Cell>
         </svelte:fragment>
         {#each planData as usage}
             {#if usage['id'] === 'members'}
-                <Table.Row>
-                    <Table.Cell>{usage.resource}</Table.Cell>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="resource" {root}>{usage.resource}</Table.Cell>
+                    <Table.Cell column="limit" {root}>
                         {plan[usage.id] || 'Unlimited'}
                     </Table.Cell>
-                    {#if !isFree}
-                        <Table.Cell>
-                            {formatCurrency(plan.addons?.member?.price)}/{usage?.unit}
-                        </Table.Cell>
-                    {/if}
-                </Table.Row>
+                    <Table.Cell column="rate" {root}>
+                        {formatCurrency(plan.addons?.member?.price)}/{usage?.unit}
+                    </Table.Cell>
+                </Table.Row.Base>
             {:else}
                 {@const addon = plan.addons[usage.id]}
-                <Table.Row>
-                    <Table.Cell>{usage.resource}</Table.Cell>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="resource" {root}>{usage.resource}</Table.Cell>
+                    <Table.Cell column="limit" {root}>
                         {abbreviateNumber(plan[usage.id])}{usage?.unit}
                     </Table.Cell>
                     {#if !isFree}
-                        <Table.Cell>
+                        <Table.Cell column="rate" {root}>
                             {formatCurrency(addon?.price)}/{['MB', 'GB', 'TB'].includes(addon?.unit)
                                 ? addon?.value
                                 : abbreviateNumber(addon?.value, 0)}{usage?.unit}
                         </Table.Cell>
                     {/if}
-                </Table.Row>
+                </Table.Row.Base>
             {/if}
         {/each}
     </Table.Root>

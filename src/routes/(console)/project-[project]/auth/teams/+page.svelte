@@ -46,27 +46,29 @@
     </Layout.Stack>
 
     {#if data.teams.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Name</Table.Header.Cell>
-                <Table.Header.Cell>Members</Table.Header.Cell>
-                <Table.Header.Cell>Created</Table.Header.Cell>
+        <Table.Root columns={3} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell {root}>Name</Table.Header.Cell>
+                <Table.Header.Cell {root}>Members</Table.Header.Cell>
+                <Table.Header.Cell {root}>Created</Table.Header.Cell>
             </svelte:fragment>
             {#each data.teams.teams as team}
-                <Table.Link href={`${base}/project-${project}/auth/teams/team-${team.$id}`}>
-                    <Table.Cell>
+                <Table.Row.Link
+                    {root}
+                    href={`${base}/project-${project}/auth/teams/team-${team.$id}`}>
+                    <Table.Cell {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={team.name} />
                             <span class="u-trim">{team.name}</span>
                         </Layout.Stack>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         {team.total} members
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         <DualTimeView time={team.$createdAt} />
                     </Table.Cell>
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
 

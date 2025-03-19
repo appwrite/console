@@ -189,16 +189,26 @@
                                 limit={6}
                                 let:paginatedItems
                                 hideFooter={variables.length <= 6}>
-                                <Table.Root>
-                                    <svelte:fragment slot="header">
-                                        <Table.Header.Cell width="200px">Key</Table.Header.Cell>
-                                        <Table.Header.Cell>Value</Table.Header.Cell>
-                                        <Table.Header.Cell width="10px"></Table.Header.Cell>
+                                <Table.Root
+                                    let:root
+                                    columns={[
+                                        { id: 'key', width: 200 },
+                                        { id: 'value' },
+                                        { id: 'actions', width: 40 }
+                                    ]}>
+                                    <svelte:fragment slot="header" let:root>
+                                        <Table.Header.Cell column="key" {root}
+                                            >Key</Table.Header.Cell>
+                                        <Table.Header.Cell column="value" {root}
+                                            >Value</Table.Header.Cell>
+                                        <Table.Header.Cell column="actions" {root}
+                                        ></Table.Header.Cell>
                                     </svelte:fragment>
                                     {#each paginatedItems as variable}
-                                        <Table.Row>
-                                            <Table.Cell>{variable.key}</Table.Cell>
-                                            <Table.Cell>
+                                        <Table.Row.Base {root}>
+                                            <Table.Cell column="key" {root}
+                                                >{variable.key}</Table.Cell>
+                                            <Table.Cell column="value" {root}>
                                                 <!-- TODO: fix max width -->
                                                 <div style="max-width: 20rem">
                                                     {#if variable.secret}
@@ -220,7 +230,7 @@
                                                     {/if}
                                                 </div>
                                             </Table.Cell>
-                                            <Table.Cell>
+                                            <Table.Cell column="actions" {root}>
                                                 <div style="margin-inline-start: auto">
                                                     <Popover
                                                         padding="none"
@@ -282,7 +292,7 @@
                                                     </Popover>
                                                 </div>
                                             </Table.Cell>
-                                        </Table.Row>
+                                        </Table.Row.Base>
                                     {/each}
                                 </Table.Root>
                             </Paginator>

@@ -215,20 +215,20 @@
                             </div>
                             {#if selectedRequest === 'parameters'}
                                 {#if parameters?.length}
-                                    <Table.Root>
-                                        <svelte:fragment slot="header">
-                                            <Table.Header.Cell>Name</Table.Header.Cell>
-                                            <Table.Header.Cell>Value</Table.Header.Cell>
+                                    <Table.Root columns={2} let:root>
+                                        <svelte:fragment slot="header" let:root>
+                                            <Table.Header.Cell {root}>Name</Table.Header.Cell>
+                                            <Table.Header.Cell {root}>Value</Table.Header.Cell>
                                         </svelte:fragment>
                                         {#each parameters as param}
-                                            <Table.Row>
-                                                <Table.Cell>
+                                            <Table.Row.Base {root}>
+                                                <Table.Cell {root}>
                                                     {param.key}
                                                 </Table.Cell>
-                                                <Table.Cell>
+                                                <Table.Cell {root}>
                                                     {param.value}
                                                 </Table.Cell>
-                                            </Table.Row>
+                                            </Table.Row.Base>
                                         {/each}
                                     </Table.Root>
                                 {/if}
@@ -249,20 +249,20 @@
                                 </p>
                             {:else if selectedRequest === 'headers'}
                                 {#if execution.requestHeaders.length}
-                                    <Table.Root>
-                                        <svelte:fragment slot="header">
-                                            <Table.Header.Cell>Name</Table.Header.Cell>
-                                            <Table.Header.Cell>Value</Table.Header.Cell>
+                                    <Table.Root columns={2} let:root>
+                                        <svelte:fragment slot="header" let:root>
+                                            <Table.Header.Cell {root}>Name</Table.Header.Cell>
+                                            <Table.Header.Cell {root}>Value</Table.Header.Cell>
                                         </svelte:fragment>
                                         {#each execution.requestHeaders as header}
-                                            <Table.Row>
-                                                <Table.Cell>
+                                            <Table.Row.Base {root}>
+                                                <Table.Cell {root}>
                                                     {header.name}
                                                 </Table.Cell>
-                                                <Table.Cell>
+                                                <Table.Cell {root}>
                                                     {header.value}
                                                 </Table.Cell>
-                                            </Table.Row>
+                                            </Table.Row.Base>
                                         {/each}
                                     </Table.Root>
                                 {/if}
@@ -363,20 +363,20 @@
                                 {/if}
                             {:else if selectedResponse === 'headers'}
                                 {#if execution.responseHeaders.length}
-                                    <Table.Root>
-                                        <svelte:fragment slot="header">
-                                            <Table.Header.Cell>Name</Table.Header.Cell>
-                                            <Table.Header.Cell>Value</Table.Header.Cell>
+                                    <Table.Root columns={2} let:root>
+                                        <svelte:fragment slot="header" let:root>
+                                            <Table.Header.Cell {root}>Name</Table.Header.Cell>
+                                            <Table.Header.Cell {root}>Value</Table.Header.Cell>
                                         </svelte:fragment>
                                         {#each execution.responseHeaders as header}
-                                            <Table.Row>
-                                                <Table.Cell>
+                                            <Table.Row.Base {root}>
+                                                <Table.Cell {root}>
                                                     {header.name}
                                                 </Table.Cell>
-                                                <Table.Cell>
+                                                <Table.Cell {root}>
                                                     {header.value}
                                                 </Table.Cell>
-                                            </Table.Row>
+                                            </Table.Row.Base>
                                         {/each}
                                     </Table.Root>
                                 {/if}

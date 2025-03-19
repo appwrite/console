@@ -5,13 +5,13 @@ import { derived, writable } from 'svelte/store';
 
 export const domain = derived(page, ($page) => $page.data.domain as Domain);
 export const columns = writable<Column[]>([
-    { id: 'name', title: 'Name', type: 'string', show: true },
-    { id: 'type', title: 'Type', type: 'string', show: true },
-    { id: 'value', title: 'Value', type: 'string', show: true },
-    { id: 'ttl', title: 'TTL', type: 'integer', show: true },
-    { id: 'priority', title: 'Priority', type: 'integer', show: false },
-    { id: 'comment', title: 'Comment', type: 'string', show: false },
-    { id: '$createdAt', title: 'Created', type: 'datetime', show: true }
+    { id: 'name', title: 'Name', type: 'string' },
+    { id: 'type', title: 'Type', type: 'string' },
+    { id: 'value', title: 'Value', type: 'string' },
+    { id: 'ttl', title: 'TTL', type: 'integer' },
+    { id: 'priority', title: 'Priority', type: 'integer', hide: true },
+    { id: 'comment', title: 'Comment', type: 'string', hide: true },
+    { id: '$createdAt', title: 'Created', type: 'datetime' }
 ]);
 
 export const recordTypes = [
@@ -66,3 +66,5 @@ export const recordTypes = [
         helper: 'ALIAS records are similar to CNAMEs but can be used for the root domain, allowing you to point your domain to another domain or server.'
     }
 ];
+
+export const presets = ['Zoho', 'Mailgun', 'Outlook', 'Proton Mail', 'iCloud', 'Google Workspace'];

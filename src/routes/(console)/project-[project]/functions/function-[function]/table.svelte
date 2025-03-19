@@ -46,140 +46,118 @@
     }
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        {#each columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column.width.toString()}>
-                    {column.title}
-                </Table.Header.Cell>
-            {/if}
+<Table.Root columns={[...columns, { id: 'actions', width: 40 }]} let:root>
+    <svelte:fragment slot="header" let:root>
+        {#each columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>
+                {title}
+            </Table.Header.Cell>
         {/each}
-        <Table.Header.Cell width="40" />
+        <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
     {#each data.deploymentList.deployments as deployment (deployment.$id)}
-        <Table.Link
+        <Table.Row.Link
+            {root}
             href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
             {#each columns as column}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key column.id}
-                            <Table.Cell>
-                                <Id value={deployment.$id}>{deployment.$id}</Id>
-                            </Table.Cell>
+                            <Id value={deployment.$id}>{deployment.$id}</Id>
                         {/key}
                     {:else if column.id === 'status'}
-                        <Table.Cell>
-                            {@const status = deployment.status}
+                        {@const status = deployment.status}
 
-                            {#if data?.activeDeployment?.$id === deployment?.$id}
-                                <Status status="complete" label="Active" />
-                            {:else}
-                                <Status
-                                    status={deploymentStatusConverter(status)}
-                                    label={capitalize(status)} />
-                            {/if}
-                        </Table.Cell>
+                        {#if data?.activeDeployment?.$id === deployment?.$id}
+                            <Status status="complete" label="Active" />
+                        {:else}
+                            <Status
+                                status={deploymentStatusConverter(status)}
+                                label={capitalize(status)} />
+                        {/if}
                     {:else if column.id === 'type'}
-                        <Table.Cell>
-                            <DeploymentSource {deployment} />
-                        </Table.Cell>
+                        <DeploymentSource {deployment} />
                     {:else if column.id === '$updatedAt'}
-                        <Table.Cell>
-                            <DeploymentCreatedBy {deployment} />
-                        </Table.Cell>
+                        <DeploymentCreatedBy {deployment} />
                     {:else if column.id === 'buildDuration'}
-                        <Table.Cell>
-                            {#if ['waiting'].includes(deployment.status)}
-                                -
-                            {:else if ['processing', 'building'].includes(deployment.status)}
-                                <span use:timer={{ start: deployment.$createdAt }} />
-                            {:else}
-                                {formatTimeDetailed(deployment.buildDuration)}
-                            {/if}
-                        </Table.Cell>
+                        {#if ['waiting'].includes(deployment.status)}
+                            -
+                        {:else if ['processing', 'building'].includes(deployment.status)}
+                            <span use:timer={{ start: deployment.$createdAt }} />
+                        {:else}
+                            {formatTimeDetailed(deployment.buildDuration)}
+                        {/if}
                     {:else if column.id === 'sourceSize'}
-                        <Table.Cell>
-                            {calculateSize(deployment.sourceSize)}
-                        </Table.Cell>
+                        {calculateSize(deployment.sourceSize)}
                     {:else if column.id === 'buildSize'}
-                        <Table.Cell>
-                            {calculateSize(deployment.buildSize)}
-                        </Table.Cell>
+                        {calculateSize(deployment.buildSize)}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-            <Table.Cell>
-                <Layout.Stack
-                    direction="row"
-                    gap="s"
-                    alignItems="center"
-                    justifyContent="flex-end"
-                    inline>
-                    <Menu>
-                        <Button text icon size="s">
-                            <Icon size="s" icon={IconDotsHorizontal} />
-                        </Button>
+            <Table.Cell column="actions" {root}>
+                <Menu>
+                    <Button text icon size="s">
+                        <Icon size="s" icon={IconDotsHorizontal} />
+                    </Button>
 
-                        <svelte:fragment slot="menu" let:toggle>
-                            <ActionMenu.Root>
+                    <svelte:fragment slot="menu" let:toggle>
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Button
+                                trailingIcon={IconRefresh}
+                                on:click={() => {
+                                    selectedDeployment = deployment;
+                                    showRedeploy = true;
+                                    toggle();
+                                    trackEvent(Click.FunctionsRedeployClick);
+                                }}>
+                                Redeploy
+                            </ActionMenu.Item.Button>
+                            {#if deployment.status === 'ready' && deployment.$id !== $func.deploymentId}
                                 <ActionMenu.Item.Button
-                                    trailingIcon={IconRefresh}
+                                    trailingIcon={IconLightningBolt}
                                     on:click={() => {
                                         selectedDeployment = deployment;
-                                        showRedeploy = true;
+                                        showActivate = true;
                                         toggle();
-                                        trackEvent(Click.FunctionsRedeployClick);
                                     }}>
-                                    Redeploy
+                                    Activate
                                 </ActionMenu.Item.Button>
-                                {#if deployment.status === 'ready' && deployment.$id !== $func.deploymentId}
-                                    <ActionMenu.Item.Button
-                                        trailingIcon={IconLightningBolt}
-                                        on:click={() => {
-                                            selectedDeployment = deployment;
-                                            showActivate = true;
-                                            toggle();
-                                        }}>
-                                        Activate
-                                    </ActionMenu.Item.Button>
-                                {/if}
+                            {/if}
 
-                                <DownloadActionMenuItem {deployment} {toggle} />
+                            <DownloadActionMenuItem {deployment} {toggle} />
 
-                                {#if deployment.status === 'processing' || deployment.status === 'building' || deployment.status === 'waiting'}
-                                    <ActionMenu.Item.Button
-                                        trailingIcon={IconXCircle}
-                                        on:click={() => {
-                                            selectedDeployment = deployment;
-                                            toggle();
+                            {#if deployment.status === 'processing' || deployment.status === 'building' || deployment.status === 'waiting'}
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconXCircle}
+                                    on:click={() => {
+                                        selectedDeployment = deployment;
+                                        toggle();
 
-                                            showCancel = true;
-                                            trackEvent(Click.FunctionsDeploymentCancelClick);
-                                        }}>
-                                        Cancel
-                                    </ActionMenu.Item.Button>
-                                {/if}
-                                {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment.status !== 'waiting'}
-                                    <ActionMenu.Item.Button
-                                        trailingIcon={IconTrash}
-                                        status="danger"
-                                        on:click={() => {
-                                            selectedDeployment = deployment;
-                                            toggle();
+                                        showCancel = true;
+                                        trackEvent(Click.FunctionsDeploymentCancelClick);
+                                    }}>
+                                    Cancel
+                                </ActionMenu.Item.Button>
+                            {/if}
+                            {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment.status !== 'waiting'}
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconTrash}
+                                    status="danger"
+                                    on:click={() => {
+                                        selectedDeployment = deployment;
+                                        toggle();
 
-                                            showDelete = true;
-                                            trackEvent(Click.FunctionsDeploymentDeleteClick);
-                                        }}>
-                                        Delete
-                                    </ActionMenu.Item.Button>
-                                {/if}
-                            </ActionMenu.Root>
-                        </svelte:fragment>
-                    </Menu>
-                </Layout.Stack>
+                                        showDelete = true;
+                                        trackEvent(Click.FunctionsDeploymentDeleteClick);
+                                    }}>
+                                    Delete
+                                </ActionMenu.Item.Button>
+                            {/if}
+                        </ActionMenu.Root>
+                    </svelte:fragment>
+                </Menu>
             </Table.Cell>
-        </Table.Link>
+        </Table.Row.Link>
     {/each}
 </Table.Root>
 

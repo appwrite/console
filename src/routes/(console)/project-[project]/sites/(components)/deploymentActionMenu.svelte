@@ -6,6 +6,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
     import {
+        IconChevronRight,
         IconDotsHorizontal,
         IconDownload,
         IconLightningBolt,
@@ -77,7 +78,9 @@
             {#if deployment?.status === 'ready' || deployment?.status === 'failed'}
                 <SubMenu>
                     <ActionMenu.Root noPadding>
-                        <ActionMenu.Item.Button leadingIcon={IconDownload}>
+                        <ActionMenu.Item.Button
+                            leadingIcon={IconDownload}
+                            trailingIcon={IconChevronRight}>
                             Download
                         </ActionMenu.Item.Button>
                     </ActionMenu.Root>

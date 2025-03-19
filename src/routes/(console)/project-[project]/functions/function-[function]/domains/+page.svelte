@@ -67,16 +67,23 @@
     </Layout.Stack>
 
     {#if data.domains.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell width="200px">Domain</Table.Header.Cell>
-                <Table.Header.Cell>Redirect to</Table.Header.Cell>
-                <Table.Header.Cell>Production branch</Table.Header.Cell>
-                <Table.Header.Cell />
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'domain', width: { min: 200 } },
+                { id: 'redirect' },
+                { id: 'branch' },
+                { id: 'actions', width: 40 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="domain" {root}>Domain</Table.Header.Cell>
+                <Table.Header.Cell column="redirect" {root}>Redirect to</Table.Header.Cell>
+                <Table.Header.Cell column="branch" {root}>Production branch</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
             {#each data.domains.rules as domain}
-                <Table.Row>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="domain" {root}>
                         <Link external href={`${$protocol}${domain.domain}`} variant="quiet">
                             <Layout.Stack direction="row" alignItems="center" gap="xs">
                                 {domain.domain}
@@ -84,60 +91,58 @@
                             </Layout.Stack>
                         </Link>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="redirect" {root}>
                         {domain?.redirectUrl || 'No redirect'}
                         {domain?.redirectStatusCode ? `(${domain.redirectStatusCode})` : ''}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="branch" {root}>
                         {domain.deploymentVcsProviderBranch || '-'}
                     </Table.Cell>
-                    <Table.Cell>
-                        <Layout.Stack direction="row" justifyContent="flex-end">
-                            <Popover let:toggle placement="bottom-start" padding="none">
-                                <Button
-                                    text
-                                    icon
-                                    on:click={(e) => {
-                                        e.preventDefault();
-                                        toggle(e);
-                                    }}>
-                                    <Icon icon={IconDotsHorizontal} size="s" />
-                                </Button>
+                    <Table.Cell column="actions" {root}>
+                        <Popover let:toggle placement="bottom-start" padding="none">
+                            <Button
+                                text
+                                icon
+                                on:click={(e) => {
+                                    e.preventDefault();
+                                    toggle(e);
+                                }}>
+                                <Icon icon={IconDotsHorizontal} size="s" />
+                            </Button>
 
-                                <svelte:fragment slot="tooltip" let:toggle>
-                                    <ActionMenu.Root>
-                                        {#if domain.status !== 'verified'}
-                                            <ActionMenu.Item.Button
-                                                leadingIcon={IconRefresh}
-                                                on:click={(e) => {
-                                                    e.preventDefault();
-                                                    selectedDomain = domain;
-                                                    showRetry = true;
-                                                    toggle(e);
-                                                }}>
-                                                Retry
-                                            </ActionMenu.Item.Button>
-                                        {/if}
+                            <svelte:fragment slot="tooltip" let:toggle>
+                                <ActionMenu.Root>
+                                    {#if domain.status !== 'verified'}
                                         <ActionMenu.Item.Button
-                                            status="danger"
-                                            leadingIcon={IconTrash}
+                                            leadingIcon={IconRefresh}
                                             on:click={(e) => {
                                                 e.preventDefault();
                                                 selectedDomain = domain;
-                                                showDelete = true;
+                                                showRetry = true;
                                                 toggle(e);
-                                                trackEvent(Click.DomainDeleteClick, {
-                                                    source: 'functions_domain_overview'
-                                                });
                                             }}>
-                                            Delete
+                                            Retry
                                         </ActionMenu.Item.Button>
-                                    </ActionMenu.Root>
-                                </svelte:fragment>
-                            </Popover>
-                        </Layout.Stack>
+                                    {/if}
+                                    <ActionMenu.Item.Button
+                                        status="danger"
+                                        leadingIcon={IconTrash}
+                                        on:click={(e) => {
+                                            e.preventDefault();
+                                            selectedDomain = domain;
+                                            showDelete = true;
+                                            toggle(e);
+                                            trackEvent(Click.DomainDeleteClick, {
+                                                source: 'functions_domain_overview'
+                                            });
+                                        }}>
+                                        Delete
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </svelte:fragment>
+                        </Popover>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         </Table.Root>
 

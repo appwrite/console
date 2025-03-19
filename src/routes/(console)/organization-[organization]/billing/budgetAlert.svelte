@@ -118,13 +118,13 @@
             {/if}
 
             {#if alerts.length}
-                <Table.Root>
+                <Table.Root columns={[{ id: 'percentage' }, { id: 'action', width: 40 }]} let:root>
                     {#each alerts.sort() as alert}
-                        <Table.Row>
-                            <Table.Cell>
+                        <Table.Row.Base {root}>
+                            <Table.Cell column="percentage" {root}>
                                 {alert}%
                             </Table.Cell>
-                            <Table.Cell width="40px">
+                            <Table.Cell column="action" {root}>
                                 <Button
                                     text
                                     icon
@@ -133,7 +133,7 @@
                                     <Icon icon={IconTrash} size="s" />
                                 </Button>
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
             {/if}
