@@ -17,7 +17,6 @@
 </script>
 
 <Usage
-    title="Usage"
     path={`${base}/project-${$page.params.project}/databases/database-${$page.params.database}/usage`}
     {total}
     {count}

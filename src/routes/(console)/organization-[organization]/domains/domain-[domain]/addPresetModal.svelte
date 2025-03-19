@@ -17,13 +17,22 @@
             //TODO: finish switch statement
             case 'zoho':
                 return await sdk.forConsole.domains.getPresetZoho($page.params.domain);
+            case 'mailgun':
+                return await sdk.forConsole.domains.getPresetMailgun($page.params.domain);
+            case 'outlook':
+                return await sdk.forConsole.domains.getPresetOutlook($page.params.domain);
+            case 'proton mail':
+                return await sdk.forConsole.domains.getPresetProtonMail($page.params.domain);
+            case 'icloud':
+                return await sdk.forConsole.domains.getPresetICloud($page.params.domain);
+            case 'google workspace':
+                return await sdk.forConsole.domains.getPresetGoogleWorkspace($page.params.domain);
         }
     }
 
     async function handleSubmit() {
         try {
             //TODO: create DNS records
-
             show = false;
             addNotification({
                 type: 'success',
@@ -69,8 +78,7 @@
                 </Table.Row>
             {/each}
         {:then presetData}
-            {JSON.stringify(presetData)}
-            {#each presetData as record}
+            {#each presetData.dnsRecords as record}
                 <Table.Row>
                     <Table.Cell>{record.type}</Table.Cell>
                     <Table.Cell>{record.name}</Table.Cell>

@@ -11,12 +11,13 @@
     export let tooltipShow = false;
 
     // Pink v2
+    export let icon: Props['icon'] = undefined;
     export let radius: Props['radius'] = 's';
     export let imageRadius: Props['imageRadius'] = 'xxs';
     export let padding: Props['padding'] = 's';
     export let variant: Props['variant'] = 'primary';
     export let name: Props['name'] = undefined;
-    //temporarily unefined
+    //temporarily undefined
     export let title: Props['title'] = undefined;
     export let disabled = false;
     export let src: string = null;
@@ -31,6 +32,7 @@
         {name}
         {src}
         {alt}
+        {icon}
         {padding}
         {imageRadius}
         {variant}

@@ -65,7 +65,7 @@
         <!-- <div class="u-flex u-main-end">
             <Button text on:click={() => (showTest = true)}>Send test message</Button>
         </div> -->
-        <Modal title="Send test message" bind:show={showTest} onSubmit={sendTestEmail} size="big">
+        <Modal title="Send test message" bind:show={showTest} onSubmit={sendTestEmail} size="l">
             <slot />
             <InputRadio
                 label={$user.email}
@@ -87,7 +87,6 @@
                         role="button"
                         tabindex="0">
                         <InputEmail
-                            showLabel={false}
                             id="email"
                             label="Email"
                             placeholder="Enter email"

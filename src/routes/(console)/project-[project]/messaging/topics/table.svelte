@@ -120,13 +120,12 @@
     </div>
 </FloatingActionBar>
 
+<!-- TODO: torsten, this also doesn't seem to be used -->
 <Modal
     title="Delete topics"
-    icon="exclamation"
-    state="warning"
     bind:show={showDelete}
     onSubmit={handleDelete}
-    closable={!deleting}>
+    dismissible={!deleting}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'topics' : 'topic'}?

@@ -292,7 +292,6 @@
 
 <Modal title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
     <Card
-        isTile
         class="restore-modal-inner-card u-width-full-line"
         style="border-radius: var(--border-radius-small, 8px); padding: 1rem;">
         <div class="u-flex u-flex-vertical u-gap-4">

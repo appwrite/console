@@ -134,7 +134,8 @@
 
 <EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent}>
     <Typography.Text
-        >Select events in your Appwrite project that will trigger your function<Link.Anchor
+        >Select events in your Appwrite project that will trigger your function.
+        <Link.Anchor
             href="https://appwrite.io/docs/advanced/platform/events"
             target="_blank"
             rel="noopener noreferrer"

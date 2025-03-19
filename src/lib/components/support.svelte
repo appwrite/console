@@ -68,7 +68,6 @@
     {#each supportOptions as option, index}
         {#if showCloudSupport(index)}
             <Card
-                isTile
                 class="support-option-card "
                 style="border-radius: var(--border-radius-small, 8px); --gap-xl: 16px">
                 <div class="u-flex u-flex-vertical u-gap-4">

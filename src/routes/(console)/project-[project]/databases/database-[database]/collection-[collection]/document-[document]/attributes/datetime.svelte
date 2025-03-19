@@ -12,8 +12,6 @@
 <InputDateTime
     {id}
     {label}
-    {optionalText}
-    showLabel={!!label?.length}
     required={attribute.required}
     nullable={!attribute.required}
     bind:value />

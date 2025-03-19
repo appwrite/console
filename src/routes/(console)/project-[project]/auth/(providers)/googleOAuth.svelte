@@ -39,7 +39,7 @@
     };
 </script>
 
-<Modal {error} size="big" bind:show onSubmit={update} on:close>
+<Modal {error} size="l" bind:show onSubmit={update} on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 settings</svelte:fragment>
     <FormList>
         <p>

@@ -17,7 +17,6 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { MessagingProviderType } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
     import FailedModal from './failedModal.svelte';
     import MessageStatusPill from './messageStatusPill.svelte';
@@ -39,8 +38,6 @@
     let deleting = false;
     let showFailed = false;
     let errors: string[] = [];
-    let showCreateDropdownMobile = false;
-    let showCreateDropdownEmpty = false;
     const columns = writable<Column[]>([
         { id: '$id', title: 'Message ID', type: 'string', show: true, width: 140 },
         { id: 'message', title: 'Message', type: 'string', show: false, filter: false, width: 140 },
@@ -228,7 +225,6 @@
                 </Button>
                 {#if $canWriteMessages}
                     <CreateMessageDropdown
-                        bind:showCreateDropdown={showCreateDropdownEmpty}
                         let:toggle>
                         <Button secondary on:click={toggle} event="create_message">
                             <span class="text">Create message</span>
@@ -242,7 +238,7 @@
 
 <FailedModal bind:show={showFailed} {errors} />
 
-<Modal title="Delete messages" bind:show={showDelete} onSubmit={handleDelete} closable={!deleting}>
+<Modal title="Delete messages" bind:show={showDelete} onSubmit={handleDelete} dismissible={!deleting}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selected.length}</b>
         {selected.length > 1 ? 'messages' : 'message'}?

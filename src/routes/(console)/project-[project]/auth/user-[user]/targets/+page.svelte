@@ -4,8 +4,6 @@
         PaginationWithLimit,
         ViewSelector,
         EmptyFilter,
-        EmptySearch,
-        DropList
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import type { PageData } from './$types';

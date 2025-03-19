@@ -10,6 +10,7 @@
     export let silentMode: boolean;
     export let installationId: string;
     export let repositoryId: string;
+    export let product: 'sites' | 'functions';
 
     let show = false;
 
@@ -90,5 +91,5 @@
 </Fieldset>
 
 {#if show}
-    <SelectRootModal bind:show bind:rootDir />
+    <SelectRootModal bind:show bind:rootDir {product} />
 {/if}

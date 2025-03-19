@@ -5,6 +5,7 @@
     export let id: string;
     export let label: string | undefined = undefined;
     export let value: string | number | boolean | null;
+    export let optionalText: string | number | boolean | null | undefined = undefined;
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
@@ -49,6 +50,7 @@
     {id}
     {label}
     {options}
+    {optionalText}
     {placeholder}
     {disabled}
     {isSearchable}

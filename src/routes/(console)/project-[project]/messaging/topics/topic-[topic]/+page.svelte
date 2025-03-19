@@ -112,8 +112,7 @@
                     view={View.Table}
                     {columns}
                     hideView
-                    allowNoColumns
-                    showColsTextMobile />
+                    allowNoColumns />
                 <Button on:click={() => (showAdd = true)} event="create_subscriber">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Add subscriber
@@ -127,8 +126,7 @@
                     view={View.Table}
                     {columns}
                     hideView
-                    allowNoColumns
-                    showColsTextMobile />
+                    allowNoColumns />
             </div>
             <div class="u-flex-basis-50-percent">
                 <!-- TODO: fix width -->

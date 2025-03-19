@@ -241,6 +241,7 @@
                                                 columnsS={3}
                                                 columns={4}>
                                                 {#each response?.files as file}
+                                                    <!-- TODO: @itznotabug - `src` type prop added on latest commits. Refactor after latest merge. -->
                                                     <Card.Selector
                                                         group="files"
                                                         name="files"

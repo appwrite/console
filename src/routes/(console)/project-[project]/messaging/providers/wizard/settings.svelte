@@ -6,9 +6,7 @@
     import SettingsFormList from '../settingsFormList.svelte';
     import { newMemberModal } from '$lib/stores/organization';
     import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
-    import Provider from '../../provider.svelte';
     import { MessagingProviderType } from '@appwrite.io/console';
-    import ProviderTypeComponent from '$routes/(console)/project-[project]/messaging/providerType.svelte';
     import {
         Collapsible,
         CollapsibleItem,

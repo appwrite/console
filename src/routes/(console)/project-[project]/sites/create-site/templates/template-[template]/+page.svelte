@@ -206,7 +206,7 @@
         <Layout.Stack gap="xl">
             {#if selectedRepository && showSiteConfig}
                 <Layout.Stack gap="xxl">
-                    <Card isTile padding="s" radius="s">
+                    <Card padding="s" radius="s">
                         <Layout.Stack
                             direction="row"
                             justifyContent="space-between"
@@ -232,6 +232,7 @@
                         bind:branch
                         bind:rootDir
                         bind:silentMode
+                        product="sites"
                         installationId={selectedInstallationId}
                         repositoryId={selectedRepository} />
                     {#if data.template.variables?.length}
@@ -300,7 +301,7 @@
                             </Layout.Stack>
                         </Fieldset>
                     {:else}
-                        <Card isDashed isTile padding="none">
+                        <Card isDashed padding="none">
                             <Empty
                                 type="secondary"
                                 title="Connect Git repository"

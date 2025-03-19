@@ -9,7 +9,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Provider, { Providers } from '../../provider.svelte';
-    import ProviderType from '../../providerType.svelte';
     import { provider as providerData } from './store';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { getProviderText } from '../../helper';

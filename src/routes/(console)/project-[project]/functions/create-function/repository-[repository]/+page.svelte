@@ -155,6 +155,7 @@
                 bind:branch
                 bind:rootDir
                 bind:silentMode
+                product="functions"
                 installationId={data.installation.$id}
                 repositoryId={data.repository.id} />
 

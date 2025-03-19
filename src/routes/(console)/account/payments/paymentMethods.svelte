@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { CardGrid, CreditCardInfo, DropList, DropListItem, Empty } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { CardGrid, CreditCardInfo, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
@@ -35,7 +34,6 @@
     let showDelete = false;
     let showEdit = false;
     let isLinked = false;
-    let showLinked = [];
 
     $: orgList = $organizationList.teams as unknown as Organization[];
 

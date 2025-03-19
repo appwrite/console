@@ -81,5 +81,5 @@
     </svelte:fragment>
 </InputSelect>
 {#if expirationSelect === 'custom'}
-    <InputDateTime required id="expire" label="" bind:value={expirationCustom} showLabel={false} />
+    <InputDateTime required id="expire" label="" bind:value={expirationCustom} />
 {/if}

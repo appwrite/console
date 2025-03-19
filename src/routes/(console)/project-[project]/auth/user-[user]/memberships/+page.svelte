@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { base } from '$app/paths';
-    import { AvatarInitials, EmptySearch } from '$lib/components';
+    import { AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import DeleteMembership from '../deleteMembership.svelte';

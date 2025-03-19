@@ -3,7 +3,7 @@
     import type { RegionList } from '$lib/sdk/billing';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { Flag, ID, Region } from '@appwrite.io/console';
+    import { ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -113,14 +113,14 @@
                 bind:id
                 bind:region>
                 <svelte:fragment slot="submit"
-                    ><Layout.Stack direction="row" justifyContent="flex-end"
-                        ><Button.Button
-                            type="button"
-                            variant="primary"
-                            size="s"
-                            on:click={createProject}>
-                            Create</Button.Button>
-                    </Layout.Stack></svelte:fragment>
+                ><Layout.Stack direction="row" justifyContent="flex-end"
+                ><Button.Button
+                    type="button"
+                    variant="primary"
+                    size="s"
+                    on:click={createProject}>
+                    Create</Button.Button>
+                </Layout.Stack></svelte:fragment>
             </CreateProject>
         </Card.Base>
     {/if}

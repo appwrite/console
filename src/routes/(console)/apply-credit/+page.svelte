@@ -24,6 +24,7 @@
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
+    import { plansInfo } from '$lib/stores/billing';
 
     export let data;
 
@@ -294,6 +295,7 @@
                         fixedCoupon={!!data?.couponData?.code}
                         {billingPlan}
                         {collaborators}
+                        plans={$plansInfo}
                         bind:couponData
                         bind:billingBudget>
                         {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}

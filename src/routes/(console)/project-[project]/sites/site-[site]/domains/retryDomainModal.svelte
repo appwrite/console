@@ -8,9 +8,10 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import RecordsCard from './recordsCard.svelte';
+    import type { Domain } from '$lib/sdk/domains';
 
     export let show = false;
-    export let selectedDomain: Models.ProxyRule;
+    export let selectedDomain: Domain;
 
     let error = null;
     async function retryDomain() {

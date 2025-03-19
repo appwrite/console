@@ -19,7 +19,6 @@
     import { isCloud } from '$lib/system';
     import { currentPlan } from '$lib/stores/organization';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
-    import Pill from '$lib/elements/pill.svelte';
     import CustomId from '$lib/components/customId.svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { ID } from '@appwrite.io/console';

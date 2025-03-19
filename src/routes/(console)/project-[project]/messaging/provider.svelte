@@ -66,6 +66,7 @@
     export let provider: Providers | string;
     export let name: string = '';
     export let noIcon = false;
+    export let size: 'xs' | 's' | 'm' | 'l' = 'm';
 
     const { icon, displayName } = getProviderDisplayNameAndIcon(provider);
 </script>
@@ -76,7 +77,7 @@
     <Layout.Stack direction="row" alignItems="center">
         {#if !noIcon}
             {#if provider === Providers.SMTP}
-                <Icon icon={IconMail} />
+                <Icon icon={IconMail} {size} />
             {:else}
                 <img src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`} alt={provider} />
             {/if}

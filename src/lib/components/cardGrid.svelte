@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Divider, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
 
-    export let hideOverflow = false;
     export let hideFooter = false;
     export let gap: 'none' | 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl' | 'xxxl' = 'l';
 </script>

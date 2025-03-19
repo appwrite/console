@@ -37,7 +37,6 @@
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
-    import { onMount } from 'svelte';
     import EmailVerificationTemplate from './emailVerificationTemplate.svelte';
     import EmailMagicUrlTemplate from './emailMagicUrlTemplate.svelte';
     import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';

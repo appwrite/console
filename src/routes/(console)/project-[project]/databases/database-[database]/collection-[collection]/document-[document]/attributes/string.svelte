@@ -15,7 +15,6 @@
         {label}
         nullable={!attribute.required}
         placeholder="Enter string"
-        showLabel={!!label?.length}
         required={attribute.required}
         maxlength={attribute.size}
         bind:value />
@@ -23,10 +22,8 @@
     <InputText
         {id}
         {label}
-        {optionalText}
         nullable={!attribute.required}
         placeholder="Enter string"
-        showLabel={!!label?.length}
         required={attribute.required}
         maxlength={attribute.size}
         bind:value />

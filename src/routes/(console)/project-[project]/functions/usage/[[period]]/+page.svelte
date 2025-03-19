@@ -9,7 +9,6 @@
 </script>
 
 <Usage
-    title="Functions"
     path={`${base}/project-${$page.params.project}/functions/usage`}
     countMetadata={{
         legend: 'Functions',

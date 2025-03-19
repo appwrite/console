@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Modal } from '$lib/components';
-    import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
+    import { InputText, InputEmail, Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -69,6 +69,7 @@
         bind:value={email} />
     <InputText id="member-name" label="Name" placeholder="Enter name" bind:value={name} />
     {#if isCloud}
+        <!-- TODO: Torsten, input also no longer have popover atm -->
         <InputSelect
             required
             popover={Roles}

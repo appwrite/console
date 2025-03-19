@@ -8,8 +8,6 @@
 
 <Modal
     title="Disable all services"
-    icon="exclamation"
-    state="warning"
     bind:show
     onSubmit={handleDisableAll}>
     <p class="text" data-private>

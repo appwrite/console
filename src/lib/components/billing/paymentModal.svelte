@@ -1,13 +1,13 @@
 <script lang="ts">
     import { FakeModal } from '$lib/components';
-    import { InputText, Button, FormList } from '$lib/elements/forms';
+    import { InputText, Button } from '$lib/elements/forms';
     import { createEventDispatcher, onMount } from 'svelte';
     import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/stores';
-    import { Layout, Spinner } from '@appwrite.io/pink-svelte';
+    import { Spinner } from '@appwrite.io/pink-svelte';
 
     export let show = false;
 

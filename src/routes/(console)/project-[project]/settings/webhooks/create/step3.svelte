@@ -1,7 +1,7 @@
 <script lang="ts">
     import { InputText, InputPassword, InputChoice } from '$lib/elements/forms';
     import Button from '$lib/elements/forms/button.svelte';
-    import { Alert, Fieldset, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let httpUser: string;
     export let httpPass: string;

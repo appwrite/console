@@ -193,7 +193,6 @@
             {#if isFromBackupsTab}
                 <div class="u-flex-vertical u-gap-8">
                     <Card
-                        isTile
                         class="restore-modal-inner-card"
                         style="border-radius: var(--border-radius-small, 8px); padding: 1rem;">
                         <div class="u-flex u-flex-vertical u-gap-4">
@@ -267,8 +266,7 @@
 
                                         <div class="u-flex u-gap-8">
                                             <Button
-                                                text
-                                                noMargin
+                                                extraCompact
                                                 class="icon-pencil height-fit-content"
                                                 on:click={() => {
                                                     policyInEdit = policy.id;
@@ -296,8 +294,7 @@
                                                 }} />
 
                                             <Button
-                                                text
-                                                noMargin
+                                                extraCompact
                                                 class="icon-trash height-fit-content"
                                                 on:click={() => {
                                                     listOfCustomPolicies = [
@@ -349,7 +346,6 @@
                                                     label="Monthly timing"
                                                     bind:value={monthlyBackupFrequency}
                                                     placeholder="End of month (28th)"
-                                                    fullWidth
                                                     options={backupFrequencies[policyFrequency]} />
                                             {:else if policyFrequency === 'weekly'}
                                                 <div class="u-flex-vertical u-width-full-line">
@@ -390,7 +386,6 @@
 
                                 <div class="u-flex-vertical u-gap-8">
                                     <InputSelect
-                                        fullWidth
                                         id="retention"
                                         label="Keep for"
                                         placeholder="3 months"
@@ -410,7 +405,6 @@
                                                     </div>
 
                                                     <InputSelect
-                                                        fullWidth
                                                         id="retention"
                                                         placeholder="Months"
                                                         options={customRetainingOptions}

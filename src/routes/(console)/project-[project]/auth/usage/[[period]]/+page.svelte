@@ -10,7 +10,6 @@
 </script>
 
 <Usage
-    title="Users"
     path={`${base}/project-${$page.params.project}/auth/usage`}
     countMetadata={{
         legend: 'Users',

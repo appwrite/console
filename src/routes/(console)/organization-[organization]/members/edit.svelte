@@ -77,7 +77,7 @@
     }
 </script>
 
-<Modal title="Edit role" {error} size="big" bind:show={showEdit} onSubmit={submit}>
+<Modal title="Edit role" {error} size="s" bind:show={showEdit} onSubmit={submit}>
     <FormList>
         <InputSelect
             popover={Roles}

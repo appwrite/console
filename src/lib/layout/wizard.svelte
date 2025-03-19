@@ -20,7 +20,7 @@
           }
         | {
               title?: string;
-              href: string;
+              href?: string;
               confirmExit?: boolean;
               showExitModal?: boolean;
               invertColumns?: boolean;
@@ -72,7 +72,7 @@
         if (confirmExit) {
             showExitModal = true;
         } else {
-             goto(href);
+            goto(href);
             trackEvent('wizard_exit', {
                 from: 'button'
             });

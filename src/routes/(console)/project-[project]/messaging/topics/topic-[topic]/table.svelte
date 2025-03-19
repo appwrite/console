@@ -5,17 +5,6 @@
     import { FloatingActionBar, Id, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellCheck,
-        TableCellHead,
-        TableCellHeadCheck,
-        TableCellText,
-        TableHeader,
-        TableRowLink,
-        TableScroll
-    } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import ProviderType from '../../providerType.svelte';
@@ -151,13 +140,12 @@
     </div>
 </FloatingActionBar>
 
+<!-- TODO: torsten, this also doesn't seem to be used due to table checkboxes-->
 <Modal
     title="Delete subscriber"
-    icon="exclamation"
-    state="warning"
     bind:show={showDelete}
     onSubmit={handleDelete}
-    closable={!deleting}>
+    dismissible={!deleting}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'subscribers' : 'subscriber'}?

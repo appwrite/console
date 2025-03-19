@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { option, attributeOptions, type Option } from './attributes/store';
-    import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';

@@ -138,8 +138,7 @@
     });
 
     function findRegion(project: Models.Project) {
-        const region = regions.regions.find((region) => region.$id === project.region);
-        return region;
+        return regions.regions.find((region) => region.$id === project.region);
     }
 </script>
 

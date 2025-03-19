@@ -12,8 +12,6 @@
 <InputEmail
     {id}
     {label}
-    {optionalText}
     placeholder="Enter URL"
-    showLabel={!!label?.length}
     required={attribute.required}
     bind:value />

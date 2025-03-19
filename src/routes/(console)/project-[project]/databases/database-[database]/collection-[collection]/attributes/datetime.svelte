@@ -36,7 +36,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputDateTime } from '$lib/elements/forms';
+    import { InputDateTime } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeDatetime>;

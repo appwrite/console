@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { Input } from '@appwrite.io/pink-svelte';
-    import type ComboBox from '@appwrite.io/pink-svelte/dist/input/ComboBox.svelte';
     import type { ComponentProps } from 'svelte';
+    import type ComboBox from '@appwrite.io/pink-svelte/dist/input/ComboBox.svelte';
 
     export let options: ComponentProps<ComboBox>['options'];
     export let id: string;
@@ -12,20 +11,22 @@
     export let disabled = false;
     export let value: ComponentProps<ComboBox>['value'];
 
-    let element: HTMLInputElement;
-    let error: string | null;
+    // TODO: Torsten, is this used on latest branch?
 
-    function handleInvalid(event: Event) {
-        event.preventDefault();
+    // let element: HTMLInputElement;
+    // let error: string | null;
 
-        if (element.validity.valueMissing) {
-            error = 'This field is required';
-            return;
-        }
-        error = element.validationMessage;
-    }
-
-    $: if (value) error = null;
+    // function handleInvalid(event: Event) {
+    //     event.preventDefault();
+    //
+    //     if (element.validity.valueMissing) {
+    //         error = 'This field is required';
+    //         return;
+    //     }
+    //     error = element.validationMessage;
+    // }
+    //
+    // $: if (value) error = null;
 </script>
 
 <!-- <Input.ComboBox {label} {id} {placeholder} {disabled} {name} bind:value {required} {options} /> -->

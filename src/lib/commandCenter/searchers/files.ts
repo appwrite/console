@@ -6,6 +6,7 @@ import { Query } from '@appwrite.io/console';
 import { goto } from '$app/navigation';
 import { project } from '$routes/(console)/project-[project]/store';
 import { base } from '$app/paths';
+import { IconDocument } from '@appwrite.io/pink-icons-svelte';
 
 export const fileSearcher = (async (query: string) => {
     const $bucket = get(bucket);
@@ -22,7 +23,7 @@ export const fileSearcher = (async (query: string) => {
         callback: () => {
             goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/file-${file.$id}`);
         },
-        icon: 'document',
+        icon: IconDocument,
         group: 'files'
     }));
 }) satisfies Searcher;

@@ -12,9 +12,7 @@
 <InputURL
     {id}
     {label}
-    {optionalText}
     placeholder="Enter URL"
-    showLabel={!!label?.length}
     nullable={!attribute.required}
     required={attribute.required}
     bind:value />

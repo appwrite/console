@@ -65,7 +65,7 @@
                 </Typography.Text>
                 <DeploymentDomains domains={proxyRuleList} />
             </Layout.Stack>
-            <Card padding="xs" radius="s" variant="secondary" isTile>
+            <Card padding="xs" radius="s" variant="secondary">
                 <Layout.Stack gap="xxs">
                     <Layout.Stack
                         direction="row"

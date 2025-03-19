@@ -88,7 +88,7 @@
 </script>
 
 <div class="u-flex u-gap-24">
-    <FormList class="u-stretch u-cross-child-start">
+    <FormList>
         <InputText
             id="title"
             label="Title"
@@ -113,7 +113,7 @@
                 title="Send test message"
                 bind:show={showTest}
                 onSubmit={sendTestMessage}
-                size="big">
+                size="l">
                 <slot />
                 <InputRadio
                     label={$user.phone}
@@ -135,7 +135,6 @@
                             role="button"
                             tabindex="0">
                             <InputEmail
-                                showLabel={false}
                                 id="email"
                                 label="Email"
                                 placeholder="Enter email"
@@ -169,8 +168,7 @@
                                 $messageParams[MessagingProviderType.Push].data[rowIndex][0]
                             }
                             placeholder="Enter key"
-                            label="Key"
-                            showLabel={false} />
+                            label="Key" />
 
                         <InputText
                             id={`${rowIndex}-value`}
@@ -179,7 +177,6 @@
                             }
                             placeholder="Enter value"
                             label="Value"
-                            showLabel={false}
                             required />
                         <Button
                             text

@@ -36,7 +36,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputURL } from '$lib/elements/forms';
+    import { InputURL } from '$lib/elements/forms';
 
     export let data: Partial<Models.AttributeUrl>;
     export let editing = false;

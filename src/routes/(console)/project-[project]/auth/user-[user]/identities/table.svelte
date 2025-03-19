@@ -20,7 +20,6 @@
 
     let selectedIds: string[] = [];
     let showDelete = false;
-    let deleting = false;
 
     async function handleDelete() {
         showDelete = false;

@@ -6,6 +6,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
+    export let size: 's' | 'm' | 'l' = 'm';
     export let error: string = null;
     export let dismissible = true;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
@@ -42,7 +43,7 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <Form isModal {onSubmit} bind:this={formComponent}>
-    <Modal {title} bind:open={show} {hideFooter} {dismissible}>
+    <Modal {size} {title} bind:open={show} {hideFooter} {dismissible} >
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>

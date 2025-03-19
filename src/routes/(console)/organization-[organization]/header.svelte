@@ -1,19 +1,16 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { AvatarGroup, Tab, Tabs } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
-    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { daysLeftInTrial, getServiceLimit, plansInfo, readOnly } from '$lib/stores/billing';
-    import { members, newMemberModal, newOrgModal, organization } from '$lib/stores/organization';
+    import { members, newMemberModal, organization } from '$lib/stores/organization';
     import {
         canSeeBilling,
-        canSeeDomains,
         canSeeProjects,
         canSeeTeams,
         isBilling,
@@ -31,14 +28,6 @@
             isCloud &&
             (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && $members?.total >= limit));
     });
-    let showDropdown = false;
-
-    function createOrg() {
-        showDropdown = false;
-        if (isCloud) {
-            goto(`${base}/create-organization`);
-        } else newOrgModal.set(true);
-    }
 
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
     $: organizationId = $page.params.organization;

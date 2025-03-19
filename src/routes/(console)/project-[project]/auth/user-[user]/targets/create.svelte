@@ -71,7 +71,7 @@
     }
 </script>
 
-<Modal title="Create target" size="big" bind:show onSubmit={create}>
+<Modal title="Create target" size="l" bind:show onSubmit={create}>
     <FormList>
         <InputSelect
             id="provider-type"

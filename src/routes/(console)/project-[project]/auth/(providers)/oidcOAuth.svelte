@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { CopyInput, Modal } from '$lib/components';
-    import { Button, FormList, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
+    import { Button, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -65,7 +65,7 @@
         : provider.secret;
 </script>
 
-<Modal {error} onSubmit={update} size="big" bind:show on:close>
+<Modal {error} onSubmit={update} size="l" bind:show on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 settings</svelte:fragment>
     <p>
         To use {provider.name} authentication in your application, first fill in this form. For more

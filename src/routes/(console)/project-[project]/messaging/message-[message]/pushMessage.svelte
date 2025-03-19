@@ -76,7 +76,6 @@
         }
     }
 
-    $: dataError = validateData(customData || []);
     $: disabled =
         title === message.data.title &&
         body === message.data.body &&

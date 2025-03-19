@@ -7,8 +7,6 @@
     import {
         Button,
         Form,
-        FormList,
-        InputChoice,
         InputPassword,
         InputText
     } from '$lib/elements/forms';

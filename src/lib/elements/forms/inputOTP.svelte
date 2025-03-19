@@ -1,10 +1,8 @@
 <script lang="ts">
-    import { SvelteComponent, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { Input } from '@appwrite.io/pink-svelte';
 
     export let label: string = undefined;
-    export let optionalText: string | undefined = undefined;
-    export let showLabel = true;
     export let id: string;
     export let name: string = id;
     export let value = '';
@@ -12,16 +10,16 @@
     export let patternError: string = '';
     export let placeholder = '';
     export let required = false;
-    export let hideRequired = false;
+    // export let hideRequired = false;
     export let disabled = false;
     export let readonly = false;
     export let maxlength: number = null;
     export let autofocus = false;
     export let autocomplete = false;
-    export let fullWidth = false;
+    // export let fullWidth = false;
     export let tooltip: string = null;
-    export let popover: typeof SvelteComponent<unknown> = null;
-    export let popoverProps: Record<string, unknown> = {};
+    // export let popover: typeof SvelteComponent<unknown> = null;
+    // export let popoverProps: Record<string, unknown> = {};
 
     let element: HTMLInputElement;
     let error: string;
@@ -65,6 +63,7 @@
     {required}
     {maxlength}
     {label}
+    {pattern}
     {readonly}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}

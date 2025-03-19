@@ -136,7 +136,7 @@
     $: wizard.setNextDisabled(!report);
 </script>
 
-<Box radius="small">
+<Box radius="s">
     <div class="u-flex u-flex-vertical u-gap-16">
         <EyebrowHeading class="eyebrow" tag="h3" size={3}>Good to know</EyebrowHeading>
         <div class="u-flex u-gap-16">

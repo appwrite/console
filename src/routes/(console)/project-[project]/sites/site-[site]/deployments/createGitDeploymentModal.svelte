@@ -4,7 +4,7 @@
     import { Repositories } from '$lib/components/git';
     import { Dependencies } from '$lib/constants';
     import { Link } from '$lib/elements';
-    import { Button, InputCheckbox, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, InputCheckbox, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -130,7 +130,7 @@
     </span>
     {#if hasRepository}
         {#await load()}
-            <Card isTile padding="xs" radius="s" variant="secondary">
+            <Card padding="xs" radius="s" variant="secondary">
                 <Layout.Stack
                     direction="row"
                     justifyContent="space-between"
@@ -158,7 +158,7 @@
                     ?.sort((a, b) => {
                         return a.label > b.label ? 1 : -1;
                     }) ?? []}
-            <Card isTile padding="xs" radius="s" variant="secondary">
+            <Card padding="xs" radius="s" variant="secondary">
                 <Layout.Stack
                     direction="row"
                     justifyContent="space-between"

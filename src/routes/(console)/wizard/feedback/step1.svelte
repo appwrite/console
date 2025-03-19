@@ -38,7 +38,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">{$selectedFeedback.title}</svelte:fragment>
+    <svelte:fragment slot="title">Feedback</svelte:fragment>
     <svelte:fragment slot="subtitle">{$selectedFeedback.desc}</svelte:fragment>
 
     <svelte:component this={$selectedFeedback.component} />

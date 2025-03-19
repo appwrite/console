@@ -36,7 +36,9 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
-    type $$Props = HTMLElement & {
+    import type { HTMLAttributes } from 'svelte/elements';
+
+    type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
         project: { $id: string } | undefined;
         avatar: string;

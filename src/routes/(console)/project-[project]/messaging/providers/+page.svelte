@@ -22,8 +22,6 @@
 
     export let data: PageData;
 
-    let showCreateDropdownMobile = false;
-    let showCreateDropdownDesktop = false;
     let showCreateDropdownEmpty = false;
 </script>
 
@@ -34,9 +32,9 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Filters query={data.query} {columns} analyticsSource="messaging_providers" />
-            <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
             {#if $canWriteProviders}
-                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+                <CreateProviderDropdown />
             {/if}
         </Layout.Stack>
     </Layout.Stack>
@@ -81,7 +79,7 @@
                     Documentation
                 </Button>
                 {#if $canWriteProviders}
-                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
+                    <CreateProviderDropdown>
                         <Button
                             secondary
                             on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}

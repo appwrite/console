@@ -135,7 +135,7 @@
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Provider</svelte:fragment>
     <div class="u-sep-block-start u-padding-block-end-32" />
-    <FormList gap={16}>
+    <FormList>
         <InputText
             id="name"
             label="Name"
@@ -163,8 +163,8 @@
                     name="provider"
                     {value}
                     bind:group={$provider}
-                    imageIcon={option.imageIcon}
-                    icon={option.classIcon}>
+                    icon={option.classIcon ?? option.imageIcon}
+                >
                     <svelte:fragment slot="title">{option.title}</svelte:fragment>
                     {#if option.description}
                         {option.description}

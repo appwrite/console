@@ -38,7 +38,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputSelect, InputTags } from '$lib/elements/forms';
+    import { InputSelect, InputTags } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeEnum>;

@@ -3,11 +3,10 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Typography, Layout, Selector, Input, Badge } from '@appwrite.io/pink-svelte';
+    import { Layout, Selector, Input, Badge } from '@appwrite.io/pink-svelte';
     import { project } from '../../store';
     import { tick } from 'svelte';
 

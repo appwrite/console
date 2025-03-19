@@ -3,7 +3,6 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     import { Modal, CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -54,7 +53,7 @@
     }
 </script>
 
-<Modal title="Create collection" size="big" bind:show={showCreate} onSubmit={create} bind:error>
+<Modal title="Create collection" size="m" bind:show={showCreate} onSubmit={create} bind:error>
     <FormList>
         <InputText
             id="name"

@@ -59,8 +59,8 @@
     }
 </script>
 
-<Modal bind:error bind:show onSubmit={handleSubmit} size="big" title="Update billing address">
-    <FormList gap={16}>
+<Modal bind:error bind:show onSubmit={handleSubmit} size="m" title="Update billing address">
+    <FormList>
         <InputSelect
             bind:value={selectedAddress.country}
             {options}
@@ -86,7 +86,6 @@
             placeholder="Enter your city"
             required />
         <InputText
-            fullWidth
             bind:value={selectedAddress.state}
             id="state"
             label="State"

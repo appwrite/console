@@ -9,7 +9,6 @@
     import { project } from '$routes/(console)/project-[project]/store';
     import Provider from '../provider.svelte';
     import ProviderType from '../providerType.svelte';
-    import { Pill } from '$lib/elements';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
@@ -135,12 +134,12 @@
     </div>
 </FloatingActionBar>
 
+<!-- TODO: torsten, this also doesn't seem to be used -->
 <Modal
     title="Delete providers"
-    state="warning"
     bind:show={showDelete}
     onSubmit={handleDelete}
-    closable={!deleting}>
+    dismissible={!deleting}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selectedIds.length}</b>
         {selectedIds.length > 1 ? 'providers' : 'provider'}?

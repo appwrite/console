@@ -90,9 +90,6 @@
     <svelte:fragment slot="title">Schedule</svelte:fragment>
     <svelte:fragment slot="subtitle"
         >Schedule the time you want to deliver this message. Learn more in our <Button
-            link
-            external
-            text
             href={docsUrl}>documentation</Button
         >.</svelte:fragment>
     <FormList>

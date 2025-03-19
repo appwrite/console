@@ -11,7 +11,6 @@
 </script>
 
 <Usage
-    title="Sites"
     path={`${base}/project-${$page.params.project}/sites/usage`}
     countMetadata={{
         legend: 'Sites',

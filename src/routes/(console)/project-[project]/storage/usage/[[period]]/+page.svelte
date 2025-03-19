@@ -10,7 +10,6 @@
 </script>
 
 <Usage
-    title="Buckets"
     path={`${base}/project-${$page.params.project}/storage/usage`}
     {total}
     {count}

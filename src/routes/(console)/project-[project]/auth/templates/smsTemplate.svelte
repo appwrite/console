@@ -66,7 +66,7 @@
     $: isButtonDisabled = deepEqual($smsTemplate, $baseSmsTemplate);
 </script>
 
-<Box class="u-position-relative">
+<Box>
     {#if loading}
         <div
             class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
@@ -77,7 +77,7 @@
     {/if}
     <div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
         <Form onSubmit={saveSmsTemplate}>
-            <FormList gap={8}>
+            <FormList>
                 <InputTextarea
                     bind:value={$smsTemplate.message}
                     id="message"

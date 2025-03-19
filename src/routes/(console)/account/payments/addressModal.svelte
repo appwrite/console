@@ -75,8 +75,8 @@
     $: isButtonDisabled = !country || !address || !city || !state;
 </script>
 
-<Modal bind:show bind:error onSubmit={handleSubmit} size="big" title="Add billing address">
-    <FormList gap={16}>
+<Modal bind:show bind:error onSubmit={handleSubmit} size="m" title="Add billing address">
+    <FormList>
         <InputSelect
             bind:value={country}
             {options}

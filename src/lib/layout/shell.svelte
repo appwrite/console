@@ -1,12 +1,12 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
-    import { type NavbarProject } from '$lib/components/navbar.svelte';
+    import type { NavbarProject } from '$lib/components/navbar.svelte';
     import { page } from '$app/stores';
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { type ComponentType, setContext } from 'svelte';
+    import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -29,7 +29,7 @@
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
     let yOnMenuOpen: number;
     let showContentTransition = false;
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
@@ -97,11 +97,12 @@
         avatar: sdk.forConsole.avatars.getInitials($user?.name, 80, 80).toString(),
 
         organizations: $organizationList.teams.map((org) => {
+            const billingPlan = org['billingPlan'];
             return {
                 name: org.name,
                 $id: org.$id,
-                showUpgrade: org.billingPlan === BillingPlan.FREE,
-                tierName: isCloud ? tierToPlan(org.billingPlan).name : null,
+                showUpgrade: billingPlan === BillingPlan.FREE,
+                tierName: isCloud ? tierToPlan(billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id,
                 projects: loadedProjects
             };
@@ -154,7 +155,7 @@
         bind:sideBarIsOpen={$isSidebarOpen}
         bind:showAccountMenu
         bind:state />
-    <SideNavigation bind:state bind:subNavigation />
+    <SideNavigation bind:subNavigation />
     <div
         class="content"
         class:has-transition={showContentTransition}
@@ -237,6 +238,9 @@
     main {
         min-height: 100vh;
 
+        /**
+            TODO: @ernst, check if this is still used. The class comes from Pink legacy
+         */
         &:not(.grid-with-side) {
             display: flex;
             flex-direction: column;
@@ -244,7 +248,11 @@
     }
 
     @media (min-width: 1199px) {
+        /**
+            TODO: @ernst, check if this is still used. The class comes from Pink legacy
+         */
         .grid-with-side {
+            outline: red 1px solid;
             grid-template-columns: auto 1fr !important;
         }
     }

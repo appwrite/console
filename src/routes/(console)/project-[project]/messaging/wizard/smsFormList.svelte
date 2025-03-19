@@ -33,7 +33,7 @@
 </script>
 
 <div class="u-flex u-gap-24">
-    <FormList class="u-stretch u-cross-child-start">
+    <FormList>
         <div class="u-colum-gap-2">
             <InputTextarea
                 id="message"
@@ -47,7 +47,7 @@
             <!-- <div class="u-flex u-main-end">
                 <Button text on:click={() => (showTest = true)}>Send test message</Button>
             </div> -->
-            <Modal title="Send test message" bind:show={showTest} onSubmit={sendTestSMS} size="big">
+            <Modal title="Send test message" bind:show={showTest} onSubmit={sendTestSMS} size="l">
                 <slot />
                 <InputRadio
                     label={$user.phone}
@@ -69,7 +69,6 @@
                             role="button"
                             tabindex="0">
                             <InputEmail
-                                showLabel={false}
                                 id="email"
                                 label="Email"
                                 placeholder="Enter email"

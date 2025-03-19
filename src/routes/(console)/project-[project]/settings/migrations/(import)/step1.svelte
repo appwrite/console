@@ -46,7 +46,7 @@
     </div>
 
     {#if $provider.provider === 'appwrite'}
-        <FormList class="u-margin-block-start-24">
+        <FormList>
             <InputText
                 id="endpoint"
                 label="Endpoint"
@@ -64,11 +64,10 @@
                 label="API Key"
                 required
                 placeholder="Enter API Key"
-                showPasswordButton
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'firebase'}
-        <FormList class="u-margin-block-start-24">
+        <FormList>
             <div class="u-margin-block-start-16">
                 <InputTextarea
                     id="credentials"
@@ -79,7 +78,7 @@
             </div>
         </FormList>
     {:else if $provider.provider === 'supabase'}
-        <FormList class="u-margin-block-start-24">
+        <FormList>
             <p class="body-text-1 u-bold">Postgres credentials</p>
 
             <InputText
@@ -99,7 +98,6 @@
                 label="Password"
                 required
                 placeholder="Enter password"
-                showPasswordButton
                 bind:value={$provider.password} />
             <p class="body-text-1 u-bold">Supabase credentials</p>
 
@@ -114,11 +112,10 @@
                 label="API Key"
                 required
                 placeholder="Enter API Key"
-                showPasswordButton
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'nhost'}
-        <FormList class="u-margin-block-start-24">
+        <FormList>
             <InputText
                 id="region"
                 label="Region"
@@ -148,14 +145,12 @@
                 label="Password"
                 required
                 placeholder="Enter password"
-                showPasswordButton
                 bind:value={$provider.password} />
             <InputPassword
                 id="adminSecret"
                 label="Admin secret"
                 required
                 placeholder="Enter admin secret"
-                showPasswordButton
                 bind:value={$provider.adminSecret} />
         </FormList>
     {/if}

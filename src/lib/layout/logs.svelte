@@ -257,7 +257,7 @@
                                         {#each execution.requestHeaders as header}
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    {header.key}
+                                                    {header.name}
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     {header.value}
@@ -343,7 +343,7 @@
                                         language="sh"
                                         class="limited-code-height" />
                                 {:else}
-                                    <Card isDashed isTile>
+                                    <Card isDashed>
                                         <p class="text u-text-center">No response was recorded.</p>
                                     </Card>
                                 {/if}
@@ -357,7 +357,7 @@
                                         language="sh"
                                         class="limited-code-height" />
                                 {:else}
-                                    <Card isDashed isTile>
+                                    <Card isDashed>
                                         <p class="text u-text-center">No response was recorded.</p>
                                     </Card>
                                 {/if}
@@ -371,7 +371,7 @@
                                         {#each execution.responseHeaders as header}
                                             <Table.Row>
                                                 <Table.Cell>
-                                                    {header.key}
+                                                    {header.name}
                                                 </Table.Cell>
                                                 <Table.Cell>
                                                     {header.value}

@@ -9,9 +9,7 @@
     import { protocol } from '$routes/(console)/store.js';
     import {
         IconDotsHorizontal,
-        IconExternalLink,
         IconPlus,
-        IconRefresh,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import {
@@ -24,7 +22,6 @@
         Table
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
-    import RetryDomainModal from './retryDomainModal.svelte';
     import { queries } from '$lib/components/filters';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
@@ -34,10 +31,7 @@
     export let data;
 
     let showDelete = false;
-    let showRetry = false;
     let selectedDomain: Domain = null;
-
-    $: console.log(data.domains);
 </script>
 
 <Container>

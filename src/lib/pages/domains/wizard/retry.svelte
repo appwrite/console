@@ -3,7 +3,7 @@
     import { sdk } from '$lib/stores/sdk';
     import CnameTable from './cnameTable.svelte';
     import { createEventDispatcher } from 'svelte';
-    import { Code, Trim } from '$lib/components';
+    import { Code } from '$lib/components';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,10 +11,11 @@
     import type { Models } from '@appwrite.io/console';
     import { Card, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { IconExclamationCircle } from '@appwrite.io/pink-icons-svelte';
+    import { domain as domainStore } from './store';
 
     let retrying = false;
     export let showTitle = true;
-    export let domain: Models.ProxyRule;
+    export let domain: Models.ProxyRule = $domainStore as Models.ProxyRule;
 
     const dispatch = createEventDispatcher();
 
@@ -61,7 +62,7 @@
             rel="noopener noreferrer">contact support</Link.Anchor
         >.
     </Typography.Text>
-    <CnameTable bind:domain />
+    <CnameTable />
 {:else if domain.status === 'unverified'}
     <div class="u-flex u-gap-8 u-cross-center">
         <span class="icon-exclamation-circle u-color-text-danger" aria-hidden="true" />

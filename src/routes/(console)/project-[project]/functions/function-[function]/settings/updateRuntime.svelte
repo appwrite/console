@@ -107,6 +107,12 @@
                     required
                     placeholder="Enter entrypoint"
                     bind:value={$func.entrypoint} />
+                <InputSelect
+                    label="CPU and memory"
+                    id="size"
+                    placeholder="Select runtime specification"
+                    bind:value={$func.specification}
+                    options={specificationOptions} />
             </Layout.Stack>
         </svelte:fragment>
 

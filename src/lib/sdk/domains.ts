@@ -27,7 +27,7 @@ export type Domain = {
     /**
      * Nameservers setting. &quot;Appwrite&quot; or empty string.
      */
-    nameservers: string;
+    nameservers: string[];
     /**
      * Domain expiry date in ISO 8601 format.
      */

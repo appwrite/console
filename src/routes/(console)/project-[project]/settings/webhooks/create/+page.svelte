@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Wizard } from '$lib/layout';
-    import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { goto } from '$app/navigation';
     import { sdk } from '$lib/stores/sdk';

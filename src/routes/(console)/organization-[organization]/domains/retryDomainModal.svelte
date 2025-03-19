@@ -4,13 +4,13 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
-    import type { Models } from '@appwrite.io/console';
+    import type { Domain } from '$lib/sdk/domains';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import RecordsCard from './recordsCard.svelte';
 
     export let show = false;
-    export let selectedDomain: Models.ProxyRule;
+    export let selectedDomain: Domain;
 
     let error = null;
     async function retryDomain() {

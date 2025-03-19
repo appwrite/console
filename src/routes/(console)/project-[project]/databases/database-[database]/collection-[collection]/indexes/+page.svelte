@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Empty, DropList, DropListItem } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Empty } from '$lib/components';
     import { Container } from '$lib/layout';
     import { collection, indexes } from '../store';
     import Delete from './deleteIndex.svelte';
@@ -26,14 +25,12 @@
     import {
         IconDotsHorizontal,
         IconEye,
-        IconPencil,
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
-    let showDropdown = [];
     let selectedIndex: Models.Index = null;
     let showCreateIndex = false;
     let showOverview = false;
@@ -82,7 +79,7 @@
                     <Table.Header.Cell>Asc/Desc</Table.Header.Cell>
                     <Table.Header.Cell width="40px" />
                 </svelte:fragment>
-                {#each $indexes as index, i}
+                {#each $indexes as index}
                     <Table.Row>
                         <Table.Cell>
                             <Layout.Stack direction="row" alignItems="center">
@@ -166,7 +163,6 @@
                     ariaLabel={`create {target}`}>Documentation</Button>
                 {#if $canWriteCollections}
                     <CreateAttributeDropdown
-                        bind:showCreateDropdown
                         bind:showCreate={showCreateAttribute}
                         bind:selectedOption={selectedAttribute}>
                         <Button

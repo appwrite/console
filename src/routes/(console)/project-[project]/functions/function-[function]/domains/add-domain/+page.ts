@@ -1,9 +1,9 @@
-import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
+import { Query } from '@appwrite.io/console';
 import { RuleTrigger, RuleType } from '$lib/stores/sdk';
 
 export const load = async ({ parent }) => {
-    const { site } = await parent();
+    const { function: func } = await parent();
 
     const [domains, installations] = await Promise.all([
         sdk.forProject.proxy.listRules([
@@ -14,14 +14,14 @@ export const load = async ({ parent }) => {
     ]);
 
     return {
-        site,
+        func,
         domains,
         installations,
         branches:
-            site?.installationId && site?.providerRepositoryId
+            func?.installationId && func?.providerRepositoryId
                 ? await sdk.forProject.vcs.listRepositoryBranches(
-                      site.installationId,
-                      site.providerRepositoryId
+                      func.installationId,
+                      func.providerRepositoryId
                   )
                 : undefined
     };

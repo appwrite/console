@@ -38,7 +38,7 @@
             View all
         </Button>
     </Layout.Stack>
-    <Card padding="xs" radius="s" isTile>
+    <Card padding="xs" radius="s">
         <Layout.Stack>
             {#if proxyRuleList?.rules?.length <= 1}
                 <Layout.Stack gap="l">

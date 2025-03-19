@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { PaginationInline } from '$lib/components';
     import { SelectSearchItem } from '$lib/elements';
-    import { Button, InputSelectSearch, Label } from '$lib/elements/forms';
+    import { Button, InputSelectSearch } from '$lib/elements/forms';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
@@ -123,7 +123,6 @@
                         <InputSelectSearch
                             {id}
                             label="Rel"
-                            showLabel={false}
                             required
                             bind:search
                             bind:value={item}
@@ -141,8 +140,7 @@
                             </svelte:fragment>
                         </InputSelectSearch>
                         <Button
-                            text
-                            noMargin
+                            extraCompact
                             ariaLabel={`Delete item ${i}`}
                             on:click={() => {
                                 relatedList.splice(i, 1);
@@ -160,7 +158,6 @@
                     <InputSelectSearch
                         {id}
                         label="Rel"
-                        showLabel={false}
                         required
                         placeholder={`Select ${attribute.key}`}
                         bind:search
@@ -183,8 +180,7 @@
                         </svelte:fragment>
                     </InputSelectSearch>
                     <Button
-                        text
-                        noMargin
+                        extraCompact
                         ariaLabel={`Hide input`}
                         on:click={() => (showInput = false)}>
                         <span class="icon-x" aria-hidden="true" />
@@ -197,7 +193,6 @@
                         <InputSelectSearch
                             {id}
                             label="Rel"
-                            showLabel={false}
                             required
                             bind:search
                             bind:value={item}
@@ -215,8 +210,7 @@
                             </svelte:fragment>
                         </InputSelectSearch>
                         <Button
-                            text
-                            noMargin
+                            extraCompact
                             ariaLabel={`Delete item ${i}`}
                             on:click={() => {
                                 relatedList.splice(i, 1);
@@ -238,8 +232,7 @@
 
         {#if total > 0 && !editing}
             <Button
-                text
-                noMargin
+                extraCompact
                 disabled={showInput}
                 on:click={() => {
                     showInput = true;
@@ -253,9 +246,7 @@
     <InputSelectSearch
         {id}
         {label}
-        {optionalText}
         required={attribute.required}
-        name="documents"
         placeholder={`Select ${attribute.key}`}
         interactiveOutput
         bind:search

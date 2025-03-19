@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FloatingActionBar, Id, Modal } from '$lib/components';
+    import { FloatingActionBar, Id } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import type { PageData } from './$types';
     import { columns } from './store';
@@ -20,7 +20,6 @@
 
     let selectedIds: string[] = [];
     let showDelete = false;
-    let deleting = false;
 
     async function handleDelete() {
         showDelete = false;

@@ -16,6 +16,7 @@
     import { CollectionsPanel } from '$lib/commandCenter/panels';
     import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
@@ -40,7 +41,7 @@
             keys: $page.url.pathname.endsWith(databaseId) ? ['c'] : ['c', 'c'],
             disabled: $page.url.pathname.includes('collection-') || !$canWriteCollections,
             group: 'databases',
-            icon: 'plus'
+            icon: IconPlus
         },
         {
             label: 'Create backup policy',
@@ -52,7 +53,7 @@
             },
             keys: $page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'p'],
             group: 'databases',
-            icon: 'plus',
+            icon: IconPlus,
             rank: $page.url.pathname.endsWith('backups') ? 10 : 0
         },
         {
@@ -65,7 +66,7 @@
             },
             keys: $page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'b'],
             group: 'databases',
-            icon: 'plus',
+            icon: IconPlus,
             rank: $page.url.pathname.endsWith('backups') ? 10 : 0
         },
         {

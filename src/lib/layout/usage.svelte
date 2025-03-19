@@ -73,7 +73,6 @@
         legend: string;
     };
 
-    export let title: string;
     export let total: number;
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;

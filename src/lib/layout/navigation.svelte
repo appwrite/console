@@ -3,7 +3,6 @@
     import { getContext } from 'svelte';
     import type { Writable } from 'svelte/store';
 
-    export let state: 'closed' | 'open' | 'icons' = 'open';
     export let subNavigation;
 
     $: subNavigation = $page.data.subNavigation;

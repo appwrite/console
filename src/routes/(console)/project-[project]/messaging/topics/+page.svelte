@@ -58,7 +58,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Filters query={data.query} {columns} analyticsSource="messaging_topics_filter" />
-            <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
             {#if $canWriteTopics}
                 <Button
                     on:click={() => {

@@ -122,7 +122,7 @@
         <svelte:fragment slot="aside">
             {#if repository === false}
                 <Layout.Stack gap="xl">
-                    <Card isTile padding="xs" radius="s" variant="secondary">
+                    <Card padding="xs" radius="s" variant="secondary">
                         <Layout.Stack
                             direction="row"
                             justifyContent="space-between"
@@ -158,7 +158,7 @@
                 </Layout.Stack>
             {:else if repository}
                 <Layout.Stack gap="xl">
-                    <Card isTile padding="xs" radius="s" variant="secondary">
+                    <Card padding="xs" radius="s" variant="secondary">
                         <Layout.Stack direction="row" gap="s">
                             <Layout.Stack direction="row" gap="s">
                                 <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
