@@ -12,6 +12,7 @@
     import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -83,27 +84,29 @@
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>
-            <InputEmail
-                id="email"
-                label="Email"
-                placeholder="Email"
-                autofocus={true}
-                required={true}
-                bind:value={mail} />
-            <InputPassword
-                id="password"
-                label="Password"
-                placeholder="Password"
-                required={true}
-                bind:value={pass} />
-            <Button fullWidth submit {disabled}>Sign in</Button>
-            {#if isCloud}
-                <span class="with-separators eyebrow-heading-3">or</span>
-                <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
-                    <span class="icon-github" aria-hidden="true" />
-                    <span class="text">Sign in with GitHub</span>
-                </Button>
-            {/if}
+            <Layout.Stack>
+                <InputEmail
+                    id="email"
+                    label="Email"
+                    placeholder="Email"
+                    autofocus={true}
+                    required={true}
+                    bind:value={mail} />
+                <InputPassword
+                    id="password"
+                    label="Password"
+                    placeholder="Password"
+                    required={true}
+                    bind:value={pass} />
+                <Button fullWidth submit {disabled}>Sign in</Button>
+                {#if isCloud}
+                    <span class="with-separators eyebrow-heading-3">or</span>
+                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true" />
+                        <span class="text">Sign in with GitHub</span>
+                    </Button>
+                {/if}
+            </Layout.Stack>
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">

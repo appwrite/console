@@ -19,6 +19,7 @@
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { isCloud } from '$lib/system';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     let slug = $page.params.slug;
     let imgLight = LoginLight;
@@ -95,45 +96,47 @@
     <svelte:fragment slot="title">{title}</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={invite}>
-            <InputText
-                id="name"
-                label="Name"
-                placeholder="Your name"
-                autofocus={true}
-                bind:value={name} />
-            <InputEmail
-                id="email"
-                label="Email"
-                placeholder="Your email"
-                required={true}
-                bind:value={mail} />
-            <InputPassword
-                id="password"
-                label="Password"
-                placeholder="Your password"
-                required={true}
-                bind:value={pass} />
-            <InputText
-                id="Code"
-                label="Code"
-                placeholder="Your code"
-                required={true}
-                bind:value={code} />
-            <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                By registering, you agree that you have read, understand, and acknowledge our <a
-                    class="link"
-                    href="https://appwrite.io/privacy"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Privacy Policy</a>
-                and accept our
-                <a
-                    class="link"
-                    href="https://appwrite.io/terms"
-                    target="_blank"
-                    rel="noopener noreferrer">General Terms of Use</a
-                >.</InputChoice>
-            <Button fullWidth submit>Sign up</Button>
+            <Layout.Stack>
+                <InputText
+                    id="name"
+                    label="Name"
+                    placeholder="Your name"
+                    autofocus={true}
+                    bind:value={name} />
+                <InputEmail
+                    id="email"
+                    label="Email"
+                    placeholder="Your email"
+                    required={true}
+                    bind:value={mail} />
+                <InputPassword
+                    id="password"
+                    label="Password"
+                    placeholder="Your password"
+                    required={true}
+                    bind:value={pass} />
+                <InputText
+                    id="Code"
+                    label="Code"
+                    placeholder="Your code"
+                    required={true}
+                    bind:value={code} />
+                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                    By registering, you agree that you have read, understand, and acknowledge our <a
+                        class="link"
+                        href="https://appwrite.io/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        Privacy Policy</a>
+                    and accept our
+                    <a
+                        class="link"
+                        href="https://appwrite.io/terms"
+                        target="_blank"
+                        rel="noopener noreferrer">General Terms of Use</a
+                    >.</InputChoice>
+                <Button fullWidth submit>Sign up</Button>
+            </Layout.Stack>
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">
