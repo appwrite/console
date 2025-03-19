@@ -45,26 +45,25 @@
 </script>
 
 <Modal title="Create membership" {error} onSubmit={create} bind:show={showCreate}>
-    <FormList>
-        <InputEmail
-            id="email"
-            label="Email"
-            placeholder="Enter email"
-            required={true}
-            autofocus={true}
-            bind:value={email} />
-        <InputText id="name" label="Name" placeholder="Enter name" bind:value={name} />
-        <Alert.Inline status="info">
-            Roles are used to manage access permissions. You can create any role you want.
-        </Alert.Inline>
+    <InputEmail
+        id="email"
+        label="Email"
+        placeholder="Enter email"
+        required={true}
+        autofocus={true}
+        bind:value={email} />
+    <InputText id="name" label="Name" placeholder="Enter name" bind:value={name} />
+    <Alert.Inline status="info">
+        Roles are used to manage access permissions. You can create any role you want.
+    </Alert.Inline>
 
-        <InputTags
-            id="tags"
-            label="Roles"
-            placeholder="Add roles"
-            bind:tags={roles}
-            helper="Roles are used to manage access permissions. You can create any role you want." />
-    </FormList>
+    <InputTags
+        id="tags"
+        label="Roles"
+        placeholder="Add roles"
+        bind:tags={roles}
+        helper="Roles are used to manage access permissions. You can create any role you want." />
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showCreate = false)}>Cancel</Button>
         <Button submit>Create</Button>

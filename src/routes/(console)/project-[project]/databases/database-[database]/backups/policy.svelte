@@ -287,27 +287,26 @@
 </div>
 
 <Modal title="Delete policy" bind:show={showDelete} onSubmit={deletePolicy}>
-    <FormList>
-        <div class="u-flex-vertical u-gap-16">
-            <p class="text" data-private>
-                Are you sure you want to delete the <b>{selectedPolicy.name}</b> policy?
-            </p>
+    <div class="u-flex-vertical u-gap-16">
+        <p class="text" data-private>
+            Are you sure you want to delete the <b>{selectedPolicy.name}</b> policy?
+        </p>
 
-            <p class="text" data-private>
-                <b
-                    >This will also delete all backups associated with this policy. This action is
-                    irreversible.</b>
-            </p>
+        <p class="text" data-private>
+            <b
+                >This will also delete all backups associated with this policy. This action is
+                irreversible.</b>
+        </p>
 
-            <div class="input-check-box-friction">
-                <InputCheckbox
-                    required
-                    id="delete_policy"
-                    bind:checked={confirmedDeletion}
-                    label="I understand and confirm" />
-            </div>
+        <div class="input-check-box-friction">
+            <InputCheckbox
+                required
+                id="delete_policy"
+                bind:checked={confirmedDeletion}
+                label="I understand and confirm" />
         </div>
-    </FormList>
+    </div>
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit disabled={!confirmedDeletion}>Delete</Button>

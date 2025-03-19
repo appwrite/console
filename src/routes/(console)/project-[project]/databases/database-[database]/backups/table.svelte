@@ -307,73 +307,67 @@
         </div>
     </Card>
 
-    <FormList>
-        <div class="u-flex u-flex-vertical-mobile u-gap-16">
-            {#each restoreOptions as restoreOption}
-                <div class="u-width-full-line">
-                    <LabelCard
-                        padding="s"
-                        name="restore"
-                        value={restoreOption.id}
-                        bind:group={selectedRestoreOption}>
-                        <svelte:fragment slot="custom">
-                            <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
-                                <h4 class="body-text-2 u-bold">
-                                    {restoreOption.title}
-                                </h4>
-                                <p class="u-color-text-offline u-small">
-                                    {restoreOption.description}
-                                </p>
-                            </div>
-                        </svelte:fragment>
-                    </LabelCard>
-                </div>
-            {/each}
-        </div>
-
-        {#if selectedRestoreOption === 'new'}
-            <div class="u-flex-vertical u-gap-8">
-                <InputText
-                    id="name"
-                    label="Database name"
-                    placeholder="Enter database name"
-                    bind:value={newDatabaseInfo.name}
-                    autofocus
-                    required />
-                {#if !showCustomId}
-                    <div>
-                        <Pill button on:click={() => (showCustomId = !showCustomId)}
-                            ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                                Database ID
-                            </span></Pill>
-                    </div>
-                {:else}
-                    <div class="u-flex u-flex-vertical u-gap-8">
-                        <RestoreModal
-                            autofocus={false}
-                            name="Database"
-                            bind:show={showCustomId}
-                            databaseId={$database.$id}
-                            bind:id={newDatabaseInfo.id} />
-                    </div>
-                {/if}
-            </div>
-        {:else}
-            <div class="input-check-box-friction">
-                <InputCheckbox
-                    required
-                    size="s"
-                    id="delete_policy"
-                    bind:checked={confirmSameDbRestore}>
-                    <svelte:fragment slot="description">
-                        <span style="margin-block-start: 1px;">
-                            Overwrite <b>{$database.name}</b> with the selected backup version
-                        </span>
+    <div class="u-flex u-flex-vertical-mobile u-gap-16">
+        {#each restoreOptions as restoreOption}
+            <div class="u-width-full-line">
+                <LabelCard
+                    padding="s"
+                    name="restore"
+                    value={restoreOption.id}
+                    bind:group={selectedRestoreOption}>
+                    <svelte:fragment slot="custom">
+                        <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+                            <h4 class="body-text-2 u-bold">
+                                {restoreOption.title}
+                            </h4>
+                            <p class="u-color-text-offline u-small">
+                                {restoreOption.description}
+                            </p>
+                        </div>
                     </svelte:fragment>
-                </InputCheckbox>
+                </LabelCard>
             </div>
-        {/if}
-    </FormList>
+        {/each}
+    </div>
+
+    {#if selectedRestoreOption === 'new'}
+        <div class="u-flex-vertical u-gap-8">
+            <InputText
+                id="name"
+                label="Database name"
+                placeholder="Enter database name"
+                bind:value={newDatabaseInfo.name}
+                autofocus
+                required />
+            {#if !showCustomId}
+                <div>
+                    <Pill button on:click={() => (showCustomId = !showCustomId)}
+                        ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                            Database ID
+                        </span></Pill>
+                </div>
+            {:else}
+                <div class="u-flex u-flex-vertical u-gap-8">
+                    <RestoreModal
+                        autofocus={false}
+                        name="Database"
+                        bind:show={showCustomId}
+                        databaseId={$database.$id}
+                        bind:id={newDatabaseInfo.id} />
+                </div>
+            {/if}
+        </div>
+    {:else}
+        <div class="input-check-box-friction">
+            <InputCheckbox required size="s" id="delete_policy" bind:checked={confirmSameDbRestore}>
+                <svelte:fragment slot="description">
+                    <span style="margin-block-start: 1px;">
+                        Overwrite <b>{$database.name}</b> with the selected backup version
+                    </span>
+                </svelte:fragment>
+            </InputCheckbox>
+        </div>
+    {/if}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showRestore = false)}>Cancel</Button>

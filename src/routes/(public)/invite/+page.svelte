@@ -63,30 +63,28 @@
                     You have been invited to join an organization on Appwrite
                 </Typography.Text>
                 <Form onSubmit={acceptInvite}>
-                    <FormList>
-                        <InputChoice
-                            required
-                            bind:value={terms}
-                            id="terms"
-                            label="terms"
-                            showLabel={false}>
-                            By accepting the invitation, you agree to the <Link.Anchor
-                                href="https://appwrite.io/terms"
-                                target="_blank"
-                                rel="noopener noreferrer">Terms and Conditions</Link.Anchor>
-                            and
-                            <Link.Anchor
-                                href="https://appwrite.io/privacy"
-                                target="_blank"
-                                rel="noopener noreferrer">
-                                Privacy Policy</Link.Anchor
-                            >.</InputChoice>
+                    <InputChoice
+                        required
+                        bind:value={terms}
+                        id="terms"
+                        label="terms"
+                        showLabel={false}>
+                        By accepting the invitation, you agree to the <Link.Anchor
+                            href="https://appwrite.io/terms"
+                            target="_blank"
+                            rel="noopener noreferrer">Terms and Conditions</Link.Anchor>
+                        and
+                        <Link.Anchor
+                            href="https://appwrite.io/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Privacy Policy</Link.Anchor
+                        >.</InputChoice>
 
-                        <div class="u-flex u-main-end u-gap-12">
-                            <Button secondary href={`${base}/login`}>Cancel</Button>
-                            <Button submit disabled={!terms}>Accept</Button>
-                        </div>
-                    </FormList>
+                    <div class="u-flex u-main-end u-gap-12">
+                        <Button secondary href={`${base}/login`}>Cancel</Button>
+                        <Button submit disabled={!terms}>Accept</Button>
+                    </div>
                 </Form>
             </Layout.Stack>
         {/if}

@@ -68,17 +68,15 @@
     title="Delete project"
     bind:open={showDelete}
     bind:error>
-    <FormList>
-        <p>
-            <b>This project will be deleted</b>, along with all of its metadata, stats, and other
-            resources. <b>This action is irreversible</b>.
-        </p>
-        <InputText
-            label={`Enter "${$project.name}" to continue`}
-            placeholder="Enter name"
-            id="project-name"
-            autofocus
-            required
-            bind:value={name} />
-    </FormList>
+    <p>
+        <b>This project will be deleted</b>, along with all of its metadata, stats, and other
+        resources. <b>This action is irreversible</b>.
+    </p>
+    <InputText
+        label={`Enter "${$project.name}" to continue`}
+        placeholder="Enter name"
+        id="project-name"
+        autofocus
+        required
+        bind:value={name} />
 </Confirm>

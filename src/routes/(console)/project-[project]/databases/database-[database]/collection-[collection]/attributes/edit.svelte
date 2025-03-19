@@ -77,25 +77,25 @@
             {/if}
         </div>
     </svelte:fragment>
-    <FormList>
-        {#if selectedAttribute}
-            {#if selectedAttribute?.type !== 'relationship'}
-                <InputText
-                    id="key"
-                    label="Attribute Key"
-                    placeholder="Enter Key"
-                    bind:value={selectedAttribute.key}
-                    autofocus />
-            {/if}
-            {#if option}
-                <svelte:component
-                    this={option.component}
-                    editing
-                    bind:data={selectedAttribute}
-                    on:close={() => (option = null)} />
-            {/if}
+
+    {#if selectedAttribute}
+        {#if selectedAttribute?.type !== 'relationship'}
+            <InputText
+                id="key"
+                label="Attribute Key"
+                placeholder="Enter Key"
+                bind:value={selectedAttribute.key}
+                autofocus />
         {/if}
-    </FormList>
+        {#if option}
+            <svelte:component
+                this={option.component}
+                editing
+                bind:data={selectedAttribute}
+                on:close={() => (option = null)} />
+        {/if}
+    {/if}
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
         <Button submit disabled={deepEqual(currentAttr, selectedAttribute)}>Update</Button>

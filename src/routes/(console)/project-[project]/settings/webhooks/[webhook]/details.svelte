@@ -58,12 +58,10 @@
     <svelte:fragment slot="aside">
         <div class="u-flex u-gap-16">
             <ul class="u-stretch">
-                <FormList>
-                    <InputSwitch
-                        label={enabled ? 'Enabled' : 'Disabled'}
-                        id="enable-switch"
-                        bind:value={enabled} />
-                </FormList>
+                <InputSwitch
+                    label={enabled ? 'Enabled' : 'Disabled'}
+                    id="enable-switch"
+                    bind:value={enabled} />
 
                 <li style="margin-top:16px">Created: {toLocaleDateTime($webhook.$createdAt)}</li>
                 <li>Last updated: {toLocaleDateTime($webhook.$updatedAt)}</li>

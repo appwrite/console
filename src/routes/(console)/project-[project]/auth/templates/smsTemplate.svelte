@@ -77,13 +77,11 @@
     {/if}
     <div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
         <Form onSubmit={saveSmsTemplate}>
-            <FormList>
-                <InputTextarea
-                    bind:value={$smsTemplate.message}
-                    id="message"
-                    label="Message"
-                    placeholder="Enter your message" />
-            </FormList>
+            <InputTextarea
+                bind:value={$smsTemplate.message}
+                id="message"
+                label="Message"
+                placeholder="Enter your message" />
 
             <div class="u-sep-block-start u-margin-block-start-24" />
 

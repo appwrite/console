@@ -54,26 +54,25 @@
 </script>
 
 <Modal title="Create collection" size="m" bind:show={showCreate} onSubmit={create} bind:error>
-    <FormList>
-        <InputText
-            id="name"
-            label="Name"
-            placeholder="Enter collection name"
-            bind:value={name}
-            autofocus
-            required />
+    <InputText
+        id="name"
+        label="Name"
+        placeholder="Enter collection name"
+        bind:value={name}
+        autofocus
+        required />
 
-        {#if !showCustomId}
-            <div>
-                <Tag
-                    size="s"
-                    on:click={() => {
-                        showCustomId = true;
-                    }}><Icon icon={IconPencil} /> Collection ID</Tag>
-            </div>
-        {/if}
-        <CustomId autofocus bind:show={showCustomId} name="Collection" bind:id fullWidth={true} />
-    </FormList>
+    {#if !showCustomId}
+        <div>
+            <Tag
+                size="s"
+                on:click={() => {
+                    showCustomId = true;
+                }}><Icon icon={IconPencil} /> Collection ID</Tag>
+        </div>
+    {/if}
+    <CustomId autofocus bind:show={showCustomId} name="Collection" bind:id fullWidth={true} />
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
         <Button submit>Create</Button>

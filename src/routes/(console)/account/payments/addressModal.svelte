@@ -76,39 +76,37 @@
 </script>
 
 <Modal bind:show bind:error onSubmit={handleSubmit} size="m" title="Add billing address">
-    <FormList>
-        <InputSelect
-            bind:value={country}
-            {options}
-            label="Country or region"
-            placeholder="Select country or region"
-            id="country"
-            required />
-        <InputText
-            bind:value={address}
-            id="address"
-            label="Street address"
-            placeholder="Enter street address"
-            required />
-        <InputText
-            bind:value={address2}
-            id="address2"
-            label="Address line 2"
-            placeholder="Unit number, floor, etc." />
-        <InputText
-            bind:value={city}
-            id="city"
-            label="City or suburb"
-            placeholder="Enter your city"
-            required />
-        <InputText
-            bind:value={state}
-            id="state"
-            label="State"
-            placeholder="Enter your state"
-            required />
-        <InputText bind:value={zip} id="zip" label="Postal code" placeholder="Enter postal code" />
-    </FormList>
+    <InputSelect
+        bind:value={country}
+        {options}
+        label="Country or region"
+        placeholder="Select country or region"
+        id="country"
+        required />
+    <InputText
+        bind:value={address}
+        id="address"
+        label="Street address"
+        placeholder="Enter street address"
+        required />
+    <InputText
+        bind:value={address2}
+        id="address2"
+        label="Address line 2"
+        placeholder="Unit number, floor, etc." />
+    <InputText
+        bind:value={city}
+        id="city"
+        label="City or suburb"
+        placeholder="Enter your city"
+        required />
+    <InputText
+        bind:value={state}
+        id="state"
+        label="State"
+        placeholder="Enter your state"
+        required />
+    <InputText bind:value={zip} id="zip" label="Postal code" placeholder="Enter postal code" />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

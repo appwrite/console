@@ -89,48 +89,46 @@
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={register}>
-            <FormList>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Your name"
-                    autofocus
-                    required
-                    bind:value={name} />
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Your email"
-                    required
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Your password"
-                    helper="Password must be at least 8 characters long"
-                    required
-                    bind:value={pass} />
-                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                    By registering, you agree that you have read, understand, and acknowledge our <Link.Anchor
-                        href="https://appwrite.io/privacy"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Privacy Policy</Link.Anchor>
-                    and accept our
-                    <Link.Anchor
-                        href="https://appwrite.io/terms"
-                        target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</Link.Anchor
-                    >.</InputChoice>
-                <Button fullWidth submit {disabled}>Sign up</Button>
-                {#if isCloud}
-                    <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
-                        <span class="icon-github" aria-hidden="true" />
-                        <span class="text">Sign up with GitHub</span>
-                    </Button>
-                {/if}
-            </FormList>
+            <InputText
+                id="name"
+                label="Name"
+                placeholder="Your name"
+                autofocus
+                required
+                bind:value={name} />
+            <InputEmail
+                id="email"
+                label="Email"
+                placeholder="Your email"
+                required
+                bind:value={mail} />
+            <InputPassword
+                id="password"
+                label="Password"
+                placeholder="Your password"
+                helper="Password must be at least 8 characters long"
+                required
+                bind:value={pass} />
+            <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                By registering, you agree that you have read, understand, and acknowledge our <Link.Anchor
+                    href="https://appwrite.io/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Privacy Policy</Link.Anchor>
+                and accept our
+                <Link.Anchor
+                    href="https://appwrite.io/terms"
+                    target="_blank"
+                    rel="noopener noreferrer">General Terms of Use</Link.Anchor
+                >.</InputChoice>
+            <Button fullWidth submit {disabled}>Sign up</Button>
+            {#if isCloud}
+                <span class="with-separators eyebrow-heading-3">or</span>
+                <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                    <span class="icon-github" aria-hidden="true" />
+                    <span class="text">Sign up with GitHub</span>
+                </Button>
+            {/if}
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">

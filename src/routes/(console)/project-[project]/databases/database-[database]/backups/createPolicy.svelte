@@ -185,335 +185,328 @@
         {/if}
     {/if}
 
-    <FormList>
-        <!-- because we show a set of pre-defined ones -->
-        {#if $organization.billingPlan === BillingPlan.PRO}
-            {@const dailyPolicy = $presetPolicies[1]}
+    <!-- because we show a set of pre-defined ones -->
+    {#if $organization.billingPlan === BillingPlan.PRO}
+        {@const dailyPolicy = $presetPolicies[1]}
 
-            {#if isFromBackupsTab}
-                <div class="u-flex-vertical u-gap-8">
-                    <Card
-                        class="restore-modal-inner-card"
-                        style="border-radius: var(--border-radius-small, 8px); padding: 1rem;">
-                        <div class="u-flex u-flex-vertical u-gap-4">
-                            <span class="body-text-2 u-bold darker-neutral-color">
-                                Daily backup
-                            </span>
-                            <span>Runs every day and is retained for 7 days</span>
-                        </div>
-                    </Card>
-                    <span>
-                        <button
-                            type="button"
-                            class="u-underline cursor-pointer"
-                            on:click={() => {
-                                isShowing = false;
-                                $showCreatePolicy = false;
-                                wizard.start(SupportWizard);
-                            }}>Contact support</button> to upgrade your plan and add customized backup
-                        policies.
-                    </span>
-                </div>
-            {:else}
-                <div class="u-flex u-gap-8 body-text-2">
-                    <InputSwitch
-                        id="daily_backup"
-                        label="Daily backups"
-                        on:change={(event) => markPolicyChecked(event, dailyPolicy)}>
-                        <svelte:fragment slot="description">
-                            <span>
-                                Daily backups are retained for 7 days.
-                                <button
-                                    type="button"
-                                    class="u-underline cursor-pointer"
-                                    on:click={() => {
-                                        isShowing = false;
-                                        wizard.start(SupportWizard);
-                                    }}>Contact support</button>
-                                to upgrade your plan and add customized backup policies.
-                            </span>
-                        </svelte:fragment>
-                    </InputSwitch>
-                </div>
-            {/if}
+        {#if isFromBackupsTab}
+            <div class="u-flex-vertical u-gap-8">
+                <Card
+                    class="restore-modal-inner-card"
+                    style="border-radius: var(--border-radius-small, 8px); padding: 1rem;">
+                    <div class="u-flex u-flex-vertical u-gap-4">
+                        <span class="body-text-2 u-bold darker-neutral-color"> Daily backup </span>
+                        <span>Runs every day and is retained for 7 days</span>
+                    </div>
+                </Card>
+                <span>
+                    <button
+                        type="button"
+                        class="u-underline cursor-pointer"
+                        on:click={() => {
+                            isShowing = false;
+                            $showCreatePolicy = false;
+                            wizard.start(SupportWizard);
+                        }}>Contact support</button> to upgrade your plan and add customized backup policies.
+                </span>
+            </div>
         {:else}
-            <!-- show 2 preset and create custom policy button on Scale & up -->
-            <div class="u-flex-vertical u-gap-12">
-                <div class="grid-1-1 u-gap-12">
-                    {#each $presetPolicies as policy, index (index)}
-                        <label for={index.toString()} class="card preset-label-card is-allow-focus">
-                            <div class="u-flex u-gap-8 body-text-2">
-                                <InputCheckbox
-                                    id={index.toString()}
-                                    on:change={(event) => markPolicyChecked(event, policy)} />
+            <div class="u-flex u-gap-8 body-text-2">
+                <InputSwitch
+                    id="daily_backup"
+                    label="Daily backups"
+                    on:change={(event) => markPolicyChecked(event, dailyPolicy)}>
+                    <svelte:fragment slot="description">
+                        <span>
+                            Daily backups are retained for 7 days.
+                            <button
+                                type="button"
+                                class="u-underline cursor-pointer"
+                                on:click={() => {
+                                    isShowing = false;
+                                    wizard.start(SupportWizard);
+                                }}>Contact support</button>
+                            to upgrade your plan and add customized backup policies.
+                        </span>
+                    </svelte:fragment>
+                </InputSwitch>
+            </div>
+        {/if}
+    {:else}
+        <!-- show 2 preset and create custom policy button on Scale & up -->
+        <div class="u-flex-vertical u-gap-12">
+            <div class="grid-1-1 u-gap-12">
+                {#each $presetPolicies as policy, index (index)}
+                    <label for={index.toString()} class="card preset-label-card is-allow-focus">
+                        <div class="u-flex u-gap-8 body-text-2">
+                            <InputCheckbox
+                                id={index.toString()}
+                                on:change={(event) => markPolicyChecked(event, policy)} />
 
-                                <div class="u-flex-vertical u-gap-4">
-                                    <h3 class="u-bold">{policy.label}</h3>
-                                    {policy.description}
-                                </div>
+                            <div class="u-flex-vertical u-gap-4">
+                                <h3 class="u-bold">{policy.label}</h3>
+                                {policy.description}
                             </div>
-                        </label>
+                        </div>
+                    </label>
+                {/each}
+            </div>
+
+            {#if listOfCustomPolicies.length}
+                <div class="u-flex-vertical u-gap-8">
+                    {#each listOfCustomPolicies as policy}
+                        <div class="card custom-policy-card">
+                            <div class="u-flex-vertical u-gap-4 body-text-2">
+                                <div class="u-flex u-main-space-between">
+                                    <h3 class="u-bold">{policy.label}</h3>
+
+                                    <div class="u-flex u-gap-8">
+                                        <Button
+                                            extraCompact
+                                            class="icon-pencil height-fit-content"
+                                            on:click={() => {
+                                                policyInEdit = policy.id;
+                                                backupPolicyName = policy.label;
+                                                selectedTime = policy.selectedTime;
+                                                policyFrequency = policy.plainTextFrequency;
+                                                monthlyBackupFrequency =
+                                                    policy.monthlyBackupFrequency;
+                                                daysSelectionArray = policy.weeklySelectedDays;
+                                                policyRetention = !backupRetainingOptions.some(
+                                                    (option) => option.value === policy.retained
+                                                )
+                                                    ? -1 // -1 is for custom policy
+                                                    : policy.retained;
+
+                                                // re-add if edit is cancelled
+                                                policyBeingEdited = policy;
+
+                                                // do not show in the list can cause confusion.
+                                                listOfCustomPolicies = [
+                                                    ...listOfCustomPolicies.filter(
+                                                        (p) => policy.id !== p.id
+                                                    )
+                                                ];
+                                            }} />
+
+                                        <Button
+                                            extraCompact
+                                            class="icon-trash height-fit-content"
+                                            on:click={() => {
+                                                listOfCustomPolicies = [
+                                                    ...listOfCustomPolicies.filter(
+                                                        (p) => policy.id !== p.id
+                                                    )
+                                                ];
+                                            }} />
+                                    </div>
+                                </div>
+
+                                <span>{customPolicyDescription(policy)}</span>
+                            </div>
+                        </div>
                     {/each}
                 </div>
+            {/if}
 
-                {#if listOfCustomPolicies.length}
-                    <div class="u-flex-vertical u-gap-8">
-                        {#each listOfCustomPolicies as policy}
-                            <div class="card custom-policy-card">
-                                <div class="u-flex-vertical u-gap-4 body-text-2">
-                                    <div class="u-flex u-main-space-between">
-                                        <h3 class="u-bold">{policy.label}</h3>
-
-                                        <div class="u-flex u-gap-8">
-                                            <Button
-                                                extraCompact
-                                                class="icon-pencil height-fit-content"
-                                                on:click={() => {
-                                                    policyInEdit = policy.id;
-                                                    backupPolicyName = policy.label;
-                                                    selectedTime = policy.selectedTime;
-                                                    policyFrequency = policy.plainTextFrequency;
-                                                    monthlyBackupFrequency =
-                                                        policy.monthlyBackupFrequency;
-                                                    daysSelectionArray = policy.weeklySelectedDays;
-                                                    policyRetention = !backupRetainingOptions.some(
-                                                        (option) => option.value === policy.retained
-                                                    )
-                                                        ? -1 // -1 is for custom policy
-                                                        : policy.retained;
-
-                                                    // re-add if edit is cancelled
-                                                    policyBeingEdited = policy;
-
-                                                    // do not show in the list can cause confusion.
-                                                    listOfCustomPolicies = [
-                                                        ...listOfCustomPolicies.filter(
-                                                            (p) => policy.id !== p.id
-                                                        )
-                                                    ];
-                                                }} />
-
-                                            <Button
-                                                extraCompact
-                                                class="icon-trash height-fit-content"
-                                                on:click={() => {
-                                                    listOfCustomPolicies = [
-                                                        ...listOfCustomPolicies.filter(
-                                                            (p) => policy.id !== p.id
-                                                        )
-                                                    ];
-                                                }} />
-                                        </div>
-                                    </div>
-
-                                    <span>{customPolicyDescription(policy)}</span>
-                                </div>
+            {#if showCustomPolicy || policyInEdit}
+                <section
+                    bind:this={customPolicySection}
+                    class="modal is-inner-modal u-width-full-line">
+                    <div class="modal-form">
+                        <div class="u-flex-vertical u-gap-24">
+                            <div class="u-flex-vertical u-gap-4">
+                                <InputSelect
+                                    label="Frequency"
+                                    id="policyFrequency"
+                                    placeholder="Select frequency"
+                                    bind:value={policyFrequency}
+                                    options={['hourly', 'daily', 'weekly', 'monthly'].map(
+                                        (freq) => ({
+                                            value: freq,
+                                            label: freq.charAt(0).toUpperCase() + freq.slice(1)
+                                        })
+                                    )}
+                                    required />
+                                {#if policyFrequency === 'hourly'}
+                                    <span>{formPolicyDescription()}</span>
+                                {/if}
                             </div>
-                        {/each}
-                    </div>
-                {/if}
 
-                {#if showCustomPolicy || policyInEdit}
-                    <section
-                        bind:this={customPolicySection}
-                        class="modal is-inner-modal u-width-full-line">
-                        <div class="modal-form">
-                            <div class="u-flex-vertical u-gap-24">
-                                <div class="u-flex-vertical u-gap-4">
-                                    <InputSelect
-                                        label="Frequency"
-                                        id="policyFrequency"
-                                        placeholder="Select frequency"
-                                        bind:value={policyFrequency}
-                                        options={['hourly', 'daily', 'weekly', 'monthly'].map(
-                                            (freq) => ({
-                                                value: freq,
-                                                label: freq.charAt(0).toUpperCase() + freq.slice(1)
-                                            })
-                                        )}
-                                        required />
-                                    {#if policyFrequency === 'hourly'}
-                                        <span>{formPolicyDescription()}</span>
-                                    {/if}
-                                </div>
-
-                                {#if policyFrequency !== 'hourly'}
-                                    <div class="u-flex-vertical u-gap-8">
-                                        <div class="time-holder">
-                                            {#if policyFrequency === 'monthly'}
-                                                <InputSelect
-                                                    id="monthly"
-                                                    label="Monthly timing"
-                                                    bind:value={monthlyBackupFrequency}
-                                                    placeholder="End of month (28th)"
-                                                    options={backupFrequencies[policyFrequency]} />
-                                            {:else if policyFrequency === 'weekly'}
-                                                <div class="u-flex-vertical u-width-full-line">
-                                                    <Label>Timing</Label>
-                                                    <InputSelectCheckbox
-                                                        name="Timing"
-                                                        bind:tags={daysSelectionArray}
-                                                        placeholder="Select weekdays"
-                                                        options={backupFrequencies[
-                                                            policyFrequency
-                                                        ].map((option) => ({
+                            {#if policyFrequency !== 'hourly'}
+                                <div class="u-flex-vertical u-gap-8">
+                                    <div class="time-holder">
+                                        {#if policyFrequency === 'monthly'}
+                                            <InputSelect
+                                                id="monthly"
+                                                label="Monthly timing"
+                                                bind:value={monthlyBackupFrequency}
+                                                placeholder="End of month (28th)"
+                                                options={backupFrequencies[policyFrequency]} />
+                                        {:else if policyFrequency === 'weekly'}
+                                            <div class="u-flex-vertical u-width-full-line">
+                                                <Label>Timing</Label>
+                                                <InputSelectCheckbox
+                                                    name="Timing"
+                                                    bind:tags={daysSelectionArray}
+                                                    placeholder="Select weekdays"
+                                                    options={backupFrequencies[policyFrequency].map(
+                                                        (option) => ({
                                                             ...option,
                                                             checked: daysSelectionArray.includes(
                                                                 option.value
                                                             )
-                                                        }))} />
-                                                </div>
-                                            {/if}
-
-                                            <div
-                                                class="input-time"
-                                                class:hide={policyFrequency === 'monthly' ||
-                                                    policyFrequency === 'weekly'}
-                                                class:u-margin-block-start-4={policyFrequency ===
-                                                    'monthly' || policyFrequency === 'weekly'}>
-                                                <InputTime
-                                                    id="time"
-                                                    bind:value={selectedTime}
-                                                    label={['daily'].includes(policyFrequency)
-                                                        ? 'Timing'
-                                                        : ''} />
-                                            </div>
-                                        </div>
-
-                                        <span>{formPolicyDescription()}</span>
-                                    </div>
-                                {/if}
-
-                                <div class="u-flex-vertical u-gap-8">
-                                    <InputSelect
-                                        id="retention"
-                                        label="Keep for"
-                                        placeholder="3 months"
-                                        bind:value={policyRetention}
-                                        options={backupRetainingOptions} />
-                                    <span class="u-flex u-flex-vertical u-gap-8">
-                                        {#if customRetentionEnabled}
-                                            <div class="u-flex-vertical u-gap-2">
-                                                <div class="u-flex u-gap-8">
-                                                    <div class="u-width-150">
-                                                        <InputNumber
-                                                            min={1}
-                                                            id="number"
-                                                            placeholder="11"
-                                                            max={customRetention.max}
-                                                            bind:value={customRetention.number} />
-                                                    </div>
-
-                                                    <InputSelect
-                                                        id="retention"
-                                                        placeholder="Months"
-                                                        options={customRetainingOptions}
-                                                        bind:value={customRetention.value} />
-                                                </div>
-                                                {#if policyInputError}
-                                                    <Helper type="warning"
-                                                        >Value should be between 1 and {customRetention.max}</Helper>
-                                                {/if}
+                                                        })
+                                                    )} />
                                             </div>
                                         {/if}
-                                        <span>
-                                            {#if policyRetention === 365 * 100}
-                                                Every backup created under this policy will be
-                                                retained <b>forever</b>.
-                                            {:else}
-                                                {@const period =
-                                                    backupRetainingOptions.find(
-                                                        (option) => option.value === policyRetention
-                                                    )?.label ?? '3 months'}
 
-                                                {@const description =
-                                                    period === 'Custom'
-                                                        ? `${customRetention.number} ${
-                                                              customRetention.number === 1
-                                                                  ? customRetention.label.slice(
-                                                                        0,
-                                                                        -1
-                                                                    )
-                                                                  : customRetention.label
-                                                          }`
-                                                        : period}
+                                        <div
+                                            class="input-time"
+                                            class:hide={policyFrequency === 'monthly' ||
+                                                policyFrequency === 'weekly'}
+                                            class:u-margin-block-start-4={policyFrequency ===
+                                                'monthly' || policyFrequency === 'weekly'}>
+                                            <InputTime
+                                                id="time"
+                                                bind:value={selectedTime}
+                                                label={['daily'].includes(policyFrequency)
+                                                    ? 'Timing'
+                                                    : ''} />
+                                        </div>
+                                    </div>
 
-                                                {#if (period === 'Custom' && customRetention.number !== null && customRetention.number !== 0) || period !== 'Custom'}
-                                                    Every backup created under this policy will be
-                                                    retained for <b>
-                                                        {description}
-                                                    </b> before being automatically deleted.
-                                                {/if}
+                                    <span>{formPolicyDescription()}</span>
+                                </div>
+                            {/if}
+
+                            <div class="u-flex-vertical u-gap-8">
+                                <InputSelect
+                                    id="retention"
+                                    label="Keep for"
+                                    placeholder="3 months"
+                                    bind:value={policyRetention}
+                                    options={backupRetainingOptions} />
+                                <span class="u-flex u-flex-vertical u-gap-8">
+                                    {#if customRetentionEnabled}
+                                        <div class="u-flex-vertical u-gap-2">
+                                            <div class="u-flex u-gap-8">
+                                                <div class="u-width-150">
+                                                    <InputNumber
+                                                        min={1}
+                                                        id="number"
+                                                        placeholder="11"
+                                                        max={customRetention.max}
+                                                        bind:value={customRetention.number} />
+                                                </div>
+
+                                                <InputSelect
+                                                    id="retention"
+                                                    placeholder="Months"
+                                                    options={customRetainingOptions}
+                                                    bind:value={customRetention.value} />
+                                            </div>
+                                            {#if policyInputError}
+                                                <Helper type="warning"
+                                                    >Value should be between 1 and {customRetention.max}</Helper>
                                             {/if}
-                                        </span>
-                                    </span>
-                                </div>
-
-                                <div>
-                                    <InputText
-                                        id="name"
-                                        label="Policy name"
-                                        placeholder="{capitalize(policyFrequency)} backup"
-                                        autofocus
-                                        bind:value={backupPolicyName}
-                                        required />
-
-                                    {#if policyNameError}
-                                        <Helper type="warning">This field is required</Helper>
+                                        </div>
                                     {/if}
-                                </div>
+                                    <span>
+                                        {#if policyRetention === 365 * 100}
+                                            Every backup created under this policy will be retained <b
+                                                >forever</b
+                                            >.
+                                        {:else}
+                                            {@const period =
+                                                backupRetainingOptions.find(
+                                                    (option) => option.value === policyRetention
+                                                )?.label ?? '3 months'}
 
-                                <div class="button-container u-main-end u-flex u-gap-8">
-                                    <Button
-                                        text
-                                        on:click={() => {
-                                            policyInEdit = false;
-                                            showCustomPolicy = false;
+                                            {@const description =
+                                                period === 'Custom'
+                                                    ? `${customRetention.number} ${
+                                                          customRetention.number === 1
+                                                              ? customRetention.label.slice(0, -1)
+                                                              : customRetention.label
+                                                      }`
+                                                    : period}
 
-                                            if (policyBeingEdited) {
-                                                listOfCustomPolicies = [
-                                                    ...listOfCustomPolicies,
-                                                    policyBeingEdited
-                                                ];
-                                            }
-                                        }}
-                                        >Cancel
-                                    </Button>
+                                            {#if (period === 'Custom' && customRetention.number !== null && customRetention.number !== 0) || period !== 'Custom'}
+                                                Every backup created under this policy will be
+                                                retained for <b>
+                                                    {description}
+                                                </b> before being automatically deleted.
+                                            {/if}
+                                        {/if}
+                                    </span>
+                                </span>
+                            </div>
 
-                                    <Button
-                                        secondary
-                                        on:click={() => {
-                                            if (!backupPolicyName) {
-                                                policyNameError = true;
-                                                return;
-                                            }
+                            <div>
+                                <InputText
+                                    id="name"
+                                    label="Policy name"
+                                    placeholder="{capitalize(policyFrequency)} backup"
+                                    autofocus
+                                    bind:value={backupPolicyName}
+                                    required />
 
-                                            if (policyInputError) {
-                                                return;
-                                            }
+                                {#if policyNameError}
+                                    <Helper type="warning">This field is required</Helper>
+                                {/if}
+                            </div>
 
-                                            policyNameError = false;
-                                            handleSavePolicy();
-                                        }}>
-                                        {policyInEdit ? 'Update' : 'Save'}
-                                    </Button>
-                                </div>
+                            <div class="button-container u-main-end u-flex u-gap-8">
+                                <Button
+                                    text
+                                    on:click={() => {
+                                        policyInEdit = false;
+                                        showCustomPolicy = false;
+
+                                        if (policyBeingEdited) {
+                                            listOfCustomPolicies = [
+                                                ...listOfCustomPolicies,
+                                                policyBeingEdited
+                                            ];
+                                        }
+                                    }}
+                                    >Cancel
+                                </Button>
+
+                                <Button
+                                    secondary
+                                    on:click={() => {
+                                        if (!backupPolicyName) {
+                                            policyNameError = true;
+                                            return;
+                                        }
+
+                                        if (policyInputError) {
+                                            return;
+                                        }
+
+                                        policyNameError = false;
+                                        handleSavePolicy();
+                                    }}>
+                                    {policyInEdit ? 'Update' : 'Save'}
+                                </Button>
                             </div>
                         </div>
-                    </section>
-                {:else}
-                    <div class="custom-policy-wrapper u-padding-inline-4 u-width-full-line">
-                        <button
-                            type="button"
-                            class="custom-policy-text"
-                            on:click={() => (showCustomPolicy = true)}
-                            >Create custom policy
-                        </button>
                     </div>
-                {/if}
-            </div>
-        {/if}
-    </FormList>
+                </section>
+            {:else}
+                <div class="custom-policy-wrapper u-padding-inline-4 u-width-full-line">
+                    <button
+                        type="button"
+                        class="custom-policy-text"
+                        on:click={() => (showCustomPolicy = true)}
+                        >Create custom policy
+                    </button>
+                </div>
+            {/if}
+        </div>
+    {/if}
 </div>
 
 <style>

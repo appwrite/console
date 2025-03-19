@@ -68,37 +68,33 @@
     <svelte:fragment>
         {#if userId && secret}
             <Form onSubmit={setPassword}>
-                <FormList>
-                    <InputPassword
-                        label="New password"
-                        placeholder="Enter password"
-                        id="password"
-                        autofocus={true}
-                        required={true}
-                        bind:value={password} />
-                    <InputPassword
-                        label="Confirm password"
-                        placeholder="Confirm password"
-                        id="confirm-password"
-                        required={true}
-                        bind:value={confirmPassword} />
+                <InputPassword
+                    label="New password"
+                    placeholder="Enter password"
+                    id="password"
+                    autofocus={true}
+                    required={true}
+                    bind:value={password} />
+                <InputPassword
+                    label="Confirm password"
+                    placeholder="Confirm password"
+                    id="confirm-password"
+                    required={true}
+                    bind:value={confirmPassword} />
 
-                    <Button fullWidth submit>Update</Button>
-                </FormList>
+                <Button fullWidth submit>Update</Button>
             </Form>
         {:else}
             <Form onSubmit={recover}>
-                <FormList>
-                    <InputEmail
-                        id="email"
-                        label="Email"
-                        placeholder="Email"
-                        autofocus={true}
-                        required={true}
-                        bind:value={email} />
+                <InputEmail
+                    id="email"
+                    label="Email"
+                    placeholder="Email"
+                    autofocus={true}
+                    required={true}
+                    bind:value={email} />
 
-                    <Button fullWidth submit>Recover</Button>
-                </FormList>
+                <Button fullWidth submit>Recover</Button>
             </Form>
         {/if}
     </svelte:fragment>

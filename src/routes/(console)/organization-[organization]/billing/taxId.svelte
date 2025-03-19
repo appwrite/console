@@ -39,13 +39,7 @@
         <svelte:fragment slot="title">Tax ID</svelte:fragment>
         Add a tax identification number to your organization.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    label="Tax ID"
-                    placeholder="Enter tax ID"
-                    id="taxId"
-                    bind:value={taxId} />
-            </FormList>
+            <InputText label="Tax ID" placeholder="Enter tax ID" id="taxId" bind:value={taxId} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

@@ -51,15 +51,15 @@
             </svelte:fragment>
         </Alert.Inline>
     {/if}
-    <FormList>
-        <InputText
-            id="organization-name"
-            label="Name"
-            placeholder="Enter name"
-            bind:value={name}
-            autofocus={true}
-            required />
-    </FormList>
+
+    <InputText
+        id="organization-name"
+        label="Name"
+        placeholder="Enter name"
+        bind:value={name}
+        autofocus={true}
+        required />
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit>Create</Button>

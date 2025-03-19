@@ -78,15 +78,14 @@
 </script>
 
 <Modal title="Edit role" {error} size="s" bind:show={showEdit} onSubmit={submit}>
-    <FormList>
-        <InputSelect
-            popover={Roles}
-            id="role"
-            label="Role"
-            required
-            options={roles}
-            bind:value={role} />
-    </FormList>
+    <InputSelect
+        popover={Roles}
+        id="role"
+        label="Role"
+        required
+        options={roles}
+        bind:value={role} />
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
         <Button submit submissionLoader>Update</Button>

@@ -83,29 +83,27 @@
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>
-            <FormList>
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Email"
-                    autofocus={true}
-                    required={true}
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Password"
-                    required={true}
-                    bind:value={pass} />
-                <Button fullWidth submit {disabled}>Sign in</Button>
-                {#if isCloud}
-                    <span class="with-separators eyebrow-heading-3">or</span>
-                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
-                        <span class="icon-github" aria-hidden="true" />
-                        <span class="text">Sign in with GitHub</span>
-                    </Button>
-                {/if}
-            </FormList>
+            <InputEmail
+                id="email"
+                label="Email"
+                placeholder="Email"
+                autofocus={true}
+                required={true}
+                bind:value={mail} />
+            <InputPassword
+                id="password"
+                label="Password"
+                placeholder="Password"
+                required={true}
+                bind:value={pass} />
+            <Button fullWidth submit {disabled}>Sign in</Button>
+            {#if isCloud}
+                <span class="with-separators eyebrow-heading-3">or</span>
+                <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                    <span class="icon-github" aria-hidden="true" />
+                    <span class="text">Sign in with GitHub</span>
+                </Button>
+            {/if}
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">

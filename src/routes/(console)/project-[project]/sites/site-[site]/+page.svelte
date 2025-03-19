@@ -19,15 +19,11 @@
     let showRollback = false;
 
     onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes(`sites.${$page.params.site}.deployments.*`)) {
                 invalidate(Dependencies.SITE);
             }
         });
-
-        return () => {
-            unsubscribe();
-        };
     });
 
     // $: console.log(data.site);

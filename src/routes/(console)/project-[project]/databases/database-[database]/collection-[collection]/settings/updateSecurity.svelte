@@ -47,12 +47,11 @@
 <CardGrid>
     <svelte:fragment slot="title">Document security</svelte:fragment>
     <svelte:fragment slot="aside">
-        <FormList>
-            <InputSwitch
-                bind:value={collectionDocumentSecurity}
-                id="security"
-                label="Document security" />
-        </FormList>
+        <InputSwitch
+            bind:value={collectionDocumentSecurity}
+            id="security"
+            label="Document security" />
+
         <p class="text">
             When document security is enabled, users will be able to access documents for which they
             have been granted <b>either document or collection permissions</b>.

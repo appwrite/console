@@ -11,11 +11,10 @@
     import type { Models } from '@appwrite.io/console';
     import { Card, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { IconExclamationCircle } from '@appwrite.io/pink-icons-svelte';
-    import { domain as domainStore } from './store';
 
     let retrying = false;
     export let showTitle = true;
-    export let domain: Models.ProxyRule = $domainStore as Models.ProxyRule;
+    export let domain: Models.ProxyRule;
 
     const dispatch = createEventDispatcher();
 

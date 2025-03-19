@@ -60,43 +60,42 @@
 </script>
 
 <Modal bind:error bind:show onSubmit={handleSubmit} size="m" title="Update billing address">
-    <FormList>
-        <InputSelect
-            bind:value={selectedAddress.country}
-            {options}
-            label="Country or region"
-            placeholder="Select country or region"
-            id="country"
-            required />
-        <InputText
-            bind:value={selectedAddress.streetAddress}
-            id="address"
-            label="Street address"
-            placeholder="Enter street address"
-            required />
-        <InputText
-            bind:value={selectedAddress.addressLine2}
-            id="address2"
-            label="Address line 2"
-            placeholder="Unit number, floor, etc." />
-        <InputText
-            bind:value={selectedAddress.city}
-            id="city"
-            label="City or suburb"
-            placeholder="Enter your city"
-            required />
-        <InputText
-            bind:value={selectedAddress.state}
-            id="state"
-            label="State"
-            placeholder="Enter your state"
-            required />
-        <InputText
-            bind:value={selectedAddress.postalCode}
-            id="zip"
-            label="Postal code"
-            placeholder="Enter postal code" />
-    </FormList>
+    <InputSelect
+        bind:value={selectedAddress.country}
+        {options}
+        label="Country or region"
+        placeholder="Select country or region"
+        id="country"
+        required />
+    <InputText
+        bind:value={selectedAddress.streetAddress}
+        id="address"
+        label="Street address"
+        placeholder="Enter street address"
+        required />
+    <InputText
+        bind:value={selectedAddress.addressLine2}
+        id="address2"
+        label="Address line 2"
+        placeholder="Unit number, floor, etc." />
+    <InputText
+        bind:value={selectedAddress.city}
+        id="city"
+        label="City or suburb"
+        placeholder="Enter your city"
+        required />
+    <InputText
+        bind:value={selectedAddress.state}
+        id="state"
+        label="State"
+        placeholder="Enter your state"
+        required />
+    <InputText
+        bind:value={selectedAddress.postalCode}
+        id="zip"
+        label="Postal code"
+        placeholder="Enter postal code" />
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button submit>Save</Button>

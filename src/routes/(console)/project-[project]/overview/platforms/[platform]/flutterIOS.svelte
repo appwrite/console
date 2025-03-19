@@ -49,14 +49,12 @@
         <svelte:fragment slot="title">Bundle ID</svelte:fragment>
         You can find your Bundle Identifier in the General tab for your app's primary target in Xcode.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="bundle-id"
-                    label="Bundle ID"
-                    bind:value={key}
-                    required
-                    placeholder="com.company.appname" />
-            </FormList>
+            <InputText
+                id="bundle-id"
+                label="Bundle ID"
+                bind:value={key}
+                required
+                placeholder="com.company.appname" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
