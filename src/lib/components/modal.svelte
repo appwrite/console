@@ -29,7 +29,7 @@
 </script>
 
 <Form isModal {onSubmit} bind:this={formComponent}>
-    <Modal {size} {title} bind:open={show} {hideFooter} {dismissible} >
+    <Modal {size} {title} bind:open={show} {hideFooter} {dismissible}>
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>

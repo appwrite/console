@@ -163,8 +163,7 @@
                     name="provider"
                     {value}
                     bind:group={$provider}
-                    icon={option.classIcon ?? option.imageIcon}
-                >
+                    icon={option.classIcon ?? option.imageIcon}>
                     <svelte:fragment slot="title">{option.title}</svelte:fragment>
                     {#if option.description}
                         {option.description}

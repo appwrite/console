@@ -10,6 +10,6 @@
 </script>
 
 <Container>
-    <ChangeOrganization domain={data.domain} organizations={organizations} />
+    <ChangeOrganization domain={data.domain} {organizations} />
     <DeleteDomain domain={data.domain} />
 </Container>

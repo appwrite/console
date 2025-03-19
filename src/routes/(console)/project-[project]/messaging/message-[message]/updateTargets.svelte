@@ -215,7 +215,8 @@
                     <div class="u-text-center">
                         No targets have been selected.
                         <p>
-                            Need a hand? Check out our <Button href="https://appwrite.io/docs/products/messaging/targets">
+                            Need a hand? Check out our <Button
+                                href="https://appwrite.io/docs/products/messaging/targets">
                                 documentation</Button
                             >.
                         </p>

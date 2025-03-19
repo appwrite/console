@@ -9,9 +9,4 @@
     export let attribute: Models.AttributeUrl;
 </script>
 
-<InputEmail
-    {id}
-    {label}
-    placeholder="Enter URL"
-    required={attribute.required}
-    bind:value />
+<InputEmail {id} {label} placeholder="Enter URL" required={attribute.required} bind:value />

@@ -23,7 +23,6 @@
 
     export let data;
 
-
     onMount(() => {
         if ($deployment.status === 'ready') {
             return;

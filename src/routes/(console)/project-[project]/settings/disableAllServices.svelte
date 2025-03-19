@@ -6,10 +6,7 @@
     export let handleDisableAll;
 </script>
 
-<Modal
-    title="Disable all services"
-    bind:show
-    onSubmit={handleDisableAll}>
+<Modal title="Disable all services" bind:show onSubmit={handleDisableAll}>
     <p class="text" data-private>
         Are you sure you want to disable all services? This will disable API requests to this
         project for all Client SDKs.

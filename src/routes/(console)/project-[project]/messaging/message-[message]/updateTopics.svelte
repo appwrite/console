@@ -137,7 +137,8 @@
                     <div class="u-text-center">
                         No topics have been selected.
                         <p>
-                            Need a hand? Check out our <Button href="https://appwrite.io/docs/products/messaging/topics">
+                            Need a hand? Check out our <Button
+                                href="https://appwrite.io/docs/products/messaging/topics">
                                 documentation</Button
                             >.
                         </p>

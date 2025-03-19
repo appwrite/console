@@ -108,11 +108,7 @@
             placeholder="Search by subscriber ID, target ID, user ID, or type">
             <div class="u-flex u-gap-16 is-not-mobile">
                 <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
-                <ViewSelector
-                    view={View.Table}
-                    {columns}
-                    hideView
-                    allowNoColumns />
+                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
                 <Button on:click={() => (showAdd = true)} event="create_subscriber">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Add subscriber
@@ -122,11 +118,7 @@
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
             <div class="u-flex-basis-50-percent">
                 <!-- TODO: fix width -->
-                <ViewSelector
-                    view={View.Table}
-                    {columns}
-                    hideView
-                    allowNoColumns />
+                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
             </div>
             <div class="u-flex-basis-50-percent">
                 <!-- TODO: fix width -->

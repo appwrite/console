@@ -67,10 +67,9 @@
         bind:projectName={$createProject.name}
         bind:region={$createProject.region}
         {regions}>
-
-    <svelte:fragment slot="footer"
-    ><Button.Button type="button" variant="primary" size="s" on:click={create}>
-        Create</Button.Button
-    ></svelte:fragment>
-</CreateProject>
+        <svelte:fragment slot="footer"
+            ><Button.Button type="button" variant="primary" size="s" on:click={create}>
+                Create</Button.Button
+            ></svelte:fragment>
+    </CreateProject>
 </Modal>

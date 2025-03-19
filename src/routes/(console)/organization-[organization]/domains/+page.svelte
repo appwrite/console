@@ -7,11 +7,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
     import { protocol } from '$routes/(console)/store.js';
-    import {
-        IconDotsHorizontal,
-        IconPlus,
-        IconTrash
-    } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
         Card,
