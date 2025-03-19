@@ -47,7 +47,10 @@
                             ?.map((policy) => getPolicyDescription(policy.schedule))
                             .join(', ')}
 
-                        <Tooltip placement="bottom" disabled={!policies || !lastBackup}>
+                        <Tooltip
+                            placement="bottom"
+                            disabled={!policies || !lastBackup}
+                            maxWidth="fit-content">
                             <span class="u-trim">
                                 {#if !policies}
                                     <span class="icon-exclamation" /> No backup policies
@@ -55,7 +58,9 @@
                                     {description}
                                 {/if}
                             </span>
-                            <span slot="tooltip">{`Last backup: ${lastBackup}`}</span>
+                            <span slot="tooltip">
+                                {`Last backup: ${lastBackup}`}
+                            </span>
                         </Tooltip>
                     {:else}
                         {toLocaleDateTime(database[column.id])}

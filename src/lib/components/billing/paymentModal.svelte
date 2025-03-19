@@ -77,7 +77,9 @@
 
     <div class="aw-stripe-container" data-private>
         {#if isLoading}
-            <Spinner />
+            <div class="loader-element">
+                <Spinner />
+            </div>
         {/if}
 
         <div class="stripe-element" bind:this={element}>
@@ -98,6 +100,12 @@
 
         .stripe-element {
             width: 100%;
+        }
+
+        .loader-element {
+            width: 100%;
+            align-self: center;
+            justify-items: end;
         }
     }
 </style>

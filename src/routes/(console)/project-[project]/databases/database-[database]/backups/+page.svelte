@@ -21,6 +21,7 @@
     import { showCreateBackup, showCreatePolicy } from './store';
     import { getProjectId } from '$lib/helpers/project';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -132,6 +133,7 @@
                     ? `Backup policies have been created`
                     : `<b>${totalPolicies[0].label}</b> policy has been created`;
 
+            // TODO: html isn't yet supported on Toast.
             addNotification({
                 isHtml: true,
                 type: 'success',
@@ -168,15 +170,15 @@
 <Container size="xxl">
     <div class="u-flex u-gap-32 u-flex-vertical-mobile">
         {#if !isDisabled}
-            <div class="u-flex-vertical policies-holder-card">
+            <div class="u-flex-vertical u-gap-16 policies-holder-card">
                 <ContainerHeader
                     title="Policies"
                     buttonText="Create policy"
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
-                    maxPolicies={$currentPlan.backupPolicies}
                     policiesCreated={data.policies.total}
+                    maxPolicies={$currentPlan.backupPolicies}
                     buttonMethod={() => {
                         $showCreatePolicy = true;
                         trackEvent('click_policy_create');
@@ -188,7 +190,7 @@
                     lastBackupDates={data.lastBackupDates} />
             </div>
 
-            <div class="u-flex-vertical u-width-full-line u-overflow-x-auto">
+            <div class="u-flex-vertical u-gap-16 u-width-full-line u-overflow-x-auto">
                 <ContainerHeader
                     title="Backups"
                     buttonText="Manual backup"
@@ -201,7 +203,7 @@
                     }} />
 
                 {#if data.backups.total}
-                    <div class="u-padding-block-start-8">
+                    <Layout.Stack gap="xxl">
                         <Table {data} />
 
                         {#if data.backups.total > 6}
@@ -211,11 +213,10 @@
                                 offset={data.offset}
                                 total={data.backups.total} />
                         {/if}
-                    </div>
+                    </Layout.Stack>
                 {:else}
                     <div class="u-flex u-flex-vertical u-gap-16">
-                        <article
-                            class="empty card u-width-full-line common-section u-margin-block-start-24">
+                        <article class="empty card u-width-full-line common-section">
                             No backups yet
                         </article>
                     </div>
@@ -242,12 +243,19 @@
     </svelte:fragment>
 </Modal>
 
-<Modal title="Create manual backup" bind:show={$showCreateBackup} onSubmit={createManualBackup}>
-    <p class="text" data-private>
-        Manual backups are <b>retained forever</b> unless manually deleted. Use for major data
-        changes or rollback safeguards.
+<Modal
+    size="s"
+    title="Create manual backup"
+    bind:show={$showCreateBackup}
+    onSubmit={createManualBackup}>
+    <Typography.Text variant="m-400">
+        Manual backups are <b>retained forever</b> unless manually deleted. Use for major data changes
+        or rollback safeguards.
+    </Typography.Text>
+
+    <Typography.Text variant="m-500">
         <b>Depending on the size of your data, this may take a while.</b>
-    </p>
+    </Typography.Text>
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => ($showCreateBackup = false)}>Cancel</Button>
@@ -264,7 +272,7 @@
 
     @media (min-width: 768px) {
         .policies-holder-card {
-            max-width: 21.5rem;
+            min-width: 330px;
         }
     }
 </style>

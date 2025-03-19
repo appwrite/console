@@ -7,6 +7,7 @@
     export let show = false;
     export let error: string = null;
     export let dismissible = true;
+    export let size: 's' | 'm' | 'l' = 'm';
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
@@ -28,7 +29,7 @@
 </script>
 
 <Form isModal {onSubmit} bind:this={formComponent}>
-    <Modal {title} bind:open={show} {hideFooter} {dismissible}>
+    <Modal {title} bind:open={show} {hideFooter} {dismissible} {size}>
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>
@@ -50,3 +51,10 @@
         </svelte:fragment>
     </Modal>
 </Form>
+
+<style>
+    /* temporary fix to modal width */
+    :global(dialog section) {
+        max-width: 100% !important;
+    }
+</style>
