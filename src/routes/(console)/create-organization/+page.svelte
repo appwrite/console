@@ -191,4 +191,4 @@
     </svelte:fragment>
 </Wizard>
 
-<ValidateCreditModal bind:show={showCreditModal} bind:couponData={selectedCoupon} isNewOrg={true} />
+<ValidateCreditModal bind:show={showCreditModal} bind:couponData={selectedCoupon} isNewOrg />
