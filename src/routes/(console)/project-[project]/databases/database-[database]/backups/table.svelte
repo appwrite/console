@@ -1,33 +1,44 @@
 <script lang="ts">
-    import { Card, DropList, DropListItem, Modal } from '$lib/components';
+    import { Card, Modal } from '$lib/components';
     import { Button, FormList, InputCheckbox, InputText } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellCheck,
-        TableCellHead,
-        TableCellHeadCheck,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
     import RestoreModal from './restoreModal.svelte';
     import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
-    import { Pill } from '$lib/elements';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { ID } from '@appwrite.io/console';
+    import { columns } from './store';
     import { database } from '../store';
     import type { BackupArchive } from '$lib/sdk/backups';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
     import { Dependencies } from '$lib/constants';
-    import { Badge, FloatingActionBar, Tooltip } from '@appwrite.io/pink-svelte';
-    import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import {
+        ActionMenu,
+        Badge,
+        FloatingActionBar,
+        Icon,
+        Layout,
+        Popover,
+        Status,
+        Table,
+        Tag,
+        Tooltip,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import {
+        IconDotsHorizontal,
+        IconDuplicate,
+        IconPencil,
+        IconRefresh,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
+    import { capitalize } from '$lib/helpers/string';
+    import Ellipse from './components/Ellipse.svelte';
+    import Confirm from '../../../../../../lib/components/confirm.svelte';
 
     export let data: PageData;
 
@@ -47,8 +58,7 @@
         {
             id: 'new',
             title: 'Restore in new database',
-            description:
-                'Duplicate the database from the selected backup version into a new database.'
+            description: 'Duplicate the database from the selected backup version to a new.'
         },
         {
             id: 'same',
@@ -138,66 +148,76 @@
         (selectedRestoreOption === 'new' &&
             (!newDatabaseInfo.name || $database.$id === newDatabaseInfo.id)) ||
         (selectedRestoreOption === 'same' && !confirmSameDbRestore);
+
+    function getBackupStatus(backup: BackupArchive) {
+        switch (backup.status) {
+            case 'pending':
+                return 'pending';
+            case 'completed':
+                return 'complete';
+            case 'uploading':
+            case 'downloading':
+                return 'processing';
+            case 'failed':
+                return 'failed';
+            default:
+                return 'waiting';
+        }
+    }
 </script>
 
-<TableScroll class="custom-height-table-column">
-    <TableHeader>
-        <TableCellHeadCheck
-            bind:selected={selectedBackups}
-            pageItemsIds={data.backups.archives.map((b) => b.$id)} />
-        <TableCellHead width={192}>Backups</TableCellHead>
-        <TableCellHead width={80}>Size</TableCellHead>
-        <TableCellHead width={120}>Status</TableCellHead>
-        <TableCellHead width={120}>Policy</TableCellHead>
-        <TableCellHead width={48} />
-    </TableHeader>
-    <TableBody>
-        {#each data.backups.archives as backup, index}
-            {@const policy = policyDetails(backup.policyId)}
-            {@const retainedUntil = new Date(
-                new Date(policy?.$createdAt).getTime() + policy?.retention * 24 * 60 * 60 * 1000
-            )}
-            {@const formattedRetainedUntil = `${retainedUntil.getDate()} ${retainedUntil.toLocaleString('en-US', { month: 'short' })}, ${retainedUntil.getFullYear()} ${retainedUntil.toLocaleTimeString('en-US', { hour12: false })}`}
-            <TableRow>
-                <TableCellCheck id={backup.$id} bind:selectedIds={selectedBackups} />
-                <TableCell title={backup.$createdAt}>
-                    <DualTimeView time={backup.$createdAt}>
-                        {cleanBackupName(backup)}
-                    </DualTimeView>
-                </TableCell>
-                <TableCell title="Backup Size">
-                    {#if backup.status === 'completed'}
-                        {calculateSize(backup.size)}
-                    {:else}
-                        -
-                    {/if}
-                </TableCell>
-                <TableCell title="Backup Status">
-                    <div class="u-flex u-gap-8 u-cross-baseline">
-                        <Pill
-                            warning={backup.status === 'pending'}
-                            danger={backup.status === 'failed'}
-                            success={backup.status === 'completed'}>
-                            {backup.status.toLowerCase()}
-                        </Pill>
-                        <!--{#if backup.status === 'Failed'}-->
-                        <!--    <span class="u-underline">Get support</span>-->
-                        <!--{/if}-->
-                    </div>
-                </TableCell>
-                <TableCell title="Backup Policy">
-                    <div class="u-flex u-main-space-between u-cross-baseline">
-                        <Tooltip>
-                            <span>
-                                {policy?.name || 'Manual'}
-                            </span>
-                            <span slot="tooltip"
-                                >{policy
-                                    ? `Retained until: ${formattedRetainedUntil}`
-                                    : `Retained forever`}</span>
-                        </Tooltip>
-                    </div>
-                </TableCell>
+<Table.Root let:root allowSelection columns={$columns} bind:selectedRows={selectedBackups}>
+    <svelte:fragment slot="header" let:root>
+        {#each $columns as column}
+            <Table.Header.Cell column={column.id} {root}>{column.title}</Table.Header.Cell>
+        {/each}
+    </svelte:fragment>
+
+    {#each data.backups.archives as backup, index}
+        {@const policy = policyDetails(backup.policyId)}
+        {@const retainedUntil = new Date(
+            new Date(policy?.$createdAt).getTime() + policy?.retention * 24 * 60 * 60 * 1000
+        )}
+        {@const formattedRetainedUntil = `${retainedUntil.getDate()} ${retainedUntil.toLocaleString('en-US', { month: 'short' })}, ${retainedUntil.getFullYear()} ${retainedUntil.toLocaleTimeString('en-US', { hour12: false })}`}
+        <Table.Row.Base id={backup.$id} {root}>
+            <Table.Cell column="backups" {root}>
+                <Tooltip maxWidth="fit-content">
+                    <span>{cleanBackupName(backup)}</span>
+                    <span slot="tooltip">{timeFromNow(backup.$createdAt)}</span>
+                </Tooltip>
+            </Table.Cell>
+            <Table.Cell column="size" {root}>
+                {#if backup.status === 'completed'}
+                    {calculateSize(backup.size)}
+                {:else}
+                    -
+                {/if}
+            </Table.Cell>
+            <Table.Cell column="status" {root}>
+                {@const backupStatus = getBackupStatus(backup)}
+                <Status status={backupStatus} label={capitalize(backupStatus)} />
+                <!--{#if backup.status === 'Failed'}-->
+                <!--    <span class="u-underline">Get support</span>-->
+                <!--{/if}-->
+            </Table.Cell>
+            <Table.Cell column="policy" {root}>
+                <div class="u-flex u-main-space-between u-cross-baseline">
+                    <Tooltip maxWidth="fit-content">
+                        <span>
+                            {policy?.name || 'Manual'}
+                        </span>
+                        <span slot="tooltip"
+                            >{policy
+                                ? `Retained until: ${formattedRetainedUntil}`
+                                : `Retained forever`}</span>
+                    </Tooltip>
+                </div>
+            </Table.Cell>
+            <Table.Cell column="action" {root}>
+                <Popover let:toggle padding="m" placement="bottom-end">
+                    <Button extraCompact on:click={toggle}>
+                        <Icon icon={IconDotsHorizontal} />
+                    </Button>
 
                     <svelte:fragment slot="tooltip" let:toggle>
                         <ActionMenu.Root width="180px">
@@ -239,7 +259,7 @@
                     </svelte:fragment>
                 </Popover>
             </Table.Cell>
-        </Table.Row>
+        </Table.Row.Base>
     {/each}
 </Table.Root>
 
@@ -259,11 +279,11 @@
     </FloatingActionBar>
 {/if}
 
-<Modal
+<Confirm
     title="Delete {selectedBackups.length ? 'backups' : 'backup'}"
-    bind:show={showDelete}
+    bind:open={showDelete}
     onSubmit={deleteBackups}>
-    <p class="text" data-private>
+    <Typography.Text>
         Are you sure you want to delete
         {#if selectedBackups.length}
             <b>{selectedBackups.length}</b> {selectedBackups.length > 1 ? 'backups' : 'backup'}?
@@ -271,18 +291,11 @@
             the <b>{cleanBackupName(selectedBackup)}</b> backup?
         {/if}
         <br />This action is irreversible.
-    </p>
-
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    </Typography.Text>
+</Confirm>
 
 <Modal title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
-    <Card
-        class="restore-modal-inner-card u-width-full-line"
-        style="border-radius: var(--border-radius-small, 8px); padding: 1rem;">
+    <Card radius="m" padding="s">
         <Layout.Stack gap="xxs">
             <Typography.Text variant="m-500">
                 {cleanBackupName(selectedBackup)}
@@ -301,7 +314,7 @@
     </Card>
 
     <FormList>
-        <div class="u-flex u-flex-vertical-mobile u-gap-16">
+        <Layout.Stack direction="row" gap="l">
             {#each restoreOptions as restoreOption}
                 <div class="u-width-full-line">
                     <LabelCard
@@ -321,10 +334,10 @@
                     </LabelCard>
                 </div>
             {/each}
-        </div>
+        </Layout.Stack>
 
         {#if selectedRestoreOption === 'new'}
-            <div class="u-flex-vertical u-gap-8">
+            <Layout.Stack gap="s" alignItems="flex-start">
                 <InputText
                     id="name"
                     label="Database name"
@@ -333,34 +346,28 @@
                     autofocus
                     required />
                 {#if !showCustomId}
-                    <div>
-                        <Tag
-                            size="s"
-                            on:click={() => {
-                                showCustomId = true;
-                            }}><Icon icon={IconPencil} /> Database ID</Tag>
-                    </div>
+                    <Tag
+                        size="s"
+                        on:click={() => {
+                            showCustomId = true;
+                        }}><Icon icon={IconPencil} /> Database ID</Tag>
                 {:else}
-                    <div class="u-flex u-flex-vertical u-gap-8">
-                        <RestoreModal
-                            autofocus={false}
-                            name="Database"
-                            bind:show={showCustomId}
-                            databaseId={$database.$id}
-                            bind:id={newDatabaseInfo.id} />
-                    </div>
+                    <RestoreModal
+                        autofocus={false}
+                        name="Database"
+                        bind:show={showCustomId}
+                        databaseId={$database.$id}
+                        bind:id={newDatabaseInfo.id} />
                 {/if}
-            </div>
+            </Layout.Stack>
         {:else}
-            <div class="input-check-box-friction">
-                <InputCheckbox
-                    required
-                    size="s"
-                    id="delete_policy"
-                    bind:checked={confirmSameDbRestore}
-                    label="Overwrite '{$database.name}' with the selected backup version">
-                </InputCheckbox>
-            </div>
+            <InputCheckbox
+                required
+                size="s"
+                id="delete_policy"
+                bind:checked={confirmSameDbRestore}
+                label="Overwrite '{$database.name}' with the selected backup version">
+            </InputCheckbox>
         {/if}
     </FormList>
 
@@ -369,36 +376,3 @@
         <Button submit disabled={disableButton}>Restore</Button>
     </svelte:fragment>
 </Modal>
-
-<style lang="scss">
-    :global(.custom-height-table-column .table-col) {
-        height: 54px;
-        padding: 0 1rem; /* removes vertical padding for constrained height */
-    }
-
-    :global(.restore-modal-inner-card) {
-        background: hsl(var(--color-neutral-5));
-        border: 1px solid hsl(var(--color-neutral-10));
-    }
-
-    :global(.theme-dark .restore-modal-inner-card) {
-        background: hsl(var(--color-neutral-85));
-        border: 1px solid hsl(var(--color-neutral-80));
-    }
-
-    // centers item horizontally!
-    :global(.last-dropdown-item div) {
-        margin: auto;
-    }
-
-    .actions {
-        .indicator {
-            border-radius: 0.25rem;
-            background: hsl(var(--color-information-100));
-            color: hsl(var(--color-neutral-0));
-
-            padding: 0 0.375rem;
-            display: inline-block;
-        }
-    }
-</style>
