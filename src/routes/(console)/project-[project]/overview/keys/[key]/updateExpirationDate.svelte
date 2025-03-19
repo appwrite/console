@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Alert } from '@appwrite.io/pink-svelte';
     import { project } from '../../../store';
-    import ExpirationInput from '../expirationInput.svelte';
+    import { ExpirationInput } from '$lib/components';
     import { key } from './store';
 
     let expiration = $key.expire;

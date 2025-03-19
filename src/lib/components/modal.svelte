@@ -5,6 +5,7 @@
     import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
 
     export let show = false;
+    export let size: 's' | 'm' | 'l' = 'm';
     export let error: string = null;
     export let dismissible = true;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
@@ -14,7 +15,6 @@
     export let hideFooter = false;
 
     let alert: HTMLElement;
-    let formComponent: Form;
 
     beforeNavigate(() => {
         show = false;
@@ -27,8 +27,8 @@
     }
 </script>
 
-<Form isModal {onSubmit} bind:this={formComponent}>
-    <Modal {title} bind:open={show} {hideFooter} {dismissible}>
+<Form isModal {onSubmit}>
+    <Modal {size} {title} bind:open={show} {hideFooter} {dismissible}>
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>

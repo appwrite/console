@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, CopyInput } from '$lib/components';
+    import { CardGrid, BoxAvatar, CopyInput, Empty } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { file } from './store';
+    import { columns, file } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -15,27 +15,49 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { bucket } from '../store';
-    import { Alert, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Alert,
+        Button as PinkButton,
+        InteractiveText,
+        Layout,
+        Icon,
+        Popover,
+        Table,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import {
+        IconDotsHorizontal,
+        IconDuplicate,
+        IconPencil,
+        IconPlus,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
+    import ManageFileTokenModal, { cleanFormattedDate } from './manageFileToken.svelte';
+    import { copy } from '$lib/helpers/copy';
 
     let showFileAlert = true;
-    onMount(async () => {
-        filePermissions = $file?.$permissions;
-    });
 
     let showDelete = false;
-    let filePermissions = $file?.$permissions;
     let arePermsDisabled = true;
+    let filePermissions = $file?.$permissions;
+
+    // TODO: @itznotabug update once backend is set up.
+    let showManageToken = false;
+    let tokenDeleteMode = false;
+    // mock data
+    $: fileTokens = []; // $file?.$tokens;
+    let selectedFileToken: object | undefined = undefined;
 
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 640, 300).toString() +
         '&mode=admin';
+
     const getView = (fileId: string) =>
         sdk.forProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
 
     $: if (filePermissions) {
-        if (symmetricDifference(filePermissions, $file.$permissions).length) {
-            arePermsDisabled = false;
-        } else arePermsDisabled = true;
+        arePermsDisabled = !symmetricDifference(filePermissions, $file.$permissions).length;
     }
 
     function downloadFile() {
@@ -68,6 +90,50 @@
             trackError(error, Submit.FileUpdatePermissions);
         }
     }
+
+    // mock method, change later.
+    async function deleteFileToken(token: object) {
+        fileTokens = fileTokens.filter((tokn) => {
+            return tokn !== token;
+        });
+    }
+
+    async function createFileToken(expiry: string) {
+        const mockToken = {
+            created: new Date().toISOString(),
+            value: Math.random().toString(36).slice(-12),
+            expiry: expiry,
+            lastAccessed: Math.random() < 0.5 ? null : new Date('2024-02-15T15:30:00Z')
+        };
+
+        console.log(JSON.stringify(mockToken, null, 2));
+
+        fileTokens = [...fileTokens, mockToken];
+    }
+
+    // TODO: update to manage file token expiry too later.
+    async function updateFileTokenExpiry(newExpiry: string) {
+        // perf hit but ok when testing!
+        fileTokens = fileTokens.map((token) => {
+            if (token === selectedFileToken) {
+                token.expiry = newExpiry;
+            }
+
+            return token;
+        });
+
+        selectedFileToken = null;
+    }
+
+    async function copyPreviewWithToken(token: string) {
+        await copy(
+            `${sdk.forProject.storage.getFilePreview($file.bucketId, $file.$id)}&token=${token}`
+        );
+    }
+
+    onMount(async () => {
+        filePermissions = $file?.$permissions;
+    });
 </script>
 
 <Container>
@@ -113,6 +179,95 @@
                 <Button secondary href={downloadFile()} event="download_file" external>
                     <span class="icon-download" aria-hidden="true" />
                     <span class="text"> Download</span></Button>
+            </svelte:fragment>
+        </CardGrid>
+
+        <CardGrid hideOverflow>
+            <svelte:fragment slot="title">File tokens</svelte:fragment>
+            Use tokens to provide public access to the file.
+            <svelte:fragment slot="aside">
+                {#if fileTokens.length}
+                    <Layout.Stack justifyContent="flex-end" direction="row">
+                        <Button secondary on:click={() => (showManageToken = true)}>
+                            <Icon size="s" icon={IconPlus} />
+                            <span class="text">Create token</span>
+                        </Button>
+                    </Layout.Stack>
+
+                    <Table.Root columns={$columns} let:root>
+                        <svelte:fragment slot="header" let:root>
+                            {#each $columns as { id, title } (id)}
+                                <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
+                            {/each}
+                        </svelte:fragment>
+
+                        {#each fileTokens as token}
+                            <Table.Row.Base {root}>
+                                <Table.Cell column="created" {root}
+                                    >{toLocaleDate(token.created)}</Table.Cell>
+                                <Table.Cell column="value" {root}>
+                                    <InteractiveText isVisible={false} text={token.value} />
+                                </Table.Cell>
+                                <Table.Cell column="expiry" {root}
+                                    >{token.expiry
+                                        ? cleanFormattedDate(token.expiry)
+                                        : 'Never'}</Table.Cell>
+                                <Table.Cell column="last_accessed" {root}
+                                    >{token.lastAccessed
+                                        ? cleanFormattedDate(token.lastAccessed, true)
+                                        : 'Never'}</Table.Cell>
+
+                                <Table.Cell column="actions" {root}>
+                                    <Popover placement="bottom-end" padding="none" let:toggle>
+                                        <PinkButton.Button
+                                            icon
+                                            variant="ghost"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                toggle(e);
+                                            }}>
+                                            <Icon size="s" icon={IconDotsHorizontal} />
+                                        </PinkButton.Button>
+                                        <svelte:fragment slot="tooltip" let:toggle>
+                                            <ActionMenu.Root>
+                                                <ActionMenu.Item.Button
+                                                    leadingIcon={IconDuplicate}
+                                                    on:click={(e) => {
+                                                        toggle(e);
+                                                        copyPreviewWithToken(token.value);
+                                                    }}>
+                                                    Copy URL
+                                                </ActionMenu.Item.Button>
+                                                <ActionMenu.Item.Button
+                                                    leadingIcon={IconPencil}
+                                                    on:click={(e) => {
+                                                        toggle(e);
+                                                        showManageToken = true;
+                                                        selectedFileToken = token;
+                                                    }}>
+                                                    Edit expiry
+                                                </ActionMenu.Item.Button>
+                                                <ActionMenu.Item.Button
+                                                    status="danger"
+                                                    leadingIcon={IconTrash}
+                                                    on:click={async (e) => {
+                                                        toggle(e);
+                                                        tokenDeleteMode = true;
+                                                        showManageToken = true;
+                                                        selectedFileToken = token;
+                                                    }}>
+                                                    Delete
+                                                </ActionMenu.Item.Button>
+                                            </ActionMenu.Root>
+                                        </svelte:fragment>
+                                    </Popover>
+                                </Table.Cell>
+                            </Table.Row.Base>
+                        {/each}
+                    </Table.Root>
+                {:else}
+                    <Empty on:click={() => (showManageToken = true)}>Create new file token</Empty>
+                {/if}
             </svelte:fragment>
         </CardGrid>
 
@@ -175,3 +330,11 @@
 </Container>
 
 <Delete bind:showDelete />
+
+<ManageFileTokenModal
+    bind:show={showManageToken}
+    bind:isDelete={tokenDeleteMode}
+    bind:fileToken={selectedFileToken}
+    on:created={({ detail: expiry }) => createFileToken(expiry)}
+    on:updated={({ detail: newExpiry }) => updateFileTokenExpiry(newExpiry)}
+    on:deleted={async () => await deleteFileToken(selectedFileToken)} />
