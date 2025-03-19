@@ -302,4 +302,7 @@
     </svelte:fragment>
 </Wizard>
 
-<ValidateCreditModal bind:show={showCreditModal} bind:couponData={selectedCoupon} />
+<ValidateCreditModal
+    bind:show={showCreditModal}
+    bind:couponData={selectedCoupon}
+    isNewOrg={false} />
