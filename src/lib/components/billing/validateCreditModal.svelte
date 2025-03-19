@@ -20,13 +20,15 @@
     async function addCoupon() {
         try {
             const response = await sdk.forConsole.billing.getCoupon(coupon);
-            couponData = response;
+
             if (response.onlyNewOrgs && !isNewOrg) {
+                show = false;
                 addNotification({
                     type: 'error',
                     message: 'Coupon only valid for new organizations'
                 });
             } else {
+                couponData = response;
                 dispatch('validation', couponData);
                 coupon = null;
                 show = false;
