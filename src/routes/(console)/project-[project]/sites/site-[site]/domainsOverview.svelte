@@ -11,13 +11,14 @@
     import { Button } from '$lib/elements/forms';
     import { Card, Trim } from '$lib/components';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { RuleTrigger } from '$lib/stores/sdk';
 
     export let proxyRuleList: Models.ProxyRuleList;
 
     let showDomainQR = false;
     let selectedDomainURL: string;
 
-    $: rules = proxyRuleList?.rules?.filter((rule) => rule.trigger === 'manual') ?? [];
+    $: rules = proxyRuleList?.rules?.filter((rule) => rule.trigger === RuleTrigger.MANUAL) ?? [];
 </script>
 
 <Layout.Stack>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Button, Form, InputSelect } from '$lib/elements/forms';
+    import { Button, Form, InputDomain, InputSelect } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -10,41 +10,37 @@
         Layout,
         Tooltip,
         Icon,
-        Alert,
         Input,
         Divider,
         Typography,
-        Badge,
         Card
     } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
     import { organization } from '$lib/stores/organization';
-    import { consoleVariables } from '$routes/(console)/store';
-    import InputDomain from '$lib/elements/forms/inputDomain.svelte';
+    import { consoleVariables, protocol } from '$routes/(console)/store';
     import { IconGlobeAlt, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import { writable } from 'svelte/store';
-    import ConnectRepoModal from '../../../(components)/connectRepoModal.svelte';
     import { isCloud } from '$lib/system';
-    import { onMount } from 'svelte';
     import { StatusCode } from '@appwrite.io/console';
+    import VerificationFieldset from './verificationFieldset.svelte';
+    import type { Domain } from '$lib/sdk/domains';
+    import { statusCodeOptions } from '$lib/stores/domains';
 
     const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
 
     export let data;
 
-    let formComponent: Form;
-    let isSubmitting = writable(false);
-
-    let showConnectRepo = false;
     let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = 'ACTIVE';
     let step: 'add' | 'verify' = 'add';
-    let domain = '';
+    let domainName = '';
     let redirect: string = null;
     let statusCode: number = null;
     let branch = null;
+
+    let domainData: Domain;
+    let selectedTab: 'cname' | 'nameserver';
 
     const redirectOptions = data.domains.rules
         .filter((d) => !d.domain.endsWith($consoleVariables._APP_DOMAIN_SITES))
@@ -53,113 +49,48 @@
             value: domain.domain
         }));
 
-    const statusCodeOptions = [
-        {
-            label: '301 Moved permanently',
-            value: 301
-        },
-        {
-            label: '302 Found',
-            value: 302
-        },
-        {
-            label: '303 See other',
-            value: 303
-        },
-        {
-            label: '307 Temporary redirect',
-            value: 307
-        },
-        {
-            label: '308 Permanent redirect',
-            value: 308
-        }
-    ];
-
-    onMount(() => {
-        if (
-            $page.url.searchParams.has('connectRepo') &&
-            $page.url.searchParams.get('connectRepo') === 'true'
-        ) {
-            showConnectRepo = true;
-        }
-    });
-
     async function addDomain() {
-        const isPreviewDomain = domain.endsWith($consoleVariables._APP_DOMAIN_SITES);
-        const isNewDomain = data.domains.rules.findIndex((rule) => rule.domain === domain) === -1;
-        const isSubDomain = domain.split('.').length >= 2;
+        const isNewDomain =
+            data.domains.rules.findIndex((rule) => rule.domain === domainName) === -1;
         try {
-            if (behaviour === 'CREATE') {
-                if (isCloud && !isPreviewDomain) {
-                    //Redirect if subdomain so user can choose how to proceed
-                    if (isSubDomain) {
-                        goto(
-                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify?domain=${domain}`
-                        );
-                    }
-                    //Create domain if it's a new domain
-                    else if (isNewDomain) {
-                        const domainData = await sdk.forConsole.domains.create(
-                            $organization.$id,
-                            domain
-                        );
-                        await sdk.forProject.proxy.createSiteRule(
-                            domain,
-                            $page.params.site,
-                            branch
-                        );
-                        goto(
-                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify-${domainData.$id}}`
-                        );
-                    }
-                }
-                //if selfhosted or preview domain create site rule
-                else {
-                    await sdk.forProject.proxy.createSiteRule(domain, $page.params.site, branch);
-                    addNotification({
-                        type: 'success',
-                        message: 'Domain added successfully'
-                    });
-                    await goto(backPage);
-                    await invalidate(Dependencies.SITES_DOMAINS);
-                }
-            } else if (behaviour === 'REDIRECT') {
-                if (isCloud && !isPreviewDomain) {
-                    //Redirect if subdomain so user can choose how to proceed
-                    if (isSubDomain) {
-                        goto(
-                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify?domain=${domain}?redirect=${redirect}?statusCode=${statusCode}`
-                        );
-                    }
-                    //Create domain if it's a new domain
-                    else if (isNewDomain) {
-                        const domainData = await sdk.forConsole.domains.create(
-                            $organization.$id,
-                            domain
-                        );
-                        const sc = Object.values(StatusCode).find(
-                            (code) => parseInt(code) === statusCode
-                        );
-                        await sdk.forProject.proxy.createRedirectRule(domain, redirect, sc);
-
-                        goto(
-                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify-${domainData.$id}}`
-                        );
-                    }
-                }
+            if (isNewDomain && isCloud) {
+                domainData = await sdk.forConsole.domains.create($organization.$id, domainName);
             }
+
+            if (behaviour === 'BRANCH') {
+                await sdk.forProject.proxy.createSiteRule(domainName, $page.params.site, branch);
+            } else if (behaviour === 'REDIRECT') {
+                const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
+                console.log(statusCode, sc);
+                await sdk.forProject.proxy.createRedirectRule(domainName, $protocol + redirect, sc);
+            } else if (behaviour === 'ACTIVE') {
+                await sdk.forProject.proxy.createSiteRule(domainName, $page.params.site);
+            }
+
+            addNotification({
+                type: 'success',
+                message: 'Domain added successfully'
+            });
+            await goto(backPage);
+            await invalidate(Dependencies.DOMAINS);
+            await invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
+            await invalidate(Dependencies.DOMAINS);
+
             addNotification({
                 type: 'error',
                 message: error.message
             });
         }
     }
+
+    $: isVerified = domainData?.nameservers
+        ? domainData?.nameservers.toLocaleLowerCase() === 'appwrite'
+        : undefined;
 </script>
 
 <Wizard title="Add custom domain" href={backPage} column columnSize="s" hideFooter={step === 'add'}>
-    <Form bind:this={formComponent} onSubmit={addDomain} bind:isSubmitting>
+    <Form onSubmit={() => (step = 'verify')}>
         {#if step === 'add'}
             <Layout.Stack gap="xxl">
                 <Layout.Grid columns={3} columnsXS={1}>
@@ -201,7 +132,7 @@
                         <InputDomain
                             label="Domain"
                             id="domain"
-                            bind:value={domain}
+                            bind:value={domainName}
                             required
                             placeholder="appwrite.example.com" />
 
@@ -254,47 +185,37 @@
                         {/if}
                         <Divider />
                         <Layout.Stack direction="row" justifyContent="flex-end">
-                            <Button on:click={() => (step = 'verify')}>Add</Button>
+                            <Button submit>Add</Button>
                         </Layout.Stack>
                     </Layout.Stack>
                 </Fieldset>
             </Layout.Stack>
         {:else if step === 'verify'}
-            <Card.Base radius="s" padding="s">
-                <Layout.Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap="xs">
-                    <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
+            <Layout.Stack gap="xxl">
+                <Card.Base radius="s" padding="s">
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        gap="xs">
+                        <Layout.Stack direction="row" alignItems="center" gap="xs">
+                            <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
 
-                        <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            {domain}
-                        </Typography.Text>
+                            <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
+                                {domainName}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Button secondary on:click={() => (step = 'add')}>Change</Button>
                     </Layout.Stack>
-                    <Button
-                        secondary
-                        href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
-                        Change
-                    </Button>
-                </Layout.Stack>
-            </Card.Base>
+                </Card.Base>
+
+                <VerificationFieldset domain={domainName} verified={isVerified} bind:selectedTab />
+            </Layout.Stack>
         {/if}
     </Form>
 
     <svelte:fragment slot="footer">
         <Button secondary href={backPage}>Cancel</Button>
-        <Button on:click={() => formComponent.triggerSubmit()} bind:disabled={$isSubmitting}>
-            Verify
-        </Button>
+        <Button on:click={addDomain}>Verify</Button>
     </svelte:fragment>
 </Wizard>
-
-{#if showConnectRepo}
-    <ConnectRepoModal
-        bind:show={showConnectRepo}
-        site={data.site}
-        onlyExisting
-        callbackState={{ connectRepo: 'true' }} />
-{/if}
