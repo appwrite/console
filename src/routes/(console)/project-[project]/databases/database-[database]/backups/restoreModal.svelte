@@ -2,7 +2,7 @@
     import { Card, Icon, Input, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
-    import Button from '../../../../../../lib/elements/forms/button.svelte';
+    import Button from '$lib/elements/forms/button.svelte';
 
     export let id: string;
     export let show = false;

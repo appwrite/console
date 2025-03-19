@@ -40,7 +40,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { capitalize } from '$lib/helpers/string';
     import Ellipse from './components/Ellipse.svelte';
-    import Confirm from '../../../../../../lib/components/confirm.svelte';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
 
