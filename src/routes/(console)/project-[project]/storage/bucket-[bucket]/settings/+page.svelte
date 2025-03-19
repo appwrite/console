@@ -118,7 +118,8 @@
     }
 
     $: if (extensions) {
-        isExtensionsDisabled = JSON.stringify(extensions) === JSON.stringify(data.bucket.allowedFileExtensions);
+        isExtensionsDisabled =
+            JSON.stringify(extensions) === JSON.stringify(data.bucket.allowedFileExtensions);
     }
 
     function toggleBucket() {

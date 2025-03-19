@@ -1,8 +1,10 @@
 <script context="module" lang="ts">
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
 
-    export function cleanFormattedDate(date: string): string {
-        return toLocaleDateTime(date, true).replaceAll(', ', ' ');
+    export function cleanFormattedDate(date: string, time: boolean = false): string {
+        return time
+            ? toLocaleDateTime(date, true)
+            : toLocaleDate(date, 'dd mm yyyy').replaceAll(', ', ' ');
     }
 </script>
 
@@ -10,6 +12,7 @@
     import { Button } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { Confirm, ExpirationInput, Modal } from '$lib/components';
+    import { Link } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let isDelete = false;
@@ -49,7 +52,7 @@
 
         <p data-private>
             {#if fileToken.lastAccessed}
-                {@const formattedDate = cleanFormattedDate(fileToken.lastAccessed)}
+                {@const formattedDate = cleanFormattedDate(fileToken.lastAccessed, true)}
 
                 This token was last accessed on <b>{formattedDate}</b>
             {:else}
@@ -60,6 +63,7 @@
 {:else}
     <Modal
         bind:show
+        size="s"
         onSubmit={handleFileToken}
         title={`${fileToken ? 'Edit' : 'Create'} file token`}>
         <!-- TODO: docs link needed-->
@@ -68,7 +72,8 @@
                 {@const formattedDate = cleanFormattedDate(fileToken.created)}
                 Edit the expiry of the file token created on <b>{formattedDate}</b>
             {:else}
-                Create a file token to grant public access to a file. Learn more.
+                Create a file token to grant public access to a file.
+                <Link.Anchor href="https://appwrite.com/docs/">Learn more</Link.Anchor>.
             {/if}
         </svelte:fragment>
 

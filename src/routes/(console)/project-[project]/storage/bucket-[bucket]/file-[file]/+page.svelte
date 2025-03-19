@@ -2,7 +2,7 @@
     import { CardGrid, BoxAvatar, CopyInput, Empty } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { file } from './store';
+    import { columns, file } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -194,31 +194,30 @@
                         </Button>
                     </Layout.Stack>
 
-                    <Table.Root>
-                        <svelte:fragment slot="header">
-                            <Table.Header.Cell width="170px">Created</Table.Header.Cell>
-                            <Table.Header.Cell width="170px">Value</Table.Header.Cell>
-                            <Table.Header.Cell width="170px">Expiry</Table.Header.Cell>
-                            <Table.Header.Cell width="170px">Last accessed</Table.Header.Cell>
-                            <Table.Header.Cell width="40px" />
+                    <Table.Root columns={$columns} let:root>
+                        <svelte:fragment slot="header" let:root>
+                            {#each $columns as { id, title } (id)}
+                                <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
+                            {/each}
                         </svelte:fragment>
 
                         {#each fileTokens as token}
-                            <Table.Row>
-                                <Table.Cell>{toLocaleDate(token.created)}</Table.Cell>
-                                <Table.Cell>
+                            <Table.Row.Base {root}>
+                                <Table.Cell column="created" {root}
+                                    >{toLocaleDate(token.created)}</Table.Cell>
+                                <Table.Cell column="value" {root}>
                                     <InteractiveText isVisible={false} text={token.value} />
                                 </Table.Cell>
-                                <Table.Cell
+                                <Table.Cell column="expiry" {root}
                                     >{token.expiry
                                         ? cleanFormattedDate(token.expiry)
                                         : 'Never'}</Table.Cell>
-                                <Table.Cell
+                                <Table.Cell column="last_accessed" {root}
                                     >{token.lastAccessed
-                                        ? cleanFormattedDate(token.lastAccessed)
+                                        ? cleanFormattedDate(token.lastAccessed, true)
                                         : 'Never'}</Table.Cell>
 
-                                <Table.Cell>
+                                <Table.Cell column="actions" {root}>
                                     <Popover placement="bottom-end" padding="none" let:toggle>
                                         <PinkButton.Button
                                             icon
@@ -263,7 +262,7 @@
                                         </svelte:fragment>
                                     </Popover>
                                 </Table.Cell>
-                            </Table.Row>
+                            </Table.Row.Base>
                         {/each}
                     </Table.Root>
                 {:else}
