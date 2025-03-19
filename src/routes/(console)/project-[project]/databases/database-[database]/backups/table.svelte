@@ -15,6 +15,8 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
     import { LabelCard } from '$lib/components/index.js';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
+
     import { Dependencies } from '$lib/constants';
     import {
         ActionMenu,
@@ -181,10 +183,9 @@
         {@const formattedRetainedUntil = `${retainedUntil.getDate()} ${retainedUntil.toLocaleString('en-US', { month: 'short' })}, ${retainedUntil.getFullYear()} ${retainedUntil.toLocaleTimeString('en-US', { hour12: false })}`}
         <Table.Row.Base id={backup.$id} {root}>
             <Table.Cell column="backups" {root}>
-                <Tooltip maxWidth="fit-content">
-                    <span>{cleanBackupName(backup)}</span>
-                    <span slot="tooltip">{timeFromNow(backup.$createdAt)}</span>
-                </Tooltip>
+                <DualTimeView time={backup.$createdAt}>
+                    {cleanBackupName(backup)}
+                </DualTimeView>
             </Table.Cell>
             <Table.Cell column="size" {root}>
                 {#if backup.status === 'completed'}
