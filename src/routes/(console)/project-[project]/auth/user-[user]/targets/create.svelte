@@ -5,7 +5,7 @@
     import { Modal, CustomId } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
-    import { Button, InputText, FormList, InputSelect, InputPhone } from '$lib/elements/forms';
+    import { Button, InputText, InputSelect, InputPhone } from '$lib/elements/forms';
     import InputEmail from '$lib/elements/forms/inputEmail.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';

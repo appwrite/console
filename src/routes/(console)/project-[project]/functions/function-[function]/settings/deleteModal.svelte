@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { type Models } from '@appwrite.io/console';
-    import { FormList, InputCheckbox } from '$lib/elements/forms';
+    import { InputCheckbox } from '$lib/elements/forms';
 
     export let showDelete = false;
     export let projectFunction: Models.Function;

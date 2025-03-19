@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { FormList, InputSelect } from '$lib/elements/forms';
+    import { InputSelect } from '$lib/elements/forms';
     import InputText from '$lib/elements/forms/inputText.svelte';
     import { WizardStep } from '$lib/layout';
     import { Query, type Models, ID } from '@appwrite.io/console';

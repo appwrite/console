@@ -3,7 +3,7 @@
     import { providerType, provider, providerParams } from './store';
     import { CustomId, LabelCard } from '$lib/components';
     import { providers } from '../store';
-    import { FormList, InputText } from '$lib/elements/forms';
+    import { InputText } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Providers } from '../../provider.svelte';
     import { SmtpEncryption } from '@appwrite.io/console';

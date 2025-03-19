@@ -12,7 +12,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import FormList from '$lib/elements/forms/formList.svelte';
 
     const projectId = $page.params.project;
 

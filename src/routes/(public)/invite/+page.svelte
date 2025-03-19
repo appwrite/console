@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Button, Form, FormList, InputChoice } from '$lib/elements/forms';
+    import { Button, Form, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';

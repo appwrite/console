@@ -11,7 +11,7 @@
         "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings --threshold warning",
         "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
         "lint": "prettier --check . && eslint .",
-        "format": "prettier --write .",
+        "format": "prettier --write . && eslint --fix .",
         "test": "TZ=EST vitest run",
         "test:ui": "TZ=EST vitest --ui",
         "test:watch": "TZ=EST vitest watch",

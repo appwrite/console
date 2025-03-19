@@ -5,7 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
     import type { Attributes } from '../store';

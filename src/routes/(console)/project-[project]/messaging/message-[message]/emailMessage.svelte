@@ -3,14 +3,7 @@
     import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import {
-        Button,
-        Form,
-        FormList,
-        InputSwitch,
-        InputText,
-        InputTextarea
-    } from '$lib/elements/forms';
+    import { Button, Form, InputSwitch, InputText, InputTextarea } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';

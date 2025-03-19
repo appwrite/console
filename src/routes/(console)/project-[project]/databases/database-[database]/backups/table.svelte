@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Card, Modal } from '$lib/components';
-    import { Button, FormList, InputCheckbox, InputText } from '$lib/elements/forms';
+    import { Button, InputCheckbox, InputText } from '$lib/elements/forms';
     import RestoreModal from './restoreModal.svelte';
     import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
@@ -314,63 +314,58 @@
         </Layout.Stack>
     </Card>
 
-    <FormList>
-        <Layout.Stack direction="row" gap="l">
-            {#each restoreOptions as restoreOption}
-                <div class="u-width-full-line">
-                    <LabelCard
-                        padding="s"
-                        value={restoreOption.id}
-                        bind:group={selectedRestoreOption}>
-                        <svelte:fragment slot="title">
-                            <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
-                                <h4 class="body-text-2 u-bold">
-                                    {restoreOption.title}
-                                </h4>
-                            </div>
-                        </svelte:fragment>
-                        <p class="u-color-text-offline u-small">
-                            {restoreOption.description}
-                        </p>
-                    </LabelCard>
-                </div>
-            {/each}
-        </Layout.Stack>
+    <Layout.Stack direction="row" gap="l">
+        {#each restoreOptions as restoreOption}
+            <div class="u-width-full-line">
+                <LabelCard padding="s" value={restoreOption.id} bind:group={selectedRestoreOption}>
+                    <svelte:fragment slot="title">
+                        <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+                            <h4 class="body-text-2 u-bold">
+                                {restoreOption.title}
+                            </h4>
+                        </div>
+                    </svelte:fragment>
+                    <p class="u-color-text-offline u-small">
+                        {restoreOption.description}
+                    </p>
+                </LabelCard>
+            </div>
+        {/each}
+    </Layout.Stack>
 
-        {#if selectedRestoreOption === 'new'}
-            <Layout.Stack gap="s" alignItems="flex-start">
-                <InputText
-                    id="name"
-                    label="Database name"
-                    placeholder="Enter database name"
-                    bind:value={newDatabaseInfo.name}
-                    autofocus
-                    required />
-                {#if !showCustomId}
-                    <Tag
-                        size="s"
-                        on:click={() => {
-                            showCustomId = true;
-                        }}><Icon icon={IconPencil} /> Database ID</Tag>
-                {:else}
-                    <RestoreModal
-                        autofocus={false}
-                        name="Database"
-                        bind:show={showCustomId}
-                        databaseId={$database.$id}
-                        bind:id={newDatabaseInfo.id} />
-                {/if}
-            </Layout.Stack>
-        {:else}
-            <InputCheckbox
-                required
-                size="s"
-                id="delete_policy"
-                bind:checked={confirmSameDbRestore}
-                label="Overwrite '{$database.name}' with the selected backup version">
-            </InputCheckbox>
-        {/if}
-    </FormList>
+    {#if selectedRestoreOption === 'new'}
+        <Layout.Stack gap="s" alignItems="flex-start">
+            <InputText
+                id="name"
+                label="Database name"
+                placeholder="Enter database name"
+                bind:value={newDatabaseInfo.name}
+                autofocus
+                required />
+            {#if !showCustomId}
+                <Tag
+                    size="s"
+                    on:click={() => {
+                        showCustomId = true;
+                    }}><Icon icon={IconPencil} /> Database ID</Tag>
+            {:else}
+                <RestoreModal
+                    autofocus={false}
+                    name="Database"
+                    bind:show={showCustomId}
+                    databaseId={$database.$id}
+                    bind:id={newDatabaseInfo.id} />
+            {/if}
+        </Layout.Stack>
+    {:else}
+        <InputCheckbox
+            required
+            size="s"
+            id="delete_policy"
+            bind:checked={confirmSameDbRestore}
+            label="Overwrite '{$database.name}' with the selected backup version">
+        </InputCheckbox>
+    {/if}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showRestore = false)}>Cancel</Button>

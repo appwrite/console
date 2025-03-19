@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Modal } from '$lib/components';
-    import { Button, FormList, InputDate, InputTime, Helper } from '$lib/elements/forms';
+    import { Button, InputDate, InputTime, Helper } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';

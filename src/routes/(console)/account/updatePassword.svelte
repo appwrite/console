@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { Button, Form, FormList, InputPassword } from '$lib/elements/forms';
+    import { Button, Form, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Link } from '@appwrite.io/pink-svelte';

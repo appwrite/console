@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { Button, FormList, InputEmail, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, InputEmail, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';

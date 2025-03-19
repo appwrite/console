@@ -9,7 +9,7 @@
         SelectPaymentMethod
     } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import {
         WizardSecondaryContainer,

@@ -27,7 +27,6 @@
     import { messageParams, providerType } from './store';
     import {
         Button,
-        FormList,
         Helper,
         InputEmail,
         InputRadio,

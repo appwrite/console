@@ -12,7 +12,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
-    import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID, OAuthProvider } from '@appwrite.io/console';

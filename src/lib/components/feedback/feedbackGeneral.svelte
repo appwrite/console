@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormList, InputTextarea } from '$lib/elements/forms';
+    import { InputTextarea } from '$lib/elements/forms';
     import { feedbackData } from '$lib/stores/feedback';
 </script>
 

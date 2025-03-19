@@ -1,11 +1,5 @@
 <script lang="ts">
-    import {
-        FormList,
-        InputNumber,
-        InputPassword,
-        InputText,
-        InputTextarea
-    } from '$lib/elements/forms';
+    import { InputNumber, InputPassword, InputText, InputTextarea } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import type { Provider } from '$lib/stores/migration';
     import { provider } from '.';

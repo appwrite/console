@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { Button, InputEmail, InputText, InputTags, FormList } from '$lib/elements/forms';
+    import { Button, InputEmail, InputText, InputTags } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert } from '@appwrite.io/pink-svelte';

@@ -4,7 +4,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';

@@ -1,7 +1,7 @@
 <script lang="ts">
     import Evaluation from './evaluation.svelte';
     import { feedbackData } from '$lib/stores/feedback';
-    import { FormList, InputTextarea } from '$lib/elements/forms';
+    import { InputTextarea } from '$lib/elements/forms';
 </script>
 
 <Evaluation bind:value={$feedbackData.value} />

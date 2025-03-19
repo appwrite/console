@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { Button, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
+    import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';

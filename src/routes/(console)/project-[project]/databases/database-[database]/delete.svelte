@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { Button, FormList, InputCheckbox } from '$lib/elements/forms';
+    import { Button, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { database } from './store';

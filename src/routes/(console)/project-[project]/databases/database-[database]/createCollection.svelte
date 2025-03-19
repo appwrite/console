@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     import { Modal, CustomId } from '$lib/components';
-    import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';

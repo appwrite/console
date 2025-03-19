@@ -1,6 +1,6 @@
 <script lang="ts">
     import { CardGrid } from '$lib/components';
-    import { Button, Form, FormList, InputTextarea } from '$lib/elements/forms';
+    import { Button, Form, InputTextarea } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import SMSPhone from '../smsPhone.svelte';
     import { onMount } from 'svelte';

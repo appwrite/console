@@ -3,7 +3,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal, CopyInput } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, FormList, InputDigits } from '$lib/elements/forms';
+    import { Button, InputDigits } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { AuthenticatorType, type Models } from '@appwrite.io/console';
     import QrFrame from '$lib/images/qr2.svg';

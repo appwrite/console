@@ -1,6 +1,6 @@
 <script lang="ts">
     import { messageParams, providerType } from './store';
-    import { Button, FormList, InputEmail, InputRadio, InputTextarea } from '$lib/elements/forms';
+    import { Button, InputEmail, InputRadio, InputTextarea } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';

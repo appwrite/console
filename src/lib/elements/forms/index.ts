@@ -1,5 +1,4 @@
 export { default as Form } from './form.svelte';
-export { default as FormList } from './formList.svelte';
 export { default as Button } from './button.svelte';
 export { default as InputDomain } from './inputDomain.svelte';
 export { default as InputEmail } from './inputEmail.svelte';

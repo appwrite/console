@@ -12,7 +12,7 @@
     import AppleTvos from './appleTvOS.svelte';
     import Android from './android.svelte';
     import { Box, CardGrid } from '$lib/components';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';

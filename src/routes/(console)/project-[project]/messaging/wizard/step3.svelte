@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, FormList, InputDate, InputSelect, InputTime } from '$lib/elements/forms';
+    import { Button, InputDate, InputSelect, InputTime } from '$lib/elements/forms';
     import Helper from '$lib/elements/forms/helper.svelte';
     import { WizardStep } from '$lib/layout';
     import { MessagingProviderType } from '@appwrite.io/console';

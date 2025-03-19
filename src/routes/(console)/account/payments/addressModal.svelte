@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';

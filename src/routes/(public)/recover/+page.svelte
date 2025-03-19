@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Button, Form, FormList, InputEmail, InputPassword } from '$lib/elements/forms';
+    import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';

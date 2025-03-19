@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Box, CardGrid, Secret } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';

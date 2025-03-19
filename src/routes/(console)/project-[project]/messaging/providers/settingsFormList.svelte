@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { FormList } from '$lib/elements/forms';
     import SettingsFormInput from './settingsFormInput.svelte';
     import type {
         ProviderInput,

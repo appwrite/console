@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { BoxAvatar, CardGrid } from '$lib/components';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';

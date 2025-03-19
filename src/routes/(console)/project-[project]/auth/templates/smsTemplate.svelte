@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Button, Form, FormList, InputTextarea } from '$lib/elements/forms';
+    import { Button, Form, InputTextarea } from '$lib/elements/forms';
     import ResetSms from './resetSms.svelte';
     import { baseSmsTemplate, smsTemplate } from './store';
     import { addNotification } from '$lib/stores/notifications';

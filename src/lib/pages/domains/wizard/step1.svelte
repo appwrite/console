@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Button, FormList, InputDomain } from '$lib/elements/forms';
+    import { Button, InputDomain } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
