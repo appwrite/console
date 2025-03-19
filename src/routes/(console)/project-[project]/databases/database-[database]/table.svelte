@@ -4,29 +4,29 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Id, Modal } from '$lib/components';
-    import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { canWriteCollections } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
-    import { Badge, Selector, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import { columns } from './store';
+    import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
 
-    let selected: string[] = [];
+    let selectedRows: string[] = [];
     let showDelete = false;
     let deleting = false;
 
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selected.map((collectionId) =>
+        const promises = selectedRows.map((collectionId) =>
             sdk.forProject.databases.deleteCollection(databaseId, collectionId)
         );
         try {
@@ -34,7 +34,7 @@
             trackEvent(Submit.CollectionDelete);
             addNotification({
                 type: 'success',
-                message: `${selected.length} collection${selected.length > 1 ? 's' : ''} deleted`
+                message: `${selectedRows.length} collection${selectedRows.length > 1 ? 's' : ''} deleted`
             });
             invalidate(Dependencies.COLLECTIONS);
         } catch (error) {
@@ -44,82 +44,63 @@
             });
             trackError(error, Submit.CollectionDelete);
         } finally {
-            selected = [];
+            selectedRows = [];
             showDelete = false;
         }
     }
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        {#if $canWriteCollections}
-            <Table.Header.Selector width="20px" />
-        {/if}
-        {#each $columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root columns={$columns} allowSelection={$canWriteCollections} bind:selectedRows let:root>
+    <svelte:fragment slot="header" let:root>
+        {#each $columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each data.collections.collections as collection (collection.$id)}
-        <Table.Link
+        <Table.Row.Link
+            {root}
+            id={collection.$id}
             href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
-            {#if $canWriteCollections}
-                <Table.Cell>
-                    <Selector.Checkbox size="s" />
-                </Table.Cell>
-            {/if}
-
             {#each $columns as column}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key $columns}
-                            <Table.Cell>
-                                <Id value={collection.$id}>{collection.$id}</Id>
-                            </Table.Cell>
+                            <Id value={collection.$id}>{collection.$id}</Id>
                         {/key}
                     {:else if column.id === 'name'}
-                        <Table.Cell>
-                            {collection.name}
-                        </Table.Cell>
+                        {collection.name}
                     {:else}
-                        <Table.Cell>
-                            {toLocaleDateTime(collection[column.id])}
-                        </Table.Cell>
+                        {toLocaleDateTime(collection[column.id])}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-        </Table.Link>
+        </Table.Row.Link>
     {/each}
 </Table.Root>
 
-<FloatingActionBar show={selected.length > 0}>
-    <svelte:fragment slot="start">
-        <Badge content={selected.length.toString()} />
-        <span>
-            <span class="is-only-desktop">
-                {selected.length > 1 ? 'collections' : 'collection'}
+{#if selectedRows.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedRows.length.toString()} />
+            <span>
+                {selectedRows.length > 1 ? 'collections' : 'collection'}
+                selected
             </span>
-            selected
-        </span>
-    </svelte:fragment>
-    <svelte:fragment slot="end">
-        <Button text on:click={() => (selected = [])}>Cancel</Button>
-        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
-    </svelte:fragment>
-</FloatingActionBar>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
+            <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
 
-<Modal
-    title="Delete Collections"
-    bind:show={showDelete}
+<Confirm
+    title="Delete collections"
+    bind:open={showDelete}
     onSubmit={handleDelete}
-    dismissible={!deleting}>
-    <p class="text" data-private>
-        Are you sure you want to delete <b>{selected.length}</b>
-        {selected.length > 1 ? 'collections' : 'collection'}?
-    </p>
-    <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
-    </svelte:fragment>
-</Modal>
+    disabled={deleting}>
+    <Typography.Text>
+        Are you sure you want to delete <b>{selectedRows.length}</b>
+        {selectedRows.length > 1 ? 'collections' : 'collection'}?
+    </Typography.Text>
+</Confirm>

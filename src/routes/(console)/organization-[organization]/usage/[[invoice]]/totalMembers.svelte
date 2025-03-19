@@ -3,13 +3,13 @@
     import { EmptyCardCloud } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { newMemberModal, organization } from '$lib/stores/organization';
     import type { Models } from '@appwrite.io/console';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let members: Models.MembershipList;
 
@@ -56,14 +56,14 @@
                 items={members.memberships}
                 let:paginatedItems
                 hideFooter={members?.total <= 5}>
-                <Table.Root>
-                    <svelte:fragment slot="header">
-                        <Table.Header.Cell>Members</Table.Header.Cell>
-                        <Table.Header.Cell>Joined</Table.Header.Cell>
+                <Table.Root columns={2} let:root>
+                    <svelte:fragment slot="header" let:root>
+                        <Table.Header.Cell {root}>Members</Table.Header.Cell>
+                        <Table.Header.Cell {root}>Joined</Table.Header.Cell>
                     </svelte:fragment>
                     {#each paginatedItems as member}
-                        <Table.Row>
-                            <Table.Cell>
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>
                                 <Layout.Stack direction="row" alignItems="center" gap="s">
                                     <AvatarInitials
                                         size="xs"
@@ -77,12 +77,10 @@
                                     </Layout.Stack>
                                 </Layout.Stack>
                             </Table.Cell>
-                            <Table.Cell>
-                                {member.joined
-                                    ? toLocaleDate(member.joined)
-                                    : toLocaleDate(member.$createdAt)}
+                            <Table.Cell {root}>
+                                <DualTimeView time={member.joined ?? member.$createdAt} />
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
             </Paginator>

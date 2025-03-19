@@ -28,69 +28,54 @@
     let selectedDeployment: Models.Deployment = null;
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        {#each $columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column?.width?.toString() ?? ''}>
-                    {column.title}
-                </Table.Header.Cell>
-            {/if}
+<Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
+    <svelte:fragment slot="header" let:root>
+        {#each $columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>
+                {title}
+            </Table.Header.Cell>
         {/each}
-        <Table.Header.Cell width="40" />
+        <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
     {#each data.deploymentList.deployments as deployment}
-        <Table.Link
+        <Table.Row.Link
+            {root}
             href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}>
             {#each $columns as column}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key column.id}
-                            <Table.Cell width={column?.width?.toString() ?? ''}>
-                                <Id value={deployment.$id}>{deployment.$id}</Id>
-                            </Table.Cell>
+                            <Id value={deployment.$id}>{deployment.$id}</Id>
                         {/key}
                     {:else if column.id === 'status'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {@const status = deployment.status}
-                            {#if data?.activeDeployment?.$id === deployment?.$id}
-                                <Status status="complete" label="Active" />
-                            {:else}
-                                <Status
-                                    status={deploymentStatusConverter(status)}
-                                    label={capitalize(status)} />
-                            {/if}
-                        </Table.Cell>
+                        {@const status = deployment.status}
+                        {#if data?.activeDeployment?.$id === deployment?.$id}
+                            <Status status="complete" label="Active" />
+                        {:else}
+                            <Status
+                                status={deploymentStatusConverter(status)}
+                                label={capitalize(status)} />
+                        {/if}
                     {:else if column.id === 'type'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            <DeploymentSource {deployment} />
-                        </Table.Cell>
+                        <DeploymentSource {deployment} />
                     {:else if column.id === '$updatedAt'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            <DeploymentCreatedBy {deployment} />
-                        </Table.Cell>
+                        <DeploymentCreatedBy {deployment} />
                     {:else if column.id === 'buildDuration'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {#if ['waiting'].includes(deployment.status)}
-                                -
-                            {:else if ['processing', 'building'].includes(deployment.status)}
-                                <span use:timer={{ start: deployment.$createdAt }} />
-                            {:else}
-                                {formatTimeDetailed(deployment.buildDuration)}
-                            {/if}
-                        </Table.Cell>
+                        {#if ['waiting'].includes(deployment.status)}
+                            -
+                        {:else if ['processing', 'building'].includes(deployment.status)}
+                            <span use:timer={{ start: deployment.$createdAt }} />
+                        {:else}
+                            {formatTimeDetailed(deployment.buildDuration)}
+                        {/if}
                     {:else if column.id === 'sourceSize'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {calculateSize(deployment.sourceSize)}
-                        </Table.Cell>
+                        {calculateSize(deployment.sourceSize)}
                     {:else if column.id === 'buildSize'}
-                        <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {calculateSize(deployment.buildSize)}
-                        </Table.Cell>
+                        {calculateSize(deployment.buildSize)}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-            <Table.Cell>
+            <Table.Cell column="actions" {root}>
                 <Layout.Stack alignItems="flex-end">
                     <DeploymentActionMenu
                         {deployment}
@@ -102,7 +87,7 @@
                         activeDeployment={data.site.deploymentId} />
                 </Layout.Stack>
             </Table.Cell>
-        </Table.Link>
+        </Table.Row.Link>
     {/each}
 </Table.Root>
 

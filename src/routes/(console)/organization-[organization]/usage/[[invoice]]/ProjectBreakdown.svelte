@@ -104,17 +104,22 @@
 
 {#if projects.some((project) => project[metric]) || projects.some( (project) => databaseOperationMetric?.some((metric) => project[metric]) )}
     <Accordion title="Project breakdown" hideDivider>
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Project</Table.Header.Cell>
-                {#if databaseOperationMetric}
-                    <Table.Header.Cell>Reads</Table.Header.Cell>
-                    <Table.Header.Cell>Writes</Table.Header.Cell>
-                {:else}
-                    <Table.Header.Cell>{getMetricTitle(metric)}</Table.Header.Cell>
-                {/if}
-
-                <Table.Header.Cell>Estimated cost</Table.Header.Cell>
+        <Table.Root
+            columns={[
+                { id: 'project' },
+                { id: 'reads', hide: !databaseOperationMetric },
+                { id: 'writes', hide: !databaseOperationMetric },
+                { id: 'metric', hide: !!databaseOperationMetric },
+                { id: 'costs' }
+            ]}
+            let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="project" {root}>Project</Table.Header.Cell>
+                <Table.Header.Cell column="reads" {root}>Reads</Table.Header.Cell>
+                <Table.Header.Cell column="writes" {root}>Writes</Table.Header.Cell>
+                <Table.Header.Cell column="metric" {root}
+                    >{getMetricTitle(metric)}</Table.Header.Cell>
+                <Table.Header.Cell column="costs" {root}>Estimated cost</Table.Header.Cell>
             </svelte:fragment>
             {#each groupByProject(metric, estimate, databaseOperationMetric).sort((a, b) => {
                 const aValue = a.usage ?? a.databasesReads ?? 0;
@@ -122,49 +127,41 @@
                 return bValue - aValue;
             }) as project}
                 {#if !$canSeeProjects}
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="project" {root}>
                             {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                         </Table.Cell>
-                        {#if databaseOperationMetric}
-                            <Table.Cell>
-                                {format(project.databasesReads ?? 0)}
-                            </Table.Cell>
-                            <Table.Cell>
-                                {format(project.databasesWrites ?? 0)}
-                            </Table.Cell>
-                        {:else}
-                            <Table.Cell>
-                                {format(project.usage)}
-                            </Table.Cell>
-                        {/if}
-
-                        <Table.Cell>
+                        <Table.Cell column="reads" {root}>
+                            {format(project.databasesReads ?? 0)}
+                        </Table.Cell>
+                        <Table.Cell column="writes" {root}>
+                            {format(project.databasesWrites ?? 0)}
+                        </Table.Cell>
+                        <Table.Cell column="metric" {root}>
+                            {format(project.usage)}
+                        </Table.Cell>
+                        <Table.Cell column="costs" {root}>
                             {formatCurrency(project.estimate ?? 0)}
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {:else}
-                    <Table.Link href={getProjectUsageLink(project.projectId)}>
-                        <Table.Cell>
+                    <Table.Row.Link href={getProjectUsageLink(project.projectId)} {root}>
+                        <Table.Cell column="project" {root}>
                             {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                         </Table.Cell>
-                        {#if databaseOperationMetric}
-                            <Table.Cell>
-                                {format(project.databasesReads ?? 0)}
-                            </Table.Cell>
-                            <Table.Cell>
-                                {format(project.databasesWrites ?? 0)}
-                            </Table.Cell>
-                        {:else}
-                            <Table.Cell>
-                                {format(project.usage)}
-                            </Table.Cell>
-                        {/if}
-
-                        <Table.Cell>
+                        <Table.Cell column="reads" {root}>
+                            {format(project.databasesReads ?? 0)}
+                        </Table.Cell>
+                        <Table.Cell column="writes" {root}>
+                            {format(project.databasesWrites ?? 0)}
+                        </Table.Cell>
+                        <Table.Cell column="metric" {root}>
+                            {format(project.usage)}
+                        </Table.Cell>
+                        <Table.Cell column="costs" {root}>
                             {formatCurrency(project.estimate ?? 0)}
                         </Table.Cell>
-                    </Table.Link>
+                    </Table.Row.Link>
                 {/if}
             {/each}
         </Table.Root>

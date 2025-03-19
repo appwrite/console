@@ -66,7 +66,7 @@
     }
 </script>
 
-<Wizard title="Create function" href={previousPage} column columnSize="l">
+<Wizard title="Create function" href={previousPage} column columnSize="l" hideFooter>
     <Layout.Stack gap="l">
         <Layout.GridFraction start={4} end={6} gap="l" rowSize="auto">
             <Card.Base>

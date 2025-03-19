@@ -17,7 +17,7 @@ export const load = async ({ url, route }) => {
 
     console.log(siteTemplatesList);
 
-    const [frameworks, useCases] = siteTemplatesList.templates.reduce(
+    const [frameworksSet, useCasesSet] = siteTemplatesList.templates.reduce(
         ([fr, uc], next) => {
             next.useCases.forEach((useCase) => uc.add(useCase));
             next.frameworks.forEach((framework) => fr.add(framework.name));
@@ -25,6 +25,9 @@ export const load = async ({ url, route }) => {
         },
         [new Set<string>(), new Set<string>()]
     );
+
+    const frameworks = Array.from(frameworksSet).sort((a, b) => a.localeCompare(b));
+    const useCases = Array.from(useCasesSet).sort((a, b) => a.localeCompare(b));
 
     const templates = siteTemplatesList.templates.filter((template) => {
         if (

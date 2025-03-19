@@ -28,28 +28,31 @@
 <Modal bind:show title={selectedRelationship?.key} hideFooter>
     {#if data?.length}
         <Paginator items={data} {limit} let:paginatedItems>
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell width="150px">Document ID</Table.Header.Cell>
+            <Table.Root
+                let:root
+                columns={[{ id: '$id', width: 150 }, ...args.map((id) => ({ id }))]}>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
                     {#if args?.length}
                         {#each args as arg}
-                            <Table.Header.Cell>{arg}</Table.Header.Cell>
+                            <Table.Header.Cell column={arg} {root}>{arg}</Table.Header.Cell>
                         {/each}
                     {/if}
                 </svelte:fragment>
                 {#each paginatedItems as doc}
-                    <Table.Link
+                    <Table.Row.Link
+                        {root}
                         href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}/document-${doc.$id}`}
                         on:click={() => (show = false)}>
-                        <Table.Cell>
+                        <Table.Cell column="$id" {root}>
                             <Id value={doc.$id}>{doc.$id}</Id>
                         </Table.Cell>
                         {#if args?.length}
                             {#each args as arg}
-                                <Table.Cell>{doc[arg]}</Table.Cell>
+                                <Table.Cell column={arg} {root}>{doc[arg]}</Table.Cell>
                             {/each}
                         {/if}
-                    </Table.Link>
+                    </Table.Row.Link>
                 {/each}
             </Table.Root>
         </Paginator>

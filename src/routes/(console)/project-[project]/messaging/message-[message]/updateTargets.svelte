@@ -159,50 +159,46 @@
                 {/if}
 
                 <div class="u-flex u-flex-vertical u-gap-24">
-                    <Table.Root>
-                        <svelte:fragment slot="header">
-                            <Table.Header.Cell>Target</Table.Header.Cell>
-
-                            {#if recipientsAvailable}
-                                <Table.Header.Cell>Identifier</Table.Header.Cell>
-                            {/if}
-
-                            <Table.Header.Cell width="40px" />
+                    <Table.Root
+                        let:root
+                        columns={[
+                            { id: 'target' },
+                            { id: 'identifier', hide: !recipientsAvailable },
+                            { id: 'actions', width: 40 }
+                        ]}>
+                        <svelte:fragment slot="header" let:root>
+                            <Table.Header.Cell column="target" {root}>Target</Table.Header.Cell>
+                            <Table.Header.Cell column="identifier" {root}
+                                >Identifier</Table.Header.Cell>
+                            <Table.Header.Cell column="actions" {root} />
                         </svelte:fragment>
                         {#each dataSource.slice(offset, offset + limit) as source (source['$id'])}
-                            <Table.Row>
-                                <Table.Cell>
+                            <Table.Row.Base {root}>
+                                <Table.Cell column="target" {root}>
                                     {#if source['providerType'] === MessagingProviderType.Push}
                                         {source['name']}
                                     {:else}
                                         {source['identifier']}
                                     {/if}
                                 </Table.Cell>
-                                {#if recipientsAvailable}
-                                    <Table.Cell>
-                                        {source['name']}
-                                    </Table.Cell>
-                                {/if}
-
-                                <Table.Cell>
+                                <Table.Cell column="identifier" {root}>
+                                    {source['name']}
+                                </Table.Cell>
+                                <Table.Cell column="actions" {root}>
                                     {#if isDraft}
-                                        <div
-                                            class="u-flex u-main-end"
-                                            style="--p-button-size: 1.25rem">
-                                            <Button
-                                                text
-                                                class="is-only-icon"
-                                                ariaLabel="delete"
-                                                disabled={!isDraft}
-                                                on:click={() => removeTarget(source['$id'])}>
-                                                <span
-                                                    class="icon-x u-font-size-20"
-                                                    aria-hidden="true" />
-                                            </Button>
-                                        </div>
+                                        <Button
+                                            text
+                                            class="is-only-icon"
+                                            ariaLabel="delete"
+                                            disabled={!isDraft}
+                                            on:click={() => removeTarget(source['$id'])}>
+                                            <span
+                                                class="icon-x u-font-size-20"
+                                                aria-hidden="true" />
+                                        </Button>
                                     {/if}
                                 </Table.Cell>
-                            </Table.Row>
+                            </Table.Row.Base>
                         {/each}
                     </Table.Root>
                     {#if sum > limit}

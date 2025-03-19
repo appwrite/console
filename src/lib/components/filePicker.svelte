@@ -1,17 +1,16 @@
 <script lang="ts">
-    import { Id, Trim } from '.';
+    import { Id } from '.';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Query, Permission, Role } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { toLocaleDate } from '$lib/helpers/date';
     import InputSearch from '$lib/elements/forms/inputSearch.svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
-    import { clickOnEnter } from '$lib/helpers/a11y';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import DualTimeView from './dualTimeView.svelte';
     import {
         Layout,
         Typography,
@@ -256,25 +255,37 @@
                                             </Layout.Grid>
                                         {/if}
                                         {#if view === 'list'}
-                                            <Table.Root>
-                                                <svelte:fragment slot="header">
-                                                    <Table.Header.Cell>Filename</Table.Header.Cell>
-                                                    <Table.Header.Cell width="140px">
+                                            <Table.Root
+                                                let:root
+                                                columns={[
+                                                    { id: 'filename', width: { min: 140 } },
+                                                    { id: 'id', width: { min: 100 } },
+                                                    { id: 'type', width: { min: 100 } },
+                                                    { id: 'size', width: { min: 100 } },
+                                                    { id: 'created', width: { min: 120 } }
+                                                ]}>
+                                                <svelte:fragment slot="header" let:root>
+                                                    <Table.Header.Cell column="filename" {root}>
+                                                        Filename
+                                                    </Table.Header.Cell>
+                                                    <Table.Header.Cell column="id" {root}>
                                                         ID
                                                     </Table.Header.Cell>
-                                                    <Table.Header.Cell width="100px">
+                                                    <Table.Header.Cell column="type" {root}>
                                                         Type
                                                     </Table.Header.Cell>
-                                                    <Table.Header.Cell width="100px">
+                                                    <Table.Header.Cell column="size" {root}>
                                                         Size
                                                     </Table.Header.Cell>
-                                                    <Table.Header.Cell width="120px">
+                                                    <Table.Header.Cell column="created" {root}>
                                                         Created
                                                     </Table.Header.Cell>
                                                 </svelte:fragment>
                                                 {#each response?.files as file}
-                                                    <Table.Button on:click={() => selectFile(file)}>
-                                                        <Table.Cell>
+                                                    <Table.Row.Button
+                                                        {root}
+                                                        on:click={() => selectFile(file)}>
+                                                        <Table.Cell column="filename" {root}>
                                                             <div
                                                                 class="u-inline-flex u-cross-center u-gap-12">
                                                                 <Selector.Radio
@@ -297,19 +308,19 @@
                                                                 </Typography.Text>
                                                             </div>
                                                         </Table.Cell>
-                                                        <Table.Cell>
+                                                        <Table.Cell column="id" {root}>
                                                             <Id value={file.$id}>{file.$id}</Id>
                                                         </Table.Cell>
-                                                        <Table.Cell>
+                                                        <Table.Cell column="type" {root}>
                                                             {file.mimeType}
                                                         </Table.Cell>
-                                                        <Table.Cell>
+                                                        <Table.Cell column="size" {root}>
                                                             {calculateSize(file.sizeOriginal)}
                                                         </Table.Cell>
-                                                        <Table.Cell>
-                                                            {toLocaleDate(file.$createdAt)}
+                                                        <Table.Cell column="created" {root}>
+                                                            <DualTimeView time={file.$createdAt} />
                                                         </Table.Cell>
-                                                    </Table.Button>
+                                                    </Table.Row.Button>
                                                 {/each}
                                             </Table.Root>
                                         {/if}

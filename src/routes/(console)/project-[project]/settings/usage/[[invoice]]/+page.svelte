@@ -219,20 +219,22 @@
                         }
                     ]} />
                 {#if data.usage.executionsBreakdown.length > 0}
-                    <Table.Root>
-                        <svelte:fragment slot="header">
-                            <Table.Header.Cell>Function</Table.Header.Cell>
-                            <Table.Header.Cell>Usage</Table.Header.Cell>
+                    <Table.Root columns={2} let:root>
+                        <svelte:fragment slot="header" let:root>
+                            <Table.Header.Cell {root}>Function</Table.Header.Cell>
+                            <Table.Header.Cell {root}>Usage</Table.Header.Cell>
                         </svelte:fragment>
                         {#each data.usage.executionsBreakdown as func}
-                            <Table.Link href={`${baseRoute}/functions/function-${func.resourceId}`}>
-                                <Table.Cell>
+                            <Table.Row.Link
+                                href={`${baseRoute}/functions/function-${func.resourceId}`}
+                                {root}>
+                                <Table.Cell {root}>
                                     {func.name ?? func.resourceId}
                                 </Table.Cell>
-                                <Table.Cell>
+                                <Table.Cell {root}>
                                     {formatNum(func.value)} executions
                                 </Table.Cell>
-                            </Table.Link>
+                            </Table.Row.Link>
                         {/each}
                     </Table.Root>
                 {/if}
@@ -367,24 +369,24 @@
                 </div>
                 {#if data.usage.authPhoneCountryBreakdown.length > 0}
                     <Accordion title="Region breakdown">
-                        <Table.Root>
-                            <svelte:fragment slot="header">
-                                <Table.Header.Cell>Region</Table.Header.Cell>
-                                <Table.Header.Cell>Amount</Table.Header.Cell>
-                                <Table.Header.Cell>Estimated cost</Table.Header.Cell>
+                        <Table.Root columns={3} let:root>
+                            <svelte:fragment slot="header" let:root>
+                                <Table.Header.Cell {root}>Region</Table.Header.Cell>
+                                <Table.Header.Cell {root}>Amount</Table.Header.Cell>
+                                <Table.Header.Cell {root}>Estimated cost</Table.Header.Cell>
                             </svelte:fragment>
                             {#each data.usage.authPhoneCountryBreakdown as phone}
-                                <Table.Row>
-                                    <Table.Cell>
+                                <Table.Row.Base {root}>
+                                    <Table.Cell {root}>
                                         {getCountryName(phone.name)}
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell {root}>
                                         {formatNumberWithCommas(phone.value)}
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell {root}>
                                         {formatCurrency(phone.estimate)}
                                     </Table.Cell>
-                                </Table.Row>
+                                </Table.Row.Base>
                             {/each}
                         </Table.Root>
                     </Accordion>

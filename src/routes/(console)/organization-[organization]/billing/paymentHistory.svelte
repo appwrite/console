@@ -69,20 +69,27 @@
     Transaction history for this organization. Download invoices for more details about your payments.
     <svelte:fragment slot="aside">
         {#if invoiceList.total > 0}
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell>Due date</Table.Header.Cell>
-                    <Table.Header.Cell width="200px">Status</Table.Header.Cell>
-                    <Table.Header.Cell width="120px">Amount due</Table.Header.Cell>
-                    <Table.Header.Cell width="40px" />
+            <Table.Root
+                let:root
+                columns={[
+                    { id: 'dueDate' },
+                    { id: 'status', width: { min: 200 } },
+                    { id: 'amount', width: { min: 120 } },
+                    { id: 'action', width: 40 }
+                ]}>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="dueDate" {root}>Due date</Table.Header.Cell>
+                    <Table.Header.Cell column="status" {root}>Status</Table.Header.Cell>
+                    <Table.Header.Cell column="amount" {root}>Amount due</Table.Header.Cell>
+                    <Table.Header.Cell column="action" {root} />
                 </svelte:fragment>
                 {#each invoiceList?.invoices as invoice}
                     {@const status = invoice.status}
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="dueDate" {root}>
                             {toLocaleDate(invoice.dueAt)}
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="status" {root}>
                             {@const isDanger =
                                 status === 'overdue' ||
                                 status === 'failed' ||
@@ -115,10 +122,10 @@
                                 {/if}
                             </Layout.Stack>
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="amount" {root}>
                             {formatCurrency(invoice.grossAmount)}
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="status" {root}>
                             <Popover let:toggle placement="bottom-start" padding="none">
                                 <Button text icon ariaLabel="more options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
@@ -152,7 +159,7 @@
                                 </ActionMenu.Root>
                             </Popover>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
             {#if invoiceList.total > limit}

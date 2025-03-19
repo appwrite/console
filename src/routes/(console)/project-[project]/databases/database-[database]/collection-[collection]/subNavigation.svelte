@@ -68,18 +68,16 @@
                     </ul>
                 {/if}
             </div>
-            <div>
-                <ActionMenu.Root noPadding>
-                    <ActionMenu.Item.Button
-                        on:click={() => {
-                            $showCreate = true;
-                            $showSubNavigation = false;
-                        }}
-                        leadingIcon={IconPlus}>
-                        Create collection
-                    </ActionMenu.Item.Button>
-                </ActionMenu.Root>
-            </div>
+            <ActionMenu.Root noPadding width="167">
+                <ActionMenu.Item.Button
+                    on:click={() => {
+                        $showCreate = true;
+                        $showSubNavigation = false;
+                    }}
+                    leadingIcon={IconPlus}>
+                    Create collection
+                </ActionMenu.Item.Button>
+            </ActionMenu.Root>
         </section>
     </Sidebar.Base>
 {:else}

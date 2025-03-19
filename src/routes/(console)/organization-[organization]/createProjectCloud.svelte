@@ -8,6 +8,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID, Region as ConsoleRegion } from '@appwrite.io/console';
     import { createProject } from './wizard/store';
+    import { Button } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
@@ -59,12 +60,16 @@
     });
 </script>
 
-<Modal bind:show={showCreateProjectCloud} title={'Create project'} hideFooter>
-    <CreateProject
+<Modal bind:show={showCreateProjectCloud} title={'Create project'}
+    ><CreateProject
         createProject={create}
         showTitle={false}
         bind:id={$createProject.id}
         bind:projectName={$createProject.name}
         bind:region={$createProject.region}
         {regions} />
+    <svelte:fragment slot="footer"
+        ><Button.Button type="button" variant="primary" size="s" on:click={create}>
+            Create</Button.Button
+        ></svelte:fragment>
 </Modal>

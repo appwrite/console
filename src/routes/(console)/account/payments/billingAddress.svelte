@@ -48,7 +48,9 @@
     View or update your billing address. This address will be included in your invoices from Appwrite.
     <svelte:fragment slot="aside">
         {#if $addressList.total && countryList?.total}
-            <Table.Root>
+            <Table.Root
+                let:root
+                columns={[{ id: 'address' }, { id: 'links' }, { id: 'actions', width: 40 }]}>
                 {#each $addressList.billingAddresses as address}
                     {@const country = countryList?.countries?.find(
                         (c) => c.code === address.country
@@ -57,8 +59,8 @@
                         (org) => address.$id === org.billingAddressId
                     )}
 
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="address" {root}>
                             {address.streetAddress},
                             {#if address?.addressLine2}
                                 {address.addressLine2},
@@ -72,7 +74,7 @@
                             {/if}
                             {country ? country.name : address.country}
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="links" {root}>
                             {#if linkedOrgs?.length > 0}
                                 <Popover let:toggle>
                                     <Tag on:click={toggle} size="s">
@@ -98,7 +100,7 @@
                                 </Popover>
                             {/if}
                         </Table.Cell>
-                        <Table.Cell width="40px">
+                        <Table.Cell column="actions" {root}>
                             <Popover let:toggle placement="bottom-end" padding="none">
                                 <Button icon text ariaLabel="More options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
@@ -124,7 +126,7 @@
                                 </ActionMenu.Root>
                             </Popover>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
 

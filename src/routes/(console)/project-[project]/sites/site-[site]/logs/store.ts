@@ -2,12 +2,11 @@ import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Log ID', type: 'string', show: true, width: 150 },
+    { id: '$id', title: 'Log ID', type: 'string', width: 200 },
     {
         id: 'requestPath',
         title: 'Path',
         type: 'string',
-        show: true,
         width: 90,
         format: 'string'
     },
@@ -16,7 +15,7 @@ export const columns = writable<Column[]>([
         id: 'trigger',
         title: 'Trigger',
         type: 'string',
-        show: false,
+        hide: true,
         width: 90,
         array: true,
         format: 'enum',
@@ -25,25 +24,23 @@ export const columns = writable<Column[]>([
             { value: 'schedule', label: 'Schedule' },
             { value: 'event', label: 'Event' }
         ],
-        filter: false,
-        hide: true
+        filter: false
     },
     {
         id: 'requestMethod',
         title: 'Method',
         type: 'string',
-        show: false,
+        hide: true,
         width: 70,
         array: true,
         format: 'enum',
-        elements: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        hide: true
+        elements: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
     },
     {
         id: 'responseStatusCode',
         title: 'Status code',
         type: 'integer',
-        show: false,
+        hide: true,
         width: 100,
         format: 'integer',
         elements: [
@@ -64,7 +61,6 @@ export const columns = writable<Column[]>([
                 label: 'Server error (500-599)'
             }
         ],
-        hide: true,
         filter: false //TODO: re-enable
     },
 
@@ -72,7 +68,6 @@ export const columns = writable<Column[]>([
         id: 'duration',
         title: 'Duration',
         type: 'integer',
-        show: true,
         width: 80,
         format: 'integer',
         elements: [
@@ -89,14 +84,12 @@ export const columns = writable<Column[]>([
                 label: 'more than 30 seconds'
             }
         ],
-        filter: false,
-        hide: true
+        filter: false
     },
     {
         id: '$createdAt',
         title: 'Created',
         type: 'datetime',
-        show: true,
         width: 120,
         format: 'datetime',
         elements: [

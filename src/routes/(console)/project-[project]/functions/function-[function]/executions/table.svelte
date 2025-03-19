@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Id } from '$lib/components';
-    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
     import type { Models } from '@appwrite.io/console';
     import { Badge, Layout, Status, Table, Tooltip, Typography } from '@appwrite.io/pink-svelte';
@@ -8,6 +8,7 @@
     import { capitalize } from '$lib/helpers/string';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { logStatusConverter } from './store';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let columns: Column[];
     export let logs: Models.ExecutionList;
@@ -16,81 +17,68 @@
     let selectedLogId: string = null;
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        {#each columns as column}
-            {#if column.show && !column.hide}
-                <Table.Header.Cell width={column.width + 'px'}>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root {columns} let:root>
+    <svelte:fragment slot="header" let:root>
+        {#each columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each logs.executions as log}
-        <Table.Button
+        <Table.Row.Button
+            {root}
             on:click={() => {
                 openSheet = true;
                 selectedLogId = log.$id;
             }}>
             {#each columns as column}
-                {#if column.show && !column.hide}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key column.id}
-                            <Table.Cell>
-                                <Id value={log.$id}>{log.$id}</Id>
-                            </Table.Cell>
+                            <Id value={log.$id}>{log.$id}</Id>
                         {/key}
                     {:else if column.id === '$createdAt'}
-                        <Table.Cell>
-                            {capitalize(timeFromNow(log.$createdAt))}
-                        </Table.Cell>
+                        <DualTimeView time={log.$createdAt} />
                     {:else if column.id === 'requestPath'}
-                        <Table.Cell>
-                            <Layout.Stack direction="row" alignItems="center" gap="s">
-                                <Badge
-                                    variant="secondary"
-                                    type={log.responseStatusCode >= 400
-                                        ? 'error'
-                                        : log.responseStatusCode === 0
-                                          ? undefined
-                                          : 'success'}
-                                    content={log.responseStatusCode.toString()} />
-                                <Typography.Code size="m">
-                                    {log.requestMethod}
-                                </Typography.Code>
-                                <Typography.Code size="m">
-                                    {log.requestPath}
-                                </Typography.Code>
-                            </Layout.Stack>
-                        </Table.Cell>
+                        <Layout.Stack direction="row" alignItems="center" gap="s">
+                            <Badge
+                                variant="secondary"
+                                type={log.responseStatusCode >= 400
+                                    ? 'error'
+                                    : log.responseStatusCode === 0
+                                      ? undefined
+                                      : 'success'}
+                                content={log.responseStatusCode.toString()} />
+                            <Typography.Code size="m">
+                                {log.requestMethod}
+                            </Typography.Code>
+                            <Typography.Code size="m">
+                                {log.requestPath}
+                            </Typography.Code>
+                        </Layout.Stack>
                     {:else if column.id === 'responseStatusCode'}
-                        <Table.Cell>
-                            {log.responseStatusCode}
-                        </Table.Cell>
+                        {log.responseStatusCode}
                     {:else if column.id === 'status'}
-                        <Table.Cell>
-                            {@const status = log.status}
-                            <Tooltip
-                                disabled={!log?.scheduledAt || status !== 'scheduled'}
-                                maxWidth="400px">
-                                <div>
-                                    <Status
-                                        status={logStatusConverter(status)}
-                                        label={capitalize(status)}>
-                                        {status}
-                                    </Status>
-                                </div>
-                                <span slot="tooltip">
-                                    {`Scheduled to execute on ${toLocaleDateTime(log.scheduledAt)}`}
-                                </span>
-                            </Tooltip>
-                        </Table.Cell>
+                        {@const status = log.status}
+                        <Tooltip
+                            disabled={!log?.scheduledAt || status !== 'scheduled'}
+                            maxWidth="400px">
+                            <div>
+                                <Status
+                                    status={logStatusConverter(status)}
+                                    label={capitalize(status)}>
+                                    {status}
+                                </Status>
+                            </div>
+                            <span slot="tooltip">
+                                {`Scheduled to execute on ${toLocaleDateTime(log.scheduledAt)}`}
+                            </span>
+                        </Tooltip>
                     {:else if column.id === 'duration'}
-                        <Table.Cell>
-                            {formatTimeDetailed(log.duration)}
-                        </Table.Cell>
+                        {formatTimeDetailed(log.duration)}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-        </Table.Button>
+        </Table.Row.Button>
     {/each}
 </Table.Root>
 

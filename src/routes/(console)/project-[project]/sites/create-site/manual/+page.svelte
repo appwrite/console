@@ -137,9 +137,9 @@
         <Layout.Stack gap="xl">
             <Layout.Stack gap="s">
                 <Typography.Text color="--fgcolor-neutral-primary">
-                    Upload a zip file (tar.gz) containing your function source code
+                    Upload a tar.gz containing your function source code
                 </Typography.Text>
-                <Upload.Dropzone extensions={['gz', 'zip']} bind:files maxSize={10000000} required>
+                <Upload.Dropzone extensions={['gz', 'tar']} bind:files maxSize={10000000} required>
                     <Layout.Stack alignItems="center" gap="s">
                         <Layout.Stack alignItems="center" gap="s">
                             <Layout.Stack
