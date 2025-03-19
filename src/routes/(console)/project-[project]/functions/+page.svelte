@@ -5,9 +5,11 @@
     import {
         CardContainer,
         Empty,
+        EmptySearch,
         GridItem1,
         Id,
         PaginationWithLimit,
+        SearchQuery,
         SvgIcon
     } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -74,7 +76,9 @@
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="flex-end">
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <SearchQuery search={data.search} placeholder="Search functions" />
+
         <Button href={`${base}/project-${project}/functions/create-function`}>
             <Icon icon={IconPlus} slot="start" />
             Create function
@@ -122,6 +126,12 @@
             limit={data.limit}
             offset={data.offset}
             total={data.functions.total} />
+    {:else if data?.search}
+        <EmptySearch hidePages bind:search={data.search} target="functions">
+            <Button secondary href={`${base}/project-${$page.params.project}/functions`}>
+                Clear search
+            </Button>
+        </EmptySearch>
     {:else}
         <Empty
             single
