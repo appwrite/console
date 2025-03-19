@@ -2,9 +2,10 @@
     import { getUTCOffset, timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { capitalize } from '$lib/helpers/string';
     import { Badge, InteractiveText, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
+    import type { ComponentProps } from 'svelte';
 
     export let time: string = '';
-    export let placement: any | string = 'bottom-end';
+    export let placement: ComponentProps<Popover>['placement'] = 'bottom-end';
 
     function timeDifference(dateString: string): string {
         const SECONDS_IN_MINUTE = 60;

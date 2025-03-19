@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Typography } from '@appwrite.io/pink-svelte';
 </script>
 
 <Container>

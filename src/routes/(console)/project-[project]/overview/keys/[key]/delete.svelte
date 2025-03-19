@@ -24,7 +24,7 @@
             trackEvent(Submit.KeyDelete);
             await goto(`${base}/project-${$project.$id}/overview/keys`);
         } catch (e) {
-            e = e.message;
+            error = e.message;
             trackError(e, Submit.KeyDelete);
         }
     }

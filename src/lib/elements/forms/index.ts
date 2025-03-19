@@ -13,7 +13,6 @@ export { default as InputDateTime } from './inputDateTime.svelte';
 export { default as InputSearch } from './inputSearch.svelte';
 export { default as InputRadio } from './inputRadio.svelte';
 export { default as InputSelect } from './inputSelect.svelte';
-export { default as InputSelectSearch } from './inputSelectSearch.svelte';
 export { default as InputCheckbox } from './inputCheckbox.svelte';
 export { default as InputChoice } from './inputChoice.svelte';
 export { default as InputPhone } from './inputPhone.svelte';

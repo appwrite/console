@@ -10,16 +10,11 @@
     export let patternError: string = '';
     export let placeholder = '';
     export let required = false;
-    // export let hideRequired = false;
     export let disabled = false;
     export let readonly = false;
     export let maxlength: number = null;
     export let autofocus = false;
     export let autocomplete = false;
-    // export let fullWidth = false;
-    export let tooltip: string = null;
-    // export let popover: typeof SvelteComponent<unknown> = null;
-    // export let popoverProps: Record<string, unknown> = {};
 
     let element: HTMLInputElement;
     let error: string;

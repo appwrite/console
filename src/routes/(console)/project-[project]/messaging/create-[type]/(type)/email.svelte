@@ -23,21 +23,6 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
     let showCustomId = false;
-
-    let docsUrl = 'https://appwrite.io/docs/products/messaging';
-
-    switch ($page.params.type) {
-        case MessagingProviderType.Email:
-            docsUrl += '/send-email-messages';
-            break;
-        case MessagingProviderType.Sms:
-            docsUrl += '/send-sms-messages';
-            break;
-        case MessagingProviderType.Push:
-            docsUrl += '/send-push-notifications';
-            break;
-    }
-
     let id: string;
     let subject: string;
     let content: string;
@@ -146,7 +131,7 @@
                 <Targets type={MessagingProviderType.Email} bind:topics bind:targets />
             </Fieldset>
             <Fieldset legend="Schedule">
-                <Schedule type={MessagingProviderType.Email} bind:scheduledAt {topics} {targets} />
+                <Schedule bind:scheduledAt {targets} />
             </Fieldset>
         </Layout.Stack>
     </Form>

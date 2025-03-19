@@ -6,7 +6,6 @@
     import { Confirm } from '$lib/components';
 
     export let show = false;
-    export let selectedCertificate;
 
     let error = '';
 

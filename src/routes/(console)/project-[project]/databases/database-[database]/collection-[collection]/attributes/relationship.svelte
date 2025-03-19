@@ -161,19 +161,6 @@
     on:change={updateKeyName}
     options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
 
-<!-- <div>
-    <InputSelectSearch
-        id="related"
-        label="Related Collection"
-        bind:value={data.relatedCollection}
-        required
-        placeholder="Select a collection"
-        disabled={editing}
-        options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
-        on:select={updateKeyName}>
-    </InputSelectSearch>
-</div> -->
-
 {#if data?.relatedCollection}
     <InputText
         id="key"
