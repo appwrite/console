@@ -4,8 +4,9 @@
     import type { Domain } from '$lib/sdk/domains';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Layout, Typography, Table, Fieldset, Icon } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    export let domain: Domain;
+    export let domain: Domain | Models.ProxyRule;
 </script>
 
 <Fieldset legend="Verification">

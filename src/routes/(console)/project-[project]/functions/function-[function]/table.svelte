@@ -14,7 +14,7 @@
     import { Dependencies } from '$lib/constants';
     import Cancel from './(modals)/cancel.svelte';
     import { base } from '$app/paths';
-    import { ActionMenu, Icon, Layout, Status, Table } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Status, Table } from '@appwrite.io/pink-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         IconDotsHorizontal,

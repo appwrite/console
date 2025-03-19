@@ -6,7 +6,6 @@
     export let label: string;
     export let value: number;
     export let attribute: Models.AttributeInteger;
-    export let optionalText: string | undefined = undefined;
 </script>
 
 <InputNumber

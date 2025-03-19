@@ -29,13 +29,14 @@
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import CreatePreviewDomainModal from './createPreviewDomainModal.svelte';
+    import type { Domain } from '$lib/sdk/domains.js';
 
     export let data;
 
     let showDelete = false;
     let showRetry = false;
-    let selectedDomain: Models.ProxyRule = null;
     let showPreviewDomainModal = false;
+    let selectedDomain: Domain | Models.ProxyRule = null;
 
     $: console.log(data.domains);
 </script>

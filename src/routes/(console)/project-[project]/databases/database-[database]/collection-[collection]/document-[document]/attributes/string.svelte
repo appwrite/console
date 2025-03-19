@@ -6,7 +6,6 @@
     export let label: string;
     export let value: string;
     export let attribute: Models.AttributeString;
-    export let optionalText: string | undefined = undefined;
 </script>
 
 {#if attribute.size >= 50}

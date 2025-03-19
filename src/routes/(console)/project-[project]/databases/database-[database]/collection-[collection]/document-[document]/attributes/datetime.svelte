@@ -6,7 +6,6 @@
     export let label: string;
     export let value: string;
     export let attribute: Models.AttributeDatetime;
-    export let optionalText: string | undefined = undefined;
 </script>
 
 <InputDateTime

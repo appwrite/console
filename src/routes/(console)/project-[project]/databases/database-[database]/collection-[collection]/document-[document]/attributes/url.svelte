@@ -5,7 +5,6 @@
     export let id: string;
     export let label: string;
     export let value: string | null;
-    export let optionalText: string | undefined = undefined;
     export let attribute: Models.AttributeUrl;
 </script>
 

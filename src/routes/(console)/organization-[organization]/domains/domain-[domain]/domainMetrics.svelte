@@ -17,7 +17,7 @@
             description: 'Registrar'
         },
         {
-            value: domain?.nameservers ? domain?.nameservers.join(', ') : '-',
+            value: domain?.nameservers ? domain?.nameservers : '-',
             description: 'Nameservers'
         },
         {

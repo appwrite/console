@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Empty } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { collection, indexes } from '../store';
+    import { collection } from '../store';
     import Delete from './deleteIndex.svelte';
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';

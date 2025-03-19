@@ -402,6 +402,9 @@
         margin: auto;
     }
 
+    /**
+        TODO: @itznotabug - see in backups pink2.
+     */
     .actions {
         .indicator {
             border-radius: 0.25rem;

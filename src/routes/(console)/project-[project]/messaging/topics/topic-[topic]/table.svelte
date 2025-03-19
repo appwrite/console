@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Id, Modal } from '$lib/components';
+    import { Id } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';

@@ -10,11 +10,9 @@
         Layout,
         Tooltip,
         Icon,
-        Alert,
         Input,
         Divider,
         Typography,
-        Badge,
         Card
     } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';

@@ -6,7 +6,6 @@
         EmptyFilter,
         EmptySearch,
         Id,
-        Modal,
         PaginationWithLimit,
         SearchQuery,
         ViewSelector

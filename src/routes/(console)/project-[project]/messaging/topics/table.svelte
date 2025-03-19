@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Id, Modal } from '$lib/components';
+    import { Id } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';

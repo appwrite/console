@@ -6,7 +6,7 @@
     export let selected: string[] = [];
     export let pageItemsIds: string[] = [];
 
-    function handleClick(e: CustomEvent) {
+    function handleClick(e: MouseEvent) {
         if (!isHTMLInputElement(e.target)) return;
         if (e.target.checked) {
             const set = new Set(selected);

@@ -8,9 +8,10 @@
     import { Dependencies } from '$lib/constants';
     import RecordsCard from './recordsCard.svelte';
     import type { Domain } from '$lib/sdk/domains';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let selectedDomain: Domain;
+    export let selectedDomain: Domain | Models.ProxyRule;
 
     let error = null;
     async function retryDomain() {

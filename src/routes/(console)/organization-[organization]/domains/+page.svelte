@@ -7,7 +7,12 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
     import { protocol } from '$routes/(console)/store.js';
-    import { IconDotsHorizontal, IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconDotsHorizontal,
+        IconPlus,
+        IconRefresh,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
     import {
         ActionMenu,
         Card,
@@ -18,6 +23,7 @@
         Table
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
+    import RetryDomainModal from './retryDomainModal.svelte';
     import { queries } from '$lib/components/filters';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
@@ -27,6 +33,7 @@
     export let data;
 
     let showDelete = false;
+    let showRetry = false;
     let selectedDomain: Domain = null;
 </script>
 
@@ -77,7 +84,7 @@
                     </Table.Cell>
                     <Table.Cell column="registrar" {root}>{domain?.registrar || '-'}</Table.Cell>
                     <Table.Cell column="nameservers" {root}
-                        >{domain?.nameservers || '-'}</Table.Cell>
+                    >{domain?.nameservers || '-'}</Table.Cell>
                     <Table.Cell column="expiry_date" {root}>
                         {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
                     </Table.Cell>
@@ -85,7 +92,7 @@
                         {domain.renewal ? toLocaleDateTime(domain.renewal) : '-'}
                     </Table.Cell>
                     <Table.Cell column="auto_renewal" {root}
-                        >{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
+                    >{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
                     <Table.Cell column="actions" {root}>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-end" padding="none">
