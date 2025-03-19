@@ -18,7 +18,7 @@
 
     export let show = false;
     export let rootDir: string;
-    export let product: 'sites' | 'functions';
+    export let product: 'sites' | 'functions' = 'functions';
 
     let isLoading = true;
     let directories: Directory[] = [
@@ -88,7 +88,7 @@
             const runtime = await sdk.forProject.vcs.createRepositoryDetection(
                 $installation.$id,
                 $repository.id,
-                VCSDetectionType.Framework, //TODO: add type: VCSDetectionType.Framework || VCSDetectionType.Runtime according to the product
+                product === 'sites' ? VCSDetectionType.Framework : VCSDetectionType.Runtime,
                 path
             );
             //TODO: Fix runtime after passing type: runtime.framework || runtime.runtime

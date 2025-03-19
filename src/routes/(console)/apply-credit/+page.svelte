@@ -24,6 +24,7 @@
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
+    import { plansInfo } from '$lib/stores/billing';
 
     export let data;
 
@@ -204,53 +205,49 @@
     <svelte:fragment slot="title">Apply credits</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-            <FormList>
-                {#if $organizationList?.total && !campaign?.onlyNewOrgs && canSelectOrg}
-                    <InputSelect
-                        bind:value={selectedOrgId}
-                        label="Select organization"
-                        {options}
+            {#if $organizationList?.total && !campaign?.onlyNewOrgs && canSelectOrg}
+                <InputSelect
+                    bind:value={selectedOrgId}
+                    label="Select organization"
+                    {options}
+                    required
+                    placeholder="Select organization"
+                    id="organization" />
+            {/if}
+            {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                {#if selectedOrgId === newOrgId}
+                    <InputText
+                        label="Organization name"
+                        placeholder="Enter organization name"
+                        id="name"
                         required
-                        placeholder="Select organization"
-                        id="organization" />
+                        bind:value={name} />
                 {/if}
-                {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
-                    {#if selectedOrgId === newOrgId}
-                        <InputText
-                            label="Organization name"
-                            placeholder="Enter organization name"
-                            id="name"
-                            required
-                            bind:value={name} />
-                    {/if}
-                    <InputTags
-                        bind:tags={collaborators}
-                        label="Invite members by email"
-                        tooltip="Invited members will have access to all services and payment data within your organization"
-                        placeholder="Enter email address(es)"
-                        validityRegex={emailRegex}
-                        validityMessage="Invalid email address"
-                        id="members" />
-                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
-                {/if}
-            </FormList>
+                <InputTags
+                    bind:tags={collaborators}
+                    label="Invite members by email"
+                    tooltip="Invited members will have access to all services and payment data within your organization"
+                    placeholder="Enter email address(es)"
+                    validityRegex={emailRegex}
+                    validityMessage="Invalid email address"
+                    id="members" />
+                <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
+            {/if}
         </Form>
         <Form bind:this={couponForm} onSubmit={addCoupon}>
-            <FormList>
-                {#if !data?.couponData?.code && selectedOrgId}
-                    <InputText
-                        required
-                        disabled={!!couponData?.credits}
-                        bind:value={coupon}
-                        placeholder="Enter coupon code"
-                        id="code"
-                        label="Coupon code">
-                        <Button submit secondary disabled={!!couponData?.credits}>
-                            <span class="text">Apply</span>
-                        </Button>
-                    </InputText>
-                {/if}
-            </FormList>
+            {#if !data?.couponData?.code && selectedOrgId}
+                <InputText
+                    required
+                    disabled={!!couponData?.credits}
+                    bind:value={coupon}
+                    placeholder="Enter coupon code"
+                    id="code"
+                    label="Coupon code">
+                    <Button submit secondary disabled={!!couponData?.credits}>
+                        <span class="text">Apply</span>
+                    </Button>
+                </InputText>
+            {/if}
         </Form>
         <svelte:fragment slot="aside">
             {#if campaign?.template === 'card'}
@@ -294,6 +291,7 @@
                         fixedCoupon={!!data?.couponData?.code}
                         {billingPlan}
                         {collaborators}
+                        plans={$plansInfo}
                         bind:couponData
                         bind:billingBudget>
                         {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}

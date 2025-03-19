@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputSelect, InputSelectSearch, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputSelect, InputText } from '$lib/elements/forms';
     import { last, symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
@@ -15,7 +15,6 @@
 
     const collectionId = $page.params.collection;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
-    let search: string;
 
     async function updateDisplayName() {
         try {
@@ -99,7 +98,6 @@
                         disabled={addAttributeDisabled}
                         on:click={() => {
                             names[names.length] = null;
-                            search = null;
                             names = names;
                         }}>
                         <Icon icon={IconPlus} slot="start" size="s" />

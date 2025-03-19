@@ -191,6 +191,7 @@
                 bind:branch
                 bind:rootDir
                 bind:silentMode
+                product="sites"
                 installationId={data.installation.$id}
                 repositoryId={data.repository.id} />
 

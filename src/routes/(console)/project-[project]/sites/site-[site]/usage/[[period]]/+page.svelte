@@ -15,7 +15,6 @@
 
 <Container>
     <Usage
-        title="Deployments"
         path={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/usage`}
         countMetadata={{
             legend: 'Deployments',

@@ -37,9 +37,9 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
-    import { createConservative } from '$lib/helpers/stores';
     import { Selector } from '@appwrite.io/pink-svelte';
+    import { createConservative } from '$lib/helpers/stores';
+    import { InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,

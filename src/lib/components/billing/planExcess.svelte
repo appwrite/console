@@ -11,7 +11,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlan } from '$lib/constants';
     import { Alert, Icon, Table, Tooltip } from '@appwrite.io/pink-svelte';
-    import Cell from '$lib/elements/table/cell.svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let tier: Tier;
@@ -65,7 +64,7 @@
             <Table.Header.Cell {root}>Resource</Table.Header.Cell>
             <Table.Header.Cell {root}>Free limit</Table.Header.Cell>
             <Table.Header.Cell {root}>
-                Excess usage <Tooltip
+                Excess usage <Tooltip maxWidth="fit-content"
                     ><Icon icon={IconInfo} />
                     <span slot="tooltip">Metrics are estimates updated every 24 hours</span>
                 </Tooltip>

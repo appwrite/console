@@ -8,11 +8,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { Divider, Fieldset, Layout } from '@appwrite.io/pink-svelte';
     import RecordsCard from '../recordsCard.svelte';
-    import { invalidate } from '$app/navigation';
+    import { afterNavigate, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Domain } from '$lib/sdk/domains';
 
-    const backPage = `${base}/organization-${$page.params.organization}/domains`;
+    let backPage = `${base}/organization-${$page.params.organization}/domains`;
 
     let domainName = '';
     let domain: Domain;
@@ -29,6 +29,10 @@
             });
         }
     }
+
+    afterNavigate(({ from }) => {
+        backPage = from.url?.pathname ?? `${base}/`;
+    });
 </script>
 
 <Wizard title="Add domain" href={backPage} column columnSize="s" hideFooter>

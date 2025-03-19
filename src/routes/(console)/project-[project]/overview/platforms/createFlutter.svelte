@@ -209,7 +209,7 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
                 </Fieldset>
             {:else}
                 <Layout.Stack gap="xxl">
-                    <Card isTile padding="s" radius="s">
+                    <Card padding="s" radius="s">
                         <Layout.Stack
                             direction="row"
                             justifyContent="space-between"

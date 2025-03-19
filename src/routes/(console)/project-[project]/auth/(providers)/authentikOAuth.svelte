@@ -72,7 +72,7 @@
         label="Authentik Base-Domain"
         placeholder="Your Authentik domain"
         bind:value={authentikDomain} />
-    <Alert.Inline type="info">
+    <Alert.Inline status="info">
         To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
     </Alert.Inline>
     <div>

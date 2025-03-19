@@ -36,20 +36,18 @@
             >Recover your password</Link.Anchor>
 
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputPassword
-                    id="oldPassword"
-                    label="Old password"
-                    placeholder="Enter password"
-                    required
-                    bind:value={oldPassword} />
-                <InputPassword
-                    id="newPassword"
-                    label="New password"
-                    placeholder="Enter password"
-                    required
-                    bind:value={newPassword} />
-            </FormList>
+            <InputPassword
+                id="oldPassword"
+                label="Old password"
+                placeholder="Enter password"
+                required
+                bind:value={oldPassword} />
+            <InputPassword
+                id="newPassword"
+                label="New password"
+                placeholder="Enter password"
+                required
+                bind:value={newPassword} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

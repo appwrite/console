@@ -10,8 +10,6 @@
     export let anyOrgFree = false;
     export let isNewOrg = false;
     export let selfService = true;
-    let classes: string = '';
-    export { classes as class };
 
     $: freePlan = $plansInfo.get(BillingPlan.FREE);
     $: proPlan = $plansInfo.get(BillingPlan.PRO);

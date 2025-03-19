@@ -39,14 +39,7 @@
         <svelte:fragment slot="title">Name</svelte:fragment>
 
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Enter name"
-                    bind:value={name}
-                    required />
-            </FormList>
+            <InputText id="name" label="Name" placeholder="Enter name" bind:value={name} required />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

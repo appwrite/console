@@ -68,12 +68,7 @@
             Learn more</Link
         >.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputCron
-                    bind:value={functionSchedule}
-                    label="Schedule (Cron syntax)"
-                    id="schedule" />
-            </FormList>
+            <InputCron bind:value={functionSchedule} label="Schedule (Cron syntax)" id="schedule" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

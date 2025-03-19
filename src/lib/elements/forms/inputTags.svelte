@@ -14,11 +14,13 @@
     const handleInvalid = (event: Event) => {
         event.preventDefault();
 
-        if (event.currentTarget.validity.valueMissing) {
+        const inputNode = event.currentTarget as HTMLInputElement;
+
+        if (inputNode.validity.valueMissing) {
             error = 'This field is required';
             return;
         }
-        error = event.currentTarget.validationMessage;
+        error = inputNode.validationMessage;
     };
 
     $: if (value) {

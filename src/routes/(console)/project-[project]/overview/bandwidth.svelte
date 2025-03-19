@@ -11,7 +11,6 @@
         Typography,
         Icon,
         ActionMenu,
-        Link,
         Layout,
         Button
     } from '@appwrite.io/pink-svelte';

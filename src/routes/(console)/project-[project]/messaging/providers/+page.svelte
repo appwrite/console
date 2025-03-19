@@ -16,7 +16,7 @@
     import Table from './table.svelte';
     import { base } from '$app/paths';
     import { canWriteProviders } from '$lib/stores/roles';
-    import { Card, Layout, Typography, Empty, Icon } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 

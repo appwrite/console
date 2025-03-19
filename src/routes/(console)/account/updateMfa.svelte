@@ -258,8 +258,8 @@
                         {/if}
                     </Layout.Stack>
 
-                    {#if enabledMethods.length > 0}
-                        <Layout.Stack>
+                    {#if enabledMethods.length >= 0}
+                        <Layout.Stack class="method">
                             <EyebrowHeading tag="h6" size={3} class="u-normal"
                                 >Recovery</EyebrowHeading>
                             <Layout.Stack>
@@ -279,14 +279,15 @@
                                     </Layout.Stack>
                                     {#if $factors.recoveryCode}
                                         <Button
-                                            text
+                                            secondary
+                                            class="recovery-codes-button"
                                             on:click={() => (showRegenerateRecoveryCodes = true)}>
                                             Regenerate
                                         </Button>
                                     {:else}
                                         <Button
-                                            class="method-button"
                                             secondary
+                                            class="recovery-codes-button"
                                             on:click={createRecoveryCodes}>View</Button>
                                     {/if}
                                 </Layout.Stack>
@@ -310,21 +311,10 @@
     {regenerateRecoveryCodes}
     factors={$factors} />
 
-<style lang="scss">
-    @use '@appwrite.io/pink-legacy/src/abstract/variables/devices';
-
-    /* Default (including mobile) */
-    .method {
-        align-items: start;
-        .method-button {
-            margin-inline-start: 2rem;
-        }
-    }
-
-    /* for smaller screens */
-    @media #{devices.$break2open} {
-        .method {
-            align-items: center;
-        }
+<style>
+    :global(.recovery-codes-button) {
+        height: fit-content;
+        margin-inline-start: 0.5rem;
+        padding-inline: 1rem !important;
     }
 </style>

@@ -6,7 +6,7 @@
     import SmsFormList from './smsFormList.svelte';
     import PushFormList, { validateData } from './pushFormList.svelte';
     import { MessagingProviderType } from '@appwrite.io/console';
-    import { Button } from '$lib/elements/forms';
+    import { Button } from '@appwrite.io/pink-svelte';
 
     let docsUrl = `https://appwrite.io/docs/products/messaging`;
 
@@ -34,18 +34,14 @@
     }
 </script>
 
+<!-- This component is probably not used anymore... -->
 <WizardStep
-    {beforeSubmit}
     nextDisabled={$providerType === MessagingProviderType.Push &&
         !!validateData($messageParams[MessagingProviderType.Push].data)}>
     <svelte:fragment slot="title">Message</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        {createMessage(providers[$providerType].text)} Learn more in our <Button
-            link
-            external
-            text
-            href={docsUrl}>documentation</Button
-        >.
+        {createMessage(providers[$providerType].text)} Learn more in our
+        <Button.Anchor href={docsUrl}>documentation</Button.Anchor>.
     </svelte:fragment>
     {#if $providerType === MessagingProviderType.Email}
         <EmailFormList />

@@ -5,15 +5,7 @@
     export let id: string;
     export let label: string;
     export let value: string | null;
-    export let optionalText: string | undefined = undefined;
     export let attribute: Models.AttributeUrl;
 </script>
 
-<InputEmail
-    {id}
-    {label}
-    {optionalText}
-    placeholder="Enter URL"
-    showLabel={!!label?.length}
-    required={attribute.required}
-    bind:value />
+<InputEmail {id} {label} placeholder="Enter URL" required={attribute.required} bind:value />

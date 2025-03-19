@@ -2,7 +2,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { CardContainer, GridItem1, Id } from '$lib/components';
-    import Pill from '$lib/elements/pill.svelte';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { Badge, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';

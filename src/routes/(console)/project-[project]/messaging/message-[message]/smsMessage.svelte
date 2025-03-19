@@ -54,13 +54,11 @@
             <SMSPhone {content} />
         </div>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputTextarea
-                    id="message"
-                    label="Message"
-                    disabled={message.status != 'draft'}
-                    bind:value={content}></InputTextarea>
-            </FormList>
+            <InputTextarea
+                id="message"
+                label="Message"
+                disabled={message.status != 'draft'}
+                bind:value={content}></InputTextarea>
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button {disabled} submit>Update</Button>

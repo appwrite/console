@@ -115,14 +115,11 @@
 
 <Modal title="Schedule message" bind:show onSubmit={update}>
     <div>
-        <FormList>
-            <div
-                class="u-grid u-gap-16"
-                style="grid-auto-rows: 1fr; grid-template-columns: 1fr 1fr;">
-                <InputDate id="date" label="Date" required={true} min={minDate} bind:value={date} />
-                <InputTime id="time" label="Time" required={true} min={minTime} bind:value={time} />
-            </div>
-        </FormList>
+        <div class="u-grid u-gap-16" style="grid-auto-rows: 1fr; grid-template-columns: 1fr 1fr;">
+            <InputDate id="date" label="Date" required={true} min={minDate} bind:value={date} />
+            <InputTime id="time" label="Time" required={true} min={minTime} bind:value={time} />
+        </div>
+
         <Helper type="neutral">
             {#if !dateTime || isNaN(dateTime.getTime())}
                 The message will be sent later

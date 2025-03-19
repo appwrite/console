@@ -38,8 +38,7 @@
         factors={{ ...factors, recoveryCode: false }}
         bind:challenge
         bind:code
-        showVerifyButton={false}
-        autoSubmit={false} />
+        showVerifyButton={false} />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

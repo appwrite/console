@@ -18,27 +18,18 @@
     let error = '';
     async function fetchPreset() {
         switch (selectedPreset.toLowerCase()) {
-            //TODO: finish switch statement
             case 'zoho':
-                records = await sdk.forConsole.domains.getPresetZoho($page.params.domain);
-                return records;
-            case 'google workspace':
-                records = await sdk.forConsole.domains.getPresetGoogleWorkspace(
-                    $page.params.domain
-                );
-                return records;
-            case 'outlook':
-                records = await sdk.forConsole.domains.getPresetOutlook($page.params.domain);
-                return records;
-            case 'proton mail':
-                records = await sdk.forConsole.domains.getPresetProtonMail($page.params.domain);
-                return records;
+                return await sdk.forConsole.domains.getPresetZoho($page.params.domain);
             case 'mailgun':
-                records = await sdk.forConsole.domains.getPresetMailgun($page.params.domain);
-                return records;
+                return await sdk.forConsole.domains.getPresetMailgun($page.params.domain);
+            case 'outlook':
+                return await sdk.forConsole.domains.getPresetOutlook($page.params.domain);
+            case 'proton mail':
+                return await sdk.forConsole.domains.getPresetProtonMail($page.params.domain);
             case 'icloud':
-                records = await sdk.forConsole.domains.getPresetICloud($page.params.domain);
-                return records;
+                return await sdk.forConsole.domains.getPresetICloud($page.params.domain);
+            case 'google workspace':
+                return await sdk.forConsole.domains.getPresetGoogleWorkspace($page.params.domain);
         }
     }
 

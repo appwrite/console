@@ -40,7 +40,7 @@
         if (status === 'failed') {
             return 'failed';
         } else if (status === 'completed') {
-            return 'completed';
+            return 'complete';
         } else if (status === 'processing') {
             return 'processing';
         }

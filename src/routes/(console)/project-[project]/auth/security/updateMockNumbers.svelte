@@ -165,7 +165,6 @@
                             <InputOTP
                                 id={`value-${index}`}
                                 bind:value={number.otp}
-                                fullWidth
                                 placeholder="Enter value"
                                 label={index === 0 ? 'Verification code' : undefined}
                                 maxlength={6}

@@ -216,7 +216,7 @@
                     </Button>
                 </Layout.Stack>
             {:else if state === 'authenticated'}
-                <Card isTile variant="secondary" radius="s" padding="s">
+                <Card variant="secondary" radius="s" padding="s">
                     <Layout.Stack gap="xxs">
                         <Layout.Stack direction="row" gap="xxs">
                             <Typography.Text variant="m-400">You're signed in as</Typography.Text>

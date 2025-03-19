@@ -96,47 +96,45 @@
     <svelte:fragment slot="title">{title}</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={invite}>
-            <FormList>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Your name"
-                    autofocus={true}
-                    bind:value={name} />
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Your email"
-                    required={true}
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Your password"
-                    required={true}
-                    bind:value={pass} />
-                <InputText
-                    id="Code"
-                    label="Code"
-                    placeholder="Your code"
-                    required={true}
-                    bind:value={code} />
-                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                    By registering, you agree that you have read, understand, and acknowledge our <a
-                        class="link"
-                        href="https://appwrite.io/privacy"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Privacy Policy</a>
-                    and accept our
-                    <a
-                        class="link"
-                        href="https://appwrite.io/terms"
-                        target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</a
-                    >.</InputChoice>
-                <Button fullWidth submit>Sign up</Button>
-            </FormList>
+            <InputText
+                id="name"
+                label="Name"
+                placeholder="Your name"
+                autofocus={true}
+                bind:value={name} />
+            <InputEmail
+                id="email"
+                label="Email"
+                placeholder="Your email"
+                required={true}
+                bind:value={mail} />
+            <InputPassword
+                id="password"
+                label="Password"
+                placeholder="Your password"
+                required={true}
+                bind:value={pass} />
+            <InputText
+                id="Code"
+                label="Code"
+                placeholder="Your code"
+                required={true}
+                bind:value={code} />
+            <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                By registering, you agree that you have read, understand, and acknowledge our <a
+                    class="link"
+                    href="https://appwrite.io/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Privacy Policy</a>
+                and accept our
+                <a
+                    class="link"
+                    href="https://appwrite.io/terms"
+                    target="_blank"
+                    rel="noopener noreferrer">General Terms of Use</a
+                >.</InputChoice>
+            <Button fullWidth submit>Sign up</Button>
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">

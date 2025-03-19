@@ -91,7 +91,7 @@
             {/each}
         </Table.Root>
     {:else}
-        <Card isTile padding="l" radius="s">
+        <Card padding="l" radius="s">
             <Empty title="No deployments exist" type="secondary">
                 <span slot="description">
                     Deployments are created when you deploy your site. You can deploy your site

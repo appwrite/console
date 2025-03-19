@@ -15,10 +15,10 @@
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
+    import { type Coupon } from '$lib/sdk/billing';
     import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization } from '$lib/stores/organization';
+    import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
@@ -174,11 +174,9 @@
         }
     }
 
-    $: isUpgrade = data.plan > data.organization.billingPlan;
-    $: isDowngrade = data.plan < data.organization.billingPlan;
+    $: isUpgrade = $plansInfo.get(selectedPlan).order > $currentPlan.order;
+    $: isDowngrade = $plansInfo.get(selectedPlan).order < $currentPlan.order;
     $: isButtonDisabled = $organization.billingPlan === selectedPlan;
-
-    $: console.log(data.paymentMethods);
 </script>
 
 <svelte:head>
@@ -193,48 +191,51 @@
     <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Select plan">
-                <Typography.Text>
-                    For more details on our plans, visit our
-                    <Link.Anchor
-                        href="https://appwrite.io/pricing"
-                        target="_blank"
-                        rel="noopener noreferrer">pricing page</Link.Anchor
-                    >.
-                </Typography.Text>
-                {#if !data.selfService}
-                    <Alert.Inline status="info">
-                        Your contract is not eligible for manual changes. Please reach out to
-                        schedule a call or setup a dialog.
-                    </Alert.Inline>
-                {/if}
-                <PlanSelection
-                    bind:billingPlan={selectedPlan}
-                    selfService={data.selfService}
-                    anyOrgFree={data.hasFreeOrgs} />
+                <Layout.Stack gap="l">
+                    <Typography.Text>
+                        For more details on our plans, visit our
+                        <Link.Anchor
+                            href="https://appwrite.io/pricing"
+                            target="_blank"
+                            rel="noopener noreferrer">pricing page</Link.Anchor
+                        >.
+                    </Typography.Text>
 
-                {#if isDowngrade}
-                    {#if selectedPlan === BillingPlan.FREE}
-                        <PlanExcess
-                            tier={BillingPlan.FREE}
-                            class="u-margin-block-start-24"
-                            members={data?.members?.total ?? 0} />
-                    {:else if selectedPlan === BillingPlan.PRO && data.organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
-                        {@const extraMembers = collaborators?.length ?? 0}
-                        {@const price = formatCurrency(
-                            extraMembers *
-                                ($plansInfo?.get(selectedPlan)?.addons?.member?.price ?? 0)
-                        )}
-                        <Alert.Inline status="error">
-                            <svelte:fragment slot="title">
-                                Your monthly payments will be adjusted for the Pro plan
-                            </svelte:fragment>
-                            After switching plans,
-                            <b
-                                >you will be charged {price} monthly for {extraMembers} team members.</b>
-                            This will be reflected in your next invoice.
+                    {#if !data.selfService}
+                        <Alert.Inline status="info">
+                            Your contract is not eligible for manual changes. Please reach out to
+                            schedule a call or setup a dialog.
                         </Alert.Inline>
                     {/if}
-                {/if}
+
+                    <PlanSelection
+                        bind:billingPlan={selectedPlan}
+                        selfService={data.selfService}
+                        anyOrgFree={data.hasFreeOrgs} />
+
+                    {#if isDowngrade}
+                        {#if selectedPlan === BillingPlan.FREE}
+                            <PlanExcess
+                                tier={BillingPlan.FREE}
+                                members={data?.members?.total ?? 0} />
+                        {:else if selectedPlan === BillingPlan.PRO && data.organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
+                            {@const extraMembers = collaborators?.length ?? 0}
+                            {@const price = formatCurrency(
+                                extraMembers *
+                                    ($plansInfo?.get(selectedPlan)?.addons?.member?.price ?? 0)
+                            )}
+                            <Alert.Inline status="error">
+                                <svelte:fragment slot="title">
+                                    Your monthly payments will be adjusted for the Pro plan
+                                </svelte:fragment>
+                                After switching plans,
+                                <b
+                                    >you will be charged {price} monthly for {extraMembers} team members.</b>
+                                This will be reflected in your next invoice.
+                            </Alert.Inline>
+                        {/if}
+                    {/if}
+                </Layout.Stack>
             </Fieldset>
 
             <!-- Show email input if upgrading from free plan -->

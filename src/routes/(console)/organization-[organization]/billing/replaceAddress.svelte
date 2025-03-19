@@ -10,7 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
-    import { Alert, Badge, Card, Layout, Skeleton, Spinner } from '@appwrite.io/pink-svelte';
+    import { Alert, Badge, Card, Layout, Skeleton } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     let loading = true;

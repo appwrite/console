@@ -19,7 +19,6 @@
 <Container>
     <Layout.Stack gap="l">
         <Usage
-            title="Usage"
             path={`${base}/project-${$page.params.project}/databases/usage`}
             {total}
             {count}

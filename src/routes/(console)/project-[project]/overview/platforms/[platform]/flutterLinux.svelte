@@ -49,14 +49,12 @@
         <svelte:fragment slot="title">Package name</svelte:fragment>
         Your application name.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="package-name"
-                    label="Package Name"
-                    bind:value={key}
-                    required
-                    placeholder="appname" />
-            </FormList>
+            <InputText
+                id="package-name"
+                label="Package Name"
+                bind:value={key}
+                required
+                placeholder="appname" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

@@ -31,7 +31,7 @@
     import CreateIndex from './indexes/createIndex.svelte';
     import { base } from '$app/paths';
     import { canWriteCollections } from '$lib/stores/roles';
-    import { IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
+    import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
     let unsubscribe: { (): void };
 
@@ -152,7 +152,7 @@
                 $page.url.pathname.endsWith('display-name') ||
                 $page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
-            icon: 'eye'
+            icon: IconEye
         },
         {
             label: 'Permissions',

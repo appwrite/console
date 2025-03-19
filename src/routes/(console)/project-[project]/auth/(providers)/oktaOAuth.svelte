@@ -47,7 +47,7 @@
             : provider.secret;
 </script>
 
-<Modal {error} onSubmit={update} size="big" bind:show on:close>
+<Modal {error} onSubmit={update} size="l" bind:show on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 settings</svelte:fragment>
     <p>
         To use {provider.name} authentication in your application, first fill in this form. For more

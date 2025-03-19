@@ -268,6 +268,7 @@ export type Plan = {
     $id: string;
     name: string;
     price: number;
+    order: number;
     bandwidth: number;
     storage: number;
     members: number;

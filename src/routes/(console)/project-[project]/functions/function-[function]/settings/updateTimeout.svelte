@@ -64,14 +64,12 @@
         <svelte:fragment slot="title">Timeout</svelte:fragment>
         Limit the execution time of your function. The maximum value is 900 seconds (15 minutes).
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputNumber
-                    min={1}
-                    max={900}
-                    id="time"
-                    label="Time (in seconds)"
-                    bind:value={timeout} />
-            </FormList>
+            <InputNumber
+                min={1}
+                max={900}
+                id="time"
+                label="Time (in seconds)"
+                bind:value={timeout} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

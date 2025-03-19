@@ -1,12 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import {
-        PaginationWithLimit,
-        ViewSelector,
-        EmptyFilter,
-        EmptySearch,
-        DropList
-    } from '$lib/components';
+    import { PaginationWithLimit, ViewSelector, EmptyFilter } from '$lib/components';
     import { Container } from '$lib/layout';
     import type { PageData } from './$types';
     import Table from './table.svelte';

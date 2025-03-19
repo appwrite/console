@@ -4,7 +4,7 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { installation, repository } from '$lib/stores/vcs';
     import { sdk } from '$lib/stores/sdk';
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import { Link } from '$lib/elements';
     import { NewRepository, Repositories } from '$lib/components/git';
@@ -16,8 +16,6 @@
     import { Dependencies } from '$lib/constants';
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-
-    const dispatch = createEventDispatcher();
 
     export let show = false;
     export let func: Models.Function;

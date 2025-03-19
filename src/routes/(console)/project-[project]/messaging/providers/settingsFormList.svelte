@@ -31,16 +31,14 @@
     >;
 </script>
 
-<FormList>
-    {#each inputs as input}
-        {#if Array.isArray(input)}
-            {#each input as i}
-                <div class="u-flex u-flex-basis-50-percent">
-                    <SettingsFormInput input={i} bind:params bind:files fullWidth />
-                </div>
-            {/each}
-        {:else}
-            <SettingsFormInput {input} bind:params bind:files />
-        {/if}
-    {/each}
-</FormList>
+{#each inputs as input}
+    {#if Array.isArray(input)}
+        {#each input as i}
+            <div class="u-flex u-flex-basis-50-percent">
+                <SettingsFormInput input={i} bind:params bind:files fullWidth />
+            </div>
+        {/each}
+    {:else}
+        <SettingsFormInput {input} bind:params bind:files />
+    {/if}
+{/each}

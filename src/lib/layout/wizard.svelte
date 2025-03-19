@@ -20,7 +20,7 @@
           }
         | {
               title?: string;
-              href: string;
+              href?: string;
               confirmExit?: boolean;
               showExitModal?: boolean;
               invertColumns?: boolean;

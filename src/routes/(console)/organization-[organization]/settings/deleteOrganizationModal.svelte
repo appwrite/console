@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Modal, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { Button, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -156,11 +156,6 @@
 </Modal>
 
 <style>
-    .box {
-        padding: unset;
-        border-radius: var(--border-radius-medium, 8px);
-    }
-
     :global(.max-height-dialog dialog) {
         max-height: 650px;
     }

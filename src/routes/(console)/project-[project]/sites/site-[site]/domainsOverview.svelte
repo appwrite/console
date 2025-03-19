@@ -35,7 +35,7 @@
             View all
         </Button>
     </Layout.Stack>
-    <Card padding="xs" radius="s" isTile>
+    <Card padding="xs" radius="s">
         <Layout.Stack>
             {#if rules.length <= 1}
                 <Layout.Stack gap="l">

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';

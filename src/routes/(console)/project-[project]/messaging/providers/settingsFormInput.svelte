@@ -72,7 +72,6 @@
         label={input.label}
         placeholder={input.placeholder}
         required={!input.optional}
-        showPasswordButton
         {popover}
         {popoverProps}
         {fullWidth}

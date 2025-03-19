@@ -44,14 +44,12 @@
         <svelte:fragment slot="title">Hostname</svelte:fragment>
         You can use * to allow wildcard hostnames or subdomains.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="hostname"
-                    label="Hostname"
-                    bind:value={hostname}
-                    required
-                    placeholder="myapp.com" />
-            </FormList>
+            <InputText
+                id="hostname"
+                label="Hostname"
+                bind:value={hostname}
+                required
+                placeholder="myapp.com" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

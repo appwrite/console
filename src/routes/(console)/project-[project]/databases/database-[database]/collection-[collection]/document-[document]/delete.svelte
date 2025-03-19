@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, Trim } from '$lib/components';
-    import { Button, InputChoice } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Selector, Table } from '@appwrite.io/pink-svelte';

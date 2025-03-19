@@ -80,7 +80,7 @@
                 {/each}
             </Table.Root>
         {:else}
-            <Card isTile padding="xs" radius="s">
+            <Card padding="xs" radius="s">
                 <Typography.Code>No parameters found.</Typography.Code>
             </Card>
         {/if}
@@ -106,7 +106,7 @@
                 </span>
             </Input.Helper>
         {:else}
-            <Card isTile padding="xs" radius="s">
+            <Card padding="xs" radius="s">
                 <Typography.Code>No headers found.</Typography.Code>
             </Card>
         {/if}

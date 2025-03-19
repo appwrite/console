@@ -154,15 +154,13 @@
             </b>
         </p>
 
-        <FormList>
-            <div class="input-check-box-friction">
-                <InputCheckbox
-                    required
-                    id="delete_policy"
-                    bind:checked={confirmedDeletion}
-                    label="I understand and confirm" />
-            </div>
-        </FormList>
+        <div class="input-check-box-friction">
+            <InputCheckbox
+                required
+                id="delete_policy"
+                bind:checked={confirmedDeletion}
+                label="I understand and confirm" />
+        </div>
     {/if}
 
     <svelte:fragment slot="footer">

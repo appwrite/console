@@ -171,6 +171,7 @@
                     </Layout.Stack>
                 </Upload.Dropzone>
                 {#if files?.length}
+                    <!-- TODO: torsten, the types issue with FileList-->
                     <Upload.List
                         bind:files
                         on:remove={(e) => (files = removeFile(e.detail, files))} />

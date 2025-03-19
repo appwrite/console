@@ -6,7 +6,7 @@
     export let value: string | number = null;
 </script>
 
-<Card radius="s" padding="xs" isTile>
+<Card radius="s" padding="xs">
     <Layout.Stack gap="xxxs">
         <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
             {description}

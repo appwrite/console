@@ -61,14 +61,12 @@
         <CardGrid>
             <svelte:fragment slot="title">Name</svelte:fragment>
             <svelte:fragment slot="aside">
-                <FormList>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        bind:value={name}
-                        required
-                        placeholder="Enter name" />
-                </FormList>
+                <InputText
+                    id="name"
+                    label="Name"
+                    bind:value={name}
+                    required
+                    placeholder="Enter name" />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

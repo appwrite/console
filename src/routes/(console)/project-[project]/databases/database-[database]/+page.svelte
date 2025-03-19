@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container, GridHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { columns, showCreate } from './store';
     import Table from './table.svelte';
     import Grid from './grid.svelte';

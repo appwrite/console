@@ -94,30 +94,29 @@
 </script>
 
 <Modal bind:error bind:show onSubmit={handleSubmit} title="Request BAA">
-    <FormList>
-        <InputEmail label="Email" placeholder="Enter email" id="email" bind:value={email} />
-        <InputSelect
-            label="Number of employees"
-            id="employees"
-            placeholder="Select number of employees"
-            required
-            options={employeesOptions}
-            bind:value={employees} />
-        <InputSelect
-            label="Country"
-            id="country"
-            options={countryOptions}
-            placeholder="Select country"
-            required
-            bind:value={country} />
-        <InputText
-            label="Your role"
-            placeholder="Enter your role"
-            id="role"
-            bind:value={role}
-            required />
-        <InputText label="Website" placeholder="Enter website" id="website" bind:value={website} />
-    </FormList>
+    <InputEmail label="Email" placeholder="Enter email" id="email" bind:value={email} />
+    <InputSelect
+        label="Number of employees"
+        id="employees"
+        placeholder="Select number of employees"
+        required
+        options={employeesOptions}
+        bind:value={employees} />
+    <InputSelect
+        label="Country"
+        id="country"
+        options={countryOptions}
+        placeholder="Select country"
+        required
+        bind:value={country} />
+    <InputText
+        label="Your role"
+        placeholder="Enter your role"
+        id="role"
+        bind:value={role}
+        required />
+    <InputText label="Website" placeholder="Enter website" id="website" bind:value={website} />
+
     <svelte:fragment slot="footer">
         <Button submit>
             <span class="text">Send request</span>

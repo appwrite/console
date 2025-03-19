@@ -55,7 +55,7 @@
             {$user.name || $user.email}
         </CoverTitle>
         <div class="u-margin-inline-start-auto">
-            <Button secondary on:click={logout}>Logout</Button>
+            <Button secondary on:click={() => logout()}>Logout</Button>
         </div>
     </svelte:fragment>
     <Tabs>

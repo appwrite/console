@@ -3,7 +3,7 @@
     import type { RegionList } from '$lib/sdk/billing';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { Flag, ID, Region } from '@appwrite.io/console';
+    import { ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';

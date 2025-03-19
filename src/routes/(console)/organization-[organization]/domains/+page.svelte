@@ -9,7 +9,6 @@
     import { protocol } from '$routes/(console)/store.js';
     import {
         IconDotsHorizontal,
-        IconExternalLink,
         IconPlus,
         IconRefresh,
         IconTrash

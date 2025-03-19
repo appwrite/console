@@ -62,14 +62,14 @@
 
 <Modal bind:show={showCreateProjectCloud} title={'Create project'}
     ><CreateProject
-        createProject={create}
         showTitle={false}
         bind:id={$createProject.id}
         bind:projectName={$createProject.name}
         bind:region={$createProject.region}
-        {regions} />
-    <svelte:fragment slot="footer"
-        ><Button.Button type="button" variant="primary" size="s" on:click={create}>
-            Create</Button.Button
-        ></svelte:fragment>
+        {regions}>
+        <svelte:fragment slot="footer"
+            ><Button.Button type="button" variant="primary" size="s" on:click={create}>
+                Create</Button.Button
+            ></svelte:fragment>
+    </CreateProject>
 </Modal>

@@ -12,7 +12,6 @@
 
 <Container>
     <Usage
-        title="Databases"
         path={`${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}/usage`}
         {total}
         {count}

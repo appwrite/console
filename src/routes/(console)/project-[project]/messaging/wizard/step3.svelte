@@ -90,32 +90,27 @@
     <svelte:fragment slot="title">Schedule</svelte:fragment>
     <svelte:fragment slot="subtitle"
         >Schedule the time you want to deliver this message. Learn more in our <Button
-            link
-            external
-            text
             href={docsUrl}>documentation</Button
         >.</svelte:fragment>
-    <FormList>
-        <div
-            class="u-grid u-gap-24"
-            style="grid-auto-rows: 1fr; grid-template-columns: 1fr 1fr 1fr;">
-            <InputSelect id="when" label="&nbsp;" {options} bind:value={when} />
-            <InputDate
-                id="date"
-                label="Date"
-                disabled={when === 'now'}
-                required={when === 'later'}
-                min={minDate}
-                bind:value={date} />
-            <InputTime
-                id="time"
-                label="Time"
-                disabled={when === 'now'}
-                required={when === 'later'}
-                min={minTime}
-                bind:value={time} />
-        </div>
-    </FormList>
+
+    <div class="u-grid u-gap-24" style="grid-auto-rows: 1fr; grid-template-columns: 1fr 1fr 1fr;">
+        <InputSelect id="when" label="&nbsp;" {options} bind:value={when} />
+        <InputDate
+            id="date"
+            label="Date"
+            disabled={when === 'now'}
+            required={when === 'later'}
+            min={minDate}
+            bind:value={date} />
+        <InputTime
+            id="time"
+            label="Time"
+            disabled={when === 'now'}
+            required={when === 'later'}
+            min={minTime}
+            bind:value={time} />
+    </div>
+
     <Helper type="neutral">
         {#if when === 'now'}
             The message will be sent immediately

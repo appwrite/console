@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { AvatarInitials, DropList, DropListItem, PaginationWithLimit } from '$lib/components';
+    import { AvatarInitials, PaginationWithLimit } from '$lib/components';
     import { Button as ConsoleButton } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';

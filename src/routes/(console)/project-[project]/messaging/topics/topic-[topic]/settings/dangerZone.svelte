@@ -3,7 +3,6 @@
     import { Button } from '$lib/elements/forms';
     import { topic, topicTotal } from '../store';
     import DeleteTopic from '../deleteTopic.svelte';
-    import { Typography } from '@appwrite.io/pink-svelte';
 
     let showDelete = false;
 </script>

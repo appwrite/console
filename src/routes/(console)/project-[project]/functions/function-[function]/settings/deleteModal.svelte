@@ -38,19 +38,17 @@
     title="Delete function"
     bind:open={showDelete}
     bind:error>
-    <FormList>
-        <p data-private>Are you sure you want to delete <strong>{projectFunction.name}</strong>?</p>
+    <p data-private>Are you sure you want to delete <strong>{projectFunction.name}</strong>?</p>
 
-        <p data-private>
-            The function and all associated deployments will be permanently deleted. This action is
-            irreversible.
-        </p>
+    <p data-private>
+        The function and all associated deployments will be permanently deleted. This action is
+        irreversible.
+    </p>
 
-        <InputCheckbox
-            size="s"
-            required
-            id="delete_function"
-            bind:checked={confirmedDeletion}
-            label="I understand and confirm" />
-    </FormList>
+    <InputCheckbox
+        size="s"
+        required
+        id="delete_function"
+        bind:checked={confirmedDeletion}
+        label="I understand and confirm" />
 </Confirm>

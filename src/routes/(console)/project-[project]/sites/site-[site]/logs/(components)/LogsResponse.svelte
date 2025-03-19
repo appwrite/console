@@ -59,7 +59,7 @@
         {#if selectedLog.logs}
             <Logs logs={selectedLog.logs} />
         {:else}
-            <Card isTile padding="xs" radius="s">
+            <Card padding="xs" radius="s">
                 <Typography.Code>No logs found.</Typography.Code>
             </Card>
         {/if}
@@ -67,7 +67,7 @@
         {#if selectedLog.errors}
             <Logs logs={selectedLog.errors} />
         {:else}
-            <Card isTile padding="xs" radius="s">
+            <Card padding="xs" radius="s">
                 <Typography.Code>No errors found.</Typography.Code>
             </Card>
         {/if}
@@ -93,7 +93,7 @@
                 </span>
             </Input.Helper>
         {:else}
-            <Card isTile padding="xs" radius="s">
+            <Card padding="xs" radius="s">
                 <Typography.Code>No headers found.</Typography.Code>
             </Card>
         {/if}
@@ -101,7 +101,7 @@
         {#if selectedLog.responseBody}
             <Logs logs={selectedLog.responseBody} />
         {:else}
-            <Card isTile padding="xs" radius="s">
+            <Card padding="xs" radius="s">
                 <Typography.Code>No parameters found.</Typography.Code>
             </Card>
         {/if}

@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { BoxAvatar, Card, CardGrid } from '$lib/components';
+    import { BoxAvatar, CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, Helper, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';

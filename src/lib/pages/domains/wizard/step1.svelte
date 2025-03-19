@@ -41,15 +41,14 @@
         >.
     </svelte:fragment>
 
-    <FormList>
-        <InputDomain
-            id="domain"
-            label="Domain"
-            placeholder="appwrite.example.com"
-            autocomplete={false}
-            required
-            bind:value={$domain.domain} />
-    </FormList>
+    <InputDomain
+        id="domain"
+        label="Domain"
+        placeholder="appwrite.example.com"
+        autocomplete={false}
+        required
+        bind:value={$domain.domain} />
+
     {#if error}
         <div class="common-section">
             <p>

@@ -62,7 +62,7 @@
         </Layout.Stack>
     </Fieldset>
 {:else}
-    <Card isTile padding="s" radius="s">
+    <Card padding="s" radius="s">
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                 <Layout.Stack direction="row" gap="s" alignItems="center">

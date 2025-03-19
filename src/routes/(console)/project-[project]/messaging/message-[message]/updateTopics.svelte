@@ -138,10 +138,7 @@
                         No topics have been selected.
                         <p>
                             Need a hand? Check out our <Button
-                                link
-                                external
-                                href="https://appwrite.io/docs/products/messaging/topics"
-                                text>
+                                href="https://appwrite.io/docs/products/messaging/topics">
                                 documentation</Button
                             >.
                         </p>

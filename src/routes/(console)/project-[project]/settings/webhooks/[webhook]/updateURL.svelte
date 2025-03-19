@@ -50,14 +50,12 @@
     <CardGrid>
         <svelte:fragment slot="title">URL</svelte:fragment>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="url"
-                    label="POST URL"
-                    bind:value={url}
-                    required
-                    placeholder="https://example.com/callback" />
-            </FormList>
+            <InputText
+                id="url"
+                label="POST URL"
+                bind:value={url}
+                required
+                placeholder="https://example.com/callback" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

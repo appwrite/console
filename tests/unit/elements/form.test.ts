@@ -19,7 +19,6 @@ test('shows form', () => {
 
 test('shows form - no margin', () => {
     const { container } = render(Form, {
-        noMargin: true,
         onSubmit: vi.fn()
     });
     const form = container.querySelector('form');

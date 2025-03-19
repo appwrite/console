@@ -9,7 +9,6 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { validateData } from '../wizard/pushFormList.svelte';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -76,7 +75,6 @@
         }
     }
 
-    $: dataError = validateData(customData || []);
     $: disabled =
         title === message.data.title &&
         body === message.data.body &&

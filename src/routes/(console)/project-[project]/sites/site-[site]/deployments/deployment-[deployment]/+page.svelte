@@ -23,10 +23,7 @@
 
     export let data;
 
-    let logs = '';
-
     onMount(() => {
-        logs = $deployment.buildLogs;
         if ($deployment.status === 'ready') {
             return;
         }
@@ -36,7 +33,6 @@
                     `sites.${$page.params.site}.deployments.${$page.params.deployment}.update`
                 )
             ) {
-                logs = message.payload['logs'];
                 if (message.payload.status === 'ready') {
                     invalidate(Dependencies.DEPLOYMENT);
                 }
@@ -71,7 +67,7 @@
                 activeDeployment={data.site.deploymentId} />
         </svelte:fragment>
     </SiteCard>
-    <Card isTile padding="s">
+    <Card padding="s">
         <Accordion
             title="Deployment logs"
             badge={capitalize(data.deployment.status)}

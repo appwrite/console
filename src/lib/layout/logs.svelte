@@ -343,7 +343,7 @@
                                         language="sh"
                                         class="limited-code-height" />
                                 {:else}
-                                    <Card isDashed isTile>
+                                    <Card isDashed>
                                         <p class="text u-text-center">No response was recorded.</p>
                                     </Card>
                                 {/if}
@@ -357,7 +357,7 @@
                                         language="sh"
                                         class="limited-code-height" />
                                 {:else}
-                                    <Card isDashed isTile>
+                                    <Card isDashed>
                                         <p class="text u-text-center">No response was recorded.</p>
                                     </Card>
                                 {/if}

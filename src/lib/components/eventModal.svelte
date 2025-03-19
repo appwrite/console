@@ -184,6 +184,7 @@
         action: null as EventAction | null,
         attribute: null as string | null
     };
+    let helper: string = null;
     let customInput: string = null;
     let customInputCursor = -1;
     let showInput = false;
@@ -234,6 +235,10 @@
         resetSelected();
         customInput = null;
         showInput = false;
+    }
+
+    $: if (showInput) {
+        helper = getCustomInputHelperStr(customInput, customInputCursor);
     }
 </script>
 
@@ -303,12 +308,17 @@
     {/if}
 
     {#if showInput}
-        <Input.Text bind:value={customInput} placeholder="Enter custom event">
-            <svelte:fragment slot="end">
-                <Input.Action icon={IconCheck} on:click={toggleShowInput} />
-                <Input.Action icon={IconX} />
-            </svelte:fragment>
-        </Input.Text>
+        <Layout.Stack gap="s">
+            <Input.Text bind:value={customInput} placeholder="Enter custom event">
+                <svelte:fragment slot="end">
+                    <Input.Action icon={IconCheck} on:click={toggleShowInput} />
+                    <Input.Action icon={IconX} />
+                </svelte:fragment>
+            </Input.Text>
+
+            <!-- TODO: get checked by design -->
+            <Typography.Caption variant="400">{helper ?? ''}</Typography.Caption>
+        </Layout.Stack>
     {:else}
         <Input.Text
             value={eventString.map((e) => e.value).join('.')}

@@ -15,7 +15,6 @@
     export let hideFooter = false;
 
     let alert: HTMLElement;
-    let formComponent: Form;
 
     beforeNavigate(() => {
         show = false;
@@ -28,8 +27,8 @@
     }
 </script>
 
-<Form isModal {onSubmit} bind:this={formComponent}>
-    <Modal {title} bind:open={show} {hideFooter} {dismissible} {size}>
+<Form isModal {onSubmit}>
+    <Modal {size} {title} bind:open={show} {hideFooter} {dismissible}>
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>

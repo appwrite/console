@@ -18,12 +18,9 @@
     export let data;
     let showRollback = false;
 
-    let unsubscribe: { (): void };
-
     onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes(`sites.${$page.params.site}.deployments.*`)) {
-                console.log('test');
                 invalidate(Dependencies.SITE);
             }
         });

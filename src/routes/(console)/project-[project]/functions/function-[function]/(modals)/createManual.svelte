@@ -72,52 +72,48 @@
             class="link">Learn more about function deployments</a
         >.
     </p>
-    <FormList>
-        <InputFile
-            label="Gzipped code (tar.gz)"
-            allowedFileExtensions={['gz', 'tar']}
-            bind:files
-            required={true} />
 
-        {#if $func.version === 'v2'}
-            <Alert.Inline status="info" title="Build commands now available for functions v3.0">
-                Update your function version to make use of new features including build commands.
-                <svelte:fragment slot="actions">
-                    <Button
-                        href="https://appwrite.io/docs/products/functions/development"
-                        external
-                        text>Learn more</Button>
-                </svelte:fragment>
-            </Alert.Inline>
-        {:else}
-            <Collapsible>
-                <CollapsibleItem>
-                    <svelte:fragment slot="title">Overwrite settings</svelte:fragment>
-                    <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
+    <InputFile
+        label="Gzipped code (tar.gz)"
+        allowedFileExtensions={['gz', 'tar']}
+        bind:files
+        required={true} />
 
-                    <FormList>
-                        <p class="text">Overwrite your function entrypoint or build commands.</p>
-                        <InputText
-                            label="Entrypoint"
-                            id="entrypoint"
-                            placeholder="Entrypoint"
-                            bind:value={entrypoint} />
-                        <InputTextarea
-                            label="Commands"
-                            placeholder="Enter a build command (e.g. 'npm install')"
-                            id="build"
-                            bind:value={buildCommand} />
-                        <InputChoice
-                            label="Activate deployment after build"
-                            id="activate"
-                            bind:value={active}>
-                            This deployment will be activated after the build is completed.
-                        </InputChoice>
-                    </FormList>
-                </CollapsibleItem>
-            </Collapsible>
-        {/if}
-    </FormList>
+    {#if $func.version === 'v2'}
+        <Alert.Inline status="info" title="Build commands now available for functions v3.0">
+            Update your function version to make use of new features including build commands.
+            <svelte:fragment slot="actions">
+                <Button href="https://appwrite.io/docs/products/functions/development" external text
+                    >Learn more</Button>
+            </svelte:fragment>
+        </Alert.Inline>
+    {:else}
+        <Collapsible>
+            <CollapsibleItem>
+                <svelte:fragment slot="title">Overwrite settings</svelte:fragment>
+                <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
+
+                <p class="text">Overwrite your function entrypoint or build commands.</p>
+                <InputText
+                    label="Entrypoint"
+                    id="entrypoint"
+                    placeholder="Entrypoint"
+                    bind:value={entrypoint} />
+                <InputTextarea
+                    label="Commands"
+                    placeholder="Enter a build command (e.g. 'npm install')"
+                    id="build"
+                    bind:value={buildCommand} />
+                <InputChoice
+                    label="Activate deployment after build"
+                    id="activate"
+                    bind:value={active}>
+                    This deployment will be activated after the build is completed.
+                </InputChoice>
+            </CollapsibleItem>
+        </Collapsible>
+    {/if}
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>
         <Button submit>Create</Button>

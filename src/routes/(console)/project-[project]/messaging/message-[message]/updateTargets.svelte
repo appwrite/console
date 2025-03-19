@@ -216,10 +216,7 @@
                         No targets have been selected.
                         <p>
                             Need a hand? Check out our <Button
-                                link
-                                external
-                                href="https://appwrite.io/docs/products/messaging/targets"
-                                text>
+                                href="https://appwrite.io/docs/products/messaging/targets">
                                 documentation</Button
                             >.
                         </p>

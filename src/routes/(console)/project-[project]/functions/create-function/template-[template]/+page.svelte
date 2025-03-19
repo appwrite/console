@@ -230,6 +230,7 @@
                         bind:branch
                         bind:rootDir
                         bind:silentMode
+                        product="functions"
                         installationId={selectedInstallationId}
                         repositoryId={selectedRepository} />
 
@@ -307,7 +308,7 @@
                             </Layout.Stack>
                         </Fieldset>
                     {:else}
-                        <Card isDashed isTile padding="none">
+                        <Card isDashed padding="none">
                             <Empty
                                 type="secondary"
                                 title="Connect Git repository"

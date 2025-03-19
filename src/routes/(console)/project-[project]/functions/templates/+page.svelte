@@ -155,7 +155,7 @@
                 </Accordion>
             </Layout.Stack>
 
-            <Card isTile radius="s" padding="xs">
+            <Card radius="s" padding="xs">
                 <Layout.Stack gap="xxxs">
                     <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
                         Contribute

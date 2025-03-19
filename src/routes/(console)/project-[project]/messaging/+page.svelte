@@ -6,7 +6,6 @@
         EmptyFilter,
         EmptySearch,
         Id,
-        Modal,
         PaginationWithLimit,
         SearchQuery,
         ViewSelector
@@ -30,7 +29,7 @@
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
     import { Badge, FloatingActionBar, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
-    import Confirm from '$lib/components/confirm.svelte';
+    import { Confirm } from '$lib/components';
 
     export let data;
 
