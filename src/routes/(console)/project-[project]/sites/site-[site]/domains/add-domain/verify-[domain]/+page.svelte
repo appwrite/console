@@ -2,7 +2,7 @@
     import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
     import { Card, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import VerificationFieldset from './verificationFieldset.svelte';
-    import { Button } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
     import { addNotification } from '$lib/stores/notifications';
@@ -10,14 +10,19 @@
     import { Dependencies } from '$lib/constants';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import Wizard from '$lib/layout/wizard.svelte';
+    import { base } from '$app/paths';
 
+    export let data;
     let selectedTab: 'cname' | 'nameserver';
+    let domainData = data.domain;
 
-    async function back() {}
+    let routeBase = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
 
     async function addDomain() {
         const isNewDomain =
-            data.domains.rules.findIndex((rule) => rule.domain === $page.params.domain) === -1;
+            data.domainsList.domains.findIndex((rule) => rule.domain === $page.params.domain) ===
+            -1;
         try {
             if (isNewDomain && isCloud) {
                 domainData = await sdk.forConsole.domains.create(
@@ -30,7 +35,7 @@
                 type: 'success',
                 message: 'Domain added successfully'
             });
-            await goto(backPage);
+            await goto(routeBase);
             await invalidate(Dependencies.DOMAINS);
             await invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
@@ -42,24 +47,38 @@
             });
         }
     }
+
+    async function back() {}
+
     $: isVerified = domainData?.nameservers
         ? domainData?.nameservers.toLocaleLowerCase() === 'appwrite'
         : undefined;
 </script>
 
-<Layout.Stack gap="xxl">
-    <Card.Base radius="s" padding="s">
-        <Layout.Stack direction="row" justifyContent="space-between" alignItems="center" gap="xs">
-            <Layout.Stack direction="row" alignItems="center" gap="xs">
-                <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
+<Wizard title="Add domain" href={routeBase} column columnSize="s">
+    <Form bind:this={formComponent} onSubmit={addDomain} bind:isSubmitting>
+        <Layout.Stack gap="xxl">
+            <Card.Base radius="s" padding="s">
+                <Layout.Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap="xs">
+                    <Layout.Stack direction="row" alignItems="center" gap="xs">
+                        <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
 
-                <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                    {$page.params.domain}
-                </Typography.Text>
-            </Layout.Stack>
-            <Button secondary on:click={back}>Change</Button>
+                        <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
+                            {$page.params.domain}
+                        </Typography.Text>
+                    </Layout.Stack>
+                    <Button secondary on:click={back}>Change</Button>
+                </Layout.Stack>
+            </Card.Base>
+
+            <VerificationFieldset
+                domain={$page.params.domain}
+                verified={isVerified}
+                bind:selectedTab />
         </Layout.Stack>
-    </Card.Base>
-
-    <VerificationFieldset domain={$page.params.domain} verified={isVerified} bind:selectedTab />
-</Layout.Stack>
+    </Form>
+</Wizard>

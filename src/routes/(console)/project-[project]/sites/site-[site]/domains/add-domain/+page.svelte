@@ -18,7 +18,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
 
-    const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
+    const routeBase = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
 
     export let data;
 
@@ -60,8 +60,7 @@
                 await sdk.forProject.proxy.createSiteRule(domainName, $page.params.site);
             }
 
-            await goto(backPage);
-            await invalidate(Dependencies.DOMAINS);
+            await goto(`${routeBase}/add-domain/verify-${domainName}`);
             await invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
             addNotification({
@@ -72,7 +71,7 @@
     }
 </script>
 
-<Wizard title="Add custom domain" href={backPage} column columnSize="s">
+<Wizard title="Add domain" href={routeBase} column columnSize="s" confirmExit>
     <Form bind:this={formComponent} onSubmit={addDomain} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Domain">
@@ -188,7 +187,7 @@
     </Form>
 
     <svelte:fragment slot="footer">
-        <Button secondary href={backPage}>Cancel</Button>
+        <Button secondary href={routeBase}>Cancel</Button>
         <Button on:click={() => formComponent.triggerSubmit()} bind:disabled={$isSubmitting}>
             Add
         </Button>
