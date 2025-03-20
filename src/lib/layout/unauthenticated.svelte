@@ -9,7 +9,7 @@
     import { app } from '$lib/stores/app';
     import type { Campaign } from '$lib/stores/campaigns';
     import { getApiEndpoint } from '$lib/stores/sdk';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Typography, Layout } from '@appwrite.io/pink-svelte';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
@@ -100,15 +100,11 @@
                 </div>
             </section>
         {:else if variation === 'review'}
-            <section
-                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line review-container">
-                <div class="u-text-center">
-                    <Typography.Title size="m">{generateTitle()}</Typography.Title>
-                </div>
-
-                <p class="body-text-1 u-margin-block-start-16 u-text-center">{generateDesc()}</p>
-                <div class="review-container u-margin-block-start-64">
-                    <Card style="--p-card-padding: 1.25rem">
+            <div style:max-inline-size="30rem" style:height="100%">
+                <Layout.Stack justifyContent="center" alignItems="center" height="100%" gap="l">
+                    <Typography.Title size="l" align="center">{generateTitle()}</Typography.Title>
+                    <Typography.Text align="center">{generateDesc()}</Typography.Text>
+                    <Card style="--p-card-padding: 1.25rem; margin-block-start: 4rem">
                         <p class="body-text-1">
                             {currentReview.review}
                         </p>
@@ -127,18 +123,21 @@
                             </div>
                         </div>
                     </Card>
-                </div>
-                {#if campaign?.footer}
-                    <div
-                        class="u-flex u-gap-16 u-cross-center u-main-center review-footer-container">
-                        <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
-                        <img
-                            style:max-block-size="2.5rem"
-                            src={getImage(campaign?.image[$app.themeInUse])}
-                            alt={coupon?.campaign ?? campaign.$id} />
-                    </div>
-                {/if}
-            </section>
+
+                    {#if campaign?.footer}
+                        <div
+                            class="u-flex u-gap-16 u-cross-center u-main-center review-footer-container">
+                            <p class="u-bold" style:text-transform="uppercase">
+                                provided to you by
+                            </p>
+                            <img
+                                style:max-block-size="2.5rem"
+                                src={getImage(campaign?.image[$app.themeInUse])}
+                                alt={coupon?.campaign ?? campaign.$id} />
+                        </div>
+                    {/if}
+                </Layout.Stack>
+            </div>
         {/if}
     </section>
     <section class="grid-1-1-col-2 u-flex u-flex-vertical u-cross-center u-main-center">
