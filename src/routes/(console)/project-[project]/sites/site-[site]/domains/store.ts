@@ -7,7 +7,7 @@ export const columns = writable<Column[]>([
         title: 'Domain',
         type: 'string',
         format: 'string',
-        width: { min: 200, max: 600 }
+        width: { min: 200, max: 700 }
     },
 
     {
@@ -20,6 +20,6 @@ export const columns = writable<Column[]>([
         id: 'deploymentVcsProviderBranch',
         title: 'Production branch',
         type: 'string',
-        width: { min: 90, max: 150 }
+        width: { min: 90, max: 200 }
     }
 ]);

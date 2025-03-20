@@ -12,8 +12,6 @@
     import Table from './table.svelte';
 
     export let data;
-
-    $: console.log(data.domains);
 </script>
 
 <Container>
