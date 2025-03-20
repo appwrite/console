@@ -96,14 +96,16 @@
                 <ActionMenu.Root>
                     <Layout.Stack>
                         {#each $columns as column}
-                            <InputCheckbox
-                                id={column.id}
-                                label={column.title}
-                                on:change={() => (column.hide = !column.hide)}
-                                checked={!column.hide}
-                                disabled={allowNoColumns
-                                    ? false
-                                    : selectedColumnsNumber <= 1 && column.hide !== true} />
+                            {#if !column?.exclude}
+                                <InputCheckbox
+                                    id={column.id}
+                                    label={column.title}
+                                    on:change={() => (column.hide = !column.hide)}
+                                    checked={!column.hide}
+                                    disabled={allowNoColumns
+                                        ? false
+                                        : selectedColumnsNumber <= 1 && column.hide !== true} />
+                            {/if}
                         {/each}
                     </Layout.Stack>
                 </ActionMenu.Root>

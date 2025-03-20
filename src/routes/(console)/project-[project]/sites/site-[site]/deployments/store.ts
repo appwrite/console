@@ -4,12 +4,12 @@ import type { Column } from '$lib/helpers/types';
 export const showCreateDeployment: Writable<boolean> = writable(false);
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Deployment ID', type: 'string', width: 200 },
+    { id: '$id', title: 'Deployment ID', type: 'string', width: { min: 200, max: 250 } },
     {
         id: 'status',
         title: 'Status',
         type: 'enum',
-        width: 110,
+        width: { min: 90, max: 130 },
         array: true,
         format: 'enum',
         elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed']
@@ -19,7 +19,8 @@ export const columns = writable<Column[]>([
         id: 'buildDuration',
         title: 'Build duration',
         type: 'integer',
-        width: 90,
+        width: { min: 110, max: 170 },
+
         elements: [
             {
                 value: 15,
@@ -41,7 +42,7 @@ export const columns = writable<Column[]>([
         title: 'Source size',
         type: 'integer',
         hide: true,
-        width: 140,
+        width: { min: 110, max: 170 },
         elements: [
             {
                 value: 2 * 1000 * 1000,
@@ -62,13 +63,13 @@ export const columns = writable<Column[]>([
         title: 'Build size',
         type: 'integer',
         filter: false,
-        width: 80
+        width: { min: 90, max: 140 }
     },
     {
         id: 'type',
         title: 'Source',
         type: 'string',
-        width: 90,
+        width: { min: 90, max: 140 },
         array: true,
         format: 'enum',
         elements: [
@@ -81,7 +82,8 @@ export const columns = writable<Column[]>([
         id: '$updatedAt',
         title: 'Updated',
         type: 'datetime',
-        width: 150,
+        width: { min: 150, max: 180 },
+
         format: 'datetime'
     }
 ]);

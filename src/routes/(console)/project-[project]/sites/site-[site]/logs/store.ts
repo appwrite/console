@@ -2,12 +2,12 @@ import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Log ID', type: 'string', width: 200 },
+    { id: '$id', title: 'Log ID', type: 'string', width: { min: 200, max: 250 } },
     {
         id: 'requestPath',
         title: 'Path',
         type: 'string',
-        width: 90,
+        width: { min: 500, max: 900 },
         format: 'string'
     },
 
@@ -15,7 +15,7 @@ export const columns = writable<Column[]>([
         id: 'trigger',
         title: 'Trigger',
         type: 'string',
-        hide: true,
+        exclude: true,
         width: 90,
         array: true,
         format: 'enum',
@@ -30,7 +30,7 @@ export const columns = writable<Column[]>([
         id: 'requestMethod',
         title: 'Method',
         type: 'string',
-        hide: true,
+        exclude: true,
         width: 70,
         array: true,
         format: 'enum',
@@ -40,7 +40,7 @@ export const columns = writable<Column[]>([
         id: 'responseStatusCode',
         title: 'Status code',
         type: 'integer',
-        hide: true,
+        exclude: true,
         width: 100,
         format: 'integer',
         elements: [
@@ -84,13 +84,14 @@ export const columns = writable<Column[]>([
                 label: 'more than 30 seconds'
             }
         ],
-        filter: false
+        filter: false,
+        exclude: true
     },
     {
         id: '$createdAt',
         title: 'Created',
+        width: { min: 150, max: 180 },
         type: 'datetime',
-        width: 120,
         format: 'datetime',
         elements: [
             {

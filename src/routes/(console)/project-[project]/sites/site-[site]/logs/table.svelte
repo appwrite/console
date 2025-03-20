@@ -15,7 +15,7 @@
 
 <Table.Root {columns} let:root>
     <svelte:fragment slot="header" let:root>
-        {#each columns as { id, title }}
+        {#each columns.filter((c) => !c.exclude) as { id, title }}
             <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
@@ -26,7 +26,7 @@
                 openSheet = true;
                 selectedLogId = log.$id;
             }}>
-            {#each columns as column}
+            {#each columns.filter((c) => !c.exclude) as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key column.id}
@@ -38,10 +38,12 @@
                         {log.responseStatusCode}
                     {:else if column.id === 'requestPath'}
                         <Layout.Stack direction="row" alignItems="center" gap="s">
-                            <Badge
-                                variant="secondary"
-                                type={log.responseStatusCode >= 400 ? 'error' : 'success'}
-                                content={log.responseStatusCode.toString()} />
+                            <div>
+                                <Badge
+                                    variant="secondary"
+                                    type={log.responseStatusCode >= 400 ? 'error' : 'success'}
+                                    content={log.responseStatusCode.toString()} />
+                            </div>
                             <Typography.Code size="m">
                                 {log.requestMethod}
                             </Typography.Code>
