@@ -25,6 +25,8 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import { plansInfo } from '$lib/stores/billing';
+    import { Fieldset, Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let data;
 
@@ -70,6 +72,8 @@
     let couponData = data?.couponData;
     let campaign = data?.campaign;
     let billingPlan = BillingPlan.PRO;
+
+    $: onlyNewOrgs = (campaign && campaign.onlyNewOrgs) || (couponData && couponData.onlyNewOrgs);
 
     onMount(async () => {
         await loadPaymentMethods();
@@ -205,34 +209,48 @@
     <svelte:fragment slot="title">Apply credits</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-            {#if $organizationList?.total && !campaign?.onlyNewOrgs && canSelectOrg}
-                <InputSelect
-                    bind:value={selectedOrgId}
-                    label="Select organization"
-                    {options}
-                    required
-                    placeholder="Select organization"
-                    id="organization" />
-            {/if}
-            {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
-                {#if selectedOrgId === newOrgId}
-                    <InputText
-                        label="Organization name"
-                        placeholder="Enter organization name"
-                        id="name"
-                        required
-                        bind:value={name} />
+            <Layout.Stack gap="l">
+                <Fieldset legend="Organization">
+                    <Layout.Stack gap="l">
+                        {#if $organizationList?.total && !onlyNewOrgs && canSelectOrg}
+                            <InputSelect
+                                bind:value={selectedOrgId}
+                                label="Select organization"
+                                {options}
+                                required
+                                placeholder="Select organization"
+                                id="organization" />
+                        {/if}
+                        {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                            {#if selectedOrgId === newOrgId}
+                                <InputText
+                                    label="Organization name"
+                                    placeholder="Enter organization name"
+                                    id="name"
+                                    required
+                                    bind:value={name} />
+                            {/if}
+                            <InputTags
+                                bind:tags={collaborators}
+                                label="Invite members by email"
+                                placeholder="Enter email address(es)"
+                                pattern={emailRegex.toString()}
+                                id="members">
+                                <Tooltip slot="info">
+                                    <Icon icon={IconInfo} size="s" />
+                                    <span slot="tooltip">
+                                        Invited members will have access to all services and payment
+                                        data within your organization
+                                    </span>
+                                </Tooltip>
+                            </InputTags>
+                        {/if}
+                    </Layout.Stack>
+                </Fieldset>
+                {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
                 {/if}
-                <InputTags
-                    bind:tags={collaborators}
-                    label="Invite members by email"
-                    tooltip="Invited members will have access to all services and payment data within your organization"
-                    placeholder="Enter email address(es)"
-                    validityRegex={emailRegex}
-                    validityMessage="Invalid email address"
-                    id="members" />
-                <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
-            {/if}
+            </Layout.Stack>
         </Form>
         <Form bind:this={couponForm} onSubmit={addCoupon}>
             {#if !data?.couponData?.code && selectedOrgId}
