@@ -102,7 +102,7 @@
                             <LabelCard
                                 value="BRANCH"
                                 bind:group={behaviour}
-                                title="Branch"
+                                title="Git branch"
                                 disabled={!data.site?.providerRepositoryId}>
                                 Point this domain to a specific branch in your repository.
                             </LabelCard>
