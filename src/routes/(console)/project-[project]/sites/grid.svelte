@@ -11,25 +11,22 @@
     import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
     import SitesActionMenu from './sitesActionMenu.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { timer } from '$lib/helpers/timeConversion';
 
     export let siteList: Models.SiteList;
-    export let deployments: Models.Deployment[];
 
     let showAddCollaborator = false;
     let selectedSite: Models.Site = null;
 
     function getScreenshot(theme: string, site: Models.Site) {
-        const deployment =
-            deployments.find((d) => site.deploymentId && d.$id === site.deploymentId) ?? null;
-
         if (theme === 'dark') {
-            return deployment?.screenshotDark
-                ? getFilePreview(deployment.screenshotDark)
+            return site?.deploymentScreenshotDark
+                ? getFilePreview(site?.deploymentScreenshotDark)
                 : `${base}/images/sites/screenshot-placeholder-dark.svg`;
         }
 
-        return deployment?.screenshotLight
-            ? getFilePreview(deployment.screenshotLight)
+        return site?.deploymentScreenshotLight
+            ? getFilePreview(site?.deploymentScreenshotLight)
             : `${base}/images/sites/screenshot-placeholder-light.svg`;
     }
 
@@ -37,6 +34,14 @@
         // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
         const endpoint = getApiEndpoint();
         return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
+    }
+
+    function generateDesc(site: Models.Site) {
+        if (site.latestDeploymentStatus === 'building') {
+            return `Deployment building ${timer(site.latestDeploymentCreatedAt)}`;
+        } else {
+            return `Deployed ${timeFromNow(site.deploymentCreatedAt)}`;
+        }
     }
 </script>
 
@@ -47,7 +52,7 @@
             padding="xxs">
             <Card.Media
                 title={site.name}
-                description={`Updated ${timeFromNow(site.$updatedAt)}`}
+                description={generateDesc(site)}
                 src={getScreenshot($app.themeInUse, site)}
                 alt={site.name}
                 avatar>

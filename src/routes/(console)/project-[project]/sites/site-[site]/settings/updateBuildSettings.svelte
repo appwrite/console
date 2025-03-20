@@ -28,15 +28,12 @@
     let fallback = site.fallbackFile;
     let isButtonDisabled = true;
     let showFallback = site.adapter === Adapter.Static;
+    $: adapterData = selectedFramework.adapters.find((a) => a.key === site.adapter);
 
-    onMount(async () => {
-        installCommand =
-            site?.installCommand ?? selectedFramework.adapters[site.adapter].defaultInstallCommand;
-        buildCommand =
-            site?.buildCommand ?? selectedFramework.adapters[site.adapter].defaultBuildCommand;
-        outputDirectory =
-            site?.outputDirectory ??
-            selectedFramework.adapters[site.adapter].defaultOutputDirectory;
+    $: onMount(async () => {
+        installCommand = site?.installCommand ?? adapterData.installCommand;
+        buildCommand = site?.buildCommand ?? adapterData.buildCommand;
+        outputDirectory = site?.outputDirectory ?? adapterData.outputDirectory;
     });
 
     async function updateName() {
@@ -89,8 +86,9 @@
 
     $: if (adapter === Adapter.Static) {
         showFallback = true;
-        fallback ||= selectedFramework.adapters.static.fallbackFile;
-        console.log(fallback, selectedFramework.adapters.static);
+        fallback ||= selectedFramework.adapters.find((a) => a.key === Adapter.Static).fallbackFile;
+
+        console.log(selectedFramework.adapters.find((a) => a.key === Adapter.Static));
     } else {
         showFallback = false;
         fallback = undefined;
@@ -101,14 +99,17 @@
     }
 
     $: frameworkDataAdapter = selectedFramework.adapters?.length
-        ? selectedFramework.adapters[site.adapter]
-        : frameworks[0].adapters[site.adapter];
+        ? adapterData
+        : frameworks[0].adapters.find((a) => a.key === site.adapter);
 
     //TODO: fix after backend type is fixed
-    $: if (selectedFramework?.adapters?.length <= 1 || !selectedFramework?.adapters?.ssr?.key) {
+
+    $: hasSSR = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Ssr);
+    $: hasStatic = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Static);
+    $: if (selectedFramework?.adapters?.length <= 1 || !hasSSR) {
         adapter = Adapter.Static;
     }
-    $: if (selectedFramework?.adapters?.length <= 1 || !selectedFramework?.adapters?.static?.key) {
+    $: if (selectedFramework?.adapters?.length <= 1 || !hasStatic) {
         adapter = Adapter.Ssr;
     }
 </script>
@@ -139,7 +140,7 @@
                             (framework) => framework.key === frameworkKey
                         );
                     }} />
-                {#if selectedFramework.adapters?.length || (selectedFramework.adapters?.ssr?.key && selectedFramework.adapters?.static?.key)}
+                {#if selectedFramework.adapters?.length || (hasSSR && hasStatic)}
                     <Layout.Grid columnsXS={1} columns={2} gap="l">
                         <Card.Selector
                             title="Server side rendering"
@@ -202,7 +203,7 @@
                                 id="installCommand"
                                 label="Install command"
                                 bind:value={installCommand}
-                                placeholder={frameworkDataAdapter?.defaultInstallCommand} />
+                                placeholder={frameworkDataAdapter?.installCommand} />
 
                             <Button
                                 secondary
@@ -220,7 +221,7 @@
                                 id="buildCommand"
                                 label="Build command"
                                 bind:value={buildCommand}
-                                placeholder={frameworkDataAdapter?.defaultBuildCommand} />
+                                placeholder={frameworkDataAdapter?.buildCommand} />
                             <Button
                                 secondary
                                 size="s"
@@ -237,7 +238,7 @@
                                 id="outputDirectory"
                                 label="Output directory"
                                 bind:value={outputDirectory}
-                                placeholder={frameworkDataAdapter?.defaultOutputDirectory} />
+                                placeholder={frameworkDataAdapter?.outputDirectory} />
                             <Button
                                 secondary
                                 size="s"
