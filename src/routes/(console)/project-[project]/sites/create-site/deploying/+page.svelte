@@ -39,7 +39,8 @@
                 bind:deployment={data.deployment}
                 bind:site={data.site}
                 hideScrollButtons
-                height="calc(100dvh - 430px)" />
+                height="calc(100dvh - 430px)"
+                emptyCopy="No logs available yet..." />
         </Fieldset>
     </Layout.Stack>
     <svelte:fragment slot="aside">

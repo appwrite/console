@@ -130,8 +130,6 @@
     title="Create site"
     bind:showExitModal
     href={`${base}/project-${$page.params.project}/sites/`}
-    column
-    columnSize="s"
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
