@@ -208,65 +208,69 @@
 <WizardSecondaryContainer href={previousPage} bind:showExitModal confirmExit>
     <svelte:fragment slot="title">Apply credits</svelte:fragment>
     <WizardSecondaryContent>
-        <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-            <Layout.Stack gap="l">
-                <Fieldset legend="Organization">
-                    <Layout.Stack gap="l">
-                        {#if $organizationList?.total && !onlyNewOrgs && canSelectOrg}
-                            <InputSelect
-                                bind:value={selectedOrgId}
-                                label="Select organization"
-                                {options}
-                                required
-                                placeholder="Select organization"
-                                id="organization" />
-                        {/if}
-                        {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
-                            {#if selectedOrgId === newOrgId}
-                                <InputText
-                                    label="Organization name"
-                                    placeholder="Enter organization name"
-                                    id="name"
+        <Layout.Stack gap="l">
+            <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
+                <Layout.Stack gap="l">
+                    <Fieldset legend="Organization">
+                        <Layout.Stack gap="l">
+                            {#if $organizationList?.total && !onlyNewOrgs && canSelectOrg}
+                                <InputSelect
+                                    bind:value={selectedOrgId}
+                                    label="Select organization"
+                                    {options}
                                     required
-                                    bind:value={name} />
+                                    placeholder="Select organization"
+                                    id="organization" />
                             {/if}
-                            <InputTags
-                                bind:tags={collaborators}
-                                label="Invite members by email"
-                                placeholder="Enter email address(es)"
-                                pattern={emailRegex.toString()}
-                                id="members">
-                                <Tooltip slot="info">
-                                    <Icon icon={IconInfo} size="s" />
-                                    <span slot="tooltip">
-                                        Invited members will have access to all services and payment
-                                        data within your organization
-                                    </span>
-                                </Tooltip>
-                            </InputTags>
-                        {/if}
-                    </Layout.Stack>
-                </Fieldset>
-                {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
-                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
+                            {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                                {#if selectedOrgId === newOrgId}
+                                    <InputText
+                                        label="Organization name"
+                                        placeholder="Enter organization name"
+                                        id="name"
+                                        required
+                                        bind:value={name} />
+                                {/if}
+                                <InputTags
+                                    bind:tags={collaborators}
+                                    label="Invite members by email"
+                                    placeholder="Enter email address(es)"
+                                    pattern={emailRegex.toString()}
+                                    id="members">
+                                    <Tooltip slot="info">
+                                        <Icon icon={IconInfo} size="s" />
+                                        <span slot="tooltip">
+                                            Invited members will have access to all services and
+                                            payment data within your organization
+                                        </span>
+                                    </Tooltip>
+                                </InputTags>
+                            {/if}
+                        </Layout.Stack>
+                    </Fieldset>
+                    {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                        <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
+                    {/if}
+                </Layout.Stack>
+            </Form>
+            <Form bind:this={couponForm} onSubmit={addCoupon}>
+                {#if !data?.couponData?.code && selectedOrgId}
+                    <Fieldset legend="Coupon">
+                        <InputText
+                            required
+                            disabled={!!couponData?.credits}
+                            bind:value={coupon}
+                            placeholder="Enter coupon code"
+                            id="code"
+                            label="Coupon code">
+                            <Button submit secondary disabled={!!couponData?.credits}>
+                                <span class="text">Apply</span>
+                            </Button>
+                        </InputText>
+                    </Fieldset>
                 {/if}
-            </Layout.Stack>
-        </Form>
-        <Form bind:this={couponForm} onSubmit={addCoupon}>
-            {#if !data?.couponData?.code && selectedOrgId}
-                <InputText
-                    required
-                    disabled={!!couponData?.credits}
-                    bind:value={coupon}
-                    placeholder="Enter coupon code"
-                    id="code"
-                    label="Coupon code">
-                    <Button submit secondary disabled={!!couponData?.credits}>
-                        <span class="text">Apply</span>
-                    </Button>
-                </InputText>
-            {/if}
-        </Form>
+            </Form>
+        </Layout.Stack>
         <svelte:fragment slot="aside">
             {#if campaign?.template === 'card'}
                 <div
