@@ -3,29 +3,32 @@
     import { page } from '$app/stores';
     import { Card } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { app } from '$lib/stores/app';
+    import type { Models } from '@appwrite.io/console';
+    import { Image, Layout, Typography } from '@appwrite.io/pink-svelte';
+
+    export let template: Models.TemplateSite;
 </script>
 
 <Card padding="xs">
     <Layout.Stack gap="xxs">
-        <Typography.Text variant="m-500">Don't have a site yet?</Typography.Text>
+        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
+            >Don't have a site yet?</Typography.Text>
         <Typography.Text variant="m-400">
             Deploy the JavaScript starter template in seconds.
         </Typography.Text>
     </Layout.Stack>
 
     <Layout.Stack>
-        <!-- <Image
+        <Image
             ratio="16/9"
-            src={$app.themeInUse === 'dark'
-                ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                : `${base}/images/sites/screenshot-placeholder-light.svg`}
-            alt="preview" /> -->
+            src={$app.themeInUse === 'dark' ? template.screenshotDark : template.screenshotLight}
+            alt="preview" />
 
         <Button
             fullWidth
             secondary
-            href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-starter-for-js`}>
+            href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}>
             Deploy
         </Button>
     </Layout.Stack>

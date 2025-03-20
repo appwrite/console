@@ -125,7 +125,6 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<!-- TODO: re enable aside -->
 <Wizard
     title="Create site"
     bind:showExitModal
@@ -182,7 +181,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside />
+        <Aside template={data.template} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
