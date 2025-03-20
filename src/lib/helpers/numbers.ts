@@ -1,14 +1,15 @@
 export function abbreviateNumber(num: number, decimals: number = 1): string {
     if (isNaN(num)) return String(num);
+    const factor = 10 ** decimals;
     if (num >= 1_000_000_000) {
         const result = num / 1_000_000_000;
-        return result.toFixed(result % 1 !== 0 ? decimals : 0) + 'B';
+        return (Math.floor(result * factor) / factor).toFixed(decimals) + 'B';
     } else if (num >= 1_000_000) {
         const result = num / 1_000_000;
-        return result.toFixed(result % 1 !== 0 ? decimals : 0) + 'M';
+        return (Math.floor(result * factor) / factor).toFixed(decimals) + 'M';
     } else if (num >= 1000) {
         const result = num / 1000;
-        return result.toFixed(result % 1 !== 0 ? decimals : 0) + 'K';
+        return (Math.floor(result * factor) / factor).toFixed(decimals) + 'K';
     } else {
         return num.toString();
     }
