@@ -69,10 +69,10 @@
 </script>
 
 <div class="dual-time-stamp-wrapper">
-    <Popover let:showTooltip let:hideTooltip {placement} portal>
+    <Popover let:show let:hide {placement} portal>
         <button
-            on:mouseenter={() => setTimeout(showTooltip, 25)}
-            on:mouseleave={() => shouldHidePopover(hideTooltip)}>
+            on:mouseenter={() => setTimeout(show, 25)}
+            on:mouseleave={() => shouldHidePopover(hide)}>
             <slot>{capitalize(timeFromNow(time))}</slot>
         </button>
 
@@ -84,17 +84,13 @@
 
             <!-- `Absolute time` as per design -->
             <Layout.Stack gap="xxs">
-                <!--
-                    PR for custom copy [`copyText`]:
-                    https://github.com/appwrite/pink/pull/305
-                -->
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <div class="body-400">
                         <InteractiveText
                             isVisible
                             variant="copy"
                             text={toLocaleDateTime(time, 'UTC')}
-                            copyText={new Date(time).toISOString()} />
+                            value={new Date(toLocaleDateTime(time, 'UTC')).toISOString()} />
                     </div>
 
                     <Badge variant="secondary" content="UTC" size="xs" />
@@ -106,7 +102,7 @@
                             isVisible
                             variant="copy"
                             text={toLocaleDateTime(time)}
-                            copyText={new Date(time).toLocaleTimeString()} />
+                            value={new Date(toLocaleDateTime(time)).toISOString()} />
                     </div>
 
                     <Badge variant="secondary" content="UTC{getUTCOffset()}" size="xs" />

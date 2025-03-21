@@ -2,6 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Id } from '$lib/components';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { PageData } from './$types';
     import { columns } from './store';
@@ -63,7 +64,9 @@
                             </span>
                         </Tooltip>
                     {:else}
-                        {toLocaleDateTime(database[column.id])}
+                        <DualTimeView time={database[column.id]}>
+                            {toLocaleDateTime(database[column.id])}
+                        </DualTimeView>
                     {/if}
                 </Table.Cell>
             {/each}
