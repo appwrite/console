@@ -15,8 +15,6 @@ export const load = async ({ url, route }) => {
 
     const siteTemplatesList = await sdk.forProject.sites.listTemplates(undefined, undefined, 100);
 
-    console.log(siteTemplatesList);
-
     const [frameworksSet, useCasesSet] = siteTemplatesList.templates.reduce(
         ([fr, uc], next) => {
             next.useCases.forEach((useCase) => uc.add(useCase));

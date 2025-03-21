@@ -1,6 +1,6 @@
 <script lang="ts">
     import { IconGlobeAlt } from '@appwrite.io/pink-icons-svelte';
-    import { Card, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Card, Divider, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import VerificationFieldset from './verificationFieldset.svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -12,12 +12,15 @@
     import { page } from '$app/stores';
     import Wizard from '$lib/layout/wizard.svelte';
     import { base } from '$app/paths';
+    import { writable } from 'svelte/store';
 
     export let data;
     let selectedTab: 'cname' | 'nameserver';
     let domainData = data.domain;
 
     let routeBase = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
+    let formComponent: Form;
+    let isSubmitting = writable(false);
 
     async function addDomain() {
         const isNewDomain =
@@ -79,6 +82,11 @@
                 domain={$page.params.domain}
                 verified={isVerified}
                 bind:selectedTab />
+
+            <Divider />
+            <Layout.Stack>
+                <Button submit disabled={$isSubmitting}>Verify</Button>
+            </Layout.Stack>
         </Layout.Stack>
     </Form>
 </Wizard>
