@@ -42,7 +42,7 @@
 
     async function create() {
         try {
-            domain = await buildVerboseDomain(name, $project.name, $organization.name, id);
+            domain = await buildVerboseDomain(name, $organization.name, $project.name, id);
 
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(

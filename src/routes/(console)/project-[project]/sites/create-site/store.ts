@@ -1,18 +1,13 @@
 import { sdk } from '$lib/stores/sdk';
-import { consoleVariables } from '$routes/(console)/store';
 import { ConsoleResourceType, ID } from '@appwrite.io/console';
-import { get } from 'svelte/store';
 
 function toURLSafe(s: string) {
     return s.replace(/[^a-zA-Z0-9-]/g, '-');
 }
 
-export async function checkDomain(domain: string) {
+export async function checkDomain(domain: string, apex: string) {
     try {
-        await sdk.forConsole.console.getResource(
-            `${domain}.${get(consoleVariables)._APP_DOMAIN_SITES}`,
-            ConsoleResourceType.Rules
-        );
+        await sdk.forConsole.console.getResource(`${domain}.${apex}`, ConsoleResourceType.Rules);
         return true;
     } catch {
         return false;
@@ -20,6 +15,7 @@ export async function checkDomain(domain: string) {
 }
 
 export async function buildVerboseDomain(
+    apex: string,
     name: string,
     specifier: string,
     secondarySpecifier?: string,
@@ -32,21 +28,21 @@ export async function buildVerboseDomain(
         : '';
     const safeUnique = unique ? toURLSafe(unique).toLowerCase() : ID.unique();
     let domain = `${safeName}`;
-    if (await checkDomain(domain)) {
+    if (await checkDomain(domain, apex)) {
         return domain;
     }
     domain += '-' + safeSpecifier;
-    if (await checkDomain(domain)) {
+    if (await checkDomain(domain, apex)) {
         return domain;
     }
     if (secondarySpecifier) {
         domain += '-' + safeSecondarySpecifier;
-        if (await checkDomain(domain)) {
+        if (await checkDomain(domain, apex)) {
             return domain;
         }
     }
     domain += '-' + safeUnique;
-    if (await checkDomain(domain)) {
+    if (await checkDomain(domain, apex)) {
         return domain;
     }
 }
