@@ -26,8 +26,8 @@ export function setFilters(localTags: TagValue[], filterCols: FilterData[], $col
             }
         });
 
-        // Reasinging the filters to trigger reactivity
-        filterCols = filterCols;
+        // Reassigning the filters to trigger reactivity
+        filterCols = [...filterCols];
     }
 }
 
