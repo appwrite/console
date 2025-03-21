@@ -28,12 +28,12 @@
     let fallback = site.fallbackFile;
     let isButtonDisabled = true;
     let showFallback = site.adapter === Adapter.Static;
-    $: adapterData = selectedFramework.adapters.find((a) => a.key === site.adapter);
+    $: frameworkAdapterData = selectedFramework.adapters.find((a) => a.key === adapter);
 
-    $: onMount(async () => {
-        installCommand = site?.installCommand ?? adapterData.installCommand;
-        buildCommand = site?.buildCommand ?? adapterData.buildCommand;
-        outputDirectory = site?.outputDirectory ?? adapterData.outputDirectory;
+    onMount(async () => {
+        installCommand = site?.installCommand ?? frameworkAdapterData?.installCommand;
+        buildCommand = site?.buildCommand ?? frameworkAdapterData?.buildCommand;
+        outputDirectory = site?.outputDirectory ?? frameworkAdapterData?.outputDirectory;
     });
 
     async function updateName() {
@@ -87,8 +87,6 @@
     $: if (adapter === Adapter.Static) {
         showFallback = true;
         fallback ||= selectedFramework.adapters.find((a) => a.key === Adapter.Static).fallbackFile;
-
-        console.log(selectedFramework.adapters.find((a) => a.key === Adapter.Static));
     } else {
         showFallback = false;
         fallback = undefined;
@@ -97,12 +95,6 @@
     $: if (fallback === '') {
         fallback = null;
     }
-
-    $: frameworkDataAdapter = selectedFramework.adapters?.length
-        ? adapterData
-        : frameworks[0].adapters.find((a) => a.key === site.adapter);
-
-    //TODO: fix after backend type is fixed
 
     $: hasSSR = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Ssr);
     $: hasStatic = selectedFramework?.adapters?.some((a) => a?.key === Adapter.Static);
@@ -140,7 +132,7 @@
                             (framework) => framework.key === frameworkKey
                         );
                     }} />
-                {#if selectedFramework.adapters?.length || (hasSSR && hasStatic)}
+                {#if selectedFramework.adapters?.length > 2}
                     <Layout.Grid columnsXS={1} columns={2} gap="l">
                         <Card.Selector
                             title="Server side rendering"
@@ -203,7 +195,7 @@
                                 id="installCommand"
                                 label="Install command"
                                 bind:value={installCommand}
-                                placeholder={frameworkDataAdapter?.installCommand} />
+                                placeholder={frameworkAdapterData?.installCommand} />
 
                             <Button
                                 secondary
@@ -221,7 +213,7 @@
                                 id="buildCommand"
                                 label="Build command"
                                 bind:value={buildCommand}
-                                placeholder={frameworkDataAdapter?.buildCommand} />
+                                placeholder={frameworkAdapterData?.buildCommand} />
                             <Button
                                 secondary
                                 size="s"
@@ -238,7 +230,7 @@
                                 id="outputDirectory"
                                 label="Output directory"
                                 bind:value={outputDirectory}
-                                placeholder={frameworkDataAdapter?.outputDirectory} />
+                                placeholder={frameworkAdapterData?.outputDirectory} />
                             <Button
                                 secondary
                                 size="s"
