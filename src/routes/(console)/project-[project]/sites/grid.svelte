@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { timeFromNow } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
-    import { Card, Layout, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Card, Icon, Layout, Popover, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { getFrameworkIcon } from './store';
     import { SvgIcon } from '$lib/components';
     import { app } from '$lib/stores/app';
@@ -12,6 +12,8 @@
     import SitesActionMenu from './sitesActionMenu.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { timer } from '$lib/helpers/timeConversion';
+    import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
+    import { Link } from '$lib/elements';
 
     export let siteList: Models.SiteList;
 
@@ -65,6 +67,31 @@
                     </Tooltip>
                 </svelte:fragment>
                 <SitesActionMenu {site} bind:showAddCollaborator bind:selectedSite />
+
+                <svelte:fragment slot="description-end">
+                    {#if site.latestDeploymentStatus === 'failed'}
+                        <Popover let:toggle portal>
+                            <button on:mouseenter={(e) => toggle(e)}>
+                                <Layout.Stack alignItems="center">
+                                    <Icon
+                                        icon={IconExclamation}
+                                        size="s"
+                                        color="--bgcolor-warning" />
+                                </Layout.Stack>
+                            </button>
+                            <svelte:fragment slot="tooltip">
+                                <Typography.Text variant="m-400">
+                                    Last deployment failed {timeFromNow(
+                                        site.latestDeploymentCreatedAt
+                                    )}. <Link
+                                        href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
+                                        View logs
+                                    </Link>
+                                </Typography.Text>
+                            </svelte:fragment>
+                        </Popover>
+                    {/if}
+                </svelte:fragment>
             </Card.Media>
         </Card.Link>
     {/each}
