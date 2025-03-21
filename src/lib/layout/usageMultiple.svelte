@@ -56,7 +56,10 @@
                     }))} />
 
                 {#if legendData}
-                    <Legend {legendData} numberFormat={legendNumberFormat} />
+                    <Legend
+                        {legendData}
+                        decimalsForAbbreviate={2}
+                        numberFormat={legendNumberFormat} />
                 {/if}
             </div>
         {/if}

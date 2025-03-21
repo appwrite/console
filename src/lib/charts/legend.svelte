@@ -11,6 +11,7 @@
     import { abbreviateNumber, formatNumberWithCommas } from '$lib/helpers/numbers';
 
     export let legendData: LegendData[] = [];
+    export let decimalsForAbbreviate: number = 1;
     export let numberFormat: 'comma' | 'abbreviate' = 'comma';
 
     let colors = Object.values(Colors);
@@ -20,9 +21,9 @@
     {#each legendData as { name, value }, index}
         {@const formattedValue =
             typeof value === 'number'
-                ? numberFormat === 'abbreviate'
-                    ? abbreviateNumber(value)
-                    : formatNumberWithCommas(value)
+                ? numberFormat === 'comma'
+                    ? formatNumberWithCommas(value)
+                    : abbreviateNumber(value, decimalsForAbbreviate)
                 : value}
         <Status status="none" statusIconStyle="background-color: {colors[index % colors.length]}">
             {name} ({formattedValue})

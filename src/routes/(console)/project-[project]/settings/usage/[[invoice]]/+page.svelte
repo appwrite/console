@@ -233,7 +233,7 @@
                         ]} />
                 </div>
 
-                <Legend {legendData} numberFormat="abbreviate" />
+                <Legend {legendData} numberFormat="abbreviate" decimalsForAbbreviate={2} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
