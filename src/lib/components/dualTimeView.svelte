@@ -5,7 +5,7 @@
     import { Badge, InteractiveText, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
 
     export let time: string = '';
-    export let placement: ComponentProps<Popover>['placement'] = 'bottom-end';
+    export let placement: ComponentProps<Popover>['placement'] = 'bottom';
 
     function timeDifference(dateString: string): string {
         const SECONDS_IN_MINUTE = 60;
@@ -130,10 +130,6 @@
             font-size: var(--font-size-s) !important;
             color: var(--fgcolor-neutral-secondary) !important;
             font-family: var(--font-family-sansserif) !important;
-        }
-
-        & :global(.interactiveTextContainer) {
-            padding-inline-start: unset !important;
         }
     }
 </style>
