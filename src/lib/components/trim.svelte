@@ -3,8 +3,8 @@
     import { throttle } from '$lib/helpers/functions';
     import { onMount } from 'svelte';
 
-    export let alternativeTrim = false;
     let showTooltip = false;
+    export let alternativeTrim = false;
     let container: HTMLSpanElement | null;
 
     onMount(onResize);
@@ -21,6 +21,7 @@
     bind:this={container}
     use:tooltip={{
         disabled: !showTooltip,
+        appendTo: 'parent',
         content: container?.innerText ?? undefined,
         maxWidth: '30rem'
     }}>
