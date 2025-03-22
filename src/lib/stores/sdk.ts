@@ -94,6 +94,14 @@ export const realtime = {
         const endpoint = getApiEndpoint(region);
         if (endpoint !== clientRealtime.config.endpoint) {
             clientRealtime.setEndpoint(endpoint);
+
+            /**
+             * Workaround: the SDK doesn't update the realtime in `setEndpoint`.
+             * Until that's fixed, we manually set the realtime endpoint like this:
+             */
+            clientRealtime.setEndpointRealtime(
+                endpoint.replace('https://', 'wss://').replace('http://', 'ws://')
+            );
         }
         return clientRealtime;
     }

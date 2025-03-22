@@ -40,7 +40,7 @@
     let error: string;
 
     onMount(async () => {
-        /* use console sdk here as project is not always available here. */
+        /* use console sdk as project is not always available here. */
         const locale = await sdk.forConsole.locale.get();
         const countryList = await sdk.forConsole.locale.listCountries();
 
