@@ -238,7 +238,7 @@
                         ]} />
                 </div>
 
-                <Legend {legendData} />
+                <Legend {legendData} numberFormat="abbreviate" decimalsForAbbreviate={2} />
 
                 {#if projects?.length > 0}
                     <ProjectBreakdown

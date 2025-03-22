@@ -9,13 +9,14 @@
     import { organization, currentPlan } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
+    import BudgetAlert from './budgetAlert.svelte';
 
     let capActive = false;
     let budget: number;
 
     onMount(() => {
         budget = $organization?.billingBudget;
-        capActive = !!$organization?.billingBudget;
+        capActive = $organization?.billingBudget !== null;
     });
 
     async function updateBudget() {
@@ -25,7 +26,7 @@
                 budget,
                 $organization.budgetAlerts
             );
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
                 isHtml: true,
@@ -44,13 +45,13 @@
     }
 
     $: if (!capActive) {
-        budget = 0;
+        budget = null;
     }
 </script>
 
 <Form onSubmit={updateBudget}>
     <CardGrid>
-        <Heading tag="h2" size="6">Budget cap</Heading>
+        <Heading id="update-budget" tag="h2" size="6">Budget cap</Heading>
 
         <p class="text">
             Restrict your resource usage by setting a budget cap. Cap usage is reset at the
@@ -113,3 +114,5 @@
         </svelte:fragment>
     </CardGrid>
 </Form>
+
+<BudgetAlert alertsEnabled={capActive && budget > 0} />

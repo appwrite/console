@@ -135,7 +135,8 @@
                 $func.providerRepositoryId || undefined,
                 selectedBranch,
                 silentMode,
-                selectedDir
+                selectedDir,
+                $func.specification || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({

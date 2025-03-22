@@ -21,3 +21,10 @@
     {id}>
     <slot />
 </svelte:element>
+
+<style>
+    :target {
+        padding-top: 120px;
+        margin-top: -120px;
+    }
+</style>
