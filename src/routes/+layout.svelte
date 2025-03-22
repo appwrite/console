@@ -32,6 +32,19 @@
             if (ref || referrer || utmSource || utmCampaign || utmMedium) {
                 sdk.forConsole.sources.create(ref, referrer, utmSource, utmCampaign, utmMedium);
             }
+
+            if (referrer || ref) {
+                sessionStorage.setItem('utmReferral', referrer ? referrer : (ref ?? ''));
+            }
+            if (utmSource) {
+                sessionStorage.setItem('utmSource', utmSource);
+            }
+            if (utmMedium) {
+                sessionStorage.setItem('utmMedium', utmMedium);
+            }
+            if (utmCampaign) {
+                sessionStorage.setItem('utmCampaign', utmCampaign);
+            }
         }
 
         if ($page.url.searchParams.has('migrate')) {
@@ -47,7 +60,7 @@
                     .getCampaign(coupon.campaign)
                     .catch<null>(() => null);
                 if (campaign && $user) {
-                    goto(`${base}/apply-credit?code=${code}`);
+                    goto(`${base}/apply-credit?${$page.url.searchParams}`);
                     loading.set(false);
                     return;
                 }
@@ -59,7 +72,8 @@
                 .getCampaign(campaignId)
                 .catch<null>(() => null);
             if (campaign) {
-                goto(`${base}/apply-credit?campaign=${campaign.$id}`);
+                goto(`${base}/apply-credit?${$page.url.searchParams}`);
+
                 loading.set(false);
                 return;
             }

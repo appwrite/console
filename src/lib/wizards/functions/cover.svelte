@@ -160,9 +160,9 @@
                                             </div>
                                             <div class="body-text-2">
                                                 {runtimeDetail.name}
-                                                {#if runtimeDetail.name.toLowerCase() === 'deno'}
-                                                    <span class="inline-tag">New</span>
-                                                {/if}
+                                                <!--{#if runtimeDetail.name.toLowerCase() === 'deno'}-->
+                                                <!--    <span class="inline-tag">New</span>-->
+                                                <!--{/if}-->
                                             </div>
                                         </button>
                                     </li>

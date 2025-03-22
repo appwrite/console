@@ -90,7 +90,7 @@
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid hideFooter={message.status != 'draft'}>
+    <CardGrid hideFooter={message.status !== 'draft'}>
         <Heading tag="h6" size="7" id="variables">Topics</Heading>
         <svelte:fragment slot="aside">
             {@const sum = topicIds.length}
@@ -99,7 +99,7 @@
                     <div>
                         <span class="eyebrow-heading-3">Topic</span>
                     </div>
-                    {#if message.status == 'draft'}
+                    {#if message.status === 'draft'}
                         <Button
                             text
                             noMargin
@@ -143,7 +143,7 @@
                                                     text
                                                     class="is-only-icon"
                                                     ariaLabel="delete"
-                                                    disabled={message.status != 'draft'}
+                                                    disabled={message.status !== 'draft'}
                                                     on:click={() => removeTopic(topic.$id)}>
                                                     <span
                                                         class="icon-x u-font-size-20"
@@ -161,7 +161,7 @@
                         <PaginationInline {sum} {limit} bind:offset />
                     </div>
                 </div>
-            {:else if message.status == 'draft'}
+            {:else if message.status === 'draft'}
                 <Empty on:click={() => (showTopics = true)}>Add a topic</Empty>
             {:else}
                 <EmptySearch hidePagination>

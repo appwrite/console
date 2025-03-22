@@ -1,8 +1,8 @@
-import type { Client, Models } from '@appwrite.io/console';
-import type { Organization, OrganizationList } from '../stores/organization';
-import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
+import type { Client, Models } from '@appwrite.io/console';
+import type { PaymentMethod } from '@stripe/stripe-js';
+import type { Organization, OrganizationError, OrganizationList } from '../stores/organization';
 
 export type PaymentMethodData = {
     $id: string;
@@ -63,6 +63,32 @@ export type Invoice = {
 export type InvoiceList = {
     invoices: Invoice[];
     total: number;
+};
+
+export type Estimation = {
+    amount: number;
+    grossAmount: number;
+    credits: number;
+    discount: number;
+    items: EstimationItem[];
+    discounts: EstimationItem[];
+    trialDays: number;
+    trialEndDate: string | undefined;
+    error: string | undefined;
+};
+
+export type EstimationItem = {
+    label: string;
+    value: number;
+};
+
+export type EstimationDeleteOrganization = {
+    amount: number;
+    grossAmount: number;
+    credits: number;
+    discount: number;
+    items: EstimationItem[];
+    unpaidInvoices: Invoice[];
 };
 
 export type Coupon = {
@@ -146,10 +172,12 @@ export type Aggregation = {
      * Total amount of the invoice.
      */
     amount: number;
+    additionalMembers: number;
+
     /**
      * Price for additional members
      */
-    additionalMembers: number;
+    additionalMemberAmount: number;
     /**
      * Total storage usage.
      */
@@ -174,14 +202,24 @@ export type Aggregation = {
      * Usage logs for the billing period.
      */
     resources: OrganizationUsage;
+    /**
+     * Aggregation billing plan
+     */
+    plan: string;
 };
 
 export type OrganizationUsage = {
     bandwidth: Array<Models.Metric>;
     executions: Array<Models.Metric>;
+    databasesReads: Array<Models.Metric>;
+    databasesWrites: Array<Models.Metric>;
+    imageTransformations: Array<Models.Metric>;
     executionsTotal: number;
     filesStorageTotal: number;
     buildsStorageTotal: number;
+    databasesReadsTotal: number;
+    databasesWritesTotal: number;
+    imageTransformationsTotal: number;
     deploymentsStorageTotal: number;
     executionsMBSecondsTotal: number;
     buildsMBSecondsTotal: number;
@@ -194,9 +232,12 @@ export type OrganizationUsage = {
         storage: number;
         executions: number;
         bandwidth: number;
+        databasesReads: number;
+        databasesWrites: number;
         users: number;
         authPhoneTotal: number;
         authPhoneEstimate: number;
+        imageTransformations: number;
     }>;
     authPhoneTotal: number;
     authPhoneEstimate: number;
@@ -310,7 +351,7 @@ export type Plan = {
     supportsCredits: boolean;
 };
 
-export type PlansInfo = {
+export type PlanList = {
     plans: Plan[];
     total: number;
 };
@@ -345,24 +386,71 @@ export class Billing {
         );
     }
 
+    async validateOrganization(organizationId: string, invites: string[]): Promise<Organization> {
+        const path = `/organizations/${organizationId}/validate`;
+        const params = {
+            organizationId,
+            invites
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'PATCH',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async createOrganization(
         organizationId: string,
         name: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
-    ): Promise<Organization> {
+        billingAddressId: string = null,
+        couponId: string = null,
+        invites: Array<string> = [],
+        budget: number = undefined,
+        taxId: string = null
+    ): Promise<Organization | OrganizationError> {
         const path = `/organizations`;
         const params = {
             organizationId,
             name,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            couponId,
+            invites,
+            budget,
+            taxId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'POST',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async estimationCreateOrganization(
+        billingPlan: string,
+        couponId: string = null,
+        invites: Array<string> = []
+    ): Promise<Estimation> {
+        const path = `/organizations/estimations/create-organization`;
+        const params = {
+            billingPlan,
+            couponId,
+            invites
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
             uri,
             {
                 'content-type': 'application/json'
@@ -387,20 +475,30 @@ export class Billing {
         );
     }
 
-    async getPlan(organizationId: string): Promise<Plan> {
-        const path = `/organizations/${organizationId}/plan`;
-        const params = {
-            organizationId
-        };
+    async estimationDeleteOrganization(
+        organizationId: string
+    ): Promise<EstimationDeleteOrganization> {
+        const path = `/organizations/${organizationId}/estimations/delete-organization`;
         const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'get',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
+        return await this.client.call('patch', uri, {
+            'content-type': 'application/json'
+        });
+    }
+
+    async getOrganizationPlan(organizationId: string): Promise<Plan> {
+        const path = `/organizations/${organizationId}/plan`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('get', uri, {
+            'content-type': 'application/json'
+        });
+    }
+
+    async getPlan(planId: string): Promise<Plan> {
+        const path = `/console/plans/${planId}`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('get', uri, {
+            'content-type': 'application/json'
+        });
     }
 
     async getRoles(organizationId: string): Promise<Roles> {
@@ -415,14 +513,22 @@ export class Billing {
         organizationId: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
-    ): Promise<Organization> {
+        billingAddressId: string = undefined,
+        couponId: string = null,
+        invites: Array<string> = [],
+        budget: number = undefined,
+        taxId: string = null
+    ): Promise<Organization | OrganizationError> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
             organizationId,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            couponId,
+            invites,
+            budget,
+            taxId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -433,6 +539,37 @@ export class Billing {
             },
             params
         );
+    }
+
+    async estimationUpdatePlan(
+        organizationId: string,
+        billingPlan: string,
+        couponId: string = null,
+        invites: Array<string> = []
+    ): Promise<Estimation> {
+        const path = `/organizations/${organizationId}/estimations/update-plan`;
+        const params = {
+            billingPlan,
+            couponId,
+            invites
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async cancelDowngrade(organizationId: string): Promise<Organization | OrganizationError> {
+        const path = `/organizations/${organizationId}/plan/cancel`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('patch', uri, {
+            'content-type': 'application/json'
+        });
     }
 
     async updateBudget(
@@ -756,6 +893,22 @@ export class Billing {
         } catch (e) {
             return { error: { code: e.code, message: e.message } };
         }
+    }
+
+    async getCouponAccount(couponId: string): Promise<Coupon> {
+        const path = `/account/coupons/${couponId}`;
+        const params = {
+            couponId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
     }
 
     async getCoupon(couponId: string): Promise<Coupon> {
@@ -1130,7 +1283,7 @@ export class Billing {
         );
     }
 
-    async getPlansInfo(): Promise<PlansInfo> {
+    async getPlansInfo(): Promise<PlanList> {
         const path = `/console/plans`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);

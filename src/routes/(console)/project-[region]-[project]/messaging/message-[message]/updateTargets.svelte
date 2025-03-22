@@ -8,7 +8,14 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { CardGrid, Heading, Empty, PaginationInline, EmptySearch } from '$lib/components';
+    import {
+        CardGrid,
+        Heading,
+        Empty,
+        PaginationInline,
+        EmptySearch,
+        Alert
+    } from '$lib/components';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -23,6 +30,7 @@
 
     export let message: Models.Message & { data: Record<string, unknown> };
     export let selectedTargetsById: Record<string, Models.Target>;
+    export let selectedRecipients: Record<string, Models.User<Models.Preferences>>;
 
     let providerType: MessagingProviderType;
     let offset = 0;
@@ -85,20 +93,79 @@
         }
     }
 
+    $: isDraft = message.status === 'draft';
+
     $: disabled = symmetricDifference(targetIds, Object.keys(selectedTargetsById)).length === 0;
+
+    $: recipients = message.users.reduce((acc, userId) => {
+        const recipient = selectedRecipients[userId];
+        if (recipient) {
+            const target = recipient.targets.find((t) => t.providerType === message.providerType);
+
+            if (target) {
+                acc[userId] = {
+                    $id: recipient.$id,
+                    name: recipient.name,
+                    identifier: target.identifier,
+                    providerType: message.providerType
+                };
+            }
+        } else {
+            // user id exists but the user is null means the user account was deleted.
+            acc[userId] = null;
+        }
+        return acc;
+    }, {});
+
+    $: recipientsAvailable = recipientsCount > 0;
+    $: recipientsCount = Object.keys(recipients).filter((user) => user !== null).length;
+    $: hasDeletedUsers = Object.values(recipients).some((source) => source == null);
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid hideFooter={message.status != 'draft'}>
+    <CardGrid hideFooter={!isDraft}>
         <Heading tag="h6" size="7" id="variables">Targets</Heading>
         <svelte:fragment slot="aside">
-            {@const sum = targetIds.length}
-            {#if sum}
+            {@const sum = targetIds.length || Object.values(recipients).length}
+            {@const dataSource =
+                targets.length > 0
+                    ? targets
+                    : Object.values(recipients).filter((user) => user !== null)}
+
+            {#if hasDeletedUsers}
+                <div class:u-padding-block-end-16={dataSource.length}>
+                    {#if hasDeletedUsers && !dataSource.length}
+                        <Alert type="info">
+                            <svelte:fragment slot="title"
+                                >There are no targets to show</svelte:fragment>
+                            This message was sent to users who are no longer available, so their information
+                            cannot be displayed.
+                        </Alert>
+                    {:else}
+                        <Alert
+                            type="info"
+                            dismissible={dataSource.length > 0}
+                            on:dismiss={() => (hasDeletedUsers = false)}>
+                            This message was sent to users who are no longer available, so their
+                            information cannot be displayed.
+                        </Alert>
+                    {/if}
+                </div>
+            {/if}
+
+            {#if sum && dataSource.length}
                 <div class="u-flex u-cross-center u-main-space-between">
-                    <div>
+                    <div class="u-width-full-line u-flex u-main-space-between">
                         <span class="eyebrow-heading-3">Target</span>
+
+                        {#if recipientsAvailable}
+                            <span class="eyebrow-heading-3">Identifier</span>
+
+                            <!-- empty header -->
+                            <span class="eyebrow-heading-3" />
+                        {/if}
                     </div>
-                    {#if message.status == 'draft'}
+                    {#if isDraft}
                         <Button
                             text
                             noMargin
@@ -110,32 +177,47 @@
                         </Button>
                     {/if}
                 </div>
+
                 <div class="u-flex u-flex-vertical u-gap-24">
                     <Table noMargin noStyles>
                         <TableHeader>
                             <TableCellHead style="padding: 0" />
-                            <TableCellHead width={40} style="padding: 0" />
+
+                            {#if recipientsAvailable}
+                                <TableCellHead style="padding: 0" />
+                            {/if}
+
+                            <TableCellHead width={25} style="padding: 0" />
                         </TableHeader>
                         <TableBody>
                             <TableRow />
-                            {#each targets.slice(offset, offset + limit) as target (target.$id)}
+                            <!-- dataSource contains objects with $id, providerType, name & identifier -->
+                            {#each dataSource.slice(offset, offset + limit) as source (source['$id'])}
                                 <TableRow>
                                     <TableCell title="Target">
                                         <div class="u-flex u-cross-center">
                                             <span class="title">
                                                 <span class="u-line-height-1-5">
                                                     <span class="body-text-2" data-private>
-                                                        {#if target.providerType === MessagingProviderType.Push}
-                                                            {target.name}
+                                                        {#if source['providerType'] === MessagingProviderType.Push}
+                                                            {source['name']}
                                                         {:else}
-                                                            {target.identifier}
+                                                            {source['identifier']}
                                                         {/if}
                                                     </span>
                                                 </span></span>
                                         </div>
                                     </TableCell>
+                                    {#if recipientsAvailable}
+                                        <TableCell title="Identifier">
+                                            <span class="body-text-2" data-private>
+                                                {source['name']}
+                                            </span>
+                                        </TableCell>
+                                    {/if}
+
                                     <TableCell title="Remove">
-                                        {#if message.status === 'draft'}
+                                        {#if isDraft}
                                             <div
                                                 class="u-flex u-main-end"
                                                 style="--p-button-size: 1.25rem">
@@ -143,8 +225,8 @@
                                                     text
                                                     class="is-only-icon"
                                                     ariaLabel="delete"
-                                                    disabled={message.status != 'draft'}
-                                                    on:click={() => removeTarget(target.$id)}>
+                                                    disabled={!isDraft}
+                                                    on:click={() => removeTarget(source['$id'])}>
                                                     <span
                                                         class="icon-x u-font-size-20"
                                                         aria-hidden="true" />
@@ -161,9 +243,9 @@
                         <PaginationInline {sum} {limit} bind:offset />
                     </div>
                 </div>
-            {:else if message.status == 'draft'}
+            {:else if isDraft}
                 <Empty on:click={() => (showTargets = true)}>Add a target</Empty>
-            {:else}
+            {:else if !sum && !hasDeletedUsers}
                 <EmptySearch hidePagination>
                     <div class="u-text-center">
                         No targets have been selected.

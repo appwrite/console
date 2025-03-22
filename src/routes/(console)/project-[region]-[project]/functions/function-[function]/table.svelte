@@ -15,7 +15,7 @@
     import { Pill } from '$lib/elements';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import DeploymentSource from './deploymentSource.svelte';
-    import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
+    import DeploymentBy from './deploymentBy.svelte';
     import { timer } from '$lib/actions/timer';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { func } from './store';
@@ -95,9 +95,13 @@
                             <TableCell width={column.width} title={column.title}>
                                 <DeploymentSource {deployment} />
                             </TableCell>
+                        {:else if column.id === '$createdAt'}
+                            <TableCellText width={column.width} title={column.title}>
+                                <DeploymentBy {deployment} type="create" />
+                            </TableCellText>
                         {:else if column.id === '$updatedAt'}
                             <TableCellText width={column.width} title={column.title}>
-                                <DeploymentCreatedBy {deployment} />
+                                <DeploymentBy {deployment} type="update" />
                             </TableCellText>
                         {:else if column.id === 'buildTime'}
                             <TableCellText width={column.width} title={column.title}>

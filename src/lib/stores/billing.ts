@@ -1,40 +1,39 @@
-import { page } from '$app/stores';
-import { derived, get, writable } from 'svelte/store';
-import { sdk } from './sdk';
-import { organization, type Organization } from './organization';
-import type {
-    InvoiceList,
-    AddressesList,
-    Invoice,
-    PaymentList,
-    PlansMap,
-    PaymentMethodData,
-    OrganizationUsage,
-    Plan
-} from '$lib/sdk/billing';
-import { isCloud } from '$lib/system';
-import { cachedStore } from '$lib/helpers/cache';
-import { Query } from '@appwrite.io/console';
-import { headerAlert } from './headerAlert';
-import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
-import { addNotification, notifications } from './notifications';
+import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
-import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
-import { BillingPlan } from '$lib/constants';
-import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
-import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
-import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
+import { page } from '$app/stores';
 import { trackEvent } from '$lib/actions/analytics';
+import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
+import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
+import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
-import { last } from '$lib/helpers/array';
+import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
+import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
+import { BillingPlan, NEW_DEV_PRO_UPGRADE_COUPON } from '$lib/constants';
+import { cachedStore } from '$lib/helpers/cache';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
-import { user } from './user';
-import { browser } from '$app/environment';
+import type {
+    AddressesList,
+    Aggregation,
+    Invoice,
+    InvoiceList,
+    PaymentList,
+    PaymentMethodData,
+    Plan,
+    PlansMap
+} from '$lib/sdk/billing';
+import { isCloud } from '$lib/system';
+import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
+import { Query } from '@appwrite.io/console';
+import { derived, get, writable } from 'svelte/store';
+import { headerAlert } from './headerAlert';
+import { addNotification, notifications } from './notifications';
+import { organization, type Organization, type OrganizationError } from './organization';
 import { canSeeBilling } from './roles';
+import { sdk } from './sdk';
+import { user } from './user';
 
-export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1';
+export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
 export const roles = [
     {
@@ -81,6 +80,8 @@ export function tierToPlan(tier: Tier) {
             return tierGitHubEducation;
         case BillingPlan.CUSTOM:
             return tierCustom;
+        case BillingPlan.ENTERPRISE:
+            return tierEnterprise;
         default:
             return tierFree;
     }
@@ -129,7 +130,8 @@ export type PlanServices =
     | 'users'
     | 'usersAddon'
     | 'webhooks'
-    | 'authPhone';
+    | 'authPhone'
+    | 'imageTransformations';
 
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
     if (!isCloud) return 0;
@@ -150,11 +152,12 @@ export const failedInvoice = cachedStore<
         load: async (orgId) => {
             if (!isCloud) set(null);
             if (!get(canSeeBilling)) set(null);
-            const invoices = await sdk.forConsole.billing.listInvoices(orgId);
-            const failedInvoices = invoices.invoices.filter((i) => i.status === 'failed');
+            const failedInvoices = await sdk.forConsole.billing.listInvoices(orgId, [
+                Query.equal('status', 'failed')
+            ]);
             // const failedInvoices = invoices.invoices;
-            if (failedInvoices?.length > 0) {
-                const firstFailed = failedInvoices[0];
+            if (failedInvoices?.invoices?.length > 0) {
+                const firstFailed = failedInvoices.invoices[0];
                 const today = new Date();
                 const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
                 const failedDate = new Date(firstFailed.$createdAt);
@@ -175,7 +178,7 @@ export type TierData = {
 
 export const tierFree: TierData = {
     name: 'Free',
-    description: 'For personal hobby projects of small scale and students.'
+    description: 'A great fit for passion projects and small applications.'
 };
 
 export const tierGitHubEducation: TierData = {
@@ -185,16 +188,23 @@ export const tierGitHubEducation: TierData = {
 
 export const tierPro: TierData = {
     name: 'Pro',
-    description: 'For pro developers and production projects that need the ability to scale.'
+    description:
+        'For production applications that need powerful functionality and resources to scale.'
 };
 export const tierScale: TierData = {
     name: 'Scale',
-    description: 'For scaling teams and agencies that need dedicated support.'
+    description:
+        'For teams that handle more complex and large projects and need more control and support.'
 };
 
 export const tierCustom: TierData = {
     name: 'Custom',
     description: 'Team on a custom contract'
+};
+
+export const tierEnterprise: TierData = {
+    name: 'Enterprise',
+    description: 'For enterprises that need more power and premium support.'
 };
 
 export const showUsageRatesModal = writable<boolean>(false);
@@ -454,30 +464,36 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
     const isDismissed = !!localStorage.getItem('newDevUpgradePro');
     if (isDismissed) return;
-    if (now - accountCreated < 1000 * 60 * 60 * 24 * 37) {
-        headerAlert.add({
-            id: 'newDevUpgradePro',
-            component: newDevUpgradePro,
-            show: true,
-            importance: 1
-        });
+    // check if coupon already applied
+    try {
+        await sdk.forConsole.billing.getCouponAccount(NEW_DEV_PRO_UPGRADE_COUPON);
+    } catch (e) {
+        return;
     }
+    headerAlert.add({
+        id: 'newDevUpgradePro',
+        component: newDevUpgradePro,
+        show: true,
+        importance: 1
+    });
 }
 export const upgradeURL = derived(
     page,
     ($page) => `${base}/organization-${$page.data?.organization?.$id}/change-plan`
 );
+export const billingURL = derived(
+    page,
+    ($page) => `${base}/organization-${$page.data?.organization?.$id}/billing`
+);
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(usage: OrganizationUsage, plan: Plan, members: number) {
-    const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
+export function calculateExcess(addon: Aggregation, plan: Plan) {
     return {
-        bandwidth: calculateResourceSurplus(totBandwidth, plan.bandwidth),
-        storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
-        users: calculateResourceSurplus(usage?.usersTotal, plan.users),
-        executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
-        members: calculateResourceSurplus(members, plan.addons.seats.limit)
+        bandwidth: calculateResourceSurplus(addon.usageBandwidth, plan.bandwidth),
+        storage: calculateResourceSurplus(addon.usageStorage, plan.storage, 'GB'),
+        executions: calculateResourceSurplus(addon.usageExecutions, plan.executions, 'GB'),
+        members: addon.additionalMembers
     };
 }
 
@@ -485,4 +501,8 @@ export function calculateResourceSurplus(total: number, limit: number, limitUnit
     if (total === undefined || limit === undefined) return 0;
     const realLimit = (limitUnit ? sizeToBytes(limit, limitUnit) : limit) || Infinity;
     return total > realLimit ? total - realLimit : 0;
+}
+
+export function isOrganization(org: Organization | OrganizationError): org is Organization {
+    return (org as Organization).$id !== undefined;
 }

@@ -180,7 +180,7 @@
     {#if $isLoading || answer}
         <div class="content">
             <div class="u-flex u-gap-8 u-cross-center">
-                <div class="avatar is-size-x-small">{getInitials($user.name)}</div>
+                <div class="avatar is-size-x-small">{getInitials($user.name || $user.email)}</div>
                 <p class="u-opacity-75">{previousQuestion}</p>
             </div>
             <div class="u-flex u-gap-8 u-margin-block-start-24">
@@ -230,7 +230,7 @@
 
     <div class="footer" slot="footer">
         <div class="u-flex u-cross-center u-gap-4">
-            <AvatarInitials size={32} name={$user.name} />
+            <AvatarInitials size={32} name={$user.name || $user.email} />
             <form
                 class="input-text-wrapper u-width-full-line"
                 style="--amount-of-buttons: 1;"

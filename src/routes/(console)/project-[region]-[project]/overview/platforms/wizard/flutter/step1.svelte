@@ -8,7 +8,7 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { PlatformType } from '@appwrite.io/console';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { invalidateDependencies } from '../skipped.svelte';
+    import { hostnameRegex } from '$lib/helpers/string';
 
     // enum Platform {
     //     Android = 'flutter-android',
@@ -104,8 +104,6 @@
 
         $createPlatform.$id = response.$id;
         $createPlatform.type = platform;
-
-        await invalidateDependencies();
     }
 
     $: registee = {
@@ -176,6 +174,8 @@
                     placeholder={placeholder[platform].hostname}
                     tooltip={placeholder[platform].tooltip}
                     required
+                    pattern={hostnameRegex}
+                    patternError="Please enter a valid hostname"
                     bind:value={$createPlatform.hostname} />
 
                 <div class="u-flex u-gap-16 u-margin-block-start-8">

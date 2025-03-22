@@ -1,18 +1,18 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import { logout } from '$lib/helpers/logout';
+    import { checkForUsageLimit } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
+    import { isCloud } from '$lib/system';
     import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { user } from '$lib/stores/user';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Dependencies } from '$lib/constants';
-    import { checkForUsageLimit } from '$lib/stores/billing';
-    import { isCloud } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
-    import { logout } from '$lib/helpers/logout';
 
     const dispatch = createEventDispatcher();
 
@@ -36,7 +36,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${selectedMember.userName} was deleted from ${selectedMember.teamName}`
+                message: `${selectedMember.userName || 'User'} was deleted from ${selectedMember.teamName}`
             });
             trackEvent(Submit.MemberDelete);
         } catch (error) {

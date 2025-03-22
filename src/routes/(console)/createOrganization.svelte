@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Modal, CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Modal } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -16,15 +15,13 @@
     export let show = false;
 
     let name: string;
-    let id: string;
-    let showCustomId = false;
     let error: string;
 
     const dispatch = createEventDispatcher();
 
     async function create() {
         try {
-            const org = await sdk.forConsole.teams.create(id ?? ID.unique(), name);
+            const org = await sdk.forConsole.teams.create(ID.unique(), name);
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
             await goto(`${base}/organization-${org.$id}`);
@@ -32,11 +29,8 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            trackEvent(Submit.OrganizationCreate, {
-                customId: !!id
-            });
+            trackEvent(Submit.OrganizationCreate);
             name = null;
-            id = null;
             show = false;
         } catch (e) {
             error = e.message;
@@ -66,17 +60,6 @@
             bind:value={name}
             autofocus={true}
             required />
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                    <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Organization ID
-                    </span>
-                </Pill>
-            </div>
-        {:else}
-            <CustomId autofocus bind:show={showCustomId} name="Organization" bind:id />
-        {/if}
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>

@@ -2,7 +2,7 @@
     import { get } from 'svelte/store';
     import { page } from '$app/stores';
     import { sdk } from '$lib/stores/sdk';
-    import { ID, Query, type Models, RelationshipType, RelationMutate } from '@appwrite.io/console';
+    import { ID, type Models, Query, RelationMutate, RelationshipType } from '@appwrite.io/console';
 
     export async function submitRelationship(
         databaseId: string,
@@ -16,6 +16,7 @@
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
+
         const $page = get(page);
         await sdk
             .forProject($page.params.region, $page.params.project)
@@ -40,6 +41,7 @@
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
+
         const $page = get(page);
         await sdk
             .forProject($page.params.region, $page.params.project)
@@ -90,17 +92,10 @@
 
     // Lifecycle hooks
     async function getCollections(search: string = null) {
-        if (search) {
-            const collections = await sdk
-                .forProject($page.params.region, $page.params.project)
-                .databases.listCollections(databaseId, [Query.orderDesc('')], search);
-            return collections;
-        } else {
-            const collections = await sdk
-                .forProject($page.params.region, $page.params.project)
-                .databases.listCollections(databaseId);
-            return collections;
-        }
+        const queries = search ? [Query.orderDesc('')] : [Query.limit(100)];
+        return sdk
+            .forProject($page.params.region, $page.params.project)
+            .databases.listCollections(databaseId, queries, search);
     }
 
     function updateKeyName() {

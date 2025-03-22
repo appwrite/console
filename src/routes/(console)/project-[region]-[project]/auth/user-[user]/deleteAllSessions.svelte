@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -41,7 +41,7 @@
     state="warning"
     headerDivider={false}>
     <p data-private>
-        Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
+        Are you sure you want to delete <b>all of {$user.name || 'User'}'s sessions?</b>
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDeleteAll = false)}>Cancel</Button>

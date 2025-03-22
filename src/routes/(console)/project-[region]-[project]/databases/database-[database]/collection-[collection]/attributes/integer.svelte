@@ -39,9 +39,9 @@
                 collectionId,
                 originalKey,
                 data.required,
-                data.min,
-                data.max,
                 data.default,
+                Math.abs(data.min) > Number.MAX_SAFE_INTEGER ? undefined : data.min,
+                Math.abs(data.max) > Number.MAX_SAFE_INTEGER ? undefined : data.max,
                 data.key !== originalKey ? data.key : undefined
             );
     }
@@ -51,6 +51,8 @@
     import { createConservative } from '$lib/helpers/stores';
     import { InputNumber, InputChoice } from '$lib/elements/forms';
 
+    export let editing = false;
+
     export let data: Partial<Models.AttributeInteger> = {
         required: false,
         min: 0,
@@ -58,7 +60,6 @@
         default: 0,
         array: false
     };
-    export let editing = false;
 
     let savedDefault = data.default;
 

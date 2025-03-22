@@ -37,7 +37,7 @@
     import DeploymentSource from '../../deploymentSource.svelte';
     import DeploymentDomains from '../../deploymentDomains.svelte';
     import { proxyRuleList } from '../../store';
-    import DeploymentCreatedBy from '../../deploymentCreatedBy.svelte';
+    import DeploymentBy from '../../deploymentBy.svelte';
     import {
         isSameDay,
         toLocaleDateISO,
@@ -402,7 +402,7 @@
                 <div class="u-flex-vertical u-gap-8">
                     <p class="u-color-text-offline">Updated</p>
                     <span>
-                        <DeploymentCreatedBy {deployment} />
+                        <DeploymentBy {deployment} type="update" />
                     </span>
                 </div>
             </Card>

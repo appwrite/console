@@ -13,8 +13,10 @@
 
     export function getFlag(country: string, width: number, height: number, quality: number) {
         if (!isValueOfStringEnum(Flag, country)) return '';
-
-        return sdk.forConsole.avatars.getFlag(country, width * 2, height * 2, quality);
+        return sdk.forConsole.avatars
+            .getFlag(country, width * 2, height * 2, quality)
+            ?.toString()
+            ?.replace('&project=console', '&mode=admin');
     }
 </script>
 

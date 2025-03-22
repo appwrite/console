@@ -6,6 +6,7 @@ import { user } from '$lib/stores/user';
 import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
 import { browser } from '$app/environment';
+import { getReferrerAndUtmSource } from '$lib/helpers/utm';
 
 function plausible(domain: string): AnalyticsPlugin {
     if (!browser) return { name: 'analytics-plugin-plausible' };
@@ -64,6 +65,8 @@ export function trackEvent(name: string, data: object = null): void {
             project: currentPage.params.project
         };
     }
+
+    data = { ...data, ...getReferrerAndUtmSource() };
 
     if (ENV.DEV || ENV.PREVIEW) {
         console.debug(`[Analytics] Event ${name} ${path}`, data);

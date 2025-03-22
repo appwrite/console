@@ -67,6 +67,8 @@
         const step = e.detail;
         if (step < $wizard.step) {
             $wizard.step = step;
+            // clear the interceptor
+            wizard.setInterceptor(null);
         }
     }
 
