@@ -122,9 +122,9 @@
     title="Retry payment">
     <!-- TODO: format currency -->
     <p class="text">
-        Your payment of <span class="inline-tag">${formatCurrency(invoice.grossAmount)}</span> due
-        on {toLocaleDate(invoice.dueAt)} has failed. Retry your payment to avoid service interruptions
-        with your projects.
+        Your payment of <span class="inline-tag">{formatCurrency(invoice.grossAmount)}</span> due on {toLocaleDate(
+            invoice.dueAt
+        )} has failed. Retry your payment to avoid service interruptions with your projects.
     </p>
 
     <Button
