@@ -195,7 +195,11 @@ export type OrganizationUsage = {
         executions: number;
         bandwidth: number;
         users: number;
+        authPhoneTotal: number;
+        authPhoneEstimate: number;
     }>;
+    authPhoneTotal: number;
+    authPhoneEstimate: number;
 };
 
 export type AggregationList = {
@@ -253,13 +257,25 @@ export type AdditionalResource = {
     multiplier?: number;
 };
 
+export type PlanAddon = {
+    supported: boolean;
+    currency: string;
+    invoiceDesc: string;
+    price: number;
+    limit: number;
+    value: number;
+    type: string;
+};
+
 export type Plan = {
     $id: string;
     name: string;
+    desc: string;
     price: number;
+    order: number;
     bandwidth: number;
     storage: number;
-    members: number;
+    imageTransformations: number;
     webhooks: number;
     users: number;
     teams: number;
@@ -270,7 +286,8 @@ export type Plan = {
     executions: number;
     realtime: number;
     logs: number;
-    addons: {
+    authPhone: number;
+    usage: {
         bandwidth: AdditionalResource;
         executions: AdditionalResource;
         member: AdditionalResource;
@@ -278,9 +295,19 @@ export type Plan = {
         storage: AdditionalResource;
         users: AdditionalResource;
     };
+    addons: {
+        seats: PlanAddon;
+    };
     trialDays: number;
     isAvailable: boolean;
     selfService: boolean;
+    premiumSupport: boolean;
+    budgeting: boolean;
+    supportsMockNumbers: boolean;
+    backupsEnabled: boolean;
+    backupPolicies: number;
+    emailBranding: boolean;
+    supportsCredits: boolean;
 };
 
 export type PlansInfo = {
@@ -1087,9 +1114,11 @@ export class Billing {
         );
     }
 
-    async listRegions(): Promise<RegionList> {
+    async listRegions(teamId: string): Promise<RegionList> {
         const path = `/console/regions`;
-        const params = {};
+        const params = {
+            teamId
+        };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'GET',

@@ -27,11 +27,13 @@
         }
 
         if ($templateConfig.repositoryBehaviour === 'new') {
-            const repo = await sdk.forProject.vcs.createRepository(
-                $installation.$id,
-                $templateConfig.repositoryName,
-                $templateConfig.repositoryPrivate
-            );
+            const repo = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .vcs.createRepository(
+                    $installation.$id,
+                    $templateConfig.repositoryName,
+                    $templateConfig.repositoryPrivate
+                );
             $repository = repo;
 
             addNotification({
@@ -60,7 +62,9 @@
                 redirect.searchParams.append(key, callbackState[key]);
             });
         }
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
+        const target = new URL(
+            `${sdk.forProject($page.params.region, $page.params.project).client.config.endpoint}/vcs/github/authorize`
+        );
         target.searchParams.set('project', $page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
@@ -69,7 +73,9 @@
     }
 
     async function loadInstallations() {
-        const { installations } = await sdk.forProject.vcs.listInstallations();
+        const { installations } = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .vcs.listInstallations();
         if (installations.length) {
             $installation = installations[0];
             hasInstallations = true;

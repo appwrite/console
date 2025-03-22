@@ -1,14 +1,15 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { InputText, FormList } from '$lib/elements/forms';
+    import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
-    import { createProject, regions } from './store';
+    import { createProject } from './store';
+    import { loadAvailableRegions } from '$routes/(console)/regions';
 
     let showCustomId = false;
 
-    sdk.forConsole.billing.listRegions().then(regions.set);
+    loadAvailableRegions($page.params.organization);
 </script>
 
 <WizardStep>
@@ -31,6 +32,7 @@
             </div>
         {:else}
             <CustomId
+                autofocus
                 bind:show={showCustomId}
                 name="Project"
                 isProject={true}

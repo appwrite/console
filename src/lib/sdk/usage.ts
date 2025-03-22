@@ -299,4 +299,19 @@ export type UsageProject = {
      * Aggregated statistics of total number of buckets.
      */
     bucketsTotal: number;
+
+    /**
+     * Aggregated statistics of total number of SMS sent.
+     */
+    authPhoneTotal: number;
+
+    /**
+     * Aggregated statistics of estimated SMS cost.
+     */
+    authPhoneEstimate: number;
+
+    /**
+     * Aggregated statistics of total number SMS by country
+     */
+    authPhoneCountriesBreakdown: Models.MetricBreakdown[];
 };

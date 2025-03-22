@@ -1,19 +1,19 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { Box, SvgIcon } from '$lib/components';
     import { FormList, InputChoice, InputText } from '$lib/elements/forms';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { sortBranches } from '$routes/(console)/project-[project]/functions/function-[function]/settings/updateConfiguration.svelte';
+    import { sortBranches } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/settings/updateConfiguration.svelte';
     import { choices, installation, repository } from '../store';
 
     $choices.rootDir ??= '';
 
     async function loadBranches() {
-        const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            $installation.$id,
-            $repository.id
-        );
+        const { branches } = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .vcs.listRepositoryBranches($installation.$id, $repository.id);
         const sorted = sortBranches(branches);
         $choices.branch = sorted[0]?.name ?? null;
 
@@ -67,7 +67,7 @@
                             $choices.branch = event.detail.value;
                         }}
                         interactiveOutput
-                        name="branch"
+                        name="branches"
                         {options} />
                     <InputText
                         id="root"

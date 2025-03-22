@@ -8,8 +8,7 @@ Sentry.init({
     dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.us.sentry.io/4504158071422976',
     tracesSampleRate: 1,
     replaysSessionSampleRate: 0,
-    replaysOnErrorSampleRate: 1,
-    integrations: [Sentry.replayIntegration()]
+    replaysOnErrorSampleRate: 0
 });
 
 export const handleError: HandleClientError = Sentry.handleErrorWithSentry(

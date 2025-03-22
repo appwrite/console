@@ -128,7 +128,8 @@ export type PlanServices =
     | 'teams'
     | 'users'
     | 'usersAddon'
-    | 'webhooks';
+    | 'webhooks'
+    | 'authPhone';
 
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
     if (!isCloud) return 0;
@@ -136,7 +137,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     const info = get(plansInfo);
     if (!info) return 0;
     plan ??= info.get(tier ?? get(organization)?.billingPlan);
-    return plan?.[serviceId];
+    return plan?.[serviceId] ?? 0;
 }
 
 export const failedInvoice = cachedStore<
@@ -272,7 +273,8 @@ export async function checkForUsageLimit(org: Organization) {
 
     const members = org.total;
     const plan = get(plansInfo)?.get(org.billingPlan);
-    const membersOverflow = members > plan.members ? members - (plan.members || members) : 0;
+    const membersOverflow =
+        members > plan.addons.seats.limit ? members - (plan.addons.seats.limit || members) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
@@ -475,7 +477,7 @@ export function calculateExcess(usage: OrganizationUsage, plan: Plan, members: n
         storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
         users: calculateResourceSurplus(usage?.usersTotal, plan.users),
         executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
-        members: calculateResourceSurplus(members, plan.members)
+        members: calculateResourceSurplus(members, plan.addons.seats.limit)
     };
 }
 
