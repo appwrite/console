@@ -7,6 +7,9 @@
     export let time: string = '';
     export let placement: ComponentProps<Popover>['placement'] = 'bottom';
 
+    let isTooltipStyled = false;
+    let tooltipElement: HTMLDivElement | null = null;
+
     function timeDifference(dateString: string): string {
         const SECONDS_IN_MINUTE = 60;
         const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
@@ -36,25 +39,20 @@
         return formattedTime ? `${formattedTime} ago` : 'Just now';
     }
 
-    let tooltipWrapperId = 'tooltip-wrapper-' + Math.random().toString(36).substring(2, 9);
-
-    $: timeToString = time ? timeDifference(time) : 'Invalid time';
-
     function shouldHidePopover(hideTooltip: () => void) {
         let isMouseOverTooltip = false;
-        const tooltip = document.querySelector(`.${tooltipWrapperId}`);
 
-        if (!tooltip) {
+        if (!tooltipElement) {
             hideTooltip();
             return;
         }
 
-        if (tooltip) {
-            tooltip.addEventListener('mouseenter', () => {
+        if (tooltipElement) {
+            tooltipElement.addEventListener('mouseenter', () => {
                 isMouseOverTooltip = true;
             });
 
-            tooltip.addEventListener('mouseleave', () => {
+            tooltipElement.addEventListener('mouseleave', () => {
                 isMouseOverTooltip = false;
                 hideTooltip();
             });
@@ -66,17 +64,32 @@
             }
         }, 50);
     }
+
+    $: timeToString = time ? timeDifference(time) : 'Invalid time';
+
+    $: if (tooltipElement && !isTooltipStyled) {
+        isTooltipStyled = true;
+        // transition to tooltip's wrapper (div[class^='popover-*'])
+        tooltipElement.parentElement.style.transition ||= 'all 0.25s ease-in-out';
+    }
 </script>
 
-<div class="dual-time-stamp-wrapper">
-    <Popover let:show let:hide {placement} portal>
-        <button
-            on:mouseenter={() => setTimeout(show, 25)}
-            on:mouseleave={() => shouldHidePopover(hide)}>
-            <slot>{capitalize(timeFromNow(time))}</slot>
-        </button>
+<Popover let:show let:hide {placement} portal>
+    <button
+        on:mouseenter={() => setTimeout(show, 25)}
+        on:mouseleave={() => shouldHidePopover(hide)}>
+        <slot>{capitalize(timeFromNow(time))}</slot>
+    </button>
 
-        <Layout.Stack gap="s" alignContent="flex-start" slot="tooltip" class={tooltipWrapperId}>
+    <div
+        slot="tooltip"
+        class="tooltip-wrapper"
+        style:padding-top="1rem"
+        style:margin-top="-1rem"
+        style:padding-bottom="1rem"
+        style:margin-bottom="-1rem"
+        bind:this={tooltipElement}>
+        <Layout.Stack gap="s" alignContent="flex-start">
             <!-- `Raw time` as per design -->
             <Typography.Caption color="--fgcolor-neutral-tertiary" variant="400">
                 {timeToString}
@@ -109,23 +122,5 @@
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
-    </Popover>
-</div>
-
-<style lang="scss">
-    :global(body [id^='popover-']:has([class^='tooltip-wrapper-'])) {
-        transition: all 0.25s;
-    }
-
-    .body-400 {
-        & :global(span) {
-            font-weight: 400;
-            line-height: 140%;
-            text-align: start;
-            letter-spacing: -0.063px;
-            font-size: var(--font-size-s) !important;
-            color: var(--fgcolor-neutral-secondary) !important;
-            font-family: var(--font-family-sansserif) !important;
-        }
-    }
-</style>
+    </div>
+</Popover>
