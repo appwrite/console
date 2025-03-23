@@ -8,52 +8,70 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert } from '@appwrite.io/pink-svelte';
-    import { project } from '../../../store';
-    import ExpirationInput from '../expirationInput.svelte';
-    import { key } from './store';
+    import ExpirationInput from './expirationInput.svelte';
+    import type { Models } from '@appwrite.io/console';
+    import { page } from '$app/stores';
 
-    let expiration = $key.expire;
+    export let keyType: 'api' | 'dev' = 'api';
+    export let key: Models.DevKey | Models.Key;
+
+    const projectId = $page.params.project;
+
+    let isApiKey = keyType === 'api';
+    const label = isApiKey ? 'API' : 'Dev';
+    const dependency = isApiKey ? Dependencies.KEY : Dependencies.DEV_KEY;
+    const event = isApiKey ? Submit.KeyUpdateExpire : Submit.DevKeyUpdateExpire;
+
+    let expiration = key.expire;
 
     async function updateExpire() {
         try {
-            await sdk.forConsole.projects.updateKey(
-                $project.$id,
-                $key.$id,
-                $key.name,
-                $key.scopes,
-                expiration
-            );
-            await invalidate(Dependencies.KEY);
-            trackEvent(Submit.KeyUpdateExpire);
+            isApiKey
+                ? await sdk.forConsole.projects.updateKey(
+                      projectId,
+                      key.$id,
+                      key.name,
+                      (key as Models.Key).scopes,
+                      expiration
+                  )
+                : await sdk.forConsole.projects.updateDevKey(
+                      projectId,
+                      key.$id,
+                      key.name,
+                      expiration
+                  );
+
+            await invalidate(dependency);
+            trackEvent(event);
             addNotification({
                 type: 'success',
-                message: 'API key expiration has been updated'
+                message: `${label} key expiration has been updated`
             });
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.KeyUpdateExpire);
+            trackError(error, event);
         }
     }
 
     let alertsDismissed = false;
     $: isExpiring =
-        !alertsDismissed && $key.expire && diffDays(new Date(), new Date($key.expire)) < 14;
-    $: isExpired = !alertsDismissed && $key.expire !== null && new Date($key.expire) < new Date();
+        !alertsDismissed && key.expire && diffDays(new Date(), new Date(key.expire)) < 14;
+    $: isExpired = !alertsDismissed && key.expire !== null && new Date(key.expire) < new Date();
 </script>
 
 <Form onSubmit={updateExpire}>
     <CardGrid>
         <svelte:fragment slot="title">Expiration date</svelte:fragment>
-        Set a date after which your API key will expire.
+        Set a date after which your {label} key will expire.
         <svelte:fragment slot="aside">
             {#if isExpired}
                 <Alert.Inline
                     status="error"
                     on:dismiss={() => (alertsDismissed = true)}
-                    title="Your API key has expired">
+                    title="Your {label} key has expired">
                     For security reasons, we recommend you delete your expired key and create a new
                     one.
                 </Alert.Inline>
@@ -61,7 +79,7 @@
                 <Alert.Inline
                     status="warning"
                     on:dismiss={() => (alertsDismissed = true)}
-                    title="Your API key is about to expire">
+                    title="Your {label} key is about to expire">
                     Update the expiration date to keep the key active
                 </Alert.Inline>
             {/if}
@@ -69,7 +87,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={expiration === $key.expire} submit>Update</Button>
+            <Button disabled={expiration === key.expire} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

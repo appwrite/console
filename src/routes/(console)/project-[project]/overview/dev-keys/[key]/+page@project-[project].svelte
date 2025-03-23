@@ -10,9 +10,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../../../store';
-    import Delete from './delete.svelte';
+    import Delete from '../../components/delete.svelte';
     import { devKey } from './store';
-    import UpdateExpirationDate from './updateExpirationDate.svelte';
+    import UpdateExpirationDate from '../../components/updateExpirationDate.svelte';
 
     let showDelete = false;
     let name: string = null;
@@ -55,6 +55,8 @@
     {@const accessedAt = $devKey.accessedAt ? toLocaleDate($devKey.accessedAt) : 'never'}
     <CardGrid>
         <svelte:fragment slot="title">{$devKey.name}</svelte:fragment>
+
+        <!-- TODO: @itznotabug, center alignment -->
         <svelte:fragment slot="aside">Last accessed: {accessedAt}</svelte:fragment>
     </CardGrid>
 
@@ -84,7 +86,7 @@
         </CardGrid>
     </Form>
 
-    <UpdateExpirationDate />
+    <UpdateExpirationDate keyType="dev" key={$devKey} />
 
     <CardGrid>
         <svelte:fragment slot="title">Delete Dev key</svelte:fragment>
@@ -106,4 +108,4 @@
     </CardGrid>
 </Container>
 
-<Delete bind:showDelete />
+<Delete keyType="dev" key={$devKey} bind:showDelete />

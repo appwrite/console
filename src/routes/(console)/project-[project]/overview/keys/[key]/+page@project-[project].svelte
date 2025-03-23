@@ -12,9 +12,9 @@
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import Scopes from '../scopes.svelte';
-    import Delete from './delete.svelte';
+    import Delete from '../../components/delete.svelte';
     import { key } from './store';
-    import UpdateExpirationDate from './updateExpirationDate.svelte';
+    import UpdateExpirationDate from '../../components/updateExpirationDate.svelte';
 
     let showDelete = false;
     let name: string = null;
@@ -140,7 +140,7 @@
         </CardGrid>
     </Form>
 
-    <UpdateExpirationDate />
+    <UpdateExpirationDate key={$key} />
 
     <CardGrid>
         <svelte:fragment slot="title">Delete API key</svelte:fragment>
@@ -162,4 +162,4 @@
     </CardGrid>
 </Container>
 
-<Delete bind:showDelete />
+<Delete key={$key} bind:showDelete />

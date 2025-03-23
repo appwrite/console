@@ -77,8 +77,6 @@
             }
         }
     }
-
-    $: console.log(scopes);
 </script>
 
 <Layout.Stack>
