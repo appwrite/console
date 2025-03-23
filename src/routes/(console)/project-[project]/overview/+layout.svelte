@@ -78,7 +78,7 @@
             callback() {
                 goto(`${base}/project-${projectId}/overview/dev-keys/create`);
             },
-            keys: ['c', 'k'],
+            keys: ['c', 'd', 'k'],
             group: 'integrations',
             disabled: !$canWriteProjects
         }
