@@ -66,7 +66,17 @@
             label: 'Create API Key',
             icon: IconPlus,
             callback() {
-                goto(`${base}/project-[project]/overview/keys/create`);
+                goto(`${base}/project-${projectId}/overview/keys/create`);
+            },
+            keys: ['c', 'k'],
+            group: 'integrations',
+            disabled: !$canWriteProjects
+        },
+        {
+            label: 'Create Dev Key',
+            icon: IconPlus,
+            callback() {
+                goto(`${base}/project-${projectId}/overview/dev-keys/create`);
             },
             keys: ['c', 'k'],
             group: 'integrations',
@@ -216,6 +226,11 @@
                         href={`${path}/keys`}
                         selected={$page.url.pathname === `${path}/keys`}
                         event="keys">API keys</Tab>
+                    <Tab
+                        noscroll
+                        href={`${path}/dev-keys`}
+                        selected={$page.url.pathname === `${path}/dev-keys`}
+                        event="keys">Dev keys</Tab>
                 </Tabs>
                 {#if $action}
                     <svelte:component this={$action} />

@@ -17,4 +17,4 @@ export const usage = cachedStore<
     };
 });
 
-export const selectedTab: Writable<'platforms' | 'keys'> = writable('platforms');
+export const selectedTab: Writable<'platforms' | 'keys' | 'dev-keys'> = writable('platforms');
