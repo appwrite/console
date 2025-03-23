@@ -19,7 +19,9 @@
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { base } from '$app/paths';
 
     export let data;
 
@@ -50,8 +52,18 @@
                 await confirmPayment(
                     $organization.$id,
                     invoice.clientSecret,
-                    $organization.paymentMethodId
+                    $organization.paymentMethodId,
+                    `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
                 );
+            }
+
+            if (
+                $page.url.searchParams.has('type') &&
+                $page.url.searchParams.get('type') === 'validate-invoice'
+            ) {
+                const invoiceId = $page.url.searchParams.get('invoice');
+                await sdk.forConsole.billing.validateInvoice($organization.$id, invoiceId);
+                invalidate(Dependencies.INVOICES);
             }
 
             if (
