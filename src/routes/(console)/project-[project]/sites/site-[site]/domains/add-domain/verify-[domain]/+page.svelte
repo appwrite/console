@@ -19,7 +19,6 @@
     let domainData = data.domain;
 
     let routeBase = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
-    let formComponent: Form;
     let isSubmitting = writable(false);
 
     async function addDomain() {
@@ -65,7 +64,7 @@
 </script>
 
 <Wizard title="Add domain" href={routeBase} column columnSize="s">
-    <Form bind:this={formComponent} onSubmit={addDomain} bind:isSubmitting>
+    <Form onSubmit={addDomain} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Card.Base radius="s" padding="s">
                 <Layout.Stack
