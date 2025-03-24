@@ -1,6 +1,7 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
     import { page } from '$app/stores';
+    import { app } from '$lib/stores/app';
     import {
         Icon,
         Sidebar,
@@ -82,7 +83,11 @@
     ];
 </script>
 
-<div class:only-mobile-tablet={project === undefined}>
+<div
+    class:only-mobile-tablet={project === undefined}
+    style:--overlay-on-neutral={$app.themeInUse === 'dark'
+        ? 'var(--neutral-750)'
+        : 'var(--neutral-100)'}>
     <Sidebar.Base
         {...$$props}
         bind:state
