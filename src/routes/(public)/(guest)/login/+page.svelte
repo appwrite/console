@@ -22,7 +22,7 @@
         try {
             disabled = true;
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
-            await invalidate(Dependencies.ACCOUNT);
+
             if ($user) {
                 trackEvent(Submit.AccountLogin, { mfa_used: 'none' });
                 addNotification({
@@ -30,12 +30,7 @@
                     message: 'Successfully logged in.'
                 });
             }
-            if ($redirectTo) {
-                window.location.href = $redirectTo;
-                return;
-            }
 
-            await invalidate(Dependencies.ACCOUNT);
             if (data?.couponData?.code) {
                 trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
                 await goto(`${base}/apply-credit?code=${data?.couponData?.code}`);
@@ -45,6 +40,13 @@
                 await goto(`${base}/apply-credit?campaign=${data.campaign?.$id}`);
                 return;
             }
+            if ($redirectTo) {
+                window.location.href = $redirectTo;
+                return;
+            }
+
+            // no specific redirect, so redirect will happen through invalidating the account
+            await invalidate(Dependencies.ACCOUNT);
         } catch (error) {
             disabled = false;
             addNotification({

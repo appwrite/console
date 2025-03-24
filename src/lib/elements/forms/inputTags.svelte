@@ -7,6 +7,7 @@
     export let placeholder = '';
     export let disabled = false;
     export let helper: string | undefined = undefined;
+    export let pattern: string | undefined = undefined;
 
     let value = '';
     let error: string;
@@ -33,7 +34,8 @@
     {id}
     {placeholder}
     {disabled}
+    {pattern}
     bind:value={tags}
     helper={error || helper}
     on:invalid={handleInvalid}
-    state={error ? 'error' : 'default'} />
+    state={error ? 'error' : 'default'}><slot name="info" slot="info" /></Input.Tags>

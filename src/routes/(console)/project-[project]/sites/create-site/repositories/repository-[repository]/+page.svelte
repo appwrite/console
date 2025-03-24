@@ -26,8 +26,7 @@
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
     import { consoleVariables } from '$routes/(console)/store';
-    import { buildVerboseDomain } from '../../store';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import Domain from '../../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -46,7 +45,8 @@
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
-    let domain = id;
+    let domain = data.domain;
+    let domainIsValid = true;
 
     onMount(async () => {
         installation.set(data.installation);
@@ -76,18 +76,18 @@
         } catch (error) {
             framework = data.frameworks.frameworks.find((f) => f.key === 'other');
             trackError(error, Submit.FrameworkDetect);
-            console.log(error);
         }
     }
 
     async function create() {
+        if (!domainIsValid) {
+            addNotification({
+                type: 'error',
+                message: 'Domain is not valid'
+            });
+            return;
+        }
         try {
-            domain = await buildVerboseDomain(
-                data.repository.name,
-                data.repository.organization,
-                $project.name,
-                id
-            );
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
@@ -151,8 +151,6 @@
             trackError(e, Submit.SiteCreate);
         }
     }
-
-    $: console.log(framework);
 </script>
 
 <svelte:head>
@@ -204,6 +202,8 @@
                     bind:variables
                     frameworks={data.frameworks.frameworks} />
             {/key}
+
+            <Domain bind:domain bind:domainIsValid />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

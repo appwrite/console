@@ -40,7 +40,7 @@
                 required
                 placeholder="Enter name" />
             {#if showCustomId}
-                <CustomId bind:id bind:show={showCustomId} name="Function" fullWidth />
+                <CustomId bind:id bind:show={showCustomId} name="Function" />
             {:else}
                 <div>
                     <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>

@@ -15,7 +15,7 @@
     export let autocomplete = false;
     export let maxlength: number = null;
 
-    let error: string;
+    export let error: string = null;
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();

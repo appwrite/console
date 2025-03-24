@@ -33,6 +33,7 @@
     export let hideScrollButtons = false;
     export let height = 'auto';
     export let fullHeight = false;
+    export let emptyCopy = 'No logs available';
 
     let { status, buildLogs } = deployment;
 
@@ -56,6 +57,18 @@
         });
         return () => unsubscribe();
     });
+
+    function setCopy() {
+        if (status === 'failed') {
+            return 'Your deployment has failed.';
+        } else if (status === 'building') {
+            return 'Build is starting.';
+        } else if (status === 'processing') {
+            return 'Your deployment is processing.';
+        } else {
+            return emptyCopy;
+        }
+    }
 </script>
 
 <Layout.Stack gap="xl">
@@ -79,7 +92,7 @@
             {fullHeight}
             {height}
             showScrollButton={!hideScrollButtons}
-            logs={buildLogs || 'No logs available'}
+            logs={buildLogs || setCopy()}
             bind:theme={$app.themeInUse} />
     {/key}
 </Layout.Stack>

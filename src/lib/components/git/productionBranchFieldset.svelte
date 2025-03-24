@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { sortBranches } from '$lib/stores/vcs';
 
-    export let branch: string;
+    export let branch = 'main';
     export let rootDir: string;
     export let silentMode: boolean;
     export let installationId: string;

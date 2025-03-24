@@ -309,7 +309,11 @@
                     </Alert.Inline>
                 {/if}
                 <Table.Root
-                    columns={[{ id: 'key' }, { id: 'value' }, { id: 'actions', width: 30 }]}
+                    columns={[
+                        { id: 'key', width: { min: 200, max: 400 } },
+                        { id: 'value', width: { min: 200, max: 400 } },
+                        { id: 'actions', width: 50 }
+                    ]}
                     let:root>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>

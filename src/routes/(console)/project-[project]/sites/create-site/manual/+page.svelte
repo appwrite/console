@@ -42,7 +42,7 @@
 
     async function create() {
         try {
-            domain = await buildVerboseDomain(name, $project.name, $organization.name, id);
+            domain = await buildVerboseDomain(name, $organization.name, $project.name, id);
 
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
@@ -125,13 +125,10 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<!-- TODO: re enable aside -->
 <Wizard
     title="Create site"
     bind:showExitModal
     href={`${base}/project-${$page.params.project}/sites/`}
-    column
-    columnSize="s"
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -184,7 +181,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside />
+        <Aside template={data.template} />
     </svelte:fragment>
 
     <svelte:fragment slot="footer">

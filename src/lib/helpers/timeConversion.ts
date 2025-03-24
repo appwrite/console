@@ -114,3 +114,29 @@ export function formatTimeDetailed(time: number): string {
 
     return parts.join(' ');
 }
+
+/**
+ * Calculates the time difference between a starting date/time and the current time.
+ * Returns the difference formatted in seconds, minutes, or hours depending on the magnitude.
+ *
+ * @export
+ * @param {Date | number | string} startTime - The starting date/time, timestamp in milliseconds, or ISO date string (e.g., '2025-03-20T15:50:43.495+00:00')
+ * @returns {string} The formatted time difference
+ */
+export function timer(startTime: Date | number | string): string {
+    let start: number;
+
+    if (startTime instanceof Date) {
+        start = startTime.getTime();
+    } else if (typeof startTime === 'number') {
+        start = startTime;
+    } else {
+        // Handle ISO date string format
+        start = new Date(startTime).getTime();
+    }
+
+    const now = new Date().getTime();
+    const diffInSeconds = (now - start) / 1000;
+
+    return calculateTime(diffInSeconds);
+}

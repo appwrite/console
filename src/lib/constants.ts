@@ -380,13 +380,13 @@ export const scopes: {
     },
     {
         scope: 'log.read',
-        description: "Access to read your sites's  logs",
+        description: "Access to read your sites's logs",
         category: 'Sites',
         icon: 'globe'
     },
     {
         scope: 'log.write',
-        description: "Access to execute your project's sites",
+        description: "Access to delete your site's logs",
         category: 'Sites',
         icon: 'globe'
     }

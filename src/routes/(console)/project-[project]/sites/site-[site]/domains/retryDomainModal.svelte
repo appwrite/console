@@ -6,12 +6,11 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
-    import type { Domain } from '$lib/sdk/domains';
     import type { Models } from '@appwrite.io/console';
     import CnameTable from '$lib/components/domains/cnameTable.svelte';
 
     export let show = false;
-    export let selectedDomain: Domain | Models.ProxyRule;
+    export let selectedDomain: Models.ProxyRule;
 
     let error = null;
     async function retryDomain() {

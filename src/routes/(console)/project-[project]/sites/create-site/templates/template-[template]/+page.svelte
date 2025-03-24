@@ -35,10 +35,8 @@
     import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
     import { consoleVariables } from '$routes/(console)/store';
-    import { project } from '$routes/(console)/project-[project]/store';
-    import { buildVerboseDomain } from '../../store';
-    import { organization } from '$lib/stores/organization';
     import { connectGitHub } from '$lib/stores/git';
+    import Domain from '../../domain.svelte';
 
     export let data;
 
@@ -51,7 +49,8 @@
 
     let name = data.template.name;
     let id = ID.unique();
-    let domain = id;
+    let domain = data.domain;
+    let domainIsValid = true;
     let framework = data?.template?.frameworks[0];
     let branch = 'main';
     let rootDir = './';
@@ -100,15 +99,14 @@
                 message: 'Please select a repository'
             });
             return;
+        } else if (!domainIsValid) {
+            addNotification({
+                type: 'error',
+                message: 'Domain is not valid'
+            });
+            return;
         } else {
             try {
-                domain = await buildVerboseDomain(
-                    data.template.name,
-                    $project.name,
-                    $organization.name,
-                    id
-                );
-
                 const fr = Object.values(Framework).find((f) => f === framework.key);
                 const buildRuntime = Object.values(BuildRuntime).find(
                     (f) => f === framework.buildRuntime
@@ -186,11 +184,6 @@
     $: if (connectBehaviour === 'later') {
         selectedRepository = null;
     }
-
-    $: console.log(repositoryName);
-
-    $: console.log(data.template);
-    $: console.log(variables);
 </script>
 
 <svelte:head>
@@ -318,6 +311,9 @@
                 {:else if data.template.variables?.length}
                     <Configuration bind:variables templateVariables={data.template.variables} />
                 {/if}
+            {/if}
+            {#if connectBehaviour === 'later' || selectedRepository}
+                <Domain bind:domain bind:domainIsValid />
             {/if}
         </Layout.Stack>
     </Form>
