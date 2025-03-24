@@ -72,8 +72,11 @@
     let couponData = data?.couponData;
     let campaign = data?.campaign;
     let billingPlan = BillingPlan.PRO;
+    let tempOrgId = null;
 
     $: onlyNewOrgs = (campaign && campaign.onlyNewOrgs) || (couponData && couponData.onlyNewOrgs);
+
+    $: selectedOrgId = tempOrgId;
 
     onMount(async () => {
         await loadPaymentMethods();
@@ -86,6 +89,10 @@
         }
         if (campaign?.plan) {
             billingPlan = campaign.plan;
+        }
+
+        if ($organizationList.total > 0 && tempOrgId === null) {
+            tempOrgId = $organizationList.teams[0].$id;
         }
     });
 
@@ -210,13 +217,13 @@
     <WizardSecondaryContent>
         <Layout.Stack gap="l">
             <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-                <Layout.Stack gap="l">
-                    <Fieldset legend="Organization">
+                <Layout.Stack gap="xl">
+                    <Fieldset legend="Setup">
                         <Layout.Stack gap="l">
                             {#if $organizationList?.total && !onlyNewOrgs && canSelectOrg}
                                 <InputSelect
                                     bind:value={selectedOrgId}
-                                    label="Select organization"
+                                    label="Organization"
                                     {options}
                                     required
                                     placeholder="Select organization"
@@ -226,7 +233,7 @@
                                 {#if selectedOrgId === newOrgId}
                                     <InputText
                                         label="Organization name"
-                                        placeholder="Enter organization name"
+                                        placeholder="Enter name"
                                         id="name"
                                         required
                                         bind:value={name} />
@@ -248,53 +255,47 @@
                             {/if}
                         </Layout.Stack>
                     </Fieldset>
-                    {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
-                        <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
+                    {#if (selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
+                        <Fieldset legend="Billing">
+                            <Layout.Stack gap="xl">
+                                {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                                    <SelectPaymentMethod
+                                        bind:methods
+                                        bind:value={paymentMethodId}
+                                        bind:taxId />
+                                {/if}
+                                <Form bind:this={couponForm} onSubmit={addCoupon}>
+                                    {#if !data?.couponData?.code && selectedOrgId}
+                                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                                            <InputText
+                                                required
+                                                disabled={!!couponData?.credits}
+                                                bind:value={coupon}
+                                                placeholder="Enter code"
+                                                id="code"
+                                                label="Coupon code">
+                                            </InputText>
+
+                                            <Button
+                                                submit
+                                                secondary
+                                                size="s"
+                                                disabled={!!couponData?.credits}>
+                                                <span class="text">Add</span>
+                                            </Button>
+                                        </Layout.Stack>
+                                    {/if}
+                                </Form>
+                            </Layout.Stack>
+                        </Fieldset>
                     {/if}
                 </Layout.Stack>
             </Form>
-            <Form bind:this={couponForm} onSubmit={addCoupon}>
-                {#if !data?.couponData?.code && selectedOrgId}
-                    <Fieldset legend="Coupon">
-                        <InputText
-                            required
-                            disabled={!!couponData?.credits}
-                            bind:value={coupon}
-                            placeholder="Enter coupon code"
-                            id="code"
-                            label="Coupon code">
-                            <Button submit secondary disabled={!!couponData?.credits}>
-                                <span class="text">Apply</span>
-                            </Button>
-                        </InputText>
-                    </Fieldset>
-                {/if}
-            </Form>
         </Layout.Stack>
         <svelte:fragment slot="aside">
-            {#if campaign?.template === 'card'}
-                <div
-                    class="box card-container u-position-relative"
-                    style:--box-border-radius="var(--border-radius-small)">
-                    <div class="card-bg"></div>
-                    <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
-                        <img
-                            src={campaign?.image[$app.themeInUse]}
-                            class="u-block u-image-object-fit-cover card-img"
-                            alt="promo" />
-                        <p class="text">
-                            {#if couponData?.credits}
-                                {campaign.title.replace('VALUE', couponData.credits.toString())}
-                            {:else}
-                                {campaign.title}
-                            {/if}
-                        </p>
-                    </div>
-                </div>
-            {/if}
             {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
                 <section
-                    class="card u-margin-block-start-24"
+                    class="card"
                     style:--p-card-padding="1.5rem"
                     style:--p-card-border-radius="var(--border-radius-small)">
                     {#if couponData?.code && couponData?.status === 'active'}
@@ -308,7 +309,7 @@
                     {/if}
                 </section>
             {:else if selectedOrgId}
-                <div class:u-margin-block-start-24={campaign?.template === 'card'}>
+                <div>
                     <EstimatedTotalBox
                         fixedCoupon={!!data?.couponData?.code}
                         {billingPlan}
@@ -348,9 +349,9 @@
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
             {/if}
             {#if selectedOrgId === newOrgId}
-                Create Organization
+                Create organization
             {:else}
-                Apply Credits
+                Apply
             {/if}
         </Button>
     </WizardSecondaryFooter>
