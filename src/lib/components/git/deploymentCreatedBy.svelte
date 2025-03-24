@@ -11,8 +11,8 @@
 <p>
     <DualTimeView time={deployment.$updatedAt}>
         {deployment.providerCommitAuthor
-            ? capitalize(timeFromNow(deployment.$updatedAt))
-            : timeFromNow(deployment.$updatedAt)}
+            ? timeFromNow(deployment.$updatedAt)
+            : capitalize(timeFromNow(deployment.$updatedAt))}
     </DualTimeView>
 
     {#if deployment.providerCommitAuthor}

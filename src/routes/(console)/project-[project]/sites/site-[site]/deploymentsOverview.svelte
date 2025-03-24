@@ -48,7 +48,7 @@
                 { id: '$id', width: 200 },
                 { id: 'status' },
                 { id: 'source' },
-                { id: 'createdBy' },
+                { id: '$updatedAt', width: { min: 140 } },
                 { id: 'actions' }
             ]}
             let:root>

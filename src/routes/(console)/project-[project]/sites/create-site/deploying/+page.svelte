@@ -8,10 +8,32 @@
     import Logs from '../../(components)/logs.svelte';
     import { getFrameworkIcon } from '../../store';
     import { Copy, SvgIcon } from '$lib/components';
+    import { sdk } from '$lib/stores/sdk';
+    import { goto, invalidate } from '$app/navigation';
+    import { onMount } from 'svelte';
+    import { Dependencies } from '$lib/constants';
 
     export let data;
 
-    $: console.log(data);
+    onMount(() => {
+        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+            if (
+                response.events.includes(
+                    `sites.${data.deployment.resourceId}.deployments.${data.deployment.$id}.update`
+                )
+            ) {
+                invalidate(Dependencies.DEPLOYMENT);
+                if (data.deployment.status === 'ready') {
+                    goto(
+                        `${base}/project-${$page.params.project}/sites/create-site/finish?site=${data.site.$id}`
+                    );
+                }
+            }
+        });
+        return () => unsubscribe();
+    });
+
+    $: console.log(data.deployment);
 </script>
 
 <Wizard
