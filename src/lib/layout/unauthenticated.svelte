@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Avatar, AvatarInitials, Card } from '$lib/components';
+    import { AvatarInitials, Card } from '$lib/components';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.png';
@@ -9,7 +9,7 @@
     import { app } from '$lib/stores/app';
     import type { Campaign } from '$lib/stores/campaigns';
     import { getApiEndpoint } from '$lib/stores/sdk';
-    import { Typography, Layout } from '@appwrite.io/pink-svelte';
+    import { Typography, Layout, Avatar } from '@appwrite.io/pink-svelte';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
@@ -101,29 +101,39 @@
             </section>
         {:else if variation === 'review'}
             <div style:max-inline-size="30rem" style:height="100%">
-                <Layout.Stack justifyContent="center" alignItems="center" height="100%" gap="l">
-                    <Typography.Title size="l" align="center">{generateTitle()}</Typography.Title>
-                    <Typography.Text align="center">{generateDesc()}</Typography.Text>
-                    <Card style="--p-card-padding: 1.25rem; margin-block-start: 4rem">
-                        <p class="body-text-1">
-                            {currentReview.review}
-                        </p>
-                        <div class="u-margin-block-start-16 u-flex u-gap-16">
-                            {#if currentReview?.image}
-                                <Avatar
-                                    src={getImage(currentReview?.image)}
-                                    alt={currentReview.name}
-                                    size="m" />
-                            {:else}
-                                <AvatarInitials size="m" name={currentReview.name} />
-                            {/if}
-                            <div>
-                                <p class="body-text-2 u-bold">{currentReview.name}</p>
-                                <p class="body-text-2">{currentReview.description}</p>
-                            </div>
-                        </div>
+                <Layout.Stack justifyContent="center" alignItems="center" height="100%" gap="xxxl">
+                    <Card radius="m" padding="s">
+                        <Layout.Stack gap="xl">
+                            <Typography.Text variant="l-400" color="--fgcolor-neutral-secondary">
+                                {currentReview.review}</Typography.Text>
+                            <Layout.Stack gap="s" direction="row">
+                                {#if currentReview?.image}
+                                    <Avatar
+                                        src={getImage(currentReview?.image)}
+                                        alt={currentReview.name}
+                                        size="m" />
+                                {:else}
+                                    <AvatarInitials size="m" name={currentReview.name} />
+                                {/if}
+                                <Layout.Stack direction="column" gap="xxxs">
+                                    <Typography.Text
+                                        variant="m-500"
+                                        color="--fgcolor-neutral-primary"
+                                        >{currentReview.name}</Typography.Text>
+                                    <Typography.Text
+                                        variant="m-400"
+                                        color="--fgcolor-neutral-secondary"
+                                        >{currentReview.description}</Typography.Text>
+                                </Layout.Stack>
+                            </Layout.Stack>
+                        </Layout.Stack>
                     </Card>
-
+                    <Layout.Stack gap="s">
+                        <Typography.Title size="s" align="center" color="--fgcolor-neutral-primary"
+                            >{generateTitle()}</Typography.Title>
+                        <Typography.Text variant="l-400" align="center"
+                            >{generateDesc()}</Typography.Text>
+                    </Layout.Stack>
                     {#if campaign?.footer}
                         <div
                             class="u-flex u-gap-16 u-cross-center u-main-center review-footer-container">
