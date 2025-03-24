@@ -7,9 +7,6 @@
     export let time: string = '';
     export let placement: ComponentProps<Popover>['placement'] = 'bottom';
 
-    let isTooltipStyled = false;
-    let tooltipElement: HTMLDivElement | null = null;
-
     function timeDifference(dateString: string): string {
         const SECONDS_IN_MINUTE = 60;
         const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
@@ -39,23 +36,11 @@
         return formattedTime ? `${formattedTime} ago` : 'Just now';
     }
 
-    function shouldHidePopover(hideTooltip: () => void) {
-        let isMouseOverTooltip = false;
-
-        if (!tooltipElement) {
-            hideTooltip();
-            return;
-        }
-
-        if (tooltipElement) {
-            tooltipElement.addEventListener('mouseenter', () => {
-                isMouseOverTooltip = true;
-            });
-
-            tooltipElement.addEventListener('mouseleave', () => {
-                isMouseOverTooltip = false;
-                hideTooltip();
-            });
+    let isMouseOverTooltip = false;
+    function hidePopover(hideTooltip: () => void, timeout = true) {
+        if (!timeout) {
+            isMouseOverTooltip = false;
+            return hideTooltip();
         }
 
         setTimeout(() => {
@@ -66,29 +51,23 @@
     }
 
     $: timeToString = time ? timeDifference(time) : 'Invalid time';
-
-    $: if (tooltipElement && !isTooltipStyled) {
-        isTooltipStyled = true;
-        // transition to tooltip's wrapper (div[class^='popover-*'])
-        tooltipElement.parentElement.style.transition ||= 'all 0.25s ease-in-out';
-    }
 </script>
 
 <Popover let:show let:hide {placement} portal>
-    <button
-        on:mouseenter={() => setTimeout(show, 25)}
-        on:mouseleave={() => shouldHidePopover(hide)}>
+    <button on:mouseenter={() => setTimeout(show, 25)} on:mouseleave={() => hidePopover(hide)}>
         <slot>{capitalize(timeFromNow(time))}</slot>
     </button>
 
     <div
+        let:hide
         slot="tooltip"
-        class="tooltip-wrapper"
+        role="tooltip"
         style:padding-top="1rem"
         style:margin-top="-1rem"
         style:padding-bottom="1rem"
         style:margin-bottom="-1rem"
-        bind:this={tooltipElement}>
+        on:mouseenter={() => (isMouseOverTooltip = true)}
+        on:mouseleave={() => hidePopover(hide, false)}>
         <Layout.Stack gap="s" alignContent="flex-start">
             <!-- `Raw time` as per design -->
             <Typography.Caption color="--fgcolor-neutral-tertiary" variant="400">
