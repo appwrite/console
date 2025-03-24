@@ -33,6 +33,7 @@ import { canSeeBilling } from './roles';
 import { sdk } from './sdk';
 import { user } from './user';
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
+import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -58,6 +59,9 @@ export const roles = [
         value: 'billing'
     }
 ];
+
+export const teamStatusReadonly = 'readonly';
+export const billingLimitOutstandingInvoice = 'outstanding_invoice';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
@@ -270,27 +274,35 @@ export function calculateTrialDay(org: Organization) {
 }
 
 export async function checkForUsageLimit(org: Organization) {
-    if (!org?.billingLimits) {
+    if (org?.status === teamStatusReadonly && org?.remarks === billingLimitOutstandingInvoice) {
+        headerAlert.add({
+            id: 'teamReadOnlyFailedInvoices',
+            component: TeamReadonlyAlert,
+            show: true,
+            importance: 11
+        });
+        readOnly.set(true);
+        return;
+    }
+    if (!org?.billingLimits && org?.status !== teamStatusReadonly) {
         readOnly.set(false);
         return;
     }
     if (org?.billingPlan !== BillingPlan.FREE) {
         const { budgetLimit } = org?.billingLimits ?? {};
 
-        if (!budgetLimit || budgetLimit < 100) {
+        if (budgetLimit && budgetLimit >= 100) {
             readOnly.set(false);
+            headerAlert.add({
+                id: 'budgetLimit',
+                component: BudgetLimitAlert,
+                show: true,
+                importance: 10
+            });
+
+            readOnly.set(true);
             return;
         }
-
-        headerAlert.add({
-            id: 'budgetLimit',
-            component: BudgetLimitAlert,
-            show: true,
-            importance: 10
-        });
-
-        readOnly.set(true);
-        return;
     }
     const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
     const resources = [

@@ -51,6 +51,11 @@
         ]);
     }
 
+    $: if ($page.url.searchParams.get('type') === 'validate-invoice') {
+        window.history.replaceState({}, '', $page.url.pathname);
+        request();
+    }
+
     function retryPayment(invoice: Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
@@ -62,7 +67,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Payment history</Heading>
+    <Heading id="payment-history" tag="h2" size="6">Payment history</Heading>
 
     <p class="text">
         Transaction history for this organization. Download invoices for more details about your

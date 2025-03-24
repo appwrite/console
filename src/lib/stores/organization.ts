@@ -32,6 +32,8 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingPlanDowngrade?: Tier;
     billingAggregationId: string;
     billingInvoiceId: string;
+    status: string;
+    remarks: string;
 };
 
 export type OrganizationList = {
