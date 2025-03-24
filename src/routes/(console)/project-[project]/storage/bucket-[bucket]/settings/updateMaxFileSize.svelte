@@ -8,13 +8,15 @@
     import { readOnly, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
     import type { Plan } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
+    
+    export let bucket: Models.Bucket;
     export let currentPlan: Plan | null;
 
     const service = currentPlan ? currentPlan['fileSize'] : null;
-    const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize, 1000);
+    const { value, unit, baseValue, units } = createByteUnitPair(bucket.maximumFileSize, 1000);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
     $: selectedUnit = $unit;
 
@@ -24,6 +26,7 @@
 
     function updateMaxSize() {
         updateBucket(
+            bucket,
             {
                 maximumFileSize: $baseValue
             },
@@ -72,7 +75,7 @@
                 id="size"
                 label="Size"
                 disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
-                placeholder={$bucket.maximumFileSize.toString()}
+                placeholder={bucket.maximumFileSize.toString()}
                 min={0}
                 max={isCloud ? maxValue() : Infinity}
                 bind:value={$value} />
@@ -81,7 +84,7 @@
 
         <svelte:fragment slot="actions">
             <Button
-                disabled={$baseValue === $bucket.maximumFileSize ||
+                disabled={$baseValue === bucket.maximumFileSize ||
                     ($readOnly && !GRACE_PERIOD_OVERRIDE)}
                 submit>
                 Update
