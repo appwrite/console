@@ -125,7 +125,7 @@
                             (framework) => framework.key === frameworkKey
                         );
                     }} />
-                {#if selectedFramework.adapters?.length > 2}
+                {#if selectedFramework.adapters?.length >= 2}
                     <Layout.Grid columnsXS={1} columns={2} gap="l">
                         <Card.Selector
                             title="Server side rendering"
