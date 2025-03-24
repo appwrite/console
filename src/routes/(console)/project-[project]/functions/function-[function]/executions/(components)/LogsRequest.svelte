@@ -67,7 +67,17 @@
     </Layout.Stack>
     {#if requestTab === 'parameters'}
         {#if parameters?.length}
-            <Table.Root columns={2} let:root>
+            <Table.Root
+                columns={[
+                    {
+                        id: 'key',
+                        width: 200
+                    },
+                    {
+                        id: 'value'
+                    }
+                ]}
+                let:root>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell {root}>Key</Table.Header.Cell>
                     <Table.Header.Cell {root}>Value</Table.Header.Cell>
@@ -86,7 +96,17 @@
         {/if}
     {:else if requestTab === 'headers'}
         {#if selectedLog.requestHeaders?.length}
-            <Table.Root columns={2} let:root>
+            <Table.Root
+                columns={[
+                    {
+                        id: 'key',
+                        width: 200
+                    },
+                    {
+                        id: 'value'
+                    }
+                ]}
+                let:root>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell {root}>Key</Table.Header.Cell>
                     <Table.Header.Cell {root}>Value</Table.Header.Cell>

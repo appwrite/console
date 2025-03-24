@@ -249,7 +249,7 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             </Tooltip>
                         </InputText></Fieldset>
                     <Layout.Stack direction="row" justifyContent="flex-end"
-                        ><Button.Button type="submit" disabled={!selectedFramework || !hostname}
+                        ><Button.Button type="submit" disabled={!selectedFramework}
                             >Create platform</Button.Button
                         ></Layout.Stack>
                 {/if}

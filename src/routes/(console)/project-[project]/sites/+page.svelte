@@ -22,6 +22,10 @@
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
     import Table from './table.svelte';
+    import { onMount } from 'svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { sdk } from '$lib/stores/sdk';
     export let data;
     let show = false;
 
@@ -41,6 +45,14 @@
     ]);
 
     $updateCommandGroupRanks({ sites: 1000 });
+
+    onMount(() => {
+        return sdk.forConsole.client.subscribe('console', (response) => {
+            if (response.events.includes(`sites.*`)) {
+                invalidate(Dependencies.SITES);
+            }
+        });
+    });
 </script>
 
 <Container>
@@ -60,7 +72,7 @@
     </Layout.Stack>
     {#if data.siteList.total}
         {#if data.view === View.Grid}
-            <Grid deployments={data.deployments} siteList={data.siteList} />
+            <Grid siteList={data.siteList} />
         {:else}
             <Table siteList={data.siteList} />
         {/if}

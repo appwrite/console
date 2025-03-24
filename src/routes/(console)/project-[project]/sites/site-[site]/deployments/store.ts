@@ -19,7 +19,7 @@ export const columns = writable<Column[]>([
         id: 'buildDuration',
         title: 'Build duration',
         type: 'integer',
-        width: { min: 110, max: 170 },
+        width: { min: 110, max: 190 },
 
         elements: [
             {
@@ -38,11 +38,31 @@ export const columns = writable<Column[]>([
         filter: false
     },
     {
+        id: 'totalSize',
+        title: 'Total size',
+        type: 'integer',
+        width: { min: 110, max: 190 },
+        elements: [
+            {
+                value: 2 * 1000 * 1000,
+                label: 'more than 2MB'
+            },
+            {
+                value: 10 * 1000 * 1000,
+                label: 'more than 10MB'
+            },
+            {
+                value: 50 * 1000 * 1000,
+                label: 'more than 50MB'
+            }
+        ]
+    },
+    {
         id: 'sourceSize',
         title: 'Source size',
         type: 'integer',
         hide: true,
-        width: { min: 110, max: 170 },
+        width: { min: 110, max: 190 },
         elements: [
             {
                 value: 2 * 1000 * 1000,
@@ -62,14 +82,15 @@ export const columns = writable<Column[]>([
         id: 'buildSize',
         title: 'Build size',
         type: 'integer',
+        hide: true,
         filter: false,
-        width: { min: 90, max: 140 }
+        width: { min: 90, max: 190 }
     },
     {
         id: 'type',
         title: 'Source',
         type: 'string',
-        width: { min: 90, max: 140 },
+        width: { min: 90, max: 160 },
         array: true,
         format: 'enum',
         elements: [
