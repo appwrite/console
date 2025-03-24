@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Link } from '$lib/elements';
+    import { consoleVariables } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import {
         Badge,
@@ -12,6 +13,8 @@
 
     export let domain: string;
     export let verified = false;
+
+    let subdomain = domain.split('.').slice(0, -2).join('.');
 </script>
 
 <Layout.Stack gap="xl">
@@ -46,10 +49,13 @@
         </svelte:fragment>
         <Table.Row.Base {root}>
             <Table.Cell {root}>CNAME</Table.Cell>
-            <Table.Cell {root}>{domain}</Table.Cell>
+            <Table.Cell {root}>{subdomain}</Table.Cell>
             <Table.Cell {root}>
-                <InteractiveText variant="copy" isVisible text={globalThis?.location?.origin}>
-                    {globalThis?.location?.origin}</InteractiveText>
+                <InteractiveText
+                    variant="copy"
+                    isVisible
+                    text={$consoleVariables._APP_DOMAIN_TARGET}>
+                    {$consoleVariables._APP_DOMAIN_TARGET}</InteractiveText>
             </Table.Cell>
         </Table.Row.Base>
     </Table.Root>

@@ -64,8 +64,13 @@
             } else if (behaviour === 'ACTIVE') {
                 rule = await sdk.forProject.proxy.createSiteRule(domainName, $page.params.site);
             }
-            await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
-            await invalidate(Dependencies.SITES_DOMAINS);
+            if (rule?.status === 'verified') {
+                await goto(routeBase);
+                await invalidate(Dependencies.SITES_DOMAINS);
+            } else {
+                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                await invalidate(Dependencies.SITES_DOMAINS);
+            }
         } catch (error) {
             addNotification({
                 type: 'error',
