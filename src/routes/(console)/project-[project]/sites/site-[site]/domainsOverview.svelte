@@ -27,7 +27,7 @@
             <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
                 Domains
             </Typography.Text>
-            <Badge variant="secondary" content={proxyRuleList?.total.toString()} size="s" />
+            <Badge variant="secondary" content={(rules?.length ?? 0).toString()} size="s" />
         </Layout.Stack>
         <Button
             secondary
