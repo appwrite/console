@@ -8,22 +8,15 @@
     import Button from '$lib/elements/forms/button.svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { onboarding } from '$routes/(console)/project-[project]/store';
+    import { onboarding } from '../../store';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
-    import Scopes from '$routes/(console)/project-[project]/overview/keys/scopes.svelte';
-
-    export let keyType: 'api' | 'dev' = 'api';
+    import Scopes from '../keys/scopes.svelte';
 
     const projectId = $page.params.project;
-
-    const isApiKey = keyType === 'api';
-    const label = isApiKey ? 'API' : 'Dev';
-    const slug = isApiKey ? 'keys' : 'dev-keys';
-    const event = isApiKey ? Submit.KeyCreate : Submit.DevKeyCreate;
 
     let showExitModal = false;
     let formComponent: Form;
@@ -35,22 +28,21 @@
 
     async function create() {
         try {
-            const { $id } = isApiKey
-                ? await sdk.forConsole.projects.createKey(
-                      projectId,
-                      name,
-                      scopes,
-                      expire || undefined
-                  )
-                : await sdk.forConsole.projects.createDevKey(projectId, name, expire || undefined);
+            const { $id } = await sdk.forConsole.projects.createKey(
+                projectId,
+                name,
+                scopes,
+                expire || undefined
+            );
 
-            if ($onboarding && isApiKey) {
+            if ($onboarding) {
                 await invalidate(Dependencies.PROJECT);
             }
-            trackEvent(event);
-            goto(`${base}/project-${projectId}/overview/${slug}/${$id}`);
+
+            trackEvent(Submit.KeyCreate);
+            await goto(`${base}/project-${projectId}/overview/keys/${$id}`);
             addNotification({
-                message: `${label} key has been created`,
+                message: `API key has been created`,
                 type: 'success'
             });
         } catch (error) {
@@ -58,14 +50,14 @@
                 type: 'error',
                 message: error.message
             });
-            trackError(error, event);
+            trackError(error, Submit.KeyCreate);
         }
     }
 </script>
 
 <Wizard
-    title="Create {label} key"
-    href={`${base}/project-${projectId}/overview/${slug}/`}
+    title="Create API key"
+    href={`${base}/project-${projectId}/overview/keys/`}
     bind:showExitModal
     column
     confirmExit>
@@ -76,26 +68,23 @@
                     <InputText
                         id="name"
                         label="Name"
-                        placeholder="{label} key name"
+                        placeholder="API key name"
                         required
                         bind:value={name} />
 
-                    <ExpirationInput bind:value={expire} {keyType} />
+                    <ExpirationInput bind:value={expire} keyType="api" />
                 </Layout.Stack>
             </Fieldset>
 
-            {#if isApiKey}
-                <Fieldset legend="Scopes">
-                    <Layout.Stack gap="xl">
-                        <Typography.Text>
-                            Choose which permission scopes to grant your application. It is best
-                            practice to allow only the permissions you need to meet your project
-                            goals.
-                        </Typography.Text>
-                        <Scopes bind:scopes />
-                    </Layout.Stack>
-                </Fieldset>
-            {/if}
+            <Fieldset legend="Scopes">
+                <Layout.Stack gap="xl">
+                    <Typography.Text>
+                        Choose which permission scopes to grant your application. It is best
+                        practice to allow only the permissions you need to meet your project goals.
+                    </Typography.Text>
+                    <Scopes bind:scopes />
+                </Layout.Stack>
+            </Fieldset>
         </Layout.Stack>
     </Form>
 

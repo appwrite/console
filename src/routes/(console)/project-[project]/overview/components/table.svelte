@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Empty } from '$lib/components';
-    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import { diffDays, toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { canWriteKeys } from '$lib/stores/roles';
-    import { Table } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Table } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -18,10 +18,23 @@
     function asApiKey(key: Models.Key | Models.DevKey) {
         return key as Models.Key;
     }
+
+    function getExpiryDetails(key: Models.Key | Models.DevKey): {
+        status: 'success' | 'warning' | 'error' | null;
+        message: string | null;
+    } {
+        const isExpired = key.expire !== null && new Date(key.expire) < new Date();
+        const isExpiring = key.expire && diffDays(new Date(), new Date(key.expire)) < 14;
+
+        return {
+            status: isExpired ? 'error' : isExpiring ? 'warning' : null,
+            message: isExpired ? 'Expired' : isExpiring ? 'Expires soon' : null
+        };
+    }
 </script>
 
 {#if keys.total}
-    <Table.Root columns={4} let:root>
+    <Table.Root columns={isApiKey ? 4 : 3} let:root>
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell {root}>Name</Table.Header.Cell>
             <Table.Header.Cell {root}>Last accessed</Table.Header.Cell>
@@ -31,7 +44,7 @@
             {/if}
         </svelte:fragment>
         {#each keys.keys as key}
-            <Table.Row.Link href={`dev-keys/${key.$id}`} {root}>
+            <Table.Row.Link href={`${slug}/${key.$id}`} {root}>
                 <Table.Cell {root}>
                     {key.name}
                 </Table.Cell>
@@ -39,7 +52,18 @@
                     {key.accessedAt ? toLocaleDate(key.accessedAt) : 'never'}
                 </Table.Cell>
                 <Table.Cell {root}>
-                    {key.expire ? toLocaleDateTime(key.expire) : 'never'}
+                    {@const expiration = getExpiryDetails(key)}
+                    <Layout.Stack gap="s" direction="row">
+                        {key.expire ? toLocaleDateTime(key.expire) : 'never'}
+
+                        {#if expiration.status}
+                            <Badge
+                                size="s"
+                                variant="secondary"
+                                type={expiration.status}
+                                content={expiration.message} />
+                        {/if}
+                    </Layout.Stack>
                 </Table.Cell>
                 {#if isApiKey}
                     <Table.Cell {root}>
