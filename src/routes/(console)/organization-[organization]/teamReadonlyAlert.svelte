@@ -17,8 +17,8 @@
 {#if $organization?.$id && $organization?.status === teamStatusReadonly && $organization?.remarks === billingLimitOutstandingInvoice && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
     <HeaderAlert type="error" title="Access restricted">
         <svelte:fragment>
-            Access to your organization resources has been restricted as you have unpaid invoices.
-            Please pay the invoice to restore access.
+            Your organization’s access to resources has been restricted due to unpaid invoices.
+            Payment is required to restore access.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
             <Button secondary fullWidthMobile href={redirectUrl}>
