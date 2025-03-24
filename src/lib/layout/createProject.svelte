@@ -65,8 +65,7 @@
                         bind:show={showCustomId}
                         name="Project"
                         isProject
-                        bind:id
-                        fullWidth={true} />
+                        bind:id />
                 </Layout.Stack>
                 {#if isCloud && regions.length > 0}
                     <Layout.Stack gap="xs"
