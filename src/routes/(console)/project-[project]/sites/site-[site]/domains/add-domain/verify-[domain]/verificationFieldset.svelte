@@ -80,5 +80,6 @@
                 {/each}
             </Table.Root>
         {/if}
+        <slot />
     </Layout.Stack>
 </Fieldset>

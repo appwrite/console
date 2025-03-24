@@ -12,8 +12,9 @@
 
 <Card padding="xs">
     <Layout.Stack gap="xxs">
-        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary"
-            >Don't have a site yet?</Typography.Text>
+        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+            Don't have a site yet?
+        </Typography.Text>
         <Typography.Text variant="m-400">
             Deploy the JavaScript starter template in seconds.
         </Typography.Text>
@@ -29,7 +30,7 @@
             fullWidth
             secondary
             href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}>
-            Deploy
+            Use template
         </Button>
     </Layout.Stack>
 </Card>

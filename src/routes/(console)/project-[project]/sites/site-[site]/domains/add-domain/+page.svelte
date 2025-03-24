@@ -30,7 +30,7 @@
     let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = 'ACTIVE';
     let domainName = '';
     let redirect: string = null;
-    let statusCode: number = null;
+    let statusCode = 307;
     let branch = null;
 
     const redirectOptions = data.rules.rules

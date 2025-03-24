@@ -6,7 +6,6 @@
     import { Button, Form, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { Card, Fieldset, Icon, InlineCode, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { iconPath } from '$lib/stores/app';
@@ -22,21 +21,15 @@
     );
     let frameworkKey = site.framework;
     let adapter: Adapter = site.adapter as Adapter;
-    let installCommand = undefined;
-    let buildCommand = undefined;
-    let outputDirectory = undefined;
+    let installCommand = site?.installCommand;
+    let buildCommand = site?.buildCommand;
+    let outputDirectory = site?.outputDirectory;
     let fallback = site.fallbackFile;
     let isButtonDisabled = true;
     let showFallback = site.adapter === Adapter.Static;
     $: frameworkAdapterData = selectedFramework.adapters.find((a) => a.key === adapter);
 
-    onMount(async () => {
-        installCommand = site?.installCommand ?? frameworkAdapterData?.installCommand;
-        buildCommand = site?.buildCommand ?? frameworkAdapterData?.buildCommand;
-        outputDirectory = site?.outputDirectory ?? frameworkAdapterData?.outputDirectory;
-    });
-
-    async function updateName() {
+    async function update() {
         try {
             await sdk.forProject.sites.update(
                 site.$id,
@@ -106,7 +99,7 @@
     }
 </script>
 
-<Form onSubmit={updateName}>
+<Form onSubmit={update}>
     <CardGrid>
         <svelte:fragment slot="title">Build settings</svelte:fragment>
         Default build settings are configured based on your framework, ensuring optimal performance.

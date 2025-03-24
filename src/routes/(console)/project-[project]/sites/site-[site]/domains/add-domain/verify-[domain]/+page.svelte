@@ -81,12 +81,14 @@
             <VerificationFieldset
                 domain={$page.params.domain}
                 verified={isVerified}
-                bind:selectedTab />
-
-            <Divider />
-            <Layout.Stack>
-                <Button submit disabled={$isSubmitting}>Verify</Button>
-            </Layout.Stack>
+                bind:selectedTab>
+                <Divider />
+                <Layout.Stack direction="row" justifyContent="flex-end">
+                    <div>
+                        <Button submit disabled={$isSubmitting}>Verify</Button>
+                    </div>
+                </Layout.Stack>
+            </VerificationFieldset>
         </Layout.Stack>
     </Form>
 </Wizard>
