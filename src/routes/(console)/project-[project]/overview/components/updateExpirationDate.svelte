@@ -4,7 +4,7 @@
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
-    import { diffDays } from '$lib/helpers/date';
+    import { diffDays, isSameDay } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert } from '@appwrite.io/pink-svelte';
@@ -17,7 +17,7 @@
 
     const projectId = $page.params.project;
 
-    let isApiKey = keyType === 'api';
+    const isApiKey = keyType === 'api';
     const label = isApiKey ? 'API' : 'Dev';
     const dependency = isApiKey ? Dependencies.KEY : Dependencies.DEV_KEY;
     const event = isApiKey ? Submit.KeyUpdateExpire : Submit.DevKeyUpdateExpire;
@@ -60,6 +60,9 @@
     $: isExpiring =
         !alertsDismissed && key.expire && diffDays(new Date(), new Date(key.expire)) < 14;
     $: isExpired = !alertsDismissed && key.expire !== null && new Date(key.expire) < new Date();
+
+    // for comparison's sake.
+    $: disableButton = isSameDay(new Date(expiration), new Date(key?.expire));
 </script>
 
 <Form onSubmit={updateExpire}>
@@ -87,7 +90,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={expiration === key.expire} submit>Update</Button>
+            <Button disabled={disableButton} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -30,7 +30,7 @@
 
             showModal = false;
             trackEvent(Submit.DevKeyCreate);
-            goto(`${base}/project-${projectId}/overview/dev-keys/${$id}`);
+            await goto(`${base}/project-${projectId}/overview/dev-keys/${$id}`);
             addNotification({
                 message: `Dev key has been created`,
                 type: 'success'
