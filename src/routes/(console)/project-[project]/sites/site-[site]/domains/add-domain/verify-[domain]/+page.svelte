@@ -51,7 +51,13 @@
         }
     }
 
-    async function back() {}
+    async function back() {
+        if ($page.url.searchParams.has('rule')) {
+            const rule = $page.url.searchParams.get('rule');
+            await sdk.forProject.proxy.deleteRule(rule);
+        }
+        await goto(`${routeBase}/add-domain?domain=${$page.params.domain}`);
+    }
 
     $: isVerified = domainData?.nameservers
         ? domainData?.nameservers.toLocaleLowerCase() === 'appwrite'
