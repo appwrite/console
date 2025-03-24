@@ -52,8 +52,6 @@
             showConnectRepo.set(true);
         }
     });
-
-    $: console.log(data);
 </script>
 
 <Container>

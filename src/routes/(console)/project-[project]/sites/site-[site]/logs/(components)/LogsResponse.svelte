@@ -73,7 +73,17 @@
         {/if}
     {:else if responseTab === 'headers'}
         {#if selectedLog.responseHeaders?.length}
-            <Table.Root columns={2} let:root>
+            <Table.Root
+                columns={[
+                    {
+                        id: 'key',
+                        width: 200
+                    },
+                    {
+                        id: 'value'
+                    }
+                ]}
+                let:root>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell {root}>Key</Table.Header.Cell>
                     <Table.Header.Cell {root}>Value</Table.Header.Cell>
