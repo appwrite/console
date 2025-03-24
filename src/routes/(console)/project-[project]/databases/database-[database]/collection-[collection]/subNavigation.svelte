@@ -59,7 +59,9 @@
                                     <Icon
                                         icon={IconTable}
                                         size="s"
-                                        color="--fgcolor-neutral-weak" />
+                                        color={isSelected
+                                            ? '--fgcolor-neutral-tertiary'
+                                            : '--fgcolor-neutral-weak'} />
                                     <span class="text collection-name" data-private
                                         >{collection.name}</span>
                                 </a>
@@ -187,7 +189,7 @@
         li:hover {
             color: var(--fgcolor-neutral-primary);
             border-radius: var(--border-radius-xs, 4px);
-            background: var(--bgcolor-neutral-tertiary, #fafafb);
+            background: var(--bgcolor-neutral-secondary);
         }
 
         .collection-name {
