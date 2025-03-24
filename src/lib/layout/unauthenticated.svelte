@@ -85,20 +85,25 @@
                 <p>Build like a team of hundreds<span class="underscore">_</span></p>
             </div>
         {:else if variation === 'card'}
-            <section
-                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
-                <img
-                    src={getImage(campaign?.image[$app.themeInUse])}
-                    class="u-block u-image-object-fit-cover side-bg-img"
-                    alt="promo" />
+            <div style:max-inline-size="30rem" style:height="100%">
+                <Layout.Stack justifyContent="center" alignItems="center" height="100%" gap="xxxl">
+                    <img
+                        src={getImage(campaign?.image[$app.themeInUse])}
+                        class="u-block u-image-object-fit-cover side-bg-img"
+                        alt="promo" />
 
-                <div class="u-text-center auth-container">
-                    <Typography.Title size="m">{generateTitle()}</Typography.Title>
-                    <p class="u-margin-block-start-16">
-                        {generateDesc()}
-                    </p>
-                </div>
-            </section>
+                    <Layout.Stack gap="s">
+                        <Typography.Title size="s" color="--fgcolor-neutral-primary" align="center"
+                            >{generateTitle()}</Typography.Title>
+                        <Typography.Text
+                            variant="l-400"
+                            color="--fgcolor-neutral-secondary"
+                            align="center">
+                            {generateDesc()}
+                        </Typography.Text>
+                    </Layout.Stack>
+                </Layout.Stack>
+            </div>
         {:else if variation === 'review'}
             <div style:max-inline-size="30rem" style:height="100%">
                 <Layout.Stack justifyContent="center" alignItems="center" height="100%" gap="xxxl">
