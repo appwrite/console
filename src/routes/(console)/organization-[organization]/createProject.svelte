@@ -66,8 +66,7 @@
                 bind:show={showCustomId}
                 name="Project"
                 isProject
-                bind:id
-                fullWidth />
+                bind:id />
         {/if}
     </Layout.Stack>
 
