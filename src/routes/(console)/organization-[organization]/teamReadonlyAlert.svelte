@@ -11,7 +11,7 @@
     } from '$lib/stores/billing';
     import { base } from '$app/paths';
 
-    $: redirectUrl = `${base}/organization-${$organization.$id}/billing#payment-history`;
+    $: redirectUrl = `${base}/organization-${$organization?.$id}/billing#payment-history`;
 </script>
 
 {#if $organization?.$id && $organization?.status === teamStatusReadonly && $organization?.remarks === billingLimitOutstandingInvoice && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
