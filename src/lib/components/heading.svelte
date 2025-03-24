@@ -14,6 +14,7 @@
 
 <svelte:element
     this={tag}
+    class:target={!!id}
     class={`heading-level-${size} u-min-width-0 ${classes}`}
     class:u-trim-1={trimmed}
     class:u-trim-2={trimmedSecondLine}
@@ -23,7 +24,7 @@
 </svelte:element>
 
 <style>
-    :target {
+    .target {
         padding-top: 120px;
         margin-top: -120px;
     }
