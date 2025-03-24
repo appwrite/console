@@ -43,7 +43,15 @@
         </Button>
     </Layout.Stack>
     {#if deploymentList?.total}
-        <Table.Root columns={5} let:root>
+        <Table.Root
+            columns={[
+                { id: '$id', width: 200 },
+                { id: 'status' },
+                { id: 'source' },
+                { id: 'createdBy' },
+                { id: 'actions' }
+            ]}
+            let:root>
             <svelte:fragment slot="header" let:root>
                 <Table.Header.Cell {root}>Deployment ID</Table.Header.Cell>
                 <Table.Header.Cell {root}>Status</Table.Header.Cell>

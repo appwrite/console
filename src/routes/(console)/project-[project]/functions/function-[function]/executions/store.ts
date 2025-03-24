@@ -2,12 +2,12 @@ import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Execution ID', type: 'string', width: 200 },
+    { id: '$id', title: 'Execution ID', type: 'string', width: { min: 200, max: 250 } },
     {
         id: 'requestPath',
         title: 'Path',
         type: 'string',
-        width: 90,
+        width: { min: 100, max: 200 },
         format: 'string'
     },
 
@@ -16,7 +16,7 @@ export const columns = writable<Column[]>([
         title: 'Trigger',
         type: 'string',
         hide: true,
-        width: 90,
+        width: { min: 90, max: 200 },
         array: true,
         format: 'enum',
         elements: [
@@ -30,7 +30,7 @@ export const columns = writable<Column[]>([
         title: 'Method',
         type: 'string',
         hide: true,
-        width: 70,
+        width: { min: 90, max: 200 },
         array: true,
         format: 'enum',
         elements: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
@@ -40,7 +40,7 @@ export const columns = writable<Column[]>([
         title: 'Status code',
         type: 'integer',
         hide: true,
-        width: 100,
+        width: { min: 100, max: 200 },
         format: 'integer',
         elements: [
             {
@@ -66,7 +66,7 @@ export const columns = writable<Column[]>([
         id: 'status',
         title: 'Status',
         type: 'enum',
-        width: 130,
+        width: { min: 130, max: 200 },
         array: true,
         format: 'enum',
         elements: ['completed', 'failed', 'waiting', 'scheduled', 'processing', 'cancelled']
@@ -75,7 +75,8 @@ export const columns = writable<Column[]>([
         id: 'duration',
         title: 'Duration',
         type: 'integer',
-        width: 80,
+        width: { min: 80, max: 200 },
+
         format: 'integer',
         elements: [
             {
@@ -96,7 +97,7 @@ export const columns = writable<Column[]>([
         id: '$createdAt',
         title: 'Created',
         type: 'datetime',
-        width: 120,
+        width: { min: 120, max: 200 },
         format: 'datetime',
         elements: [
             {
