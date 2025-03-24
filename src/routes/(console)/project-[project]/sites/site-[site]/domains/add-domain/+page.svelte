@@ -175,10 +175,7 @@
                             required>
                             <Tooltip slot="info">
                                 <Icon icon={IconInfo} size="s" />
-                                <span slot="tooltip">
-                                    Redirect this domain. Domains added to your project will be
-                                    listed here.
-                                </span>
+                                <span slot="tooltip"> Redirect your domain to this URL.</span>
                             </Tooltip>
                         </InputURL>
                         <InputSelect
