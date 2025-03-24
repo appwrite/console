@@ -24,7 +24,7 @@
     let installCommand = site?.installCommand;
     let buildCommand = site?.buildCommand;
     let outputDirectory = site?.outputDirectory;
-    let fallback = site.fallbackFile;
+    let fallback = site?.fallbackFile;
     let isButtonDisabled = true;
     let showFallback = site.adapter === Adapter.Static;
     $: frameworkAdapterData = selectedFramework.adapters.find((a) => a.key === adapter);
@@ -69,7 +69,7 @@
         buildCommand === site?.buildCommand &&
         outputDirectory === site?.outputDirectory &&
         selectedFramework?.key === site?.framework &&
-        fallback === site?.fallbackFile &&
+        fallback === (site?.fallbackFile || undefined) &&
         adapter === site?.adapter
     ) {
         isButtonDisabled = true;

@@ -1,6 +1,7 @@
 <script lang="ts">
     import CnameTable from '$lib/components/domains/cnameTable.svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
+    import { isCloud } from '$lib/system';
     import { Divider, Fieldset, Layout, Tabs } from '@appwrite.io/pink-svelte';
 
     export let domain: string;
@@ -34,7 +35,7 @@
         </div>
         {#if selectedTab === 'cname' && isSubDomain}
             <CnameTable {domain} {verified} />
-        {:else}
+        {:else if isCloud}
             <NameserverTable {domain} />
         {/if}
         <slot />
