@@ -11,13 +11,8 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import {
-        WizardSecondaryContainer,
-        WizardSecondaryContent,
-        WizardSecondaryFooter
-    } from '$lib/layout';
+    import { Wizard } from '$lib/layout';
     import { type PaymentList } from '$lib/sdk/billing';
-    import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -212,130 +207,126 @@
     <title>Apply credits - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer href={previousPage} bind:showExitModal confirmExit>
-    <svelte:fragment slot="title">Apply credits</svelte:fragment>
-    <WizardSecondaryContent>
-        <Layout.Stack gap="l">
-            <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-                <Layout.Stack gap="xl">
-                    <Fieldset legend="Setup">
-                        <Layout.Stack gap="l">
-                            {#if $organizationList?.total && !onlyNewOrgs && canSelectOrg}
-                                <InputSelect
-                                    bind:value={selectedOrgId}
-                                    label="Organization"
-                                    {options}
+<Wizard bind:showExitModal href={previousPage} confirmExit title="Apply credits">
+    <Layout.Stack gap="l">
+        <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
+            <Layout.Stack gap="xl">
+                <Fieldset legend="Setup">
+                    <Layout.Stack gap="l">
+                        {#if $organizationList?.total && !onlyNewOrgs && canSelectOrg}
+                            <InputSelect
+                                bind:value={selectedOrgId}
+                                label="Organization"
+                                {options}
+                                required
+                                placeholder="Select organization"
+                                id="organization" />
+                        {/if}
+                        {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                            {#if selectedOrgId === newOrgId}
+                                <InputText
+                                    label="Organization name"
+                                    placeholder="Enter name"
+                                    id="name"
                                     required
-                                    placeholder="Select organization"
-                                    id="organization" />
+                                    bind:value={name} />
                             {/if}
+                            <InputTags
+                                bind:tags={collaborators}
+                                label="Invite members by email"
+                                placeholder="Enter email address(es)"
+                                pattern={emailRegex.toString()}
+                                id="members">
+                                <Tooltip slot="info">
+                                    <Icon icon={IconInfo} size="s" />
+                                    <span slot="tooltip">
+                                        Invited members will have access to all services and payment
+                                        data within your organization
+                                    </span>
+                                </Tooltip>
+                            </InputTags>
+                        {/if}
+                    </Layout.Stack>
+                </Fieldset>
+                {#if (selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
+                    <Fieldset legend="Billing">
+                        <Layout.Stack gap="xl">
                             {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
-                                {#if selectedOrgId === newOrgId}
-                                    <InputText
-                                        label="Organization name"
-                                        placeholder="Enter name"
-                                        id="name"
-                                        required
-                                        bind:value={name} />
-                                {/if}
-                                <InputTags
-                                    bind:tags={collaborators}
-                                    label="Invite members by email"
-                                    placeholder="Enter email address(es)"
-                                    pattern={emailRegex.toString()}
-                                    id="members">
-                                    <Tooltip slot="info">
-                                        <Icon icon={IconInfo} size="s" />
-                                        <span slot="tooltip">
-                                            Invited members will have access to all services and
-                                            payment data within your organization
-                                        </span>
-                                    </Tooltip>
-                                </InputTags>
+                                <SelectPaymentMethod
+                                    bind:methods
+                                    bind:value={paymentMethodId}
+                                    bind:taxId />
                             {/if}
+                            <Form bind:this={couponForm} onSubmit={addCoupon}>
+                                {#if !data?.couponData?.code && selectedOrgId}
+                                    <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                                        <InputText
+                                            required
+                                            disabled={!!couponData?.credits}
+                                            bind:value={coupon}
+                                            placeholder="Enter code"
+                                            id="code"
+                                            label="Coupon code">
+                                        </InputText>
+
+                                        <Button
+                                            submit
+                                            secondary
+                                            size="s"
+                                            disabled={!!couponData?.credits}>
+                                            <span class="text">Add</span>
+                                        </Button>
+                                    </Layout.Stack>
+                                {/if}
+                            </Form>
                         </Layout.Stack>
                     </Fieldset>
-                    {#if (selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
-                        <Fieldset legend="Billing">
-                            <Layout.Stack gap="xl">
-                                {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
-                                    <SelectPaymentMethod
-                                        bind:methods
-                                        bind:value={paymentMethodId}
-                                        bind:taxId />
+                {/if}
+            </Layout.Stack>
+        </Form>
+    </Layout.Stack>
+    <svelte:fragment slot="aside">
+        {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+            <section
+                class="card"
+                style:--p-card-padding="1.5rem"
+                style:--p-card-border-radius="var(--border-radius-small)">
+                {#if couponData?.code && couponData?.status === 'active'}
+                    <CreditsApplied bind:couponData fixedCoupon={!!data?.couponData?.code} />
+                    <p class="text u-margin-block-start-12">
+                        Credits will automatically be applied to your next invoice on <b
+                            >{toLocaleDate(selectedOrg?.billingNextInvoiceDate)}.</b>
+                    </p>
+                {:else}
+                    <p class="text">Add a coupon code to apply credits to your organization.</p>
+                {/if}
+            </section>
+        {:else if selectedOrgId}
+            <div>
+                <EstimatedTotalBox
+                    fixedCoupon={!!data?.couponData?.code}
+                    {billingPlan}
+                    {collaborators}
+                    plans={$plansInfo}
+                    bind:couponData
+                    bind:billingBudget>
+                    {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
+                        <div class="u-margin-block-end-24">
+                            <p class="body-text-1 u-bold">{campaign?.cta}</p>
+                            <p class="text u-margin-block-start-8">
+                                {#if couponData?.code && couponData?.status === 'active' && campaign?.claimed}
+                                    {campaign?.claimed}
+                                {:else if campaign?.unclaimed}
+                                    {campaign?.unclaimed}
                                 {/if}
-                                <Form bind:this={couponForm} onSubmit={addCoupon}>
-                                    {#if !data?.couponData?.code && selectedOrgId}
-                                        <Layout.Stack gap="s" direction="row" alignItems="flex-end">
-                                            <InputText
-                                                required
-                                                disabled={!!couponData?.credits}
-                                                bind:value={coupon}
-                                                placeholder="Enter code"
-                                                id="code"
-                                                label="Coupon code">
-                                            </InputText>
-
-                                            <Button
-                                                submit
-                                                secondary
-                                                size="s"
-                                                disabled={!!couponData?.credits}>
-                                                <span class="text">Add</span>
-                                            </Button>
-                                        </Layout.Stack>
-                                    {/if}
-                                </Form>
-                            </Layout.Stack>
-                        </Fieldset>
+                            </p>
+                        </div>
                     {/if}
-                </Layout.Stack>
-            </Form>
-        </Layout.Stack>
-        <svelte:fragment slot="aside">
-            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
-                <section
-                    class="card"
-                    style:--p-card-padding="1.5rem"
-                    style:--p-card-border-radius="var(--border-radius-small)">
-                    {#if couponData?.code && couponData?.status === 'active'}
-                        <CreditsApplied bind:couponData fixedCoupon={!!data?.couponData?.code} />
-                        <p class="text u-margin-block-start-12">
-                            Credits will automatically be applied to your next invoice on <b
-                                >{toLocaleDate(selectedOrg?.billingNextInvoiceDate)}.</b>
-                        </p>
-                    {:else}
-                        <p class="text">Add a coupon code to apply credits to your organization.</p>
-                    {/if}
-                </section>
-            {:else if selectedOrgId}
-                <div>
-                    <EstimatedTotalBox
-                        fixedCoupon={!!data?.couponData?.code}
-                        {billingPlan}
-                        {collaborators}
-                        plans={$plansInfo}
-                        bind:couponData
-                        bind:billingBudget>
-                        {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
-                            <div class="u-margin-block-end-24">
-                                <p class="body-text-1 u-bold">{campaign?.cta}</p>
-                                <p class="text u-margin-block-start-8">
-                                    {#if couponData?.code && couponData?.status === 'active' && campaign?.claimed}
-                                        {campaign?.claimed}
-                                    {:else if campaign?.unclaimed}
-                                        {campaign?.unclaimed}
-                                    {/if}
-                                </p>
-                            </div>
-                        {/if}
-                    </EstimatedTotalBox>
-                </div>
-            {/if}
-        </svelte:fragment>
-    </WizardSecondaryContent>
-
-    <WizardSecondaryFooter>
+                </EstimatedTotalBox>
+            </div>
+        {/if}
+    </svelte:fragment>
+    <svelte:fragment slot="footer">
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
@@ -354,7 +345,7 @@
                 Apply
             {/if}
         </Button>
-    </WizardSecondaryFooter>
+    </svelte:fragment>
     <svelte:fragment slot="exit">
         You can apply your credits to an organization at a later date. All other data entered will
         be lost.
@@ -362,42 +353,4 @@
             Credits expire {toLocaleDate(couponData.expiration)}.
         {/if}
     </svelte:fragment>
-</WizardSecondaryContainer>
-
-<style lang="scss">
-    .card-container {
-        overflow: hidden;
-    }
-    .card-bg {
-        position: absolute;
-        overflow: hidden;
-        height: 100%;
-        width: 100%;
-        inset: 0;
-    }
-    .card-bg::before {
-        position: absolute;
-        inset-block-start: -30px;
-        inset-inline-end: -30px;
-        content: '';
-        display: block;
-        inline-size: 30%;
-        block-size: 30%;
-        background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
-        filter: blur(70px);
-    }
-    .card-bg::after {
-        position: absolute;
-        inset-block-end: -30px;
-        inset-inline-start: -30px;
-        content: '';
-        display: block;
-        inline-size: 30%;
-        block-size: 30%;
-        background: radial-gradient(50% 46.73% at 50% 53.27%, #fe9567 28.17%, #fd366e 59.38%);
-        filter: blur(70px);
-    }
-    .card-img {
-        max-width: 12.5rem;
-    }
-</style>
+</Wizard>
