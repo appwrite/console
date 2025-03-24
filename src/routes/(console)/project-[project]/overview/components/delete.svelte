@@ -45,5 +45,5 @@
 </script>
 
 <Confirm onSubmit={handleDelete} title="Delete {label} key" bind:open={showDelete} bind:error>
-    Are you sure you want to delete this execution?
+    Are you sure you want to delete this key?
 </Confirm>

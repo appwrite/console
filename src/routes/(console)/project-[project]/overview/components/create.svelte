@@ -44,11 +44,11 @@
                   )
                 : await sdk.forConsole.projects.createDevKey(projectId, name, expire || undefined);
 
-            if ($onboarding) {
+            if ($onboarding && isApiKey) {
                 await invalidate(Dependencies.PROJECT);
             }
             trackEvent(event);
-            goto(`${base}/project-${$page.params.project}/overview/${slug}/${$id}`);
+            goto(`${base}/project-${projectId}/overview/${slug}/${$id}`);
             addNotification({
                 message: `${label} key has been created`,
                 type: 'success'
@@ -79,7 +79,8 @@
                         placeholder="{label} key name"
                         required
                         bind:value={name} />
-                    <ExpirationInput bind:value={expire} />
+
+                    <ExpirationInput bind:value={expire} {keyType} />
                 </Layout.Stack>
             </Fieldset>
 

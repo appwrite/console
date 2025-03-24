@@ -19,7 +19,7 @@
         return date.toISOString();
     }
 
-    const options = [
+    const defaultOptions = [
         {
             label: 'Never',
             value: null
@@ -46,10 +46,30 @@
         }
     ];
 
+    const limitedOptions = [
+        {
+            label: '1 Day',
+            value: incrementToday(1, 'day')
+        },
+        {
+            label: '7 Days',
+            value: incrementToday(7, 'day')
+        },
+        {
+            label: '30 days',
+            value: incrementToday(30, 'day')
+        }
+    ];
+
     export let value: string | null = null;
+    export let keyType: 'api' | 'dev' = 'api';
+
+    const options = keyType === 'api' ? defaultOptions : limitedOptions;
 
     function initExpirationSelect() {
-        if (value === null || !isValidDate(value)) return null;
+        if (value === null || !isValidDate(value)) {
+            return options[0]?.value ?? null;
+        }
 
         let result = 'custom';
         for (const option of options) {

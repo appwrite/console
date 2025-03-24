@@ -83,7 +83,7 @@
                     Update the expiration date to keep the key active
                 </Alert.Inline>
             {/if}
-            <ExpirationInput bind:value={expiration} />
+            <ExpirationInput bind:value={expiration} {keyType} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
