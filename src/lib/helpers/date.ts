@@ -86,6 +86,29 @@ export const toLocaleTimeISO = (datetime: string | number) => {
     return date.toLocaleTimeString('sv');
 };
 
+/**
+ * Returns a local datetime string in ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sss),
+ * matching local time, without the 'Z' suffix.
+ *
+ * @returns Local ISO string (with ms) or 'n/a' if invalid
+ */
+export const toLocalDateTimeISO = (datetime: string | number): string => {
+    const date = new Date(datetime);
+
+    if (isNaN(date.getTime())) {
+        return 'n/a';
+    }
+
+    // Get timezone offset in minutes, convert to ms
+    const tzOffsetMs = date.getTimezoneOffset() * 60 * 1000;
+
+    // Shift date to local time
+    const local = new Date(date.getTime() - tzOffsetMs);
+
+    // Drop the trailing 'Z' to keep it as local
+    return local.toISOString().replace('Z', '');
+};
+
 export const utcHourToLocaleHour = (utcTimeString: string) => {
     const now = new Date();
     const [hours, minutes] = utcTimeString.split(':').map(Number);

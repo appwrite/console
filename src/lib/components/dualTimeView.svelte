@@ -1,7 +1,7 @@
 <script lang="ts">
     import { type ComponentProps } from 'svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { getUTCOffset, timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
+    import { timeFromNow, toLocaleDateTime, toLocalDateTimeISO } from '$lib/helpers/date';
     import { Badge, InteractiveText, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
 
     export let time: string = '';
@@ -70,7 +70,7 @@
 </script>
 
 <Popover let:show let:hide {placement} portal>
-    <button on:mouseenter={() => setTimeout(show, 100)} on:mouseleave={() => hidePopover(hide)}>
+    <button on:mouseenter={() => setTimeout(show, 150)} on:mouseleave={() => hidePopover(hide)}>
         <slot>{capitalize(timeFromNow(time))}</slot>
     </button>
 
@@ -92,23 +92,31 @@
 
             <!-- `Absolute time` as per design -->
             <Layout.Stack gap="xxs">
-                <Layout.Stack direction="row" justifyContent="space-between">
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    alignContent="center"
+                    justifyContent="space-between">
                     <InteractiveText
                         isVisible
                         variant="copy"
                         text={toLocaleDateTime(time, 'UTC')}
-                        value={new Date(toLocaleDateTime(time, 'UTC')).toISOString()} />
+                        value={new Date(time).toISOString()} />
 
                     <Badge variant="secondary" content="UTC" size="xs" />
                 </Layout.Stack>
 
-                <Layout.Stack direction="row" justifyContent="space-between">
+                <Layout.Stack
+                    direction="row"
+                    alignItems="center"
+                    alignContent="center"
+                    justifyContent="space-between">
                     <InteractiveText
                         isVisible
                         variant="copy"
                         text={toLocaleDateTime(time)}
-                        value={new Date(toLocaleDateTime(time)).toISOString()} />
-                    <Badge variant="secondary" content="UTC{getUTCOffset()}" size="xs" />
+                        value={toLocalDateTimeISO(time)} />
+                    <Badge variant="secondary" content="Local time" size="xs" />
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
