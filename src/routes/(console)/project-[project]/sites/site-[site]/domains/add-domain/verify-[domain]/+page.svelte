@@ -15,27 +15,28 @@
     import { writable } from 'svelte/store';
 
     export let data;
+
+    const ruleId = $page.url.searchParams.get('rule');
     let selectedTab: 'cname' | 'nameserver';
-    let domainData = data.domain;
+    let verified = false;
 
     let routeBase = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
     let isSubmitting = writable(false);
 
-    async function addDomain() {
+    async function verify() {
         const isNewDomain =
             data.domainsList.domains.findIndex((rule) => rule.domain === $page.params.domain) ===
             -1;
         try {
-            // if (selectedTab === 'cname'){
-            //     domainData = await sdk.forProject.proxy.updateRuleVerification(
-            //         $page.params.domain
-            //     );
-            // }
-            if (isNewDomain && isCloud) {
-                domainData = await sdk.forConsole.domains.create(
+            if (selectedTab === 'cname') {
+                const ruleData = await sdk.forProject.proxy.updateRuleVerification(ruleId);
+                verified = ruleData.status === 'verified';
+            } else if (isNewDomain && isCloud) {
+                const domainData = await sdk.forConsole.domains.create(
                     $organization.$id,
                     $page.params.domain
                 );
+                verified = domainData.nameservers.toLocaleLowerCase() === 'appwrite';
             }
 
             addNotification({
@@ -46,8 +47,7 @@
             await invalidate(Dependencies.DOMAINS);
             await invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
-            await invalidate(Dependencies.DOMAINS);
-
+            verified = false;
             addNotification({
                 type: 'error',
                 message: error.message
@@ -56,20 +56,15 @@
     }
 
     async function back() {
-        if ($page.url.searchParams.has('rule')) {
-            const rule = $page.url.searchParams.get('rule');
-            await sdk.forProject.proxy.deleteRule(rule);
+        if (ruleId) {
+            await sdk.forProject.proxy.deleteRule(ruleId);
         }
         await goto(`${routeBase}/add-domain?domain=${$page.params.domain}`);
     }
-
-    $: isVerified = domainData?.nameservers
-        ? domainData?.nameservers.toLocaleLowerCase() === 'appwrite'
-        : undefined;
 </script>
 
 <Wizard title="Add domain" href={routeBase} column columnSize="s">
-    <Form onSubmit={addDomain} bind:isSubmitting>
+    <Form onSubmit={verify} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Card.Base radius="s" padding="s">
                 <Layout.Stack
@@ -88,10 +83,7 @@
                 </Layout.Stack>
             </Card.Base>
 
-            <VerificationFieldset
-                domain={$page.params.domain}
-                verified={isVerified}
-                bind:selectedTab>
+            <VerificationFieldset domain={$page.params.domain} {verified} bind:selectedTab>
                 <Divider />
                 <Layout.Stack direction="row" justifyContent="flex-end">
                     <div>
