@@ -45,7 +45,7 @@
             id: 'message',
             title: 'Message',
             type: 'string',
-            show: false,
+            hide: true,
             filter: false,
             width: { min: 140 }
         },

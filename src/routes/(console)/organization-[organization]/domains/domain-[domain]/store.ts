@@ -9,8 +9,8 @@ export const columns = writable<Column[]>([
     { id: 'type', title: 'Type', type: 'string' },
     { id: 'value', title: 'Value', type: 'string' },
     { id: 'ttl', title: 'TTL', type: 'integer' },
-    { id: 'priority', title: 'Priority', type: 'integer', show: false },
-    { id: 'comment', title: 'Comment', type: 'string', show: false },
+    { id: 'priority', title: 'Priority', type: 'integer', hide: true },
+    { id: 'comment', title: 'Comment', type: 'string', hide: true },
     { id: '$createdAt', title: 'Created', type: 'datetime' }
 ]);
 
