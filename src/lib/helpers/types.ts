@@ -31,6 +31,7 @@ export type Column = PinkColumn & {
     array?: boolean;
     format?: string;
     exclude?: boolean;
+    show?: boolean;
     elements?: string[] | { value: string | number; label: string }[];
 };
 

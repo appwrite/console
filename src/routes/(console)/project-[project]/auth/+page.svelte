@@ -37,13 +37,13 @@
         { id: 'name', title: 'Name', type: 'string', width: { min: 260 } },
         { id: 'identifiers', title: 'Identifiers', type: 'string', width: { min: 140 } },
         { id: 'status', title: 'Status', type: 'string', width: { min: 140 } },
-        { id: 'labels', title: 'Labels', type: 'string', hide: true, width: { min: 140 } },
+        { id: 'labels', title: 'Labels', type: 'string', show: false, width: { min: 140 } },
         { id: 'joined', title: 'Joined', type: 'string', width: { min: 140 } },
         {
             id: 'lastActivity',
             title: 'Last activity',
             type: 'string',
-            hide: true,
+            show: false,
             width: { min: 140 }
         }
     ]);

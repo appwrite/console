@@ -36,21 +36,21 @@
             id: 'emailTotal',
             title: 'Email Subscribers',
             type: 'integer',
-            hide: true,
+            show: false,
             width: { min: 140 }
         },
         {
             id: 'smsTotal',
             title: 'SMS Subscribers',
             type: 'integer',
-            hide: true,
+            show: false,
             width: { min: 140 }
         },
         {
             id: 'pushTotal',
             title: 'Push Subscribers',
             type: 'integer',
-            hide: true,
+            show: false,
             width: { min: 140 }
         },
         {
