@@ -55,8 +55,7 @@ test('shows password input - placeholder', () => {
 test('shows password input - meter', () => {
     render(InputPassword, {
         id: 'input',
-        label: 'input',
-        meter: true
+        label: 'input'
     });
 
     const meter = document.querySelector('meter');
@@ -66,8 +65,7 @@ test('shows password input - meter', () => {
 test('shows password input - show password button', () => {
     const { getByRole } = render(InputPassword, {
         id: 'input',
-        label: 'input',
-        showPasswordButton: true
+        label: 'input'
     });
 
     expect(getByRole('button')).toBeInTheDocument();
@@ -95,8 +93,7 @@ test('shows password input - minlength', () => {
 test('shows password input - hide label', () => {
     render(InputPassword, {
         id: 'input',
-        label: 'label',
-        showLabel: false
+        label: 'label'
     });
 
     const label = document.querySelector('label');

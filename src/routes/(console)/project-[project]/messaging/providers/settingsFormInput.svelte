@@ -24,6 +24,7 @@
         FCMProviderParams,
         APNSProviderParams
     } from './store';
+    import TooltipPopover from './tooltipPopover.svelte';
 
     export let files: Record<string, FileList>;
     export let input: ProviderInput;
@@ -39,8 +40,6 @@
         | FCMProviderParams
         | APNSProviderParams
     >;
-    export let fullWidth = false;
-
     const popover = input.popover ? PopoverContent : null;
     const popoverProps = getPopoverProps(input);
 
@@ -61,52 +60,45 @@
         label={input.label}
         placeholder={input.placeholder}
         required={!input.optional}
-        tooltip={input.tooltip}
-        {popover}
-        {popoverProps}
-        {fullWidth}
-        bind:value={params[input.name]} />
+        bind:value={params[input.name]}>
+        <TooltipPopover slot="info" {popover} {popoverProps} tooltip={input.tooltip} />
+    </InputText>
 {:else if input.type === 'password'}
     <InputPassword
         id={input.name}
         label={input.label}
         placeholder={input.placeholder}
         required={!input.optional}
-        {popover}
-        {popoverProps}
-        {fullWidth}
-        bind:value={params[input.name]} />
+        bind:value={params[input.name]}>
+        <TooltipPopover slot="info" {popover} {popoverProps} tooltip={input.tooltip} />
+    </InputPassword>
 {:else if input.type === 'email'}
     <InputEmail
         id={input.name}
         label={input.label}
         placeholder={input.placeholder}
         required={!input.optional}
-        tooltip={input.tooltip}
-        {popover}
-        {popoverProps}
-        {fullWidth}
-        bind:value={params[input.name]} />
+        bind:value={params[input.name]}>
+        <TooltipPopover slot="info" {popover} {popoverProps} tooltip={input.tooltip} />
+    </InputEmail>
 {:else if input.type === 'domain'}
     <InputDomain
         id={input.name}
         label={input.label}
         placeholder={input.placeholder}
         required={!input.optional}
-        {popover}
-        {popoverProps}
-        {fullWidth}
-        bind:value={params[input.name]} />
+        bind:value={params[input.name]}>
+        <TooltipPopover slot="info" {popover} {popoverProps} tooltip={input.tooltip} />
+    </InputDomain>
 {:else if input.type === 'phone'}
     <InputPhone
         id={input.name}
         label={input.label}
         placeholder={input.placeholder}
         required={!input.optional}
-        {popover}
-        {popoverProps}
-        {fullWidth}
-        bind:value={params[input.name]} />
+        bind:value={params[input.name]}>
+        <TooltipPopover slot="info" {popover} {popoverProps} tooltip={input.tooltip} />
+    </InputPhone>
 {:else if input.type === 'file'}
     <InputFile
         label={input.label}

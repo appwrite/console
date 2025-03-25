@@ -6,6 +6,7 @@
     export let required = false;
     export let disabled = false;
     export let readonly = false;
+    export let autofocus = false;
 </script>
 
-<Input.OTP {length} bind:value {required} {disabled} {readonly} size="s" />
+<Input.OTP {length} bind:value {required} {disabled} {readonly} {autofocus} size="s" />

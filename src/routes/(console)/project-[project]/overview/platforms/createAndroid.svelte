@@ -3,9 +3,17 @@
     import { invalidate } from '$app/navigation';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import { Code, Layout, Icon, Typography, Fieldset, InlineCode } from '@appwrite.io/pink-svelte';
+    import {
+        Code,
+        Layout,
+        Icon,
+        Typography,
+        Fieldset,
+        InlineCode,
+        Tooltip
+    } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
-    import { IconAndroid, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
+    import { IconAndroid, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
@@ -103,11 +111,18 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             <!-- Tooltips on InputText don't work as of now -->
                             <InputText
                                 id="key"
+                                required
                                 label="Package name"
                                 placeholder="com.company.appname"
-                                tooltip="Your package name is generally the applicationId in your app-level build.gradle file."
-                                required
-                                bind:value={$createPlatform.key} />
+                                bind:value={$createPlatform.key}>
+                                <Tooltip slot="info" maxWidth="15rem">
+                                    <Icon icon={IconInfo} size="s" />
+                                    <Typography.Caption variant="400" slot="tooltip">
+                                        Your package name is generally the applicationId in your
+                                        app-level build.gradle file.
+                                    </Typography.Caption>
+                                </Tooltip>
+                            </InputText>
                         </Layout.Stack>
 
                         <Button

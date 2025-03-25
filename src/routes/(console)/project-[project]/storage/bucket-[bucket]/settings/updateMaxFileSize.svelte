@@ -11,7 +11,7 @@
     import { updateBucket } from './+page.svelte';
     import type { Plan } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
-    
+
     export let bucket: Models.Bucket;
     export let currentPlan: Plan | null;
 

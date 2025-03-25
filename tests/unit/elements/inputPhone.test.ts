@@ -42,8 +42,7 @@ test('shows phone input - placeholder', () => {
 test('shows phone input - hide label', () => {
     render(InputPhone, {
         id: 'input',
-        label: 'label',
-        showLabel: false
+        label: 'label'
     });
 
     const label = document.querySelector('label');

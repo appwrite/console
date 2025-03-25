@@ -5,15 +5,7 @@
     import { onMount } from 'svelte';
     import PaymentModal from './paymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import {
-        Alert,
-        Fieldset,
-        Icon,
-        Layout,
-        Selector,
-        Card,
-        Typography
-    } from '@appwrite.io/pink-svelte';
+    import { Alert, Icon, Layout, Selector, Card, Typography } from '@appwrite.io/pink-svelte';
     import { IconExclamationCircle, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { invalidate } from '$app/navigation';

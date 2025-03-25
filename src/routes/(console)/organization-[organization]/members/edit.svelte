@@ -11,6 +11,8 @@
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import type { Models } from '@appwrite.io/console';
     import Roles from '$lib/components/roles/roles.svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
 
     export let showEdit = false;
     export let selectedMember: Models.Membership;
@@ -78,13 +80,16 @@
 </script>
 
 <Modal title="Edit role" {error} size="s" bind:show={showEdit} onSubmit={submit}>
-    <InputSelect
-        popover={Roles}
-        id="role"
-        label="Role"
-        required
-        options={roles}
-        bind:value={role} />
+    <InputSelect id="role" label="Role" required options={roles} bind:value={role}>
+        <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
+            <Popover let:toggle>
+                <Button extraCompact size="s" on:click={toggle}>
+                    <Icon size="s" icon={IconInfo} />
+                </Button>
+                <svelte:component this={Roles} slot="tooltip" />
+            </Popover>
+        </Layout.Stack>
+    </InputSelect>
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>

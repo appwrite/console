@@ -71,7 +71,7 @@
                 }}><Icon icon={IconPencil} /> Collection ID</Tag>
         </div>
     {/if}
-    <CustomId autofocus bind:show={showCustomId} name="Collection" bind:id fullWidth={true} />
+    <CustomId autofocus bind:show={showCustomId} name="Collection" bind:id />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

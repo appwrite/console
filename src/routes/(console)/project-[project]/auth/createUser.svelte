@@ -67,7 +67,7 @@
                 }}><Icon icon={IconPencil} /> User ID</Tag>
         </div>
     {/if}
-    <CustomId bind:show={showDropdown} name="User" bind:id fullWidth={true} />
+    <CustomId bind:show={showDropdown} name="User" bind:id />
     <svelte:fragment slot="footer">
         <Button text on:mousedown={() => (showCreate = false)}>Cancel</Button>
         <Button submit>Create</Button>

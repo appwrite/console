@@ -44,8 +44,7 @@ test('shows text input - placeholder', () => {
 test('shows text input - hide label', () => {
     render(InputText, {
         id: 'input',
-        label: 'label',
-        showLabel: false
+        label: 'label'
     });
 
     const label = document.querySelector('label');

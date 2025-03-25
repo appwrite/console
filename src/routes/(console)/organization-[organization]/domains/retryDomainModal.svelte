@@ -59,20 +59,19 @@
         </Typography.Text>
     </Layout.Stack>
 
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Type</Table.Header.Cell>
-            <Table.Header.Cell>Value</Table.Header.Cell>
-            <Table.Header.Cell />
+    <Table.Root let:root columns={2}>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell {root}>Type</Table.Header.Cell>
+            <Table.Header.Cell {root}>Value</Table.Header.Cell>
         </svelte:fragment>
         {#each nameservers as nameserver}
-            <Table.Row>
-                <Table.Cell>NS</Table.Cell>
-                <Table.Cell>
+            <Table.Row.Base {root}>
+                <Table.Cell {root} column="ns">NS</Table.Cell>
+                <Table.Cell {root} column="action">
                     <InteractiveText variant="copy" isVisible text={nameserver}>
                         {nameserver}</InteractiveText>
                 </Table.Cell>
-            </Table.Row>
+            </Table.Row.Base>
         {/each}
     </Table.Root>
     <Input.Helper state="default">

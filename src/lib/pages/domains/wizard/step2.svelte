@@ -4,12 +4,18 @@
     import Retry from './retry.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { Box } from '$lib/components';
+    import type { Models } from '@appwrite.io/console';
 
     function onRetryError(event: CustomEvent<string>) {
         addNotification({
             message: event.detail,
             type: 'error'
         });
+    }
+
+    // TODO: @arman, please confirm that its no longer partial at this point.
+    function domainAsProxyRule(): Models.ProxyRule {
+        return $domain as Models.ProxyRule;
     }
 </script>
 
@@ -18,7 +24,7 @@
 
     <div class="boxes-wrapper u-margin-block-start-24">
         {#if $domain.status === 'created'}
-            <Retry on:error={onRetryError} showTitle={false} />
+            <Retry domain={domainAsProxyRule()} on:error={onRetryError} showTitle={false} />
         {:else}
             <div class="u-flex u-gap-8 u-cross-center">
                 <span class="icon-check u-color-text-success" aria-hidden="true" />
