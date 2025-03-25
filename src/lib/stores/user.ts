@@ -7,6 +7,7 @@ import type { NotificationPrefItem } from '$lib/helpers/notifications';
 export type Account = Models.User<
     {
         organization?: string;
+        console: Models.Preferences;
         notificationPrefs: Record<string, NotificationPrefItem>;
     } & Record<string, string>
 >;
