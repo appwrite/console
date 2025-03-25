@@ -10,7 +10,7 @@
     import { Typography } from '@appwrite.io/pink-svelte';
 
     export let site: Models.Site;
-    let logging = site.logging;
+    let logging = site?.logging;
 
     async function update() {
         try {
@@ -19,6 +19,7 @@
                 site.name,
                 site.framework as Framework,
                 site.enabled || undefined,
+                site.logging || undefined,
                 site.timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
@@ -32,7 +33,7 @@
                 site.providerSilentMode || undefined,
                 site.providerRootDirectory || undefined
             );
-            await invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',
                 message:
@@ -61,7 +62,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={site.logging === logging} submit>Update</Button>
+            <Button disabled={site?.logging === logging} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
