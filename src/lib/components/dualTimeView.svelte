@@ -24,12 +24,28 @@
             { label: 'month', value: Math.floor(diffInSeconds / SECONDS_IN_MONTH) },
             { label: 'day', value: Math.floor(diffInSeconds / SECONDS_IN_DAY) % 30 },
             { label: 'hour', value: Math.floor(diffInSeconds / SECONDS_IN_HOUR) % 24 },
-            { label: 'minute', value: Math.floor(diffInSeconds / SECONDS_IN_MINUTE) % 60 }
+            { label: 'minute', value: Math.floor(diffInSeconds / SECONDS_IN_MINUTE) % 60 },
+            { label: 'second', value: diffInSeconds % 60 }
         ];
 
-        const formattedTime = timeParts
-            .filter((unit) => unit.value > 0)
-            .slice(0, 3)
+        const month = timeParts[0].value;
+        const day = timeParts[1].value;
+        const hour = timeParts[2].value;
+        const second = timeParts[4].value;
+
+        let outputParts: { label: string; value: number }[];
+
+        if (month === 0 && day === 0 && hour === 0 && second > 0) {
+            // Seconds exist but no months, days, hours — show minutes + seconds
+            outputParts = timeParts.slice(3).filter((unit) => unit.value > 0);
+        } else {
+            // Normal logic — top 3 non-zero units, no seconds.
+            outputParts = timeParts
+                .filter((unit) => unit.label !== 'second' && unit.value > 0)
+                .slice(0, 3);
+        }
+
+        const formattedTime = outputParts
             .map((unit) => `${unit.value} ${unit.label}${unit.value > 1 ? 's' : ''}`)
             .join(', ');
 
@@ -54,7 +70,7 @@
 </script>
 
 <Popover let:show let:hide {placement} portal>
-    <button on:mouseenter={() => setTimeout(show, 25)} on:mouseleave={() => hidePopover(hide)}>
+    <button on:mouseenter={() => setTimeout(show, 100)} on:mouseleave={() => hidePopover(hide)}>
         <slot>{capitalize(timeFromNow(time))}</slot>
     </button>
 
@@ -77,26 +93,21 @@
             <!-- `Absolute time` as per design -->
             <Layout.Stack gap="xxs">
                 <Layout.Stack direction="row" justifyContent="space-between">
-                    <div class="body-400">
-                        <InteractiveText
-                            isVisible
-                            variant="copy"
-                            text={toLocaleDateTime(time, 'UTC')}
-                            value={new Date(toLocaleDateTime(time, 'UTC')).toISOString()} />
-                    </div>
+                    <InteractiveText
+                        isVisible
+                        variant="copy"
+                        text={toLocaleDateTime(time, 'UTC')}
+                        value={new Date(toLocaleDateTime(time, 'UTC')).toISOString()} />
 
                     <Badge variant="secondary" content="UTC" size="xs" />
                 </Layout.Stack>
 
                 <Layout.Stack direction="row" justifyContent="space-between">
-                    <div class="body-400">
-                        <InteractiveText
-                            isVisible
-                            variant="copy"
-                            text={toLocaleDateTime(time)}
-                            value={new Date(toLocaleDateTime(time)).toISOString()} />
-                    </div>
-
+                    <InteractiveText
+                        isVisible
+                        variant="copy"
+                        text={toLocaleDateTime(time)}
+                        value={new Date(toLocaleDateTime(time)).toISOString()} />
                     <Badge variant="secondary" content="UTC{getUTCOffset()}" size="xs" />
                 </Layout.Stack>
             </Layout.Stack>
