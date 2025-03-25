@@ -128,7 +128,7 @@
 
     const columns: Column[] = [
         { id: 'role', width: { min: 100 } },
-        { id: 'create', width: { min: 100 }, hide: !withCreate },
+        { id: 'create', width: { min: 100 }, show: withCreate },
         { id: 'read', width: { min: 100 } },
         { id: 'update', width: { min: 100 } },
         { id: 'delete', width: { min: 100 } },

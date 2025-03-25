@@ -163,7 +163,7 @@
                         let:root
                         columns={[
                             { id: 'target' },
-                            { id: 'identifier', hide: !recipientsAvailable },
+                            { id: 'identifier', show: recipientsAvailable },
                             { id: 'actions', width: 40 }
                         ]}>
                         <svelte:fragment slot="header" let:root>

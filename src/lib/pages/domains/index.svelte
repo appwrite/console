@@ -78,7 +78,7 @@
             { id: 'name' },
             { id: 'verification' },
             { id: 'certificate' },
-            { id: 'action', width: 20, hide: !$canWriteRules }
+            { id: 'action', width: 20, show: $canWriteRules }
         ]}>
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
