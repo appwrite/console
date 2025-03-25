@@ -29,7 +29,7 @@
             const prefs = preferences.getCustomCollectionColumns($page.params.collection);
             columns.set(
                 $columns.map((column) => {
-                    column.show = prefs?.includes(column.id) ?? true;
+                    column.show = prefs?.includes(column.id) ?? false;
                     return column;
                 })
             );
@@ -40,7 +40,7 @@
             if (prefs?.columns) {
                 columns.set(
                     $columns.map((column) => {
-                        column.show = prefs.columns?.includes(column.id) ?? true;
+                        column.show = prefs.columns?.includes(column.id) ?? false;
                         return column;
                     })
                 );
@@ -75,13 +75,11 @@
         });
     }
 
-    $: selectedColumnsNumber = $columns
-        .filter((c) => !c?.exclude)
-        .reduce((acc, column) => {
-            if (column.show === true) return acc;
+    $: selectedColumnsNumber = $columns.reduce((acc, column) => {
+        if (column.show === true) return acc;
 
-            return ++acc;
-        }, 0);
+        return ++acc;
+    }, 0);
 </script>
 
 {#if !hideColumns && view === View.Table}
@@ -97,13 +95,13 @@
             <svelte:fragment slot="tooltip">
                 <ActionMenu.Root>
                     <Layout.Stack>
-                        {#each $columns.filter((c) => !c?.exclude) as column}
+                        {#each $columns as column}
                             {#if !column?.exclude}
                                 <InputCheckbox
                                     id={column.id}
                                     label={column.title}
                                     on:change={() => (column.show = !column.show)}
-                                    checked={column.show}
+                                    checked={!column.show}
                                     disabled={allowNoColumns
                                         ? false
                                         : selectedColumnsNumber <= 1 && column.show !== true} />

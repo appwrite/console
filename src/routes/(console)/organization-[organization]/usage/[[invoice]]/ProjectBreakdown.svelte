@@ -107,9 +107,9 @@
         <Table.Root
             columns={[
                 { id: 'project' },
-                { id: 'reads', show: !!databaseOperationMetric },
-                { id: 'writes', show: !!databaseOperationMetric },
-                { id: 'metric', show: !databaseOperationMetric },
+                { id: 'reads', hide: !databaseOperationMetric },
+                { id: 'writes', hide: !databaseOperationMetric },
+                { id: 'metric', hide: !!databaseOperationMetric },
                 { id: 'costs' }
             ]}
             let:root>

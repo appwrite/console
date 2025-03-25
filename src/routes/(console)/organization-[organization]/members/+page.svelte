@@ -83,7 +83,7 @@
             { id: 'email' },
             { id: 'roles' },
             { id: 'mfa' },
-            { id: 'actions', show: $isOwner, width: 40 }
+            { id: 'actions', hide: !$isOwner, width: 40 }
         ]}>
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>

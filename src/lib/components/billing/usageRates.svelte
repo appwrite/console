@@ -63,7 +63,7 @@
         </Typography.Text>
     {/if}
     <Table.Root
-        columns={[{ id: 'resource' }, { id: 'limit' }, { id: 'rate', show: !isFree }]}
+        columns={[{ id: 'resource' }, { id: 'limit' }, { id: 'rate', hide: isFree }]}
         let:root>
         <svelte:fragment slot="header" let:root>
             <Table.Header.Cell column="resource" {root}>Resource</Table.Header.Cell>

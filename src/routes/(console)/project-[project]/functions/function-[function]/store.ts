@@ -82,7 +82,7 @@ export const columns = writable<Column[]>([
         id: 'buildSize',
         title: 'Build size',
         type: 'integer',
-        show: false,
+        hide: true,
         filter: false,
         width: 80
     },
