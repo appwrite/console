@@ -28,7 +28,7 @@
     }
 </script>
 
-{#if deployment?.status === 'ready' || deployment?.status === 'failed'}
+{#if deployment?.status === 'ready' || deployment?.status === 'failed' || deployment?.status === 'building'}
     <SubMenu>
         <ActionMenu.Root noPadding>
             <ActionMenu.Item.Button trailingIcon={IconDownload}>Download</ActionMenu.Item.Button>
