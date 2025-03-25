@@ -1,5 +1,4 @@
 import { browser } from '$app/environment';
-import { page } from '$app/stores';
 import type { View } from '$lib/helpers/load';
 import type { Page } from '@sveltejs/kit';
 import { get, writable } from 'svelte/store';
@@ -48,73 +47,62 @@ function createPreferences() {
         subscribe,
         set,
         update,
-        get: (route?: Page['route']): Preferences => {
-            const parsedRoute = route ?? get(page).route;
-            return (
-                preferences[sdk.forProject.client.config.project]?.[parsedRoute.id] ?? {
-                    limit: null,
-                    view: null,
-                    columns: null
-                }
-            );
-        },
+        get: (projectId: string, route: Page['route']): Preferences =>
+            preferences[projectId]?.[route.id] ?? {
+                limit: null,
+                view: null,
+                columns: null
+            },
 
-        getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
-            return (
-                preferences[sdk.forProject.client.config.project]?.collections?.[collectionId] ??
-                null
-            );
-        },
-        setLimit: (limit: Preferences['limit']) =>
+        getCustomCollectionColumns: (
+            projectId: string,
+            collectionId: string
+        ): Preferences['columns'] => preferences[projectId]?.collections?.[collectionId] ?? [],
+        setLimit: (projectId: string, route: Page['route'], limit: Preferences['limit']) =>
             update((n) => {
-                const path = get(page).route.id;
-                const project = sdk.forProject.client.config.project;
-                if (!n[project]?.[path]) {
-                    n[project] ??= {};
-                    n[project][path] ??= {};
+                if (!n[projectId]?.[route.id]) {
+                    n[projectId] ??= {};
+                    n[projectId][route.id] ??= {};
                 }
 
-                n[project][path].limit = limit;
+                n[projectId][route.id].limit = limit;
 
                 return n;
             }),
-        setView: (view: Preferences['view']) =>
+        setView: (projectId: string, route: Page['route'], view: Preferences['view']) =>
             update((n) => {
-                const path = get(page).route.id;
-                const project = sdk.forProject.client.config.project;
-                if (!n[project]?.[path]) {
-                    n[project] ??= {};
-                    n[project][path] ??= {};
+                if (!n[projectId]?.[route.id]) {
+                    n[projectId] ??= {};
+                    n[projectId][route.id] ??= {};
                 }
 
-                n[project][path].view = view;
+                n[projectId][route.id].view = view;
 
                 return n;
             }),
-        setColumns: (columns: Preferences['columns']) =>
+        setColumns: (projectId: string, route: Page['route'], columns: Preferences['columns']) =>
             update((n) => {
-                const path = get(page).route.id;
-                const project = sdk.forProject.client.config.project;
-                if (!n[project]?.[path]) {
-                    n[project] ??= {};
-                    n[project][path] ??= {};
+                if (!n[projectId]?.[route.id]) {
+                    n[projectId] ??= {};
+                    n[projectId][route.id] ??= {};
                 }
 
-                n[project][path].columns = columns;
+                n[projectId][route.id].columns = columns;
 
                 return n;
             }),
-        setCustomCollectionColumns: (columns: Preferences['columns']) =>
+        setCustomCollectionColumns: (
+            projectId: string,
+            route: Page['route'],
+            columns: Preferences['columns']
+        ) =>
             update((n) => {
-                const current = get(page);
-                const project = sdk.forProject.client.config.project;
-                const collection = current.params.collection;
-                if (!n[project]?.collections?.[collection]) {
-                    n[project] ??= {};
-                    n[project].collections ??= {};
+                if (!n[projectId]?.collections?.[route.id]) {
+                    n[projectId] ??= {};
+                    n[projectId].collections ??= {};
                 }
 
-                n[project].collections[collection] = columns;
+                n[projectId].collections[route.id] = columns;
 
                 return n;
             }),

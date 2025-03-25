@@ -8,6 +8,7 @@
     import type { Permission } from './permissions.svelte';
     import Table from '$lib/elements/table/table.svelte';
     import { TableBody, TableCell, TableRow } from '$lib/elements/table';
+    import { page } from '$app/stores';
 
     export let show: boolean;
     export let groups: Writable<Map<string, Permission>>;
@@ -33,10 +34,9 @@
 
     async function request() {
         if (!show) return;
-        results = await sdk.forProject.teams.list(
-            [Query.limit(5), Query.offset(offset)],
-            search || undefined
-        );
+        results = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .teams.list([Query.limit(5), Query.offset(offset)], search || undefined);
     }
 
     function onSelection(event: Event, role: string) {

@@ -4,13 +4,10 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert } from '$lib/components';
-    import {
-        EstimatedTotalBox,
-        PlanComparisonBox,
-        SelectPaymentMethod
-    } from '$lib/components/billing';
+    import { PlanComparisonBox, SelectPaymentMethod } from '$lib/components/billing';
+    import EstimatedTotal from '$lib/components/billing/estimatedTotal.svelte';
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
-    import PlanSelection from '$lib/components/billing/planSelection.svelte';
+    import SelectPlan from '$lib/components/billing/selectPlan.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
@@ -23,17 +20,24 @@
         InputTextarea,
         Label
     } from '$lib/elements/forms';
-    import { formatCurrency } from '$lib/helpers/numbers.js';
+    import { toLocaleDate } from '$lib/helpers/date.js';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { isOrganization, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization, organizationList, type Organization } from '$lib/stores/organization';
+    import {
+        currentPlan,
+        organization,
+        organizationList,
+        type Organization
+    } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
     import { onMount } from 'svelte';
@@ -54,7 +58,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
     let methods: PaymentList;
-    let billingPlan: Tier = $organization.billingPlan;
+    let billingPlan: Tier = $currentPlan?.$id as Tier;
     let paymentMethodId: string;
     let collaborators: string[] =
         data?.members?.memberships
@@ -79,7 +83,7 @@
         if ($page.url.searchParams.has('code')) {
             const coupon = $page.url.searchParams.get('code');
             try {
-                const response = await sdk.forConsole.billing.getCoupon(coupon);
+                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
                 couponData = response;
             } catch (e) {
                 couponData = {
@@ -95,14 +99,22 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        if ($organization?.billingPlan === BillingPlan.SCALE) {
+
+        if ($page.url.searchParams.has('type')) {
+            const type = $page.url.searchParams.get('type');
+            if (type === 'payment_confirmed') {
+                const organizationId = $page.url.searchParams.get('id');
+                const invites = $page.url.searchParams.get('invites').split(',');
+                await validate(organizationId, invites);
+            }
+        }
+        if ($currentPlan?.$id === BillingPlan.SCALE) {
             billingPlan = BillingPlan.SCALE;
         } else {
             billingPlan = BillingPlan.PRO;
         }
 
-        const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
-        selfService = currentPlan.selfService;
+        selfService = $currentPlan?.selfService ?? true;
     });
 
     async function loadPaymentMethods() {
@@ -137,7 +149,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: tierToPlan($organization.billingPlan).name,
+                    from: tierToPlan($currentPlan?.$id as Tier).name,
                     to: tierToPlan(billingPlan).name,
                     email: $user.email,
                     reason: feedbackDowngradeOptions.find(
@@ -149,14 +161,14 @@
                 })
             });
 
+            await invalidate(Dependencies.ORGANIZATION);
+
             await goto(previousPage);
             addNotification({
                 type: 'success',
                 isHtml: true,
                 message: `
-                        <b>${$organization.name}</b> will change to ${
-                            tierToPlan(billingPlan).name
-                        } plan at the end of the current billing cycle.`
+                        <b>${$organization.name}</b> plan has been successfully updated.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
@@ -171,61 +183,88 @@
         }
     }
 
+    async function validate(organizationId: string, invites: string[]) {
+        try {
+            let org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
+                await goto(previousPage);
+                addNotification({
+                    type: 'success',
+                    message: 'Your organization has been upgraded'
+                });
+
+                trackEvent(Submit.OrganizationUpgrade, {
+                    plan: tierToPlan(billingPlan)?.name
+                });
+            }
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+            trackError(e, Submit.OrganizationCreate);
+        }
+    }
+
     async function upgrade() {
         try {
+            //Add collaborators
+            let newCollaborators = [];
+            if (collaborators?.length) {
+                newCollaborators = collaborators.filter(
+                    (collaborator) =>
+                        !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
+                );
+            }
             const org = await sdk.forConsole.billing.updatePlan(
                 $organization.$id,
                 billingPlan,
                 paymentMethodId,
-                null
+                null,
+                couponData?.code,
+                newCollaborators,
+                billingBudget,
+                taxId ? taxId : null
             );
 
-            //Add coupon
-            if (couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                trackEvent(Submit.CreditRedeem);
-            }
-
-            //Add budget
-            if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-            }
-
-            //Add collaborators
-            if (collaborators?.length) {
-                const newCollaborators = collaborators.filter(
-                    (collaborator) =>
-                        !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
+            if (!isOrganization(org) && org.status == 402) {
+                let clientSecret = org.clientSecret;
+                let params = new URLSearchParams();
+                for (const [key, value] of $page.url.searchParams.entries()) {
+                    if (key !== 'type' && key !== 'id') {
+                        params.append(key, value);
+                    }
+                }
+                params.append('type', 'payment_confirmed');
+                params.append('id', org.teamId);
+                params.append('invites', collaborators.join(','));
+                params.append('plan', billingPlan);
+                await confirmPayment(
+                    '',
+                    clientSecret,
+                    paymentMethodId,
+                    '/console/change-plan?' + params.toString()
                 );
-                newCollaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${$page.url.origin}${base}/invite`
-                    );
+                await validate(org.teamId, collaborators);
+            }
+
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
+                await goto(previousPage);
+                addNotification({
+                    type: 'success',
+                    message: 'Your organization has been upgraded'
+                });
+
+                trackEvent(Submit.OrganizationUpgrade, {
+                    plan: tierToPlan(billingPlan)?.name
                 });
             }
-
-            //Add tax ID
-            if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-            }
-
-            await invalidate(Dependencies.ACCOUNT);
-            await invalidate(Dependencies.ORGANIZATION);
-
-            await goto(previousPage);
-            addNotification({
-                type: 'success',
-                message: 'Your organization has been upgraded'
-            });
-
-            trackEvent(Submit.OrganizationUpgrade, {
-                plan: tierToPlan(billingPlan)?.name
-            });
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -235,12 +274,12 @@
         }
     }
 
-    $: isUpgrade = billingPlan > $organization.billingPlan;
-    $: isDowngrade = billingPlan < $organization.billingPlan;
+    $: isUpgrade = $plansInfo.get(billingPlan).order > $currentPlan.order;
+    $: isDowngrade = $plansInfo.get(billingPlan).order < $currentPlan.order;
     $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
-    $: isButtonDisabled = $organization.billingPlan === billingPlan;
+    $: isButtonDisabled = ($currentPlan?.$id as Tier) === billingPlan;
 </script>
 
 <svelte:head>
@@ -261,13 +300,7 @@
                     >Your contract is not eligible for manual changes. Please reach out to schedule
                     a call or setup a dialog.</Alert>
             {/if}
-            <PlanSelection
-                bind:billingPlan
-                bind:selfService
-                anyOrgFree={!!anyOrgFree}
-                class={anyOrgFree && billingPlan !== BillingPlan.FREE
-                    ? 'u-margin-block-start-16'
-                    : ''} />
+            <SelectPlan bind:billingPlan anyOrgFree={!!anyOrgFree} class="u-margin-block-16" />
 
             {#if isDowngrade}
                 {#if billingPlan === BillingPlan.FREE}
@@ -275,24 +308,27 @@
                         tier={BillingPlan.FREE}
                         class="u-margin-block-start-24"
                         members={data?.members?.total ?? 0} />
-                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE}
+                {:else}
                     {@const extraMembers = collaborators?.length ?? 0}
-                    <Alert type="error" class="u-margin-block-start-24">
+                    <Alert type="warning" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
-                            Your monthly payments will be adjusted for the Pro plan
+                            Your organization will switch to {tierToPlan(billingPlan).name} plan on {toLocaleDate(
+                                $organization.billingNextInvoiceDate
+                            )}.
                         </svelte:fragment>
-                        After switching plans,
-                        <b
-                            >you will be charged {formatCurrency(
-                                extraMembers *
-                                    ($plansInfo?.get(billingPlan)?.addons?.member?.price ?? 0)
-                            )} monthly for {extraMembers} team members.</b> This will be reflected in
-                        your next invoice.
+                        You will retain access to {tierToPlan($organization.billingPlan).name} plan features
+                        until your billing period ends. {#if extraMembers > 0}After that,
+                            <b
+                                >you will be charged {formatCurrency(
+                                    extraMembers *
+                                        ($plansInfo?.get(billingPlan)?.addons?.seats?.price ?? 0)
+                                )} per month for {extraMembers} team members.</b
+                            >{/if}
                     </Alert>
                 {/if}
             {/if}
             <!-- Show email input if upgrading from free plan -->
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
                         bind:tags={collaborators}
@@ -314,7 +350,7 @@
                     </Button>
                 {/if}
             {/if}
-            {#if isDowngrade}
+            {#if isDowngrade && billingPlan === BillingPlan.FREE}
                 <FormList class="u-margin-block-start-24">
                     <InputSelect
                         id="reason"
@@ -333,13 +369,13 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
-                <EstimatedTotalBox
-                    {billingPlan}
-                    {collaborators}
-                    bind:couponData
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
+                <EstimatedTotal
                     bind:billingBudget
-                    {isDowngrade} />
+                    bind:couponData
+                    organizationId={$organization.$id}
+                    {billingPlan}
+                    {collaborators} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}

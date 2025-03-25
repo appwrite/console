@@ -48,3 +48,8 @@ const formatter = Intl.NumberFormat('en', {
 export function formatNum(number: number): string {
     return formatter.format(number);
 }
+
+/**
+ * Returns a regex to check hostname validity. Supports wildcards too!
+ */
+export const hostnameRegex = String.raw`(\*)|(\*\.)?(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}|localhost`;

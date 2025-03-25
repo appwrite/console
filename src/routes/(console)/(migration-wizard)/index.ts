@@ -17,6 +17,6 @@ export function openMigrationWizard() {
     });
 }
 
-export const selectedProject = writable(null);
+export const selectedProject = writable<string>(null);
 
 export const provider = createMigrationProviderStore();

@@ -23,7 +23,10 @@
 
     onMount(async () => {
         if (isCustomCollection) {
-            const prefs = preferences.getCustomCollectionColumns($page.params.collection);
+            const prefs = preferences.getCustomCollectionColumns(
+                $page.params.project,
+                $page.params.collection
+            );
             columns.set(
                 $columns.map((column) => {
                     column.show = prefs?.includes(column.id) ?? true;
@@ -31,7 +34,7 @@
                 })
             );
         } else {
-            const prefs = preferences.get($page.route);
+            const prefs = preferences.get($page.params.project, $page.route);
 
             // Override the shown columns only if a preference was set
             if (prefs?.columns) {
@@ -48,9 +51,9 @@
             const columns = ctx.filter((n) => n.show).map((n) => n.id);
 
             if (isCustomCollection) {
-                preferences.setCustomCollectionColumns(columns);
+                preferences.setCustomCollectionColumns($page.params.project, $page.route, columns);
             } else {
-                preferences.setColumns(columns);
+                preferences.setColumns($page.params.project, $page.route, columns);
             }
         });
     });
@@ -62,7 +65,7 @@
     }
 
     function updateViewPreferences(view: View) {
-        preferences.setView(view);
+        preferences.setView($page.params.project, $page.route, view);
     }
 
     $: selectedColumnsNumber = $columns.reduce((acc, column) => {

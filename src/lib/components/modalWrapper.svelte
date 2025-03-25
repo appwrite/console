@@ -6,6 +6,7 @@
     export let show = false;
     export let size: 'small' | 'big' | 'huge' = null;
     export let closable = true;
+    export let closeByEscape = true;
     export let headerDivider = true;
     export let style = '';
 
@@ -48,7 +49,7 @@
     }
 
     function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Escape') {
+        if (event.key === 'Escape' && closeByEscape) {
             event.preventDefault();
             trackEvent('click_close_modal', {
                 from: 'escape'
@@ -79,7 +80,9 @@
     on:cancel|preventDefault
     {style}>
     {#if show}
-        <slot close={closeModal} />
+        <div class="content">
+            <slot close={closeModal} />
+        </div>
     {/if}
 </dialog>
 

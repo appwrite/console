@@ -19,7 +19,8 @@
             repositoryBehaviour: 'new',
             repositoryName: template.id,
             repositoryPrivate: true,
-            repositoryId: null
+            repositoryId: null,
+            specification: null
         });
         wizard.start(CreateTemplate);
     }
@@ -159,9 +160,9 @@
                                             </div>
                                             <div class="body-text-2">
                                                 {runtimeDetail.name}
-                                                {#if runtimeDetail.name.toLowerCase() === 'deno'}
-                                                    <span class="inline-tag">New</span>
-                                                {/if}
+                                                <!--{#if runtimeDetail.name.toLowerCase() === 'deno'}-->
+                                                <!--    <span class="inline-tag">New</span>-->
+                                                <!--{/if}-->
                                             </div>
                                         </button>
                                     </li>
@@ -192,7 +193,7 @@
                     <Button
                         text
                         class="u-margin-block-start-24 u-margin-inline-start-auto"
-                        href={`${base}/project-${$page.params.project}/functions/templates?useCase=starter`}>
+                        href={`${base}/project-${$page.params.region}-${$page.params.project}/functions/templates?useCase=starter`}>
                         All starter templates <span class="icon-cheveron-right" />
                     </Button>
                     <div class="u-sep-block-start common-section" />
@@ -225,7 +226,7 @@
                                 {/each}
                             {:then templatesListWithoutStarter}
                                 {#each templatesListWithoutStarter.templates as template}
-                                    <li class="clickable-list-item">
+                                    <li class="clickable-list-item u-padding-block-8">
                                         <button
                                             type="button"
                                             on:click={() => {
@@ -259,7 +260,7 @@
                         text
                         noMargin
                         class="u-margin-inline-start-auto u-margin-block-start-16"
-                        href={`${base}/project-${$page.params.project}/functions/templates`}>
+                        href={`${base}/project-${$page.params.region}-${$page.params.project}/functions/templates`}>
                         <span> All templates </span>
                         <span class="icon-cheveron-right" aria-hidden="true" />
                     </Button>
@@ -293,6 +294,22 @@
             hsl(var(--p-card-bg-color)) 68.91%,
             hsl(var(--p-card-bg-color) / 0.5) 92.8%
         );
+    }
+
+    .u-sep-block-start {
+        border-block-start: solid 0.0625rem hsl(var(--color-neutral)) !important;
+    }
+
+    .clickable-list-item:not(:last-child) {
+        border-block-end: solid 0.0625rem hsl(var(--color-neutral)) !important;
+    }
+
+    :global(.theme-light) {
+        --color-neutral: var(--color-neutral-10);
+    }
+
+    :global(.theme-dark) {
+        --color-neutral: var(--color-neutral-85);
     }
 
     .inline-tag {
