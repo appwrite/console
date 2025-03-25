@@ -5,6 +5,7 @@
     import {
         Badge,
         Divider,
+        InlineCode,
         Input,
         Layout,
         Logs,
@@ -13,9 +14,11 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import LoggingAlert from './loggingAlert.svelte';
 
     export let selectedLog: Models.Execution;
-
+    export let product: 'site' | 'function';
+    export let logging: boolean;
     let responseTab: 'logs' | 'errors' | 'headers' | 'body' = 'logs';
 
     onMount(() => {
@@ -36,12 +39,14 @@
                 on:click={() => (responseTab = 'logs')}>
                 Logs
             </Tabs.Item.Button>
-            <!-- <Tabs.Item.Button
-                {root}
-                active={responseTab === 'errors'}
-                on:click={() => (responseTab = 'errors')}>
-                Errors
-            </Tabs.Item.Button> -->
+            {#if product !== 'site'}
+                <Tabs.Item.Button
+                    {root}
+                    active={responseTab === 'errors'}
+                    on:click={() => (responseTab = 'errors')}>
+                    Errors
+                </Tabs.Item.Button>
+            {/if}
             <Tabs.Item.Button
                 {root}
                 active={responseTab === 'headers'}
@@ -51,11 +56,22 @@
                     size="s"
                     content={selectedLog?.responseHeaders?.length?.toString()} />
             </Tabs.Item.Button>
+            {#if product !== 'site'}
+                <Tabs.Item.Button
+                    {root}
+                    active={responseTab === 'body'}
+                    on:click={() => (responseTab = 'body')}>
+                    Body
+                </Tabs.Item.Button>
+            {/if}
         </Tabs.Root>
         <Divider />
     </Layout.Stack>
 
     {#if responseTab === 'logs'}
+        {#if !logging}
+            <LoggingAlert {product} />
+        {/if}
         {#if selectedLog.logs}
             <Logs logs={selectedLog.logs} />
         {:else}
@@ -64,6 +80,9 @@
             </Card>
         {/if}
     {:else if responseTab === 'errors'}
+        {#if !logging}
+            <LoggingAlert {product} />
+        {/if}
         {#if selectedLog.errors}
             <Logs logs={selectedLog.errors} />
         {:else}
@@ -112,7 +131,17 @@
             <Logs logs={selectedLog.responseBody} />
         {:else}
             <Card padding="xs" radius="s">
-                <Typography.Code>No parameters found.</Typography.Code>
+                <Typography.Text>
+                    Body data is not captured by Appwrite for your user's security and privacy. To
+                    display body data in the Logs tab, use <InlineCode
+                        code="context.log()"
+                        size="s" />. <Link
+                        external
+                        href="https://appwrite.io/docs/products/functions/develop#logging"
+                        variant="muted">
+                        Learn more</Link
+                    >.
+                </Typography.Text>
             </Card>
         {/if}
     {/if}

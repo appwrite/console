@@ -14,10 +14,10 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { timeFromNow } from '$lib/helpers/date';
-    import LogsRequest from './(components)/LogsRequest.svelte';
-    import LogsResponse from './(components)/LogsResponse.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { Copy } from '$lib/components';
+    import { LogsRequest, LogsResponse } from '$lib/components/logs';
+    import { site } from '../store';
 
     export let open = false;
     export let selectedLogId: string;
@@ -127,7 +127,7 @@
                 <LogsRequest {selectedLog} />
             </Accordion>
             <Accordion title="Response" open hideDivider>
-                <LogsResponse {selectedLog} />
+                <LogsResponse {selectedLog} logging={$site?.logging} product="site" />
             </Accordion>
         </Layout.Stack>
     {/if}

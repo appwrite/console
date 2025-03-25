@@ -15,6 +15,7 @@
     import { isCloud } from '$lib/system';
     import UpdateResourceLimits from './updateResourceLimits.svelte';
     import UpdateVariables from '$routes/(console)/project-[project]/updateVariables.svelte';
+    import UpdateLogging from './updateLogging.svelte';
 
     export let data;
 
@@ -74,5 +75,6 @@
         <UpdateResourceLimits site={data.site} specs={data.specificationsList} />
     {/if}
     <UpdateTimeout site={data.site} />
+    <UpdateLogging site={data.site} />
     <DangerZone site={data.site} />
 </Container>
