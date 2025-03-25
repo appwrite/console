@@ -29,7 +29,7 @@
             const prefs = preferences.getCustomCollectionColumns($page.params.collection);
             columns.set(
                 $columns.map((column) => {
-                    column.hide = prefs?.includes(column.id) ?? false;
+                    column.show = prefs?.includes(column.id) ?? false;
                     return column;
                 })
             );
@@ -40,7 +40,7 @@
             if (prefs?.columns) {
                 columns.set(
                     $columns.map((column) => {
-                        column.hide = prefs.columns?.includes(column.id) ?? false;
+                        column.show = prefs.columns?.includes(column.id) ?? false;
                         return column;
                     })
                 );
@@ -48,7 +48,7 @@
         }
 
         columns.subscribe((ctx) => {
-            const columns = ctx.filter((n) => n.hide === true).map((n) => n.id);
+            const columns = ctx.filter((n) => n.show === true).map((n) => n.id);
 
             if (isCustomCollection) {
                 preferences.setCustomCollectionColumns(columns);
@@ -76,7 +76,7 @@
     }
 
     $: selectedColumnsNumber = $columns.reduce((acc, column) => {
-        if (column.hide === true) return acc;
+        if (column.show === true) return acc;
 
         return ++acc;
     }, 0);
@@ -100,11 +100,11 @@
                                 <InputCheckbox
                                     id={column.id}
                                     label={column.title}
-                                    on:change={() => (column.hide = !column.hide)}
-                                    checked={!column.hide}
+                                    on:change={() => (column.show = !column.show)}
+                                    checked={!column.show}
                                     disabled={allowNoColumns
                                         ? false
-                                        : selectedColumnsNumber <= 1 && column.hide !== true} />
+                                        : selectedColumnsNumber <= 1 && column.show !== true} />
                             {/if}
                         {/each}
                     </Layout.Stack>
