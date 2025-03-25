@@ -1,7 +1,7 @@
 <script lang="ts">
     import { BillingPlan } from '$lib/constants';
     import { formatNum } from '$lib/helpers/string';
-    import { plansInfo, tierFree, tierPro, type Tier } from '$lib/stores/billing';
+    import { plansInfo, tierFree, tierPro, tierScale, type Tier } from '$lib/stores/billing';
     import { Card, SecondaryTabs, SecondaryTabsItem } from '..';
 
     let selectedTab: Tier = BillingPlan.FREE;
@@ -23,11 +23,11 @@
                 on:click={() => (selectedTab = BillingPlan.PRO)}>
                 {tierPro.name}
             </SecondaryTabsItem>
-            <!-- <SecondaryTabsItem
+            <SecondaryTabsItem
                 disabled={selectedTab === BillingPlan.SCALE}
                 on:click={() => (selectedTab = BillingPlan.SCALE)}>
                 {tierScale.name}
-            </SecondaryTabsItem> -->
+            </SecondaryTabsItem>
         </SecondaryTabs>
     </div>
 
@@ -109,7 +109,7 @@
             <p class="u-margin-block-start-8">Everything in the Pro plan, plus:</p>
             <ul class="un-order-list u-margin-inline-start-4">
                 <li>Unlimited seats</li>
-                <li>Organization roles <span class="inline-tag">Coming soon</span></li>
+                <li>Organization roles</li>
                 <li>SOC-2, HIPAA compliance</li>
                 <li>SSO <span class="inline-tag">Coming soon</span></li>
                 <li>Priority support</li>

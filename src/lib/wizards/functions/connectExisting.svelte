@@ -39,7 +39,8 @@
                     $repository.id,
                     $choices.branch,
                     $choices.silentMode || undefined,
-                    $choices.rootDir
+                    $choices.rootDir,
+                    $func.specification || undefined
                 );
             trackEvent(Submit.FunctionConnectRepo, {
                 customId: !!$func.$id

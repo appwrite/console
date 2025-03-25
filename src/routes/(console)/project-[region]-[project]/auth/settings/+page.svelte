@@ -13,6 +13,8 @@
     import type { Models } from '@appwrite.io/console';
     import { project } from '../../store';
     import { base } from '$app/paths';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const projectId = $page.params.project;
     let showProvider = false;
@@ -30,6 +32,7 @@
                 method: box.method,
                 value: box.value
             });
+            invalidate(Dependencies.PROJECT);
         } catch (error) {
             box.value = !box.value;
             addNotification({

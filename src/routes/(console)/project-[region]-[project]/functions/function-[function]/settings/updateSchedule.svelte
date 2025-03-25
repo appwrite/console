@@ -11,6 +11,7 @@
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
+    import { parseExpression } from 'cron-parser';
 
     const functionId = $page.params.function;
     let functionSchedule: string = null;
@@ -24,6 +25,9 @@
             if (!isValueOfStringEnum(Runtime, $func.runtime)) {
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
+
+            // an error is shown if invalid.
+            parseExpression(functionSchedule);
             await sdk
                 .forProject($page.params.region, $page.params.project)
                 .functions.update(
@@ -43,7 +47,8 @@
                     $func.providerRepositoryId || undefined,
                     $func.providerBranch || undefined,
                     $func.providerSilentMode || undefined,
-                    $func.providerRootDirectory || undefined
+                    $func.providerRootDirectory || undefined,
+                    $func.specification || undefined
                 );
             await invalidate(Dependencies.FUNCTION);
             addNotification({

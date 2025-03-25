@@ -5,16 +5,32 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
-    $: total = data.filesTotal;
-    $: count = data.files;
+    $: filesTotal = data.filesTotal;
+    $: files = data.files;
+    $: transformationsTotal = data.imageTransformationsTotal;
+    $: transformations = data.imageTransformations;
+
+    $: path = `${base}/project-${$page.params.region}-${$page.params.project}/storage/bucket-${$page.params.bucket}/usage`;
 </script>
 
 <Usage
+    {path}
     title="Files"
-    path={`${base}/project-${$page.params.region}-${$page.params.project}/storage/bucket-${$page.params.bucket}/usage`}
-    {total}
-    {count}
+    count={files}
+    total={filesTotal}
     countMetadata={{
         legend: 'Files',
         title: 'Total files'
     }} />
+
+<Usage
+    {path}
+    title="Image transformations"
+    total={transformationsTotal}
+    count={transformations}
+    countMetadata={{
+        legend: 'Image transformations',
+        title: 'Total transformations'
+    }}
+    isCumulative
+    hideSelectPeriod />

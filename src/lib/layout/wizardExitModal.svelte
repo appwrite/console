@@ -14,7 +14,7 @@
 </script>
 
 <Modal
-    title="Exit Process"
+    title="Exit process"
     bind:show
     onSubmit={handleSubmit}
     icon="exclamation"

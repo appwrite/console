@@ -29,14 +29,15 @@
     import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import { onMount } from 'svelte';
-    import { organization, regions } from '$lib/stores/organization';
+    import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
+    import { regions as regionsStore } from '$routes/(console)/organization-[organization]/store';
 
     export let data;
 
-    let addOrganization = false;
     let showCreate = false;
+    let addOrganization = false;
 
     const getPlatformInfo = (platform: string) => {
         let name: string, icon: string;
@@ -84,6 +85,7 @@
         if (isCloud) wizard.start(Create);
         else showCreate = true;
     }
+
     $: $registerCommands([
         {
             label: 'Create project',
@@ -118,15 +120,16 @@
             trackError(e, Submit.ProjectCreate);
         }
     };
-
     onMount(async () => {
-        if (isCloud) {
+        if (isCloud && $organization.$id) {
+            const regions = await sdk.forConsole.billing.listRegions($organization.$id);
+            regionsStore.set(regions);
             checkPricingRefAndRedirect($page.url.searchParams);
         }
     });
 
     function findRegion(project: Models.Project) {
-        return $regions.regions.find((region) => region.$id === project.region);
+        return $regionsStore?.regions?.find((region) => region.$id === project.region);
     }
 </script>
 
@@ -194,7 +197,7 @@
                                 </Pill>
                             {/if}
                             <svelte:fragment slot="icons">
-                                {#if isCloud && regions}
+                                {#if isCloud && $regionsStore?.regions}
                                     {@const region = findRegion(project)}
                                     <span class="u-color-text-gray u-medium u-line-height-2">
                                         {region?.name}
