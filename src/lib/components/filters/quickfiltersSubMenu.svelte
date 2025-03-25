@@ -69,7 +69,15 @@
                                     });
                                 }}>
                                 <Layout.Stack direction="row" gap="s">
-                                    <Selector.Checkbox checked={option.checked} size="s" />
+                                    <Selector.Checkbox
+                                        checked={option.checked}
+                                        on:click={() => {
+                                            option.checked = !option.checked;
+                                            dispatch('add', {
+                                                value: option.checked
+                                            });
+                                        }}
+                                        size="s" />
                                     {capitalize(option.label)}
                                 </Layout.Stack>
                             </ActionMenu.Item.Button>
