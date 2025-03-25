@@ -1,14 +1,15 @@
 <script lang="ts">
     import CnameTable from '$lib/components/domains/cnameTable.svelte';
     import NameserverTable from '$lib/components/domains/nameserverTable.svelte';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isSelfHosted } from '$lib/system';
     import { Divider, Fieldset, Layout, Tabs } from '@appwrite.io/pink-svelte';
 
     export let domain: string;
     export let verified: boolean;
 
     $: isSubDomain = domain?.split('.')?.length >= 3;
-    export let selectedTab: 'cname' | 'nameserver' = isSubDomain ? 'cname' : 'nameserver';
+    export let selectedTab: 'cname' | 'nameserver' =
+        isSubDomain || isSelfHosted ? 'cname' : 'nameserver';
 </script>
 
 <Fieldset legend="Verification">
@@ -23,13 +24,14 @@
                         CNAME
                     </Tabs.Item.Button>
                 {/if}
-
-                <Tabs.Item.Button
-                    {root}
-                    on:click={() => (selectedTab = 'nameserver')}
-                    active={selectedTab === 'nameserver'}>
-                    Nameservers
-                </Tabs.Item.Button>
+                {#if isCloud}
+                    <Tabs.Item.Button
+                        {root}
+                        on:click={() => (selectedTab = 'nameserver')}
+                        active={selectedTab === 'nameserver'}>
+                        Nameservers
+                    </Tabs.Item.Button>
+                {/if}
             </Tabs.Root>
             <Divider />
         </div>

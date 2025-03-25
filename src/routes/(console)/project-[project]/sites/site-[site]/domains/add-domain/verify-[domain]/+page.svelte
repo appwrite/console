@@ -26,6 +26,11 @@
             data.domainsList.domains.findIndex((rule) => rule.domain === $page.params.domain) ===
             -1;
         try {
+            // if (selectedTab === 'cname'){
+            //     domainData = await sdk.forProject.proxy.updateRuleVerification(
+            //         $page.params.domain
+            //     );
+            // }
             if (isNewDomain && isCloud) {
                 domainData = await sdk.forConsole.domains.create(
                     $organization.$id,
