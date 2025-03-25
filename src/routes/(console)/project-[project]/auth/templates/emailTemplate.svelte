@@ -8,7 +8,8 @@
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
-    import { Card, Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Icon, Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let loading = false;
     let openResetModal = false;
@@ -128,13 +129,20 @@
                     id="subject"
                     label="Subject"
                     placeholder="Enter subject" />
+
                 <InputTextarea
                     bind:value={$emailTemplate.message}
                     id="message"
                     label="Message"
                     placeholder="Enter your message"
-                    tooltip="Set up an SMTP server to edit the message body"
-                    readonly={!isSmtpEnabled} />
+                    readonly={!isSmtpEnabled}>
+                    <Tooltip slot="info" maxWidth="15rem">
+                        <Icon icon={IconInfo} size="s" />
+                        <Typography.Caption variant="400" slot="tooltip">
+                            Set up an SMTP server to edit the message body
+                        </Typography.Caption>
+                    </Tooltip>
+                </InputTextarea>
             </Layout.Stack>
             <div class="u-sep-block-start u-margin-block-start-24" />
             <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">

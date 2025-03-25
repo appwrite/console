@@ -3,9 +3,17 @@
     import { invalidate } from '$app/navigation';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import { Code, Layout, Icon, Typography, Fieldset, InlineCode } from '@appwrite.io/pink-svelte';
+    import {
+        Code,
+        Layout,
+        Icon,
+        Typography,
+        Fieldset,
+        InlineCode,
+        Tooltip
+    } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
-    import { IconFlutter, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
+    import { IconFlutter, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
@@ -188,9 +196,15 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
                                 id="hostname"
                                 label={hostname[platform]}
                                 placeholder={placeholder[platform].hostname}
-                                tooltip={placeholder[platform].tooltip}
                                 required
-                                bind:value={$createPlatform.key} />
+                                bind:value={$createPlatform.key}>
+                                <Tooltip slot="info" maxWidth="15rem">
+                                    <Icon icon={IconInfo} size="s" />
+                                    <Typography.Caption variant="400" slot="tooltip">
+                                        {placeholder[platform].tooltip}
+                                    </Typography.Caption>
+                                </Tooltip>
+                            </InputText>
                         </Layout.Stack>
 
                         <Button

@@ -43,8 +43,7 @@ test('shows URL input - placeholder', () => {
 test('shows URL input - hide label', () => {
     render(InputURL, {
         id: 'input',
-        label: 'label',
-        showLabel: false
+        label: 'label'
     });
 
     const label = document.querySelector('label');

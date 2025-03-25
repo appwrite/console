@@ -11,7 +11,6 @@
 
 <Container>
     <Usage
-        title="Files"
         path={`${base}/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/usage`}
         {total}
         {count}

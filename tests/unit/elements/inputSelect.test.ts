@@ -77,7 +77,6 @@ test('shows select input - hide label', () => {
         id: 'select',
         value: '',
         label: 'label',
-        showLabel: false,
         options
     });
 

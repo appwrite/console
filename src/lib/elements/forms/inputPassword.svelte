@@ -47,4 +47,8 @@
     autocomplete={autocomplete ? 'on' : 'off'}
     helper={helper || error}
     on:invalid={handleInvalid}
-    bind:value />
+    bind:value>
+    <slot name="start" slot="start" />
+    <slot name="info" slot="info" />
+    <slot name="end" slot="end" />
+</Input.Password>

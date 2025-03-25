@@ -43,8 +43,7 @@ test('shows email input - placeholder', () => {
 test('shows email input - hide label', () => {
     render(InputEmail, {
         id: 'input',
-        label: 'label',
-        showLabel: false
+        label: 'label'
     });
 
     const label = document.querySelector('label');

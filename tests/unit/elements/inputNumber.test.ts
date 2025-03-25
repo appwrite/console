@@ -47,8 +47,7 @@ test('shows number input - placeholder', () => {
 test('shows number input - hide label', () => {
     render(InputNumber, {
         id: 'input',
-        label: 'label',
-        showLabel: false
+        label: 'label'
     });
 
     const label = document.querySelector('label');
