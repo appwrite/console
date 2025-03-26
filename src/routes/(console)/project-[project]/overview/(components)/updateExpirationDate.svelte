@@ -62,7 +62,11 @@
     $: isExpired = !alertsDismissed && key.expire !== null && new Date(key.expire) < new Date();
 
     // for comparison's sake.
-    $: disableButton = isSameDay(new Date(expiration), new Date(key?.expire));
+    $: disableButton =
+        // expiration becomes `null` in `ExpirationInput`.
+        typeof key?.expire === 'undefined' && expiration === null
+            ? true
+            : isSameDay(new Date(expiration), new Date(key?.expire));
 </script>
 
 <Form onSubmit={updateExpire}>
