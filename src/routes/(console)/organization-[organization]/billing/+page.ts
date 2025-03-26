@@ -39,32 +39,29 @@ export const load: PageLoad = async ({ parent, depends }) => {
         // ignore error
     }
 
-    let billingInvoice = null;
-    try {
-        billingInvoice = await sdk.forConsole.billing.getInvoice(
-            organization.$id,
-            (organization as Organization)?.billingInvoiceId
-        );
-    } catch (e) {
-        // ignore error
-    }
-
-    const [paymentMethods, addressList, billingAddress, creditList, aggregationBillingPlan] =
-        await Promise.all([
-            sdk.forConsole.billing.listPaymentMethods(),
-            sdk.forConsole.billing.listAddresses(),
-            billingAddressPromise,
-            sdk.forConsole.billing.listCredits(organization.$id),
-            sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan)
-        ]);
+    const [
+        estimationOrganization,
+        paymentMethods,
+        addressList,
+        billingAddress,
+        creditList,
+        aggregationBillingPlan
+    ] = await Promise.all([
+        sdk.forConsole.billing.estimationGetOrganization(organization.$id),
+        sdk.forConsole.billing.listPaymentMethods(),
+        sdk.forConsole.billing.listAddresses(),
+        billingAddressPromise,
+        sdk.forConsole.billing.listCredits(organization.$id),
+        sdk.forConsole.billing.getPlan(billingAggregation?.plan ?? organization.billingPlan)
+    ]);
 
     return {
+        estimationOrganization,
         paymentMethods,
         addressList,
         billingAddress,
         aggregationBillingPlan,
         creditList,
-        billingAggregation,
-        billingInvoice
+        billingAggregation
     };
 };

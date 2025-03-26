@@ -118,10 +118,8 @@
         <Heading tag="h2" size="5">Billing</Heading>
     </div>
     <PlanSummary
-        creditList={data?.creditList}
-        currentPlan={data?.aggregationBillingPlan}
-        currentAggregation={data?.billingAggregation}
-        currentInvoice={data?.billingInvoice} />
+        estimation={data?.estimationOrganization}
+        currentPlan={data?.aggregationBillingPlan} />
     <PaymentHistory />
     <PaymentMethods />
     <BillingAddress billingAddress={data?.billingAddress} />

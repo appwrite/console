@@ -82,6 +82,25 @@ export type EstimationItem = {
     value: number;
 };
 
+export type EstimationOrganization = {
+    amount: number;
+    grossAmount: number;
+    credits: number;
+    discount: number;
+    items: EstimationItem[];
+    discounts: EstimationItem[];
+    usage: {
+        name: string;
+        value: number /* service over the limit*/;
+        amount: number /* price of service over the limit*/;
+        rate: number;
+        desc: string;
+    }[];
+    trialDays: number;
+    trialEndDate: string | undefined;
+    error: string | undefined;
+};
+
 export type EstimationDeleteOrganization = {
     amount: number;
     grossAmount: number;
@@ -481,6 +500,14 @@ export class Billing {
         const path = `/organizations/${organizationId}/estimations/delete-organization`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('patch', uri, {
+            'content-type': 'application/json'
+        });
+    }
+
+    async estimationGetOrganization(organizationId: string): Promise<EstimationOrganization> {
+        const path = `/organizations/${organizationId}/estimations`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('get', uri, {
             'content-type': 'application/json'
         });
     }
