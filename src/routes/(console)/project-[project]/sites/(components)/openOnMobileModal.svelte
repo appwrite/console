@@ -25,7 +25,7 @@
     <Layout.Stack gap="l">
         <Card padding="l" radius="l">
             <Layout.Stack justifyContent="center" alignItems="center">
-                <Image src={image} height={176} width={176} alt="QR code" />
+                <Image src={image} height={176} width={176} alt="QR code" radius="xxs" />
             </Layout.Stack>
         </Card>
         <InputText id="copy" value={url} readonly>

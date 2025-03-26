@@ -46,7 +46,7 @@
     <span slot="description"> Manually deploy a site by uploading any file(s) or folder. </span>
     <Layout.Stack gap="s">
         <Typography.Text color="--fgcolor-neutral-primary">
-            Upload a tar.gz file containing your function source code
+            Upload a tar.gz file containing your site source code
         </Typography.Text>
         <Upload.Dropzone extensions={['gz', 'tar']} bind:files maxSize={10000000} required>
             <Layout.Stack alignItems="center" gap="s">

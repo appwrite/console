@@ -20,7 +20,7 @@
                 variant="secondary"
                 padding="xs"
                 radius="s"
-                href={`${base}/project-${$page.params.project}/sites/create-site/templates?framework=React&framework=Vue.js&framework=Next.js&framework=SvelteKit&framework=Nuxt`}>
+                href={`${base}/project-${$page.params.project}/sites/create-site/templates`}>
                 <Image
                     alt="repositories"
                     radius="xxs"

@@ -1,10 +1,11 @@
 import { DeploymentResourceType, RuleTrigger, RuleType, sdk } from '$lib/stores/sdk';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { Query } from '@appwrite.io/console';
 import { Dependencies } from '$lib/constants';
+import { base } from '$app/paths';
 
-export const load: PageLoad = async ({ url, depends }) => {
+export const load: PageLoad = async ({ url, depends, params }) => {
     depends(Dependencies.DEPLOYMENT);
     depends(Dependencies.SITE);
     if (!url.searchParams.has('site')) error(404, 'Site is not optional');
@@ -22,6 +23,13 @@ export const load: PageLoad = async ({ url, depends }) => {
             Query.equal('trigger', RuleTrigger.MANUAL)
         ])
     ]);
+
+    if (deployment?.status === 'ready' && site?.deploymentId === deploymentId) {
+        redirect(
+            303,
+            `${base}/project-${params.project}/sites/create-site/finish?site=${site.$id}`
+        );
+    }
 
     return {
         site,
