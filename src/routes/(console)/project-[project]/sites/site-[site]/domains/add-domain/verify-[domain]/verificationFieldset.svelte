@@ -38,7 +38,7 @@
         {#if selectedTab === 'cname' && isSubDomain}
             <CnameTable {domain} {verified} />
         {:else if isCloud}
-            <NameserverTable {domain} />
+            <NameserverTable {domain} {verified} />
         {/if}
         <slot />
     </Layout.Stack>

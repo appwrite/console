@@ -19,12 +19,12 @@
     import { capitalize } from '$lib/helpers/string';
     import { Copy } from '$lib/components';
     import { logStatusConverter } from './store';
-    import LogsResponse from './(components)/LogsResponse.svelte';
-    import LogsRequest from './(components)/LogsRequest.svelte';
+    import { LogsRequest, LogsResponse } from '$lib/components/logs';
 
     export let open = false;
     export let selectedLogId: string;
     export let logs: Models.Execution[];
+    export let logging: boolean;
 
     function nextLog() {
         const currentIndex = logs.findIndex((log) => log.$id === selectedLogId);
@@ -160,7 +160,7 @@
                 <LogsRequest {selectedLog} />
             </Accordion>
             <Accordion title="Response" open hideDivider>
-                <LogsResponse {selectedLog} />
+                <LogsResponse {selectedLog} product="function" {logging} />
             </Accordion>
         </Layout.Stack>
     {/if}

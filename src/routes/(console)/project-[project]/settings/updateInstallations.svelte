@@ -96,7 +96,11 @@
 
                 <Table.Root
                     let:root
-                    columns={[{ id: 'repo' }, { id: 'updated' }, { id: 'actions', width: 20 }]}>
+                    columns={[
+                        { id: 'repo', width: { min: 150, max: 500 } },
+                        { id: 'updated', width: { min: 150, max: 500 } },
+                        { id: 'actions', width: 60 }
+                    ]}>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="repo" {root}>Repository</Table.Header.Cell>
                         <Table.Header.Cell column="updated" {root}>Updated</Table.Header.Cell>

@@ -46,7 +46,7 @@
     function updateMaxWidth() {
         const tableCells = Array.from(document.querySelectorAll('.less-width-truncated'));
 
-        const visibleColumnsCount = $columns.filter((col) => col.show).length;
+        const visibleColumnsCount = $columns.filter((col) => !col.hide).length;
         const newMaxWidth = Math.max(50 - (visibleColumnsCount - 1) * 5, 25);
 
         tableCells.forEach((cell) => {

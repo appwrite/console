@@ -9,7 +9,7 @@
     import { project } from '$routes/(console)/project-[project]/store';
     import { base } from '$app/paths';
     import { View } from '$lib/helpers/load';
-    import { Alert, Icon, Layout, Link, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import Table from './table.svelte';
     import { columns } from './store';
@@ -54,17 +54,6 @@
         <ParsedTagList />
     </Layout.Stack>
 
-    {#if !data.func.logging}
-        <div class="common-section">
-            <Alert.Inline status="info" title="Your execution logs are disabled">
-                To view execution logs and errors, enable them in your
-                <Link.Anchor
-                    href={`${base}/project-${$project.$id}/functions/function-${data.func.$id}/settings`}>
-                    Function settings</Link.Anchor
-                >.
-            </Alert.Inline>
-        </div>
-    {/if}
     {#if data?.executions?.total}
         <Table columns={$columns} logs={data.executions} />
 

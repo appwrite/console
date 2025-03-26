@@ -62,6 +62,7 @@
                 site.name,
                 site.framework as Framework,
                 site.enabled,
+                site.logging || undefined,
                 site.timeout,
                 site.installCommand,
                 site.buildCommand,

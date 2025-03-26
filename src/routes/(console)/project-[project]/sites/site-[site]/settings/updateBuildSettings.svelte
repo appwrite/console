@@ -40,6 +40,7 @@
                 site.name,
                 selectedFramework.key as Framework,
                 site.enabled || undefined,
+                site.logging || undefined,
                 site.timeout || undefined,
                 installCommand || undefined,
                 buildCommand || undefined,

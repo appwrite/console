@@ -9,6 +9,7 @@
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { logStatusConverter } from './store';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { func } from '../store';
 
     export let columns: Column[];
     export let logs: Models.ExecutionList;
@@ -82,4 +83,4 @@
     {/each}
 </Table.Root>
 
-<Sheet bind:open={openSheet} bind:selectedLogId logs={logs.executions} />
+<Sheet bind:open={openSheet} bind:selectedLogId logs={logs.executions} logging={$func.logging} />

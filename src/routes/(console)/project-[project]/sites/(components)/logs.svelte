@@ -22,7 +22,6 @@
     import { Badge, Layout, Logs, Typography } from '@appwrite.io/pink-svelte';
     import LogsTimer from './logsTimer.svelte';
 
-    export let site: Models.Site;
     export let deployment: Models.Deployment;
     export let hideTitle = false;
     export let hideScrollButtons = false;

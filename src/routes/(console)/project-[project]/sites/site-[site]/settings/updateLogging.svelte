@@ -3,27 +3,24 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputNumber } from '$lib/elements/forms';
+    import { Button, Form, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let site: Models.Site;
+    let logging = site?.logging;
 
-    let timeout = 0;
-
-    onMount(async () => (timeout = site.timeout));
-
-    async function updateTimeout() {
+    async function update() {
         try {
             await sdk.forProject.sites.update(
                 site.$id,
                 site.name,
-                site?.framework as Framework,
+                site.framework as Framework,
                 site.enabled || undefined,
                 site.logging || undefined,
-                timeout || undefined,
+                site.timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
@@ -39,36 +36,33 @@
             await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',
-                message: 'Timeout has been updated'
+                message:
+                    site.name + ' logs settings have been ' + (logging ? 'enabled' : 'disabled')
             });
-            trackEvent(Submit.SiteUpdateTimeout);
+            trackEvent(Submit.SiteUpdateLogging);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.SiteUpdateTimeout);
+            trackError(error, Submit.SiteUpdateLogging);
         }
     }
 </script>
 
-<Form onSubmit={updateTimeout}>
+<Form onSubmit={update}>
     <CardGrid>
-        <svelte:fragment slot="title">Timeout</svelte:fragment>
-        Set a time limit for the execution of your site. The maximum value is 30 seconds.
+        <svelte:fragment slot="title">Execution logs</svelte:fragment>
         <svelte:fragment slot="aside">
-            <InputNumber
-                min={1}
-                max={30}
-                id="time"
-                label="Time (in seconds)"
-                placeholder="Enter timeout"
-                required
-                bind:value={timeout} />
+            <InputSwitch label="Logs" id="logging" bind:value={logging} />
+            <Typography.Text>
+                When disabled, request logs will exclude logs and errors, and site responses will be
+                slightly faster.
+            </Typography.Text>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={site.timeout === timeout || timeout < 1} submit>Update</Button>
+            <Button disabled={site?.logging === logging} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
