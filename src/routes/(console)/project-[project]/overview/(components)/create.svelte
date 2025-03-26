@@ -60,6 +60,7 @@
     href={`${base}/project-${projectId}/overview/keys/`}
     bind:showExitModal
     column
+    columnSize="s"
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xxl">
