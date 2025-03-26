@@ -18,7 +18,7 @@
             await sdk.forProject.functions.createDuplicateDeployment(
                 $func.$id,
                 selectedDeployment.$id,
-                selectedDeployment.buildId
+                selectedDeployment?.buildId || undefined
             );
             addNotification({
                 type: 'success',
