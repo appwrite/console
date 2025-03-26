@@ -33,9 +33,11 @@
         if (deployment.status === 'failed') {
             return 'Your deployment has failed.';
         } else if (deployment.status === 'building') {
-            return 'Build is starting.';
+            return 'Preparing for build ...';
+        } else if (deployment.status === 'waiting') {
+            return 'Preparing for build ...';
         } else if (deployment.status === 'processing') {
-            return 'Your deployment is processing.';
+            return 'Preparing for build ...';
         } else {
             return emptyCopy;
         }

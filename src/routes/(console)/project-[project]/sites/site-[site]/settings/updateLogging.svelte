@@ -19,7 +19,7 @@
                 site.name,
                 site.framework as Framework,
                 site.enabled || undefined,
-                site.logging || undefined,
+                logging,
                 site.timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
@@ -48,11 +48,13 @@
             trackError(error, Submit.SiteUpdateLogging);
         }
     }
+
+    $: console.log(logging);
 </script>
 
 <Form onSubmit={update}>
     <CardGrid>
-        <svelte:fragment slot="title">Execution logs</svelte:fragment>
+        <svelte:fragment slot="title">Logging</svelte:fragment>
         <svelte:fragment slot="aside">
             <InputSwitch label="Logs" id="logging" bind:value={logging} />
             <Typography.Text>

@@ -100,17 +100,31 @@
                 <Accordion title="Framework" open>
                     <Layout.Stack>
                         {#each [...data.frameworks] as framework}
+                            {#if !framework.toLowerCase().includes('other')}
+                                <Layout.Stack direction="row" gap="s">
+                                    <Selector.Checkbox
+                                        id={framework}
+                                        size="s"
+                                        label={framework?.split('-')?.join(' ')}
+                                        checked={$page.url.searchParams
+                                            .getAll('framework')
+                                            .includes(framework)}
+                                        on:change={(e) => applyFilter('framework', framework, e)} />
+                                </Layout.Stack>
+                            {/if}
+                        {/each}
+                        {#if data.frameworks.includes('Other')}
                             <Layout.Stack direction="row" gap="s">
                                 <Selector.Checkbox
-                                    id={framework}
+                                    id="other"
                                     size="s"
-                                    label={framework?.split('-')?.join(' ')}
+                                    label="Other"
                                     checked={$page.url.searchParams
                                         .getAll('framework')
-                                        .includes(framework)}
-                                    on:change={(e) => applyFilter('framework', framework, e)} />
+                                        .includes('Other')}
+                                    on:change={(e) => applyFilter('framework', 'Other', e)} />
                             </Layout.Stack>
-                        {/each}
+                        {/if}
                     </Layout.Stack>
                 </Accordion>
             </Layout.Stack>
@@ -154,7 +168,10 @@
                 hidePagination
                 target="templates"
                 search={$page.url.searchParams.get('search')}>
-                <Button secondary on:click={clearSearch}>Clear search</Button>
+                <Button
+                    secondary
+                    href={`${base}/project-${$page.params.project}/sites/create-site/templates`}
+                    >Clear search</Button>
             </EmptySearch>
         {/if}
 
