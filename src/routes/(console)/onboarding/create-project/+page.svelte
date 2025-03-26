@@ -111,16 +111,15 @@
                 regions={isCloud ? data.regions.regions : []}
                 bind:projectName
                 bind:id
-                bind:region>
-                <svelte:fragment slot="submit"
-                    ><Layout.Stack direction="row" justifyContent="flex-end"
-                        ><Button.Button
-                            type="button"
-                            variant="primary"
-                            size="s"
-                            on:click={createProject}>
-                            Create</Button.Button>
-                    </Layout.Stack></svelte:fragment>
+                bind:region
+                on:submit={createProject}>
+                <svelte:fragment slot="submit">
+                    <Layout.Stack direction="row" justifyContent="flex-end">
+                        <Button.Button type="submit" variant="primary" size="s">
+                            Create
+                        </Button.Button>
+                    </Layout.Stack>
+                </svelte:fragment>
             </CreateProject>
         </Card.Base>
     {/if}
