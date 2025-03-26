@@ -208,5 +208,9 @@
 
 <slot />
 
-<CreateAttribute {...$createAttributeArgs} />
-<CreateIndex bind:showCreateIndex={$showCreateIndex} />
+{#if $createAttributeArgs.showCreate}
+    <CreateAttribute {...$createAttributeArgs} />
+{/if}
+{#if $showCreateIndex}
+    <CreateIndex bind:showCreateIndex={$showCreateIndex} />
+{/if}
