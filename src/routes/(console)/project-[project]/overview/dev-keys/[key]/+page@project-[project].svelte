@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { key } from './store';
+    import { devKey } from './store';
     import KeyDetails from '../../(components)/keyDetails.svelte';
 </script>
 
-<KeyDetails key={$key} keyType="api" />
+<KeyDetails key={$devKey} keyType="dev" />

@@ -17,6 +17,16 @@
         Other = 'Other'
     }
 
+    const categories = [
+        Category.Auth,
+        Category.Database,
+        Category.Functions,
+        Category.Storage,
+        Category.Messaging,
+        Category.Sites,
+        Category.Other
+    ];
+
     let mounted = false;
 
     onMount(() => {
@@ -77,8 +87,6 @@
             }
         }
     }
-
-    $: console.log(scopes);
 </script>
 
 <Layout.Stack>
@@ -92,14 +100,16 @@
     <Layout.Stack gap="none">
         <Divider />
 
-        {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Sites, Category.Other] as category}
+        {#each categories as category, index}
             {@const checked = categoryState(category, scopes)}
+            {@const isLastItem = index === categories.length - 1}
             {@const scopesLength = allScopes.filter(
                 (n) => n.category === category && scopes.includes(n.scope)
             ).length}
             <Accordion
                 selectable
                 title={category}
+                hideDivider={isLastItem}
                 badge={`${scopesLength} ${scopesLength === 1 ? 'Scope' : 'Scopes'}`}
                 {checked}
                 on:change={(event) => onCategoryChange(event, category)}>

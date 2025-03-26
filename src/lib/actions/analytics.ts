@@ -157,6 +157,7 @@ export enum Click {
     FunctionsDeploymentDeleteClick = 'click_deployment_delete',
     FunctionsDeploymentCancelClick = 'click_deployment_cancel',
     KeyCreateClick = 'click_key_create',
+    DevKeyCreateClick = 'click_dev_key_create',
     MenuDropDownClick = 'click_menu_dropdown',
     MenuOverviewClick = 'click_menu_overview',
     ModalCloseClick = 'click_close_modal',
@@ -307,11 +308,17 @@ export enum Submit {
     VariableDelete = 'submit_variable_delete',
     VariableUpdate = 'submit_variable_update',
     VariableEditor = 'submit_variable_editor',
+
     KeyCreate = 'submit_key_create',
     KeyDelete = 'submit_key_delete',
     KeyUpdateName = 'submit_key_update_name',
     KeyUpdateScopes = 'submit_key_update_scopes',
     KeyUpdateExpire = 'submit_key_update_expire',
+
+    DevKeyCreate = 'submit_dev_key_create',
+    DevKeyDelete = 'submit_dev_key_delete',
+    DevKeyUpdateName = 'submit_dev_key_update_name',
+    DevKeyUpdateExpire = 'submit_dev_key_update_expire',
 
     PlatformCreate = 'submit_platform_create',
     PlatformDelete = 'submit_platform_delete',
