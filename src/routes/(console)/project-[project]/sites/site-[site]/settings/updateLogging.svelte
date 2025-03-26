@@ -48,8 +48,6 @@
             trackError(error, Submit.SiteUpdateLogging);
         }
     }
-
-    $: console.log(logging);
 </script>
 
 <Form onSubmit={update}>
