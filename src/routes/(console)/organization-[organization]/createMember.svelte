@@ -14,6 +14,9 @@
     import { roles } from '$lib/stores/billing';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import Roles from '$lib/components/roles/roles.svelte';
+    import { Icon, Popover } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let showCreate = false;
 
@@ -68,15 +71,17 @@
         autofocus={true}
         bind:value={email} />
     <InputText id="member-name" label="Name" placeholder="Enter name" bind:value={name} />
-    {#if isCloud}
-        <!-- TODO: Torsten, input also no longer have popover atm -->
-        <InputSelect
-            required
-            popover={Roles}
-            id="role"
-            label="Role"
-            options={roles}
-            bind:value={role} />
+    {#if !isCloud}
+        <InputSelect required id="role" label="Role" options={roles} bind:value={role}>
+            <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
+                <Popover let:toggle>
+                    <Button extraCompact size="s" on:click={toggle}>
+                        <Icon size="s" icon={IconInfo} />
+                    </Button>
+                    <svelte:component this={Roles} slot="tooltip" />
+                </Popover>
+            </Layout.Stack>
+        </InputSelect>
     {/if}
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

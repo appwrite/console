@@ -28,12 +28,7 @@
                     </Tag>
                 </span>
             {:else}
-                <CustomId
-                    autofocus
-                    bind:show={showCustomId}
-                    name="Document"
-                    bind:id={customId}
-                    fullWidth />
+                <CustomId autofocus bind:show={showCustomId} name="Document" bind:id={customId} />
             {/if}
         {/if}
     </Layout.Stack>

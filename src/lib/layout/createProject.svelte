@@ -61,12 +61,7 @@
                                 }}><Icon icon={IconPencil} /> Project ID</Tag>
                         </div>
                     {/if}
-                    <CustomId
-                        bind:show={showCustomId}
-                        name="Project"
-                        isProject
-                        bind:id
-                        fullWidth={true} />
+                    <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
                 </Layout.Stack>
                 {#if isCloud && regions.length > 0}
                     <Layout.Stack gap="xs"

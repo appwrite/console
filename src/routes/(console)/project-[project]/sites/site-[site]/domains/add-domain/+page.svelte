@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Button, Form, InputDomain, InputSelect } from '$lib/elements/forms';
+    import { Button, Form, InputDomain, InputSelect, InputURL } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -9,10 +9,10 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
-    import { consoleVariables, protocol } from '$routes/(console)/store';
+    import { protocol } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import { StatusCode } from '@appwrite.io/console';
+    import { StatusCode, type Models } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
     import ConnectRepoModal from '../../../(components)/connectRepoModal.svelte';
     import { writable } from 'svelte/store';
@@ -30,15 +30,8 @@
     let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = 'ACTIVE';
     let domainName = '';
     let redirect: string = null;
-    let statusCode: number = null;
+    let statusCode = 307;
     let branch = null;
-
-    const redirectOptions = data.rules.rules
-        .filter((d) => !d.domain.endsWith($consoleVariables._APP_DOMAIN_SITES))
-        .map((domain) => ({
-            label: domain.domain,
-            value: domain.domain
-        }));
 
     onMount(() => {
         if (
@@ -47,21 +40,37 @@
         ) {
             showConnectRepo = true;
         }
+        if ($page.url.searchParams.has('domain')) {
+            domainName = $page.url.searchParams.get('domain');
+        }
     });
 
     async function addDomain() {
         try {
+            let rule: Models.ProxyRule;
             if (behaviour === 'BRANCH') {
-                await sdk.forProject.proxy.createSiteRule(domainName, $page.params.site, branch);
+                rule = await sdk.forProject.proxy.createSiteRule(
+                    domainName,
+                    $page.params.site,
+                    branch
+                );
             } else if (behaviour === 'REDIRECT') {
                 const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
-                await sdk.forProject.proxy.createRedirectRule(domainName, $protocol + redirect, sc);
+                rule = await sdk.forProject.proxy.createRedirectRule(
+                    domainName,
+                    $protocol + redirect,
+                    sc
+                );
             } else if (behaviour === 'ACTIVE') {
-                await sdk.forProject.proxy.createSiteRule(domainName, $page.params.site);
+                rule = await sdk.forProject.proxy.createSiteRule(domainName, $page.params.site);
             }
-
-            await goto(`${routeBase}/add-domain/verify-${domainName}`);
-            await invalidate(Dependencies.SITES_DOMAINS);
+            if (rule?.status === 'verified') {
+                await goto(routeBase);
+                await invalidate(Dependencies.SITES_DOMAINS);
+            } else {
+                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                await invalidate(Dependencies.SITES_DOMAINS);
+            }
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -158,21 +167,17 @@
             {:else if behaviour === 'REDIRECT'}
                 <Fieldset legend="Settings">
                     <Layout.Stack gap="xl">
-                        <InputSelect
+                        <InputURL
                             label="Redirect to"
                             id="redirect"
-                            placeholder="Select domain"
-                            options={redirectOptions}
+                            placeholder="https://appwrite.io/docs"
                             bind:value={redirect}
                             required>
                             <Tooltip slot="info">
                                 <Icon icon={IconInfo} size="s" />
-                                <span slot="tooltip">
-                                    Redirect this domain. Domains added to your project will be
-                                    listed here.
-                                </span>
+                                <span slot="tooltip"> Redirect your domain to this URL.</span>
                             </Tooltip>
-                        </InputSelect>
+                        </InputURL>
                         <InputSelect
                             options={statusCodeOptions}
                             label="Status code"

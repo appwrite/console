@@ -12,7 +12,6 @@
         InlineCode,
         Card,
         Button,
-        Input,
         Tooltip
     } from '@appwrite.io/pink-svelte';
     import { Form, InputText } from '$lib/elements/forms';

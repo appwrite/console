@@ -115,8 +115,7 @@
 {:else}
     <CustomId
         autofocus
-        bind:show={showCustomId}
         name="Message"
-        bind:id={$messageParams[$providerType].messageId}
-        fullWidth />
+        bind:show={showCustomId}
+        bind:id={$messageParams[$providerType].messageId} />
 {/if}

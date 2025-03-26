@@ -208,8 +208,7 @@
             autofocus
             bind:show={showCustomId}
             name="Message"
-            bind:id={$messageParams[$providerType].messageId}
-            fullWidth />
+            bind:id={$messageParams[$providerType].messageId} />
     {/if}
 
     <PushPhone

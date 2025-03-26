@@ -10,7 +10,7 @@ test('shows label', () => {
 });
 
 test('shows input - autofocus', () => {
-    const { getByLabelText } = render(InputTags, { id: 'input', label: 'Tags', autofocus: true });
+    const { getByLabelText } = render(InputTags, { id: 'input', label: 'Tags' });
 
     expect(getByLabelText('Tags')).toHaveFocus();
 });
@@ -18,8 +18,7 @@ test('shows input - autofocus', () => {
 test('shows input - hide label', () => {
     render(InputTags, {
         id: 'input',
-        label: 'label',
-        showLabel: false
+        label: 'label'
     });
 
     const label = document.querySelector('label');

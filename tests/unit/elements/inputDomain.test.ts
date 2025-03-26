@@ -50,8 +50,7 @@ test('shows domain input - placeholder', () => {
 test('shows domain input - hide label', () => {
     render(InputDomain, {
         id: 'input',
-        label: 'label',
-        showLabel: false
+        label: 'label'
     });
 
     const label = document.querySelector('label');

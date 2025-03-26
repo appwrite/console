@@ -61,13 +61,7 @@
                 </Tag>
             </span>
         {:else}
-            <CustomId
-                autofocus
-                bind:show={showCustomId}
-                name="Project"
-                isProject
-                bind:id
-                fullWidth />
+            <CustomId autofocus bind:show={showCustomId} name="Project" isProject bind:id />
         {/if}
     </Layout.Stack>
 

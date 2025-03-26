@@ -237,33 +237,5 @@
     }
     main {
         min-height: 100vh;
-
-        /**
-            TODO: @ernst, check if this is still used. The class comes from Pink legacy
-         */
-        &:not(.grid-with-side) {
-            display: flex;
-            flex-direction: column;
-        }
     }
-
-    @media (min-width: 1199px) {
-        /**
-            TODO: @ernst, check if this is still used. The class comes from Pink legacy
-         */
-        .grid-with-side {
-            outline: red 1px solid;
-            grid-template-columns: auto 1fr !important;
-        }
-    }
-    //
-    //:global(main.has-alert > header) {
-    //    top: 70px;
-    //}
-    //:global(main.has-alert > div nav) {
-    //    @media (min-width: 1024px) {
-    //        top: calc(48px + 70px) !important;
-    //        height: calc(100vh - (48px + 70px)) !important;
-    //    }
-    //}
 </style>

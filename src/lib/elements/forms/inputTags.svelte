@@ -5,6 +5,7 @@
     export let label: string;
     export let tags: string[] = [];
     export let placeholder = '';
+    export let required = false;
     export let disabled = false;
     export let helper: string | undefined = undefined;
     export let pattern: string | undefined = undefined;
@@ -35,6 +36,7 @@
     {placeholder}
     {disabled}
     {pattern}
+    {required}
     bind:value={tags}
     helper={error || helper}
     on:invalid={handleInvalid}

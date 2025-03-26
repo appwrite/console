@@ -367,7 +367,7 @@
         </CardGrid>
     </Form>
 
-    <UpdateMaxFileSize currentPlan={data.currentPlan} />
+    <UpdateMaxFileSize currentPlan={data.currentPlan} bucket={data.bucket} />
 
     <Form onSubmit={updateAllowedExtensions}>
         <CardGrid>

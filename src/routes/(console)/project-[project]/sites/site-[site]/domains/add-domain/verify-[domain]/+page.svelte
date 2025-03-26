@@ -19,7 +19,6 @@
     let domainData = data.domain;
 
     let routeBase = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
-    let formComponent: Form;
     let isSubmitting = writable(false);
 
     async function addDomain() {
@@ -27,6 +26,11 @@
             data.domainsList.domains.findIndex((rule) => rule.domain === $page.params.domain) ===
             -1;
         try {
+            // if (selectedTab === 'cname'){
+            //     domainData = await sdk.forProject.proxy.updateRuleVerification(
+            //         $page.params.domain
+            //     );
+            // }
             if (isNewDomain && isCloud) {
                 domainData = await sdk.forConsole.domains.create(
                     $organization.$id,
@@ -51,7 +55,13 @@
         }
     }
 
-    async function back() {}
+    async function back() {
+        if ($page.url.searchParams.has('rule')) {
+            const rule = $page.url.searchParams.get('rule');
+            await sdk.forProject.proxy.deleteRule(rule);
+        }
+        await goto(`${routeBase}/add-domain?domain=${$page.params.domain}`);
+    }
 
     $: isVerified = domainData?.nameservers
         ? domainData?.nameservers.toLocaleLowerCase() === 'appwrite'
@@ -59,7 +69,7 @@
 </script>
 
 <Wizard title="Add domain" href={routeBase} column columnSize="s">
-    <Form bind:this={formComponent} onSubmit={addDomain} bind:isSubmitting>
+    <Form onSubmit={addDomain} bind:isSubmitting>
         <Layout.Stack gap="xxl">
             <Card.Base radius="s" padding="s">
                 <Layout.Stack
@@ -81,12 +91,14 @@
             <VerificationFieldset
                 domain={$page.params.domain}
                 verified={isVerified}
-                bind:selectedTab />
-
-            <Divider />
-            <Layout.Stack>
-                <Button submit disabled={$isSubmitting}>Verify</Button>
-            </Layout.Stack>
+                bind:selectedTab>
+                <Divider />
+                <Layout.Stack direction="row" justifyContent="flex-end">
+                    <div>
+                        <Button submit disabled={$isSubmitting}>Verify</Button>
+                    </div>
+                </Layout.Stack>
+            </VerificationFieldset>
         </Layout.Stack>
     </Form>
 </Wizard>

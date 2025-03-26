@@ -16,15 +16,10 @@
 </script>
 
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app';
-    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { Badge, Layout, Logs, Typography } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
     import LogsTimer from './logsTimer.svelte';
 
     export let site: Models.Site;
@@ -35,35 +30,12 @@
     export let fullHeight = false;
     export let emptyCopy = 'No logs available';
 
-    let { status, buildLogs } = deployment;
-
-    onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (
-                response.events.includes(
-                    `sites.${deployment.resourceId}.deployments.${deployment.$id}.update`
-                )
-            ) {
-                const res = response.payload as Partial<Models.Deployment>;
-                status = res.status;
-                buildLogs = res.buildLogs;
-
-                if (status === 'ready') {
-                    goto(
-                        `${base}/project-${$page.params.project}/sites/create-site/finish?site=${site.$id}`
-                    );
-                }
-            }
-        });
-        return () => unsubscribe();
-    });
-
     function setCopy() {
-        if (status === 'failed') {
+        if (deployment.status === 'failed') {
             return 'Your deployment has failed.';
-        } else if (status === 'building') {
+        } else if (deployment.status === 'building') {
             return 'Build is starting.';
-        } else if (status === 'processing') {
+        } else if (deployment.status === 'processing') {
             return 'Your deployment is processing.';
         } else {
             return emptyCopy;
@@ -79,20 +51,20 @@
                     Deployment logs
                 </Typography.Text>
                 <Badge
-                    content={capitalize(status)}
+                    content={capitalize(deployment.status)}
                     size="xs"
                     variant="secondary"
-                    type={badgeTypeDeployment(status)} />
+                    type={badgeTypeDeployment(deployment.status)} />
             </Layout.Stack>
-            <LogsTimer {status} {deployment} />
+            <LogsTimer status={deployment.status} {deployment} />
         </Layout.Stack>
     {/if}
-    {#key buildLogs}
+    {#key deployment.buildLogs}
         <Logs
             {fullHeight}
             {height}
             showScrollButton={!hideScrollButtons}
-            logs={buildLogs || setCopy()}
+            logs={deployment.buildLogs || setCopy()}
             bind:theme={$app.themeInUse} />
     {/key}
 </Layout.Stack>

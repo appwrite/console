@@ -44,7 +44,8 @@
     export let data: Partial<Models.AttributeEnum>;
 
     import { createConservative } from '$lib/helpers/stores';
-    import { Selector } from '@appwrite.io/pink-svelte';
+    import { Icon, Selector, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     let savedDefault = data.default;
 
@@ -85,12 +86,17 @@
 </script>
 
 <InputTags
+    required
     id="elements"
     label="Elements"
     bind:tags={data.elements}
-    placeholder="Add elements here"
-    tooltip="Enum elements have a maximum length of 255 characters. This limit can not be exceeded."
-    required>
+    placeholder="Add elements here">
+    <Tooltip slot="info" maxWidth="15rem">
+        <Icon icon={IconInfo} size="s" />
+        <Typography.Caption variant="400" slot="tooltip">
+            Enum elements have a maximum length of 255 characters. This limit can not be exceeded.
+        </Typography.Caption>
+    </Tooltip>
 </InputTags>
 
 <InputSelect

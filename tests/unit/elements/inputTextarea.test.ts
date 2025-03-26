@@ -54,8 +54,7 @@ test('shows textarea - placeholder', () => {
 test('shows textarea - hide label', () => {
     render(InputTextarea, {
         id: 'input',
-        label: 'label',
-        showLabel: false
+        label: 'label'
     });
 
     const label = document.querySelector('label');
