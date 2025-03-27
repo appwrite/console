@@ -201,11 +201,9 @@
         selectedRepository = null;
     }
 
-    $: console.log(data.template);
     $: availableRuntimes = data.runtimesList.runtimes.filter((runtime) =>
         data.template.runtimes.some((templateRuntime) => templateRuntime.name === runtime.$id)
     );
-    $: console.log(availableRuntimes);
 </script>
 
 <svelte:head>
@@ -351,7 +349,17 @@
         <Button
             fullWidthMobile
             size="s"
-            on:click={() => formComponent.triggerSubmit()}
+            on:click={() => {
+                if (variables.filter((v) => v.required && !v.value).length) {
+                    addNotification({
+                        type: 'error',
+                        message:
+                            'Missing required environment variables. Please update and try again.'
+                    });
+                } else {
+                    formComponent.triggerSubmit();
+                }
+            }}
             disabled={$isSubmitting || (connectBehaviour === 'now' && !selectedRepository)}>
             Deploy
         </Button>

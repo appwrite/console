@@ -57,6 +57,7 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
         filter,
         runtimes,
         useCases,
+        search,
         sum: templates.length,
         templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit),
         functions: await sdk.forProject.functions.list()

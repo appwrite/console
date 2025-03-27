@@ -14,9 +14,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
-
-    import { Button } from '$lib/elements/forms';
-    import { IconInfo, IconQrcode } from '@appwrite.io/pink-icons-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';
     import DeploymentDomains from '$lib/components/git/deploymentDomains.svelte';
     import { app } from '$lib/stores/app';
@@ -71,13 +69,11 @@
                         <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                             Domains
                         </Typography.Text>
-                        <DeploymentDomains domains={proxyRuleList} />
+                        <DeploymentDomains
+                            domains={proxyRuleList}
+                            {hideQRCode}
+                            on:showQR={() => (show = !show)} />
                     </Layout.Stack>
-                    {#if siteUrl && !hideQRCode}
-                        <Button icon secondary on:click={() => (show = true)}>
-                            <Icon icon={IconQrcode} size="l" />
-                        </Button>
-                    {/if}
                 </Layout.Stack>
 
                 <Layout.Stack direction="row" gap="xl">
