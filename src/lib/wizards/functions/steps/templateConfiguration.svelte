@@ -1,15 +1,15 @@
 <script lang="ts">
     import { CustomId } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
+    import { organization } from '$lib/stores/organization';
     import { runtimesList } from '$lib/stores/runtimes';
     import { specificationsList } from '$lib/stores/specifications';
-    import { BillingPlan } from '$lib/constants';
+    import { isCloud } from '$lib/system';
     import SpecificationsTooltip from '../components/specificationsTooltip.svelte';
     import { template, templateConfig } from '../store';
-    import { organization } from '$lib/stores/organization';
-    import { isCloud } from '$lib/system';
 
     let showCustomId = false;
 
@@ -18,7 +18,7 @@
             throw new Error('Please select a runtime.');
         }
 
-        if (!$templateConfig.specification) {
+        if (isCloud && !$templateConfig.specification) {
             throw new Error('Please select a specification.');
         }
     }
@@ -86,28 +86,30 @@
                 {options}
                 bind:value={$templateConfig.runtime} />
         {/await}
-        {#await loadSpecifications()}
-            <InputSelect
-                label="CPU and memory"
-                id="specification"
-                placeholder="Loading specifications..."
-                required
-                disabled
-                options={[]}
-                value={null} />
-        {:then specificationOptions}
-            <InputSelect
-                label="CPU and memory"
-                id="specification"
-                placeholder="Select specification"
-                required
-                disabled={specificationOptions.length < 1}
-                options={specificationOptions}
-                popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
-                    ? SpecificationsTooltip
-                    : null}
-                bind:value={$templateConfig.specification} />
-        {/await}
+        {#if isCloud}
+            {#await loadSpecifications()}
+                <InputSelect
+                    label="CPU and memory"
+                    id="specification"
+                    placeholder="Loading specifications..."
+                    required
+                    disabled
+                    options={[]}
+                    value={null} />
+            {:then specificationOptions}
+                <InputSelect
+                    label="CPU and memory"
+                    id="specification"
+                    placeholder="Select specification"
+                    required
+                    disabled={specificationOptions.length < 1}
+                    options={specificationOptions}
+                    popover={$organization?.billingPlan === BillingPlan.FREE
+                        ? SpecificationsTooltip
+                        : null}
+                    bind:value={$templateConfig.specification} />
+            {/await}
+        {/if}
     </FormList>
 
     <FormList class="u-margin-block-start-24">
