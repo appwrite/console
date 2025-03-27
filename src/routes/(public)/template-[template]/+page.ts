@@ -1,7 +1,7 @@
 import { sdk } from '$lib/stores/sdk.js';
-import { isCloud } from '$lib/system.js';
+// import { isCloud } from '$lib/system.js';
 import type { Models } from '@appwrite.io/console';
-import { redirect } from '@sveltejs/kit';
+// import { redirect } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 
 export const load = async ({ parent, url, params }) => {
@@ -28,13 +28,11 @@ export const load = async ({ parent, url, params }) => {
             error(404, 'Type is not valid');
     }
 
-    if (account)
-        return {
-            account,
-            template: template,
-            product,
-            organizations: account?.$id
-                ? await sdk.forConsole.billing.listOrganization()
-                : undefined
-        };
+    return {
+        account,
+        template: template,
+        product,
+        // organizations: account?.$id ? await sdk.forConsole.billing.listOrganization() : undefined
+        organizations: account?.$id ? await sdk.forConsole.teams.list() : undefined
+    };
 };
