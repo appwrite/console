@@ -46,7 +46,7 @@
     let isSubmitting = writable(false);
 
     let name = '';
-    let id = ID.unique();
+    let id: string;
     let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
@@ -66,7 +66,7 @@
     async function create() {
         try {
             const func = await sdk.forProject.functions.create(
-                id,
+                id || ID.unique(),
                 name,
                 runtime,
                 undefined,

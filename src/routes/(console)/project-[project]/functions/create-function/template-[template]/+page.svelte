@@ -50,7 +50,7 @@
     let isSubmitting = writable(false);
 
     let name = data.template.name;
-    let id = ID.unique();
+    let id: string;
     let runtime: Runtime;
     let branch = 'main';
     let rootDir = './';
@@ -70,10 +70,7 @@
 
     onMount(async () => {
         if ($page.url.searchParams.has('runtime')) {
-            console.log(runtime);
-            console.log($page.url.searchParams.get('runtime'));
             runtime = $page.url.searchParams.get('runtime') as Runtime;
-            console.log(runtime);
         }
         if (!$installation?.$id) {
             $installation = data.installations.installations[0];
@@ -127,7 +124,7 @@
                 const rt = data.template.runtimes.find((r) => r.name === runtime);
 
                 const func = await sdk.forProject.functions.create(
-                    id,
+                    id || ID.unique(),
                     name,
                     runtime as Runtime,
                     data.template.permissions?.length ? data.template.permissions : undefined,
