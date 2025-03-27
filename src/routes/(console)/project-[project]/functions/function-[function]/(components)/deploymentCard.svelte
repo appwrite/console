@@ -3,11 +3,21 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import type { Models } from '@appwrite.io/console';
-    import { Divider, Layout, Status, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Divider,
+        Icon,
+        Layout,
+        Status,
+        Tooltip,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { DeploymentSource, DeploymentCreatedBy, DeploymentDomains } from '$lib/components/git';
 
     import { func } from '../store';
     import { capitalize } from '$lib/helpers/string';
+    import { isCloud } from '$lib/system';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList;
@@ -21,7 +31,7 @@
     <Layout.Stack gap="xxl">
         <Layout.GridFraction start={4} end={6}>
             <Layout.Stack>
-                <Layout.Stack direction="row" alignItems="center" gap="s">
+                <Layout.Stack direction="row" alignItems="center" gap="s" wrap="wrap">
                     {#if activeDeployment}
                         <Typography.Title
                             size="s"
@@ -110,6 +120,48 @@
                                     {capitalize($func.runtime)}
                                 </Layout.Stack>
                             </Typography.Text>
+                        </Layout.Stack>
+                    </Layout.Stack>
+                    <Layout.Stack gap="xxl" direction="row" wrap="wrap" inline>
+                        <Layout.Stack gap="xxs" inline>
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                    Global CDN <Tooltip>
+                                        <Icon icon={IconInfo} size="s" />
+                                        <span slot="tooltip">
+                                            Optimized speed by caching content on servers closer to
+                                            users.
+                                        </span>
+                                    </Tooltip>
+                                </Layout.Stack>
+                            </Typography.Text>
+                            <Layout.Stack inline alignItems="flex-start">
+                                <Badge
+                                    size="xs"
+                                    variant="secondary"
+                                    type={isCloud ? 'success' : null}
+                                    content={isCloud ? 'Connected' : 'Available on Cloud'} />
+                            </Layout.Stack>
+                        </Layout.Stack>
+                        <Layout.Stack gap="xxs" inline>
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+                                <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                    DDoS protection <Tooltip>
+                                        <Icon icon={IconInfo} size="s" />
+                                        <span slot="tooltip">
+                                            Safeguards your site by detecting and blocking malicious
+                                            traffic.
+                                        </span>
+                                    </Tooltip>
+                                </Layout.Stack>
+                            </Typography.Text>
+                            <Layout.Stack inline alignItems="flex-start">
+                                <Badge
+                                    size="xs"
+                                    variant="secondary"
+                                    type={isCloud ? 'success' : null}
+                                    content={isCloud ? 'Connected' : 'Available on Cloud'} />
+                            </Layout.Stack>
                         </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>

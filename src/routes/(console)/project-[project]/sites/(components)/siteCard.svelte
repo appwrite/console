@@ -33,7 +33,7 @@
     let show = false;
     const siteUrl = proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : undefined;
 
-    $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.sourceSize ?? 0));
+    $: totalSize = humanFileSize(deployment?.totalSize ?? 0);
 
     function getScreenshot(theme: string, deployment: Models.Deployment) {
         if (theme === 'dark') {
