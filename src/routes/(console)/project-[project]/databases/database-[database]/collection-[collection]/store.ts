@@ -26,3 +26,6 @@ export const attributes = derived(
 export const indexes = derived(page, ($page) => $page.data.collection.indexes as Models.Index[]);
 
 export const columns = writable<Column[]>([]);
+
+// TODO: @itznotabug, check what data is received when SDK is available.
+export const isCsvImportInProgress = derived(page, ($page) => $page.data.csvImport ?? true);
