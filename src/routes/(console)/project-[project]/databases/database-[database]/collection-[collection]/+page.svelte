@@ -241,10 +241,10 @@
         <!-- TODO: @itznotabug, need to brainstorm for design on this one -->
         <Layout.Stack gap="s">
             <Typography.Text>
-                The uploaded CSV doesn't match the structure of the collection's attributes.
+                The uploaded CSV does not match the collection's attribute structure.
             </Typography.Text>
 
-            <PinkTable.Root columns={2} let:root stickyHeaders maxHeight="14rem">
+            <PinkTable.Root columns={2} let:root stickyHeaders maxHeight="16rem">
                 <svelte:fragment slot="header" let:root>
                     <PinkTable.Header.Cell column="csv" {root}>CSV</PinkTable.Header.Cell>
                     <PinkTable.Header.Cell column="collection" {root}
