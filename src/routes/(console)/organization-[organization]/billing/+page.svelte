@@ -62,7 +62,7 @@
                 $page.url.searchParams.get('type') === 'validate-invoice'
             ) {
                 const invoiceId = $page.url.searchParams.get('invoice');
-                await sdk.forConsole.billing.validateInvoice($organization.$id, invoiceId);
+                await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoiceId);
                 invalidate(Dependencies.INVOICES);
                 invalidate(Dependencies.ORGANIZATION);
             }

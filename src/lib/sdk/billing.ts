@@ -739,8 +739,8 @@ export class Billing {
         );
     }
 
-    async validateInvoice(organizationId: string, invoiceId: string): Promise<Invoice> {
-        const path = `/organizations/${organizationId}/invoices/${invoiceId}/validate`;
+    async updateInvoiceStatus(organizationId: string, invoiceId: string): Promise<Invoice> {
+        const path = `/organizations/${organizationId}/invoices/${invoiceId}/status`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('PATCH', uri, {
             'content-type': 'application/json'
