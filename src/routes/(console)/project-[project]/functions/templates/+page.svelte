@@ -180,8 +180,9 @@
                                                         +{hidden.length}
                                                     </span>
                                                 </Avatar>
-                                                <span slot="tooltip"
-                                                    >{hidden.map((n) => n.name).join(', ')}</span>
+                                                <span slot="tooltip">
+                                                    {hidden.map((n) => n.name).join(', ')}
+                                                </span>
                                             </Tooltip>
                                         {/if}
                                     </AvatarGroup>

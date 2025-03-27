@@ -90,7 +90,6 @@
 
         <Divider />
 
-        <!-- TODO: mobile view table doesn't shrink -->
         <Layout.GridFraction gap="xxl" start={1} end={2} breakpoint="m">
             <DomainsOverview proxyRuleList={data.proxyRuleList} />
             <DeploymentsOverview
