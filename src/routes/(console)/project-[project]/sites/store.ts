@@ -40,6 +40,8 @@ export function getFrameworkIcon(framework: string) {
             return 'analog';
         case framework.toLocaleLowerCase().includes('vite'):
             return 'vite';
+        case framework.toLocaleLowerCase().includes('lynx'):
+            return 'lynx';
         case framework.toLocaleLowerCase().includes('other'):
             return 'empty';
 
