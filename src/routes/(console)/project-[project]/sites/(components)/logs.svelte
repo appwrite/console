@@ -33,9 +33,12 @@
         if (deployment.status === 'failed') {
             return 'Your deployment has failed.';
         } else if (deployment.status === 'building') {
-            return 'Build is starting.';
+            //Do not remove empty space before the string it's an invisible character
+            return '[37mPreparing for build ... [0m\n';
+        } else if (deployment.status === 'waiting') {
+            return '[37mPreparing for build ... [0m\n';
         } else if (deployment.status === 'processing') {
-            return 'Your deployment is processing.';
+            return '[37mPreparing for build ... [0m\n';
         } else {
             return emptyCopy;
         }

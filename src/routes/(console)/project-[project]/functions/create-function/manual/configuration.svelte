@@ -12,7 +12,6 @@
     <Layout.Stack>
         <Accordion title="Build settings" badge="Optional">
             <Layout.Stack gap="xl">
-                Set up how your project is built.
                 <InputText
                     id="installCommand"
                     label="Install command"
