@@ -7,7 +7,7 @@ export const columns = writable<Column[]>([
         id: 'requestPath',
         title: 'Path',
         type: 'string',
-        width: { min: 500, max: 900 },
+        width: { min: 500 },
         format: 'string'
     },
 

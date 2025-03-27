@@ -9,10 +9,10 @@
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { Card, Fieldset, Icon, InlineCode, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { iconPath } from '$lib/stores/app';
-    import { getFrameworkIcon } from '../../store';
     import { Link } from '$lib/elements';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { adapterDataList } from './store';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];

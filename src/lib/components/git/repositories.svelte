@@ -18,8 +18,8 @@
     import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
     import ConnectGit from './connectGit.svelte';
     import SvgIcon from '../svgIcon.svelte';
-    import { getFrameworkIcon } from '$routes/(console)/project-[project]/sites/store';
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     const dispatch = createEventDispatcher();
 

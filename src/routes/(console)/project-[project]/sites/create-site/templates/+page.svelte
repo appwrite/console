@@ -9,7 +9,7 @@
     import { Card, Layout, Accordion, Selector, Tooltip } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app.js';
-    import { getFrameworkIcon } from '../../store.js';
+    import { getFrameworkIcon } from '$lib/stores/sites.js';
 
     export let data;
 

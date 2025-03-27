@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { Avatar, Icon, Layout, Popover, Table, Typography } from '@appwrite.io/pink-svelte';
-    import { columns, getFrameworkIcon } from './store';
+    import { columns } from './store';
     import type { Models } from '@appwrite.io/console';
     import SitesActionMenu from './sitesActionMenu.svelte';
     import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
@@ -13,6 +13,7 @@
     import { Link } from '$lib/elements';
     import { timer } from '$lib/helpers/timeConversion';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let siteList: Models.SiteList;
 
