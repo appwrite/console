@@ -739,6 +739,14 @@ export class Billing {
         );
     }
 
+    async updateInvoiceStatus(organizationId: string, invoiceId: string): Promise<Invoice> {
+        const path = `/organizations/${organizationId}/invoices/${invoiceId}/status`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('PATCH', uri, {
+            'content-type': 'application/json'
+        });
+    }
+
     async retryPayment(
         organizationId: string,
         invoiceId: string,
