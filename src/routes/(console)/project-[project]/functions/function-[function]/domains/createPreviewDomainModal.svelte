@@ -22,7 +22,7 @@
     async function onSubmit() {
         try {
             await sdk.forProject.proxy.createFunctionRule(
-                `${domain}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                `${domain}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
                 $page.params.function
             );
 
@@ -57,7 +57,7 @@
         }
         try {
             await sdk.forConsole.console.getResource(
-                `${value}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                `${value}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
                 ConsoleResourceType.Rules
             );
             domainStatus = 'complete';
@@ -89,7 +89,7 @@
             <InputText id="domain" placeholder="my-domain" bind:value={domain}>
                 <svelte:fragment slot="end">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                        .{$consoleVariables._APP_DOMAIN_TARGET}
+                        .{$consoleVariables._APP_DOMAIN_FUNCTIONS}
                     </Typography.Text>
                 </svelte:fragment>
             </InputText>

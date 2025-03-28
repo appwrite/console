@@ -35,7 +35,7 @@
     let branch = null;
 
     const redirectOptions = data.domains.rules
-        .filter((d) => !d.domain.endsWith($consoleVariables._APP_DOMAIN_TARGET))
+        .filter((d) => !d.domain.endsWith($consoleVariables._APP_DOMAIN_FUNCTIONS))
         .map((domain) => ({
             label: domain.domain,
             value: domain.domain
@@ -74,7 +74,7 @@
     });
 
     async function addDomain() {
-        const isPreviewDomain = domain.endsWith($consoleVariables._APP_DOMAIN_TARGET);
+        const isPreviewDomain = domain.endsWith($consoleVariables._APP_DOMAIN_FUNCTIONS);
         const isNewDomain = data.domains.rules.findIndex((rule) => rule.domain === domain) === -1;
         const isSubDomain = domain.split('.').length >= 2;
         try {

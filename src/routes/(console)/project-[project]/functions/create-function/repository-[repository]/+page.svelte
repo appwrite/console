@@ -88,7 +88,7 @@
 
             // Add domain
             await sdk.forProject.proxy.createFunctionRule(
-                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
                 func.$id
             );
 
