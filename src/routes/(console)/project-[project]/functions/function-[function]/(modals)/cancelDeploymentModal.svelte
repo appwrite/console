@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import { Confirm } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -34,10 +34,10 @@
     }
 </script>
 
-<Modal title="Cancel deployment" bind:show={showCancel} onSubmit={handleSubmit}>
+<Confirm title="Cancel deployment" bind:open={showCancel} onSubmit={handleSubmit}>
     <p data-private>Are you sure you want to cancel this deployment?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showCancel = false)}>Cancel</Button>
-        <Button secondary submit>Continue</Button>
+        <Button secondary submit>Confirm</Button>
     </svelte:fragment>
-</Modal>
+</Confirm>

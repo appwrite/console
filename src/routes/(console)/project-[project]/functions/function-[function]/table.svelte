@@ -12,7 +12,7 @@
     import RedeployModal from './(modals)/redeployModal.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import Cancel from './(modals)/cancel.svelte';
+    import Cancel from './(modals)/cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
     import { ActionMenu, Icon, Status, Table } from '@appwrite.io/pink-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';

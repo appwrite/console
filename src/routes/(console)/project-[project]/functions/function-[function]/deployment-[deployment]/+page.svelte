@@ -8,7 +8,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Activate from '../(modals)/activateModal.svelte';
-    import Cancel from '../(modals)/cancel.svelte';
+    import Cancel from '../(modals)/cancelDeploymentModal.svelte';
     import DeploymentCard from '../(components)/deploymentCard.svelte';
     import Delete from '../(modals)/deleteModal.svelte';
     import {
