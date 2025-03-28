@@ -28,10 +28,10 @@
         {disabled}>
         <span class="text"><slot /></span>
         {#if icon}
-            <span class={`icon-${icon}`} aria-hidden="true" />
+            <span class={`icon-${icon}`} aria-hidden="true"></span>
         {/if}
         {#if loading}
-            <span class="loader is-small u-line-height-1-5" aria-hidden="true" />
+            <span class="loader is-small u-line-height-1-5" aria-hidden="true"></span>
         {/if}
     </button>
 </li>

@@ -192,9 +192,8 @@
                                             ariaLabel="delete"
                                             disabled={!isDraft}
                                             on:click={() => removeTarget(source['$id'])}>
-                                            <span
-                                                class="icon-x u-font-size-20"
-                                                aria-hidden="true" />
+                                            <span class="icon-x u-font-size-20" aria-hidden="true"
+                                            ></span>
                                         </Button>
                                     {/if}
                                 </Table.Cell>

@@ -16,7 +16,7 @@
             class:icon-exclamation-circle={type === 'error'}
             class:icon-check-circle={type === 'success'}
             class:icon-exclamation={type === 'warning'}
-            aria-hidden="true" />
+            aria-hidden="true"></span>
     {/if}
     <span class="text u-line-height-1-5">
         <slot />

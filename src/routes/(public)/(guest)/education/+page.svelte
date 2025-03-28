@@ -28,7 +28,7 @@
         <img
             src={$app.themeInUse === 'light' ? AppwriteLogoLight : AppwriteLogoDark}
             alt="Appwrite logo" />
-        <div class="logo-divider" />
+        <div class="logo-divider"></div>
         <img
             src={$app.themeInUse === 'light' ? GithubLogoLight : GithubLogoDark}
             alt="Github logo" />
@@ -39,7 +39,7 @@
         Developer Pack.
     </p>
     <Button fullWidth on:click={onGithubLogin}>
-        <span class="icon-github" aria-hidden="true" />
+        <span class="icon-github" aria-hidden="true"></span>
         <span class="text">Sign up with GitHub</span>
     </Button>
 </div>

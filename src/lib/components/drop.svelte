@@ -125,7 +125,8 @@
         class="drop-arrow"
         class:is-popover={isPopover}
         class:u-hide={!show || (show && noArrow)}
-        bind:this={arrow} />
+        bind:this={arrow}>
+    </div>
     {#if show}
         <slot name="list" />
     {/if}

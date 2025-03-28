@@ -49,7 +49,7 @@
             class:icon-check-circle={type === 'success'}
             class:icon-exclamation={type === 'warning'}
             class:icon-exclamation-circle={type === 'error'}
-            class:icon-info={type === 'info' || type === 'default'} />
+            class:icon-info={type === 'info' || type === 'default'}></span>
 
         <div class="alert-content">
             {#if title || $$slots.title}

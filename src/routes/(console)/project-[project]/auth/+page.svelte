@@ -95,12 +95,13 @@
                                             </span>
                                         {:else}
                                             <div class="avatar is-size-small">
-                                                <span class="icon-minus-sm" aria-hidden="true" />
+                                                <span class="icon-minus-sm" aria-hidden="true"
+                                                ></span>
                                             </div>
                                         {/if}
                                     {:else}
                                         <div class="avatar is-size-small">
-                                            <span class="icon-anonymous" aria-hidden="true" />
+                                            <span class="icon-anonymous" aria-hidden="true"></span>
                                         </div>
                                         <span class="text u-trim">{user.name}</span>
                                     {/if}

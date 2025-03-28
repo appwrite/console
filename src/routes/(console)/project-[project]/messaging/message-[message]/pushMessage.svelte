@@ -12,6 +12,7 @@
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export let message: Models.Message & { data: Record<string, any> };
 
     let title = '';
@@ -138,7 +139,7 @@
                                     }
                                     customData = customData.filter((_, i) => i !== index);
                                 }}>
-                                <span class="icon-x" aria-hidden="true" />
+                                <span class="icon-x" aria-hidden="true"></span>
                             </Button>
                         </Layout.Stack>
                     </Layout.Stack>

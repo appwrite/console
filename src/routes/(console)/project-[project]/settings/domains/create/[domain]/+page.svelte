@@ -81,7 +81,8 @@
                             <Retry bind:domain showTitle={false} />
                         {:else}
                             <div class="u-flex u-gap-8 u-cross-center">
-                                <span class="icon-check u-color-text-success" aria-hidden="true" />
+                                <span class="icon-check u-color-text-success" aria-hidden="true"
+                                ></span>
                                 <p class="u-stretch">Domain verified</p>
                             </div>
                         {/if}

@@ -16,13 +16,13 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount, SvelteComponent } from 'svelte';
+    import { onMount, type Component } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
 
-    const types: Record<string, typeof SvelteComponent<unknown>> = {
+    const types: Record<string, Component> = {
         web: Web,
         android: Android,
         'apple-ios': AppleiOs,

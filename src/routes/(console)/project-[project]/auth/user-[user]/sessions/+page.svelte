@@ -61,7 +61,7 @@
                                         <span
                                             class="icon-globe-alt"
                                             style="--p-text-size: 1.25rem"
-                                            aria-hidden="true" />
+                                            aria-hidden="true"></span>
                                     {/if}
                                 </div>
                                 <p class="text">
@@ -70,7 +70,7 @@
                                     {session.osVersion}
                                 </p>
                             {:else}
-                                <span class="avatar is-color-empty" />
+                                <span class="avatar is-color-empty"></span>
                                 <p class="text u-trim">Unknown</p>
                             {/if}
                             <Badge variant="secondary" content={session.provider} />
@@ -95,7 +95,7 @@
                                 selectedSessionId = session.$id;
                                 showDelete = true;
                             }}>
-                            <span class="icon-trash" aria-hidden="true" />
+                            <span class="icon-trash" aria-hidden="true"></span>
                         </Button>
                     </Table.Cell>
                 </Table.Row.Base>

@@ -274,7 +274,7 @@
                     class="account-backdrop"
                     on:click={() => {
                         showAccountMenu = false;
-                    }} />
+                    }}></button>
             {/if}
         </div>
     </div>

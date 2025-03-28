@@ -55,7 +55,7 @@
     {#await Promise.all([loadFunctions(), loadSites()])}
         <div class="u-flex u-main-center">
             <div class="avatar is-size-x-small">
-                <div class="loader u-margin-16" />
+                <div class="loader u-margin-16"></div>
             </div>
         </div>
     {:then [functions, sites]}

@@ -114,9 +114,8 @@
                                             ariaLabel="delete"
                                             disabled={message.status != 'draft'}
                                             on:click={() => removeTopic(topic.$id)}>
-                                            <span
-                                                class="icon-x u-font-size-20"
-                                                aria-hidden="true" />
+                                            <span class="icon-x u-font-size-20" aria-hidden="true"
+                                            ></span>
                                         </Button>
                                     </div>
                                 {/if}

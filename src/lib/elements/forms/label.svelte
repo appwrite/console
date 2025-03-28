@@ -32,7 +32,7 @@
 
 {#if tooltip}
     <Tooltip placement="top">
-        <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)" />
+        <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)"></span>
         <div slot="tooltip">{tooltip}</div>
     </Tooltip>
 {/if}

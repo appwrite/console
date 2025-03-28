@@ -152,7 +152,7 @@
                         on:click={() => {
                             attributeList = remove(attributeList, i);
                         }}>
-                        <span class="icon-x" aria-hidden="true" />
+                        <span class="icon-x" aria-hidden="true"></span>
                     </Button>
                 </Layout.Stack>
             </Layout.Stack>

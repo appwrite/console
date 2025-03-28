@@ -34,7 +34,7 @@
         </Tooltip>
     {/each}
     {#if remainder > 0}
-        <div class="progressbar__content" style:width={`${(remainder / maxSize) * 100}%`} />
+        <div class="progressbar__content" style:width={`${(remainder / maxSize) * 100}%`}></div>
     {/if}
 </section>
 

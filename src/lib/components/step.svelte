@@ -23,10 +23,10 @@
             <div class="steps-item-wrapper">
                 {#if completed}
                     <div class="bullet is-done">
-                        <span class="icon-check" aria-hidden="true" />
+                        <span class="icon-check" aria-hidden="true"></span>
                     </div>
                 {:else}
-                    <div class="bullet" class:is-current={current} />
+                    <div class="bullet" class:is-current={current}></div>
                 {/if}
                 <div class="steps-item-content">
                     <span class="text">{step.text}</span>

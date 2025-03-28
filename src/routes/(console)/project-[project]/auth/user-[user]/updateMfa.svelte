@@ -62,7 +62,7 @@
                                 icon
                                 text
                                 ariaLabel="Delete authenticator">
-                                <span class="icon-trash" aria-hidden="true" />
+                                <span class="icon-trash" aria-hidden="true"></span>
                             </Button>
                         </Table.Cell>
                     </Table.Row.Base>

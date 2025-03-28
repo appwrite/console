@@ -55,7 +55,7 @@
             ? ''
             : `url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
         {#if variation !== 'default'}
-            <div class="side-bg-container" />
+            <div class="side-bg-container"></div>
         {/if}
         <div
             class="logo u-flex u-gap-16"
@@ -79,7 +79,7 @@
         </div>
 
         {#if variation === 'default'}
-            <div class="u-flex u-stretch" />
+            <div class="u-flex u-stretch"></div>
 
             <div class="tag-line is-not-mobile">
                 <p>Build like a team of hundreds<span class="underscore">_</span></p>

@@ -118,7 +118,7 @@
             <span
                 class="loader is-small"
                 style:--p-loader-base-full-color="transparent"
-                aria-hidden="true" />
+                aria-hidden="true"></span>
         {/if}
         <slot isSubmitting={$isSubmitting} />
         <slot slot="end" name="end" />

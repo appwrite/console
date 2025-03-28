@@ -14,7 +14,7 @@
         {#if !hideCopyIcon}
             <div class="u-flex u-cross-child-start u-gap-8">
                 <button class="interactive-text-output-button" aria-label="copy text">
-                    <span class="icon-duplicate" aria-hidden="true" />
+                    <span class="icon-duplicate" aria-hidden="true"></span>
                 </button>
             </div>
         {/if}

@@ -2,10 +2,10 @@
     import { Button } from '$lib/elements/forms';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Popover, Tooltip } from '@appwrite.io/pink-svelte';
-    import { SvelteComponent } from 'svelte';
+    import type { Component } from 'svelte';
 
     export let tooltip: string | undefined = undefined;
-    export let popover: typeof SvelteComponent<unknown> = null;
+    export let popover: Component = null;
     export let popoverProps: Record<string, unknown> = {};
 </script>
 

@@ -123,7 +123,7 @@
                     <Table.Row.Base {root}>
                         <Table.Cell column="filename" {root}>
                             <Layout.Stack direction="row" alignItems="center">
-                                <span class="avatar is-size-small is-color-empty" />
+                                <span class="avatar is-size-small is-color-empty"></span>
                                 <span class="text u-trim">{file.name}</span>
                                 <div>
                                     <Pill warning>Pending</Pill>
@@ -143,7 +143,7 @@
                                     class="button is-only-icon is-text"
                                     aria-label="Delete item"
                                     on:click|preventDefault={() => deleteFile(file)}>
-                                    <span class="icon-trash" aria-hidden="true" />
+                                    <span class="icon-trash" aria-hidden="true"></span>
                                 </button>
                             </div>
                         </Table.Cell>

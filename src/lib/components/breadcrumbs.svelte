@@ -224,7 +224,7 @@
                         ></ActionMenu.Root>
                 </div>
                 {#if organizations.length > 1}
-                    <div class="separator" use:melt={$separatorOrganizations} />
+                    <div class="separator" use:melt={$separatorOrganizations}></div>
 
                     <div use:melt={$subTriggerOrganizations}>
                         <ActionMenu.Root>
@@ -244,7 +244,7 @@
                                         </ActionMenu.Root>
                                     </div>
                                 {/each}
-                                <div class="separator" use:melt={$separatorOrganizations} />
+                                <div class="separator" use:melt={$separatorOrganizations}></div>
                                 <div use:melt={$itemOrganizations}>
                                     <ActionMenu.Root>
                                         <ActionMenu.Item.Button
@@ -257,7 +257,7 @@
                         </Card.Base>
                     </div>
                 {:else}
-                    <div class="separator" use:melt={$separatorOrganizations} />
+                    <div class="separator" use:melt={$separatorOrganizations}></div>
                     <div use:melt={$itemOrganizations}>
                         <ActionMenu.Root>
                             <ActionMenu.Item.Button leadingIcon={IconPlusSm} on:click={createOrg}
@@ -275,7 +275,7 @@
                             ></ActionMenu.Root>
                     </div>
                 {/each}
-                <div class="separator" use:melt={$separatorOrganizations} />
+                <div class="separator" use:melt={$separatorOrganizations}></div>
                 <div use:melt={$itemOrganizations}>
                     <ActionMenu.Root>
                         <ActionMenu.Item.Button leadingIcon={IconPlusSm} on:click={createOrg}
@@ -329,7 +329,7 @@
                             </div>
                         {/if}
                     {/each}
-                    <div class="separator" use:melt={$separatorProjects} />
+                    <div class="separator" use:melt={$separatorProjects}></div>
                 {/if}
                 <div use:melt={$itemProjects}>
                     <ActionMenu.Root>

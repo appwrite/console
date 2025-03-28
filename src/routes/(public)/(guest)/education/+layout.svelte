@@ -20,7 +20,7 @@
             <img src={ArtworkDark} alt="" class="u-only-dark" />
             <img src={ArtworkLight} alt="" class="u-only-light" />
         </div>
-        <div class="mobile-gradient" />
+        <div class="mobile-gradient"></div>
     </div>
     <div class="content-container">
         <slot />

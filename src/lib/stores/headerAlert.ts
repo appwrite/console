@@ -1,10 +1,10 @@
-import type { SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type HeaderAlert = {
     id: string;
     show: boolean;
-    component: typeof SvelteComponent<unknown>;
+    component: Component;
     importance: number;
 };
 

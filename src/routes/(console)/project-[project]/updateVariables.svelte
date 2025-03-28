@@ -333,7 +333,7 @@
                                     {#if isConflicting && hasConflictOnPage}
                                         <span
                                             class="icon-exclamation u-color-text-warning"
-                                            aria-hidden="true" />
+                                            aria-hidden="true"></span>
                                     {/if}
                                     <Copy value={variable.key} />
                                     <Output value={variable.key} hideCopyIcon>

@@ -2,7 +2,7 @@
     import { browser } from '$app/environment';
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app, type AppStore } from '$lib/stores/app';
@@ -31,7 +31,7 @@
         updateViewport();
         // handle sources
         if (isCloud) {
-            const urlParams = $page.url.searchParams;
+            const urlParams = page.url.searchParams;
             const ref = urlParams.get('ref');
             const utmSource = urlParams.get('utm_source');
             const utmMedium = urlParams.get('utm_medium');
@@ -48,13 +48,13 @@
             }
         }
 
-        if ($page.url.searchParams.has('migrate')) {
-            const migrateData = $page.url.searchParams.get('migrate');
+        if (page.url.searchParams.has('migrate')) {
+            const migrateData = page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
         }
 
-        if ($page.url.searchParams.has('code')) {
-            const code = $page.url.searchParams.get('code');
+        if (page.url.searchParams.has('code')) {
+            const code = page.url.searchParams.get('code');
             const coupon = await sdk.forConsole.billing.getCoupon(code).catch<null>(() => null);
             if (coupon?.campaign) {
                 const campaign = await sdk.forConsole.billing
@@ -68,8 +68,8 @@
             }
         }
 
-        if (user && $page.url.searchParams.has('campaign')) {
-            const campaignId = $page.url.searchParams.get('campaign');
+        if ($user && page.url.searchParams.has('campaign')) {
+            const campaignId = page.url.searchParams.get('campaign');
             const campaign = await sdk.forConsole.billing
                 .getCampaign(campaignId)
                 .catch<null>(() => null);

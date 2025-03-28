@@ -518,7 +518,8 @@
                                                             $app.themeInUse === 'dark'
                                                                 ? UsersImgSourceDark
                                                                 : UsersImgSource
-                                                        }')`} />
+                                                        }')`}>
+                                                    </div>
                                                 </Layout.Stack>
                                             </div></Card.Base>
                                     </div>

@@ -19,7 +19,7 @@
     class:is-complete={status === 'completed' || status === 'ready'}
     class:is-processing={status === 'processing' || status === 'building'}>
     {#if status}
-        <span class="status-icon" style={statusIconStyle} />
+        <span class="status-icon" style={statusIconStyle}></span>
     {/if}
     <span class="text" data-private><slot /></span>
 </div>

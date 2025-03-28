@@ -3,7 +3,7 @@
         number,
         {
             label: string;
-            component: typeof SvelteComponent<unknown>;
+            component: Component;
             optional?: boolean;
             disabled?: boolean;
             actions?: {
@@ -21,7 +21,7 @@
     import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
-    import { createEventDispatcher, type SvelteComponent } from 'svelte';
+    import { createEventDispatcher, type Component } from 'svelte';
     import WizardExitModal from './wizardExitModal.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
 
@@ -158,9 +158,9 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <section class="wizard">
-    <div class="wizard-header-strip" />
-    <div class="wizard-start-bg" />
-    <div class="wizard-end-bg" />
+    <div class="wizard-header-strip"></div>
+    <div class="wizard-start-bg"></div>
+    <div class="wizard-end-bg"></div>
 
     <header class="wizard-header">
         <div class="body-text-1 u-bold">{title}</div>
@@ -171,7 +171,7 @@
             style="--button-size:1.5rem;"
             aria-label="close wizard"
             on:click={handleExit}>
-            <span class="icon-x" aria-hidden="true" />
+            <span class="icon-x" aria-hidden="true"></span>
         </button>
     </header>
 

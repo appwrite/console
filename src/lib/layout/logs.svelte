@@ -75,7 +75,7 @@
                 class="button is-text is-only-icon"
                 style="--button-size:1.5rem;"
                 aria-label="close popup">
-                <span class="icon-x" aria-hidden="true" />
+                <span class="icon-x" aria-hidden="true"></span>
             </button>
         </header>
 
@@ -132,7 +132,7 @@
                                     info={execution.status === 'completed' ||
                                         execution.status === 'ready'}>
                                     {#if execution.status === 'scheduled'}
-                                        <span class="icon-clock" aria-hidden="true" />
+                                        <span class="icon-clock" aria-hidden="true"></span>
                                         {timeFromNow(execution.scheduledAt)}
                                     {:else}
                                         {execution.status}
@@ -169,7 +169,8 @@
                                             <button
                                                 class="interactive-text-output-button"
                                                 aria-label="copy text">
-                                                <span class="icon-duplicate" aria-hidden="true" />
+                                                <span class="icon-duplicate" aria-hidden="true"
+                                                ></span>
                                             </button>
                                         </div>
                                     </div>
@@ -295,7 +296,7 @@
                                 </p>
                             {/if}
                         </div>
-                        <div class="u-sep-block-end is-only-mobile u-padding-block-start-16" />
+                        <div class="u-sep-block-end is-only-mobile u-padding-block-start-16"></div>
                         <div
                             class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0 mobile-only-inline-20-padding mobile-only-block-start-20-padding">
                             <Typography.Title size="s">Request</Typography.Title>

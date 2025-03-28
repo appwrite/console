@@ -11,7 +11,6 @@ export function isHTMLInputElement(el: unknown): el is HTMLInputElement {
     return el instanceof HTMLInputElement;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type Prettify<T> = T & {};
 
 const columnTypes = [

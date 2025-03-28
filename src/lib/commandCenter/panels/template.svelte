@@ -262,7 +262,7 @@
             {@const isLast = i === breadcrumbs.length - 1}
             <button class="crumb" on:click={() => handleCrumbClick(i)}>
                 <span>{crumb}</span>
-                <i class="icon-x" />
+                <i class="icon-x"></i>
             </button>
             {#if !isLast}
                 <span style="opacity: 50%">/</span>
@@ -296,7 +296,7 @@
                             class:first-nested={isFirstNested(i)}
                             class:last-nested={isLastNested(i)}>
                             {#if isSelected}
-                                <div class="bg" />
+                                <div class="bg"></div>
                             {/if}
                             <button
                                 class="option"

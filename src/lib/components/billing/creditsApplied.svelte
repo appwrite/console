@@ -15,7 +15,7 @@
     <span class="u-flex u-main-space-between">
         <div class="u-flex u-cross-center u-gap-4">
             <p class="text">
-                <span class="icon-tag u-color-text-success" aria-hidden="true" />
+                <span class="icon-tag u-color-text-success" aria-hidden="true"></span>
                 {#if couponData.credits >= 100}
                     {couponData?.code?.toUpperCase()}
                 {:else}
@@ -40,7 +40,7 @@
                             status: null,
                             credits: null
                         })}>
-                    <span class="icon-x" aria-hidden="true" />
+                    <span class="icon-x" aria-hidden="true"></span>
                 </button>
             {/if}
         </div>

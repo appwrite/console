@@ -69,7 +69,7 @@
                 class="upload-box-button"
                 aria-label="close migration box"
                 on:click={() => ($showMigrationBox = false)}>
-                <span class="icon-x" aria-hidden="true" />
+                <span class="icon-x" aria-hidden="true"></span>
             </button>
         </header>
         <div class="upload-box-content is-open">
@@ -80,7 +80,8 @@
                 <div
                     class="progress-bar-container"
                     class:is-danger={migration.status === 'failed'}
-                    style="--graph-size:{percentage}%" />
+                    style="--graph-size:{percentage}%">
+                </div>
             </section>
         </div>
     </section>

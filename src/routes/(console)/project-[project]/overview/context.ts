@@ -1,8 +1,8 @@
-import { getContext, type SvelteComponent } from 'svelte';
+import { getContext, type Component } from 'svelte';
 import type { Writable } from 'svelte/store';
 
-export type OverviewActionContext = Writable<typeof SvelteComponent<unknown>>;
+export type OverviewActionContext = Writable<Component>;
 
-export function setOverviewAction(component: typeof SvelteComponent<unknown>) {
+export function setOverviewAction(component: Component) {
     getContext<OverviewActionContext>('overview-action').set(component);
 }

@@ -96,7 +96,7 @@
                         {/if}
                     </svelte:fragment>
                     {#await avatarList}
-                        <span class="avatar is-color-empty" />
+                        <span class="avatar is-color-empty"></span>
                     {:then avatars}
                         <AvatarGroup {avatars} />
                     {/await}

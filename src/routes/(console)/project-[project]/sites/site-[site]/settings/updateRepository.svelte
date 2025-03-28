@@ -245,7 +245,7 @@
     </CardGrid>
 </Form>
 
-{#if showConnectRepo}
+{#if $showConnectRepo}
     <ConnectRepoModal bind:show={$showConnectRepo} {site} />
 {/if}
 

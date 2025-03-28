@@ -101,7 +101,7 @@
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
                         <span class="u-flex u-gap-8">
                             {#await loadCollectionCount()}
-                                <div class="loader is-small" />
+                                <div class="loader is-small"></div>
                             {:then count}
                                 {count}
                             {/await}

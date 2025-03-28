@@ -14,7 +14,7 @@
     import { Tab, Tabs } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
-    import { onMount, setContext, SvelteComponent } from 'svelte';
+    import { onMount, setContext, type Component } from 'svelte';
     import Bandwidth from './bandwidth.svelte';
     import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
@@ -35,7 +35,7 @@
     onMount(handle);
     afterNavigate(handle);
 
-    const action = setContext<Writable<typeof SvelteComponent>>('overview-action', writable(null));
+    const action = setContext<Writable<Component>>('overview-action', writable(null));
 
     async function handle() {
         const promise = changePeriod(period);
@@ -107,12 +107,12 @@
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
-                                    <span class="icon-database" aria-hidden="true" />
+                                    <span class="icon-database" aria-hidden="true"></span>
                                     <span class="text">Database</span>
                                 </div>
                             </div>
 
-                            <div class="grid-item-1-start-end" />
+                            <div class="grid-item-1-start-end"></div>
 
                             <div class="grid-item-1-end-start">
                                 <Typography.Title>
@@ -129,12 +129,12 @@
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
-                                    <span class="icon-folder" aria-hidden="true" />
+                                    <span class="icon-folder" aria-hidden="true"></span>
                                     <span class="text">Storage</span>
                                 </div>
                             </div>
 
-                            <div class="grid-item-1-start-end" />
+                            <div class="grid-item-1-start-end"></div>
 
                             <div class="grid-item-1-end-start">
                                 <Typography.Title>
@@ -152,12 +152,12 @@
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
-                                    <span class="icon-user-group" aria-hidden="true" />
+                                    <span class="icon-user-group" aria-hidden="true"></span>
                                     <span class="text">Auth</span>
                                 </div>
                             </div>
 
-                            <div class="grid-item-1-start-end" />
+                            <div class="grid-item-1-start-end"></div>
 
                             <div class="grid-item-1-end-start">
                                 <Typography.Title>
@@ -174,12 +174,12 @@
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
                                 <div class="eyebrow-heading-3">
-                                    <span class="icon-lightning-bolt" aria-hidden="true" />
+                                    <span class="icon-lightning-bolt" aria-hidden="true"></span>
                                     <span class="text">Functions</span>
                                 </div>
                             </div>
 
-                            <div class="grid-item-1-start-end" />
+                            <div class="grid-item-1-start-end"></div>
 
                             <div class="grid-item-1-end-start">
                                 <Typography.Title>
@@ -189,7 +189,7 @@
                             </div>
 
                             <div class="grid-item-1-end-end">
-                                <div class="text" />
+                                <div class="text"></div>
                             </div>
                         </div>
                     </Card.Link>

@@ -64,7 +64,7 @@
                         {#if ['waiting'].includes(deployment.status)}
                             -
                         {:else if ['processing', 'building'].includes(deployment.status)}
-                            <span use:timer={{ start: deployment.$createdAt }} />
+                            <span use:timer={{ start: deployment.$createdAt }}></span>
                         {:else}
                             {formatTimeDetailed(deployment.buildDuration)}
                         {/if}

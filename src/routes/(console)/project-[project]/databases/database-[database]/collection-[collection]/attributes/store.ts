@@ -1,4 +1,4 @@
-import type { ComponentType, SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 import { writable } from 'svelte/store';
 import Boolean, { submitBoolean, updateBoolean } from './boolean.svelte';
 import Email, { submitEmail, updateEmail } from './email.svelte';
@@ -36,7 +36,7 @@ export type Option = {
         | 'Enum'
         | 'Relationship';
     sentenceName: string;
-    component: typeof SvelteComponent<unknown>;
+    component: Component;
     type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship';
     create: (
         databaseId: string,
@@ -51,7 +51,7 @@ export type Option = {
         originalKey: string
     ) => Promise<void>;
     format?: 'email' | 'ip' | 'url' | 'enum';
-    icon: ComponentType;
+    icon: Component;
 };
 
 export const attributeOptions: Option[] = [

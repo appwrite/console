@@ -150,7 +150,7 @@
                 <Typography.Caption variant="500">Buckets</Typography.Caption>
                 {#await buckets}
                     <div class="u-flex u-main-center">
-                        <div class="loader" />
+                        <div class="loader"></div>
                     </div>
                 {:then response}
                     <ActionMenu.Root>

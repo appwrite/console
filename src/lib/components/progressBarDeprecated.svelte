@@ -15,7 +15,7 @@
     <div class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
         <h3 class="body-text-1 u-flex u-cross-baseline u-gap-4">
             {#if icon}
-                <span class={`icon-${icon}`} aria-hidden="true" />
+                <span class={`icon-${icon}`} aria-hidden="true"></span>
             {/if}
             <span class="text">{name}</span>
         </h3>
@@ -30,7 +30,8 @@
         class="progress-bar-container"
         class:is-warning={status === 'warning'}
         class:is-danger={status === 'error'}
-        style:--graph-size={progress + '%'} />
+        style:--graph-size={progress + '%'}>
+    </div>
     <div class="u-flex u-gap-8 u-main-space-between u-cross-baseline">
         <span class="progress-bar-text-used">{used}{unit}</span>
         <span class="progress-bar-text-max">{max}{unit}</span>

@@ -155,7 +155,7 @@
                     <span class="with-separators eyebrow-heading-3">or</span>
                     {#if isCloud}
                         <Button size="m" secondary fullWidth on:click={onGithubAuth}>
-                            <span class="icon-github" aria-hidden="true" />
+                            <span class="icon-github" aria-hidden="true"></span>
                             <span class="text">Sign in with GitHub</span>
                         </Button>
                     {/if}
@@ -207,7 +207,7 @@
                     <span class="with-separators eyebrow-heading-3">or</span>
                     {#if isCloud}
                         <Button size="m" secondary fullWidth on:click={onGithubAuth}>
-                            <span class="icon-github" aria-hidden="true" />
+                            <span class="icon-github" aria-hidden="true"></span>
                             <span class="text">Continue with GitHub</span>
                         </Button>
                     {/if}

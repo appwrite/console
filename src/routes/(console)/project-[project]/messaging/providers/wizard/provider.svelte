@@ -134,7 +134,7 @@
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Provider</svelte:fragment>
-    <div class="u-sep-block-start u-padding-block-end-32" />
+    <div class="u-sep-block-start u-padding-block-end-32"></div>
 
     <InputText
         id="name"
@@ -147,7 +147,7 @@
     {#if !showCustomId}
         <div>
             <Pill button on:click={() => (showCustomId = !showCustomId)}
-                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                ><span class="icon-pencil" aria-hidden="true"></span><span class="text">
                     Provider ID
                 </span></Pill>
         </div>

@@ -76,7 +76,7 @@
                 <Table.Cell {root}>{plan.members} members</Table.Cell>
                 <Table.Cell {root}>
                     <p class="u-color-text-danger u-flex u-cross-center u-gap-4">
-                        <span class="icon-arrow-up" />
+                        <span class="icon-arrow-up"></span>
                         {excess?.members} members
                     </p>
                 </Table.Cell>
@@ -88,7 +88,7 @@
                 <Table.Cell {root}>{plan.storage} GB</Table.Cell>
                 <Table.Cell {root}>
                     <p class="u-color-text-danger">
-                        <span class="icon-arrow-up" />
+                        <span class="icon-arrow-up"></span>
                         {humanFileSize(excess?.storage).value}
                         {humanFileSize(excess?.storage).unit}
                     </p>
@@ -103,7 +103,7 @@
                 </Table.Cell>
                 <Table.Cell {root}>
                     <p class="u-color-text-danger">
-                        <span class="icon-arrow-up" />
+                        <span class="icon-arrow-up"></span>
                         <span
                             title={excess?.executions
                                 ? excess.executions.toString()
@@ -122,7 +122,7 @@
                 </Table.Cell>
                 <Table.Cell column="usage" {root}>
                     <p class="u-color-text-danger">
-                        <span class="icon-arrow-up" />
+                        <span class="icon-arrow-up"></span>
                         <span title={excess?.users ? excess.users.toString() : 'users'}>
                             {formatNum(excess?.users)} users
                         </span>

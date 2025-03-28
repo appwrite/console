@@ -20,7 +20,7 @@
                             aria-label="Close"
                             title="Close"
                             on:click={() => (show = false)}>
-                            <span class="icon-x" aria-hidden="true" />
+                            <span class="icon-x" aria-hidden="true"></span>
                         </button>
                     {/if}
                 </div>

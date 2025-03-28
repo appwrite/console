@@ -70,7 +70,7 @@
                                 <div class="avatar is-size-small">
                                     <span
                                         class={`icon-${provider.icon}`}
-                                        style="font-size: var(--icon-size-medium)!important" />
+                                        style="font-size: var(--icon-size-medium)!important"></span>
                                 </div>
                                 {provider.name}
                             </Layout.Stack>

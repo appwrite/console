@@ -130,7 +130,8 @@
                                         class="button is-text is-only-icon"
                                         aria-label="more options"
                                         on:click={toggle}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                                        <span class="icon-dots-horizontal" aria-hidden="true"
+                                        ></span>
                                     </button>
                                     <ActionMenu.Root slot="tooltip">
                                         <ActionMenu.Item.Anchor

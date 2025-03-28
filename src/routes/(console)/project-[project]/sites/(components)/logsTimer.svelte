@@ -13,7 +13,7 @@
     {#if ['processing', 'building'].includes(status)}
         <Typography.Code color="--fgcolor-neutral-secondary">
             <Layout.Stack direction="row" alignItems="center" inline>
-                <p use:timer={{ start: deployment.$createdAt }} />
+                <p use:timer={{ start: deployment.$createdAt }}></p>
                 <Spinner size="s" />
             </Layout.Stack>
         </Typography.Code>

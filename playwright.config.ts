@@ -5,6 +5,7 @@ const config: PlaywrightTestConfig = {
     reportSlowTests: null,
     reporter: [['html', { open: 'never' }]],
     retries: 3,
+    testDir: 'e2e',
     use: {
         baseURL: 'http://localhost:4173/console/',
         trace: 'on-first-retry'

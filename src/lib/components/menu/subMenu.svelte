@@ -24,11 +24,11 @@
     <Card.Base padding="xxxs">
         {#if $$slots.start}
             <slot name="start" />
-            <div class="separator" use:melt={$separator} />
+            <div class="separator" use:melt={$separator}></div>
         {/if}
         <slot name="menu" />
         {#if $$slots.end}
-            <div class="separator" use:melt={$separator} />
+            <div class="separator" use:melt={$separator}></div>
             <slot name="end" />
         {/if}
     </Card.Base>

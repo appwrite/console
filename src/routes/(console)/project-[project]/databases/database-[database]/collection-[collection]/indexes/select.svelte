@@ -30,7 +30,7 @@
     <select bind:this={element} {id} bind:value {required} on:invalid={handleInvalid}>
         <slot />
     </select>
-    <span class="icon-cheveron-down" aria-hidden="true" />
+    <span class="icon-cheveron-down" aria-hidden="true"></span>
 </div>
 {#if error}
     <Helper type="warning">{error}</Helper>

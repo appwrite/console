@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 
 export type Tab = {
     href: string;
@@ -14,12 +14,12 @@ export type Breadcrumb = {
 export type View = 'list' | 'grid';
 
 export type updateLayoutArguments = {
-    header?: typeof SvelteComponent<unknown>;
-    breadcrumb?: typeof SvelteComponent<unknown>;
+    header?: Component;
+    breadcrumb?: Component;
 };
 
-export const header = writable<typeof SvelteComponent<unknown>>();
-export const breadcrumb = writable<typeof SvelteComponent<unknown>>();
+export const header = writable<Component>();
+export const breadcrumb = writable<Component>();
 
 export function updateLayout(args: updateLayoutArguments) {
     header.set(args.header ?? null);

@@ -44,7 +44,7 @@
                         <span
                             class="icon-cheveron-down u-font-size-20"
                             class:u-color-text-disabled={disabled}
-                            aria-hidden="true" />
+                            aria-hidden="true"></span>
                     </div>
                 </slot>
             </summary>

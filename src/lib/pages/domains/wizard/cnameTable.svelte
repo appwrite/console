@@ -28,7 +28,7 @@
         <Table.Cell column="action" {root}>
             <Button text>
                 <Copy value={target}>
-                    <span class="icon-duplicate" aria-hidden="true" />
+                    <span class="icon-duplicate" aria-hidden="true"></span>
                 </Copy>
             </Button>
         </Table.Cell>

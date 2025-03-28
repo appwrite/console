@@ -11,7 +11,7 @@
         class="u-flex u-flex-vertical card u-margin-inline-start-24 u-margin-inline-end-24 u-gap-8">
         <div class="u-flex u-main-space-between header">
             <div class="u-flex u-gap-4 u-cross-center">
-                <span class="u-icon icon-bell u-line-height-1" /><span class=""
+                <span class="u-icon icon-bell u-line-height-1"></span><span class=""
                     >{$project.name}</span>
             </div>
             <div class="u-flex u-cross-center">now</div>

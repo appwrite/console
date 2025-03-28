@@ -128,7 +128,7 @@
                             relatedList = relatedList;
                             value = relatedList;
                         }}>
-                        <span class="icon-x" aria-hidden="true" />
+                        <span class="icon-x" aria-hidden="true"></span>
                     </Button>
                 {/each}
             {/if}
@@ -146,7 +146,7 @@
                         showInput = false;
                     }} />
                 <Button extraCompact ariaLabel={`Hide input`} on:click={() => (showInput = false)}>
-                    <span class="icon-x" aria-hidden="true" />
+                    <span class="icon-x" aria-hidden="true"></span>
                 </Button>
             {/if}
             {#if paginatedItems && editing}
@@ -160,7 +160,7 @@
                             relatedList = relatedList;
                             value = relatedList;
                         }}>
-                        <span class="icon-x" aria-hidden="true" />
+                        <span class="icon-x" aria-hidden="true"></span>
                     </Button>
                 {/each}
             {/if}

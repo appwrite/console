@@ -18,7 +18,7 @@
     </div>
     <div class="file-preview-content">
         <div class="avatar">
-            <span class="icon-external-link" aria-hidden="true" />
+            <span class="icon-external-link" aria-hidden="true"></span>
         </div>
     </div>
 </a>

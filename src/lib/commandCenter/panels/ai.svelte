@@ -158,7 +158,7 @@
     </div>
 
     <div slot="option" let:option class="u-flex u-cross-center u-gap-8">
-        <i class="icon-question-mark-circle" />
+        <i class="icon-question-mark-circle"></i>
         <span>{option.label}</span>
     </div>
 
@@ -248,7 +248,7 @@
                             aria-label="ask AI"
                             type="submit"
                             disabled={!$input.trim() || $isLoading}>
-                            <span class="icon-arrow-sm-right" aria-hidden="true" />
+                            <span class="icon-arrow-sm-right" aria-hidden="true"></span>
                         </button>
                     </div>
                 </form>

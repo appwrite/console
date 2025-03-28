@@ -27,7 +27,7 @@
             <Retry domain={domainAsProxyRule()} on:error={onRetryError} showTitle={false} />
         {:else}
             <div class="u-flex u-gap-8 u-cross-center">
-                <span class="icon-check u-color-text-success" aria-hidden="true" />
+                <span class="icon-check u-color-text-success" aria-hidden="true"></span>
                 <p class="u-stretch">Domain verified</p>
             </div>
         {/if}
@@ -36,13 +36,14 @@
                 {#if $domain.status === 'verifying'}
                     <div
                         class="loader"
-                        style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem" />
+                        style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem">
+                    </div>
                     <p class="u-stretch">Generating certificate</p>
                 {:else if $domain.status === 'verified'}
-                    <span class="icon-check u-color-text-success" aria-hidden="true" />
+                    <span class="icon-check u-color-text-success" aria-hidden="true"></span>
                     <p class="u-stretch">Certificate generated</p>
                 {:else}
-                    <span class="icon-clock u-text-color-gray" aria-hidden="true" />
+                    <span class="icon-clock u-text-color-gray" aria-hidden="true"></span>
                     <p class="u-stretch">
                         Certificate generation will begin after domain verification
                     </p>

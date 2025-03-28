@@ -86,7 +86,7 @@
                 {/if}
             {/each}
             {#if filter.options.some((option) => option.checked)}
-                <div class="separator" use:melt={$separator} />
+                <div class="separator" use:melt={$separator}></div>
                 <div use:melt={$item}>
                     <ActionMenu.Root>
                         <ActionMenu.Item.Button
