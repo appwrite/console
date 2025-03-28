@@ -22,7 +22,7 @@
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
-    import { collection, columns } from './store';
+    import { collection, columns, isCsvImportInProgress } from './store';
     import Table from './table.svelte';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
@@ -203,7 +203,14 @@
         bind:selectedOption={selectedAttribute} />
 {/if}
 
-<Modal title="Import CSV" bind:show={showImportCSV}>
+<Modal
+    title="Import CSV"
+    bind:show={showImportCSV}
+    onSubmit={() => {
+        // todo: trigger upload and import once SDK is available.
+        showImportCSV = false;
+        $isCsvImportInProgress = true;
+    }}>
     <Typography.Text slot="description">
         Select a CSV file to upload. Ensure the file is properly formatted before proceeding.
         <!-- TODO: @itznotabug, need a docs link here -->
