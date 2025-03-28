@@ -12,7 +12,7 @@
         InlineCode,
         Tooltip
     } from '@appwrite.io/pink-svelte';
-    import { Button, Form, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { IconAndroid, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
     import { page } from '$app/stores';
@@ -94,103 +94,88 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
 </script>
 
 <Wizard title="Add Android platform" bind:showExitModal confirmExit>
-    <Form onSubmit={createAndroidPlatform}>
-        <Layout.Stack gap="xxl">
-            <!-- Step One -->
-            {#if !isPlatformCreated}
-                <Fieldset legend="Details">
-                    <Layout.Stack gap="l" alignItems="flex-end">
-                        <Layout.Stack gap="s">
-                            <InputText
-                                id="name"
-                                label="Name"
-                                placeholder="My Android app"
-                                required
-                                bind:value={$createPlatform.name} />
-
-                            <!-- Tooltips on InputText don't work as of now -->
-                            <InputText
-                                id="key"
-                                required
-                                label="Package name"
-                                placeholder="com.company.appname"
-                                bind:value={$createPlatform.key}>
-                                <Tooltip slot="info" maxWidth="15rem">
-                                    <Icon icon={IconInfo} size="s" />
-                                    <Typography.Caption variant="400" slot="tooltip">
-                                        Your package name is generally the applicationId in your
-                                        app-level build.gradle file.
-                                    </Typography.Caption>
-                                </Tooltip>
-                            </InputText>
-                        </Layout.Stack>
-
-                        <Button
-                            fullWidthMobile
-                            size="s"
-                            submit
-                            forceShowLoader
-                            submissionLoader={isCreatingPlatform}
-                            disabled={!$createPlatform.name ||
-                                !$createPlatform.key ||
-                                isCreatingPlatform}>
-                            Create platform
-                        </Button>
-                    </Layout.Stack>
-                </Fieldset>
-            {:else}
-                <Layout.Stack gap="xxl">
-                    <Card padding="s" radius="s">
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            gap="xs">
-                            <Layout.Stack direction="row" alignItems="center" gap="s">
-                                <Icon size="m" icon={IconAndroid} />
-                                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {$createPlatform.name} ({$createPlatform.key})
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </Layout.Stack>
-                    </Card>
-                </Layout.Stack>
-            {/if}
-
-            <!-- Step Two -->
-            {#if isPlatformCreated}
-                <Fieldset legend="Clone starter">
+    <Layout.Stack gap="xxl">
+        <!-- Step One -->
+        {#if !isPlatformCreated}
+            <Fieldset legend="Details">
+                <Layout.Stack gap="l" alignItems="flex-end">
                     <Layout.Stack gap="l">
-                        <Typography.Text variant="m-500">
-                            1. Clone the starter kit from GitHub using the terminal or Android
-                            Studio.
-                        </Typography.Text>
+                        <InputText
+                            id="name"
+                            label="Name"
+                            placeholder="My Android app"
+                            required
+                            bind:value={$createPlatform.name} />
 
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code lang="bash" lineNumbers code={gitCloneCode} />
-                        </div>
-
-                        <Typography.Text variant="m-500"
-                            >2. Open the file <InlineCode
-                                size="s"
-                                code="data/repository/AppwriteRepository.kt" /> and update the configuration
-                            settings.</Typography.Text>
-
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code lang="kotlin" lineNumbers code={updateConfigCode} />
-                        </div>
-
-                        <Typography.Text variant="m-500"
-                            >3. Run the app on a connected device or emulator, then click the <InlineCode
-                                size="s"
-                                code="Send a ping" /> button to verify the setup.</Typography.Text>
+                        <InputText
+                            id="key"
+                            required
+                            label="Package name"
+                            placeholder="com.company.appname"
+                            bind:value={$createPlatform.key}>
+                            <Tooltip slot="info" maxWidth="15rem">
+                                <Icon icon={IconInfo} size="s" />
+                                <Typography.Caption variant="400" slot="tooltip">
+                                    Your package name is generally the applicationId in your
+                                    app-level build.gradle file.
+                                </Typography.Caption>
+                            </Tooltip>
+                        </InputText>
                     </Layout.Stack>
-                </Fieldset>
-            {/if}
-        </Layout.Stack>
-    </Form>
+                </Layout.Stack>
+            </Fieldset>
+        {:else}
+            <Layout.Stack gap="xxl">
+                <Card padding="s" radius="s">
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        gap="xs">
+                        <Layout.Stack direction="row" alignItems="center" gap="s">
+                            <Icon size="m" icon={IconAndroid} />
+                            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
+                                {$createPlatform.name} ({$createPlatform.key})
+                            </Typography.Text>
+                        </Layout.Stack>
+                    </Layout.Stack>
+                </Card>
+            </Layout.Stack>
+        {/if}
+
+        <!-- Step Two -->
+        {#if isPlatformCreated}
+            <Fieldset legend="Clone starter">
+                <Layout.Stack gap="l">
+                    <Typography.Text variant="m-500">
+                        1. Clone the starter kit from GitHub using the terminal or Android Studio.
+                    </Typography.Text>
+
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code lang="bash" lineNumbers code={gitCloneCode} />
+                    </div>
+
+                    <Typography.Text variant="m-500"
+                        >2. Open the file <InlineCode
+                            size="s"
+                            code="data/repository/AppwriteRepository.kt" /> and update the configuration
+                        settings.</Typography.Text>
+
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code lang="kotlin" lineNumbers code={updateConfigCode} />
+                    </div>
+
+                    <Typography.Text variant="m-500"
+                        >3. Run the app on a connected device or emulator, then click the <InlineCode
+                            size="s"
+                            code="Send a ping" /> button to verify the setup.</Typography.Text>
+                </Layout.Stack>
+            </Fieldset>
+        {/if}
+    </Layout.Stack>
+
     <svelte:fragment slot="aside">
         <Card padding="l" class="responsive-padding">
             <Layout.Stack gap="xxl">
@@ -243,6 +228,17 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                 disabled={isCreatingPlatform}
                 href={location.pathname}>
                 Go to dashboard
+            </Button>
+        {:else}
+            <Button
+                fullWidthMobile
+                size="s"
+                submit
+                forceShowLoader
+                submissionLoader={isCreatingPlatform}
+                disabled={!$createPlatform.name || !$createPlatform.key || isCreatingPlatform}
+                on:click={createAndroidPlatform}>
+                Create platform
             </Button>
         {/if}
     </svelte:fragment>

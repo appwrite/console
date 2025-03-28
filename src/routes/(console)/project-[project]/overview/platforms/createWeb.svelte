@@ -14,7 +14,7 @@
         Button,
         Tooltip
     } from '@appwrite.io/pink-svelte';
-    import { Form, InputText } from '$lib/elements/forms';
+    import { InputText } from '$lib/elements/forms';
     import {
         IconVue,
         IconAppwrite,
@@ -144,8 +144,10 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
 
     async function createWebPlatform() {
+        hostnameError = false;
         hostnameError = !new RegExp(hostnameRegex).test(hostname);
         if (hostnameError) {
+            console.log(`wrong hostname`);
             return;
         }
 
@@ -202,155 +204,141 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
 </script>
 
 <Wizard title="Add web platform" bind:showExitModal>
-    <Form onSubmit={createWebPlatform}>
-        <Layout.Stack gap="xxl">
-            <!-- Step One -->
-            {#if !isPlatformCreated || isChangingFramework}
-                <Fieldset legend="Type">
-                    <Layout.Stack>
-                        <div class="frameworks">
-                            {#each frameworks as framework}
-                                <Card.Selector
-                                    bind:group={selectedFrameworkKey}
-                                    name="framework"
-                                    id={framework.key}
-                                    value={framework.key}
-                                    title={framework.label}
-                                    icon={framework.icon}
-                                    imageRadius="s" />
-                            {/each}
-                        </div>
-                        <Layout.Stack direction="row" justifyContent="flex-end">
-                            {#if isChangingFramework}
-                                <Button.Button
-                                    disabled={!selectedFramework}
-                                    on:click={() => (isChangingFramework = false)}>
-                                    Save</Button.Button>
-                            {/if}
-                        </Layout.Stack>
-                    </Layout.Stack>
-                </Fieldset>
-                {#if !isChangingFramework}
-                    <Fieldset legend="Details">
-                        <InputText
-                            id="hostname"
-                            label="Hostname"
-                            placeholder="localhost"
-                            error={hostnameError && 'Please enter a valid hostname'}
-                            bind:value={hostname}>
-                            <Tooltip slot="info">
-                                <Icon icon={IconInfo} size="s" />
-                                <span slot="tooltip">
-                                    The hostname that your website will use to interact with the
-                                    Appwrite APIs in production or development environments. No
-                                    protocol or port number required.
-                                </span>
-                            </Tooltip>
-                        </InputText></Fieldset>
-                    <Layout.Stack direction="row" justifyContent="flex-end"
-                        ><Button.Button type="submit" disabled={!selectedFramework}
-                            >Create platform</Button.Button
-                        ></Layout.Stack>
-                {/if}
-            {:else}
-                <Card.Base padding="s"
-                    ><Layout.Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center">
-                        <Layout.Stack gap="xxs" direction="row">
-                            <Icon icon={selectedFramework.smallIcon} />
-                            <Typography.Text variant="m-500"
-                                >{selectedFramework.label}</Typography.Text>
-                        </Layout.Stack>
-                        <Button.Button
-                            variant="secondary"
-                            size="s"
-                            on:click={() => {
-                                isChangingFramework = true;
-                            }}>Change</Button.Button>
-                    </Layout.Stack></Card.Base>
-            {/if}
-
-            <!-- Step Three -->
-            {#if isPlatformCreated && !isChangingFramework}
-                <Fieldset legend="Clone starter">
-                    <Layout.Stack gap="l">
-                        <Typography.Text variant="m-500">
-                            1. Clone the starter kit from GitHub using the terminal or VSCode.
-                        </Typography.Text>
-
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code
-                                lang="bash"
-                                lineNumbers
-                                code={`\ngit clone https://github.com/appwrite/starter-for-${selectedFramework.key}\ncd starter-for-${selectedFramework.key}`} />
-                        </div>
-
-                        {#if selectedFramework.key === 'angular'}
-                            <Typography.Text variant="m-500"
-                                >2. Change <InlineCode
-                                    size="s"
-                                    code="src/environments/environment.ts" />
-                                to reflect the values below:</Typography.Text>
-                        {:else}
-                            <Typography.Text variant="m-500"
-                                >2. Rename <InlineCode size="s" code=".env.example" /> into <InlineCode
-                                    size="s"
-                                    code=".env" /> and update the values.</Typography.Text>
-                        {/if}
-
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code
-                                lang="bash"
-                                lineNumbers
-                                code={selectedFramework.updateConfigCode} />
-                        </div>
-
-                        <Typography.Text variant="m-500"
-                            >3. Install project dependencies</Typography.Text>
-
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code lang="bash" lineNumbers code={'npm install'} />
-                        </div>
-
-                        <Typography.Text variant="m-500"
-                            >4. Run the app, then click the <InlineCode
+    <Layout.Stack gap="xxl">
+        <!-- Step One -->
+        {#if !isPlatformCreated || isChangingFramework}
+            <Fieldset legend="Type">
+                <Layout.Stack>
+                    <div class="frameworks">
+                        {#each frameworks as framework}
+                            <Card.Selector
+                                bind:group={selectedFrameworkKey}
+                                name="framework"
+                                id={framework.key}
+                                value={framework.key}
+                                title={framework.label}
+                                icon={framework.icon}
+                                imageRadius="s" />
+                        {/each}
+                    </div>
+                    <Layout.Stack direction="row" justifyContent="flex-end">
+                        {#if isChangingFramework}
+                            <Button.Button
                                 size="s"
-                                code="Send a ping" /> button to verify the setup.</Typography.Text>
-                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
-                        <div class="pink2-code-margin-fix">
-                            <Code lang="bash" lineNumbers code={selectedFramework.runCommand} />
-                        </div>
+                                disabled={!selectedFramework}
+                                on:click={() => (isChangingFramework = false)}>
+                                Save</Button.Button>
+                        {/if}
                     </Layout.Stack>
-                </Fieldset>
-                <Card.Base padding="s"
-                    ><Layout.Stack direction="row" justifyContent="space-between"
-                        ><Layout.Stack direction="row" alignItems="center">
-                            <Icon
-                                icon={IconInfo}
-                                color="--fgcolor-neutral-tertiary" /><Typography.Text
-                                variant="m-500"
-                                color="--fgcolor-neutral-primary">
-                                Demo app runs on http://localhost:{selectedFramework.portNumber}</Typography.Text
-                            ></Layout.Stack>
-                        <Button.Anchor
-                            variant="secondary"
-                            href={`http://localhost:${selectedFramework.portNumber}`}
-                            target="_blank"
-                            ><Layout.Stack direction="row" gap="xs"
-                                >Open <Icon
-                                    icon={IconExternalLink}
-                                    color="--fgcolor-neutral-tertiary" /></Layout.Stack
-                            ></Button.Anchor
-                        ></Layout.Stack
-                    ></Card.Base>
+                </Layout.Stack>
+            </Fieldset>
+            {#if !isChangingFramework}
+                <Fieldset legend="Details">
+                    <InputText
+                        id="hostname"
+                        label="Hostname"
+                        placeholder="localhost"
+                        error={hostnameError && 'Please enter a valid hostname'}
+                        bind:value={hostname}>
+                        <Tooltip slot="info" maxWidth="15rem">
+                            <Icon icon={IconInfo} size="s" />
+                            <Typography.Text slot="tooltip">
+                                The hostname that your website will use to interact with the
+                                Appwrite APIs in production or development environments. No protocol
+                                or port number required.
+                            </Typography.Text>
+                        </Tooltip>
+                    </InputText></Fieldset>
             {/if}
-        </Layout.Stack>
-    </Form>
+        {:else}
+            <Card.Base padding="s"
+                ><Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Layout.Stack gap="xxs" direction="row">
+                        <Icon icon={selectedFramework.smallIcon} />
+                        <Typography.Text variant="m-500">{selectedFramework.label}</Typography.Text>
+                    </Layout.Stack>
+                    <Button.Button
+                        variant="secondary"
+                        size="s"
+                        on:click={() => {
+                            isChangingFramework = true;
+                        }}>Change</Button.Button>
+                </Layout.Stack></Card.Base>
+        {/if}
+
+        <!-- Step Three -->
+        {#if isPlatformCreated && !isChangingFramework}
+            <Fieldset legend="Clone starter">
+                <Layout.Stack gap="l">
+                    <Typography.Text variant="m-500">
+                        1. Clone the starter kit from GitHub using the terminal or VSCode.
+                    </Typography.Text>
+
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code
+                            lang="bash"
+                            lineNumbers
+                            code={`\ngit clone https://github.com/appwrite/starter-for-${selectedFramework.key}\ncd starter-for-${selectedFramework.key}`} />
+                    </div>
+
+                    {#if selectedFramework.key === 'angular'}
+                        <Typography.Text variant="m-500"
+                            >2. Change <InlineCode
+                                size="s"
+                                code="src/environments/environment.ts" />
+                            to reflect the values below:</Typography.Text>
+                    {:else}
+                        <Typography.Text variant="m-500"
+                            >2. Rename <InlineCode size="s" code=".env.example" /> into <InlineCode
+                                size="s"
+                                code=".env" /> and update the values.</Typography.Text>
+                    {/if}
+
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code lang="bash" lineNumbers code={selectedFramework.updateConfigCode} />
+                    </div>
+
+                    <Typography.Text variant="m-500"
+                        >3. Install project dependencies</Typography.Text>
+
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code lang="bash" lineNumbers code={'npm install'} />
+                    </div>
+
+                    <Typography.Text variant="m-500"
+                        >4. Run the app, then click the <InlineCode size="s" code="Send a ping" /> button
+                        to verify the setup.</Typography.Text>
+                    <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                    <div class="pink2-code-margin-fix">
+                        <Code lang="bash" lineNumbers code={selectedFramework.runCommand} />
+                    </div>
+                </Layout.Stack>
+            </Fieldset>
+            <Card.Base padding="s"
+                ><Layout.Stack direction="row" justifyContent="space-between"
+                    ><Layout.Stack direction="row" alignItems="center">
+                        <Icon icon={IconInfo} color="--fgcolor-neutral-tertiary" /><Typography.Text
+                            variant="m-500"
+                            color="--fgcolor-neutral-primary">
+                            Demo app runs on http://localhost:{selectedFramework.portNumber}</Typography.Text
+                        ></Layout.Stack>
+                    <Button.Anchor
+                        variant="secondary"
+                        href={`http://localhost:${selectedFramework.portNumber}`}
+                        target="_blank"
+                        ><Layout.Stack direction="row" gap="xs"
+                            >Open <Icon
+                                icon={IconExternalLink}
+                                color="--fgcolor-neutral-tertiary" /></Layout.Stack
+                        ></Button.Anchor
+                    ></Layout.Stack
+                ></Card.Base>
+        {/if}
+    </Layout.Stack>
+
     <svelte:fragment slot="aside">
         <Card.Base>
             <Layout.Stack gap="xxl">
@@ -394,9 +382,13 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     <svelte:fragment slot="footer">
         {#if isPlatformCreated}
             <Button.Anchor
+                size="s"
                 href={location.pathname}
                 variant="secondary"
                 disabled={isCreatingPlatform}>Go to dashboard</Button.Anchor>
+        {:else}
+            <Button.Button size="s" on:click={createWebPlatform} disabled={!selectedFramework}
+                >Create platform</Button.Button>
         {/if}
     </svelte:fragment>
 </Wizard>
