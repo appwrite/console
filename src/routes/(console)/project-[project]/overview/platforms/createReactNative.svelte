@@ -133,7 +133,7 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
 <Wizard title="Add React Native platform" bind:showExitModal confirmExit>
     <Layout.Stack gap="xxl">
         <!-- Step One -->
-        <Layout.Stack gap="l" direction="row">
+        <Layout.Stack gap="l" direction="row" class="platforms">
             {#each Object.entries(platforms) as [key, value]}
                 <div class="u-width-full-line">
                     <!-- TODO: https://github.com/appwrite/pink/pull/248 for correct spacing -->
@@ -309,6 +309,14 @@ const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
     :global(.responsive-padding) {
         @media (max-width: 768px) {
             padding: 16px;
+        }
+    }
+
+    :global(.platforms) {
+        @media (max-width: 768px) {
+            gap: var(--gap-l, 1rem);
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 </style>
