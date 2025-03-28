@@ -117,7 +117,7 @@
                                     <span
                                         class="icon-globe-alt"
                                         style="--p-text-size: 1.25rem"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"></span>
                                 {/if}
                             </div>
                             <Trim>
@@ -127,7 +127,7 @@
                                 {session.osVersion}
                             </Trim>
                         {:else}
-                            <span class="avatar is-color-empty" />
+                            <span class="avatar is-color-empty"></span>
                             <p class="text u-trim">Unknown</p>
                         {/if}
                         <div class="is-only-desktop">

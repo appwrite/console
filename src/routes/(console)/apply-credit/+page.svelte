@@ -337,7 +337,8 @@
             }}
             disabled={$isSubmitting}>
             {#if $isSubmitting}
-                <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
+                <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true"
+                ></span>
             {/if}
             {#if selectedOrgId === newOrgId}
                 Create organization

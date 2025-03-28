@@ -51,7 +51,7 @@
         {#if label}
             <Pill>
                 {#if labelIcon}
-                    <span class={`icon-${labelIcon}`} aria-hidden="true" />
+                    <span class={`icon-${labelIcon}`} aria-hidden="true"></span>
                 {/if}
                 {label}
             </Pill>
@@ -59,7 +59,7 @@
         {#if withCopy}
             <Copy value={code}>
                 <button class="button is-small is-text is-only-icon" aria-label="copy code">
-                    <span class="icon-duplicate" aria-hidden="true" />
+                    <span class="icon-duplicate" aria-hidden="true"></span>
                 </button>
             </Copy>
         {/if}

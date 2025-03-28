@@ -186,7 +186,7 @@
                     </svelte:fragment>
                     {#if allServiceDisabled(project)}
                         <p>
-                            <span class="icon-pause" aria-hidden="true" /> All services are disabled.
+                            <span class="icon-pause" aria-hidden="true"></span> All services are disabled.
                         </p>
                     {/if}
 

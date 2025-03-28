@@ -157,7 +157,7 @@
                         <EyebrowHeading tag="h3" size={3} class="u-normal">Methods</EyebrowHeading>
                         <Layout.Stack direction="row">
                             <div class="avatar is-size-x-small">
-                                <span class="icon-device-mobile" aria-hidden="true" />
+                                <span class="icon-device-mobile" aria-hidden="true"></span>
                             </div>
                             <Layout.Stack gap="xxxs">
                                 <Layout.Stack gap="s">
@@ -191,7 +191,7 @@
                             <Layout.Stack>
                                 <Layout.Stack direction="row">
                                     <div class="avatar is-size-x-small">
-                                        <span class="icon-mail" aria-hidden="true" />
+                                        <span class="icon-mail" aria-hidden="true"></span>
                                     </div>
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack gap="s" direction="row">
@@ -211,7 +211,7 @@
                             <Layout.Stack>
                                 <Layout.Stack direction="row">
                                     <div class="avatar is-size-x-small">
-                                        <span class="icon-mail" aria-hidden="true" />
+                                        <span class="icon-mail" aria-hidden="true"></span>
                                     </div>
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack gap="s" direction="row">
@@ -239,7 +239,7 @@
                             <Layout.Stack>
                                 <Layout.Stack direction="row">
                                     <div class="avatar is-size-x-small">
-                                        <span class="icon-send" aria-hidden="true" />
+                                        <span class="icon-send" aria-hidden="true"></span>
                                     </div>
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack gap="s" direction="row">
@@ -265,7 +265,7 @@
                             <Layout.Stack>
                                 <Layout.Stack direction="row">
                                     <div class="avatar is-size-x-small">
-                                        <span class="icon-lock-open" aria-hidden="true" />
+                                        <span class="icon-lock-open" aria-hidden="true"></span>
                                     </div>
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack gap="s" direction="row">

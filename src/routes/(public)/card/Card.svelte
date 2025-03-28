@@ -257,16 +257,16 @@
                     loading="lazy"
                     width="450"
                     height="274" />
-                <div class="card__glare" />
+                <div class="card__glare"></div>
             </div>
 
             {#each new Array(THICKNESS) as _, i (i)}
-                <div class="card__thick" style:--i={i + 1} />
+                <div class="card__thick" style:--i={i + 1}></div>
             {/each}
             <div class="card__front" style:--thickness={THICKNESS}>
                 <img class="invisible" src={base64.front} alt="" />
                 <img class="abs" src={base64.front} alt="The front of the card" />
-                <div class="card__glare" />
+                <div class="card__glare"></div>
             </div>
         </button>
     </div>

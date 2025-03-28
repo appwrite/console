@@ -40,7 +40,7 @@
                 on:click={downloadPdf}
                 href="{base}/legal/dpa.pdf"
                 event="download_dpa">
-                <span class="icon-download" aria-hidden="true" />
+                <span class="icon-download" aria-hidden="true"></span>
                 <span class="text">Download</span>
             </Button>
         </Box>

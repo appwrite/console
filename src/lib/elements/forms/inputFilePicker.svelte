@@ -33,7 +33,7 @@
                         <span
                             class="icon-info"
                             aria-hidden="true"
-                            style="font-size: var(--icon-size-small)" />
+                            style="font-size: var(--icon-size-small)"></span>
                     </button>
                     <svelte:fragment slot="list">
                         <div
@@ -52,7 +52,7 @@
         style:--box-border-radius="var(--border-radius-xsmall)">
         <div class="upload-file-box">
             <div class="upload-file-box-image">
-                <span class="icon-upload" aria-hidden="true" />
+                <span class="icon-upload" aria-hidden="true"></span>
             </div>
             <div class="u-min-width-0 u-text-center">
                 <h5 class="upload-file-box-title heading-level-7 u-inline">
@@ -75,7 +75,7 @@
                 {@const fileSize = humanFileSize(value.sizeOriginal)}
                 <ul class="upload-file-box-list u-min-width-0">
                     <li class="u-flex u-cross-center u-min-width-0">
-                        <span class="icon-document" aria-hidden="true" />
+                        <span class="icon-document" aria-hidden="true"></span>
                         <span class="upload-file-box-name u-min-width-0">
                             <Trim alternativeTrim>{value.name}</Trim>
                         </span>
@@ -89,7 +89,7 @@
                             class="button is-text is-only-icon u-margin-inline-start-auto"
                             aria-label="remove file"
                             style="--button-size:1.5rem;">
-                            <span class="icon-x" aria-hidden="true" />
+                            <span class="icon-x" aria-hidden="true"></span>
                         </button>
                     </li>
                 </ul>

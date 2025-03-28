@@ -78,9 +78,9 @@
                     <Table.Cell column="relations" {root}>
                         <span class="u-flex u-cross-center u-gap-8">
                             {#if attr.twoWay}
-                                <span class="icon-switch-horizontal" />
+                                <span class="icon-switch-horizontal"></span>
                             {:else}
-                                <span class="icon-arrow-sm-right" />
+                                <span class="icon-arrow-sm-right"></span>
                             {/if}
                             <Trim>{attr.key}</Trim>
                         </span>

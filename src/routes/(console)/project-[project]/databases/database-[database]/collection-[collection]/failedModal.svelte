@@ -14,7 +14,8 @@
             <span
                 class="icon-exclamation-circle u-font-size-20"
                 aria-hidden="true"
-                style="color:hsl(var(--color-danger-100));" />{header}
+                style="color:hsl(var(--color-danger-100));"></span
+            >{header}
         </p>
         <p>{error}</p>
     </div>

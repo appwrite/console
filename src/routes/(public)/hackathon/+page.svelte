@@ -48,7 +48,7 @@
             </Button>
         </div>
         <div class="ht-logos">
-            <div class="u-only-light buttons-list" />
+            <div class="u-only-light buttons-list"></div>
             <ul class="inline-links">
                 <li class="inline-links-item" style="padding-inline-start: 0;">
                     <div class="u-only-light">

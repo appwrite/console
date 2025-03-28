@@ -100,7 +100,7 @@
     </p>
     {#await listCollections()}
         <div class="u-flex u-main-center">
-            <div class="loader" />
+            <div class="loader"></div>
         </div>
     {:then}
         {#if error}
@@ -129,7 +129,7 @@
                         </button>
 
                         {#if isLoadingDocumentsCount}
-                            <div class="loader is-small" />
+                            <div class="loader is-small"></div>
                         {/if}
                     </div>
                 {:else if collectionItems.length > 25}
