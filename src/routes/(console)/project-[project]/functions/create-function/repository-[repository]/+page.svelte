@@ -50,7 +50,7 @@
     let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
-    let scopes: string[] = [];
+    let roles: string[] = [];
     let branch: string;
     let rootDir = './';
     let variables: Partial<Models.Variable>[] = [];
@@ -69,7 +69,7 @@
                 id || ID.unique(),
                 name,
                 runtime,
-                undefined,
+                roles?.length ? roles : undefined,
                 undefined,
                 undefined,
                 undefined,
@@ -77,7 +77,7 @@
                 undefined,
                 entrypoint,
                 buildCommand,
-                scopes,
+                undefined,
                 $installation.$id,
                 $repository.id,
                 branch,
@@ -159,7 +159,7 @@
                 installationId={data.installation.$id}
                 repositoryId={data.repository.id} />
 
-            <Configuration bind:buildCommand bind:scopes />
+            <Configuration bind:buildCommand bind:roles />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
