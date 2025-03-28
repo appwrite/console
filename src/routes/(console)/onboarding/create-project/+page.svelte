@@ -16,7 +16,7 @@
     let isLoading = false;
     let id: string;
     let startAnimation = false;
-    let projectName = '';
+    let projectName = 'Appwrite project';
     let region = Region.Default;
     export let data: { regions: RegionList | null };
 
