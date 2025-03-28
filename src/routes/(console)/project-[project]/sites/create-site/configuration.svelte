@@ -24,7 +24,6 @@
         IconPencil
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
-    import { getFrameworkIcon } from '../store';
     import { iconPath } from '$lib/stores/app';
     import VariableEditorModal from './variableEditorModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
@@ -33,6 +32,7 @@
     import DeleteVariableModal from './deleteVariableModal.svelte';
     import UpdateVariableModal from './updateVariableModal.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let frameworks: Models.Framework[];
     export let selectedFramework: Models.Framework;

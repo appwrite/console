@@ -32,11 +32,11 @@
         Repositories,
         RepositoryBehaviour
     } from '$lib/components/git';
-    import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
     import { consoleVariables } from '$routes/(console)/store';
     import { connectGitHub } from '$lib/stores/git';
     import Domain from '../../domain.svelte';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let data;
 

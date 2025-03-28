@@ -50,7 +50,7 @@
     let isSubmitting = writable(false);
 
     let name = data.template.name;
-    let id = ID.unique();
+    let id: string;
     let runtime: Runtime;
     let branch = 'main';
     let rootDir = './';
@@ -70,10 +70,7 @@
 
     onMount(async () => {
         if ($page.url.searchParams.has('runtime')) {
-            console.log(runtime);
-            console.log($page.url.searchParams.get('runtime'));
             runtime = $page.url.searchParams.get('runtime') as Runtime;
-            console.log(runtime);
         }
         if (!$installation?.$id) {
             $installation = data.installations.installations[0];
@@ -127,7 +124,7 @@
                 const rt = data.template.runtimes.find((r) => r.name === runtime);
 
                 const func = await sdk.forProject.functions.create(
-                    id,
+                    id || ID.unique(),
                     name,
                     runtime as Runtime,
                     data.template.permissions?.length ? data.template.permissions : undefined,
@@ -204,11 +201,9 @@
         selectedRepository = null;
     }
 
-    $: console.log(data.template);
     $: availableRuntimes = data.runtimesList.runtimes.filter((runtime) =>
         data.template.runtimes.some((templateRuntime) => templateRuntime.name === runtime.$id)
     );
-    $: console.log(availableRuntimes);
 </script>
 
 <svelte:head>
@@ -354,7 +349,17 @@
         <Button
             fullWidthMobile
             size="s"
-            on:click={() => formComponent.triggerSubmit()}
+            on:click={() => {
+                if (variables.filter((v) => v.required && !v.value).length) {
+                    addNotification({
+                        type: 'error',
+                        message:
+                            'Missing required environment variables. Please update and try again.'
+                    });
+                } else {
+                    formComponent.triggerSubmit();
+                }
+            }}
             disabled={$isSubmitting || (connectBehaviour === 'now' && !selectedRepository)}>
             Deploy
         </Button>

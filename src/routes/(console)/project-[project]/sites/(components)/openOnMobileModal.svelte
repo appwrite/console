@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import Card from '$lib/components/card.svelte';
-    import { Button, InputText } from '$lib/elements/forms';
+    import { InputText } from '$lib/elements/forms';
     import { copy } from '$lib/helpers/copy';
     import { sdk } from '$lib/stores/sdk';
     import { protocol } from '$routes/(console)/store';
@@ -20,7 +20,7 @@
     });
 </script>
 
-<Modal title="Open on mobile" bind:show>
+<Modal title="Open on mobile" bind:show hideFooter>
     <span slot="description">Open the preview of your site on any mobile or tablet device.</span>
     <Layout.Stack gap="l">
         <Card padding="l" radius="l">
@@ -34,7 +34,4 @@
             </svelte:fragment>
         </InputText>
     </Layout.Stack>
-    <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (show = false)}>Cancel</Button>
-    </svelte:fragment>
 </Modal>

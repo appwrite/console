@@ -69,7 +69,7 @@
                             {formatTimeDetailed(deployment.buildDuration)}
                         {/if}
                     {:else if column.id === 'totalSize'}
-                        {calculateSize(deployment.totalSize)}
+                        {calculateSize(deployment?.totalSize ?? 0)}
                     {:else if column.id === 'sourceSize'}
                         {calculateSize(deployment.sourceSize)}
                     {:else if column.id === 'buildSize'}

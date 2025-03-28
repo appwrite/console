@@ -85,6 +85,7 @@ export const sdk = {
         assistant: new Assistant(clientConsole),
         billing: new Billing(clientConsole),
         sources: new Sources(clientConsole),
+        sites: new Sites(clientConsole),
         domains: new Domains(clientConsole)
     },
     get forProject() {

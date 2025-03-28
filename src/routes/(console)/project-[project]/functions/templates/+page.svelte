@@ -2,15 +2,14 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { EmptySearch, SvgIcon } from '$lib/components';
-    import { Button, InputSearch } from '$lib/elements/forms';
+    import { EmptyFilter, EmptySearch, SearchQuery, SvgIcon } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import { Container, ContainerButton } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
-    import { debounce } from '$lib/helpers/debounce';
     import {
         Accordion,
         AvatarGroup,
@@ -68,37 +67,10 @@
         return [...baseRuntimes.values()];
     }
 
-    function applySearch(event: CustomEvent<string>) {
-        debounce(() => {
-            const value = event.detail;
-            const target = new URL($page.url);
-
-            if (value.length > 0) {
-                target.searchParams.set('search', value);
-            } else {
-                target.searchParams.delete('search');
-            }
-            target.searchParams.delete('page');
-            goto(target.toString(), { keepFocus: true });
-        }, 250)();
-    }
-
     $: isChecked = (useCase: string) => {
         return $page.url.searchParams
             .getAll('useCase')
             .some((param) => param.toLowerCase() === useCase.toLowerCase());
-    };
-
-    $: getErrorMessage = () => {
-        const searchParams = $page.url.searchParams;
-        const paramsArray = Array.from(searchParams.entries());
-
-        if (paramsArray.length === 1) {
-            const [_, value] = paramsArray[0];
-            return `Sorry, we couldn't find "${value}".`;
-        } else if (paramsArray.length > 1) {
-            return `Sorry, we couldn't find any results with the applied filters.`;
-        }
     };
 
     $: buttonDisabled = isServiceLimited(
@@ -111,11 +83,7 @@
 <Container>
     <Layout.GridFraction start={1} end={3} gap="xxl">
         <Layout.Stack gap="xl">
-            <InputSearch
-                placeholder="Search templates"
-                value={$page.url.searchParams.get('search')}
-                on:clear={clearSearch}
-                on:change={applySearch} />
+            <SearchQuery search={data.search} placeholder="Search template" />
             <Layout.Stack>
                 <Accordion title="Use case">
                     <Layout.Stack>
@@ -212,8 +180,9 @@
                                                         +{hidden.length}
                                                     </span>
                                                 </Avatar>
-                                                <span slot="tooltip"
-                                                    >{hidden.map((n) => n.name).join(', ')}</span>
+                                                <span slot="tooltip">
+                                                    {hidden.map((n) => n.name).join(', ')}
+                                                </span>
                                             </Tooltip>
                                         {/if}
                                     </AvatarGroup>
@@ -246,24 +215,18 @@
                         </PinkCard.Base>
                     {/each}
                 </Layout.Grid>
-            {:else}
-                <EmptySearch hidePagination>
-                    <div class="common-section">
-                        <div class="u-text-center common-section">
-                            <b class="body-text-2 u-bold">{getErrorMessage()}</b>
-                            <p>There are no templates that match your search.</p>
-                        </div>
-                        <div class="u-flex u-gap-16 common-section u-main-center">
-                            <Button secondary on:click={clearSearch}>Clear search</Button>
-                        </div>
-                    </div>
+                <PaginationWithLimit
+                    name="Templates"
+                    limit={data.limit}
+                    offset={data.offset}
+                    total={data.sum} />
+            {:else if data?.search}
+                <EmptySearch hidePagination search={data.search}>
+                    <Button secondary on:click={clearSearch}>Clear search</Button>
                 </EmptySearch>
+            {:else if data?.filter}
+                <EmptyFilter resource="templates"></EmptyFilter>
             {/if}
-            <PaginationWithLimit
-                name="Templates"
-                limit={data.limit}
-                offset={data.offset}
-                total={data.sum} />
         </Layout.Stack>
     </Layout.GridFraction>
 </Container>

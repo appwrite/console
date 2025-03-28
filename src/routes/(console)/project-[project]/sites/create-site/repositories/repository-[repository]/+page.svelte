@@ -53,10 +53,10 @@
         repository.set(data.repository);
         name = data.repository.name;
 
-        await detectFramwork();
+        await detectFramework();
     });
 
-    async function detectFramwork() {
+    async function detectFramework() {
         try {
             const response = await sdk.forProject.vcs.createRepositoryDetection(
                 $installation.$id,

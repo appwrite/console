@@ -1,7 +1,8 @@
 import { page } from '$app/stores';
 import { derived, writable, type Writable } from 'svelte/store';
-import type { Models } from '@appwrite.io/console';
+import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
 import type { Column } from '$lib/helpers/types';
+import { sdk } from '$lib/stores/sdk';
 
 export const func = derived(page, ($page) => $page.data.function as Models.Function);
 export const deploymentList = derived(
@@ -108,3 +109,22 @@ export const columns = writable<Column[]>([
         format: 'datetime'
     }
 ]);
+
+export function getOutputDownload(funcId: string, deploymentId: string) {
+    return (
+        sdk.forProject.functions.getDeploymentDownload(
+            funcId,
+            deploymentId.toString(),
+            DeploymentDownloadType.Output
+        ) + '&mode=admin'
+    );
+}
+export function getSourceDownload(funcId: string, deploymentId: string) {
+    return (
+        sdk.forProject.functions.getDeploymentDownload(
+            funcId,
+            deploymentId.toString(),
+            DeploymentDownloadType.Source
+        ) + '&mode=admin'
+    );
+}

@@ -53,6 +53,8 @@
             }
         });
     });
+
+    $: console.log(data.siteList);
 </script>
 
 <Container>

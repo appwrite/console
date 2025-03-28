@@ -4,16 +4,16 @@
     import { timeFromNow } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
     import { Card, Icon, Layout, Popover, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { getFrameworkIcon } from './store';
+    import { generateSiteDeploymentDesc } from './store';
     import { SvgIcon } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
     import SitesActionMenu from './sitesActionMenu.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { timer } from '$lib/helpers/timeConversion';
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Link } from '$lib/elements';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let siteList: Models.SiteList;
 
@@ -37,14 +37,6 @@
         const endpoint = getApiEndpoint();
         return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
     }
-
-    function generateDesc(site: Models.Site) {
-        if (site.latestDeploymentStatus === 'building') {
-            return `Deployment building ${timer(site.latestDeploymentCreatedAt)}`;
-        } else {
-            return `Deployed ${timeFromNow(site.deploymentCreatedAt)}`;
-        }
-    }
 </script>
 
 <Layout.Grid columns={3} columnsXS={1} columnsXXS={1}>
@@ -54,7 +46,7 @@
             padding="xxs">
             <Card.Media
                 title={site.name}
-                description={generateDesc(site)}
+                description={generateSiteDeploymentDesc(site)}
                 src={getScreenshot($app.themeInUse, site)}
                 alt={site.name}
                 avatar>

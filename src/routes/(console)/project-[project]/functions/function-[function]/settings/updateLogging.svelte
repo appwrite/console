@@ -58,7 +58,7 @@
 
 <Form onSubmit={update}>
     <CardGrid>
-        <svelte:fragment slot="title">Execution logs</svelte:fragment>
+        <svelte:fragment slot="title">Logging</svelte:fragment>
         <svelte:fragment slot="aside">
             <InputSwitch label="Logs" id="logging" bind:value={logging} />
             <Typography.Text>

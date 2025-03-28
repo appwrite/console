@@ -1,12 +1,17 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
     import { Link } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import { protocol } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
-    import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
+    import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import { ActionMenu, Icon, Layout, Popover, Tag, Typography } from '@appwrite.io/pink-svelte';
+    import { createEventDispatcher } from 'svelte';
 
     export let domains: Models.ProxyRuleList;
+    export let hideQRCode = true;
+
+    const dispatch = createEventDispatcher();
 </script>
 
 <Layout.Stack gap="xxs" direction="row" alignItems="center">
@@ -18,12 +23,12 @@
                         {domains.rules[0]?.domain}
                     </Typography.Text>
                 </Trim>
-                <Icon icon={IconExternalLink} size="s" />
             </Layout.Stack>
         </Link>
+
         {#if domains.rules.length > 1}
             <Popover padding="none" let:toggle>
-                <Tag size="s" on:click={toggle}>
+                <Tag size="xs" on:click={toggle}>
                     +{domains.rules.length - 1}
                 </Tag>
                 <svelte:fragment slot="tooltip">
@@ -43,6 +48,11 @@
                     </ActionMenu.Root>
                 </svelte:fragment>
             </Popover>
+        {/if}
+        {#if !hideQRCode}
+            <Button icon secondary size="xs" on:click={() => dispatch('showQR')}>
+                <Icon icon={IconQrcode} size="s" />
+            </Button>
         {/if}
     {:else}
         <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">

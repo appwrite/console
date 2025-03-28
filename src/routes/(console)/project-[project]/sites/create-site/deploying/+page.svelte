@@ -6,12 +6,12 @@
     import Button from '$lib/elements/forms/button.svelte';
     import Aside from '../aside.svelte';
     import Logs from '../../(components)/logs.svelte';
-    import { getFrameworkIcon } from '../../store';
     import { Copy, SvgIcon } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { onMount } from 'svelte';
     import { Dependencies } from '$lib/constants';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let data;
 
