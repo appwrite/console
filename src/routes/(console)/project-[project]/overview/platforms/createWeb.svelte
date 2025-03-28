@@ -387,6 +387,12 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                 variant="secondary"
                 disabled={isCreatingPlatform}>Go to dashboard</Button.Anchor>
         {:else}
+            <Button.Button
+                size="s"
+                on:click={() => (showExitModal = true)}
+                variant="secondary"
+                disabled={isCreatingPlatform}>Cancel</Button.Button>
+
             <Button.Button size="s" on:click={createWebPlatform} disabled={!selectedFramework}
                 >Create platform</Button.Button>
         {/if}

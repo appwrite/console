@@ -313,9 +313,15 @@ static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.e
             </Button>
         {:else}
             <Button
-                fullWidthMobile
+                disabled={isCreatingPlatform}
                 size="s"
-                submit
+                on:click={() => (showExitModal = true)}
+                secondary>
+                Cancel
+            </Button>
+
+            <Button
+                size="s"
                 forceShowLoader
                 submissionLoader={isCreatingPlatform}
                 disabled={!platform ||

@@ -231,9 +231,15 @@ const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
             </Button>
         {:else}
             <Button
-                fullWidthMobile
+                disabled={isCreatingPlatform}
                 size="s"
-                submit
+                on:click={() => (showExitModal = true)}
+                secondary>
+                Cancel
+            </Button>
+
+            <Button
+                size="s"
                 forceShowLoader
                 submissionLoader={isCreatingPlatform}
                 disabled={!$createPlatform.name || !$createPlatform.key || isCreatingPlatform}
