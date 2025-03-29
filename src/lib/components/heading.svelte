@@ -24,7 +24,7 @@
 </svelte:element>
 
 <style>
-    .target {
+    .target:target {
         padding-top: 120px;
         margin-top: -120px;
     }
