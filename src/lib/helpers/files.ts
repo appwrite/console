@@ -97,6 +97,24 @@ export function removeFile(file: File, files: FileList) {
     return dataTransfer.files;
 }
 
+export function readColumnsFromCSV(file: File): Promise<string[]> {
+    // more than enough!
+    const CHUNK_SIZE = 4096;
+
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const text = reader.result as string;
+            const [firstLine] = text.split('\n');
+            resolve(firstLine.split(','));
+        };
+
+        reader.onerror = reject;
+        reader.readAsText(file.slice(0, CHUNK_SIZE));
+    });
+}
+
 export const defaultIgnore = `
 ### Node ###
 # Logs
