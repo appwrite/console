@@ -87,7 +87,7 @@
         </Layout.Stack>
 
         <Alert dismissible={false} type="warning">
-            If you did not create your site using the CLI, initialize your function by following our <a
+            If you did not create your site using the CLI, initialize your site by following our <a
                 href="https://appwrite.io/docs/tooling/command-line/installation"
                 target="_blank"
                 rel="noopener noreferrer"

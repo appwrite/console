@@ -51,7 +51,7 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create deployment`}>Documentation</Button>
-                    <CreateActionMenu let:toggle>
+                    <CreateActionMenu let:toggle installations={data.installations}>
                         <Button secondary on:click={toggle} event="create_deployment">
                             Create deployment
                         </Button>
@@ -157,7 +157,7 @@
                                 text
                                 event="empty_documentation"
                                 ariaLabel={`create deployment`}>Documentation</Button>
-                            <CreateActionMenu let:toggle>
+                            <CreateActionMenu let:toggle installations={data.installations}>
                                 <Button secondary on:click={toggle} event="create_deployment">
                                     Create deployment
                                 </Button>
@@ -179,7 +179,7 @@
                             {#if data.deploymentList.total}
                                 <ViewSelector view={View.Table} {columns} hideView />
                             {/if}
-                            <CreateActionMenu let:toggle>
+                            <CreateActionMenu let:toggle installations={data.installations}>
                                 <Button on:click={toggle} event="create_deployment">
                                     <Icon icon={IconPlus} size="s" slot="start" />
                                     Create deployment

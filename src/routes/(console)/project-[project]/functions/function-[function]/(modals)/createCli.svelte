@@ -1,12 +1,10 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Modal, Code } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { func } from '../store';
-    import SecondaryTabs from '$lib/components/secondaryTabs.svelte';
-    import SecondaryTabsItem from '$lib/components/secondaryTabsItem.svelte';
-    import { Alert } from '@appwrite.io/pink-svelte';
+    import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
 
     export let show = false;
 
@@ -84,67 +82,42 @@
     }
 </script>
 
-<Modal title="Create CLI deployment" bind:show>
-    <p class="text">
+<Modal title="Create CLI deployment" bind:show hideFooter>
+    <span slot="description">
         Deploy your function using the Appwrite CLI by running the following command inside your
         function's folder.
-    </p>
+    </span>
 
-    <Alert.Inline dismissible={false} status="warning">
-        If you did not create your function using the CLI, initialize your function by following our <a
-            href="https://appwrite.io/docs/tooling/command-line/installation"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">documentation</a
-        >.
-    </Alert.Inline>
+    <Layout.Stack gap="l">
+        <Layout.Stack gap="s">
+            <Tabs.Root let:root stretch>
+                {#each ['Unix', 'CMD', 'PowerShell'] as cat}
+                    <Tabs.Item.Button
+                        {root}
+                        on:click={() => (category = cat)}
+                        active={category === cat}>
+                        {cat}
+                    </Tabs.Item.Button>
+                {/each}
+            </Tabs.Root>
 
-    <div class="editor-border box">
-        <SecondaryTabs large class="u-sep-block-end u-padding-8">
             {#each ['Unix', 'CMD', 'PowerShell'] as cat}
-                <SecondaryTabsItem
-                    stretch
-                    fullWidth
-                    center
-                    on:click={() => (category = cat)}
-                    disabled={category === cat}>
-                    {cat}
-                </SecondaryTabsItem>
+                {#if category === cat}
+                    <Code hideHeader lang="sh" code={codeSnippets[cat].code} />
+                {/if}
             {/each}
-        </SecondaryTabs>
+        </Layout.Stack>
 
-        {#each ['Unix', 'CMD', 'PowerShell'] as cat}
-            {#if category === cat}
-                <Code
-                    withLineNumbers
-                    withCopy
-                    language="sh"
-                    class="cli-commands-code-box-no-outline"
-                    label={codeSnippets[cat].language}
-                    code={codeSnippets[cat].code} />
-            {/if}
-        {/each}
-    </div>
+        <Alert.Inline dismissible={false} status="warning">
+            If you did not create your site using the CLI, initialize your function by following our <a
+                href="https://appwrite.io/docs/tooling/command-line/installation"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">documentation</a
+            >.
+        </Alert.Inline>
+    </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>
     </svelte:fragment>
 </Modal>
-
-<style>
-    .box {
-        padding: unset;
-        background-color: unset;
-    }
-
-    .editor-border :global(.cli-commands-code-box-no-outline) {
-        margin: 1rem 0;
-        border: unset;
-        border-radius: unset;
-        background-color: unset;
-        padding: 0 var(--box-padding, 1.5rem) 0 var(--box-padding, 1.5rem);
-    }
-
-    :global(.editor-border .cli-commands-code-box-no-outline pre) {
-        background-color: unset;
-    }
-</style>

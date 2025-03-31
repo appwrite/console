@@ -13,29 +13,31 @@
     $: total = projectStats?.reduce((prev, next) => prev + next[1], 0) ?? 0;
 </script>
 
-<div class="heading-level-4">
-    {formatNum(current)}
-</div>
-<div>Realtime Connections</div>
-{#if total}
-    <div style="height: 18em">
-        <BarChart
-            series={[
-                {
-                    name: 'Realtime connection',
-                    data: $stats.get(projectId)
-                }
-            ]} />
+<Layout.Stack gap="l">
+    <div class="heading-level-4">
+        {formatNum(current)}
     </div>
-{:else}
-    <Card isDashed>
-        <Layout.Stack gap="xs" alignItems="center" justifyContent="center" height="10rem">
-            <Icon icon={IconChartSquareBar} size="l" />
-            <Typography.Text variant="m-600">No data to show</Typography.Text>
-            <Link.Anchor
-                href="https://appwrite.io/docs/apis/realtime"
-                target="_blank"
-                rel="noopener noreferrer">Get started with Realtime</Link.Anchor>
-        </Layout.Stack>
-    </Card>
-{/if}
+    <div>Realtime Connections</div>
+    {#if total}
+        <div style="height: 18em">
+            <BarChart
+                series={[
+                    {
+                        name: 'Realtime connection',
+                        data: $stats.get(projectId)
+                    }
+                ]} />
+        </div>
+    {:else}
+        <Card isDashed>
+            <Layout.Stack gap="xs" alignItems="center" justifyContent="center" height="10rem">
+                <Icon icon={IconChartSquareBar} size="l" />
+                <Typography.Text variant="m-600">No data to show</Typography.Text>
+                <Link.Anchor
+                    href="https://appwrite.io/docs/apis/realtime"
+                    target="_blank"
+                    rel="noopener noreferrer">Get started with Realtime</Link.Anchor>
+            </Layout.Stack>
+        </Card>
+    {/if}
+</Layout.Stack>
