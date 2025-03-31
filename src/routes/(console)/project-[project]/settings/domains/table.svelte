@@ -10,11 +10,16 @@
     import RetryDomainModal from './retryDomainModal.svelte';
     import { columns } from './store';
 
-    export let domains: Models.ProxyRuleList;
+    let {
+        domains
+    }: {
+        domains: Models.ProxyRuleList;
+    } = $props();
 
-    let showDelete = false;
-    let showRetry = false;
-    let selectedDomain: Models.ProxyRule = null;
+    let showDelete = $state(false);
+    let showRetry = $state(false);
+    let selectedDomain: Models.ProxyRule = $state(null);
+    let showPreviewDomainModal = $state(false);
 </script>
 
 <Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
