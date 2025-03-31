@@ -2,7 +2,6 @@ import * as Sentry from '@sentry/sveltekit';
 import { AppwriteException } from '@appwrite.io/console';
 import type { HandleClientError } from '@sveltejs/kit';
 import { isCloud, isProd } from '$lib/system';
-import { dev } from '$app/environment';
 
 Sentry.init({
     enabled: isCloud && isProd,
