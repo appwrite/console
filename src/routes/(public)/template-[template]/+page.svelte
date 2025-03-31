@@ -1,7 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import CustomId from '$lib/components/customId.svelte';
     import { SvgIcon } from '$lib/components/index.js';
@@ -95,7 +93,7 @@
     }
 
     async function handleSubmit() {
-        if (selectedProject !== null) {
+        if (selectedProject === null) {
             try {
                 await sdk.forConsole.projects.create(
                     id ?? ID.unique(),
@@ -109,9 +107,7 @@
                     teamId: selectedOrg
                 });
 
-                await goto(
-                    `${base}/template-${$page.params.template}/redirect-${selectedOrg}?route=${generateUrl()}`
-                );
+                window.location.href = generateUrl();
             } catch (e) {
                 trackError(e, Submit.ProjectCreate);
                 addNotification({
@@ -120,9 +116,7 @@
                 });
             }
         } else {
-            await goto(
-                `${base}/template-${$page.params.template}/redirect-${selectedOrg}?route=${generateUrl()}`
-            );
+            window.location.href = generateUrl();
         }
     }
 
