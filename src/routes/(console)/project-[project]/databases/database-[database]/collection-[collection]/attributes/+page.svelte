@@ -46,6 +46,13 @@
         email = 'mail',
         enum = 'view-list'
     }
+
+    const relationTypeMap = {
+        oneToOne: 'one-to-one',
+        oneToMany: 'one-to-many',
+        manyToOne: 'many-to-one',
+        manyToMany: 'many-to-many'
+    }
 </script>
 
 <Container>
@@ -121,15 +128,15 @@
                         <TableCellText onlyDesktop title="Type">
                             {#if 'format' in attribute && attribute.format}
                                 <span class="u-capitalize">{attribute.format}</span>
+                            {:else if isRelationship(attribute)}
+                            <span class="u-capitalize">{relationTypeMap[attribute.relationType]}</span>
+                            <span>
+                                with <a
+                                    href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
+                                    ><b data-private>{attribute?.key}</b></a>
+                            </span>
                             {:else}
                                 <span class="u-capitalize">{attribute.type}</span>
-                                {#if isRelationship(attribute)}
-                                    <span>
-                                        with <a
-                                            href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
-                                            ><b data-private>{attribute?.key}</b></a>
-                                    </span>
-                                {/if}
                             {/if}
                             <span>
                                 {attribute.array ? '[]' : ''}
