@@ -4,6 +4,7 @@
     import { readable } from 'svelte/store';
     import type { FormContext } from './form.svelte';
     import { multiAction, type MultiActionArray } from '$lib/actions/multi-actions';
+    import { isAnalyst } from '$lib/stores/roles';
 
     export let submit = false;
     export let secondary = false;
@@ -26,11 +27,12 @@
     export let actions: MultiActionArray = [];
     export let submissionLoader = false;
 
+    const inForm = hasContext('form') && submit;
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
         : readable(false);
 
-    $: internalDisabled = (submit && $isSubmitting) || disabled;
+    $: internalDisabled = (submit && $isSubmitting) || disabled || (inForm && $isAnalyst);
 
     function track() {
         if (!event) {
