@@ -3,7 +3,6 @@
     import { Navbar, Sidebar } from '$lib/components';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
     import { page } from '$app/stores';
-    import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { setContext } from 'svelte';
@@ -141,7 +140,7 @@
 <main
     class:has-alert={$activeHeaderAlert?.show}
     class:is-open={$showSubNavigation}
-    class:u-hide={$wizard.show || $log.show || $wizard.cover}
+    class:u-hide={$wizard.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
     class:no-header={!showHeader}
     style:--p-side-size={sideSize}>
