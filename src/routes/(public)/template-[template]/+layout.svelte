@@ -1,12 +1,13 @@
 <script lang="ts">
     import { app } from '$lib/stores/app';
-
     import { Typography } from '@appwrite.io/pink-svelte';
+
+    let { children } = $props();
 </script>
 
 <div class="auth-bg">
     <section class="console-container">
-        <slot />
+        {@render children()}
     </section>
     <footer>
         <Typography.Eyebrow color="--fgcolor-neutral-secondary">POWERED BY</Typography.Eyebrow>

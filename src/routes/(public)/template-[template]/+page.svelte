@@ -30,16 +30,18 @@
         Typography
     } from '@appwrite.io/pink-svelte';
 
-    export let data;
+    let { data } = $props();
 
-    let projects: Models.ProjectList;
-    let selectedProject: string;
-    let selectedOrg = data?.organizations?.total ? data.organizations.teams[0].$id : undefined;
-    let projectName: string;
-    let showCustomId = false;
-    let region: string;
-    let regions: Array<Region> = [];
-    let id: string;
+    let projects = $state<Models.ProjectList>();
+    let selectedProject = $state<string>();
+    let selectedOrg = $state(
+        data?.organizations?.total ? data.organizations.teams[0].$id : undefined
+    );
+    let projectName = $state<string>();
+    let showCustomId = $state(false);
+    let region = $state<string>();
+    let regions = $state<Array<Region>>([]);
+    let id = $state<string>();
 
     function getRegions() {
         return regions
@@ -81,9 +83,7 @@
             Query.equal('teamId', selectedOrg),
             Query.orderDesc('')
         ]);
-        console.log(selectedProject);
         selectedProject = projects?.total ? projects.projects[0].$id : null;
-        console.log(selectedProject);
     }
 
     function generateUrl() {
@@ -122,10 +122,12 @@
         }
     }
 
-    $: if (selectedOrg !== undefined) {
-        console.log('test');
-        fetchProjects();
-    }
+    $effect(() => {
+        if (selectedOrg !== undefined) {
+            console.log('test');
+            fetchProjects();
+        }
+    });
 </script>
 
 <svelte:head>
