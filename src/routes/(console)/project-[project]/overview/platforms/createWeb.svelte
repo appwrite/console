@@ -144,7 +144,8 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
 
     async function createWebPlatform() {
-        hostnameError = !new RegExp(hostnameRegex).test(hostname);
+        hostnameError = hostname !== '' ? !new RegExp(hostnameRegex).test(hostname) : null;
+
         if (hostnameError) {
             return;
         }
@@ -157,7 +158,7 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                 `${selectedFramework.label} app`,
                 selectedFrameworkKey,
                 undefined,
-                hostname
+                hostname === '' ? undefined : hostname
             );
 
             isPlatformCreated = true;
