@@ -143,6 +143,7 @@
     class:is-open={$showSubNavigation}
     class:u-hide={$wizard.show || $log.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
+    class:no-header={!showHeader}
     style:--p-side-size={sideSize}>
     {#if showHeader}
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
@@ -209,6 +210,14 @@
 
     .main-content {
         min-height: calc(100vh - 48px);
+    }
+
+    .no-header {
+        min-height: 100vh;
+
+        .content {
+            margin-block-start: 0;
+        }
     }
 
     :global(main:has(.sub-navigation)) {
