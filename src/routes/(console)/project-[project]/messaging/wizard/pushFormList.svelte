@@ -178,7 +178,7 @@
                                 (_, i) => i !== rowIndex
                             );
                         }}>
-                        <span class="icon-x" aria-hidden="true" />
+                        <span class="icon-x" aria-hidden="true"></span>
                     </Button>
                 {/each}
             </ul>
@@ -199,7 +199,7 @@
     {#if !showCustomId}
         <div>
             <Pill button on:click={() => (showCustomId = !showCustomId)}
-                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                ><span class="icon-pencil" aria-hidden="true"></span><span class="text">
                     Message ID
                 </span></Pill>
         </div>

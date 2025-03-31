@@ -27,7 +27,7 @@
     <div class="box u-flex-vertical u-gap-24">
         <div class="u-inline-flex u-cross-center u-gap-8">
             <p class="u-stretch">
-                <span class={`${iconClass} u-font-size-20`} aria-hidden="true" {style} />
+                <span class={`${iconClass} u-font-size-20`} aria-hidden="true" {style}></span>
                 <span>Webhook {webhook.enabled ? 'enabled' : 'disabled'}</span>
             </p>
 

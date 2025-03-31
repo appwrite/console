@@ -22,7 +22,7 @@
                 {#if data.lastBackups && data.lastBackups[database.$id]}
                     Last backup: {data.lastBackups[database.$id]}
                 {:else if !data.policies || !data.policies[database.$id]}
-                    <span class="icon-exclamation" /> No backup policies
+                    <span class="icon-exclamation"></span> No backup policies
                 {:else}
                     Last backup: No backups yet
                 {/if}

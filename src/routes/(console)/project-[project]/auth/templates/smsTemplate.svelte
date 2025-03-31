@@ -71,7 +71,7 @@
         <div
             class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
             style="inset-inline-start: 0;">
-            <div class="loader" />
+            <div class="loader"></div>
             <p class="text">Loading template...</p>
         </div>
     {/if}
@@ -83,7 +83,7 @@
                 label="Message"
                 placeholder="Enter your message" />
 
-            <div class="u-sep-block-start u-margin-block-start-24" />
+            <div class="u-sep-block-start u-margin-block-start-24"></div>
 
             <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
                 <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>

@@ -104,7 +104,7 @@
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
                     <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
-                        <span class="icon-github" aria-hidden="true" />
+                        <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign in with GitHub</span>
                     </Button>
                 {/if}

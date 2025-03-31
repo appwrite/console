@@ -67,7 +67,7 @@
                                 <span
                                     class="icon-info"
                                     aria-hidden="true"
-                                    style="font-size: var(--icon-size-small)" />
+                                    style="font-size: var(--icon-size-small)"></span>
                             </button>
                             <p slot="tooltip">{tooltip}</p>
                         </Tooltip>

@@ -122,21 +122,21 @@
                     href="https://twitter.com/intent/tweet?text={twitterText}"
                     target="_blank"
                     rel="noreferrer">
-                    <span class="icon-twitter" aria-hidden="true" />
+                    <span class="icon-twitter" aria-hidden="true"></span>
                     <span class="text">Tweet it</span>
                 </a>
             </li>
             {#if variant === 'owner'}
                 <li class="buttons-list-item embed-btn">
                     <button class="button is-text" on:click={() => (showEmbedCode = true)}>
-                        <span class="icon-code" aria-hidden="true" />
+                        <span class="icon-code" aria-hidden="true"></span>
                         <span class="text">Get embed code</span>
                     </button>
                 </li>
             {/if}
             <li class="buttons-list-item">
                 <button class="button is-text" on:click={copyShareableLink}>
-                    <span class="icon-link" aria-hidden="true" />
+                    <span class="icon-link" aria-hidden="true"></span>
                     <span class="text">Get a link</span>
                 </button>
             </li>
@@ -177,7 +177,8 @@
             }}
             transition:fade
             role="button"
-            tabindex="0" />
+            tabindex="0">
+        </div>
     {/if}
     <div class="controls" class:invisible={!cardActive}>
         <button

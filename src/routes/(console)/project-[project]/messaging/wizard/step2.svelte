@@ -97,7 +97,7 @@
                                     type="button"
                                     aria-label="delete"
                                     on:click={() => removeTopic(topicId)}>
-                                    <span class="icon-x u-font-size-20" aria-hidden="true" />
+                                    <span class="icon-x u-font-size-20" aria-hidden="true"></span>
                                 </button>
                             </div>
                         </Table.Cell>
@@ -119,7 +119,7 @@
                                     type="button"
                                     aria-label="delete"
                                     on:click={() => removeTarget(targetId)}>
-                                    <span class="icon-x u-font-size-20" aria-hidden="true" />
+                                    <span class="icon-x u-font-size-20" aria-hidden="true"></span>
                                 </button>
                             </div>
                         </Table.Cell>

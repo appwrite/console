@@ -294,9 +294,9 @@
                         <Table.Cell column="relation" {root}>
                             <span class="u-flex u-cross-center u-gap-8">
                                 {#if attr.twoWay}
-                                    <span class="icon-switch-horizontal" />
+                                    <span class="icon-switch-horizontal"></span>
                                 {:else}
-                                    <span class="icon-arrow-sm-right" />
+                                    <span class="icon-arrow-sm-right"></span>
                                 {/if}
                                 <span data-private>{attr.key}</span>
                             </span>

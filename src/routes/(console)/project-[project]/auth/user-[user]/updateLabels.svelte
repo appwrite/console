@@ -85,7 +85,7 @@
                                     labels = labels.filter((e) => e !== suggestedLabel);
                                 }
                             }}>
-                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="icon-plus" aria-hidden="true"></span>
                             {suggestedLabel}
                         </Tag>
                     {/each}

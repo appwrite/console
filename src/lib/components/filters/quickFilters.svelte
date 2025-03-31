@@ -58,7 +58,6 @@
                                 $columns,
                                 analyticsSource
                             );
-                            subSheets = subSheets;
                         }
                     };
                 })

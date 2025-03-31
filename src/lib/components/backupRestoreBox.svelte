@@ -158,13 +158,13 @@
                             on:click={() => {
                                 openStates[key] = !openStates[key];
                             }}>
-                            <span class="icon-cheveron-up" aria-hidden="true" />
+                            <span class="icon-cheveron-up" aria-hidden="true"></span>
                         </button>
                         <button
                             class="upload-box-button"
                             aria-label="close backup restore box"
                             on:click={() => handleClose(key)}>
-                            <span class="icon-x" aria-hidden="true" />
+                            <span class="icon-x" aria-hidden="true"></span>
                         </button>
                     </header>
 
@@ -186,7 +186,8 @@
                                         <div
                                             class="progress-bar-container"
                                             class:is-danger={item.status === 'failed'}
-                                            style="--graph-size:{graphSize(item.status)}%" />
+                                            style="--graph-size:{graphSize(item.status)}%">
+                                        </div>
                                     </section>
                                 </li>
                             {/each}

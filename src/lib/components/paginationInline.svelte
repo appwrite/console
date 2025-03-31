@@ -17,18 +17,15 @@
     function handleOptionClick(page: number) {
         if (currentPage !== page) {
             offset = limit * (page - 1);
-            currentPage = page;
             dispatch('change');
         }
     }
 
     function handleButtonPage(direction: string) {
         if (direction === 'next' && currentPage < totalPages) {
-            currentPage += 1;
             offset = limit * (currentPage - 1);
             dispatch('change');
         } else if (direction === 'prev' && currentPage > 1) {
-            currentPage -= 1;
             offset = limit * (currentPage - 1);
             dispatch('change');
         }
@@ -97,7 +94,7 @@
 {:else}
     <nav class="pagination">
         <button type="button" class="button is-text is-disabled" aria-label="prev page">
-            <span class="icon-cheveron-left" aria-hidden="true" />
+            <span class="icon-cheveron-left" aria-hidden="true"></span>
             <span class="text">Prev</span>
         </button>
         {#if !hidePages}
@@ -111,7 +108,7 @@
         {/if}
         <button type="button" class="button is-text is-disabled" aria-label="next page">
             <span class="text">Next</span>
-            <span class="icon-cheveron-right" aria-hidden="true" />
+            <span class="icon-cheveron-right" aria-hidden="true"></span>
         </button>
     </nav>
 {/if}

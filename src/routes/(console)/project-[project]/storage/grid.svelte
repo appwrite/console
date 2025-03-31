@@ -37,7 +37,7 @@
                     <span
                         class:u-opacity-20={!bucket.encryption}
                         class="icon-lock-closed"
-                        aria-hidden="true" />
+                        aria-hidden="true"></span>
                     <span slot="tooltip">
                         {bucket.encryption ? 'Encryption enabled' : 'Encryption disabled'}
                     </span>

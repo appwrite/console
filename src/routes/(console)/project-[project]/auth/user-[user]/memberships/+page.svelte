@@ -60,7 +60,7 @@
                                 showDelete = true;
                                 trackEvent('click_delete_membership');
                             }}>
-                            <span class="icon-trash" aria-hidden="true" />
+                            <span class="icon-trash" aria-hidden="true"></span>
                         </button>
                     </Table.Cell>
                 </Table.Row.Link>

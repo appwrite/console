@@ -77,7 +77,7 @@
                                 showDelete = true;
                                 trackEvent(Click.MembershipDeleteClick);
                             }}>
-                            <span class="icon-trash" aria-hidden="true" />
+                            <span class="icon-trash" aria-hidden="true"></span>
                         </button>
                     </Table.Cell>
                 </Table.Row.Link>

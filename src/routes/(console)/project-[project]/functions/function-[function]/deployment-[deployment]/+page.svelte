@@ -144,7 +144,7 @@
                     {#if ['processing', 'building'].includes(data.deployment.status)}
                         <Typography.Code color="--fgcolor-neutral-secondary">
                             <Layout.Stack direction="row" alignItems="center" inline>
-                                <p use:timer={{ start: data.deployment.$createdAt }} />
+                                <p use:timer={{ start: data.deployment.$createdAt }}></p>
                                 <Spinner size="s" />
                             </Layout.Stack>
                         </Typography.Code>

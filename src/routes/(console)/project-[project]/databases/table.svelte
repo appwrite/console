@@ -53,7 +53,7 @@
                             maxWidth="fit-content">
                             <span class="u-trim">
                                 {#if !policies}
-                                    <span class="icon-exclamation" /> No backup policies
+                                    <span class="icon-exclamation"></span> No backup policies
                                 {:else}
                                     {description}
                                 {/if}

@@ -49,7 +49,7 @@
 </InputText>
 {#if couponData?.status === 'error'}
     <div>
-        <span class="icon-exclamation-circle u-color-text-danger" />
+        <span class="icon-exclamation-circle u-color-text-danger"></span>
         <span>
             {couponData.code.toUpperCase()} is not a valid promo code
         </span>
@@ -57,7 +57,7 @@
 {:else if couponData?.status === 'active'}
     <div class="u-flex u-main-space-between u-cross-center">
         <div>
-            <span class="icon-tag u-color-text-success" />
+            <span class="icon-tag u-color-text-success"></span>
             <slot data={couponData}>
                 <span>
                     {couponData.code.toUpperCase()} applied (-{formatCurrency(couponData.credits)})
