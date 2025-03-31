@@ -116,7 +116,7 @@
                         variant="copy"
                         text={toLocaleDateTime(time)}
                         value={toLocalDateTimeISO(time)} />
-                    <Badge variant="secondary" content="Local time" size="xs" />
+                    <Badge variant="secondary" content="Local" size="xs" />
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
