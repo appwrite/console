@@ -8,23 +8,33 @@
     import Logs from '../../(components)/logs.svelte';
     import { Copy, SvgIcon } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { onMount } from 'svelte';
-    import { Dependencies } from '$lib/constants';
     import { getFrameworkIcon } from '$lib/stores/sites';
+    import type { Models, RealtimeResponseEvent } from '@appwrite.io/console';
 
-    export let data;
+    let { data } = $props();
+
+    let deployment = $state(data.deployment);
 
     onMount(async () => {
-        sdk.forConsole.client.subscribe('console', async (response) => {
-            if (
-                response.events.includes(
-                    `sites.${data.deployment.resourceId}.deployments.${data.deployment.$id}.update`
-                )
-            ) {
-                invalidate(Dependencies.DEPLOYMENT);
+        sdk.forConsole.client.subscribe(
+            'console',
+            async (response: RealtimeResponseEvent<Models.Deployment>) => {
+                if (
+                    response.events.includes(
+                        `sites.${data.deployment.resourceId}.deployments.${data.deployment.$id}.update`
+                    )
+                ) {
+                    deployment = response.payload;
+                    if (response.payload.status === 'ready') {
+                        goto(
+                            `${base}/project-${$page.params.project}/sites/create-site/finish?site=${data.site.$id}`
+                        );
+                    }
+                }
             }
-        });
+        );
     });
 </script>
 
@@ -50,7 +60,7 @@
         </Card.Base>
         <Fieldset legend="Deploy">
             <Logs
-                bind:deployment={data.deployment}
+                bind:deployment
                 hideScrollButtons
                 height="calc(100dvh - 430px)"
                 emptyCopy="No logs available yet..." />

@@ -2,11 +2,7 @@
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import type { Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { deployment } from './store';
+    import type { Models, RealtimeResponseEvent } from '@appwrite.io/console';
     import SiteCard from '../../../(components)/siteCard.svelte';
     import Logs, { badgeTypeDeployment } from '../../../(components)/logs.svelte';
     import Card from '$lib/components/card.svelte';
@@ -21,29 +17,31 @@
     import { capitalize } from '$lib/helpers/string';
     import LogsTimer from '../../../(components)/logsTimer.svelte';
 
-    export let data;
+    let { data } = $props();
 
-    onMount(() => {
-        if ($deployment.status === 'ready') {
+    let deployment = $state(data.deployment);
+    let showRedeploy = $state(false);
+    let showActivate = $state(false);
+    let showDelete = $state(false);
+    let showCancel = $state(false);
+
+    onMount(async () => {
+        if (data.deployment.status === 'ready') {
             return;
         }
-        return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            if (
-                message.events.includes(
-                    `sites.${$page.params.site}.deployments.${$page.params.deployment}.update`
-                )
-            ) {
-                if (message.payload.status === 'ready') {
-                    invalidate(Dependencies.DEPLOYMENT);
+        sdk.forConsole.client.subscribe(
+            'console',
+            async (response: RealtimeResponseEvent<Models.Deployment>) => {
+                if (
+                    response.events.includes(
+                        `sites.${data.deployment.resourceId}.deployments.${data.deployment.$id}.update`
+                    )
+                ) {
+                    deployment = response.payload;
                 }
             }
-        });
+        );
     });
-
-    let showRedeploy = false;
-    let showActivate = false;
-    let showDelete = false;
-    let showCancel = false;
 </script>
 
 <Container>
@@ -70,13 +68,13 @@
     <Card padding="s">
         <Accordion
             title="Deployment logs"
-            badge={capitalize(data.deployment.status)}
+            badge={capitalize(deployment.status)}
             open
             badgeType={badgeTypeDeployment(data.deployment.status)}
             hideDivider>
-            <Logs deployment={data.deployment} hideTitle hideScrollButtons fullHeight />
+            <Logs {deployment} hideTitle hideScrollButtons fullHeight />
             <svelte:fragment slot="end">
-                <LogsTimer status={data.deployment.status} deployment={data.deployment} />
+                <LogsTimer status={deployment.status} {deployment} />
             </svelte:fragment>
         </Accordion>
     </Card>
@@ -84,20 +82,20 @@
 
 {#if showDelete}
     <DeleteDeploymentModal
-        selectedDeployment={data.deployment}
+        selectedDeployment={deployment}
         bind:showDelete
         activeDeployment={data.site?.deploymentId} />
 {/if}
 
-<CancelDeploymentModal selectedDeployment={data.deployment} bind:showCancel />
+<CancelDeploymentModal selectedDeployment={deployment} bind:showCancel />
 <RedeployModal
-    selectedDeploymentId={data.deployment.$id}
+    selectedDeploymentId={deployment.$id}
     bind:show={showRedeploy}
     redirect
     site={data.site} />
 {#if showActivate}
     <ActivateDeploymentModal
         siteId={data.site.$id}
-        selectedDeploymentId={data.deployment.$id}
+        selectedDeploymentId={deployment.$id}
         bind:show={showActivate} />
 {/if}

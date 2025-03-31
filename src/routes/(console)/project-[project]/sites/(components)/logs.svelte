@@ -19,7 +19,7 @@
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app';
     import type { Models } from '@appwrite.io/console';
-    import { Badge, Layout, Logs, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Card, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import LogsTimer from './logsTimer.svelte';
 
     export let deployment: Models.Deployment;
@@ -61,12 +61,21 @@
             <LogsTimer status={deployment.status} {deployment} />
         </Layout.Stack>
     {/if}
-    {#key deployment.buildLogs}
-        <Logs
-            {fullHeight}
-            {height}
-            showScrollButton={!hideScrollButtons}
-            logs={deployment.buildLogs || setCopy()}
-            bind:theme={$app.themeInUse} />
-    {/key}
+
+    {#if ['waiting', 'processing'].includes(deployment.status)}
+        <Card.Base variant="secondary">
+            <Layout.Stack direction="row" justifyContent="center" gap="s">
+                <Spinner /> Waiting for build to start...
+            </Layout.Stack>
+        </Card.Base>
+    {:else}
+        {#key deployment.buildLogs}
+            <Logs
+                {fullHeight}
+                {height}
+                showScrollButton={!hideScrollButtons}
+                logs={deployment.buildLogs || setCopy()}
+                bind:theme={$app.themeInUse} />
+        {/key}
+    {/if}
 </Layout.Stack>
