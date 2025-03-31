@@ -174,6 +174,7 @@
 
     <button
         type="button"
+        class="overlay-button"
         class:overlay={$isSidebarOpen}
         on:click={() => {
             $isSidebarOpen = false;
@@ -230,12 +231,13 @@
         transition:
             backdrop-filter 0.5s ease-in-out,
             background-color 0.35s ease-in-out;
-
+    }
+    .overlay-button {
         @media (min-width: 1024px) {
             display: none;
         }
     }
     main {
-        min-height: 100vh;
+        min-height: calc(100vh - 48px);
     }
 </style>
