@@ -4,26 +4,37 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     export let show = false;
     export let selectedDeploymentId: string;
     export let site: Models.Site;
+    export let redirect = false;
     let error: string;
 
     async function redeploy() {
         try {
-            sdk.forProject.sites.createDuplicateDeployment(site.$id, selectedDeploymentId);
+            const deployment = await sdk.forProject.sites.createDuplicateDeployment(
+                site.$id,
+                selectedDeploymentId
+            );
             addNotification({
                 type: 'success',
                 message: `Redeploying ${site.name}`
             });
             trackEvent(Submit.SiteRedeploy);
 
-            invalidate(Dependencies.SITE);
-            invalidate(Dependencies.DEPLOYMENTS);
+            if (redirect) {
+                await goto(
+                    `${base}/project-${$page.params.project}/sites/site-${site.$id}/deployments/deployment-${deployment.$id}`
+                );
+            }
+            await invalidate(Dependencies.SITE);
+            await invalidate(Dependencies.DEPLOYMENTS);
             show = false;
         } catch (e) {
             error = e.message;

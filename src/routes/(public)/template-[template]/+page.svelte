@@ -64,7 +64,7 @@
         template: Models.TemplateFunction | Models.TemplateSite,
         product: 'site' | 'function'
     ): template is Models.TemplateSite {
-        return product === 'site';
+        return product === 'site' && 'frameworks' in template;
     }
 
     function onGithubLogin() {

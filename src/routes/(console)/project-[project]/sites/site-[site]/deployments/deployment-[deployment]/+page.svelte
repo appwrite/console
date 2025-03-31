@@ -93,6 +93,7 @@
 <RedeployModal
     selectedDeploymentId={data.deployment.$id}
     bind:show={showRedeploy}
+    redirect
     site={data.site} />
 {#if showActivate}
     <ActivateDeploymentModal

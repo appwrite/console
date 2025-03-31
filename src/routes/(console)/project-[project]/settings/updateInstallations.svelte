@@ -97,18 +97,18 @@
                 <Table.Root
                     let:root
                     columns={[
-                        { id: 'repo', width: { min: 150, max: 500 } },
+                        { id: 'owner', width: { min: 150, max: 500 } },
                         { id: 'updated', width: { min: 150, max: 500 } },
                         { id: 'actions', width: 60 }
                     ]}>
                     <svelte:fragment slot="header" let:root>
-                        <Table.Header.Cell column="repo" {root}>Repository</Table.Header.Cell>
+                        <Table.Header.Cell column="owner" {root}>Owner</Table.Header.Cell>
                         <Table.Header.Cell column="updated" {root}>Updated</Table.Header.Cell>
                         <Table.Header.Cell column="actions" {root} />
                     </svelte:fragment>
                     {#each installations as installation, i}
                         <Table.Row.Base {root}>
-                            <Table.Cell column="repo" {root}>
+                            <Table.Cell column="owner" {root}>
                                 <Layout.Stack direction="row" gap="s" alignItems="center">
                                     <Avatar alt={installation.provider} size="xs">
                                         <Icon

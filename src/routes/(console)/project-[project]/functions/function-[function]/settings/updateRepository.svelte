@@ -7,7 +7,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Runtime, type Models } from '@appwrite.io/console';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
     import { sortBranches } from '$lib/stores/vcs';
@@ -17,14 +16,13 @@
         Icon,
         Layout,
         Skeleton,
-        Typography,
         Card as PinkCard,
         Input,
         Selector
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { ConnectGit } from '$lib/components/git';
+    import { ConnectGit, RepositoryCard } from '$lib/components/git';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import ConnectRepoModal from '../(modals)/connectRepoModal.svelte';
 
@@ -161,29 +159,7 @@
                 </Layout.Stack>
             {:else if repository}
                 <Layout.Stack gap="xl">
-                    <Card padding="xs" radius="s" variant="secondary">
-                        <Layout.Stack direction="row" gap="s">
-                            <Layout.Stack direction="row" gap="s">
-                                <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
-                                <Layout.Stack gap="xxxs">
-                                    <Typography.Text
-                                        variant="m-400"
-                                        color="--fgcolor-neutral-primary">
-                                        {repository.name}
-                                    </Typography.Text>
-                                    <Typography.Caption
-                                        variant="400"
-                                        color="--fgcolor-neutral-tertiary">
-                                        Last updated: {toLocaleDateTime(repository.pushedAt)}
-                                    </Typography.Caption>
-                                </Layout.Stack>
-                            </Layout.Stack>
-                            <Button secondary on:click={() => (showDisconnect = true)}>
-                                Disconnect
-                            </Button>
-                        </Layout.Stack>
-                    </Card>
-
+                    <RepositoryCard {repository} on:disconnect={() => (showDisconnect = true)} />
                     <Fieldset legend="Branch">
                         <Layout.Stack gap="xl">
                             <Input.ComboBox
