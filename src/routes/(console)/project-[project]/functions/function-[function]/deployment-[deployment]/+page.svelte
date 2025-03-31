@@ -29,14 +29,11 @@
 
     export let data;
 
-    let logs = '';
     let showDelete = false;
     let showCancel = false;
     let showActivate = false;
 
     onMount(() => {
-        logs = data.deployment.buildLogs;
-
         const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
             'console',
             (message) => {
@@ -45,7 +42,6 @@
                         `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
                     )
                 ) {
-                    logs = message.payload['logs'];
                     if (message.payload.status === 'ready') {
                         invalidate(Dependencies.DEPLOYMENT);
                     }

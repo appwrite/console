@@ -109,3 +109,7 @@ export enum RuleTrigger {
     DEPLOYMENT = 'deployment',
     MANUAL = 'manual'
 }
+
+export const createAdminClient = () => {
+    return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());
+};

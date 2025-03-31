@@ -78,10 +78,8 @@
         let:hide
         slot="tooltip"
         role="tooltip"
-        style:padding-top="1rem"
-        style:margin-top="-1rem"
-        style:padding-bottom="1rem"
-        style:margin-bottom="-1rem"
+        style:padding="1rem"
+        style:margin="-1rem"
         on:mouseenter={() => (isMouseOverTooltip = true)}
         on:mouseleave={() => hidePopover(hide, false)}>
         <Layout.Stack gap="s" alignContent="flex-start">
@@ -116,7 +114,7 @@
                         variant="copy"
                         text={toLocaleDateTime(time)}
                         value={toLocalDateTimeISO(time)} />
-                    <Badge variant="secondary" content="Local time" size="xs" />
+                    <Badge variant="secondary" content="Local" size="xs" />
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>

@@ -1,11 +1,9 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { BillingPlan, INTERVAL } from '$lib/constants';
-    import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
-    import { log } from '$lib/stores/logs';
     import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { wizard } from '$lib/stores/wizard';
@@ -319,11 +317,6 @@
 
     $: checkForUsageLimits($organization);
 
-    $: if (!$log.show) {
-        $log.data = null;
-        $log.func = null;
-    }
-
     $: if ($requestedMigration) {
         openMigrationWizard();
     }
@@ -358,10 +351,6 @@
 {/if}
 
 <Create bind:show={$newOrgModal} />
-
-{#if $log.show}
-    <Logs />
-{/if}
 
 {#if $showSupportModal}
     <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>
