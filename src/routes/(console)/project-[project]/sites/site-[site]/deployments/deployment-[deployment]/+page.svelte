@@ -16,28 +16,29 @@
     import { Accordion } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import LogsTimer from '../../../(components)/logsTimer.svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { page } from '$app/state';
 
     let { data } = $props();
 
-    let deployment = $state(data.deployment);
+    let deployment = $derived(data.deployment);
+
     let showRedeploy = $state(false);
     let showActivate = $state(false);
     let showDelete = $state(false);
     let showCancel = $state(false);
 
     onMount(async () => {
-        if (data.deployment.status === 'ready') {
-            return;
-        }
         sdk.forConsole.client.subscribe(
             'console',
             async (response: RealtimeResponseEvent<Models.Deployment>) => {
                 if (
                     response.events.includes(
-                        `sites.${data.deployment.resourceId}.deployments.${data.deployment.$id}.update`
+                        `sites.${page.params.site}.deployments.${page.params.deployment}.update`
                     )
                 ) {
-                    deployment = response.payload;
+                    invalidate(Dependencies.DEPLOYMENTS);
                 }
             }
         );
@@ -45,9 +46,9 @@
 </script>
 
 <Container>
-    <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList}>
+    <SiteCard {deployment} proxyRuleList={data.proxyRuleList}>
         <svelte:fragment slot="footer">
-            {#if data.deployment?.status === 'ready' && data.proxyRuleList?.total}
+            {#if deployment?.status === 'ready' && data.proxyRuleList?.total}
                 <Button href={`${$protocol}${data.proxyRuleList.rules[0]?.domain}`} external>
                     Visit
                 </Button>
@@ -56,8 +57,8 @@
             <Button secondary on:click={() => (showRedeploy = true)}>Redeploy</Button>
             <DeploymentActionMenu
                 inCard
-                deployment={data.deployment}
-                selectedDeployment={data.deployment}
+                {deployment}
+                selectedDeployment={deployment}
                 bind:showRedeploy
                 bind:showActivate
                 bind:showDelete
@@ -70,7 +71,7 @@
             title="Deployment logs"
             badge={capitalize(deployment.status)}
             open
-            badgeType={badgeTypeDeployment(data.deployment.status)}
+            badgeType={badgeTypeDeployment(deployment.status)}
             hideDivider>
             <Logs {deployment} hideTitle hideScrollButtons fullHeight />
             <svelte:fragment slot="end">
