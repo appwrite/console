@@ -26,8 +26,10 @@ import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
 import { Domains } from '$lib/sdk/domains';
 import { Sources } from '$lib/sdk/sources';
+import { building } from '$app/environment';
 
 export function getApiEndpoint(): string {
+    if (building) return 'https://cloud.appwrite.io/v1';
     if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
     return globalThis?.location?.origin + '/v1';
 }
