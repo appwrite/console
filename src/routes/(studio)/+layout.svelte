@@ -29,7 +29,7 @@
             name: org.name,
             $id: org.$id,
             showUpgrade: billingPlan === BillingPlan.FREE,
-            tierName: isCloud ? tierToPlan(billingPlan).name : null,
+            tierName: isCloud ? (tierToPlan(billingPlan)?.name ?? '') : null,
             isSelected: $page.data.currentOrganization?.$id === org.$id,
             projects: loadedProjects
         };
