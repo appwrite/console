@@ -29,8 +29,8 @@ import { Sources } from '$lib/sdk/sources';
 import { building } from '$app/environment';
 
 export function getApiEndpoint(): string {
-    if (building) return 'https://cloud.appwrite.io/v1';
     if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
+    if (building) return 'https://cloud.appwrite.io/v1';
     return globalThis?.location?.origin + '/v1';
 }
 
