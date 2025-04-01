@@ -5,12 +5,13 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { Query } from '@appwrite.io/console';
+import { base } from '$app/paths';
 
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes } = await parent();
 
     if (!scopes.includes('billing.read')) {
-        return redirect(301, `/console/organization-${organization.$id}`);
+        return redirect(301, `${base}/organization-${organization.$id}`);
     }
     depends(Dependencies.PAYMENT_METHODS);
     depends(Dependencies.ORGANIZATION);
