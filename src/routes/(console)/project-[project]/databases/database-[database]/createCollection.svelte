@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     import { Modal, CustomId } from '$lib/components';
@@ -13,7 +13,7 @@
 
     export let showCreate = false;
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
     const dispatch = createEventDispatcher();
 
     let name = '';

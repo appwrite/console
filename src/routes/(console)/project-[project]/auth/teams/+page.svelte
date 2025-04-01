@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -26,7 +26,7 @@
 
     export let data: PageData;
 
-    const project = $page.params.project;
+    const project = page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
         await goto(`${base}/project-${project}/auth/teams/team-${event.detail.$id}`);
     };
@@ -79,7 +79,7 @@
             total={data.teams.total} />
     {:else if data.search}
         <EmptySearch target="teams" search={data.search} hidePagination={data.teams.total === 0}>
-            <Button secondary size="s" href={`${base}/project-${$page.params.project}/auth/teams`}>
+            <Button secondary size="s" href={`${base}/project-${page.params.project}/auth/teams`}>
                 Clear Search
             </Button>
         </EmptySearch>

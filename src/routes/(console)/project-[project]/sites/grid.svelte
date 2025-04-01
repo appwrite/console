@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { timeFromNow } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
     import { Card, Icon, Layout, Popover, Tooltip, Typography } from '@appwrite.io/pink-svelte';
@@ -42,7 +42,7 @@
 <Layout.Grid columns={3} columnsXS={1} columnsXXS={1}>
     {#each siteList.sites as site}
         <Card.Link
-            href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}
+            href={`${base}/project-${page.params.project}/sites/site-${site.$id}`}
             padding="xxs">
             <Card.Media
                 title={site.name}
@@ -76,7 +76,7 @@
                                     Last deployment failed {timeFromNow(
                                         site.latestDeploymentCreatedAt
                                     )}. <Link
-                                        href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
+                                        href={`${base}/project-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
                                         View logs
                                     </Link>
                                 </Typography.Text>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
@@ -21,7 +21,7 @@
                 message: `${$user.name ? $user.name : 'User'} has been deleted`
             });
             trackEvent(Submit.UserDelete);
-            await goto(`${base}/project-${$page.params.project}/auth`);
+            await goto(`${base}/project-${page.params.project}/auth`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.UserDelete);

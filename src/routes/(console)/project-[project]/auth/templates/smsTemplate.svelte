@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button, Form, InputTextarea } from '$lib/elements/forms';
     import ResetSms from './resetSms.svelte';
     import { baseSmsTemplate, smsTemplate } from './store';
@@ -11,7 +11,7 @@
     import type { SmsTemplateLocale, SmsTemplateType } from '@appwrite.io/console';
 
     export let loading = false;
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     let openResetModal = false;
 
     let eventType = Submit.SmsUpdateInviteTemplate;

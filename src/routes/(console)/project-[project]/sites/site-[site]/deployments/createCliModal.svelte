@@ -2,7 +2,7 @@
     import { Button } from '$lib/elements/forms';
     import { Modal, Alert } from '$lib/components';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
 
     export let show = false;
@@ -12,7 +12,7 @@
     let os = 'unknown';
     let category = 'Unix';
 
-    const siteId = $page.params.site;
+    const siteId = page.params.site;
     codeSnippets = setCodeSnippets(lang);
 
     onMount(() => {

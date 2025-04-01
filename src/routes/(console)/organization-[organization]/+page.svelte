@@ -5,7 +5,7 @@
     import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
     import {
         CardContainer,
@@ -110,11 +110,11 @@
             const project = await sdk.forConsole.projects.create(
                 ID.unique(),
                 `Imported project ${new Date().toISOString()}`,
-                $page.params.organization,
+                page.params.organization,
                 Region.Default
             );
             trackEvent(Submit.ProjectCreate, {
-                teamId: $page.params.organization
+                teamId: page.params.organization
             });
             await goto(`${base}/project-${project.$id}/settings/migrations`);
             openImportWizard();
@@ -128,10 +128,10 @@
     onMount(async () => {
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
-            checkPricingRefAndRedirect($page.url.searchParams);
+            checkPricingRefAndRedirect(page.url.searchParams);
         }
 
-        const searchParams = $page.url.searchParams;
+        const searchParams = page.url.searchParams;
         if (searchParams.has('create-project')) {
             handleCreateProject();
         }
@@ -232,7 +232,7 @@
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
-<CreateProject bind:show={showCreate} teamId={$page.params.organization} />
+<CreateProject bind:show={showCreate} teamId={page.params.organization} />
 {#if showCreateProjectCloud}
     <CreateProjectCloud bind:showCreateProjectCloud regions={regions.regions} />
 {/if}

@@ -14,7 +14,7 @@
     import type { Models } from '@appwrite.io/console';
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
     import { Pill } from '$lib/elements';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { onMount } from 'svelte';
     import { Badge, Divider, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
 
@@ -29,7 +29,7 @@
         .map(([factor, _]) => factor);
     $: enabledMethods = enabledFactors.filter((factor) => factor !== 'recoveryCode');
 
-    $: cleanUrl = $page.url.origin + $page.url.pathname;
+    $: cleanUrl = page.url.origin + page.url.pathname;
 
     let creatingVerification = false;
 
@@ -53,7 +53,7 @@
     }
 
     async function updateEmailVerification() {
-        const searchParams = $page.url.searchParams;
+        const searchParams = page.url.searchParams;
         const userId = searchParams.get('userId');
         const secret = searchParams.get('secret');
 

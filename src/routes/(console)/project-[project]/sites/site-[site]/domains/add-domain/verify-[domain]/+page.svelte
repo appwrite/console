@@ -9,24 +9,23 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isCloud } from '$lib/system';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Wizard from '$lib/layout/wizard.svelte';
     import { base } from '$app/paths';
     import { writable } from 'svelte/store';
 
     export let data;
 
-    const ruleId = $page.url.searchParams.get('rule');
+    const ruleId = page.url.searchParams.get('rule');
     let selectedTab: 'cname' | 'nameserver';
     let verified = false;
 
-    let routeBase = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
+    let routeBase = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
     let isSubmitting = writable(false);
 
     async function verify() {
         const isNewDomain =
-            data.domainsList.domains.findIndex((rule) => rule.domain === $page.params.domain) ===
-            -1;
+            data.domainsList.domains.findIndex((rule) => rule.domain === page.params.domain) === -1;
         try {
             if (selectedTab === 'cname') {
                 const ruleData = await sdk.forProject.proxy.updateRuleVerification(ruleId);
@@ -34,7 +33,7 @@
             } else if (isNewDomain && isCloud) {
                 const domainData = await sdk.forConsole.domains.create(
                     $organization.$id,
-                    $page.params.domain
+                    page.params.domain
                 );
                 verified = domainData.nameservers.toLocaleLowerCase() === 'appwrite';
             }
@@ -59,7 +58,7 @@
         if (ruleId) {
             await sdk.forProject.proxy.deleteRule(ruleId);
         }
-        await goto(`${routeBase}/add-domain?domain=${$page.params.domain}`);
+        await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
     }
 </script>
 
@@ -76,14 +75,14 @@
                         <Icon icon={IconGlobeAlt} color="--fgcolor-neutral-primary" />
 
                         <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
-                            {$page.params.domain}
+                            {page.params.domain}
                         </Typography.Text>
                     </Layout.Stack>
                     <Button secondary on:click={back}>Change</Button>
                 </Layout.Stack>
             </Card.Base>
 
-            <VerificationFieldset domain={$page.params.domain} {verified} bind:selectedTab>
+            <VerificationFieldset domain={page.params.domain} {verified} bind:selectedTab>
                 <Divider />
                 <Layout.Stack direction="row" justifyContent="flex-end">
                     <div>

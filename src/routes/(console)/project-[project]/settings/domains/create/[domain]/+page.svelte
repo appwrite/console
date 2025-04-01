@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import {
         Card,
@@ -59,7 +59,7 @@
 
 <Wizard
     title={data.domain.domain}
-    href={`${base}/project-${$page.params.project}/settings/domains/`}
+    href={`${base}/project-${page.params.project}/settings/domains/`}
     bind:showExitModal
     column>
     <Form {onSubmit} bind:isSubmitting>
@@ -70,7 +70,7 @@
                     <Button
                         secondary
                         size="s"
-                        href={`${base}/project-${$page.params.project}/settings/domains/create?domain=${data.domain.domain}&$id=${data.domain.$id}`}
+                        href={`${base}/project-${page.params.project}/settings/domains/create?domain=${data.domain.domain}&$id=${data.domain.$id}`}
                         >Change</Button>
                 </Layout.Stack>
             </Card.Base>
@@ -121,7 +121,7 @@
         <Button
             fullWidthMobile
             secondary
-            href={`${base}/project-${$page.params.project}/settings/domains`}>
+            href={`${base}/project-${page.params.project}/settings/domains`}>
             Go to Domains
         </Button>
     </svelte:fragment>

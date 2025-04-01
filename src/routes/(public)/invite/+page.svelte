@@ -5,7 +5,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { onMount } from 'svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Layout, Link, Typography, Alert } from '@appwrite.io/pink-svelte';
@@ -14,10 +14,10 @@
     let terms = false;
 
     onMount(() => {
-        userId = $page.url.searchParams.get('userId');
-        secret = $page.url.searchParams.get('secret');
-        teamId = $page.url.searchParams.get('teamId');
-        membershipId = $page.url.searchParams.get('membershipId');
+        userId = page.url.searchParams.get('userId');
+        secret = page.url.searchParams.get('secret');
+        teamId = page.url.searchParams.get('teamId');
+        membershipId = page.url.searchParams.get('membershipId');
     });
 
     const acceptInvite = async () => {

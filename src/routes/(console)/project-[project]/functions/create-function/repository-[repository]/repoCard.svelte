@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
@@ -19,7 +19,7 @@
         </Layout.Stack>
         <Button
             secondary
-            href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
+            href={`${base}/project-${page.params.project}/sites/create-site/repositories`}>
             Change
         </Button>
     </Layout.Stack>

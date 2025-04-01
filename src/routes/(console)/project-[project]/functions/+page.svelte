@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import {
         CardContainer,
@@ -32,16 +32,16 @@
 
     let offset = 0;
 
-    const project = $page.params.project;
+    const project = page.params.project;
 
     onMount(async () => {
-        const from = $page.url.searchParams.get('from');
+        const from = page.url.searchParams.get('from');
         if (from === 'github') {
-            const to = $page.url.searchParams.get('to');
+            const to = page.url.searchParams.get('to');
             switch (to) {
                 case 'template': {
-                    const template = $page.url.searchParams.get('template');
-                    const templateConfig = $page.url.searchParams.get('templateConfig');
+                    const template = page.url.searchParams.get('template');
+                    const templateConfig = page.url.searchParams.get('templateConfig');
                     goto(
                         `${base}/project-${project}/functions/create-function/template-${template}?templateConfig=${templateConfig}`
                     );
@@ -128,7 +128,7 @@
             total={data.functions.total} />
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="functions">
-            <Button secondary href={`${base}/project-${$page.params.project}/functions`}>
+            <Button secondary href={`${base}/project-${page.params.project}/functions`}>
                 Clear search
             </Button>
         </EmptySearch>

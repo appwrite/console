@@ -9,7 +9,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import DualTimeView from './dualTimeView.svelte';
     import {
         Layout,
@@ -355,7 +355,7 @@
                                 slot="actions"
                                 secondary
                                 external
-                                href={`${base}/project-${$page.params.project}/storage`}>
+                                href={`${base}/project-${page.params.project}/storage`}>
                                 Create bucket
                             </Button>
                         </Empty>

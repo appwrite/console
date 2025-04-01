@@ -5,7 +5,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import {
         AvatarInitials,
         Copy,
@@ -31,7 +31,7 @@
 
     export let data: PageData;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     const columns = writable<Column[]>([
         { id: '$id', title: 'User ID', type: 'string', width: 200 },
         { id: 'name', title: 'Name', type: 'string', width: { min: 260 } },

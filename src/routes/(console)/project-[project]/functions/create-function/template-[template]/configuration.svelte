@@ -13,7 +13,7 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import type { Component } from 'svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { project } from '$routes/(console)/project-[project]/store';
 
     export let variables: Partial<Models.TemplateVariable>[] = [];
@@ -37,8 +37,8 @@
             variable.value = getApiEndpoint();
             variable.placeholder = getApiEndpoint();
         } else if (variable.value === '{projectId}') {
-            variable.value = $page.params.project;
-            variable.placeholder = $page.params.project;
+            variable.value = page.params.project;
+            variable.placeholder = page.params.project;
         } else if (variable.value === '{projectName}') {
             variable.value = $project.name;
             variable.placeholder = $project.name;

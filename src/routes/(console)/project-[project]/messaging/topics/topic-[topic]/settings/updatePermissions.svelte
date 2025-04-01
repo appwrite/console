@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -12,7 +12,7 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { topic } from '../store';
 
-    const topicId = $page.params.topic;
+    const topicId = page.params.topic;
 
     let arePermsDisabled = true;
     let permissions: string[] = [];

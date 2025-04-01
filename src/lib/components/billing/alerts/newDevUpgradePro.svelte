@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -21,7 +21,7 @@
     }
 </script>
 
-{#if show && $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && !$page.url.pathname.includes('/console/account')}
+{#if show && $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && !page.url.pathname.includes('/console/account')}
     <GradientBanner on:close={handleClose}>
         <div class="u-flex u-gap-24 u-main-center u-cross-center u-flex-vertical-mobile">
             <span class="body-text-1">Get $50 Cloud credits for Appwrite Pro.</span>

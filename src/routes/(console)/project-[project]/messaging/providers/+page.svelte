@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         EmptySearch,
@@ -58,7 +58,7 @@
                 <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no providers that match your search.</p>
             </div>
-            <Button secondary href={`${base}/project-${$page.params.project}/messaging/providers`}>
+            <Button secondary href={`${base}/project-${page.params.project}/messaging/providers`}>
                 Clear search
             </Button>
         </EmptySearch>

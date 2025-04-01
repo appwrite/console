@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
     import { actionRequiredInvoices, hideBillingHeaderRoutes } from '$lib/stores/billing';
@@ -9,7 +9,7 @@
     const endpoint = getApiEndpoint();
 </script>
 
-{#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !hideBillingHeaderRoutes.includes($page.url.pathname)}
+{#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert title="Authorization required" type="error">
         Please authorize your upcoming payment for {$organization.name}. Your bank requires this
         security measure to proceed with payment.

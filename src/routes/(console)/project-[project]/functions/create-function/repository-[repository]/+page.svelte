@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
@@ -115,7 +115,7 @@
                 runtime: runtime
             });
 
-            await goto(`${base}/project-${$page.params.project}/functions/function-${func.$id}`);
+            await goto(`${base}/project-${page.params.project}/functions/function-${func.$id}`);
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
@@ -135,7 +135,7 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/functions`}
+    href={`${base}/project-${page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">

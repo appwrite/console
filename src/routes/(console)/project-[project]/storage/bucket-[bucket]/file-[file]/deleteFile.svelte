@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -15,7 +15,7 @@
         try {
             await sdk.forProject.storage.deleteFile($file.bucketId, $file.$id);
             showDelete = false;
-            await goto(`${base}/project-${$page.params.project}/storage/bucket-${$file.bucketId}`);
+            await goto(`${base}/project-${page.params.project}/storage/bucket-${$file.bucketId}`);
             addNotification({
                 type: 'success',
                 message: `${$file.name} has been deleted`

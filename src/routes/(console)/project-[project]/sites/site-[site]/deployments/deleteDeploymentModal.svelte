@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
@@ -23,9 +23,9 @@
                 selectedDeployment.$id
             );
             await invalidate(Dependencies.SITE);
-            if ($page.url.href.includes(`deployment-${selectedDeployment.$id}`)) {
+            if (page.url.href.includes(`deployment-${selectedDeployment.$id}`)) {
                 await goto(
-                    `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments`
+                    `${base}/project-${page.params.project}/sites/site-${page.params.site}/deployments`
                 );
             }
             showDelete = false;

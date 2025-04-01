@@ -6,7 +6,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Spinner } from '@appwrite.io/pink-svelte';
 
     export let show = false;
@@ -18,7 +18,7 @@
 
     async function handleSubmit() {
         try {
-            const card = await submitStripeCard(name, $page?.params?.organization ?? null);
+            const card = await submitStripeCard(name, page?.params?.organization ?? null);
             invalidate(Dependencies.PAYMENT_METHODS);
             dispatch('submit', card);
             show = false;

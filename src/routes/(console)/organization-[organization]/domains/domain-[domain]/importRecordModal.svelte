@@ -8,7 +8,7 @@
     import { removeFile } from '$lib/helpers/files';
     import { sdk } from '$lib/stores/sdk';
     import type { DnsRecord } from '$lib/sdk/domains';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     export let show = false;
     let files: FileList;
@@ -146,7 +146,7 @@
                     switch (type) {
                         case 'A':
                             await sdk.forConsole.domains.createRecordA(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.ttl,
@@ -155,7 +155,7 @@
                             break;
                         case 'AAAA':
                             await sdk.forConsole.domains.createRecordAAAA(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.ttl,
@@ -164,7 +164,7 @@
                             break;
                         case 'CNAME':
                             await sdk.forConsole.domains.createRecordCNAME(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.ttl,
@@ -173,7 +173,7 @@
                             break;
                         case 'MX':
                             await sdk.forConsole.domains.createRecordMX(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.priority || 10,
@@ -183,7 +183,7 @@
                             break;
                         case 'TXT':
                             await sdk.forConsole.domains.createRecordTXT(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.ttl,
@@ -192,7 +192,7 @@
                             break;
                         case 'NS':
                             await sdk.forConsole.domains.createRecordNS(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.ttl,
@@ -201,7 +201,7 @@
                             break;
                         case 'SRV':
                             await sdk.forConsole.domains.createRecordSRV(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.ttl,
@@ -213,7 +213,7 @@
                             break;
                         case 'CAA':
                             await sdk.forConsole.domains.createRecordCAA(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.ttl,
@@ -222,7 +222,7 @@
                             break;
                         case 'PTR':
                             await sdk.forConsole.domains.createRecordHTTPS(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.ttl,
@@ -231,7 +231,7 @@
                             break;
                         case 'ALIAS':
                             await sdk.forConsole.domains.createRecordAlias(
-                                $page.params.domain,
+                                page.params.domain,
                                 record.name,
                                 record.value,
                                 record.ttl,

@@ -11,7 +11,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { project } from '$routes/(console)/project-[project]/store';
     import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { targetsById } from '../../store';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
@@ -31,7 +31,7 @@
         showDelete = false;
 
         async function deleteSubscriber(subscriberId: string) {
-            await sdk.forProject.messaging.deleteSubscriber($page.params.topic, subscriberId);
+            await sdk.forProject.messaging.deleteSubscriber(page.params.topic, subscriberId);
             const { target } = subscribers[subscriberId];
             const { [target.$id]: _, ...rest } = $targetsById;
             $targetsById = rest;

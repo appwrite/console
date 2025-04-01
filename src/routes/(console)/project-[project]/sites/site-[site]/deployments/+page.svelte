@@ -19,7 +19,7 @@
     import { Dependencies } from '$lib/constants';
     import CreateCliModal from './createCliModal.svelte';
     import { ParsedTagList, QuickFilters } from '$lib/components/filters';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     export let data;
 
@@ -32,7 +32,7 @@
     let showConnectManual = false;
 
     onMount(() => {
-        if ($page.url.searchParams.has('createDeployment')) {
+        if (page.url.searchParams.has('createDeployment')) {
             showConnectRepo = true;
         }
 

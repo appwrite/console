@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Menu } from '$lib/components/menu';
     import SubMenu from '$lib/components/menu/subMenu.svelte';
     import { Button } from '$lib/elements/forms';
@@ -28,7 +28,7 @@
     function getOutputDownload(deploymentId: string) {
         return (
             sdk.forProject.sites.getDeploymentDownload(
-                $page.params.site,
+                page.params.site,
                 deploymentId.toString(),
                 DeploymentDownloadType.Output
             ) + '&mode=admin'
@@ -37,7 +37,7 @@
     function getSourceDownload(deploymentId: string) {
         return (
             sdk.forProject.sites.getDeploymentDownload(
-                $page.params.site,
+                page.params.site,
                 deploymentId.toString(),
                 DeploymentDownloadType.Source
             ) + '&mode=admin'

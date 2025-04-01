@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -28,7 +28,7 @@
 
     export let data: PageData;
 
-    const project = $page.params.project;
+    const project = page.params.project;
     const columns = writable<Column[]>([
         { id: '$id', title: 'Topic ID', type: 'string', width: 200 },
         { id: 'name', title: 'Name', type: 'string', width: { min: 140 } },
@@ -106,7 +106,7 @@
                 <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no topics that match your search.</p>
             </div>
-            <Button secondary href={`${base}/project-${$page.params.project}/messaging/topics`}>
+            <Button secondary href={`${base}/project-${page.params.project}/messaging/topics`}>
                 Clear Search
             </Button>
         </EmptySearch>

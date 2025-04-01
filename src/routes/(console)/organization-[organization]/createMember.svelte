@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Modal } from '$lib/components';
     import { InputText, InputEmail, Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -35,7 +35,7 @@
                 email,
                 undefined,
                 undefined,
-                `${$page.url.origin}${base}/invite`,
+                `${page.url.origin}${base}/invite`,
                 name || undefined
             );
             await invalidate(Dependencies.ACCOUNT);

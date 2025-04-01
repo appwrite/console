@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page as pageStore } from '$app/stores';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent } from '$lib/actions/analytics';
@@ -65,7 +65,7 @@
     }
 
     onMount(() => {
-        return page.subscribe(($page) => {
+        return pageStore.subscribe(($page) => {
             const url = new URL($page.url);
             const sessionId = url.searchParams.get('sessionId');
             if (sessionId) {

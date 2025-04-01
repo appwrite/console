@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button, Form, InputDomain, InputSelect, InputURL } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -18,7 +18,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
 
-    const routeBase = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
+    const routeBase = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
 
     export let data;
 
@@ -35,13 +35,13 @@
 
     onMount(() => {
         if (
-            $page.url.searchParams.has('connectRepo') &&
-            $page.url.searchParams.get('connectRepo') === 'true'
+            page.url.searchParams.has('connectRepo') &&
+            page.url.searchParams.get('connectRepo') === 'true'
         ) {
             showConnectRepo = true;
         }
-        if ($page.url.searchParams.has('domain')) {
-            domainName = $page.url.searchParams.get('domain');
+        if (page.url.searchParams.has('domain')) {
+            domainName = page.url.searchParams.get('domain');
         }
     });
 
@@ -51,7 +51,7 @@
             if (behaviour === 'BRANCH') {
                 rule = await sdk.forProject.proxy.createSiteRule(
                     domainName,
-                    $page.params.site,
+                    page.params.site,
                     branch
                 );
             } else if (behaviour === 'REDIRECT') {
@@ -62,7 +62,7 @@
                     sc
                 );
             } else if (behaviour === 'ACTIVE') {
-                rule = await sdk.forProject.proxy.createSiteRule(domainName, $page.params.site);
+                rule = await sdk.forProject.proxy.createSiteRule(domainName, page.params.site);
             }
             if (rule?.status === 'verified') {
                 await goto(routeBase);

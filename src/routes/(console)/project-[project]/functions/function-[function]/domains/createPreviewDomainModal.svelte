@@ -7,7 +7,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { consoleVariables } from '$routes/(console)/store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Layout, Status, Typography } from '@appwrite.io/pink-svelte';
     import { ConsoleResourceType, ID } from '@appwrite.io/console';
     import { debounce } from '$lib/helpers/debounce';
@@ -23,7 +23,7 @@
         try {
             await sdk.forProject.proxy.createFunctionRule(
                 `${domain}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
-                $page.params.function
+                page.params.function
             );
 
             await invalidate(Dependencies.FUNCTION_DOMAINS);

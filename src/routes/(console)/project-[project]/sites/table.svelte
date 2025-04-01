@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { Avatar, Icon, Layout, Popover, Table, Typography } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
@@ -33,7 +33,7 @@
     {#each siteList.sites as site}
         <Table.Row.Link
             {root}
-            href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}>
+            href={`${base}/project-${page.params.project}/sites/site-${site.$id}`}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'name'}
@@ -69,7 +69,7 @@
                                         Last deployment failed {timeFromNow(
                                             site.latestDeploymentCreatedAt
                                         )}. <Link
-                                            href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
+                                            href={`${base}/project-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
                                             View logs
                                         </Link>
                                     </Typography.Text>

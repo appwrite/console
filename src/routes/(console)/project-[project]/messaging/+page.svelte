@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import {
         Empty,
         EmptyFilter,
@@ -55,7 +55,7 @@
         { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', width: { min: 120 } }
     ]);
 
-    const project = $page.params.project;
+    const project = page.params.project;
 
     async function handleDelete() {
         showDelete = false;
@@ -193,7 +193,7 @@
                 <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
                     Documentation
                 </Button>
-                <Button secondary href={`${base}/project-${$page.params.project}/messaging`}>
+                <Button secondary href={`${base}/project-${page.params.project}/messaging`}>
                     Clear search
                 </Button>
             </div>

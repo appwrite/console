@@ -7,7 +7,7 @@
     import { timer } from '$lib/actions/timer';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { func } from './store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Activate from './(modals)/activateModal.svelte';
     import RedeployModal from './(modals)/redeployModal.svelte';
     import { invalidate } from '$app/navigation';
@@ -58,7 +58,7 @@
     {#each data.deploymentList.deployments as deployment (deployment.$id)}
         <Table.Row.Link
             {root}
-            href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
+            href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/deployment-${deployment.$id}`}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

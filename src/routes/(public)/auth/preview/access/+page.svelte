@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import Modal from '$lib/components/modal.svelte';
@@ -78,13 +78,13 @@
     function onGithubAuth() {
         let url = window.location.origin;
 
-        if ($page.url.searchParams) {
-            const redirect = $page.url.searchParams.get('redirect');
-            $page.url.searchParams.delete('redirect');
+        if (page.url.searchParams) {
+            const redirect = page.url.searchParams.get('redirect');
+            page.url.searchParams.delete('redirect');
             if (redirect) {
-                url = `${redirect}${$page.url.search}`;
+                url = `${redirect}${page.url.search}`;
             } else {
-                url = `${base}${$page.url.search ?? ''}`;
+                url = `${base}${page.url.search ?? ''}`;
             }
         }
         sdk.forConsole.account.createOAuth2Session(

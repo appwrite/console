@@ -4,7 +4,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID, Region as ConsoleRegion } from '@appwrite.io/console';
     import { createProject } from './wizard/store';
@@ -14,7 +14,7 @@
     import { Modal } from '$lib/components';
     import type { Region } from '$lib/sdk/billing';
 
-    const teamId = $page.params.organization;
+    const teamId = page.params.organization;
     export let regions: Array<Region> = [];
     export let showCreateProjectCloud: boolean;
 

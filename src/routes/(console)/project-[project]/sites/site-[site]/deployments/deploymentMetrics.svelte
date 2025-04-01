@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { SiteUsageRange } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { UsageCard } from '$lib/components';
 
     const now = new Date();
@@ -61,7 +61,7 @@
             metrics = metrics;
 
             try {
-                const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
+                const usage = await sdk.forProject.sites.getUsage(page.params.site, range);
                 metrics = metrics.map((metric) => {
                     metric.value = usage[metric.id] ?? '-';
                     return metric;

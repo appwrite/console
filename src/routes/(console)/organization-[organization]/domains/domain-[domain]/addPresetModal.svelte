@@ -6,7 +6,7 @@
     import { Skeleton, Table } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import type { DnsRecordsList } from '$lib/sdk/domains';
     import { presets } from './store';
     import { invalidate } from '$app/navigation';
@@ -19,17 +19,17 @@
     async function fetchPreset() {
         switch (selectedPreset.toLowerCase()) {
             case 'zoho':
-                return await sdk.forConsole.domains.getPresetZoho($page.params.domain);
+                return await sdk.forConsole.domains.getPresetZoho(page.params.domain);
             case 'mailgun':
-                return await sdk.forConsole.domains.getPresetMailgun($page.params.domain);
+                return await sdk.forConsole.domains.getPresetMailgun(page.params.domain);
             case 'outlook':
-                return await sdk.forConsole.domains.getPresetOutlook($page.params.domain);
+                return await sdk.forConsole.domains.getPresetOutlook(page.params.domain);
             case 'proton mail':
-                return await sdk.forConsole.domains.getPresetProtonMail($page.params.domain);
+                return await sdk.forConsole.domains.getPresetProtonMail(page.params.domain);
             case 'icloud':
-                return await sdk.forConsole.domains.getPresetICloud($page.params.domain);
+                return await sdk.forConsole.domains.getPresetICloud(page.params.domain);
             case 'google workspace':
-                return await sdk.forConsole.domains.getPresetGoogleWorkspace($page.params.domain);
+                return await sdk.forConsole.domains.getPresetGoogleWorkspace(page.params.domain);
         }
     }
 
@@ -39,7 +39,7 @@
             if (records.total) {
                 const promises = records.dnsRecords.map((record) =>
                     sdk.forConsole.domains.createRecordMX(
-                        $page.params.domain,
+                        page.params.domain,
                         record.name,
                         record.value,
                         record.ttl,

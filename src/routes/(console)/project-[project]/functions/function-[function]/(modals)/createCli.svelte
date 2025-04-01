@@ -2,7 +2,7 @@
     import { Button } from '$lib/elements/forms';
     import { Modal } from '$lib/components';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { func } from '../store';
     import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
 
@@ -13,7 +13,7 @@
     let os = 'unknown';
     let category = 'Unix';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
 
     onMount(() => {
         lang = setLanguage($func.runtime);

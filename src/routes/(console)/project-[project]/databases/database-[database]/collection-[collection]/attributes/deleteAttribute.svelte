@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { collection } from '../store';
@@ -14,7 +14,7 @@
 
     export let showDelete = false;
     export let selectedAttribute: Attributes;
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
     let checked = false;
     let error: string;
     async function handleDelete() {
@@ -32,7 +32,7 @@
             });
             trackEvent(Submit.AttributeDelete);
             await goto(
-                `${base}/project-${$page.params.project}/databases/database-${databaseId}/collection-${$page.params.collection}/attributes`
+                `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${page.params.collection}/attributes`
             );
         } catch (e) {
             error = e.message;

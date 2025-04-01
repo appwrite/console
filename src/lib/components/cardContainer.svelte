@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Empty } from '$lib/components';
     import { CARD_LIMIT } from '$lib/constants';
     import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
@@ -16,7 +16,7 @@
 
     $: planLimit = getServiceLimit(serviceId) || Infinity;
 
-    $: limit = preferences.get($page.route)?.limit ?? CARD_LIMIT;
+    $: limit = preferences.get(page.route)?.limit ?? CARD_LIMIT;
 </script>
 
 <ul class="grid-box" style={`--grid-item-size:${total > 3 ? '22rem' : '25rem'};`} data-private>

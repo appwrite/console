@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { EmptyFilter, EmptySearch, SearchQuery, SvgIcon } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ContainerButton } from '$lib/layout';
@@ -29,7 +29,7 @@
     export let data;
 
     function applyFilter(filter: string, value: string, event: CustomEvent) {
-        const target = new URL($page.url);
+        const target = new URL(page.url);
         if (event?.detail) {
             if (
                 !target.searchParams
@@ -50,7 +50,7 @@
     }
 
     function clearSearch() {
-        const target = new URL($page.url);
+        const target = new URL(page.url);
         target.search = '';
         goto(target.toString());
     }
@@ -68,7 +68,7 @@
     }
 
     $: isChecked = (useCase: string) => {
-        return $page.url.searchParams
+        return page.url.searchParams
             .getAll('useCase')
             .some((param) => param.toLowerCase() === useCase.toLowerCase());
     };
@@ -113,7 +113,7 @@
                                     id={runtime}
                                     size="s"
                                     label={runtime?.split('-')?.join(' ')}
-                                    checked={$page.url.searchParams
+                                    checked={page.url.searchParams
                                         .getAll('runtime')
                                         .includes(runtime)}
                                     on:change={(e) => applyFilter('runtime', runtime, e)} />
@@ -192,7 +192,7 @@
                                         alignItems="center"
                                         inline>
                                         <Button
-                                            href={`${base}/project-${$page.params.project}/functions/templates/template-${template.id}`}
+                                            href={`${base}/project-${page.params.project}/functions/templates/template-${template.id}`}
                                             text>
                                             <span class="text">Details</span>
                                         </Button>
@@ -201,7 +201,7 @@
                                                 title="functions"
                                                 disabled={buttonDisabled}
                                                 buttonType="secondary"
-                                                buttonHref={`${base}/project-${$page.params.project}/functions/create-function/template-${template.id}`}
+                                                buttonHref={`${base}/project-${page.params.project}/functions/create-function/template-${template.id}`}
                                                 showIcon={false}
                                                 buttonText="Create"
                                                 buttonEventData={{

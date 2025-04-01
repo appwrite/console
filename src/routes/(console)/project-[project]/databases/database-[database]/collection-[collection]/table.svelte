@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, Id, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -28,9 +28,9 @@
 
     export let data: PageData;
 
-    const projectId = $page.params.project;
-    const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
+    const projectId = page.params.project;
+    const databaseId = page.params.database;
+    const collectionId = page.params.collection;
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
     let relationshipData: [];
@@ -93,7 +93,7 @@
         };
     }
 
-    $: selected = preferences.getCustomCollectionColumns($page.params.collection);
+    $: selected = preferences.getCustomCollectionColumns(page.params.collection);
 
     $: {
         columns.set(

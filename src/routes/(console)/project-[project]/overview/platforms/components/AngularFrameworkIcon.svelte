@@ -2,4 +2,4 @@
     import { SvgIcon } from '$lib/components';
 </script>
 
-<SvgIcon name="angular" type="color" iconSize="" />
+<SvgIcon name="angular" type="color" />

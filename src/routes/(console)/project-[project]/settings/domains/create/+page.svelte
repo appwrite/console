@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -28,7 +28,7 @@
             const value = await sdk.forProject.proxy.createAPIRule(domain);
 
             trackEvent(Submit.DomainCreate);
-            goto(`${base}/project-${$page.params.project}/settings/domains/create/${value.$id}`);
+            goto(`${base}/project-${page.params.project}/settings/domains/create/${value.$id}`);
         } catch (e) {
             trackError(e.message, Submit.DomainCreate);
             throw new Error(e.message);
@@ -38,7 +38,7 @@
 
 <Wizard
     title="Create custom domain"
-    href={`${base}/project-${$page.params.project}/settings/domains`}
+    href={`${base}/project-${page.params.project}/settings/domains`}
     bind:showExitModal
     column
     hideFooter
