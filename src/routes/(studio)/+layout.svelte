@@ -8,8 +8,10 @@
     import { organization, organizationList } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
     import SidebarOrganization from '$lib/components/studio/sidebarOrganization.svelte';
+    import SidebarProject from '$lib/components/studio/sidebarProject.svelte';
 
-    const hasProjectSidebar = $page.url.pathname.startsWith('/studio/proj');
+    $: hasProjectSidebar = $page.url.pathname.startsWith('/studio/proj');
+    $: console.log('hasProjectSidebar', hasProjectSidebar);
 
     $: loadedProjects = $page.data.projects.map((project) => {
         return {
@@ -28,10 +30,12 @@
             $id: org.$id,
             showUpgrade: billingPlan === BillingPlan.FREE,
             tierName: isCloud ? tierToPlan(billingPlan).name : null,
-            isSelected: $organization?.$id === org.$id,
+            isSelected: $page.data.currentOrganization?.$id === org.$id,
             projects: loadedProjects
         };
     });
+
+    $: console.log('organizations', organizations);
 </script>
 
 <main>
@@ -43,7 +47,11 @@
             </Layout.Stack>
         </header>
         <div class="studio-content" class:project-sidebar={hasProjectSidebar}><slot /></div>
-        <SidebarOrganization organization={$page.data.currentOrganization} />
+        {#if hasProjectSidebar}
+            <SidebarProject />
+        {:else}
+            <SidebarOrganization organization={$page.data.currentOrganization} />
+        {/if}
     </Layout.Stack>
 </main>
 
@@ -67,8 +75,9 @@
         margin-left: 200px;
         padding-right: var(--space-4);
 
-        &.hasProjectSidebar {
-            background-color: red;
+        &.project-sidebar {
+            width: calc(100vw - 52px);
+            margin-left: 52px;
         }
     }
 </style>

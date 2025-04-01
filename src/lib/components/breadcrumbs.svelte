@@ -9,7 +9,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isStudio } from '$lib/system';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { newOrgModal } from '$lib/stores/organization';
@@ -185,7 +185,9 @@
 <svelte:window on:resize={onResize} />
 <div use:melt={$menubar}>
     {#if !$isSmallViewport}
-        <span class="breadcrumb-separator">/</span>
+        {#if !isStudio}
+            <span class="breadcrumb-separator">/</span>
+        {/if}
         <button
             type="button"
             class="trigger"
