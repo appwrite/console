@@ -33,6 +33,7 @@
         "cron-parser": "^4.9.0",
         "dayjs": "^1.11.13",
         "deep-equal": "^2.2.3",
+        "dotenv": "^16.4.7",
         "echarts": "^5.6.0",
         "envfile": "^7.1.0",
         "ignore": "^6.0.2",
@@ -47,6 +48,7 @@
     },
     "devDependencies": {
         "@eslint/compat": "^1.2.7",
+        "@eslint/js": "^9.23.0",
         "@melt-ui/pp": "^0.3.2",
         "@melt-ui/svelte": "^0.86.5",
         "@playwright/test": "^1.51.1",

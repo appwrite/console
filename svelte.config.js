@@ -1,6 +1,9 @@
 import adapter from '@sveltejs/adapter-static';
 import { sveltePreprocess } from 'svelte-preprocess';
 import { preprocessMeltUI, sequence } from '@melt-ui/pp';
+import 'dotenv/config';
+
+const projectProfile = process.env.PUBLIC_PROJECT_PROFILE || 'console';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -26,7 +29,7 @@ const config = {
             precompress: true
         }),
         paths: {
-            base: '/console'
+            base: `/${projectProfile}`
         }
     },
     vitePlugin: {

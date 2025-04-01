@@ -149,14 +149,14 @@
     {#each preloadFonts as font}
         <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
     {/each}
-    <link rel="preload" as="style" type="text/css" href="/console/fonts/main.css" />
+    <link rel="preload" as="style" type="text/css" href={`${base}/fonts/main.css`} />
     <link rel="stylesheet" href={`${base}/fonts/main.css`} />
 
     {#if isCloud}
         {#each preloadFontsCloud as font}
             <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
         {/each}
-        <link rel="preload" as="style" type="text/css" href="/console/fonts/cloud.css" />
+        <link rel="preload" as="style" type="text/css" href={`${base}/fonts/cloud.css`} />
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
     {/if}
 </svelte:head>
