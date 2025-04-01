@@ -125,6 +125,6 @@
 {#if teamId}
     <Transfer
         bind:teamId
-        teamName={$organizationList.teams.find((t) => t.$id == teamId).name}
+        teamName={$organizationList.teams.find((t) => t.$id === teamId).name}
         bind:show={showTransfer} />
 {/if}

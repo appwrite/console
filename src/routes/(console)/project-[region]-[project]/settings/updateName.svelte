@@ -48,8 +48,8 @@
         </p>
         <svelte:fragment slot="aside">
             <FormList>
-                <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
                 <CopyInput label="API Endpoint" showLabel={true} value={getProjectEndpoint()} />
+                <CopyInput label="Project ID" showLabel={true} value={$project.$id} />
             </FormList>
         </svelte:fragment>
         <svelte:fragment slot="actions">

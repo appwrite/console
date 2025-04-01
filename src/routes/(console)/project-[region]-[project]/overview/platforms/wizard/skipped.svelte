@@ -57,8 +57,8 @@
             project's API Endpoint and Project ID:
         </p>
 
+        <CopyInput label="API Endpoint" showLabel={true} value={getProjectEndpoint()} />
         <CopyInput label="Project ID" showLabel={true} value={project} />
-        <CopyInput label="Endpoint" showLabel={true} value={getProjectEndpoint()} />
     </FormList>
 
     <svelte:fragment slot="footer">
