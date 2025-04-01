@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -17,7 +17,7 @@
     import Link from '$lib/elements/link.svelte';
 
     export let runtimesList: Models.RuntimeList;
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     let runtime: string = $func.runtime;
     let entrypoint = $func.entrypoint;
 

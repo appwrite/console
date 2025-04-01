@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -15,7 +15,7 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { Link } from '$lib/elements';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     let functionScopes: string[] = null;
 
     onMount(async () => {

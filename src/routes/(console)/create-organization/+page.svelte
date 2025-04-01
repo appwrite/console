@@ -1,7 +1,7 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate, preloadData } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
         EstimatedTotalBox,
@@ -84,7 +84,7 @@
                             collaborator,
                             undefined,
                             undefined,
-                            `${$page.url.origin}${base}/invite`
+                            `${page.url.origin}${base}/invite`
                         );
                     });
                 }

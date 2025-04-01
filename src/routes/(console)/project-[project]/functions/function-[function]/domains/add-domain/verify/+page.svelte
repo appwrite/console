@@ -16,12 +16,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Link } from '$lib/elements';
     import { consoleVariables } from '$routes/(console)/store';
 
-    const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
+    const backPage = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
 
     let nameservers = $consoleVariables?._APP_DOMAINS_NAMESERVERS
         ? $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',')

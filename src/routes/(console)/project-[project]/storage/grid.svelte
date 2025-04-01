@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { Badge, Tooltip } from '@appwrite.io/pink-svelte';
@@ -9,7 +9,7 @@
     export let data: PageData;
     export let showCreate = false;
 
-    const project = $page.params.project;
+    const project = page.params.project;
 </script>
 
 <CardContainer

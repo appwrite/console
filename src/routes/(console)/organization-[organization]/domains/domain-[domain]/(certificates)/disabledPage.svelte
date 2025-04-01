@@ -17,7 +17,7 @@
     } from '@appwrite.io/pink-svelte';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import CertificateInfoModal from './certificateInfoModal.svelte';
     import DeleteCertificateModal from './deleteCertificateModal.svelte';
 
@@ -142,7 +142,7 @@
             <svelte:fragment slot="actions">
                 <Button
                     secondary
-                    href={`${base}/organization-${$page.params.organization}/domains/domain-${$page.params.domain}/certificates`}>
+                    href={`${base}/organization-${page.params.organization}/domains/domain-${page.params.domain}/certificates`}>
                     Clear search
                 </Button>
             </svelte:fragment>

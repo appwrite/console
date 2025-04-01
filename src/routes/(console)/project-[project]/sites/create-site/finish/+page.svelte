@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Layout, Typography, Icon, Lights, Step, Card } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
@@ -24,15 +24,15 @@
 
     onMount(() => {
         if (
-            $page.url.searchParams.has('connectRepo') &&
-            $page.url.searchParams.get('connectRepo') === 'true'
+            page.url.searchParams.has('connectRepo') &&
+            page.url.searchParams.get('connectRepo') === 'true'
         ) {
             showConnectRepositry = true;
         }
     });
 </script>
 
-<Wizard column href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
+<Wizard column href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}`}>
     <!-- Creating a new stack -->
     <div style:position="relative" style="z-index: 6;">
         <Layout.Stack gap="xxxl">
@@ -97,7 +97,7 @@
                                         source: 'sites_create_finish'
                                     });
                                 }}
-                                href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}/domains`}>
+                                href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}/domains`}>
                                 <Layout.Stack gap="s" style="height: 100%">
                                     <Layout.Stack
                                         direction="row"
@@ -167,7 +167,7 @@
             size="s"
             fullWidthMobile
             secondary
-            href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
+            href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}`}>
             Go to dashboard
         </Button>
     </svelte:fragment>

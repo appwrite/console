@@ -9,7 +9,7 @@
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     export let show = false;
     export let selectedDeployment: Models.Deployment = null;
@@ -33,7 +33,7 @@
             invalidate(Dependencies.DEPLOYMENTS);
             if (redirect) {
                 goto(
-                    `${base}/project-${$page.params.project}/functions/function-${$func.$id}/deployments/deployment-${deployment.$id}`
+                    `${base}/project-${page.params.project}/functions/function-${$func.$id}/deployments/deployment-${deployment.$id}`
                 );
             }
             show = false;

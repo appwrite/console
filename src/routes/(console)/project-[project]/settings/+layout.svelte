@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { canWriteProjects } from '$lib/stores/roles';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -10,9 +10,9 @@
         {
             label: 'Create webhook',
             icon: IconPlus,
-            keys: $page.url.pathname.includes('webhooks') ? ['c'] : ['c', 'w'],
+            keys: page.url.pathname.includes('webhooks') ? ['c'] : ['c', 'w'],
             callback: () => {
-                goto(`${base}/project-${$page.params.project}/settings/webhooks/create`);
+                goto(`${base}/project-${page.params.project}/settings/webhooks/create`);
             },
             group: 'webhooks',
             disabled: !$canWriteProjects

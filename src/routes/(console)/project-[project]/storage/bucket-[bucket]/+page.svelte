@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Avatar, Empty, EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -29,8 +29,8 @@
     let showDelete = false;
     let selectedFile: Models.File = null;
 
-    const projectId = $page.params.project;
-    const bucketId = $page.params.bucket;
+    const projectId = page.params.project;
+    const bucketId = page.params.bucket;
 
     function getPreview(fileId: string) {
         return (
@@ -92,7 +92,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button
-                href={`${base}/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/create`}
+                href={`${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}/create`}
                 event="create_file"
                 size="s">
                 <Icon icon={IconPlus} slot="start" size="s" />
@@ -209,7 +209,7 @@
                 </Button>
                 <Button
                     secondary
-                    href={`${base}/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}>
+                    href={`${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}`}>
                     Clear Search
                 </Button>
             </div>

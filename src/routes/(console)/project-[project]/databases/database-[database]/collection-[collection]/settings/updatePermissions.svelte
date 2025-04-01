@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
@@ -13,7 +13,7 @@
     import { collection } from '../store';
     import { Link } from '@appwrite.io/pink-svelte';
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
     let arePermsDisabled = true;
 

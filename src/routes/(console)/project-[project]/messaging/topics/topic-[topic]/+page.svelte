@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -43,7 +43,7 @@
 
     onMount(() => {
         $targetsById = {};
-        for (const subscriber of $page.data.subscribers.subscribers) {
+        for (const subscriber of page.data.subscribers.subscribers) {
             const { target } = subscriber;
             $targetsById[target.$id] = target;
             subscribersByTargetId[target.$id] = subscriber;
@@ -59,7 +59,7 @@
         );
         const promises = targetIds.map(async (targetId) => {
             const subscriber = await sdk.forProject.messaging.createSubscriber(
-                $page.params.topic,
+                page.params.topic,
                 ID.unique(),
                 targetId
             );
@@ -144,7 +144,7 @@
             </div>
             <Button
                 secondary
-                href={`${base}/project-${$page.params.project}/messaging/topics/topic-${$page.params.topic}/subscribers`}>
+                href={`${base}/project-${page.params.project}/messaging/topics/topic-${page.params.topic}/subscribers`}>
                 Clear Search
             </Button>
         </EmptySearch>

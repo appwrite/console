@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     import Code from '$lib/components/code.svelte';
     import Modal from '$lib/components/modal.svelte';
@@ -11,7 +11,7 @@
     export let webhook: Models.Webhook;
     export let showUpdateButton: boolean = true;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     $: webhookPath = webhook
         ? `${base}/project-${projectId}/settings/webhooks/` + (webhook['$id'] ?? '')

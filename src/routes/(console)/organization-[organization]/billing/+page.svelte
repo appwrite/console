@@ -12,7 +12,7 @@
     import { failedInvoice, paymentMethods, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { confirmPayment } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -33,18 +33,18 @@
     );
 
     onMount(async () => {
-        if ($page.url.searchParams.has('type')) {
-            if ($page.url.searchParams.get('type') === 'upgrade') {
+        if (page.url.searchParams.has('type')) {
+            if (page.url.searchParams.get('type') === 'upgrade') {
                 goto($upgradeURL);
             }
 
             if (
-                $page.url.searchParams.has('invoice') &&
-                $page.url.searchParams.get('type') === 'confirmation'
+                page.url.searchParams.has('invoice') &&
+                page.url.searchParams.get('type') === 'confirmation'
             ) {
-                const invoiceId = $page.url.searchParams.get('invoice');
+                const invoiceId = page.url.searchParams.get('invoice');
                 const invoice = await sdk.forConsole.billing.getInvoice(
-                    $page.params.organization,
+                    page.params.organization,
                     invoiceId
                 );
 
@@ -56,20 +56,20 @@
             }
 
             if (
-                $page.url.searchParams.has('invoice') &&
-                $page.url.searchParams.get('type') === 'retry'
+                page.url.searchParams.has('invoice') &&
+                page.url.searchParams.get('type') === 'retry'
             ) {
-                const invoiceId = $page.url.searchParams.get('invoice');
+                const invoiceId = page.url.searchParams.get('invoice');
                 const invoice = await sdk.forConsole.billing.getInvoice(
-                    $page.params.organization,
+                    page.params.organization,
                     invoiceId
                 );
                 selectedInvoice.set(invoice);
                 showRetryModal.set(true);
             }
         }
-        if ($page.url.searchParams.has('clientSecret')) {
-            const clientSecret = $page.url.searchParams.get('clientSecret');
+        if (page.url.searchParams.has('clientSecret')) {
+            const clientSecret = page.url.searchParams.get('clientSecret');
             await confirmPayment($organization.$id, clientSecret, $organization.paymentMethodId);
         }
     });

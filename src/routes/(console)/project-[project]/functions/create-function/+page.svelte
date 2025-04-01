@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { SvgIcon } from '$lib/components';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import { isSelfHosted } from '$lib/system';
@@ -27,7 +27,7 @@
     export let data;
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
-    const wizardBase = `${base}/project-${$page.params.project}/functions`;
+    const wizardBase = `${base}/project-${page.params.project}/functions`;
     let previousPage: string = wizardBase;
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;

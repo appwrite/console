@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -36,7 +36,7 @@
                 message: notificationMessage
             });
             trackEvent(Submit.MessagingMessageDelete);
-            await goto(`${base}/project-${$page.params.project}/messaging`);
+            await goto(`${base}/project-${page.params.project}/messaging`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.MessagingMessageDelete);

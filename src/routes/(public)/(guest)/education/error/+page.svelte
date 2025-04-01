@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { base } from '$app/paths';
 
-    $: message = $page.url.searchParams.get('message');
-    $: code = parseInt($page.url.searchParams.get('code'));
+    $: message = page.url.searchParams.get('message');
+    $: code = parseInt(page.url.searchParams.get('code'));
 
     const getErrorTitle = () => {
         if (code == 403) {

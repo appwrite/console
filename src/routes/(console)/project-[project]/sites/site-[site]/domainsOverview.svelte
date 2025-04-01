@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Badge, Divider, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import OpenOnMobileModal from '../(components)/openOnMobileModal.svelte';
     import { timeFromNow } from '$lib/helpers/date';
@@ -31,7 +31,7 @@
         </Layout.Stack>
         <Button
             secondary
-            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`}>
+            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`}>
             View all
         </Button>
     </Layout.Stack>
@@ -57,7 +57,7 @@
                                     source: 'sites_domain_overview'
                                 });
                             }}
-                            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
+                            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}>
                             Add domain
                         </Button>
                     </div>

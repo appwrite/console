@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -20,7 +20,7 @@
     import { StatusCode } from '@appwrite.io/console';
     import ConnectRepoModal from '../../(modals)/connectRepoModal.svelte';
 
-    const backPage = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/domains`;
+    const backPage = `${base}/project-${page.params.project}/functions/function-${page.params.function}/domains`;
 
     export let data;
 
@@ -66,8 +66,8 @@
 
     onMount(() => {
         if (
-            $page.url.searchParams.has('connectRepo') &&
-            $page.url.searchParams.get('connectRepo') === 'true'
+            page.url.searchParams.has('connectRepo') &&
+            page.url.searchParams.get('connectRepo') === 'true'
         ) {
             showConnectRepo = true;
         }
@@ -83,7 +83,7 @@
                     //Redirect if subdomain so user can choose how to proceed
                     if (isSubDomain) {
                         goto(
-                            `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/domains/add-domain/verify?domain=${domain}`
+                            `${base}/project-${page.params.project}/functions/function-${page.params.function}/domains/add-domain/verify?domain=${domain}`
                         );
                     }
                     //Create domain if it's a new domain
@@ -94,11 +94,11 @@
                         );
                         await sdk.forProject.proxy.createFunctionRule(
                             domain,
-                            $page.params.function,
+                            page.params.function,
                             branch
                         );
                         goto(
-                            `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/domains/add-domain/verify-${domainData.$id}}`
+                            `${base}/project-${page.params.project}/functions/function-${page.params.function}/domains/add-domain/verify-${domainData.$id}}`
                         );
                     }
                 }
@@ -106,7 +106,7 @@
                 else {
                     await sdk.forProject.proxy.createFunctionRule(
                         domain,
-                        $page.params.function,
+                        page.params.function,
                         branch
                     );
                     addNotification({
@@ -121,7 +121,7 @@
                     //Redirect if subdomain so user can choose how to proceed
                     if (isSubDomain) {
                         goto(
-                            `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/domains/add-domain/verify?domain=${domain}?redirect=${redirect}?statusCode=${statusCode}`
+                            `${base}/project-${page.params.project}/functions/function-${page.params.function}/domains/add-domain/verify?domain=${domain}?redirect=${redirect}?statusCode=${statusCode}`
                         );
                     }
                     //Create domain if it's a new domain
@@ -136,7 +136,7 @@
                         await sdk.forProject.proxy.createRedirectRule(domain, redirect, sc);
 
                         goto(
-                            `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/domains/add-domain/verify-${domainData.$id}}`
+                            `${base}/project-${page.params.project}/functions/function-${page.params.function}/domains/add-domain/verify-${domainData.$id}}`
                         );
                     }
                 }

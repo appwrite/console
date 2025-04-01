@@ -28,7 +28,7 @@
         IconRefresh,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { base } from '$app/paths';
 
     export let search: string = null;
@@ -62,7 +62,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button
-                href={`${base}/project-${$page.params.project}/settings/domains/create`}
+                href={`${base}/project-${page.params.project}/settings/domains/create`}
                 event="create_user"
                 size="s">
                 <Icon size="s" icon={IconPlus} slot="start" />

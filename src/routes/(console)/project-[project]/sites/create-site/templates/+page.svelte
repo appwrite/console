@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { EmptySearch, PaginationWithLimit, Paginator, SvgIcon } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Wizard from '$lib/layout/wizard.svelte';
     import { goto } from '$app/navigation';
     import { debounce } from '$lib/helpers/debounce.js';
@@ -14,7 +14,7 @@
     export let data;
 
     function applyFilter(filter: string, value: string, event: CustomEvent) {
-        const target = new URL($page.url);
+        const target = new URL(page.url);
         if (event?.detail) {
             if (
                 !target.searchParams
@@ -37,7 +37,7 @@
     function applySearch(event: CustomEvent<string>) {
         debounce(() => {
             const value = event.detail;
-            const target = new URL($page.url);
+            const target = new URL(page.url);
 
             if (value.length > 0) {
                 target.searchParams.set('search', value);
@@ -50,13 +50,13 @@
     }
 
     function clearSearch() {
-        const target = new URL($page.url);
+        const target = new URL(page.url);
         target.search = '';
         goto(target.toString());
     }
 
     $: isChecked = (useCase: string) => {
-        return $page.url.searchParams
+        return page.url.searchParams
             .getAll('useCase')
             .some((param) => param.toLowerCase() === useCase.toLowerCase());
     };
@@ -67,7 +67,7 @@
 </svelte:head>
 
 <Wizard
-    href={`${base}/project-${$page.params.project}/sites/`}
+    href={`${base}/project-${page.params.project}/sites/`}
     title="Create site"
     invertColumns
     stickySide
@@ -76,7 +76,7 @@
         <Layout.Stack gap="xl">
             <InputSearch
                 placeholder="Search templates"
-                value={$page.url.searchParams.get('search')}
+                value={page.url.searchParams.get('search')}
                 on:clear={clearSearch}
                 on:change={applySearch} />
 
@@ -106,7 +106,7 @@
                                         id={framework}
                                         size="s"
                                         label={framework?.split('-')?.join(' ')}
-                                        checked={$page.url.searchParams
+                                        checked={page.url.searchParams
                                             .getAll('framework')
                                             .includes(framework)}
                                         on:change={(e) => applyFilter('framework', framework, e)} />
@@ -119,7 +119,7 @@
                                     id="other"
                                     size="s"
                                     label="Other"
-                                    checked={$page.url.searchParams
+                                    checked={page.url.searchParams
                                         .getAll('framework')
                                         .includes('Other')}
                                     on:change={(e) => applyFilter('framework', 'Other', e)} />
@@ -144,7 +144,7 @@
 
                         <Card.Link
                             variant="secondary"
-                            href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}
+                            href={`${base}/project-${page.params.project}/sites/create-site/templates/template-${template.key}`}
                             padding="xxs">
                             <Card.Media
                                 title={template.name}
@@ -174,10 +174,10 @@
             <EmptySearch
                 hidePagination
                 target="templates"
-                search={$page.url.searchParams.get('search')}>
+                search={page.url.searchParams.get('search')}>
                 <Button
                     secondary
-                    href={`${base}/project-${$page.params.project}/sites/create-site/templates`}
+                    href={`${base}/project-${page.params.project}/sites/create-site/templates`}
                     >Clear search</Button>
             </EmptySearch>
         {/if}

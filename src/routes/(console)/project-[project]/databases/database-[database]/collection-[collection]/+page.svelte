@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Empty, EmptySearch, PaginationWithLimit } from '$lib/components';
     import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
@@ -24,7 +24,7 @@
     let showCreateAttribute = false;
     let selectedAttribute: Option['name'] = null;
 
-    $: selected = preferences.getCustomCollectionColumns($page.params.collection);
+    $: selected = preferences.getCustomCollectionColumns(page.params.collection);
     $: columns.set(
         $collection.attributes.map((attribute) => ({
             id: attribute.key,
@@ -40,7 +40,7 @@
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
 </script>
 
-{#key $page.params.collection}
+{#key page.params.collection}
     <Container>
         <Layout.Stack direction="row" justifyContent="space-between">
             <Filters
@@ -52,7 +52,7 @@
                 <ViewSelector view={data.view} {columns} hideView allowNoColumns />
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
-                    href={`${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}/create`}
+                    href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
                     event="create_document">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
@@ -106,7 +106,7 @@
                             size="s"
                             ariaLabel="create document">Documentation</Button>
                         <Button
-                            href={`${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}/create`}
+                            href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
                             secondary
                             disabled={!$canWriteDocuments}
                             size="s">

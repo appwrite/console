@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, Trim } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -13,15 +13,15 @@
     import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
     let checked = false;
 
     const handleDelete = async () => {
         try {
             await sdk.forProject.databases.deleteDocument(
                 databaseId,
-                $page.params.collection,
-                $page.params.document
+                page.params.collection,
+                page.params.document
             );
             showDelete = false;
             addNotification({
@@ -30,7 +30,7 @@
             });
             trackEvent(Submit.DocumentDelete);
             await goto(
-                `${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`
+                `${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}`
             );
         } catch (error) {
             addNotification({

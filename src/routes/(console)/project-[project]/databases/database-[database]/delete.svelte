@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button, InputCheckbox } from '$lib/elements/forms';
@@ -12,7 +12,7 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { Table } from '@appwrite.io/pink-svelte';
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
     export let showDelete = false;
     let confirmedDeletion = false;
@@ -71,7 +71,7 @@
                 type: 'success',
                 message: `${$database.name} has been deleted`
             });
-            await goto(`${base}/project-${$page.params.project}/databases`);
+            await goto(`${base}/project-${page.params.project}/databases`);
             trackEvent(Submit.DatabaseDelete);
         } catch (error) {
             addNotification({

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
@@ -69,8 +69,8 @@
     let specification = specificationOptions[0].value;
 
     onMount(async () => {
-        if ($page.url.searchParams.has('runtime')) {
-            runtime = $page.url.searchParams.get('runtime') as Runtime;
+        if (page.url.searchParams.has('runtime')) {
+            runtime = page.url.searchParams.get('runtime') as Runtime;
         }
         if (!$installation?.$id) {
             $installation = data.installations.installations[0];
@@ -178,9 +178,7 @@
                     framework: data.template.name
                 });
 
-                await goto(
-                    `${base}/project-${$page.params.project}/functions/function-${func.$id}`
-                );
+                await goto(`${base}/project-${page.params.project}/functions/function-${func.$id}`);
                 invalidate(Dependencies.FUNCTION);
             } catch (e) {
                 addNotification({
@@ -213,7 +211,7 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/functions`}
+    href={`${base}/project-${page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">

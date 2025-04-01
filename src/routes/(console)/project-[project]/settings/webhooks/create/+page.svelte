@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Layout } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
@@ -42,7 +42,7 @@
             trackEvent(Submit.WebhookCreate, {
                 events: events
             });
-            goto(`${base}/project-${$page.params.project}/settings/webhooks/${webhook.$id}`);
+            goto(`${base}/project-${page.params.project}/settings/webhooks/${webhook.$id}`);
         } catch (error) {
             trackError(error.message, Submit.DomainCreate);
             throw new Error(error.message);
@@ -53,7 +53,7 @@
 <Form onSubmit={create}>
     <Wizard
         title="Create webhook"
-        href={`${base}/project-${$page.params.project}/settings/webhooks`}
+        href={`${base}/project-${page.params.project}/settings/webhooks`}
         bind:showExitModal
         column
         confirmExit>

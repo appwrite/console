@@ -35,7 +35,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import Link from '$lib/elements/link.svelte';
     import Copy from '$lib/components/copy.svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import UpdateVariablesModal from './updateVariablesModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
 
@@ -210,7 +210,7 @@
                 message: `Variable has been ${isConflicting ? 'overwritten' : 'promoted'}. You can find it in the project settings.`,
                 buttons: [
                     {
-                        method: () => goto(`${base}/project-${$page.params.project}/settings`),
+                        method: () => goto(`${base}/project-${page.params.project}/settings`),
                         name: 'Go to settings'
                     }
                 ]

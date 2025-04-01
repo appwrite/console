@@ -12,7 +12,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { recordTypes } from './store';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
@@ -45,7 +45,7 @@
             switch (type) {
                 case 'A':
                     await sdk.forConsole.domains.createRecordA(
-                        $page.params.domain,
+                        page.params.domain,
                         name,
                         value,
                         ttl,
@@ -55,7 +55,7 @@
                     break;
                 case 'AAAA':
                     await sdk.forConsole.domains.createRecordAAAA(
-                        $page.params.domain,
+                        page.params.domain,
                         name,
                         value,
                         ttl,
@@ -65,7 +65,7 @@
                     break;
                 case 'CNAME':
                     await sdk.forConsole.domains.createRecordCNAME(
-                        $page.params.domain,
+                        page.params.domain,
                         name,
                         value,
                         ttl,
@@ -75,7 +75,7 @@
                     break;
                 case 'MX':
                     await sdk.forConsole.domains.createRecordMX(
-                        $page.params.domain,
+                        page.params.domain,
                         name,
                         value,
                         ttl,
@@ -86,7 +86,7 @@
                     break;
                 case 'TXT':
                     await sdk.forConsole.domains.createRecordTXT(
-                        $page.params.domain,
+                        page.params.domain,
                         name,
                         value,
                         ttl,
@@ -96,7 +96,7 @@
                     break;
                 case 'NS':
                     await sdk.forConsole.domains.createRecordNS(
-                        $page.params.domain,
+                        page.params.domain,
                         name,
                         value,
                         ttl,
@@ -107,7 +107,7 @@
 
                 case 'CAA':
                     await sdk.forConsole.domains.createRecordCAA(
-                        $page.params.domain,
+                        page.params.domain,
                         name,
                         value,
                         ttl,
@@ -117,7 +117,7 @@
                     break;
                 case 'HTTPS':
                     await sdk.forConsole.domains.createRecordHTTPS(
-                        $page.params.domain,
+                        page.params.domain,
                         name,
                         value,
                         ttl,
@@ -127,7 +127,7 @@
                     break;
                 case 'ALIAS':
                     await sdk.forConsole.domains.createRecordAlias(
-                        $page.params.domain,
+                        page.params.domain,
                         name,
                         value,
                         ttl,

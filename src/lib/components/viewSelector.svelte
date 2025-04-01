@@ -1,6 +1,6 @@
 <script lang="ts">
     import { InputCheckbox } from '$lib/elements/forms';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import type { Writable } from 'svelte/store';
     import { preferences } from '$lib/stores/preferences';
     import { onMount } from 'svelte';
@@ -26,7 +26,7 @@
 
     onMount(async () => {
         if (isCustomCollection) {
-            const prefs = preferences.getCustomCollectionColumns($page.params.collection);
+            const prefs = preferences.getCustomCollectionColumns(page.params.collection);
             columns.set(
                 $columns.map((column) => {
                     column.hide = prefs?.includes(column.id) ?? false;
@@ -34,7 +34,7 @@
                 })
             );
         } else {
-            const prefs = preferences.get($page.route);
+            const prefs = preferences.get(page.route);
 
             // Override the shown columns only if a preference was set
             if (prefs?.columns) {
@@ -59,7 +59,7 @@
     });
 
     function getViewLink(view: View): string {
-        const url = new URL($page.url);
+        const url = new URL(page.url);
         url.searchParams.set('view', view);
         return url.toString();
     }

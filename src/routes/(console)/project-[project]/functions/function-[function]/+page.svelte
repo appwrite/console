@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { PaginationWithLimit, ViewSelector, EmptyFilter } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { columns, deploymentList, func } from './store';
@@ -99,7 +99,7 @@
                                             {toggle} />
                                         <ActionMenu.Item.Anchor
                                             trailingIcon={IconTerminal}
-                                            href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
+                                            href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/deployment-${activeDeployment.$id}`}>
                                             Build logs
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>
@@ -107,7 +107,7 @@
                             </Menu>
                             <Button
                                 secondary
-                                href={`${base}/project-${$page.params.project}/functions/function-${$func.$id}/executions/execute-function`}
+                                href={`${base}/project-${page.params.project}/functions/function-${$func.$id}/executions/execute-function`}
                                 disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
                                 Execute
                             </Button>
@@ -134,7 +134,7 @@
                                 ariaLabel={`create deployment`}>Documentation</Button>
                             <Button
                                 secondary
-                                href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployments/deplyoment-${activeDeployment?.$id}`}>
+                                href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/deployments/deplyoment-${activeDeployment?.$id}`}>
                                 View logs</Button>
                         </span>
                     </Empty>

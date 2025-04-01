@@ -8,7 +8,7 @@
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     export let show = false;
     export let selectedDeploymentId: string;
@@ -32,8 +32,8 @@
             await invalidate(Dependencies.DEPLOYMENTS);
             show = false;
             if (redirect) {
-                goto(
-                    `${base}/project-${$page.params.project}/sites/site-${site.$id}/deployments/deployment-${deployment.$id}`
+                await goto(
+                    `${base}/project-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${deployment.$id}`
                 );
             }
         } catch (e) {

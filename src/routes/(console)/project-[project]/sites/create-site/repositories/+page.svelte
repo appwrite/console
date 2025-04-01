@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics.js';
     import Card from '$lib/components/card.svelte';
     import { Repositories } from '$lib/components/git/index.js';
@@ -20,12 +20,12 @@
             from: 'cover'
         });
         repository.set(e.detail);
-        const target = `${base}/project-${$page.params.project}/sites/create-site/repositories/repository-${e.detail.id}?installation=${$installation.$id}`;
+        const target = `${base}/project-${page.params.project}/sites/create-site/repositories/repository-${e.detail.id}?installation=${$installation.$id}`;
         goto(target);
     }
 </script>
 
-<Wizard title="Create site" href={`${base}/project-${$page.params.project}/sites/`} hideFooter>
+<Wizard title="Create site" href={`${base}/project-${page.params.project}/sites/`} hideFooter>
     {#if hasInstallations}
         <Fieldset legend="Git repository">
             <Repositories
@@ -55,7 +55,7 @@
                         </Typography.Text>
                     </Layout.Stack>
                     <Button
-                        href={`${base}/project-${$page.params.project}/sites/create-site/templates`}
+                        href={`${base}/project-${page.params.project}/sites/create-site/templates`}
                         secondary>View templates</Button>
                 {:else}
                     <Layout.Stack gap="s">

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -83,7 +83,7 @@
                 providerType: 'push',
                 status: response.status
             });
-            await goto(`${base}/project-${$page.params.project}/messaging/message-${response.$id}`);
+            await goto(`${base}/project-${page.params.project}/messaging/message-${response.$id}`);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -101,7 +101,7 @@
 
 <Wizard
     title="Create push message"
-    href={`${base}/project-${$page.params.project}/messaging/`}
+    href={`${base}/project-${page.params.project}/messaging/`}
     bind:showExitModal
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>

@@ -4,7 +4,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { type Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Activate from '../(modals)/activateModal.svelte';
@@ -39,7 +39,7 @@
             (message) => {
                 if (
                     message.events.includes(
-                        `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
+                        `functions.${page.params.function}.deployments.${page.params.deployment}.update`
                     )
                 ) {
                     if (message.payload.status === 'ready') {
@@ -90,7 +90,7 @@
                                 <ActionMenu.Item.Anchor
                                     on:click={toggle}
                                     href={getSourceDownload(
-                                        $page.params.function,
+                                        page.params.function,
                                         data.deployment.$id
                                     )}
                                     external>
@@ -101,7 +101,7 @@
                                     disabled={data.deployment?.status !== 'ready'}
                                     on:click={toggle}
                                     href={getOutputDownload(
-                                        $page.params.function,
+                                        page.params.function,
                                         data.deployment.$id
                                     )}
                                     external>

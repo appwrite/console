@@ -8,7 +8,7 @@
     import { Table } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     export let data: PageData;
 
@@ -46,5 +46,5 @@
         allowCreate={$canWriteKeys}
         href="https://appwrite.io/docs/advanced/platform/api-keys"
         target="API key"
-        on:click={() => goto(`${base}/project-${$page.params.project}/overview/keys/create`)} />
+        on:click={() => goto(`${base}/project-${page.params.project}/overview/keys/create`)} />
 {/if}

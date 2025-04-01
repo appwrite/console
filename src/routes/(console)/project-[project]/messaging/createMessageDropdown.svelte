@@ -4,7 +4,7 @@
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 </script>
 
 <Popover let:toggle padding="none" placement="bottom-end">
@@ -18,7 +18,7 @@
         {#each Object.entries(providers) as [type, option]}
             <ActionMenu.Item.Anchor
                 leadingIcon={option.icon}
-                href={`${base}/project-${$page.params.project}/messaging/create-${type}`}>
+                href={`${base}/project-${page.params.project}/messaging/create-${type}`}>
                 {option.name}
             </ActionMenu.Item.Anchor>
         {/each}

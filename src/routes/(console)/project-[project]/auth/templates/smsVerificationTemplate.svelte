@@ -1,14 +1,14 @@
 <script lang="ts">
     import SmsTemplate from './smsTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { loadSmsTemplate } from './+page.svelte';
     import { baseSmsTemplate, smsTemplate } from './store';
     import { Id } from '$lib/components';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     let locale = 'en';
     let loading = false;
 

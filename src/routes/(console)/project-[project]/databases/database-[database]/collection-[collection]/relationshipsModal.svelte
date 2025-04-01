@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Modal, Paginator } from '$lib/components';
     import Id from '$lib/components/id.svelte';
     import { preferences } from '$lib/stores/preferences';
@@ -10,8 +10,8 @@
     export let show = false;
     export let data: [];
     export let selectedRelationship: Models.AttributeRelationship = null;
-    const projectId = $page.params.project;
-    const databaseId = $page.params.database;
+    const projectId = page.params.project;
+    const databaseId = page.params.database;
     const limit = 10;
 
     $: args =

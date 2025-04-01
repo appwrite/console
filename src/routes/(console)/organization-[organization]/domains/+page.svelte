@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { EmptySearch, PaginationWithLimit } from '$lib/components/index.js';
     import { Button } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
@@ -46,7 +46,7 @@
                     source: 'organization_domain_overview'
                 });
             }}
-            href={`${base}/organization-${$page.params.organization}/domains/add-domain`}>
+            href={`${base}/organization-${page.params.organization}/domains/add-domain`}>
             <Icon icon={IconPlus} size="s" />
             Add domain
         </Button>
@@ -76,7 +76,7 @@
             {#each data.domains.domains as domain}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/organization-${$page.params.organization}/domains/domain-${domain.$id}`}>
+                    href={`${base}/organization-${page.params.organization}/domains/domain-${domain.$id}`}>
                     <Table.Cell column="domain" {root}>
                         <Link external icon href={`${$protocol}${domain.domain}`} variant="quiet">
                             {domain.domain}
@@ -189,7 +189,7 @@
                                 source: 'organization_domain_overview'
                             });
                         }}
-                        href={`${base}/organization-${$page.params.organization}/domains/add-domain`}
+                        href={`${base}/organization-${page.params.organization}/domains/add-domain`}
                         size="s">
                         Add domain
                     </Button>

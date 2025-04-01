@@ -26,7 +26,7 @@
         IconAngular,
         IconJs
     } from '@appwrite.io/pink-icons-svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { type ComponentType, onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -55,7 +55,7 @@
     let connectionSuccessful = false;
     let isChangingFramework = false;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     const updateConfigCode = (prefix = '') => `${prefix}APPWRITE_PROJECT_ID = "${projectId}"
 ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"

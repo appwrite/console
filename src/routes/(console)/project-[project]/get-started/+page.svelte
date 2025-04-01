@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Onboard from '../overview/onboard.svelte';
 
-    $: projectId = $page.params.project;
+    $: projectId = page.params.project;
 </script>
 
 <svelte:head>
@@ -11,5 +11,5 @@
 
 <Onboard
     {projectId}
-    platforms={$page.data.project.platforms}
-    pingCount={$page.data.project.pingCount} />
+    platforms={page.data.project.platforms}
+    pingCount={page.data.project.pingCount} />

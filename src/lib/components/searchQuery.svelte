@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { onDestroy } from 'svelte';
@@ -35,14 +35,14 @@
     function valueChange(value: string) {
         clearTimeout(timer);
         timer = setTimeout(() => {
-            const url = new URL($page.url);
+            const url = new URL(page.url);
             const previous = url.searchParams.get('search') ?? '';
 
             if (previous === value) {
                 return;
             }
 
-            if ($page.data.page > 1) {
+            if (page.data.page > 1) {
                 url.searchParams.delete('page');
             }
 

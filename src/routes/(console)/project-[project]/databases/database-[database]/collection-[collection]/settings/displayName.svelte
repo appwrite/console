@@ -9,11 +9,11 @@
     import type { Models } from '@appwrite.io/console';
     import { attributes } from '../store';
     import { preferences } from '$lib/stores/preferences';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
-    const collectionId = $page.params.collection;
+    const collectionId = page.params.collection;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
 
     async function updateDisplayName() {

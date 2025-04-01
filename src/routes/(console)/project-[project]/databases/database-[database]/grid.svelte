@@ -1,14 +1,14 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { canWriteCollections } from '$lib/stores/roles';
     import type { PageData } from './$types';
     export let data: PageData;
     export let showCreate = false;
-    const projectId = $page.params.project;
-    const databaseId = $page.params.database;
+    const projectId = page.params.project;
+    const databaseId = page.params.database;
 </script>
 
 <CardContainer

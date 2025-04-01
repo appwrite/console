@@ -6,7 +6,7 @@
     import { Unauthenticated } from '$lib/layout';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Divider, Layout, Link } from '@appwrite.io/pink-svelte';
 
@@ -18,8 +18,8 @@
     let confirmPassword: string;
 
     onMount(() => {
-        userId = $page.url.searchParams.get('userId');
-        secret = $page.url.searchParams.get('secret');
+        userId = page.url.searchParams.get('userId');
+        secret = page.url.searchParams.get('secret');
     });
 
     async function recover() {

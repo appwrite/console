@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
@@ -17,7 +17,7 @@
     }
 </script>
 
-{#if $showPolicyAlert && isCloud && $organization?.$id && $page.url.pathname.match(/\/databases\/database-[^/]+$/)}
+{#if $showPolicyAlert && isCloud && $organization?.$id && page.url.pathname.match(/\/databases\/database-[^/]+$/)}
     {@const isFreePlan = $organization?.billingPlan === BillingPlan.FREE}
 
     {@const subtitle = isFreePlan
@@ -25,7 +25,7 @@
         : 'Protect your data by quickly adding a backup policy'}
 
     {@const ctaText = isFreePlan ? 'Upgrade plan' : 'Create policy'}
-    {@const ctaURL = isFreePlan ? $upgradeURL : `${$page.url.pathname}/backups`}
+    {@const ctaURL = isFreePlan ? $upgradeURL : `${page.url.pathname}/backups`}
 
     <HeaderAlert type="warning" title="Your database has no backup policy">
         <svelte:fragment>{subtitle}</svelte:fragment>

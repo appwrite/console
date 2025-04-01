@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { CardGrid, PaginationInline } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -44,7 +44,7 @@
 
     async function request() {
         // isLoadingInvoices = true;
-        invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
+        invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
             Query.notEqual('from', $organization.billingCurrentInvoiceDate),
@@ -135,12 +135,12 @@
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconExternalLink}
                                         external
-                                        href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}>
+                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
                                         View invoice
                                     </ActionMenu.Item.Anchor>
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconDownload}
-                                        href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}>
+                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
                                         Download PDF
                                     </ActionMenu.Item.Anchor>
                                     {#if status === 'overdue' || status === 'failed'}

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -37,8 +37,8 @@
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
-    const projectId = $page.params.project;
-    const databaseId = $page.params.database;
+    const projectId = page.params.project;
+    const databaseId = page.params.database;
 
     let showDropdown = [];
     let selectedOption: Option['name'] = null;

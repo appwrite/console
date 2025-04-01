@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { app } from '$lib/stores/app';
     import {
         Icon,
@@ -70,7 +70,7 @@
     }
 
     $: state = $isTabletViewport ? 'closed' : getSidebarState();
-    $: pathname = $page.url.pathname;
+    $: pathname = page.url.pathname;
     $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(pathname);
 
     const projectOptions = [

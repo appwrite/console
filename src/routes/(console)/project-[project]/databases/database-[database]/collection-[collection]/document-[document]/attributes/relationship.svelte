@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { PaginationInline } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { preferences } from '$lib/stores/preferences';
@@ -20,7 +20,7 @@
     export let optionalText: string | undefined = undefined;
     export let editing = false;
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
     let documentList: Models.DocumentList<Models.Document>;
     let search: string = null;

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { showCreate } from '../store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
@@ -14,10 +14,10 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
 
-    $: data = $page.data as PageData;
-    $: project = $page.params.project;
-    $: databaseId = $page.params.database;
-    $: collectionId = $page.params.collection;
+    $: data = page.data as PageData;
+    $: project = page.params.project;
+    $: databaseId = page.params.database;
+    $: collectionId = page.params.collection;
 
     $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
         a.name.localeCompare(b.name)

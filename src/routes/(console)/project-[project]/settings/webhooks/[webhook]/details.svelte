@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
@@ -13,7 +13,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     let enabled: boolean;
 

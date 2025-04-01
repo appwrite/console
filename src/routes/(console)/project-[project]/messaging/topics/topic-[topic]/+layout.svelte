@@ -1,11 +1,11 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
     import { project } from '$routes/(console)/project-[project]/store';
 
-    const topicId = $page.params.topic;
+    const topicId = page.params.topic;
 
     $: $registerCommands([
         {
@@ -16,7 +16,7 @@
                 );
             },
             keys: ['g', 's'],
-            disabled: $page.url.pathname.endsWith('subscribers'),
+            disabled: page.url.pathname.endsWith('subscribers'),
             group: 'topics',
             rank: 1
         },
@@ -26,7 +26,7 @@
                 goto(`${base}/project-${$project.$id}/messaging/topics/topic-${topicId}/activity`);
             },
             keys: ['g', 'a'],
-            disabled: $page.url.pathname.endsWith('activity'),
+            disabled: page.url.pathname.endsWith('activity'),
             group: 'topics',
             rank: 1
         },
@@ -36,7 +36,7 @@
                 goto(`${base}/project-${$project.$id}/messaging/topics/topic-${topicId}`);
             },
             keys: ['g', 'o'],
-            disabled: $page.url.pathname.endsWith(`topic-${topicId}`),
+            disabled: page.url.pathname.endsWith(`topic-${topicId}`),
             group: 'topics',
             rank: 1
         }

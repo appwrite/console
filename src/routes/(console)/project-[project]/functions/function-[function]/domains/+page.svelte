@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { EmptySearch, PaginationWithLimit } from '$lib/components/index.js';
     import { Button } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
@@ -55,7 +55,7 @@
             <svelte:fragment slot="tooltip">
                 <ActionMenu.Root>
                     <ActionMenu.Item.Anchor
-                        href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/domains/add-domain`}>
+                        href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/domains/add-domain`}>
                         Custom domain
                     </ActionMenu.Item.Anchor>
                     <ActionMenu.Item.Button on:click={() => (showPreviewDomainModal = true)}>
@@ -180,7 +180,7 @@
 
                     <Button
                         secondary
-                        href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/domains/add-domain`}
+                        href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/domains/add-domain`}
                         size="s">
                         Add domain
                     </Button>

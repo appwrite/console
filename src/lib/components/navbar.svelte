@@ -272,6 +272,7 @@
                 </div>
                 <button
                     class="account-backdrop"
+                    aria-label="Account menu"
                     on:click={() => {
                         showAccountMenu = false;
                     }}></button>

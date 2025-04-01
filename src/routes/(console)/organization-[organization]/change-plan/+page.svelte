@@ -1,7 +1,7 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
         EstimatedTotalBox,
@@ -143,7 +143,7 @@
                         collaborator,
                         undefined,
                         undefined,
-                        `${$page.url.origin}${base}/invite`
+                        `${page.url.origin}${base}/invite`
                     );
                 });
             }
@@ -185,7 +185,7 @@
 
 <Wizard
     title="Change plan"
-    href={`${base}/organization-${$page.params.organization}`}
+    href={`${base}/organization-${page.params.organization}`}
     bind:showExitModal
     confirmExit>
     <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>

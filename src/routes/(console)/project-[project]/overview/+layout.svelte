@@ -8,7 +8,7 @@
 <script lang="ts">
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { PlatformsPanel } from '$lib/commandCenter/panels';
     import { Tab, Tabs } from '$lib/components';
@@ -28,7 +28,7 @@
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    $: projectId = $page.params.project;
+    $: projectId = page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
     let period: UsagePeriods = '30d';
 
@@ -209,12 +209,12 @@
                     <Tab
                         noscroll
                         href={`${path}/platforms`}
-                        selected={$page.url.pathname === `${path}/platforms`}
+                        selected={page.url.pathname === `${path}/platforms`}
                         event="platforms">Platforms</Tab>
                     <Tab
                         noscroll
                         href={`${path}/keys`}
-                        selected={$page.url.pathname === `${path}/keys`}
+                        selected={page.url.pathname === `${path}/keys`}
                         event="keys">API keys</Tab>
                 </Tabs>
                 {#if $action}

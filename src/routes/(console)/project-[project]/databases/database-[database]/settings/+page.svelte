@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { BoxAvatar, CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -39,7 +39,7 @@
 
     async function updateName() {
         try {
-            await sdk.forProject.databases.update($page.params.database, databaseName);
+            await sdk.forProject.databases.update(page.params.database, databaseName);
             await invalidate(Dependencies.DATABASE);
             addNotification({
                 message: 'Name has been updated',

@@ -49,7 +49,7 @@
 <script lang="ts">
     import { InputText, InputSelect } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Box } from '$lib/components';
     import { collection } from '../store';
     import arrowOne from './arrow-one.svg';
@@ -64,7 +64,7 @@
     export let editing = false;
 
     // Constants
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
     const relationshipType = [
         { value: 'oneToOne', label: 'One to one' },
         { value: 'oneToMany', label: 'One to many' },
