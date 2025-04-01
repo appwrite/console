@@ -36,11 +36,11 @@
         }
     }
 
-    let maxSessionInputField: InputNumber | null = null;
+    let maxPasswordInputField: InputNumber | null = null;
 
-    $: if (passwordHistoryEnabled && maxSessionInputField) {
+    $: if (passwordHistoryEnabled && maxPasswordInputField) {
         tick().then(() => {
-            maxSessionInputField.addInputFocus();
+            maxPasswordInputField.addInputFocus();
         });
     }
 </script>
@@ -66,9 +66,9 @@
                 <InputNumber
                     max={20}
                     min={1}
-                    id="max-session"
+                    id="max-passwords"
                     label="Limit"
-                    bind:this={maxSessionInputField}
+                    bind:this={maxPasswordInputField}
                     disabled={!passwordHistoryEnabled}
                     bind:value={passwordHistory} />
             </FormList>
