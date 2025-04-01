@@ -12,7 +12,7 @@ export function getOrganizationIdFromUrl(pathname: string) {
 
 export function getProjectIdFromUrl(pathname: string) {
     // TODO: use base path from svelte here
-    const regex = /\/console\/project-([^/]+)(\/.*)?/;
+    const regex = /\/console\/project-(?:[a-z]{2,3}-)?([^/]+)(\/.*)?/;
     const match = pathname.match(regex);
 
     if (match) {

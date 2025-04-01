@@ -20,6 +20,7 @@
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
+    import { page } from '$app/stores';
 
     let show = false;
     let showEdit = false;
@@ -31,7 +32,9 @@
     let showLinked = [];
 
     onMount(async () => {
-        countryList = await sdk.forProject.locale.listCountries();
+        countryList = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .locale.listCountries();
     });
 
     $: orgList = $organizationList.teams as unknown as Organization[];

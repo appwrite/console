@@ -1,3 +1,5 @@
+import { getApiEndpoint } from '$lib/stores/sdk';
+
 export function getCardImgUrls(userId: string, endpoint: string) {
     const resolved = endpoint;
 
@@ -6,4 +8,10 @@ export function getCardImgUrls(userId: string, endpoint: string) {
     const ogImg = `${resolved}/cards/cloud-og?userId=${userId}`;
 
     return { frontImg, backImg, ogImg };
+}
+
+export function getCampaignImageUrl(image: string) {
+    const endpoint = getApiEndpoint();
+    const url = new URL(image, endpoint);
+    return url.toString();
 }

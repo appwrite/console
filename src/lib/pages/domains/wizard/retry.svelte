@@ -9,15 +9,19 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/stores';
 
     let retrying = false;
+    export let showTitle = true;
 
     const dispatch = createEventDispatcher();
 
     async function retry() {
         try {
             retrying = true;
-            $domain = await sdk.forProject.proxy.updateRuleVerification($domain.$id);
+            $domain = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .proxy.updateRuleVerification($domain.$id);
             invalidate(Dependencies.FUNCTION_DOMAINS);
             addNotification({
                 message:
@@ -36,7 +40,10 @@
     }
 </script>
 
-<Trim alternativeTrim><b>{$domain.domain}</b></Trim>
+{#if showTitle}
+    <Trim alternativeTrim><b>{$domain.domain}</b></Trim>
+{/if}
+
 {#if $domain.status === 'created'}
     <Box radius="small">
         <div class="u-flex u-gap-8 u-cross-center">

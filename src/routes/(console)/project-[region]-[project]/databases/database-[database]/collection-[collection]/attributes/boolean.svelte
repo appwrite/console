@@ -1,0 +1,98 @@
+<script context="module" lang="ts">
+    import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
+    import { get } from 'svelte/store';
+    import type { Models } from '@appwrite.io/console';
+
+    export async function submitBoolean(
+        databaseId: string,
+        collectionId: string,
+        key: string,
+        data: Partial<Models.AttributeBoolean>
+    ) {
+        const $page = get(page);
+        await sdk
+            .forProject($page.params.region, $page.params.project)
+            .databases.createBooleanAttribute(
+                databaseId,
+                collectionId,
+                key,
+                data.required,
+                data.default,
+                data.array
+            );
+    }
+    export async function updateBoolean(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeBoolean>,
+        originalKey?: string
+    ) {
+        const $page = get(page);
+        await sdk
+            .forProject($page.params.region, $page.params.project)
+            .databases.updateBooleanAttribute(
+                databaseId,
+                collectionId,
+                originalKey,
+                data.required,
+                data.default,
+                data.key !== originalKey ? data.key : undefined
+            );
+    }
+</script>
+
+<script lang="ts">
+    import { InputChoice, InputSelect } from '$lib/elements/forms';
+
+    export let editing = false;
+    export let data: Partial<Models.AttributeBoolean> = {
+        required: false,
+        array: false,
+        default: null
+    };
+
+    import { createConservative } from '$lib/helpers/stores';
+
+    let savedDefault = data.default;
+
+    function handleDefaultState(hideDefault: boolean) {
+        if (hideDefault) {
+            savedDefault = data.default;
+            data.default = null;
+        } else {
+            data.default = savedDefault;
+        }
+    }
+
+    const {
+        stores: { required, array },
+        listen
+    } = createConservative<Partial<Models.AttributeBoolean>>({
+        required: false,
+        array: false,
+        ...data
+    });
+    $: listen(data);
+
+    $: handleDefaultState($required || $array);
+</script>
+
+<InputSelect
+    id="default"
+    label="Default value"
+    placeholder="Select a value"
+    disabled={data.required || data.array}
+    options={[
+        { label: 'NULL', value: null },
+        { label: 'True', value: true },
+        { label: 'False', value: false }
+    ]}
+    bind:value={data.default} />
+<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
+    Indicate whether this is a required attribute
+</InputChoice>
+<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
+    Indicate whether this attribute should act as an array, with the default value set as an empty
+    array.
+</InputChoice>

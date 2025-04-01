@@ -1,8 +1,8 @@
+import type { Invoice } from '$lib/sdk/billing';
+import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import { type Organization } from '$lib/stores/organization';
-import type { Invoice } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
@@ -27,7 +27,15 @@ export const load: PageLoad = async ({ params, parent }) => {
                 executionsTotal: null,
                 projects: null,
                 executionsMBSecondsTotal: null,
-                buildsMBSecondsTotal: null
+                buildsMBSecondsTotal: null,
+                authPhoneTotal: null,
+                authPhoneEstimate: null,
+                databasesReads: null,
+                databasesWrites: null,
+                databasesReadsTotal: null,
+                databasesWritesTotal: null,
+                imageTransformations: null,
+                imageTransformationsTotal: null
             }
         };
     }
@@ -45,10 +53,10 @@ export const load: PageLoad = async ({ params, parent }) => {
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
         sdk.forConsole.teams.listMemberships(params.organization),
-        sdk.forConsole.billing.getPlan(org.$id)
+        sdk.forConsole.billing.getOrganizationPlan(org.$id)
     ]);
 
-    const projectNames: { [key: string]: Models.Project } = {};
+    const projects: { [key: string]: Models.Project } = {};
     if (usage?.projects?.length > 0) {
         // in batches of 100 (the max number of values in a query)
         const requests = [];
@@ -67,17 +75,17 @@ export const load: PageLoad = async ({ params, parent }) => {
         const responses = await Promise.all(requests);
         for (const response of responses) {
             for (const project of response.projects) {
-                projectNames[project.$id] = project;
+                projects[project.$id] = project;
             }
         }
     }
 
     return {
-        organizationUsage: usage,
-        projectNames,
+        plan,
         invoices,
+        projects,
         currentInvoice,
         organizationMembers,
-        plan
+        organizationUsage: usage
     };
 };

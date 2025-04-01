@@ -3,16 +3,15 @@ import type { Coupon } from '$lib/sdk/billing.js';
 import type { Campaign } from '$lib/stores/campaigns.js';
 import { sdk } from '$lib/stores/sdk.js';
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url }) => {
+export const load = async ({ url }) => {
     // Has promo code
     if (url.searchParams.has('code')) {
         let couponData: Coupon;
         let campaign: Campaign;
         const code = url.searchParams.get('code');
         try {
-            couponData = await sdk.forConsole.billing.getCoupon(code);
+            couponData = await sdk.forConsole.billing.getCouponAccount(code);
             if (couponData.campaign) {
                 campaign = await sdk.forConsole.billing.getCampaign(couponData.campaign);
             }
