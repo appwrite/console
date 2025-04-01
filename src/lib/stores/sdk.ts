@@ -30,17 +30,18 @@ import { building } from '$app/environment';
 
 export function getApiEndpoint(): string {
     if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
-    if (building) return 'https://cloud.appwrite.io/v1';
     return globalThis?.location?.origin + '/v1';
 }
 
 const endpoint = getApiEndpoint();
 
 const clientConsole = new Client();
-clientConsole.setEndpoint(endpoint).setProject('console');
-
 const clientProject = new Client();
-clientProject.setEndpoint(endpoint).setMode('admin');
+
+if (!building) {
+    clientConsole.setEndpoint(endpoint).setProject('console');
+    clientProject.setEndpoint(endpoint).setMode('admin');
+}
 
 const sdkForProject = {
     client: clientProject,
