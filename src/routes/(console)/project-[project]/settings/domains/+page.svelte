@@ -18,10 +18,10 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery search={data.search} placeholder="Search domain" />
         <Button
-            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}
+            href={`${base}/project-${page.params.project}/settings/domains/add-domain`}
             on:click={() => {
                 trackEvent(Click.DomainCreateClick, {
-                    source: 'sites_domain_overview'
+                    source: 'settings_domain_overview'
                 });
             }}>
             <Icon icon={IconPlus} size="s" />
@@ -53,8 +53,8 @@
                 src={$app.themeInUse === 'dark'
                     ? `${base}/images/domains/empty-domain-dark.svg`
                     : `${base}/images/domains/empty-domain-light.svg`}
-                title="Use a custom domain"
-                description="Make your API easier to access and integrate by assigning it a custom domain.">
+                title="Use a custom domain for your API"
+                description="Connect your own domain to Appwrite, so your API is accessible from a custom URL instead of the default Appwrite endpoint.">
                 <svelte:fragment slot="actions">
                     <Button
                         external

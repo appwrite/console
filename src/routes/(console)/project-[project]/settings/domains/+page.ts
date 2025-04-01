@@ -1,5 +1,5 @@
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-import { sdk } from '$lib/stores/sdk';
+import { RuleTrigger, sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { getSearch } from '$lib/helpers/load';
@@ -24,7 +24,7 @@ export const load: PageLoad = async ({ depends, url, route }) => {
 
     return {
         rules: await sdk.forProject.proxy.listRules(
-            [Query.equal('type', RuleType.API)],
+            [Query.equal('type', RuleType.API), Query.equal('trigger', RuleTrigger.MANUAL)],
             search || undefined
         ),
         offset,
