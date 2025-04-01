@@ -60,11 +60,31 @@ export const columns = writable<Column[]>([
         filter: false
     },
     {
+        id: 'totalSize',
+        title: 'Total size',
+        type: 'integer',
+        width: { min: 140, max: 160 },
+        elements: [
+            {
+                value: 2 * 1000 * 1000,
+                label: 'more than 2MB'
+            },
+            {
+                value: 10 * 1000 * 1000,
+                label: 'more than 10MB'
+            },
+            {
+                value: 50 * 1000 * 1000,
+                label: 'more than 50MB'
+            }
+        ]
+    },
+    {
         id: 'sourceSize',
         title: 'Source size',
         type: 'integer',
+        hide: true,
         width: { min: 140, max: 160 },
-
         elements: [
             {
                 value: 2 * 1000 * 1000,
@@ -85,8 +105,21 @@ export const columns = writable<Column[]>([
         title: 'Build size',
         type: 'integer',
         hide: true,
-        filter: false,
-        width: { min: 110, max: 130 }
+        width: { min: 110, max: 130 },
+        elements: [
+            {
+                value: 2 * 1000 * 1000,
+                label: 'more than 2MB'
+            },
+            {
+                value: 10 * 1000 * 1000,
+                label: 'more than 10MB'
+            },
+            {
+                value: 50 * 1000 * 1000,
+                label: 'more than 50MB'
+            }
+        ]
     },
     {
         id: 'type',
