@@ -28,14 +28,14 @@
             });
             trackEvent(Submit.SiteRedeploy);
 
+            await invalidate(Dependencies.SITE);
+            await invalidate(Dependencies.DEPLOYMENTS);
+            show = false;
             if (redirect) {
                 await goto(
                     `${base}/project-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${deployment.$id}`
                 );
             }
-            await invalidate(Dependencies.SITE);
-            await invalidate(Dependencies.DEPLOYMENTS);
-            show = false;
         } catch (e) {
             error = e.message;
             trackError(e, Submit.SiteRedeploy);
