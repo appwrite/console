@@ -1,13 +1,12 @@
 import { BillingPlan } from '$lib/constants.js';
 import { sdk } from '$lib/stores/sdk.js';
 import { ID, type Models } from '@appwrite.io/console';
-// import { isCloud } from '$lib/system.js';
-// import { redirect } from '@sveltejs/kit';
+import { isCloud } from '$lib/system.js';
+import { redirect } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 
 export const load = async ({ parent, url, params }) => {
-    //TODO: enable before release
-    // if (!isCloud) redirect(303, '/');
+    if (!isCloud) redirect(303, '/');
 
     const { account } = await parent();
 
@@ -28,8 +27,10 @@ export const load = async ({ parent, url, params }) => {
         default:
             error(404, 'Type is not valid');
     }
-    // const organizations = account?.$id ? await sdk.forConsole.billing.listOrganization() : undefined;
-    const organizations = account?.$id ? await sdk.forConsole.teams.list() : undefined;
+    const organizations = account?.$id
+        ? await sdk.forConsole.billing.listOrganization()
+        : undefined;
+    // const organizations = account?.$id ? await sdk.forConsole.teams.list() : undefined;
 
     if (!organizations?.total && account?.$id) {
         await sdk.forConsole.billing.createOrganization(

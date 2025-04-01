@@ -1,13 +1,8 @@
 import { sdk } from '$lib/stores/sdk';
-import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
-import { getLimit } from '$lib/helpers/load';
+import { getSearch, getView, View } from '$lib/helpers/load';
 
 export const load = async ({ url, route }) => {
-    const limit = getLimit(url, route, 12);
-    const page = getPage(url);
     const search = getSearch(url);
-    const view = getView(url, route, View.Grid);
-    const offset = pageToOffset(page, limit);
     const filter = {
         useCases: url.searchParams.getAll('useCase'),
         frameworks: url.searchParams.getAll('framework')
@@ -51,13 +46,9 @@ export const load = async ({ url, route }) => {
     });
 
     return {
-        offset,
-        limit,
-        view,
         filter,
         frameworks,
         useCases,
-        sum: templates.length,
-        templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit)
+        templates
     };
 };

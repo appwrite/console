@@ -16,13 +16,26 @@
     import { onMount } from 'svelte';
     import LoggingAlert from './loggingAlert.svelte';
 
-    export let selectedLog: Models.Execution;
-    export let product: 'site' | 'function';
-    export let logging: boolean;
-    let responseTab: 'logs' | 'errors' | 'headers' | 'body' = 'logs';
+    // export let selectedLog: Models.Execution;
+    // export let product: 'site' | 'function';
+    // export let logging: boolean;
+
+    let {
+        selectedLog,
+        product,
+        logging
+    }: {
+        selectedLog: Models.Execution;
+        product: 'site' | 'function';
+        logging: boolean;
+    } = $props();
+
+    let responseTab: 'logs' | 'errors' | 'headers' | 'body' = $state('logs');
 
     onMount(() => {
-        if (selectedLog?.logs) {
+        if (selectedLog?.errors) {
+            responseTab = 'errors';
+        } else if (selectedLog?.logs) {
             responseTab = 'logs';
         } else if (selectedLog.requestHeaders?.length) {
             responseTab = 'headers';
@@ -69,22 +82,20 @@
     </Layout.Stack>
 
     {#if responseTab === 'logs'}
-        {#if !logging}
-            <LoggingAlert {product} />
-        {/if}
         {#if selectedLog.logs}
             <Logs logs={selectedLog.logs} />
+        {:else if !logging}
+            <LoggingAlert {product} />
         {:else}
             <Card padding="xs" radius="s">
                 <Typography.Code>No logs found.</Typography.Code>
             </Card>
         {/if}
     {:else if responseTab === 'errors'}
-        {#if !logging}
-            <LoggingAlert {product} />
-        {/if}
         {#if selectedLog.errors}
             <Logs logs={selectedLog.errors} />
+        {:else if !logging}
+            <LoggingAlert {product} />
         {:else}
             <Card padding="xs" radius="s">
                 <Typography.Code>No errors found.</Typography.Code>
