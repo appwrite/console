@@ -43,7 +43,7 @@
         <header>
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Breadcrumbs {organizations} />
-                <AvatarInitials name={$user.name} size="s" />
+                <AvatarInitials name={$user?.name ?? ''} size="s" />
             </Layout.Stack>
         </header>
         <div class="studio-content" class:project-sidebar={hasProjectSidebar}><slot /></div>
