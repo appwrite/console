@@ -8,7 +8,7 @@
     import Logs from '../../(components)/logs.svelte';
     import { Copy, SvgIcon } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
-    import { goto, invalidate } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import type { Models, RealtimeResponseEvent } from '@appwrite.io/console';

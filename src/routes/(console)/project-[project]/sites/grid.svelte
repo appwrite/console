@@ -61,7 +61,7 @@
                 <SitesActionMenu {site} bind:showAddCollaborator bind:selectedSite />
 
                 <svelte:fragment slot="description-end">
-                    {#if site.latestDeploymentStatus === 'failed'}
+                    {#if site?.latestDeploymentStatus === 'failed'}
                         <Popover let:toggle portal>
                             <button on:mouseenter={(e) => toggle(e)}>
                                 <Layout.Stack alignItems="center">
@@ -74,7 +74,7 @@
                             <svelte:fragment slot="tooltip">
                                 <Typography.Text variant="m-400">
                                     Last deployment failed {timeFromNow(
-                                        site.latestDeploymentCreatedAt
+                                        site?.latestDeploymentCreatedAt
                                     )}. <Link
                                         href={`${base}/project-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
                                         View logs

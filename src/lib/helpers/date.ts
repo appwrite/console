@@ -190,6 +190,13 @@ export const diffDays = (date1: Date, date2: Date) => {
 };
 
 export function timeFromNow(datetime: string): string {
+    if (!datetime) {
+        return 'unknown time';
+    }
+    if (!isValidDate(datetime)) {
+        return 'invalid date';
+    }
+
     return dayjs().to(dayjs(datetime));
 }
 

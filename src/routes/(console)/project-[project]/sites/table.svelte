@@ -46,9 +46,9 @@
                     {:else if column.id === 'domains'}
                         {site[column.id]}
                     {:else if column.id === 'deployed'}
-                        {#if site.latestDeploymentStatus === 'building'}
+                        {#if site?.latestDeploymentStatus === 'building'}
                             Building {timer(site.latestDeploymentCreatedAt)}
-                        {:else if site.latestDeploymentStatus === 'failed'}
+                        {:else if site?.latestDeploymentStatus === 'failed'}
                             <Popover let:toggle portal>
                                 <button on:mouseenter={(e) => toggle(e)}>
                                     <Layout.Stack
@@ -76,7 +76,8 @@
                                 </svelte:fragment>
                             </Popover>
                         {:else}
-                            <DualTimeView time={site.latestDeploymentCreatedAt} />
+                            <DualTimeView
+                                time={site?.latestDeploymentCreatedAt ?? site.$createdAt} />
                         {/if}
                     {:else if column.id === '$createdAt'}
                         {toLocaleDateTime(site[column.id])}
