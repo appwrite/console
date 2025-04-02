@@ -11,11 +11,13 @@
 
     let openSheet = false;
     let selectedLogId: string = null;
+
+    $: filteredColumns = columns.filter((c) => !c.exclude);
 </script>
 
-<Table.Root {columns} let:root>
+<Table.Root columns={filteredColumns} let:root>
     <svelte:fragment slot="header" let:root>
-        {#each columns.filter((c) => !c.exclude) as { id, title }}
+        {#each filteredColumns as { id, title }}
             <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
@@ -26,7 +28,7 @@
                 openSheet = true;
                 selectedLogId = log.$id;
             }}>
-            {#each columns.filter((c) => !c.exclude) as column}
+            {#each filteredColumns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key column.id}

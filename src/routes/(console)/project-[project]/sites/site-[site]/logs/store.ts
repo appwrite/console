@@ -16,7 +16,6 @@ export const columns = writable<Column[]>([
         title: 'Trigger',
         type: 'string',
         exclude: true,
-        width: 90,
         array: true,
         format: 'enum',
         elements: [
@@ -31,7 +30,6 @@ export const columns = writable<Column[]>([
         title: 'Method',
         type: 'string',
         exclude: true,
-        width: 70,
         array: true,
         format: 'enum',
         elements: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
@@ -41,7 +39,6 @@ export const columns = writable<Column[]>([
         title: 'Status code',
         type: 'integer',
         exclude: true,
-        width: 100,
         format: 'integer',
         elements: [
             {
@@ -68,7 +65,6 @@ export const columns = writable<Column[]>([
         id: 'duration',
         title: 'Duration',
         type: 'integer',
-        width: 80,
         format: 'integer',
         elements: [
             {
