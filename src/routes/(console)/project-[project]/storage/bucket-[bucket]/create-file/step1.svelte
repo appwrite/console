@@ -13,7 +13,8 @@
 
     let showCustomId = false;
     let fileError: string = null;
-    const service = $currentPlan['fileSize'];
+    // self-hosted has no $currentPlan.
+    const service = $currentPlan?.['fileSize'];
     const projectId = $page.params.project;
 </script>
 
