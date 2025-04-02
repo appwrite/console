@@ -41,9 +41,8 @@ export const load: PageLoad = async ({ parent, url }) => {
         } else {
             redirect(
                 303,
-                isStudio
-                    ? `${base}/org-${teamId}${url.search}`
-                    : `${base}/organization-${teamId}${url.search}`
+
+                `${base}/organization-${teamId}${url.search}`
             );
         }
     } else {

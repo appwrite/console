@@ -6,7 +6,7 @@
     import type { TabElement } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { canWriteProjects } from '$lib/stores/roles';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isStudio } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
 
     const projectId = page.params.project;
@@ -51,7 +51,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <Typography.Title color="--fgcolor-neutral-primary" size="xl">Settings</Typography.Title>
+        <Typography.Title color="--fgcolor-neutral-primary" size={isStudio ? 's' : 'xl'}
+            >Settings</Typography.Title>
     </svelte:fragment>
 
     <Tabs>

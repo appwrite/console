@@ -6,6 +6,7 @@
     import { Cover } from '$lib/layout';
     import { canWriteProjects } from '$lib/stores/roles';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { isStudio } from '$lib/system';
 
     const projectId = page.params.project;
     const path = `${base}/project-${projectId}/auth`;
@@ -52,7 +53,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <Typography.Title color="--fgcolor-neutral-primary" size="xl">Auth</Typography.Title>
+        <Typography.Title color="--fgcolor-neutral-primary" size={isStudio ? 's' : 'xl'}
+            >Auth</Typography.Title>
     </svelte:fragment>
     <Tabs>
         {#each tabs as tab}
