@@ -1,7 +1,12 @@
 <script lang="ts">
     import { type ComponentProps } from 'svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { timeFromNow, toLocaleDateTime, toLocalDateTimeISO } from '$lib/helpers/date';
+    import {
+        timeFromNow,
+        toLocaleDateTime,
+        toLocalDateTimeISO,
+        toISOString
+    } from '$lib/helpers/date';
     import { Badge, InteractiveText, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
 
     export let time: string = '';
@@ -99,7 +104,7 @@
                         isVisible
                         variant="copy"
                         text={toLocaleDateTime(time, 'UTC')}
-                        value={new Date(time).toISOString()} />
+                        value={toISOString(time)} />
 
                     <Badge variant="secondary" content="UTC" size="xs" />
                 </Layout.Stack>

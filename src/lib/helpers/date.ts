@@ -223,3 +223,12 @@ export function getUTCOffset(): string {
 
     return `${hours >= 0 ? '+' : ''}${hours}${minutes ? `:${minutes.toString().padStart(2, '0')}` : ''}`;
 }
+
+export function toISOString(date: string): string {
+    const d = new Date(date);
+
+    if (isNaN(d.getTime())) {
+        return 'n/a';
+    }
+    return d.toISOString();
+}
