@@ -12,7 +12,7 @@ export default defineConfig({
                 project: 'console'
             }
         }),
-        sveltekit()
+        sveltekit(),
     ],
     optimizeDeps: {
         include: ['echarts', 'prismjs']

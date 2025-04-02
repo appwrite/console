@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 import { sdk } from '$lib/stores/sdk';
-import { VARS } from '$lib/system';
+import { isStudio, VARS } from '$lib/system';
 
 const handleGithubEducationMembership = async (name: string, email: string) => {
     const result = await sdk.forConsole.billing.setMembership('github-student-developer');
@@ -39,7 +39,12 @@ export const load: PageLoad = async ({ parent, url }) => {
         if (!teamId) {
             redirect(303, `${base}/account/organizations${url.search}`);
         } else {
-            redirect(303, `${base}/organization-${teamId}${url.search}`);
+            redirect(
+                303,
+                isStudio
+                    ? `${base}/org-${teamId}${url.search}`
+                    : `${base}/organization-${teamId}${url.search}`
+            );
         }
     } else {
         redirect(303, `${base}/onboarding/create-project${url.search}`);

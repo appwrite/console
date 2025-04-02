@@ -9,7 +9,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { BottomSheet } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isStudio } from '$lib/system';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { newOrgModal } from '$lib/stores/organization';
@@ -80,7 +80,7 @@
             title: 'Switch Organization',
             items: organizations.map((organization) => ({
                 name: organization.name,
-                href: `/console/organization-${organization?.$id}`
+                href: `${base}/organization-${organization?.$id}`
             }))
         },
         bottom: {
@@ -101,7 +101,7 @@
                   items: [
                       {
                           name: 'Organization overview',
-                          href: `/console/organization-${selectedOrg?.$id}`
+                          href: `${base}/organization-${selectedOrg?.$id}`
                       }
                   ]
               },
@@ -139,12 +139,12 @@
                                     if (index < 4) {
                                         return {
                                             name: project.name,
-                                            href: `/console/project-${project.$id}/overview`
+                                            href: `${base}/project-${project.$id}/overview`
                                         };
                                     } else if (index === 4) {
                                         return {
                                             name: 'All projects',
-                                            href: `/console/organization-${selectedOrg?.$id}`
+                                            href: `${base}/organization-${selectedOrg?.$id}`
                                         };
                                     }
                                     return null;
@@ -156,7 +156,7 @@
                           {
                               name: 'Create project',
                               trailingIcon: IconPlus,
-                              href: `/console/organization-${selectedOrg?.$id}?create-project`
+                              href: `${base}/organization-${selectedOrg?.$id}?create-project`
                           }
                       ]
                   },
@@ -167,7 +167,7 @@
                           {
                               name: 'Create project',
                               trailingIcon: IconPlus,
-                              href: `/console/organization-${selectedOrg?.$id}?create-project`
+                              href: `${base}/organization-${selectedOrg?.$id}?create-project`
                           }
                       ]
                   }
@@ -185,7 +185,9 @@
 <svelte:window on:resize={onResize} />
 <div use:melt={$menubar}>
     {#if !$isSmallViewport}
-        <span class="breadcrumb-separator">/</span>
+        {#if !isStudio}
+            <span class="breadcrumb-separator">/</span>
+        {/if}
         <button
             type="button"
             class="trigger"
@@ -219,7 +221,7 @@
             {#if selectedOrg}
                 <div use:melt={$itemOrganizations}>
                     <ActionMenu.Root>
-                        <ActionMenu.Item.Anchor href={`/console/organization-${selectedOrg?.$id}`}
+                        <ActionMenu.Item.Anchor href={`${base}/organization-${selectedOrg?.$id}`}
                             >Organization overview</ActionMenu.Item.Anchor
                         ></ActionMenu.Root>
                 </div>
@@ -239,7 +241,7 @@
                                     <div use:melt={$itemOrganizations}>
                                         <ActionMenu.Root>
                                             <ActionMenu.Item.Anchor
-                                                href={`/console/organization-${organization?.$id}`}
+                                                href={`${base}/organization-${organization?.$id}`}
                                                 >{organization.name}</ActionMenu.Item.Anchor>
                                         </ActionMenu.Root>
                                     </div>
@@ -270,7 +272,7 @@
                     <div use:melt={$itemOrganizations}>
                         <ActionMenu.Root>
                             <ActionMenu.Item.Anchor
-                                href={`/console/organization-${organization?.$id}`}
+                                href={`${base}/organization-${organization?.$id}`}
                                 >{organization.name}</ActionMenu.Item.Anchor
                             ></ActionMenu.Root>
                     </div>
@@ -315,7 +317,7 @@
                         {#if index < 4}
                             <div use:melt={$itemProjects}>
                                 <ActionMenu.Root>
-                                    <ActionMenu.Item.Anchor href={`/console/project-${project.$id}`}
+                                    <ActionMenu.Item.Anchor href={`${base}/project-${project.$id}`}
                                         >{project.name}</ActionMenu.Item.Anchor
                                     ></ActionMenu.Root>
                             </div>
@@ -323,7 +325,7 @@
                             <div use:melt={$itemProjects}>
                                 <ActionMenu.Root>
                                     <ActionMenu.Item.Anchor
-                                        href={`/console/organization-${selectedOrg.$id}`}
+                                        href={`${base}/organization-${selectedOrg.$id}`}
                                         >All projects</ActionMenu.Item.Anchor
                                     ></ActionMenu.Root>
                             </div>
@@ -335,7 +337,7 @@
                     <ActionMenu.Root>
                         <ActionMenu.Item.Anchor
                             leadingIcon={IconPlusSm}
-                            href={`/console/organization-${selectedOrg?.$id}?create-project`}
+                            href={`${base}/organization-${selectedOrg?.$id}?create-project`}
                             >Create project</ActionMenu.Item.Anchor
                         ></ActionMenu.Root>
                 </div>

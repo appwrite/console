@@ -14,16 +14,23 @@
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
     import { Root } from '@appwrite.io/pink-svelte';
-    import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
+    import {
+        ThemeDark,
+        ThemeLight,
+        ThemeDarkCloud,
+        ThemeLightCloud,
+        ThemeLightStudio
+    } from '../themes';
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
+    import { isStudio } from '$lib/system.js';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
             case 'dark':
                 return isCloud ? ThemeDarkCloud : ThemeDark;
             case 'light':
-                return isCloud ? ThemeLightCloud : ThemeLight;
+                return isStudio ? ThemeLightStudio : isCloud ? ThemeLightCloud : ThemeLight;
         }
     }
 
@@ -149,14 +156,14 @@
     {#each preloadFonts as font}
         <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
     {/each}
-    <link rel="preload" as="style" type="text/css" href="/console/fonts/main.css" />
+    <link rel="preload" as="style" type="text/css" href={`${base}/fonts/main.css`} />
     <link rel="stylesheet" href={`${base}/fonts/main.css`} />
 
     {#if isCloud}
         {#each preloadFontsCloud as font}
             <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
         {/each}
-        <link rel="preload" as="style" type="text/css" href="/console/fonts/cloud.css" />
+        <link rel="preload" as="style" type="text/css" href={`${base}/fonts/cloud.css`} />
         <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
     {/if}
 </svelte:head>

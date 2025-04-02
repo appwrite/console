@@ -3,3 +3,8 @@ export { default as ThemeLight } from './light.json';
 
 export { default as ThemeDarkCloud } from './dark-cloud.json';
 export { default as ThemeLightCloud } from './light-cloud.json';
+
+import { default as StudioLightOverride } from './light-studio.json';
+import { default as ThemeLightBase } from './light.json';
+
+export const ThemeLightStudio = { ...ThemeLightBase, ...StudioLightOverride };

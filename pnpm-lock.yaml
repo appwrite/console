@@ -47,6 +47,9 @@ importers:
       deep-equal:
         specifier: ^2.2.3
         version: 2.2.3
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
       echarts:
         specifier: ^5.6.0
         version: 5.6.0
@@ -84,6 +87,9 @@ importers:
       '@eslint/compat':
         specifier: ^1.2.7
         version: 1.2.7(eslint@9.23.0)
+      '@eslint/js':
+        specifier: ^9.23.0
+        version: 9.23.0
       '@melt-ui/pp':
         specifier: ^0.3.2
         version: 0.3.2(@melt-ui/svelte@0.86.5(svelte@5.25.3))(svelte@5.25.3)
