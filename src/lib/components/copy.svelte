@@ -40,7 +40,7 @@
         role="button"
         tabindex="0"
         style:cursor="pointer"
-        on:click|preventDefault={handleClick}
+        on:click|preventDefault|stopPropagation={handleClick}
         on:keyup={clickOnEnter}
         on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}>
         <slot />
