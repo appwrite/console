@@ -13,7 +13,7 @@
     import type { Plan } from '$lib/sdk/billing';
     export let currentPlan: Plan;
 
-    const service = currentPlan['fileSize'];
+    const service = currentPlan?.['fileSize'];
     const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize, 1000);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
     $: selectedUnit = $unit;
