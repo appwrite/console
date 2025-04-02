@@ -45,6 +45,7 @@
         "prismjs": "^1.30.0",
         "remarkable": "^2.0.1",
         "svelte-confetti": "^1.4.0",
+        "svelte-exmarkdown": "^5.0.0",
         "tippy.js": "^6.3.7"
     },
     "devDependencies": {
@@ -70,10 +71,12 @@
         "eslint-config-prettier": "^10.1.0",
         "eslint-plugin-svelte": "^3.3.3",
         "globals": "^16.0.0",
+        "highlight.js": "^11.11.1",
         "jsdom": "^26.0.0",
         "kleur": "^4.1.5",
         "prettier": "^3.5.3",
         "prettier-plugin-svelte": "^3.3.3",
+        "rehype-highlight": "^7.0.2",
         "sass": "^1.86.0",
         "svelte": "^5.25.3",
         "svelte-check": "^4.1.5",

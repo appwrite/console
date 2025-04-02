@@ -19,7 +19,6 @@
     import 'prismjs/plugins/autoloader/prism-autoloader';
     import 'prismjs/plugins/custom-class/prism-custom-class';
     import 'prismjs/plugins/line-numbers/prism-line-numbers';
-    import { afterUpdate } from 'svelte';
     import { Copy } from '.';
 
     export let label: string = null;
@@ -35,11 +34,11 @@
     let classes = '';
     export { classes as class };
 
+    let element: HTMLPreElement;
+
     Prism.plugins.customClass.prefix('prism-');
 
-    afterUpdate(async () => {
-        Prism.highlightAll();
-    });
+    $: if (code && element) Prism.highlightElement(element);
 </script>
 
 <section
@@ -65,6 +64,7 @@
         {/if}
     </div>
     <pre
+        bind:this={element}
         class:with-scroll={allowScroll}
         class={`language-${language}`}
         class:line-numbers={withLineNumbers}><code>{code}</code></pre>
