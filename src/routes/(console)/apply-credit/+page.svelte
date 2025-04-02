@@ -148,9 +148,10 @@
                     collaborators
                 );
             }
-            // Existing pro org
+            // Existing pro org, apply credits
             else {
                 org = selectedOrg;
+                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
             }
 
             if (!isOrganization(org) && org.status === 402) {
