@@ -5,19 +5,13 @@
     import { SvgIcon } from '$lib/components/index.js';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
     import { getFlagUrl } from '$lib/helpers/flag.js';
-    import type { Region } from '$lib/sdk/billing.js';
+    import type { AllowedRegions, Region as RegionType } from '$lib/sdk/billing.js';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { getFrameworkIcon } from '$lib/stores/sites.js';
     import { isCloud } from '$lib/system';
-    import {
-        ID,
-        OAuthProvider,
-        Query,
-        type Models,
-        type Region as AppwriteRegion
-    } from '@appwrite.io/console';
+    import { ID, OAuthProvider, Query, type Models, Region } from '@appwrite.io/console';
     import { IconGithub, IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import {
         Card,
@@ -39,8 +33,8 @@
     );
     let projectName = $state<string>();
     let showCustomId = $state(false);
-    let region = $state<string>();
-    let regions = $state<Array<Region>>([]);
+    let region = $state<AllowedRegions>();
+    let regions = $state<Array<RegionType>>([]);
     let id = $state<string>();
 
     function getRegions() {
@@ -101,7 +95,7 @@
                     id ?? ID.unique(),
                     projectName,
                     selectedOrg,
-                    region as AppwriteRegion
+                    isCloud ? (region as Region) : Region.Default
                 );
                 trackEvent(Submit.ProjectCreate, {
                     customId: !!id,
@@ -124,7 +118,6 @@
 
     $effect(() => {
         if (selectedOrg !== undefined) {
-            console.log('test');
             fetchProjects();
         }
     });
@@ -240,7 +233,7 @@
                                         isProject
                                         bind:id />
                                 </Layout.Stack>
-                                {#if isCloud && regions.length > 0}
+                                {#if isCloud}
                                     <Layout.Stack gap="xs">
                                         <Input.Select
                                             bind:value={region}
