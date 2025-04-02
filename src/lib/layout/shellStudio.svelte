@@ -1,26 +1,19 @@
 <script lang="ts">
+    import { AvatarInitials, Breadcrumbs } from '$lib/components/index.js';
     import { Avatar, Layout } from '@appwrite.io/pink-svelte';
-    import { AvatarInitials, Breadcrumbs } from '$lib/components';
     import { page } from '$app/stores';
-    import { BillingPlan } from '$lib/constants';
-    import { isCloud } from '$lib/system';
-    import { tierToPlan } from '$lib/stores/billing';
     import { organization, organizationList } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
-    import SidebarOrganization from '$lib/components/studio/sidebarOrganization.svelte';
     import SidebarProject from '$lib/components/studio/sidebarProject.svelte';
+    import SidebarOrganization from '$lib/components/studio/sidebarOrganization.svelte';
+    import { BillingPlan } from '$lib/constants.js';
+    import { isCloud } from '$lib/system.js';
+    import { tierToPlan } from '$lib/stores/billing.js';
+    import type { NavbarProject } from '$lib/components/navbar.svelte';
 
     $: hasProjectSidebar = $page.url.pathname.startsWith('/studio/proj');
 
-    $: loadedProjects = $page.data.projects.map((project) => {
-        return {
-            name: project?.name,
-            $id: project.$id,
-            isSelected: $page.data.currentProjectId === project.$id,
-            platformCount: project.platforms.length,
-            pingCount: project.pingCount
-        };
-    });
+    export let loadedProjects: Array<NavbarProject> = [];
 
     $: organizations = $organizationList.teams.map((org) => {
         const billingPlan = org['billingPlan'];
@@ -29,10 +22,12 @@
             $id: org.$id,
             showUpgrade: billingPlan === BillingPlan.FREE,
             tierName: isCloud ? (tierToPlan(billingPlan)?.name ?? '') : null,
-            isSelected: $page.data.currentOrganization?.$id === org.$id,
+            isSelected: $page.data.organization?.$id === org.$id,
             projects: loadedProjects
         };
     });
+
+    $: console.log(organizations);
 </script>
 
 <main>
@@ -47,7 +42,7 @@
         {#if hasProjectSidebar}
             <SidebarProject />
         {:else}
-            <SidebarOrganization organization={$page.data.currentOrganization} />
+            <SidebarOrganization organization={$page.data.organization} />
         {/if}
     </Layout.Stack>
 </main>

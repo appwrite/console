@@ -3,6 +3,7 @@
     import { BillingPlan, INTERVAL } from '$lib/constants';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
+    import ShellStudio from '$lib/layout/shellStudio.svelte';
     import { app } from '$lib/stores/app';
     import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
@@ -32,7 +33,7 @@
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
-    import { hasStripePublicKey, isCloud, VARS } from '$lib/system';
+    import { hasStripePublicKey, isCloud, isStudio, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
@@ -329,21 +330,24 @@
 </script>
 
 <CommandCenter />
-<Shell
-    showSideNavigation={$page.url.pathname !== '/console' &&
-        !$page?.params.organization &&
-        !$page.url.pathname.includes('/console/account') &&
-        !$page.url.pathname.includes('/console/card') &&
-        !$page.url.pathname.includes('/console/onboarding')}
-    showHeader={!$page.url.pathname.includes('/console/onboarding')}
-    showFooter={!$page.url.pathname.includes('/console/onboarding')}
-    bind:loadedProjects
-    bind:projects={data.projects}>
-    <!--    <Header slot="header" />-->
-    <slot />
-    <Footer slot="footer" />
-</Shell>
-
+{#if isStudio}
+    <ShellStudio bind:loadedProjects><slot /></ShellStudio>
+{:else}
+    <Shell
+        showSideNavigation={$page.url.pathname !== '/console' &&
+            !$page?.params.organization &&
+            !$page.url.pathname.includes('/console/account') &&
+            !$page.url.pathname.includes('/console/card') &&
+            !$page.url.pathname.includes('/console/onboarding')}
+        showHeader={!$page.url.pathname.includes('/console/onboarding')}
+        showFooter={!$page.url.pathname.includes('/console/onboarding')}
+        bind:loadedProjects
+        bind:projects={data.projects}>
+        <!--    <Header slot="header" />-->
+        <slot />
+        <Footer slot="footer" />
+    </Shell>
+{/if}
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} {...$wizard.props} />
 {:else if $wizard.cover}

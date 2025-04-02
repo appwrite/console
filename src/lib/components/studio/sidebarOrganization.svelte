@@ -11,15 +11,15 @@
         <Typography.Text color="--fgcolor-neutral-tertiary">{organization.name}</Typography.Text>
 
         <Layout.Stack gap="xs">
-            <ActionMenu.Item.Anchor href={`${base}/org-${organization.$id}`}
+            <ActionMenu.Item.Anchor href={`${base}/organization-${organization.$id}`}
                 >Projects</ActionMenu.Item.Anchor>
-            <ActionMenu.Item.Anchor href={`${base}/org-${organization.$id}/members`}
+            <ActionMenu.Item.Anchor href={`${base}/organization-${organization.$id}/members`}
                 >Members</ActionMenu.Item.Anchor>
-            <ActionMenu.Item.Anchor href={`${base}/org-${organization.$id}/usage`}
+            <ActionMenu.Item.Anchor href={`${base}/organization-${organization.$id}/usage`}
                 >Usage</ActionMenu.Item.Anchor>
-            <ActionMenu.Item.Anchor href={`${base}/org-${organization.$id}/billing`}
+            <ActionMenu.Item.Anchor href={`${base}/organization-${organization.$id}/billing`}
                 >Billing</ActionMenu.Item.Anchor>
-            <ActionMenu.Item.Anchor href={`${base}/org-${organization.$id}/settings`}
+            <ActionMenu.Item.Anchor href={`${base}/organization-${organization.$id}/settings`}
                 >Settings</ActionMenu.Item.Anchor>
         </Layout.Stack>
     </Layout.Stack>
