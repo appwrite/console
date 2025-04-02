@@ -49,15 +49,24 @@
         </div>
     </Card.Base>
 </section>
+<div class="chat-placeholder" class:is-visible={showChat}></div>
 
 <style lang="scss">
     .chat {
         width: 0;
-        position: sticky;
+        position: fixed;
         top: 48px;
         overflow: hidden;
         transition: width 0.3s ease-in-out;
 
+        &.is-visible {
+            width: 400px;
+        }
+    }
+
+    .chat-placeholder {
+        width: 0;
+        transition: width 0.3s ease-in-out;
         &.is-visible {
             width: 600px;
         }
