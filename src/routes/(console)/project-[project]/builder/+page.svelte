@@ -2,6 +2,4 @@
     import { Layout, Card, Typography, Divider } from '@appwrite.io/pink-svelte';
 </script>
 
-<Layout.Stack direction="row">
-    <Card.Base>Iframe</Card.Base>
-</Layout.Stack>
+<Layout.Stack direction="row">Iframe</Layout.Stack>

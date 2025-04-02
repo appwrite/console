@@ -11,12 +11,13 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { isStudio } from '$lib/system';
 </script>
 
 {#if !page.url.pathname.includes('get-started')}
     <Cover>
         <svelte:fragment slot="header">
-            <Typography.Title color="--fgcolor-neutral-primary" size="xl">
+            <Typography.Title color="--fgcolor-neutral-primary" size={isStudio ? 's' : 'xl'}>
                 {$project?.name}
             </Typography.Title>
             <Id value={$project.$id}>{$project.$id}</Id>

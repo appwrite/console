@@ -10,14 +10,19 @@
         : '';
 </script>
 
-<div class="top-cover-console" class:no-padding={isStudio} style:block-size={blocksize}>
-    <div class="cover-container" {style}>
-        <Layout.Stack direction="row" alignItems="center">
-            <slot name="header" />
-        </Layout.Stack>
-        <slot />
+{#if isStudio}
+    <slot name="header" />
+    <slot />
+{:else}
+    <div class="top-cover-console" class:no-padding={isStudio} style:block-size={blocksize}>
+        <div class="cover-container" {style}>
+            <Layout.Stack direction="row" alignItems="center">
+                <slot name="header" />
+            </Layout.Stack>
+            <slot />
+        </div>
     </div>
-</div>
+{/if}
 
 <style lang="scss">
     .top-cover-console {

@@ -60,12 +60,15 @@
                         </Card.Base>
                     </section>
                 {/if}
-                <Layout.Stack>
-                    {#if $page.data?.header}
-                        <svelte:component this={$page.data.header} />
-                    {/if}
-                    <slot />
-                </Layout.Stack>
+
+                <Card.Base>
+                    <Layout.Stack>
+                        {#if $page.data?.header}
+                            <svelte:component this={$page.data.header} />
+                        {/if}
+                        <slot />
+                    </Layout.Stack>
+                </Card.Base>
             </Layout.Stack>
         </div>
         {#if hasProjectSidebar}
