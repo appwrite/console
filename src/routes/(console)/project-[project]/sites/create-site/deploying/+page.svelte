@@ -23,7 +23,7 @@
             async (response: RealtimeResponseEvent<Models.Deployment>) => {
                 if (
                     response.events.includes(
-                        `sites.${data.deployment.resourceId}.deployments.${data.deployment.$id}.update`
+                        `sites.${data.site.$id}.deployments.${data.deployment.$id}.update`
                     )
                 ) {
                     deployment = response.payload;

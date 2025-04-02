@@ -34,8 +34,8 @@
 
 <Wizard column href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}`}>
     <!-- Creating a new stack -->
-    <div style:position="relative" style="z-index: 6;">
-        <Layout.Stack gap="xxxl">
+    <Layout.Stack gap="xxxl">
+        <div style:position="relative" style="z-index: 6;">
             <Layout.Stack gap="xxxl">
                 <Layout.Stack gap="l" direction="column" alignItems="center">
                     <Check />
@@ -57,110 +57,107 @@
                     </svelte:fragment>
                 </SiteCard>
             </Layout.Stack>
+        </div>
 
-            <!-- To add spacing -->
-            <div></div>
+        <!-- To add spacing -->
+        <div></div>
 
-            <Step.List>
-                <Step.Item state="current" shortLine={true} badgeText="Next steps">
-                    <Layout.Stack>
-                        <Layout.Grid columns={!data.site.providerRepositoryId ? 4 : 3} columnsS={1}>
-                            {#if !data.site.providerRepositoryId}
-                                <Card.Button
-                                    radius="s"
-                                    padding="s"
-                                    on:click={() => (showConnectRepositry = true)}>
-                                    <Layout.Stack gap="s" style="height: 100%">
-                                        <Layout.Stack
-                                            direction="row"
-                                            justifyContent="space-between"
-                                            alignItems="center">
-                                            <Typography.Title size="s">
-                                                Add repository
-                                            </Typography.Title>
-                                            <Icon
-                                                icon={IconArrowSmRight}
-                                                size="l"
-                                                color="--fgcolor-neutral-weak" />
-                                        </Layout.Stack>
-                                        <Typography.Text variant="m-400">
-                                            Connect to a new repository or an existing one.
-                                        </Typography.Text>
-                                    </Layout.Stack>
-                                </Card.Button>
-                            {/if}
-                            <Card.Link
-                                radius="s"
-                                padding="s"
-                                on:click={() => {
-                                    trackEvent(Click.DomainCreateClick, {
-                                        source: 'sites_create_finish'
-                                    });
-                                }}
-                                href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}/domains`}>
-                                <Layout.Stack gap="s" style="height: 100%">
-                                    <Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center">
-                                        <Typography.Title size="s">Add domain</Typography.Title>
-                                        <Icon
-                                            icon={IconArrowSmRight}
-                                            size="l"
-                                            color="--fgcolor-neutral-weak" />
-                                    </Layout.Stack>
-                                    <Typography.Text variant="m-400">
-                                        Connect to an existing domain or add a new one.
-                                    </Typography.Text>
-                                </Layout.Stack>
-                            </Card.Link>
+        <Step.List>
+            <Step.Item state="current" shortLine={true} badgeText="Next steps">
+                <Layout.Stack>
+                    <Layout.Grid columns={!data.site.providerRepositoryId ? 4 : 3} columnsS={1}>
+                        {#if !data.site.providerRepositoryId}
                             <Card.Button
                                 radius="s"
                                 padding="s"
-                                on:click={() => (showInviteCollaborator = true)}>
+                                on:click={() => (showConnectRepositry = true)}>
                                 <Layout.Stack gap="s" style="height: 100%">
                                     <Layout.Stack
                                         direction="row"
                                         justifyContent="space-between"
                                         alignItems="center">
-                                        <Typography.Title size="s">Share site</Typography.Title>
+                                        <Typography.Title size="s">Add repository</Typography.Title>
                                         <Icon
                                             icon={IconArrowSmRight}
                                             size="l"
                                             color="--fgcolor-neutral-weak" />
                                     </Layout.Stack>
                                     <Typography.Text variant="m-400">
-                                        Share your progress and start collaborating with your team.
+                                        Connect to a new repository or an existing one.
                                     </Typography.Text>
                                 </Layout.Stack>
                             </Card.Button>
-                            <Card.Button
-                                radius="s"
-                                padding="s"
-                                on:click={() => (showOpenOnMobile = true)}>
-                                <Layout.Stack gap="s" style="height: 100%">
-                                    <Layout.Stack
-                                        direction="row"
-                                        justifyContent="space-between"
-                                        alignItems="center">
-                                        <Typography.Title size="s">Open on mobile</Typography.Title>
-                                        <Icon
-                                            icon={IconArrowSmRight}
-                                            size="l"
-                                            color="--fgcolor-neutral-weak" />
-                                    </Layout.Stack>
-                                    <Typography.Text variant="m-400">
-                                        Open the preview of your site on any mobile or tablet
-                                        device.
-                                    </Typography.Text>
+                        {/if}
+                        <Card.Link
+                            radius="s"
+                            padding="s"
+                            on:click={() => {
+                                trackEvent(Click.DomainCreateClick, {
+                                    source: 'sites_create_finish'
+                                });
+                            }}
+                            href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}/domains`}>
+                            <Layout.Stack gap="s" style="height: 100%">
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    <Typography.Title size="s">Add domain</Typography.Title>
+                                    <Icon
+                                        icon={IconArrowSmRight}
+                                        size="l"
+                                        color="--fgcolor-neutral-weak" />
                                 </Layout.Stack>
-                            </Card.Button>
-                        </Layout.Grid>
-                    </Layout.Stack>
-                </Step.Item>
-            </Step.List>
-        </Layout.Stack>
-    </div>
+                                <Typography.Text variant="m-400">
+                                    Connect to an existing domain or add a new one.
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </Card.Link>
+                        <Card.Button
+                            radius="s"
+                            padding="s"
+                            on:click={() => (showInviteCollaborator = true)}>
+                            <Layout.Stack gap="s" style="height: 100%">
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    <Typography.Title size="s">Share site</Typography.Title>
+                                    <Icon
+                                        icon={IconArrowSmRight}
+                                        size="l"
+                                        color="--fgcolor-neutral-weak" />
+                                </Layout.Stack>
+                                <Typography.Text variant="m-400">
+                                    Share your progress and start collaborating with your team.
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </Card.Button>
+                        <Card.Button
+                            radius="s"
+                            padding="s"
+                            on:click={() => (showOpenOnMobile = true)}>
+                            <Layout.Stack gap="s" style="height: 100%">
+                                <Layout.Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center">
+                                    <Typography.Title size="s">Open on mobile</Typography.Title>
+                                    <Icon
+                                        icon={IconArrowSmRight}
+                                        size="l"
+                                        color="--fgcolor-neutral-weak" />
+                                </Layout.Stack>
+                                <Typography.Text variant="m-400">
+                                    Open the preview of your site on any mobile or tablet device.
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </Card.Button>
+                    </Layout.Grid>
+                </Layout.Stack>
+            </Step.Item>
+        </Step.List>
+    </Layout.Stack>
 
     <svelte:fragment slot="footer">
         <Button
