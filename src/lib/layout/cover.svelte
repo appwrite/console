@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Layout } from '@appwrite.io/pink-svelte';
+    import { isStudio } from '$lib/system';
 
     export let size: 'small' | 'medium' | 'large' | 'xl' = null;
     export let blocksize = '152px';
@@ -9,7 +10,7 @@
         : '';
 </script>
 
-<div class="top-cover-console" style:block-size={blocksize}>
+<div class="top-cover-console" class:no-padding={isStudio} style:block-size={blocksize}>
     <div class="cover-container" {style}>
         <Layout.Stack direction="row" alignItems="center">
             <slot name="header" />
@@ -18,7 +19,7 @@
     </div>
 </div>
 
-<style>
+<style lang="scss">
     .top-cover-console {
         container-type: inline-size;
         padding-block-start: var(--base-32);
@@ -27,6 +28,11 @@
         background: var(--bgcolor-neutral-primary, #1d1d21);
         margin-left: -190px;
         padding-left: 190px;
+
+        &.no-padding {
+            margin-left: 0;
+            padding-left: 0;
+        }
     }
     .cover-container {
         position: relative;

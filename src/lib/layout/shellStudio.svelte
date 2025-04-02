@@ -1,6 +1,6 @@
 <script lang="ts">
     import { AvatarInitials, Breadcrumbs } from '$lib/components/index.js';
-    import { Avatar, Layout } from '@appwrite.io/pink-svelte';
+    import { Avatar, Divider, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/stores';
     import { organization, organizationList } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
@@ -26,6 +26,8 @@
             projects: loadedProjects
         };
     });
+
+    $: showChat = !showChat ? $page.url.pathname.endsWith('builder') : showChat;
 </script>
 
 <main>
@@ -36,9 +38,38 @@
                 <AvatarInitials name={$user?.name ?? ''} size="s" />
             </Layout.Stack>
         </header>
-        <div class="studio-content" class:project-sidebar={hasProjectSidebar}><slot /></div>
+        <div class="studio-content" class:project-sidebar={hasProjectSidebar}>
+            <Layout.Stack direction="row">
+                {#if showChat}
+                    <section class="chat">
+                        <Card.Base>
+                            <Layout.Stack height="calc(100vh - 120px)">
+                                <Typography.Text>Chat</Typography.Text>
+                                <Divider />
+                                <Typography.Text>
+                                    Phasellus a ultricies nulla. Proin tristique aliquam dui.
+                                    Phasellus porta sodales justo, et feugiat ligula pulvinar sed.
+                                    Morbi et nulla hendrerit, pellentesque est sodales, euismod
+                                    magna. Suspendisse vel massa arcu. Nulla ultrices sit amet metus
+                                    ac euismod. Curabitur ultrices aliquet libero, a pharetra orci
+                                    tristique in. Etiam egestas fermentum justo ut semper. Sed
+                                    vulputate eros erat, ac sollicitudin nulla condimentum volutpat.
+                                    Sed vulputate est ante.
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </Card.Base>
+                    </section>
+                {/if}
+                <Layout.Stack>
+                    {#if $page.data?.header}
+                        <svelte:component this={$page.data.header} />
+                    {/if}
+                    <slot />
+                </Layout.Stack>
+            </Layout.Stack>
+        </div>
         {#if hasProjectSidebar}
-            <SidebarProject project={$page.data.project} />
+            <SidebarProject project={$page.data.project} bind:showChat />
         {:else}
             <SidebarOrganization organization={$page.data.organization} />
         {/if}
@@ -69,5 +100,9 @@
             width: calc(100vw - 52px);
             margin-left: 52px;
         }
+    }
+
+    .chat {
+        width: 600px;
     }
 </style>
