@@ -19,7 +19,7 @@
     import Bandwidth from './bandwidth.svelte';
     import { createApiKey } from './keys/+page.svelte';
     import Onboard from './onboard.svelte';
-    import Realtime from './realtime.svelte';
+    // import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
     import { formatNum } from '$lib/helpers/string';
@@ -28,9 +28,9 @@
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
 
+    let period: UsagePeriods = '30d';
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
-    let period: UsagePeriods = '30d';
 
     onMount(handle);
     afterNavigate(handle);
@@ -197,10 +197,10 @@
                                 </div>
                             </div>
                         </a>
-                        <div
-                            class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
-                            <Realtime />
-                        </div>
+<!--                        <div-->
+<!--                            class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">-->
+<!--                            <Realtime />-->
+<!--                        </div>-->
                     </div>
                 </section>
             {/if}
@@ -237,3 +237,21 @@
         {/if}
     </Container>
 {/if}
+
+<style>
+    @media (min-width: 1199px) {
+        .grid-dashboard-1s-2m-6l {
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .is-3-columns-large-screen {
+            /* 6/12 = half */
+            grid-column: span 6;
+        }
+
+        .is-2-columns-large-screen {
+            /* 3/12 = 1/4 → fits 4 items per row */
+            grid-column: span 3;
+        }
+    }
+</style>
