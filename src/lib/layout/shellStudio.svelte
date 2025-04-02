@@ -11,7 +11,7 @@
     import { tierToPlan } from '$lib/stores/billing.js';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
 
-    $: hasProjectSidebar = $page.url.pathname.startsWith('/studio/proj');
+    $: hasProjectSidebar = $page.url.pathname.startsWith('/studio/project');
 
     export let loadedProjects: Array<NavbarProject> = [];
 
@@ -26,8 +26,6 @@
             projects: loadedProjects
         };
     });
-
-    $: console.log(organizations);
 </script>
 
 <main>
@@ -40,7 +38,7 @@
         </header>
         <div class="studio-content" class:project-sidebar={hasProjectSidebar}><slot /></div>
         {#if hasProjectSidebar}
-            <SidebarProject />
+            <SidebarProject project={$page.data.project} />
         {:else}
             <SidebarOrganization organization={$page.data.organization} />
         {/if}

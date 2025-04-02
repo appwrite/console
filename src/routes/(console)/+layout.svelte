@@ -333,20 +333,20 @@
 {#if isStudio}
     <ShellStudio bind:loadedProjects><slot /></ShellStudio>
 {:else}
-<Shell
-    showSideNavigation={page.url.pathname !== '/console' &&
-        !page?.params.organization &&
-        !page.url.pathname.includes('/console/account') &&
-        !page.url.pathname.includes('/console/card') &&
-        !page.url.pathname.includes('/console/onboarding')}
-    showHeader={!page.url.pathname.includes('/console/onboarding')}
-    showFooter={!page.url.pathname.includes('/console/onboarding')}
-    bind:loadedProjects
-    bind:projects={data.projects}>
-    <!--    <Header slot="header" />-->
-    <slot />
-    <Footer slot="footer" />
-</Shell>
+    <Shell
+        showSideNavigation={page.url.pathname !== '/console' &&
+            !page?.params.organization &&
+            !page.url.pathname.includes('/console/account') &&
+            !page.url.pathname.includes('/console/card') &&
+            !page.url.pathname.includes('/console/onboarding')}
+        showHeader={!page.url.pathname.includes('/console/onboarding')}
+        showFooter={!page.url.pathname.includes('/console/onboarding')}
+        bind:loadedProjects
+        bind:projects={data.projects}>
+        <!--    <Header slot="header" />-->
+        <slot />
+        <Footer slot="footer" />
+    </Shell>
 {/if}
 
 {#if $wizard.show && $wizard.component}
