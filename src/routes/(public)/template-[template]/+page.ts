@@ -2,7 +2,6 @@ import { BillingPlan } from '$lib/constants.js';
 import { sdk } from '$lib/stores/sdk.js';
 import { ID, type Models } from '@appwrite.io/console';
 import { isCloud } from '$lib/system.js';
-import { redirect } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { OrganizationList } from '$lib/stores/organization.js';
 
