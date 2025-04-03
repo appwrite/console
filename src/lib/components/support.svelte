@@ -8,7 +8,7 @@
     import { plansInfo } from '$lib/stores/billing';
     import { Card } from '$lib/components/index';
     import { app } from '$lib/stores/app';
-    import { currentPlan, organizationList } from '$lib/stores/organization';
+    import { currentPlan, type Organization, organizationList } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { base } from '$app/paths';
 
@@ -19,12 +19,12 @@
     $: hasPremiumSupport = $currentPlan?.premiumSupport ?? areAllOrganizationsPaid ?? false;
 
     $: areAllOrganizationsPaid = $organizationList.teams.every(
-        (team) => $plansInfo.get(team['billingPlan'])?.premiumSupport
+        (team) => $plansInfo.get((team as Organization).billingPlan)?.premiumSupport
     );
 
     // there can only be one free organization
     $: freeOrganization = $organizationList.teams.find(
-        (team) => !$plansInfo.get(team['billingPlan'])?.premiumSupport
+        (team) => !$plansInfo.get((team as Organization).billingPlan)?.premiumSupport
     );
 
     $: upgradeURL = `${base}/organization-${freeOrganization.$id}/change-plan`;
