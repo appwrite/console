@@ -3,9 +3,10 @@
     import { IconArrowUp, IconChevronLeft, IconPaperClip } from '@appwrite.io/pink-icons-svelte';
 
     export let showChat;
+    export let width;
 </script>
 
-<section class="chat" class:is-visible={showChat}>
+<section class="chat" style:width={showChat ? `${width}px` : 0} class:is-visible={showChat}>
     <Card.Base>
         <div class="chat-content">
             <Layout.Stack height="calc(100vh - 120px)" justifyContent="space-between">
@@ -49,7 +50,8 @@
         </div>
     </Card.Base>
 </section>
-<div class="chat-placeholder" class:is-visible={showChat}></div>
+<div class="chat-placeholder" class:is-visible={showChat} style:width={showChat ? `${width}px` : 0}>
+</div>
 
 <style lang="scss">
     .chat {
@@ -57,19 +59,11 @@
         position: fixed;
         top: 48px;
         overflow: hidden;
-        transition: width 0.3s ease-in-out;
-
-        &.is-visible {
-            width: 400px;
-        }
+        //transition: width 0.1s ease-in-out;
     }
 
     .chat-placeholder {
-        width: 0;
-        transition: width 0.3s ease-in-out;
-        &.is-visible {
-            width: 600px;
-        }
+        flex-shrink: 0;
     }
 
     .chat-content {

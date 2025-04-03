@@ -28,6 +28,34 @@
     });
 
     $: showChat = !showChat ? $page.url.pathname.endsWith('builder') : showChat;
+
+    let resizer;
+    let resizerLeftPosition = 500;
+    let chatWidth = resizerLeftPosition - 52;
+    let isResizing = false;
+
+    function startResize(event) {
+        isResizing = true;
+        window.addEventListener('mousemove', resize);
+        window.addEventListener('mouseup', stopResize);
+        document.body.style.userSelect = 'none';
+    }
+
+    function resize(event) {
+        if (!isResizing) return;
+
+        if (resizer) {
+            resizerLeftPosition = event.clientX;
+            chatWidth = event.clientX - 52;
+        }
+    }
+
+    function stopResize() {
+        isResizing = false;
+        window.removeEventListener('mousemove', resize);
+        window.removeEventListener('mouseup', stopResize);
+        document.body.style.userSelect = '';
+    }
 </script>
 
 <main>
@@ -39,9 +67,17 @@
             </Layout.Stack>
         </header>
         <div class="studio-content" class:project-sidebar={hasProjectSidebar}>
-            <Layout.Stack direction="row">
+            <Layout.Stack direction="row" gap="l">
                 {#if hasProjectSidebar}
-                    <Chat bind:showChat />
+                    <Chat bind:showChat bind:width={chatWidth} />
+                    {#if showChat}
+                        <div
+                            class="resizer"
+                            style:left={`${resizerLeftPosition}px`}
+                            bind:this={resizer}
+                            on:mousedown={startResize}>
+                        </div>
+                    {/if}
                 {/if}
 
                 <Card.Base>
@@ -85,6 +121,39 @@
         &.project-sidebar {
             width: calc(100vw - 52px);
             margin-left: 52px;
+        }
+    }
+
+    .resizer {
+        width: 7px;
+        margin-inline: 10px;
+        position: absolute;
+        height: calc(100vh - 82px);
+        margin-block-start: 6px;
+        cursor: col-resize;
+        margin-inline-start: 8px;
+
+        &::before {
+            content: '';
+            position: absolute;
+            height: 100%;
+            width: 1px;
+            background-color: var(--border-neutral);
+        }
+
+        &::after {
+            content: '';
+            position: absolute;
+            height: 100%;
+            width: 2px;
+            margin-left: -1px;
+            background-color: var(--border-neutral-strong);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        &:hover::after {
+            opacity: 1;
         }
     }
 </style>
