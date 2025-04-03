@@ -16,9 +16,9 @@
 
     export let showHeader = true;
 
-    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? areAllOrganizationsPaid ?? false;
+    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? allOrgsHavePremiumSupport ?? false;
 
-    $: areAllOrganizationsPaid = $organizationList.teams.every(
+    $: allOrgsHavePremiumSupport = $organizationList.teams.every(
         (team) => $plansInfo.get((team as Organization).billingPlan)?.premiumSupport
     );
 
