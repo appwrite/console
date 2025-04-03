@@ -32,6 +32,9 @@ importers:
       '@stripe/stripe-js':
         specifier: ^3.5.0
         version: 3.5.0
+      '@xterm/xterm':
+        specifier: ^5.5.0
+        version: 5.5.0
       ai:
         specifier: ^2.2.37
         version: 2.2.37(react@18.3.1)(solid-js@1.9.5)(svelte@5.25.3)(vue@3.5.13(typescript@5.8.2))
@@ -1438,6 +1441,9 @@ packages:
 
   '@vue/shared@3.5.13':
     resolution: {integrity: sha512-/hnE/qP5ZoGpol0a5mDi45bOd7t3tjYJBjsgCsivow7D48cJeV5l05RD82lPqi7gRiphZM37rnhW1l6ZoCNNnQ==}
+
+  '@xterm/xterm@5.5.0':
+    resolution: {integrity: sha512-hqJHYaQb5OptNunnyAnkHyM8aCjZ1MEIDTQu1iIbbTD/xops91NB5yq1ZK/dC2JDbVWtF23zUtl9JE2NqwT87A==}
 
   acorn-import-attributes@1.9.5:
     resolution: {integrity: sha512-n02Vykv5uA3eHGM/Z2dQrcD56kL8TyDb2p1+0P83PClMnC/nc+anbQRhIOWnSq4Ke/KvDPrY3C9hDtC/A3eHnQ==}
@@ -5006,6 +5012,8 @@ snapshots:
       vue: 3.5.13(typescript@5.8.2)
 
   '@vue/shared@3.5.13': {}
+
+  '@xterm/xterm@5.5.0': {}
 
   acorn-import-attributes@1.9.5(acorn@8.14.1):
     dependencies:
