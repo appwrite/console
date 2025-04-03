@@ -6,9 +6,8 @@
     type Props = {
         showChat: boolean;
         width: number;
-        children: Snippet;
     };
-    let { showChat = $bindable(), width, children }: Props = $props();
+    let { showChat = $bindable(), width }: Props = $props();
 </script>
 
 <section class="chat" style:width={showChat ? `${width}px` : 0} class:is-visible={showChat}>
@@ -33,7 +32,6 @@
                                 color="--fgcolor-neutral-tertiary" /></Button.Button>
                     </Layout.Stack>
                     <Divider />
-                    {@render children?.()}
                 </Layout.Stack>
                 <div class="input">
                     <textarea placeholder="Reply..."></textarea>

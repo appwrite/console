@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AvatarInitials, Breadcrumbs, Chat } from '$lib/components/index.js';
+    import { AvatarInitials, Breadcrumbs } from '$lib/components/index.js';
     import { Avatar, Divider, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/stores';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -10,6 +10,7 @@
     import { isCloud } from '$lib/system.js';
     import { tierToPlan } from '$lib/stores/billing.js';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
+    import Chat from '$lib/components/chat/chat.svelte';
 
     $: hasProjectSidebar = $page.url.pathname.startsWith('/studio/project');
 
@@ -71,7 +72,7 @@
         <div class="studio-content" class:project-sidebar={hasProjectSidebar}>
             <Layout.Stack direction="row" gap="l">
                 {#if hasProjectSidebar}
-                    <Chat bind:showChat bind:width={chatWidth} />
+                    <Chat bind:showChat width={chatWidth} />
                     {#if showChat}
                         <div
                             class="resizer"
