@@ -18,6 +18,7 @@
     import DeleteAllSessions from '../deleteAllSessions.svelte';
     import DeleteSessions from '../deleteSession.svelte';
     import type { PageData } from './$types';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     export let data: PageData;
 
@@ -47,6 +48,7 @@
                 <TableCellHead width={140}>Session</TableCellHead>
                 <TableCellHead width={140}>Location</TableCellHead>
                 <TableCellHead width={140}>IP</TableCellHead>
+                <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
@@ -84,6 +86,7 @@
                         <TableCellText title="Session">{session.clientType}</TableCellText>
                         <TableCellText title="Location">{session.countryName}</TableCellText>
                         <TableCellText title="IP">{session.ip}</TableCellText>
+                        <TableCellText title ="Created">{toLocaleDateTime(session.$createdAt)}</TableCellText>
                         <TableCell>
                             <Button
                                 text
