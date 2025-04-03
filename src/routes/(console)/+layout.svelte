@@ -33,7 +33,7 @@
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
-    import { hasStripePublicKey, isCloud, isStudio, VARS } from '$lib/system';
+    import { consoleProfile, hasStripePublicKey, isCloud, isStudio, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
@@ -330,7 +330,7 @@
 </script>
 
 <CommandCenter />
-{#if isStudio}
+{#if consoleProfile.hasChatLayout}
     <ShellStudio bind:loadedProjects><slot /></ShellStudio>
 {:else}
     <Shell
