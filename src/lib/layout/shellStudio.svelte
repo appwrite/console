@@ -39,6 +39,7 @@
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
         document.body.style.userSelect = 'none';
+        document.getElementById('preview-iframe').style.pointerEvents = 'none';
     }
 
     function resize(event) {
@@ -55,6 +56,7 @@
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
         document.body.style.userSelect = '';
+        document.getElementById('preview-iframe').style.pointerEvents = '';
     }
 </script>
 
