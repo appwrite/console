@@ -248,4 +248,125 @@ const client = new Client();
         expect(item.type).toBe('file');
         expect(item.content).toBe('function Component() { return <div>Hello</div>; }');
     });
+
+    it('should handle partially closed action tags correctly', () => {
+        parser.chunk('<action type="file" src="test.js">console.log("test");</ac');
+        parser.chunk('tion>');
+        parser.end();
+        
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+        
+        expect(items.length).toBe(1);
+        const [item] = items;
+        expectAction(item);
+        expect(item.complete).toBe(true);
+        expect(item.content).toBe('console.log("test");');
+    });
+
+    it('should handle multiple adjacent actions without text between', () => {
+        parser.chunk('<action type="file" src="file1.js">code1</action><action type="file" src="file2.js">code2</action>');
+        parser.end();
+        
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+        
+        expect(items.length).toBe(2);
+        const [action1, action2] = items;
+        expectAction(action1);
+        expectAction(action2);
+        expect(action1.src).toBe('file1.js');
+        expect(action1.content).toBe('code1');
+        expect(action2.src).toBe('file2.js');
+        expect(action2.content).toBe('code2');
+    });
+
+    it('should handle empty action content correctly', () => {
+        parser.chunk('<action type="shell"></action>');
+        parser.end();
+        
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+        
+        expect(items.length).toBe(1);
+        const [item] = items;
+        expectAction(item);
+        expect(item.content).toBe('');
+        expect(item.complete).toBe(true);
+    });
+
+    it('should filter out empty text chunks', () => {
+        parser.chunk('  \n  <action type="shell">command</action>  \n  ');
+        parser.end();
+        
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+        
+        // Only the action should remain, empty text chunks should be filtered
+        expect(items.length).toBe(1);
+        const [item] = items;
+        expectAction(item);
+        expect(item.content).toBe('command');
+    });
+
+    it('should handle malformed action tags gracefully', () => {
+        parser.chunk('<action type="file" src="test.js" unclosed');
+        parser.chunk('>content</action>');
+        parser.end();
+        
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+        
+        expect(items.length).toBe(1);
+        const [item] = items;
+        expectAction(item);
+        expect(item.content).toBe('content');
+    });
+
+    it('should handle large content streaming properly', () => {
+        const largeText = 'A'.repeat(1000);
+        parser.chunk('Text before ');
+        parser.chunk('<action type="file" src="large.txt">');
+        parser.chunk(largeText);
+        parser.chunk('</action>');
+        parser.end();
+        
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+        
+        expect(items.length).toBe(2);
+        const [text, action] = items;
+        expectText(text);
+        expectAction(action);
+        expect(action.content.length).toBe(1000);
+    });
+
+    it('should handle end() call with incomplete action', () => {
+        parser.chunk('<action type="file" src="test.js">content');
+        // No closing tag, but end() is called
+        parser.end();
+        
+        let items: ParsedItem[] = [];
+        parser.parsed.subscribe((value) => {
+            items = value;
+        })();
+        
+        expect(items.length).toBe(1);
+        const [item] = items;
+        expectAction(item);
+        expect(item.content).toBe('content');
+        expect(item.complete).toBe(true);
+    });
 });
