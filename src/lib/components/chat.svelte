@@ -1,9 +1,14 @@
-<script>
+<script lang="ts">
     import { Divider, Card, Typography, Layout, Button, Icon } from '@appwrite.io/pink-svelte';
     import { IconArrowUp, IconChevronLeft, IconPaperClip } from '@appwrite.io/pink-icons-svelte';
+    import type { Snippet } from 'svelte';
 
-    export let showChat;
-    export let width;
+    type Props = {
+        showChat: boolean;
+        width: number;
+        children: Snippet;
+    };
+    let { showChat = $bindable(), width, children }: Props = $props();
 </script>
 
 <section class="chat" style:width={showChat ? `${width}px` : 0} class:is-visible={showChat}>
@@ -27,9 +32,8 @@
                                 icon={IconChevronLeft}
                                 color="--fgcolor-neutral-tertiary" /></Button.Button>
                     </Layout.Stack>
-
                     <Divider />
-                    <!-- CHAT CONTENT -->
+                    {@render children?.()}
                 </Layout.Stack>
                 <div class="input">
                     <textarea placeholder="Reply..."></textarea>
