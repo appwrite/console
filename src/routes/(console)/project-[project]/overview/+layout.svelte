@@ -197,10 +197,10 @@
                                 </div>
                             </div>
                         </a>
-<!--                        <div-->
-<!--                            class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">-->
-<!--                            <Realtime />-->
-<!--                        </div>-->
+                        <!--                        <div-->
+                        <!--                            class="card is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">-->
+                        <!--                            <Realtime />-->
+                        <!--                        </div>-->
                     </div>
                 </section>
             {/if}
