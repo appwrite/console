@@ -5,18 +5,18 @@
     import { CardGrid, Heading } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList } from '$lib/elements/forms';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
+    import { runtimesList } from '$lib/stores/runtimes';
     import { sdk } from '$lib/stores/sdk';
+    import { specificationsList } from '$lib/stores/specifications';
+    import { isCloud } from '$lib/system';
+    import SpecificationsTooltip from '$lib/wizards/functions/components/specificationsTooltip.svelte';
+    import { Runtime } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { func } from '../store';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { specificationsList } from '$lib/stores/specifications';
-    import { runtimesList } from '$lib/stores/runtimes';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime } from '@appwrite.io/console';
-    import { isCloud } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
-    import SpecificationsTooltip from '$lib/wizards/functions/components/specificationsTooltip.svelte';
 
     const functionId = $page.params.function;
     let runtime: string = null;
@@ -102,17 +102,19 @@
                     {options}
                     required
                     hideRequired />
-                <InputSelect
-                    label="CPU and memory"
-                    id="size"
-                    placeholder="Select runtime specification"
-                    bind:value={specification}
-                    options={specificationOptions}
-                    popover={isCloud && $organization?.billingPlan === BillingPlan.FREE
-                        ? SpecificationsTooltip
-                        : null}
-                    required
-                    hideRequired />
+                {#if isCloud}
+                    <InputSelect
+                        label="CPU and memory"
+                        id="size"
+                        placeholder="Select runtime specification"
+                        bind:value={specification}
+                        options={specificationOptions}
+                        popover={$organization?.billingPlan === BillingPlan.FREE
+                            ? SpecificationsTooltip
+                            : null}
+                        required
+                        hideRequired />
+                {/if}
             </FormList>
         </svelte:fragment>
 
