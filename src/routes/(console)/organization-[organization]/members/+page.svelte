@@ -73,6 +73,7 @@
             total={data.organizationMembers.total}
             buttonText={$isOwner ? 'Invite' : ''}
             buttonMethod={() => newMemberModal.set(true)}
+            customPillText="Members limited"
             buttonDisabled={!$currentPlan?.addons?.seats?.supported} />
 
         <TableScroll>

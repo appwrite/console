@@ -29,6 +29,7 @@
     export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
     export let showAlert = true;
     export let level: 'organization' | 'project' = 'project';
+    export let customPillText: string | undefined = undefined;
 
     export let buttonText: string = null;
     export let buttonMethod: () => void = null;
@@ -132,7 +133,12 @@
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info" />{total}/{limit} created
+                        <span class="icon-info" />
+                        {#if customPillText}
+                            {customPillText}
+                        {:else}
+                            {total}/{limit} created
+                        {/if}
                     </Pill>
                 {:else if $organization?.billingPlan !== BillingPlan.SCALE}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
