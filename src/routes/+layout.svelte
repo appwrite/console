@@ -115,7 +115,7 @@
             lastname: $user.name.split(' ')[1]
         };
 
-        if (dev) return;
+        if (dev || !Object.keys($user).length) return;
         // @ts-expect-error
         Reo.identify(reoIdentity);
     });
