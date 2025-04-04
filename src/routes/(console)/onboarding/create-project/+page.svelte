@@ -115,7 +115,7 @@
                 on:submit={createProject}>
                 <svelte:fragment slot="submit">
                     <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Button.Button type="submit" variant="primary" size="s">
+                        <Button.Button autofocus type="submit" variant="primary" size="s">
                             Create
                         </Button.Button>
                     </Layout.Stack>
