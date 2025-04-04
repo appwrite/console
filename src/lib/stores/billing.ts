@@ -149,6 +149,14 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     const info = get(plansInfo);
     if (!info) return 0;
     plan ??= info.get(tier ?? get(organization)?.billingPlan);
+    // members are no longer a variable on plan itself!
+    // the correct info for members/seats, resides in `addons`.
+    // plan > addons > seats/others
+    if (serviceId === 'members') {
+        // some don't include `limit`, so we fallback!
+        return plan?.['addons']['seats']['limit'] ?? 1;
+    }
+
     return plan?.[serviceId] ?? 0;
 }
 

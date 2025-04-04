@@ -23,7 +23,7 @@
     import { Container, ContainerHeader } from '$lib/layout';
     import { getRoleLabel } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { newMemberModal, organization } from '$lib/stores/organization';
+    import { currentPlan, newMemberModal, organization } from '$lib/stores/organization';
     import { isOwner } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
@@ -69,10 +69,11 @@
     {#if data.organizationMembers.total}
         <ContainerHeader
             title="Members"
+            level="organization"
             total={data.organizationMembers.total}
             buttonText={$isOwner ? 'Invite' : ''}
             buttonMethod={() => newMemberModal.set(true)}
-            showAlert={false} />
+            buttonDisabled={!$currentPlan?.addons?.seats?.supported} />
 
         <TableScroll>
             <TableHeader>
