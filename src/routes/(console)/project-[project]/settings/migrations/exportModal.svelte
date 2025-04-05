@@ -3,8 +3,10 @@
     import { Alert, Box, Modal } from '$lib/components';
     import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
-    import { feedback } from '$lib/stores/feedback';
+    import { feedback, feedbackData } from '$lib/stores/feedback';
+    import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
     import { project } from '../../store';
 
     export let show = false;
@@ -53,7 +55,18 @@
         const { endpoint, feedback: message } = formData;
 
         try {
-            await feedback.submitFeedback(`feedback-${$feedback.type}`, message, $page.url.href);
+            await feedback.submitFeedback(
+                `feedback-${$feedback.type}`,
+                message,
+                $page.url.href,
+                $user.name,
+                $user.email,
+                $organization?.billingPlan,
+                $feedbackData.value,
+                $organization?.$id,
+                $project?.$id,
+                $user.$id
+            );
         } catch (error) {
             console.error(
                 'Feedback could not be submitted, but we continue to redirect to do export.'
