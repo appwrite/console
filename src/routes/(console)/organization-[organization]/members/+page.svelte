@@ -74,6 +74,7 @@
             buttonText={$isOwner ? 'Invite' : ''}
             buttonMethod={() => newMemberModal.set(true)}
             customPillText="Members limited"
+            showPillMessage={!$currentPlan?.addons?.seats?.supported}
             buttonDisabled={!$currentPlan?.addons?.seats?.supported} />
 
         <TableScroll>
