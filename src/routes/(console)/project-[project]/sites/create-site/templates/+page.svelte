@@ -34,22 +34,29 @@
         goto(target.toString());
     }
 
-    function applySearch(event: CustomEvent<string>) {
-        debounce(() => {
-            const value = event.detail;
-            const target = new URL(page.url);
+    let searchText = page.url.searchParams.get('search') ?? '';
 
-            if (value.length > 0) {
-                target.searchParams.set('search', value);
-            } else {
-                target.searchParams.delete('search');
-            }
-            target.searchParams.delete('page');
-            goto(target.toString(), { keepFocus: true });
-        }, 250)();
+    const debouncedApplySearch = debounce((value: string) => {
+        const trimmed = value.trim();
+        const url = new URL(page.url);
+
+        if (trimmed.length > 0) {
+            url.searchParams.set('search', trimmed);
+        } else {
+            url.searchParams.delete('search');
+        }
+
+        url.searchParams.delete('page');
+        goto(url.toString(), { keepFocus: true });
+    }, 250);
+
+    function applySearch(event: CustomEvent<string>) {
+        searchText = event.detail;
+        debouncedApplySearch(event.detail);
     }
 
     function clearSearch() {
+        searchText = '';
         const target = new URL(page.url);
         target.search = '';
         goto(target.toString());
@@ -76,7 +83,7 @@
         <Layout.Stack gap="xl">
             <InputSearch
                 placeholder="Search templates"
-                value={page.url.searchParams.get('search')}
+                value={searchText}
                 on:clear={clearSearch}
                 on:change={applySearch} />
 
