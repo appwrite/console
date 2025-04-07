@@ -11,6 +11,7 @@
     import { presets } from './store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { createRecord } from '$lib/helpers/domains';
 
     export let show = false;
     export let selectedPreset: (typeof presets)[number];
@@ -35,16 +36,9 @@
 
     async function handleSubmit() {
         try {
-            //TODO: create DNS records
             if (records.total) {
-                const promises = records.dnsRecords.map((record) =>
-                    sdk.forConsole.domains.createRecordMX(
-                        page.params.domain,
-                        record.name,
-                        record.value,
-                        record.ttl,
-                        record.priority
-                    )
+                const promises = records.dnsRecords.map(
+                    async (record) => await createRecord(record, page.params.domain)
                 );
                 await Promise.all(promises);
             }
@@ -62,8 +56,6 @@
             trackError(e, Submit.RecordCreate);
         }
     }
-
-    $: console.log(selectedPreset);
 </script>
 
 <Modal

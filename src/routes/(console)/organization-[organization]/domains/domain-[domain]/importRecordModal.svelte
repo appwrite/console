@@ -6,9 +6,8 @@
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { removeFile } from '$lib/helpers/files';
-    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { parseDnsRecords } from '$lib/helpers/domains';
+    import { createRecord, parseDnsRecords } from '$lib/helpers/domains';
 
     export let show = false;
     let files: FileList;
@@ -28,102 +27,7 @@
                 recordCount += records.length;
 
                 for (const record of records) {
-                    switch (type) {
-                        case 'A':
-                            await sdk.forConsole.domains.createRecordA(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.ttl,
-                                record.comment
-                            );
-                            break;
-                        case 'AAAA':
-                            await sdk.forConsole.domains.createRecordAAAA(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.ttl,
-                                record.comment
-                            );
-                            break;
-                        case 'CNAME':
-                            await sdk.forConsole.domains.createRecordCNAME(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.ttl,
-                                record.comment
-                            );
-                            break;
-                        case 'MX':
-                            await sdk.forConsole.domains.createRecordMX(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.priority || 10,
-                                record.ttl,
-                                record.comment
-                            );
-                            break;
-                        case 'TXT':
-                            await sdk.forConsole.domains.createRecordTXT(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.ttl,
-                                record.comment
-                            );
-                            break;
-                        case 'NS':
-                            await sdk.forConsole.domains.createRecordNS(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.ttl,
-                                record.comment
-                            );
-                            break;
-                        case 'SRV':
-                            await sdk.forConsole.domains.createRecordSRV(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.ttl,
-                                record.priority,
-                                record.weight,
-                                record.port,
-                                record.comment
-                            );
-                            break;
-                        case 'CAA':
-                            await sdk.forConsole.domains.createRecordCAA(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.ttl,
-                                record.comment
-                            );
-                            break;
-                        case 'PTR':
-                            await sdk.forConsole.domains.createRecordHTTPS(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.ttl,
-                                record.comment
-                            );
-                            break;
-                        case 'ALIAS':
-                            await sdk.forConsole.domains.createRecordAlias(
-                                page.params.domain,
-                                record.name,
-                                record.value,
-                                record.ttl,
-                                record.comment
-                            );
-                            break;
-                    }
+                    await createRecord(record, page.params.domain);
                 }
             }
 
