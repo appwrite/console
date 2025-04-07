@@ -1,6 +1,14 @@
 <script lang="ts">
     import { AvatarInitials, Breadcrumbs } from '$lib/components/index.js';
-    import { Avatar, Divider, Layout, Card, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Avatar,
+        Divider,
+        Layout,
+        Card,
+        Typography,
+        Icon,
+        Button
+    } from '@appwrite.io/pink-svelte';
     import { page } from '$app/stores';
     import { organization, organizationList } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
@@ -11,10 +19,12 @@
     import { tierToPlan } from '$lib/stores/billing.js';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
     import Chat from '$lib/components/chat/chat.svelte';
+    import { IconMenuAlt4 } from '@appwrite.io/pink-icons-svelte';
 
     $: hasProjectSidebar = $page.url.pathname.startsWith('/studio/project');
 
     export let loadedProjects: Array<NavbarProject> = [];
+    let showSideNavigation = false;
 
     $: organizations = $organizationList.teams.map((org) => {
         const billingPlan = org['billingPlan'];
@@ -65,7 +75,20 @@
     <Layout.Stack>
         <header>
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Breadcrumbs {organizations} />
+                <Layout.Stack direction="row" alignItems="center" gap="none">
+                    <div class="only-mobile-tablet">
+                        <Button.Button
+                            variant="secondary"
+                            size="xs"
+                            on:click={() => {
+                                showSideNavigation = !showSideNavigation;
+                            }}
+                            ><Icon
+                                icon={IconMenuAlt4}
+                                color="--fgcolor-neutral-tertiary" /></Button.Button>
+                    </div>
+                    <Breadcrumbs {organizations} />
+                </Layout.Stack>
                 <AvatarInitials name={$user?.name ?? ''} size="s" />
             </Layout.Stack>
         </header>
@@ -96,7 +119,9 @@
         {#if hasProjectSidebar}
             <SidebarProject project={$page.data.project} bind:showChat />
         {:else}
-            <SidebarOrganization organization={$page.data.organization} />
+            <SidebarOrganization
+                organization={$page.data.organization}
+                bind:isOpen={showSideNavigation} />
         {/if}
     </Layout.Stack>
 </main>
@@ -112,18 +137,30 @@
         top: 0;
         width: 100%;
         padding: var(--space-4);
+        z-index: 10;
+        background-color: var(--bgcolor-neutral-default);
     }
 
     .studio-content {
         min-height: calc(100vh - 48px);
         margin-top: 48px;
-        width: calc(100vw - 200px);
-        margin-left: 200px;
+        width: 100vw;
+
         padding-right: var(--space-4);
+        padding-left: var(--space-4);
+
+        @media (min-width: 1024px) {
+            width: calc(100vw - 200px);
+            margin-left: 200px;
+            padding-left: 0;
+        }
 
         &.project-sidebar {
             width: calc(100vw - 52px);
-            margin-left: 52px;
+
+            @media (min-width: 1024px) {
+                margin-left: 52px;
+            }
         }
     }
 
@@ -157,6 +194,12 @@
 
         &:hover::after {
             opacity: 1;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .only-mobile-tablet {
+            display: none;
         }
     }
 </style>

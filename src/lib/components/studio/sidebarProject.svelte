@@ -13,6 +13,7 @@
 
     export let project;
     export let showChat;
+    export let isOpen = true;
 </script>
 
 <nav style:--icon-fill="var(--fgcolor-neutral-tertiary)">
