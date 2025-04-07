@@ -171,9 +171,7 @@
                 <Layout.Stack>
                     <Layout.Stack direction="row" alignItems="center">
                         <Layout.Stack direction="row" gap="s" wrap="wrap">
-                            {#if data.deploymentList.total}
-                                <QuickFilters {columns} analyticsSource="function_deployments" />
-                            {/if}
+                            <QuickFilters {columns} analyticsSource="function_deployments" />
                         </Layout.Stack>
                         <Layout.Stack direction="row" gap="s" inline>
                             {#if data.deploymentList.total}
