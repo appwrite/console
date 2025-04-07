@@ -69,9 +69,6 @@
     let specification = specificationOptions[0].value;
 
     onMount(async () => {
-        if (page.url.searchParams.has('runtime')) {
-            runtime = page.url.searchParams.get('runtime') as Runtime;
-        }
         if (!$installation?.$id) {
             $installation = data.installations.installations[0];
         }
@@ -87,7 +84,11 @@
                 const versionB = b.split('-')[1];
                 return versionB.localeCompare(versionA, undefined, { numeric: true });
             });
-            runtime = matchingRuntimes[0];
+            if (page.url.searchParams.has('runtime')) {
+                runtime = page.url.searchParams.get('runtime') as Runtime;
+            } else {
+                runtime = matchingRuntimes[0];
+            }
         }
     });
 
@@ -249,7 +250,6 @@
                         bind:specification
                         {specificationOptions}
                         {options} />
-
                     <Permissions
                         templateScopes={data.template.scopes}
                         bind:selectedScopes
