@@ -13,7 +13,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { InputText } from '$lib/elements/forms/index.js';
 
-    const frameUrl = 'https://app.posthog.com/embedded/fEjuk1e61iQjYiRjODPDjpbsyhIfpg';
+    const frameUrl = 'https://getbootstrap.com/docs/5.3/examples/blog/';
 
     const projectId = page.params.project;
     const path = `${base}/project-${projectId}/builder`;
