@@ -107,31 +107,17 @@
                 <Accordion title="Framework" open>
                     <Layout.Stack>
                         {#each [...data.frameworks] as framework}
-                            {#if !framework.toLowerCase().includes('other')}
-                                <Layout.Stack direction="row" gap="s">
-                                    <Selector.Checkbox
-                                        id={framework}
-                                        size="s"
-                                        label={framework?.split('-')?.join(' ')}
-                                        checked={page.url.searchParams
-                                            .getAll('framework')
-                                            .includes(framework)}
-                                        on:change={(e) => applyFilter('framework', framework, e)} />
-                                </Layout.Stack>
-                            {/if}
-                        {/each}
-                        {#if data.frameworks.includes('Other')}
                             <Layout.Stack direction="row" gap="s">
                                 <Selector.Checkbox
-                                    id="other"
+                                    id={framework}
                                     size="s"
-                                    label="Other"
+                                    label={framework?.split('-')?.join(' ')}
                                     checked={page.url.searchParams
                                         .getAll('framework')
-                                        .includes('Other')}
-                                    on:change={(e) => applyFilter('framework', 'Other', e)} />
+                                        .includes(framework)}
+                                    on:change={(e) => applyFilter('framework', framework, e)} />
                             </Layout.Stack>
-                        {/if}
+                        {/each}
                     </Layout.Stack>
                 </Accordion>
             </Layout.Stack>

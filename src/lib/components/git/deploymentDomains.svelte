@@ -12,28 +12,37 @@
     export let hideQRCode = true;
 
     const dispatch = createEventDispatcher();
+
+    $: sortedDomains = domains?.rules?.sort((a, b) => {
+        if (a?.trigger === 'manual' && b?.trigger !== 'manual') {
+            return -1;
+        } else if (a?.trigger !== 'manual' && b?.trigger === 'manual') {
+            return 1;
+        }
+        return 0;
+    });
 </script>
 
 <Layout.Stack gap="xxs" direction="row" alignItems="center">
     {#if domains?.total}
-        <Link external href={`${$protocol}${domains.rules[0]?.domain}`} variant="muted">
+        <Link external href={`${$protocol}${sortedDomains[0]?.domain}`} variant="muted">
             <Layout.Stack gap="xxs" direction="row" alignItems="center">
                 <Trim alternativeTrim>
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                        {domains.rules[0]?.domain}
+                        {sortedDomains[0]?.domain}
                     </Typography.Text>
                 </Trim>
             </Layout.Stack>
         </Link>
 
-        {#if domains.rules.length > 1}
+        {#if sortedDomains.length > 1}
             <Popover padding="none" let:toggle>
                 <Tag size="xs" on:click={toggle}>
-                    +{domains.rules.length - 1}
+                    +{sortedDomains.length - 1}
                 </Tag>
                 <svelte:fragment slot="tooltip">
                     <ActionMenu.Root>
-                        {#each domains.rules as rule, i}
+                        {#each sortedDomains as rule, i}
                             {#if i !== 0}
                                 <ActionMenu.Item.Anchor
                                     href={`${$protocol}${rule.domain}`}

@@ -19,7 +19,37 @@ export const load = async ({ url, route }) => {
         [new Set<string>(), new Set<string>()]
     );
 
-    const frameworks = Array.from(frameworksSet).sort((a, b) => a.localeCompare(b));
+    const frameworkOrder = [
+        'Next.js',
+        'Nuxt',
+        'SvelteKit',
+        'Astro',
+        'Remix',
+        'Flutter',
+        'React',
+        'Vue.js',
+        'Svelte',
+        'Lynx',
+        'Angular',
+        'Analog',
+        'Vite',
+        'Other'
+    ];
+    const frameworks = Array.from(frameworksSet)
+        .sort((a, b) => a.localeCompare(b))
+        .sort((a, b) => {
+            const aIndex = frameworkOrder.indexOf(a);
+            const bIndex = frameworkOrder.indexOf(b);
+            if (aIndex === -1 && bIndex === -1) {
+                return a.localeCompare(b);
+            } else if (aIndex === -1) {
+                return 1;
+            } else if (bIndex === -1) {
+                return -1;
+            }
+            return aIndex - bIndex;
+        });
+
     const useCases = Array.from(useCasesSet).sort((a, b) => a.localeCompare(b));
 
     const templates = siteTemplatesList.templates.filter((template) => {
