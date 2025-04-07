@@ -3,8 +3,6 @@ import { sveltePreprocess } from 'svelte-preprocess';
 import { preprocessMeltUI, sequence } from '@melt-ui/pp';
 import 'dotenv/config';
 
-const projectProfile = process.env.PUBLIC_PROJECT_PROFILE || 'console';
-
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
     preprocess: sequence([
@@ -29,7 +27,7 @@ const config = {
             precompress: true
         }),
         paths: {
-            base: `/${projectProfile}`
+            base: `/console`
         }
     },
     vitePlugin: {

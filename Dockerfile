@@ -40,5 +40,5 @@ FROM nginx:1.25-alpine
 
 EXPOSE 80
 
-COPY docker/nginx.$PUBLIC_PROJECT_PROFILE.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html/console
