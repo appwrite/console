@@ -20,8 +20,9 @@
     import type { NavbarProject } from '$lib/components/navbar.svelte';
     import Chat from '$lib/components/chat/chat.svelte';
     import { IconMenuAlt4 } from '@appwrite.io/pink-icons-svelte';
+    import { base } from '$app/paths';
 
-    $: hasProjectSidebar = $page.url.pathname.startsWith('/studio/project');
+    $: hasProjectSidebar = $page.url.pathname.startsWith(base + '/project');
 
     export let loadedProjects: Array<NavbarProject> = [];
     let showSideNavigation = false;
