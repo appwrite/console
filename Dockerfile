@@ -36,7 +36,7 @@ ENV NODE_OPTIONS=--max_old_space_size=8192
 
 RUN pnpm run build
 
-FROM nginx:1.25-alpine
+FROM nginx:1.27-alpine
 
 EXPOSE 80
 
