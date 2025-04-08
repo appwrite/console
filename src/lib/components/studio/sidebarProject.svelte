@@ -10,7 +10,7 @@
         IconUserGroup
     } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { ComponentType } from 'svelte';
 
     export let project;
@@ -54,6 +54,9 @@
             <ActionMenu.Item.Button
                 on:click={() => {
                     showChat = !showChat;
+                    if ($isTabletViewport) {
+                        isOpen = false;
+                    }
                 }}>
                 <Icon icon={IconSparkles} />
             </ActionMenu.Item.Button>
