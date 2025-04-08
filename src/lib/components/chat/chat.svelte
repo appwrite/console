@@ -18,35 +18,57 @@
     let minimizeChat = $state(false);
 </script>
 
-<section class="chat" style:width={showChat ? `${width}px` : 0} class:is-visible={showChat}>
+<section
+    class="chat"
+    style:width={$isSmallViewport ? 'calc(100vw - 16px)' : showChat ? `${width}px` : 0}
+    class:minimize-chat={minimizeChat}
+    class:is-visible={showChat}>
     <div class="chat-content">
-        <header>
-            <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography.Text>Chat</Typography.Text>
-                <Button.Button
-                    icon
-                    variant="secondary"
-                    size="s"
-                    on:click={() => {
-                        showChat = false;
-                    }}
-                    ><Icon
-                        icon={IconChevronLeft}
-                        color="--fgcolor-neutral-tertiary" /></Button.Button>
-            </Layout.Stack>
-        </header>
-        <Divider />
+        {#if !minimizeChat}
+            <header>
+                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography.Text>Chat</Typography.Text>
+                    <Button.Button
+                        icon
+                        variant="secondary"
+                        size="s"
+                        on:click={() => {
+                            if ($isSmallViewport) {
+                                minimizeChat = !minimizeChat;
+                            } else {
+                                showChat = false;
+                            }
+                        }}
+                        ><Icon
+                            icon={$isSmallViewport ? IconChevronDown : IconChevronLeft}
+                            color="--fgcolor-neutral-tertiary" /></Button.Button>
+                </Layout.Stack>
+            </header>
+            <Divider />
 
-        <Conversation />
-        <div class="input">
-            <textarea placeholder="Reply..."></textarea>
-            <Layout.Stack direction="row" justifyContent="flex-end">
-                <Button.Button icon variant="secondary" size="s"
-                    ><Icon
-                        icon={IconPaperClip}
-                        color="--fgcolor-neutral-tertiary" /></Button.Button>
-                <Button.Button icon variant="secondary" size="s"
-                    ><Icon icon={IconArrowUp} color="--fgcolor-neutral-tertiary" /></Button.Button>
+            <Conversation />
+        {/if}
+        <div class="input" class:minimize-chat={minimizeChat}>
+            <Layout.Stack
+                direction={minimizeChat ? 'row' : 'column'}
+                alignItems={minimizeChat ? 'center' : 'flex-end'}>
+                <textarea
+                    placeholder="Chat with Imagine..."
+                    on:focus={() => {
+                        minimizeChat = false;
+                    }}></textarea>
+                <div class="options">
+                    <Layout.Stack direction="row" justifyContent="flex-end">
+                        <Button.Button icon variant="secondary" size="s"
+                            ><Icon
+                                icon={IconPaperClip}
+                                color="--fgcolor-neutral-tertiary" /></Button.Button>
+                        <Button.Button icon variant="secondary" size="s"
+                            ><Icon
+                                icon={IconArrowUp}
+                                color="--fgcolor-neutral-tertiary" /></Button.Button>
+                    </Layout.Stack>
+                </div>
             </Layout.Stack>
         </div>
     </div>
@@ -65,9 +87,19 @@
     .chat {
         width: 0;
         position: fixed;
-        top: 48px;
-        height: calc(100vh - 48px);
-        //transition: width 0.1s ease-in-out;
+        top: 56px;
+        height: calc(100vh - 56px);
+        z-index: 2;
+
+        @media (min-width: 768px) {
+            top: 48px;
+            height: calc(100vh - 70px);
+        }
+    }
+    .chat.minimize-chat {
+        top: auto;
+        bottom: var(--space-4);
+        height: 60px;
     }
 
     .chat-placeholder {

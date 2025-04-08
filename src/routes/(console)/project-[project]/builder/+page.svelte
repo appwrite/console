@@ -4,6 +4,7 @@
     import { page } from '$app/state';
     import { Tab, Tabs, Terminal } from '$lib/components';
     import { base } from '$app/paths';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconChevronDoubleUp,
         IconDeviceMobile,
@@ -64,7 +65,10 @@
     }
 </script>
 
-<Layout.Stack direction="column" height="calc(100vh - 120px)" gap="none">
+<Layout.Stack
+    direction="column"
+    height={$isSmallViewport ? 'calc(100vh - 203px)' : 'calc(100vh - 120px)'}
+    gap="none">
     <Layout.Stack direction="column">
         <Tabs>
             {#each tabs as tab}
@@ -110,18 +114,36 @@
 <style>
     aside {
         background-color: var(--bgcolor-neutral-default);
-        width: calc(100% + 2 * var(--space-9));
-        margin-inline-start: calc(-1 * var(--space-9));
+
+        margin-inline-start: -25px;
         margin-block-end: calc(-1 * var(--space-9));
         padding: var(--space-3);
         border-bottom-left-radius: var(--border-radius-m);
         border-bottom-right-radius: var(--border-radius-m);
+
+        border: 1px solid var(--border-neutral);
+        width: calc(100% - var(--space-7));
+
+        position: fixed;
+        bottom: 100px;
+
+        @media (min-width: 768px) {
+            width: calc(100% + 2 * var(--space-9));
+            margin-inline-start: calc(-1 * var(--space-9));
+            position: static;
+            border: 0;
+        }
     }
     summary {
         cursor: pointer;
     }
     .iframe-container {
-        flex-grow: 1;
+        height: calc(100vh - 296px);
+
+        @media (min-width: 768px) {
+            flex-grow: 1;
+            height: auto;
+        }
     }
     iframe {
         border: none;

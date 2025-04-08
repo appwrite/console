@@ -6,6 +6,7 @@ type Profile = {
     hasMessages: boolean;
     hasStorage: boolean;
     hasSites: boolean;
+    hasProjectProgressBars: boolean;
 };
 
 export const ConsoleCloudProfile: Profile = {
@@ -15,7 +16,8 @@ export const ConsoleCloudProfile: Profile = {
     hasFunctions: true,
     hasMessages: true,
     hasStorage: true,
-    hasSites: true
+    hasSites: true,
+    hasProjectProgressBars: true
 };
 
 export const ConsoleSelfhostedProfile: Profile = {
@@ -25,7 +27,8 @@ export const ConsoleSelfhostedProfile: Profile = {
     hasFunctions: true,
     hasMessages: true,
     hasStorage: true,
-    hasSites: true
+    hasSites: true,
+    hasProjectProgressBars: true
 };
 
 export const StudioProfile: Profile = {
@@ -35,5 +38,6 @@ export const StudioProfile: Profile = {
     hasFunctions: false,
     hasMessages: true,
     hasStorage: true,
-    hasSites: true
+    hasSites: true,
+    hasProjectProgressBars: false
 };

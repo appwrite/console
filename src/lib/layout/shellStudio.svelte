@@ -255,7 +255,8 @@
     }
 
     .overlay-button {
-        margin-top: calc(-1 * var(--space-6));
+        position: fixed;
+        top: 0;
         @media (min-width: 1024px) {
             display: none;
         }

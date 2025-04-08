@@ -24,6 +24,7 @@
         canWriteProjects,
         canWriteSites
     } from '$lib/stores/roles';
+    import { consoleProfile } from '$lib/system';
 
     onMount(() => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -113,11 +114,13 @@
 
 <slot />
 
-<div class="layout-level-progress-bars">
-    <UploadBox />
-    <MigrationBox />
-    <BackupRestoreBox />
-</div>
+{#if consoleProfile.hasProjectProgressBars}
+    <div class="layout-level-progress-bars">
+        <UploadBox />
+        <MigrationBox />
+        <BackupRestoreBox />
+    </div>
+{/if}
 
 <style>
     .layout-level-progress-bars {
