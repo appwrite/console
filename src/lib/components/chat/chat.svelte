@@ -15,7 +15,7 @@
     };
     let { showChat = $bindable(), width }: Props = $props();
 
-    let minimizeChat = $state(false);
+    let minimizeChat = $state($isSmallViewport ? true : false);
 </script>
 
 <section
@@ -99,7 +99,7 @@
     .chat.minimize-chat {
         top: auto;
         bottom: var(--space-4);
-        height: 60px;
+        height: 68px;
     }
 
     .chat-placeholder {
@@ -117,11 +117,15 @@
             '.'
             '.'
             '.';
-        height: 100%;
+        height: calc(100% - var(--space-4));
         background-color: white;
         width: 100%;
         border: 1px solid var(--border-neutral);
         border-radius: var(--border-radius-m);
+
+        @media (min-width: 768px) {
+            height: 100%;
+        }
     }
 
     header {

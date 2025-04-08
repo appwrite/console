@@ -67,7 +67,7 @@
 
 <Layout.Stack
     direction="column"
-    height={$isSmallViewport ? 'calc(100vh - 203px)' : 'calc(100vh - 120px)'}
+    height={$isSmallViewport ? 'calc(100vh - 218px)' : 'calc(100vh - 120px)'}
     gap="none">
     <Layout.Stack direction="column">
         <Tabs>
@@ -125,7 +125,7 @@
         width: calc(100% - var(--space-7));
 
         position: fixed;
-        bottom: 100px;
+        bottom: 116px;
 
         @media (min-width: 768px) {
             width: calc(100% + 2 * var(--space-9));
