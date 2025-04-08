@@ -51,8 +51,10 @@
     pathnameWatcher.subscribe(() => {});
 
     let resizer;
-    let resizerLeftPosition = 500;
-    let chatWidth = resizerLeftPosition - 52;
+    $: resizerLeftPosition = $page.data?.subNavigation ? 360 : 500;
+    $: resizerLeftOffset = $page.data?.subNavigation ? 0 : 52;
+    $: chatWidth = resizerLeftPosition - resizerLeftOffset;
+
     let isResizing = false;
 
     function startResize(event) {
@@ -67,8 +69,18 @@
         if (!isResizing) return;
 
         if (resizer) {
-            resizerLeftPosition = event.clientX;
-            chatWidth = event.clientX - 52;
+            resizerLeftPosition = $page.data?.subNavigation ? event.clientX - 280 : event.clientX;
+            const maxSize = $page.data?.subNavigation
+                ? window.innerWidth - 660
+                : window.innerWidth - 460;
+
+            const minSize = 320;
+
+            if (resizerLeftPosition > maxSize) {
+                resizerLeftPosition = maxSize;
+            } else if (resizerLeftPosition < minSize) {
+                resizerLeftPosition = minSize;
+            }
         }
     }
 
@@ -102,15 +114,18 @@
                 <AvatarInitials name={$user?.name ?? ''} size="s" />
             </Layout.Stack>
         </header>
-        <div class="studio-content" class:project-sidebar={hasProjectSidebar}>
+        <div
+            class="studio-content"
+            class:project-sidebar={hasProjectSidebar}
+            class:sub-navigation={$page.data.subNavigation}>
             {#if $isSmallViewport}
                 {#if hasProjectSidebar}
                     <Chat bind:showChat={$showChat} width={chatWidth} />
                 {/if}
                 <Card.Base>
                     <Layout.Stack>
-                        {#if $page.data?.header}
-                            <svelte:component this={$page.data.header} />
+                        {#if $page.data?.subNavigation}
+                            <svelte:component this={$page.data.subNavigation} />
                         {/if}
                         <slot />
                     </Layout.Stack>
@@ -145,6 +160,11 @@
                 project={$page.data.project}
                 bind:showChat={$showChat}
                 bind:isOpen={showSideNavigation} />
+            {#if $page.data.subNavigation}
+                <div class="sub-navigation">
+                    <svelte:component this={$page.data.subNavigation} />
+                </div>
+            {/if}
         {:else}
             <SidebarOrganization
                 organization={$page.data.organization}
@@ -195,6 +215,13 @@
             @media (min-width: 1024px) {
                 width: calc(100vw - 52px);
                 margin-left: 52px;
+            }
+
+            &.sub-navigation {
+                @media (min-width: 1024px) {
+                    width: calc(100vw - 320px);
+                    margin-left: 215px;
+                }
             }
         }
     }
@@ -260,5 +287,21 @@
         @media (min-width: 1024px) {
             display: none;
         }
+    }
+
+    .sub-navigation {
+        position: fixed;
+
+        @media (min-width: 1024px) {
+            left: 53px;
+        }
+        nav {
+            top: 49px;
+        }
+    }
+
+    :global(.sub-navigation nav) {
+        --bgcolor-neutral-primary: var(--bgcolor-neutral-default);
+        --border-width-s: 0;
     }
 </style>
