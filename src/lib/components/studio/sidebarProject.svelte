@@ -13,10 +13,10 @@
 
     export let project;
     export let showChat;
-    export let isOpen = true;
+    export let isOpen;
 </script>
 
-<nav style:--icon-fill="var(--fgcolor-neutral-tertiary)">
+<nav style:--icon-fill="var(--fgcolor-neutral-tertiary)" class:isOpen>
     <Layout.Stack direction="column" justifyContent="space-between" height="100%">
         <Layout.Stack gap="xs">
             <ActionMenu.Item.Anchor
@@ -56,5 +56,13 @@
         height: calc(100vh - 48px);
         padding: var(--space-4);
         width: 52px;
+        transform: translateX(-52px);
+        transition: transform 0.3s ease-in-out;
+        background-color: var(--bgcolor-neutral-default);
+        z-index: 10;
+    }
+
+    .isOpen {
+        transform: translateX(0);
     }
 </style>

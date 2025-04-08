@@ -21,11 +21,13 @@
     import Chat from '$lib/components/chat/chat.svelte';
     import { IconMenuAlt4 } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
+    import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
+    import { derived, writable } from 'svelte/store';
 
     $: hasProjectSidebar = $page.url.pathname.startsWith(base + '/project');
 
     export let loadedProjects: Array<NavbarProject> = [];
-    let showSideNavigation = false;
+    $: showSideNavigation = !($isTabletViewport || $isSmallViewport);
 
     $: organizations = $organizationList.teams.map((org) => {
         const billingPlan = org['billingPlan'];
@@ -39,7 +41,14 @@
         };
     });
 
-    $: showChat = !showChat ? $page.url.pathname.endsWith('builder') : showChat;
+    const showChat = writable(false);
+    const pathnameWatcher = derived(page, ($page) => {
+        if ($page.url.pathname.endsWith('builder')) {
+            showChat.set(true);
+        }
+    });
+
+    pathnameWatcher.subscribe(() => {});
 
     let resizer;
     let resizerLeftPosition = 500;
@@ -94,19 +103,10 @@
             </Layout.Stack>
         </header>
         <div class="studio-content" class:project-sidebar={hasProjectSidebar}>
-            <Layout.Stack direction="row" gap="l">
+            {#if $isSmallViewport}
                 {#if hasProjectSidebar}
-                    <Chat bind:showChat width={chatWidth} />
-                    {#if showChat}
-                        <div
-                            class="resizer"
-                            style:left={`${resizerLeftPosition}px`}
-                            bind:this={resizer}
-                            on:mousedown={startResize}>
-                        </div>
-                    {/if}
+                    <Chat bind:showChat={$showChat} width={chatWidth} />
                 {/if}
-
                 <Card.Base>
                     <Layout.Stack>
                         {#if $page.data?.header}
@@ -115,10 +115,36 @@
                         <slot />
                     </Layout.Stack>
                 </Card.Base>
-            </Layout.Stack>
+            {:else}
+                <Layout.Stack direction="row" gap="l">
+                    {#if hasProjectSidebar}
+                        <Chat bind:showChat={$showChat} width={chatWidth} />
+                        {#if $showChat}
+                            <div
+                                class="resizer"
+                                style:left={`${resizerLeftPosition}px`}
+                                bind:this={resizer}
+                                on:mousedown={startResize}>
+                            </div>
+                        {/if}
+                    {/if}
+
+                    <Card.Base>
+                        <Layout.Stack>
+                            {#if $page.data?.header}
+                                <svelte:component this={$page.data.header} />
+                            {/if}
+                            <slot />
+                        </Layout.Stack>
+                    </Card.Base>
+                </Layout.Stack>
+            {/if}
         </div>
         {#if hasProjectSidebar}
-            <SidebarProject project={$page.data.project} bind:showChat />
+            <SidebarProject
+                project={$page.data.project}
+                bind:showChat={$showChat}
+                bind:isOpen={showSideNavigation} />
         {:else}
             <SidebarOrganization
                 organization={$page.data.organization}
@@ -126,6 +152,15 @@
         {/if}
     </Layout.Stack>
 </main>
+
+<button
+    type="button"
+    class="overlay-button"
+    aria-label="Close sidebar"
+    class:overlay={showSideNavigation}
+    on:click={() => {
+        showSideNavigation = false;
+    }}></button>
 
 <style lang="scss">
     main {
@@ -157,9 +192,8 @@
         }
 
         &.project-sidebar {
-            width: calc(100vw - 52px);
-
             @media (min-width: 1024px) {
+                width: calc(100vw - 52px);
                 margin-left: 52px;
             }
         }
@@ -200,6 +234,29 @@
 
     @media (min-width: 1024px) {
         .only-mobile-tablet {
+            display: none;
+        }
+    }
+
+    .overlay {
+        background-color: rgba(0, 0, 0, 0.4);
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #56565c1a;
+        backdrop-filter: blur(5px);
+        transition:
+            backdrop-filter 0.5s ease-in-out,
+            background-color 0.35s ease-in-out;
+        z-index: 1;
+        margin-top: 0 !important;
+    }
+
+    .overlay-button {
+        margin-top: calc(-1 * var(--space-6));
+        @media (min-width: 1024px) {
             display: none;
         }
     }

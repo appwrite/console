@@ -1,6 +1,12 @@
 <script lang="ts">
     import { Divider, Card, Typography, Layout, Button, Icon } from '@appwrite.io/pink-svelte';
-    import { IconArrowUp, IconChevronLeft, IconPaperClip } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconArrowUp,
+        IconChevronDown,
+        IconChevronLeft,
+        IconPaperClip
+    } from '@appwrite.io/pink-icons-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import Conversation from './conversation.svelte';
 
     type Props = {
@@ -8,6 +14,8 @@
         width: number;
     };
     let { showChat = $bindable(), width }: Props = $props();
+
+    let minimizeChat = $state(false);
 </script>
 
 <section class="chat" style:width={showChat ? `${width}px` : 0} class:is-visible={showChat}>
@@ -45,6 +53,13 @@
 </section>
 <div class="chat-placeholder" class:is-visible={showChat} style:width={showChat ? `${width}px` : 0}>
 </div>
+{#if $isSmallViewport}
+    <button
+        type="button"
+        class="overlay-button"
+        aria-label="Close chat"
+        class:overlay={!minimizeChat}></button>
+{/if}
 
 <style lang="scss">
     .chat {
@@ -100,6 +115,40 @@
         }
 
         .options {
+        }
+    }
+
+    .input.minimize-chat {
+        border: 0;
+        padding: var(--space-6);
+        margin-inline: var(--space-4);
+
+        textarea {
+            min-height: 20px;
+            height: 20px;
+        }
+    }
+
+    .overlay {
+        background-color: rgba(0, 0, 0, 0.4);
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #56565c1a;
+        backdrop-filter: blur(5px);
+        transition:
+            backdrop-filter 0.5s ease-in-out,
+            background-color 0.35s ease-in-out;
+        z-index: 1;
+        margin-top: 0 !important;
+    }
+
+    .overlay-button {
+        margin-top: calc(-1 * var(--space-6));
+        @media (min-width: 768px) {
+            display: none;
         }
     }
 </style>

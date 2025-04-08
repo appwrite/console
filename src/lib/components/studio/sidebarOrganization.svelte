@@ -2,10 +2,9 @@
     import { ActionMenu, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import type { Organization } from '$lib/stores/organization';
-    import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
 
     export let organization: Organization;
-    export let isOpen = !($isTabletViewport || $isSmallViewport);
+    export let isOpen = false;
 </script>
 
 <nav class:isOpen>
@@ -27,15 +26,6 @@
     </Layout.Stack>
 </nav>
 
-<button
-    type="button"
-    class="overlay-button"
-    aria-label="Close sidebar"
-    class:overlay={isOpen}
-    on:click={() => {
-        isOpen = false;
-    }}></button>
-
 <style>
     nav {
         position: fixed;
@@ -52,28 +42,5 @@
 
     .isOpen {
         transform: translateX(0);
-    }
-
-    .overlay {
-        background-color: rgba(0, 0, 0, 0.4);
-        width: 100vw;
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background-color: #56565c1a;
-        backdrop-filter: blur(5px);
-        transition:
-            backdrop-filter 0.5s ease-in-out,
-            background-color 0.35s ease-in-out;
-        z-index: 1;
-        margin-top: 0 !important;
-    }
-
-    .overlay-button {
-        margin-top: calc(-1 * var(--space-6));
-        @media (min-width: 1024px) {
-            display: none;
-        }
     }
 </style>
