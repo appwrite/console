@@ -42,7 +42,7 @@
     });
 
     const showChat = writable(false);
-    
+
     $: if (page.url.pathname.endsWith('studio')) {
         showChat.set(true);
     }
@@ -58,6 +58,8 @@
         isResizing = true;
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
+        window.addEventListener('touchmove', resize);
+        window.addEventListener('touchend', stopResize);
         document.body.style.userSelect = 'none';
         document.getElementById('preview-iframe').style.pointerEvents = 'none';
     }
@@ -66,7 +68,8 @@
         if (!isResizing) return;
 
         if (resizer) {
-            resizerLeftPosition = page.data?.subNavigation ? event.clientX - 280 : event.clientX;
+            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+            resizerLeftPosition = page.data?.subNavigation ? clientX - 280 : clientX;
             const maxSize = page.data?.subNavigation
                 ? window.innerWidth - 660
                 : window.innerWidth - 460;
@@ -85,6 +88,8 @@
         isResizing = false;
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
+        window.removeEventListener('touchmove', resize);
+        window.removeEventListener('touchend', stopResize);
         document.body.style.userSelect = '';
         document.getElementById('preview-iframe').style.pointerEvents = '';
     }
@@ -142,7 +147,8 @@
                                 class="resizer"
                                 style:left={`${resizerLeftPosition}px`}
                                 bind:this={resizer}
-                                onmousedown={startResize}>
+                                onmousedown={startResize}
+                                ontouchmove={startResize}>
                             </div>
                         {/if}
                     {/if}

@@ -42,6 +42,8 @@
         isResizing = true;
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
+        window.addEventListener('touchmove', resize);
+        window.addEventListener('touchend', stopResize);
         document.body.style.userSelect = 'none';
         document.getElementById('preview-iframe').style.pointerEvents = 'none';
     }
@@ -49,9 +51,11 @@
     function resize(event) {
         if (!isResizing) return;
 
+        const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+
         terminalHeight =
             asideRef.getBoundingClientRect().y -
-            event.clientY +
+            clientY +
             asideRef.getBoundingClientRect().height -
             32;
     }
@@ -60,6 +64,8 @@
         isResizing = false;
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
+        window.removeEventListener('touchmove', resize);
+        window.removeEventListener('touchend', stopResize);
         document.body.style.userSelect = '';
         document.getElementById('preview-iframe').style.pointerEvents = '';
     }
@@ -93,7 +99,11 @@
         <iframe src={frameUrl} id="preview-iframe"></iframe>
     </div>
     <div></div>
-    {#if terminalOpen}<div class="terminal-slider" on:mousedown={startResize}></div>
+    {#if terminalOpen}<div
+            class="terminal-slider"
+            on:mousedown={startResize}
+            on:touchmove={startResize}>
+        </div>
     {/if}
     <aside bind:this={asideRef}>
         <details bind:open={terminalOpen}>
