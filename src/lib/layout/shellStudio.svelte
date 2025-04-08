@@ -250,7 +250,7 @@
         transition:
             backdrop-filter 0.5s ease-in-out,
             background-color 0.35s ease-in-out;
-        z-index: 1;
+        z-index: 2;
         margin-top: 0 !important;
     }
 
