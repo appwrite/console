@@ -81,17 +81,17 @@ mail3         IN  A     192.0.2.5             ; IPv4 address for mail3.example.c
         const result = parseDnsRecords(content);
 
         expect(result.NS).toHaveLength(1);
-        expect(result.NS[0].name).toBe(''); // @ symbol is converted to empty string
+        expect(result.NS[0].name).toBe('');
         expect(result.NS[0].value).toBe('@');
         expect(result.NS[0].ttl).toBe(86400);
 
         expect(result.A).toHaveLength(1);
-        expect(result.A[0].name).toBe(''); // @ symbol is converted to empty string
+        expect(result.A[0].name).toBe('');
         expect(result.A[0].value).toBe('127.0.0.1');
         expect(result.A[0].ttl).toBe(86400);
 
         expect(result.AAAA).toHaveLength(1);
-        expect(result.AAAA[0].name).toBe(''); // @ symbol is converted to empty string
+        expect(result.AAAA[0].name).toBe('');
         expect(result.AAAA[0].value).toBe('::1');
         expect(result.AAAA[0].ttl).toBe(86400);
     });
@@ -353,6 +353,7 @@ $TTL 1814400 ; 3 weeks
         expect(result.MX).toHaveLength(0);
         expect(result.NS).toHaveLength(0);
         expect(result.TXT).toHaveLength(0);
+        expect(result.PTR).toHaveLength(0);
     });
 
     it('should handle invalid content', () => {
@@ -363,6 +364,7 @@ $TTL 1814400 ; 3 weeks
         expect(result.MX).toHaveLength(0);
         expect(result.NS).toHaveLength(0);
         expect(result.TXT).toHaveLength(0);
+        expect(result.PTR).toHaveLength(0);
     });
 
     it('should handle content with only comments', () => {
@@ -375,5 +377,6 @@ $TTL 1814400 ; 3 weeks
         expect(result.MX).toHaveLength(0);
         expect(result.NS).toHaveLength(0);
         expect(result.TXT).toHaveLength(0);
+        expect(result.PTR).toHaveLength(0);
     });
 });

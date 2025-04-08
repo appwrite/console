@@ -62,7 +62,7 @@
         </Layout.Stack>
     {/if}
 
-    {#if ['waiting', 'processing'].includes(deployment.status)}
+    {#if ['waiting', 'processing'].includes(deployment.status) || (deployment.status === 'building' && deployment?.buildLogs?.length > 0)}
         <Card.Base variant="secondary">
             <Layout.Stack direction="row" justifyContent="center" gap="s">
                 <Spinner /> Waiting for build to start...
