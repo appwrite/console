@@ -12,8 +12,9 @@
     type Props = {
         showChat: boolean;
         width: number;
+        hasSubNavigation: boolean;
     };
-    let { showChat = $bindable(), width }: Props = $props();
+    let { showChat = $bindable(), width, hasSubNavigation }: Props = $props();
 
     let minimizeChat = $state($isSmallViewport ? true : false);
 </script>
@@ -22,7 +23,8 @@
     class="chat"
     style:width={$isSmallViewport ? 'calc(100vw - 16px)' : showChat ? `${width}px` : 0}
     class:minimize-chat={minimizeChat}
-    class:is-visible={showChat}>
+    class:is-visible={showChat}
+    class:sub-navigation={hasSubNavigation}>
     <div class="chat-content">
         {#if !minimizeChat}
             <header>
@@ -94,6 +96,13 @@
         @media (min-width: 768px) {
             top: 48px;
             height: calc(100vh - 70px);
+        }
+
+        &.sub-navigation {
+            @media (max-width: 1024px) {
+                top: 96px;
+                height: calc(100vh - 96px);
+            }
         }
     }
     .chat.minimize-chat {

@@ -120,7 +120,10 @@
             class:sub-navigation={$page.data.subNavigation}>
             {#if $isSmallViewport}
                 {#if hasProjectSidebar}
-                    <Chat bind:showChat={$showChat} width={chatWidth} />
+                    <Chat
+                        bind:showChat={$showChat}
+                        width={chatWidth}
+                        hasSubNavigation={$page.data?.subNavigation} />
                 {/if}
                 <Card.Base>
                     <Layout.Stack>
@@ -133,7 +136,10 @@
             {:else}
                 <Layout.Stack direction="row" gap="l">
                     {#if hasProjectSidebar}
-                        <Chat bind:showChat={$showChat} width={chatWidth} />
+                        <Chat
+                            bind:showChat={$showChat}
+                            width={chatWidth}
+                            hasSubNavigation={$page.data?.subNavigation} />
                         {#if $showChat}
                             <div
                                 class="resizer"
@@ -218,7 +224,9 @@
             }
 
             &.sub-navigation {
+                margin-top: 96px;
                 @media (min-width: 1024px) {
+                    margin-top: 48px;
                     width: calc(100vw - 320px);
                     margin-left: 215px;
                 }
@@ -300,7 +308,8 @@
         }
     }
 
-    :global(.sub-navigation nav) {
+    :global(.sub-navigation nav),
+    :global(.sub-navigation header) {
         --bgcolor-neutral-primary: var(--bgcolor-neutral-default);
         --border-width-s: 0;
     }
