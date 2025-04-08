@@ -177,7 +177,7 @@
         callbackState={{ connectRepo: 'true' }} />
 {/if}
 {#if showOpenOnMobile}
-    <OpenOnMobileModal bind:show={showOpenOnMobile} {siteURL} />
+    <OpenOnMobileModal bind:show={showOpenOnMobile} proxyRuleList={data.proxyRuleList} />
 {/if}
 
 {#if showInviteCollaborator}

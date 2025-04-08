@@ -186,8 +186,8 @@
     </Layout.Stack>
 </Card>
 
-{#if show && siteUrl}
-    <OpenOnMobileModal bind:show siteURL={siteUrl} />
+{#if show && proxyRuleList.total}
+    <OpenOnMobileModal bind:show {proxyRuleList} />
 {/if}
 
 <style lang="scss">

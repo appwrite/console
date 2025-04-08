@@ -96,7 +96,6 @@
                         on:click={() => {
                             showDomainQR = true;
                             selectedDomainURL = rule.domain;
-                            console.log(rule.domain);
                         }}>
                         <Icon icon={IconQrcode} />
                     </Button>
@@ -110,5 +109,5 @@
 </Layout.Stack>
 
 {#if showDomainQR && selectedDomainURL}
-    <OpenOnMobileModal bind:show={showDomainQR} siteURL={selectedDomainURL} />
+    <OpenOnMobileModal bind:show={showDomainQR} {proxyRuleList} selectedUrl={selectedDomainURL} />
 {/if}
