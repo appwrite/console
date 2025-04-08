@@ -26,7 +26,7 @@
                 on:click={() => {
                     isOpen = false;
                 }}
-                >{#if $isSmallViewport}Builder{/if}</ActionMenu.Item.Anchor>
+                >{#if $isSmallViewport}Studio{/if}</ActionMenu.Item.Anchor>
             <Divider />
             <ActionMenu.Item.Anchor
                 href={`${base}/project-${project.$id}/auth`}

@@ -17,7 +17,7 @@
     const frameUrl = 'https://getbootstrap.com/docs/5.3/examples/blog/';
 
     const projectId = page.params.project;
-    const path = `${base}/project-${projectId}/builder`;
+    const path = `${base}/project-${projectId}/studio`;
     const tabs = [
         {
             href: path,

@@ -43,7 +43,7 @@
 
     const showChat = writable(false);
     const pathnameWatcher = derived(page, ($page) => {
-        if ($page.url.pathname.endsWith('builder')) {
+        if ($page.url.pathname.endsWith('studio')) {
             showChat.set(true);
         }
     });
