@@ -10,6 +10,7 @@
         IconUserGroup
     } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     export let project;
     export let showChat;
@@ -21,28 +22,52 @@
         <Layout.Stack gap="xs">
             <ActionMenu.Item.Anchor
                 href={`${base}/project-${project.$id}`}
-                leadingIcon={IconTemplate}></ActionMenu.Item.Anchor>
+                leadingIcon={IconTemplate}
+                on:click={() => {
+                    isOpen = false;
+                }}
+                >{#if $isSmallViewport}Builder{/if}</ActionMenu.Item.Anchor>
             <Divider />
             <ActionMenu.Item.Anchor
                 href={`${base}/project-${project.$id}/auth`}
-                leadingIcon={IconUserGroup}></ActionMenu.Item.Anchor>
+                leadingIcon={IconUserGroup}
+                on:click={() => {
+                    isOpen = false;
+                }}
+                >{#if $isSmallViewport}Auth{/if}</ActionMenu.Item.Anchor>
             <ActionMenu.Item.Anchor
                 href={`${base}/project-${project.$id}/databases`}
-                leadingIcon={IconDatabase}></ActionMenu.Item.Anchor>
+                on:click={() => {
+                    isOpen = false;
+                }}
+                leadingIcon={IconDatabase}
+                >{#if $isSmallViewport}Databases{/if}</ActionMenu.Item.Anchor>
             <ActionMenu.Item.Anchor
                 href={`${base}/project-${project.$id}/messaging`}
-                leadingIcon={IconAnnotation}></ActionMenu.Item.Anchor>
+                on:click={() => {
+                    isOpen = false;
+                }}
+                leadingIcon={IconAnnotation}
+                >{#if $isSmallViewport}Messaging{/if}</ActionMenu.Item.Anchor>
             <ActionMenu.Item.Anchor
                 href={`${base}/project-${project.$id}/storage`}
-                leadingIcon={IconFolder}></ActionMenu.Item.Anchor>
+                on:click={() => {
+                    isOpen = false;
+                }}
+                leadingIcon={IconFolder}
+                >{#if $isSmallViewport}Storage{/if}</ActionMenu.Item.Anchor>
             <Divider />
             <ActionMenu.Item.Anchor
                 href={`${base}/project-${project.$id}/settings`}
-                leadingIcon={IconCog}></ActionMenu.Item.Anchor>
+                on:click={() => {
+                    isOpen = false;
+                }}
+                leadingIcon={IconCog}
+                >{#if $isSmallViewport}Settings{/if}</ActionMenu.Item.Anchor>
         </Layout.Stack>
         <ActionMenu.Item.Button
-            leadingIcon={IconSparkles}
             on:click={() => {
+                isOpen = false;
                 showChat = !showChat;
             }}></ActionMenu.Item.Button>
     </Layout.Stack>
@@ -55,11 +80,15 @@
         top: 48px;
         height: calc(100vh - 48px);
         padding: var(--space-4);
-        width: 52px;
-        transform: translateX(-52px);
+        width: auto;
+        transform: translateX(-100%);
         transition: transform 0.3s ease-in-out;
         background-color: var(--bgcolor-neutral-default);
         z-index: 10;
+
+        @media (min-width: 768px) {
+            width: 52px;
+        }
     }
 
     .isOpen {
