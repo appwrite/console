@@ -11,63 +11,50 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import type { ComponentType } from 'svelte';
 
     export let project;
     export let showChat;
     export let isOpen;
+
+    const menuItems: Array<
+        { type: 'divider' } | { type: 'item'; label: string; path: string; icon: ComponentType }
+    > = [
+        { type: 'item', label: 'Studio', path: 'studio', icon: IconTemplate },
+        { type: 'divider' },
+        { type: 'item', label: 'Auth', path: 'auth', icon: IconUserGroup },
+        { type: 'item', label: 'Databases', path: 'databases', icon: IconDatabase },
+        { type: 'item', label: 'Messaging', path: 'messaging', icon: IconAnnotation },
+        { type: 'item', label: 'Storage', path: 'storage', icon: IconFolder },
+        { type: 'divider' },
+        { type: 'item', label: 'Settings', path: 'settings', icon: IconCog }
+    ];
 </script>
 
 <nav style:--icon-fill="var(--fgcolor-neutral-tertiary)" class:isOpen>
     <Layout.Stack direction="column" justifyContent="space-between" height="100%">
         <Layout.Stack gap="xs">
-            <ActionMenu.Item.Anchor
-                href={`${base}/project-${project.$id}`}
-                leadingIcon={IconTemplate}
-                on:click={() => {
-                    isOpen = false;
-                }}
-                >{#if $isSmallViewport}Studio{/if}</ActionMenu.Item.Anchor>
-            <Divider />
-            <ActionMenu.Item.Anchor
-                href={`${base}/project-${project.$id}/auth`}
-                leadingIcon={IconUserGroup}
-                on:click={() => {
-                    isOpen = false;
-                }}
-                >{#if $isSmallViewport}Auth{/if}</ActionMenu.Item.Anchor>
-            <ActionMenu.Item.Anchor
-                href={`${base}/project-${project.$id}/databases`}
-                on:click={() => {
-                    isOpen = false;
-                }}
-                leadingIcon={IconDatabase}
-                >{#if $isSmallViewport}Databases{/if}</ActionMenu.Item.Anchor>
-            <ActionMenu.Item.Anchor
-                href={`${base}/project-${project.$id}/messaging`}
-                on:click={() => {
-                    isOpen = false;
-                }}
-                leadingIcon={IconAnnotation}
-                >{#if $isSmallViewport}Messaging{/if}</ActionMenu.Item.Anchor>
-            <ActionMenu.Item.Anchor
-                href={`${base}/project-${project.$id}/storage`}
-                on:click={() => {
-                    isOpen = false;
-                }}
-                leadingIcon={IconFolder}
-                >{#if $isSmallViewport}Storage{/if}</ActionMenu.Item.Anchor>
-            <Divider />
-            <ActionMenu.Item.Anchor
-                href={`${base}/project-${project.$id}/settings`}
-                on:click={() => {
-                    isOpen = false;
-                }}
-                leadingIcon={IconCog}
-                >{#if $isSmallViewport}Settings{/if}</ActionMenu.Item.Anchor>
+            {#each menuItems as menuItem}
+                {#if menuItem.type === 'item'}
+                    <ActionMenu.Item.Anchor
+                        href={`${base}/project-${project.$id}/${menuItem.path}`}
+                        leadingIcon={menuItem.icon}
+                        on:click={() => {
+                            if ($isSmallViewport) {
+                                isOpen = false;
+                            }
+                        }}
+                        >{#if $isSmallViewport}{menuItem.label}{/if}</ActionMenu.Item.Anchor>
+                {:else if menuItem.type === 'divider'}
+                    <Divider />
+                {/if}
+            {/each}
         </Layout.Stack>
         <ActionMenu.Item.Button
             on:click={() => {
-                isOpen = false;
+                if ($isSmallViewport) {
+                    isOpen = false;
+                }
                 showChat = !showChat;
             }}></ActionMenu.Item.Button>
     </Layout.Stack>
