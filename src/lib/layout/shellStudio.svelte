@@ -9,8 +9,8 @@
         Icon,
         Button
     } from '@appwrite.io/pink-svelte';
-    import { page } from '$app/stores';
-    import { organization, organizationList } from '$lib/stores/organization';
+    import { page } from '$app/state';
+    import { organizationList } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
     import SidebarProject from '$lib/components/studio/sidebarProject.svelte';
     import SidebarOrganization from '$lib/components/studio/sidebarOrganization.svelte';
@@ -24,7 +24,7 @@
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { derived, writable } from 'svelte/store';
 
-    $: hasProjectSidebar = $page.url.pathname.startsWith(base + '/project');
+    $: hasProjectSidebar = page.url.pathname.startsWith(base + '/project');
 
     export let loadedProjects: Array<NavbarProject> = [];
     $: showSideNavigation = !($isTabletViewport || $isSmallViewport);
@@ -36,23 +36,20 @@
             $id: org.$id,
             showUpgrade: billingPlan === BillingPlan.FREE,
             tierName: isCloud ? (tierToPlan(billingPlan)?.name ?? '') : null,
-            isSelected: $page.data.organization?.$id === org.$id,
+            isSelected: page.data?.organization?.$id === org.$id,
             projects: loadedProjects
         };
     });
 
     const showChat = writable(false);
-    const pathnameWatcher = derived(page, ($page) => {
-        if ($page.url.pathname.endsWith('studio')) {
-            showChat.set(true);
-        }
-    });
-
-    pathnameWatcher.subscribe(() => {});
+    
+    $: if (page.url.pathname.endsWith('studio')) {
+        showChat.set(true);
+    }
 
     let resizer;
-    $: resizerLeftPosition = $page.data?.subNavigation ? 360 : 500;
-    $: resizerLeftOffset = $page.data?.subNavigation ? 0 : 52;
+    $: resizerLeftPosition = page.data?.subNavigation ? 360 : 500;
+    $: resizerLeftOffset = page.data?.subNavigation ? 0 : 52;
     $: chatWidth = resizerLeftPosition - resizerLeftOffset;
 
     let isResizing = false;
@@ -69,8 +66,8 @@
         if (!isResizing) return;
 
         if (resizer) {
-            resizerLeftPosition = $page.data?.subNavigation ? event.clientX - 280 : event.clientX;
-            const maxSize = $page.data?.subNavigation
+            resizerLeftPosition = page.data?.subNavigation ? event.clientX - 280 : event.clientX;
+            const maxSize = page.data?.subNavigation
                 ? window.innerWidth - 660
                 : window.innerWidth - 460;
 
@@ -117,18 +114,18 @@
         <div
             class="studio-content"
             class:project-sidebar={hasProjectSidebar}
-            class:sub-navigation={$page.data.subNavigation}>
+            class:sub-navigation={page.data.subNavigation}>
             {#if $isSmallViewport}
                 {#if hasProjectSidebar}
                     <Chat
                         bind:showChat={$showChat}
                         width={chatWidth}
-                        hasSubNavigation={$page.data?.subNavigation} />
+                        hasSubNavigation={page.data?.subNavigation} />
                 {/if}
                 <Card.Base>
                     <Layout.Stack>
-                        {#if $page.data?.subNavigation}
-                            <svelte:component this={$page.data.subNavigation} />
+                        {#if page.data?.subNavigation}
+                            <svelte:component this={page.data.subNavigation} />
                         {/if}
                         <slot />
                     </Layout.Stack>
@@ -139,21 +136,21 @@
                         <Chat
                             bind:showChat={$showChat}
                             width={chatWidth}
-                            hasSubNavigation={$page.data?.subNavigation} />
+                            hasSubNavigation={page.data?.subNavigation} />
                         {#if $showChat}
                             <div
                                 class="resizer"
                                 style:left={`${resizerLeftPosition}px`}
                                 bind:this={resizer}
-                                on:mousedown={startResize}>
+                                onmousedown={startResize}>
                             </div>
                         {/if}
                     {/if}
 
                     <Card.Base>
                         <Layout.Stack>
-                            {#if $page.data?.header}
-                                <svelte:component this={$page.data.header} />
+                            {#if page.data?.header}
+                                <svelte:component this={page.data.header} />
                             {/if}
                             <slot />
                         </Layout.Stack>
@@ -162,18 +159,20 @@
             {/if}
         </div>
         {#if hasProjectSidebar}
-            <SidebarProject
-                project={$page.data.project}
-                bind:showChat={$showChat}
-                bind:isOpen={showSideNavigation} />
-            {#if $page.data.subNavigation}
+            {#if page.data.project}
+                <SidebarProject
+                    project={page.data.project}
+                    bind:showChat={$showChat}
+                    bind:isOpen={showSideNavigation} />
+            {/if}
+            {#if page.data.subNavigation}
                 <div class="sub-navigation">
-                    <svelte:component this={$page.data.subNavigation} />
+                    <svelte:component this={page.data.subNavigation} />
                 </div>
             {/if}
         {:else}
             <SidebarOrganization
-                organization={$page.data.organization}
+                organization={page.data.organization}
                 bind:isOpen={showSideNavigation} />
         {/if}
     </Layout.Stack>
@@ -184,7 +183,7 @@
     class="overlay-button"
     aria-label="Close sidebar"
     class:overlay={showSideNavigation}
-    on:click={() => {
+    onclick={() => {
         showSideNavigation = false;
     }}></button>
 
