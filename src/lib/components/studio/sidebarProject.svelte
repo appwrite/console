@@ -50,13 +50,14 @@
                 {/if}
             {/each}
         </Layout.Stack>
-        <ActionMenu.Item.Button
-            on:click={() => {
-                if ($isSmallViewport) {
-                    isOpen = false;
-                }
-                showChat = !showChat;
-            }}></ActionMenu.Item.Button>
+        {#if !$isSmallViewport}
+            <ActionMenu.Item.Button
+                on:click={() => {
+                    showChat = !showChat;
+                }}>
+                <Icon icon={IconSparkles} />
+            </ActionMenu.Item.Button>
+        {/if}
     </Layout.Stack>
 </nav>
 
