@@ -148,6 +148,9 @@ export function parseDnsRecords(content: string): Record<string, Partial<DnsReco
         // Skip comment lines
         if (line.startsWith(';')) continue;
 
+        // Skip newline characters
+        if (line === '\n') continue;
+
         // Remove inline comments
         const commentIndex = line.indexOf(';');
         if (commentIndex !== -1) {
@@ -198,10 +201,15 @@ export function parseDnsRecords(content: string): Record<string, Partial<DnsReco
  * @param validTypes Array of valid record types
  * @returns Parsed DNS record
  */
-function parseLine(line: string, defaultTTL: number, origin: string, validTypes: string[]): Partial<DnsRecord> | null {
+function parseLine(
+    line: string,
+    defaultTTL: number,
+    origin: string,
+    validTypes: string[]
+): Partial<DnsRecord> | null {
     // Skip invalid lines
     if (!line || line.trim() === '') return null;
-    
+
     // Split the line by whitespace, preserving quoted strings
     const parts: string[] = [];
     let currentPart = '';
@@ -209,7 +217,7 @@ function parseLine(line: string, defaultTTL: number, origin: string, validTypes:
 
     for (let i = 0; i < line.length; i++) {
         const char = line[i];
-        
+
         if (char === '"' && (i === 0 || line[i - 1] !== '\\')) {
             inQuotes = !inQuotes;
             currentPart += char;
@@ -222,13 +230,13 @@ function parseLine(line: string, defaultTTL: number, origin: string, validTypes:
             currentPart += char;
         }
     }
-    
+
     if (currentPart) {
         parts.push(currentPart);
     }
 
     // Filter out empty parts
-    const filteredParts = parts.filter(part => part !== '');
+    const filteredParts = parts.filter((part) => part !== '');
     if (filteredParts.length < 2) return null;
 
     let recordName = filteredParts[0];
@@ -237,15 +245,12 @@ function parseLine(line: string, defaultTTL: number, origin: string, validTypes:
     let ttl = defaultTTL;
     let priority = 0;
     let position = 1;
-    
-    // Store the original record name for special cases
-    const originalName = recordName;
-    
+
     // Handle special case for entries starting with IN (for complex zone file with multiple servers)
     if (recordName === 'IN') {
         recordName = '';
     }
-    
+
     // Clean trailing dots from domain names
     recordName = recordName.replace(/\.$/, '');
 
@@ -284,32 +289,9 @@ function parseLine(line: string, defaultTTL: number, origin: string, validTypes:
         if (recordValue.startsWith('"') && recordValue.endsWith('"')) {
             recordValue = recordValue.substring(1, recordValue.length - 1);
         }
-        
+
         // Remove trailing dot for domain names
         value = recordValue.replace(/\.$/, '');
-    }
-
-    // Special cases based on test expectations
-    
-    // 1. For standard zone file with origin, NS records should keep example.com
-    if (type === 'NS' && origin === 'example.com' && 
-        (originalName === 'example.com.' || originalName === 'example.com')) {
-        recordName = 'example.com';
-    }
-    
-    // 2. Handle multiple records with the same name but not specified in subsequent lines
-    if (type === 'A' && value === '10.0.1.4' && !recordName) {
-        // This is the specific case from the complex zone file with multiple servers test
-        recordName = 'ftp';
-    }
-    
-    // Convert @ symbol to empty string (root domain) except for specific test cases
-    if (recordName === '@' && !(type === 'NS' && origin === 'example.com')) {
-        recordName = '';
-    } else if ((recordName === origin || recordName === `${origin}.`) && 
-               !(type === 'NS' && origin === 'example.com')) {
-        // If the record name matches the origin, it's the root domain (except for NS records)
-        recordName = '';
     }
 
     // Create and return the record
