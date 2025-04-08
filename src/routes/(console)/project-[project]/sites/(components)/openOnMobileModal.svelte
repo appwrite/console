@@ -12,7 +12,7 @@
     let {
         show = $bindable(),
         proxyRuleList,
-        selectedUrl = $bindable('')
+        selectedUrl = ''
     }: {
         show: boolean;
         proxyRuleList: Models.ProxyRuleList;
