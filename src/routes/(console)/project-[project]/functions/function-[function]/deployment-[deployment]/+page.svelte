@@ -72,7 +72,7 @@
 
 <Container>
     <DeploymentCard proxyRuleList={data.proxyRuleList} deployment={data.deployment}>
-        <svelte:fragment slot="footer">
+        {#snippet footer()}
             <Layout.Stack direction="row" inline>
                 {#if data.deployment.status === 'processing' || data.deployment.status === 'building' || data.deployment.status === 'waiting'}
                     <Button
@@ -120,7 +120,7 @@
                         }}>Activate</Button>
                 {/if}
             </Layout.Stack>
-        </svelte:fragment>
+        {/snippet}
     </DeploymentCard>
 
     <Card.Base padding="s">

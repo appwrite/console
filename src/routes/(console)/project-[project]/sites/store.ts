@@ -17,9 +17,11 @@ export const columns = writable<Column[]>([
 ]);
 
 export function generateSiteDeploymentDesc(site: Models.Site) {
-    if (site.latestDeploymentStatus === 'building') {
+    if (site?.latestDeploymentStatus === 'building') {
         return `Deployment building ${timer(site.latestDeploymentCreatedAt)}`;
-    } else {
+    } else if (site?.deploymentCreatedAt) {
         return `Deployed ${timeFromNow(site.deploymentCreatedAt)}`;
+    } else {
+        return 'No active deployment';
     }
 }

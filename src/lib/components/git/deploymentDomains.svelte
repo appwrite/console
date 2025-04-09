@@ -8,19 +8,29 @@
     import { ActionMenu, Icon, Layout, Popover, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
-    export let domains: Models.ProxyRuleList;
-    export let hideQRCode = true;
+    // export let domains: Models.ProxyRuleList;
+    // export let hideQRCode = true;
 
-    const dispatch = createEventDispatcher();
+    let {
+        domains,
+        hideQRCode = true,
+        showQR = () => {}
+    }: {
+        domains: Models.ProxyRuleList;
+        hideQRCode?: boolean;
+        showQR?: (show: boolean) => void;
+    } = $props();
 
-    $: sortedDomains = domains?.rules?.sort((a, b) => {
-        if (a?.trigger === 'manual' && b?.trigger !== 'manual') {
-            return -1;
-        } else if (a?.trigger !== 'manual' && b?.trigger === 'manual') {
-            return 1;
-        }
-        return 0;
-    });
+    let sortedDomains = $derived(
+        domains?.rules?.sort((a, b) => {
+            if (a?.trigger === 'manual' && b?.trigger !== 'manual') {
+                return -1;
+            } else if (a?.trigger !== 'manual' && b?.trigger === 'manual') {
+                return 1;
+            }
+            return 0;
+        })
+    );
 </script>
 
 <Layout.Stack gap="xxs" direction="row" alignItems="center">
@@ -59,7 +69,7 @@
             </Popover>
         {/if}
         {#if !hideQRCode}
-            <Button icon secondary size="xs" on:click={() => dispatch('showQR')}>
+            <Button icon secondary size="xs" on:click={() => showQR(true)}>
                 <Icon icon={IconQrcode} size="s" />
             </Button>
         {/if}

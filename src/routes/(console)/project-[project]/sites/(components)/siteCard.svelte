@@ -72,7 +72,7 @@
                         <DeploymentDomains
                             domains={proxyRuleList}
                             {hideQRCode}
-                            on:showQR={() => (show = !show)} />
+                            showQR={() => (show = !show)} />
                     </Layout.Stack>
                 </Layout.Stack>
 
