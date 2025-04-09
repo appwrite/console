@@ -8,6 +8,7 @@
         toISOString
     } from '$lib/helpers/date';
     import { Badge, InteractiveText, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
+    import { menuOpen } from '$lib/components/menu/store';
 
     export let time: string = '';
     export let placement: ComponentProps<Popover>['placement'] = 'bottom';
@@ -77,7 +78,7 @@
 <Popover let:show let:hide {placement} portal>
     <button
         on:mouseenter={() => {
-            if (!document.getElementById('actionmenuopen')) {
+            if (!$menuOpen) {
                 setTimeout(show, 150);
             }
         }}
