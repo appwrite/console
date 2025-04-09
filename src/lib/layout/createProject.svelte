@@ -58,7 +58,7 @@
                                 size="s"
                                 on:click={() => {
                                     showCustomId = true;
-                                }}><Icon slot="start" icon={IconPencil} /> Project ID</Tag>
+                                }}><Icon slot="start" icon={IconPencil} size="s" /> Project ID</Tag>
                         </div>
                     {/if}
                     <CustomId bind:show={showCustomId} name="Project" isProject bind:id />

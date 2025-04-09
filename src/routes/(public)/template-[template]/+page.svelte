@@ -12,7 +12,7 @@
     import { getFrameworkIcon } from '$lib/stores/sites.js';
     import { isCloud } from '$lib/system';
     import { ID, OAuthProvider, Query, type Models, Region } from '@appwrite.io/console';
-    import { IconGithub, IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconGithub, IconPencil, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import {
         Card,
         Divider,
@@ -91,7 +91,7 @@
     async function handleSubmit() {
         if (selectedProject === null) {
             try {
-                await sdk.forConsole.projects.create(
+                const p = await sdk.forConsole.projects.create(
                     id ?? ID.unique(),
                     projectName,
                     selectedOrg,
@@ -102,6 +102,8 @@
                     selectedOrg,
                     teamId: selectedOrg
                 });
+
+                selectedProject = p.$id;
 
                 window.location.href = generateUrl();
             } catch (e) {
@@ -131,16 +133,16 @@
     <Card.Base padding="s" radius="l">
         <Layout.Stack gap="xl">
             <Layout.Stack gap="l">
-                <Typography.Title size="l">
+                <Typography.Title size="m">
                     Deploy {data.product}
                 </Typography.Title>
                 <Card.Base variant="secondary" padding="xxxs" radius="s">
-                    <Layout.GridFraction start={4} end={5}>
+                    <Layout.GridFraction start={5} end={6}>
                         {#if isSiteTemplate(data.template, data.product)}
                             {@const framework = data.template.frameworks[0]}
                             <Image
                                 border
-                                radius="s"
+                                radius="xs"
                                 ratio="16/9"
                                 style=" align-self: start"
                                 src={$app.themeInUse === 'dark'
@@ -149,7 +151,7 @@
                                     : data.template.screenshotLight ||
                                       `${base}/images/sites/screenshot-placeholder-light.svg`}
                                 alt="Screenshot" />
-                            <Layout.Stack gap="xl">
+                            <Layout.Stack gap="xxl" justifyContent="center">
                                 <Layout.Stack gap="xxs">
                                     <Typography.Text
                                         variant="m-500"
@@ -202,8 +204,8 @@
                                                 value: p.$id
                                             })),
                                             {
-                                                label: 'Create a new project',
-                                                leadingIcon: IconPlus,
+                                                label: 'Create project',
+                                                leadingIcon: IconPlusSm,
                                                 value: null
                                             }
                                         ]}
@@ -224,7 +226,8 @@
                                                 on:click={() => {
                                                     showCustomId = true;
                                                 }}
-                                                ><Icon slot="start" icon={IconPencil} /> Project ID</Tag>
+                                                ><Icon slot="start" icon={IconPencil} size="s" /> Project
+                                                ID</Tag>
                                         </div>
                                     {/if}
                                     <CustomId
@@ -236,12 +239,14 @@
                                 {#if isCloud}
                                     <Layout.Stack gap="xs">
                                         <Input.Select
+                                            required
                                             bind:value={region}
                                             placeholder="Select a region"
                                             options={getRegions()}
                                             label="Region" />
-                                        <Typography.Text
-                                            >Region cannot be changed after creation</Typography.Text>
+                                        <Typography.Text>
+                                            Region cannot be changed after creation
+                                        </Typography.Text>
                                     </Layout.Stack>
                                 {/if}
                             {/if}
