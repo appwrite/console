@@ -1,6 +1,8 @@
 <script lang="ts">
     import { Card } from '@appwrite.io/pink-svelte';
     import { createMenubar, melt } from '@melt-ui/svelte';
+    import { writable } from 'svelte/store';
+    import { menuOpen } from '$lib/components/menu/store';
 
     const {
         elements: { menubar },
@@ -15,9 +17,14 @@
     function toggle() {
         open.update((state) => !state);
     }
+
+    $: menuOpen.set($open);
 </script>
 
 <div use:melt={$menubar}>
+    {#if $open}
+        <div style:display="none" id="actionmenuopen"></div>
+    {/if}
     <div use:melt={$trigger}>
         <slot />
     </div>

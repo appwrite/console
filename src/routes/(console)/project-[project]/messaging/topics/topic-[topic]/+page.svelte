@@ -34,11 +34,11 @@
     let subscribersByTargetId: Record<string, Models.Subscriber> = {};
     const columns = writable<Column[]>([
         { id: '$id', title: 'Subscriber ID', type: 'string', width: 200 },
-        { id: 'userName', title: 'Name', type: 'string', filter: false, width: 100 },
-        { id: 'targetId', title: 'Target ID', type: 'string', width: 140 },
-        { id: 'target', title: 'Target', type: 'string', filter: false, width: 140 },
-        { id: 'type', title: 'Type', type: 'string', width: 80 },
-        { id: '$createdAt', title: 'Created', type: 'datetime', width: 100 }
+        { id: 'userName', title: 'Name', type: 'string', filter: false, width: { min: 80 } },
+        { id: 'targetId', title: 'Target ID', type: 'string', width: { min: 200 } },
+        { id: 'target', title: 'Target', type: 'string', filter: false, width: { min: 140 } },
+        { id: 'type', title: 'Type', type: 'string', width: { min: 80 } },
+        { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 100 } }
     ]);
 
     onMount(() => {
@@ -89,7 +89,6 @@
 <Container>
     <div class="u-flex u-flex-vertical">
         <div class="u-flex u-main-space-between">
-            <Typography.Title>Subscribers</Typography.Title>
             <div class="is-only-mobile">
                 <Button
                     on:click={() => {
@@ -103,12 +102,10 @@
             </div>
         </div>
         <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery
-            search={data.search}
-            placeholder="Search by subscriber ID, target ID, user ID, or type">
+        <SearchQuery search={data.search} placeholder="Search by type or IDs">
             <div class="u-flex u-gap-16 is-not-mobile">
                 <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                <ViewSelector view={View.Table} {columns} hideView />
                 <Button on:click={() => (showAdd = true)} event="create_subscriber">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Add subscriber
@@ -118,7 +115,7 @@
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
             <div class="u-flex-basis-50-percent">
                 <!-- TODO: fix width -->
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                <ViewSelector view={View.Table} {columns} hideView />
             </div>
             <div class="u-flex-basis-50-percent">
                 <!-- TODO: fix width -->

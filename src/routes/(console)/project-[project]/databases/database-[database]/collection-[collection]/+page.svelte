@@ -49,7 +49,7 @@
                 disabled={!(hasAttributes && hasValidAttributes)}
                 analyticsSource="database_documents" />
             <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                <ViewSelector view={data.view} {columns} hideView allowNoColumns />
+                <ViewSelector view={data.view} {columns} hideView />
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
                     href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
