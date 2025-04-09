@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Card } from '@appwrite.io/pink-svelte';
     import { createMenubar, melt } from '@melt-ui/svelte';
-    import { writable } from 'svelte/store';
     import { menuOpen } from '$lib/components/menu/store';
 
     const {
@@ -30,7 +29,7 @@
     </div>
 
     <div class="menu" use:melt={$menu}>
-        <Card.Base padding="xxxs">
+        <Card.Base padding="none">
             {#if $$slots.start}
                 <slot name="start" />
                 <div class="separator" use:melt={$separator}></div>
