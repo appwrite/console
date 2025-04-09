@@ -102,7 +102,7 @@
                             {target.identifier}
                         {/if}
                     {:else if column.id === 'type'}
-                        <ProviderType type={subscriber.target.providerType} size="s" />
+                        <ProviderType type={subscriber.target.providerType} size="xs" />
                     {:else if column.id === '$createdAt'}
                         {toLocaleDateTime(subscriber[column.id])}
                     {:else}
