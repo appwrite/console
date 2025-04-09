@@ -7,6 +7,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
+    import { Dialog, Layout } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let message: Models.Message & { data: Record<string, unknown> };
@@ -75,6 +76,7 @@
             });
             show = false;
         } catch (error) {
+            show = false;
             addNotification({
                 message: error.message,
                 type: 'error'
@@ -84,7 +86,7 @@
     };
 </script>
 
-<Modal title="Send message" bind:show onSubmit={update}>
+<Dialog title="Send message" bind:open={show}>
     <div class="u-flex-vertical u-gap-16">
         <p data-private>
             You are about to send a message to an estimated <span class="u-bold"
@@ -94,7 +96,9 @@
         <p class="u-bold">This action is irreversible.</p>
     </div>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Send</Button>
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button text on:click={() => (show = false)}>Cancel</Button>
+            <Button on:click={update}>Send</Button>
+        </Layout.Stack>
     </svelte:fragment>
-</Modal>
+</Dialog>
