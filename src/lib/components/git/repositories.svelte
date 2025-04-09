@@ -20,6 +20,7 @@
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { connectGitHub } from '$lib/stores/git';
+    import { debounce } from '$lib/helpers/debounce';
 
     let {
         action = $bindable('select'),
@@ -69,24 +70,7 @@
             $repositories.installationId !== installationId ||
             $repositories.search !== search
         ) {
-            //TODO: remove forced cast after backend fixes
-            if (product === 'functions') {
-                $repositories.repositories = (
-                    (await sdk.forProject.vcs.listRepositories(
-                        installationId,
-                        VCSDetectionType.Runtime,
-                        search || undefined
-                    )) as unknown as Models.ProviderRepositoryRuntimeList
-                ).runtimeProviderRepositories;
-            } else {
-                $repositories.repositories = (
-                    await sdk.forProject.vcs.listRepositories(
-                        installationId,
-                        VCSDetectionType.Framework,
-                        search || undefined
-                    )
-                ).frameworkProviderRepositories;
-            }
+            await fetchRepos(installationId, search);
         }
 
         $repositories.search = search;
@@ -98,6 +82,26 @@
         }
 
         return $repositories.repositories;
+    }
+
+    async function fetchRepos(installationId: string, search: string) {
+        if (product === 'functions') {
+            $repositories.repositories = (
+                (await sdk.forProject.vcs.listRepositories(
+                    installationId,
+                    VCSDetectionType.Runtime,
+                    search || undefined
+                )) as unknown as Models.ProviderRepositoryRuntimeList
+            ).runtimeProviderRepositories; //TODO: remove forced cast after backend fixes
+        } else {
+            $repositories.repositories = (
+                (await sdk.forProject.vcs.listRepositories(
+                    installationId,
+                    VCSDetectionType.Framework,
+                    search || undefined
+                )) as unknown as Models.ProviderRepositoryFrameworkList
+            ).frameworkProviderRepositories;
+        }
     }
 </script>
 

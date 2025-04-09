@@ -132,7 +132,7 @@
                 hidePages={false}
                 hasLimit>
                 <Layout.Grid columns={3} columnsXS={2} columnsXXS={1}>
-                    {#each paginatedItems as template}
+                    {#each paginatedItems as template (template.name)}
                         {@const templateFrameworks = template.frameworks.map((t) => t.name)}
 
                         <Card.Link

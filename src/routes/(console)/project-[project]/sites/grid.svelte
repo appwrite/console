@@ -40,7 +40,7 @@
 </script>
 
 <Layout.Grid columns={3} columnsXS={1} columnsXXS={1}>
-    {#each siteList.sites as site}
+    {#each siteList.sites as site (site.$id)}
         <Card.Link
             href={`${base}/project-${page.params.project}/sites/site-${site.$id}`}
             padding="xxs">
