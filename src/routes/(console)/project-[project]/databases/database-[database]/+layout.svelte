@@ -17,6 +17,7 @@
     import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
     import { currentPlan } from '$lib/stores/organization';
+    import { isCloud } from '$lib/system';
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
@@ -55,7 +56,7 @@
             group: 'databases',
             icon: 'plus',
             rank: $page.url.pathname.endsWith('backups') ? 10 : 0,
-            disabled: !$currentPlan.backupsEnabled
+            disabled: !isCloud || !$currentPlan.backupsEnabled
         },
         {
             label: 'Create manual backup',
@@ -69,7 +70,7 @@
             group: 'databases',
             icon: 'plus',
             rank: $page.url.pathname.endsWith('backups') ? 10 : 0,
-            disabled: !$currentPlan.backupsEnabled
+            disabled: !isCloud || !$currentPlan.backupsEnabled
         },
         {
             label: 'Go to collections',
