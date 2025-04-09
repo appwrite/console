@@ -34,11 +34,11 @@
     let subscribersByTargetId: Record<string, Models.Subscriber> = {};
     const columns = writable<Column[]>([
         { id: '$id', title: 'Subscriber ID', type: 'string', width: 200 },
-        { id: 'userName', title: 'Name', type: 'string', filter: false, width: 100 },
-        { id: 'targetId', title: 'Target ID', type: 'string', width: 140 },
-        { id: 'target', title: 'Target', type: 'string', filter: false, width: 140 },
-        { id: 'type', title: 'Type', type: 'string', width: 80 },
-        { id: '$createdAt', title: 'Created', type: 'datetime', width: 100 }
+        { id: 'userName', title: 'Name', type: 'string', filter: false, width: { min: 80 } },
+        { id: 'targetId', title: 'Target ID', type: 'string', width: { min: 200 } },
+        { id: 'target', title: 'Target', type: 'string', filter: false, width: { min: 140 } },
+        { id: 'type', title: 'Type', type: 'string', width: { min: 80 } },
+        { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 100 } }
     ]);
 
     onMount(() => {
