@@ -26,7 +26,7 @@
     let showCustomId = false;
     let id: string;
     let file: Models.File;
-    let data: Writable<[string, string][]> = writable([]);
+    let data: Writable<[string, string][]> = writable([['', '']]);
     let title: string;
     let body: string;
     let topics: string[];
