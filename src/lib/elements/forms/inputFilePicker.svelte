@@ -3,7 +3,7 @@
     import FilePicker from '$lib/components/filePicker.svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { Models } from '@appwrite.io/console';
-    import { Label } from '.';
+    import { Button, Label } from '.';
 
     export let label: string = null;
     export let value: Models.File = null;
@@ -62,13 +62,7 @@
             </div>
             <div class="u-flex u-main-center u-cross-center u-gap-16 u-flex-vertical-mobile">
                 Max file size: 1MB
-                <button
-                    class="button is-secondary is-full-width-mobile"
-                    type="button"
-                    {disabled}
-                    on:click={() => (show = true)}>
-                    <span class="text">Browse</span>
-                </button>
+                <Button secondary {disabled} on:click={() => (show = true)}>Browse</Button>
             </div>
 
             {#if value}
