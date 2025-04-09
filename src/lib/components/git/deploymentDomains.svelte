@@ -6,10 +6,6 @@
     import type { Models } from '@appwrite.io/console';
     import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import { ActionMenu, Icon, Layout, Popover, Tag, Typography } from '@appwrite.io/pink-svelte';
-    import { createEventDispatcher } from 'svelte';
-
-    // export let domains: Models.ProxyRuleList;
-    // export let hideQRCode = true;
 
     let {
         domains,

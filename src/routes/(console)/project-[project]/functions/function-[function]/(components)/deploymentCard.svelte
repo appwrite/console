@@ -22,11 +22,6 @@
     import { page } from '$app/state';
     import type { Snippet } from 'svelte';
 
-    // export let deployment: Models.Deployment;
-    // export let proxyRuleList: Models.ProxyRuleList;
-    // export let variant: 'primary' | 'secondary' = 'primary';
-    // export let activeDeployment = false;
-
     let {
         deployment,
         proxyRuleList,
@@ -44,11 +39,15 @@
     let totalSize = $derived(humanFileSize(deployment?.totalSize ?? 0));
 </script>
 
-{#snippet text(title: string, text: string)}
+{#snippet titleSnippet(title: string)}
+    <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
+        {title}
+    </Typography.Text>
+{/snippet}
+
+{#snippet textGroup(title: string, text: string)}
     <Layout.Stack gap="xxs" inline>
-        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-            {title}
-        </Typography.Text>
+        {@render titleSnippet(title)}
         <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
             {text}
         </Typography.Text>
@@ -108,9 +107,7 @@
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row" alignItems="flex-start">
                     <Layout.Stack gap="xxs">
-                        <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                            Domains
-                        </Typography.Text>
+                        {@render titleSnippet('Domains')}
 
                         {#if $func.deploymentId === deployment.$id}
                             <DeploymentDomains domains={proxyRuleList} />
@@ -127,9 +124,7 @@
                 <Layout.Stack direction="row" gap="xl">
                     {#if deployment.status === 'failed'}
                         <Layout.Stack gap="xxs" inline>
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                Status
-                            </Typography.Text>
+                            {@render titleSnippet('Status')}
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                 <Status status={deployment.status} label={deployment.status} />
                             </Typography.Text>
@@ -149,17 +144,15 @@
                 <Layout.Stack gap="xxl" direction="row" wrap="wrap">
                     <Layout.Stack gap="xxl" direction="row" wrap="wrap" inline>
                         {#if deployment?.buildDuration}
-                            {@render text(
+                            {@render textGroup(
                                 'Build duration',
                                 formatTimeDetailed(deployment.buildDuration)
                             )}
                         {/if}
-                        {@render text('Total size', `${totalSize.value} ${totalSize.unit}`)}
+                        {@render textGroup('Total size', `${totalSize.value} ${totalSize.unit}`)}
 
                         <Layout.Stack gap="xxs" inline>
-                            <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                Runtime
-                            </Typography.Text>
+                            {@render titleSnippet('Runtime')}
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                 <Layout.Stack direction="row" gap="xxs" alignItems="center">
                                     <SvgIcon
@@ -182,9 +175,7 @@
                     )}
                 </Layout.Stack>
                 <Layout.Stack gap="xxs" inline style="width: min-content;">
-                    <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                        Source
-                    </Typography.Text>
+                    {@render titleSnippet('Source')}
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                         <div>
                             <DeploymentSource {deployment} />
