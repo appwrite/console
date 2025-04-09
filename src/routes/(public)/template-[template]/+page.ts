@@ -2,11 +2,17 @@ import { BillingPlan } from '$lib/constants.js';
 import { sdk } from '$lib/stores/sdk.js';
 import { ID, type Models } from '@appwrite.io/console';
 import { isCloud } from '$lib/system.js';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { OrganizationList } from '$lib/stores/organization.js';
+import { redirectTo } from '$routes/store.js';
 
 export const load = async ({ parent, url, params }) => {
     const { account } = await parent();
+
+    if (!account && !isCloud) {
+        redirectTo.set(url.pathname + url.search);
+        redirect(302, '/console/login?redirect=' + url.pathname + url.search);
+    }
 
     if (!url.searchParams.has('type')) {
         error(404, 'Type is not optional');

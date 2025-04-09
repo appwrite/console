@@ -47,15 +47,21 @@
     let showCreate = false;
     let showCreateProjectCloud = false;
 
-    function allServiceDisabled(project: Models.Project): boolean {
+    async function allServiceDisabled(project: Models.Project) {
         let disabled = true;
-        services.load(project);
-        $services.list.forEach((service) => {
-            if (service.value) {
-                disabled = false;
-            }
-        });
-        return disabled;
+        try {
+            if (!project.$id) return false;
+            if (!project.platforms.length) return false;
+            services.load(project);
+            $services.list.forEach((service) => {
+                if (service.value) {
+                    disabled = false;
+                }
+            });
+            return disabled;
+        } catch (e) {
+            return true;
+        }
     }
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
@@ -184,11 +190,14 @@
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
-                    {#if allServiceDisabled(project)}
-                        <p>
-                            <span class="icon-pause" aria-hidden="true"></span> All services are disabled.
-                        </p>
-                    {/if}
+                    {#await allServiceDisabled(project) then isDisabled}
+                        {#if isDisabled}
+                            <p>
+                                <span class="icon-pause" aria-hidden="true"></span> All services are
+                                disabled.
+                            </p>
+                        {/if}
+                    {/await}
 
                     {#each platforms as platform, i}
                         {#if i < 3}
