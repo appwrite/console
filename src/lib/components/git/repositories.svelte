@@ -5,7 +5,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
-    import { createEventDispatcher } from 'svelte';
     import {
         Layout,
         Table,
@@ -15,27 +14,33 @@
         Skeleton,
         Button as PinkButton
     } from '@appwrite.io/pink-svelte';
-    import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
+    import { IconLockClosed, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import ConnectGit from './connectGit.svelte';
     import SvgIcon from '../svgIcon.svelte';
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
+    import { connectGitHub } from '$lib/stores/git';
 
-    const dispatch = createEventDispatcher();
+    let {
+        action = $bindable('select'),
+        selectedRepository = $bindable(null),
+        installationList = $bindable($installations),
+        hasInstallations = $bindable($installations?.total > 0),
+        product = 'functions',
+        callbackState = null,
+        connect = () => {}
+    }: {
+        action?: 'button' | 'select';
+        selectedRepository?: string;
+        installationList?: Models.InstallationList;
+        hasInstallations?: boolean;
+        product?: 'functions' | 'sites';
+        callbackState?: Record<string, string> | null;
+        connect?: (repository: Models.ProviderRepository) => void;
+    } = $props();
 
-    export let callbackState: Record<string, string> = null;
-    export let selectedRepository: string = null;
-    export let hasInstallations = false;
-    export let action: 'button' | 'select' = 'select';
-    export let installationList = $installations;
-    export let product: 'functions' | 'sites' = 'functions';
-
-    let search = '';
-    let selectedInstallation = null;
-
-    $: {
-        hasInstallations = installationList?.total > 0;
-    }
+    let search = $state('');
+    let selectedInstallation = $state(null);
 
     async function loadInstallations() {
         if (installationList) {
@@ -117,13 +122,23 @@
                 <Layout.Stack direction="row">
                     <InputSelect
                         id="installation"
-                        options={installations.map((entry) => {
-                            return {
-                                label: entry.organization,
-                                value: entry.$id
-                            };
-                        })}
+                        options={[
+                            ...installations.map((entry) => {
+                                return {
+                                    label: entry.organization,
+                                    value: entry.$id
+                                };
+                            }),
+                            {
+                                label: 'Add installation',
+                                leadingIcon: IconPlus,
+                                value: 'new'
+                            }
+                        ]}
                         on:change={() => {
+                            if (selectedInstallation === 'new') {
+                                window.location.href = connectGitHub(callbackState).toString();
+                            }
                             search = '';
                             installation.set(
                                 installations.find((entry) => entry.$id === selectedInstallation)
@@ -170,7 +185,7 @@
                                                     type="radio"
                                                     name="repositories"
                                                     bind:group={selectedRepository}
-                                                    on:change={() => repository.set(repo)}
+                                                    onchange={() => repository.set(repo)}
                                                     value={repo.id} />
                                             {/if}
                                             {#if product === 'sites'}
@@ -222,7 +237,7 @@
                                                     <PinkButton.Button
                                                         size="xs"
                                                         variant="secondary"
-                                                        on:click={() => dispatch('connect', repo)}>
+                                                        on:click={() => connect(repo)}>
                                                         Connect
                                                     </PinkButton.Button>
                                                 </Layout.Stack>

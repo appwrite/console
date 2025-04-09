@@ -209,8 +209,8 @@
             callbackState={{
                 createDeployment: 'true'
             }}
-            on:connect={(e) => {
-                repository.set(e.detail);
+            connect={(e) => {
+                repository.set(e);
                 hasRepository = true;
             }} />
     {/if}

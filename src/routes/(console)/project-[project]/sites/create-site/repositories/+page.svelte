@@ -11,16 +11,17 @@
     import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
 
-    export let data;
-    let hasInstallations = !!data?.installations?.total;
-    let selectedRepository: string = null;
+    let { data } = $props();
 
-    function onConnect(e: CustomEvent<Models.ProviderRepository>) {
+    let hasInstallations = $derived(!!data?.installations?.total);
+    let selectedRepository: string = $state(null);
+
+    function onConnect(e: Models.ProviderRepository) {
         trackEvent(Click.ConnectRepositoryClick, {
             from: 'cover'
         });
-        repository.set(e.detail);
-        const target = `${base}/project-${page.params.project}/sites/create-site/repositories/repository-${e.detail.id}?installation=${$installation.$id}`;
+        repository.set(e);
+        const target = `${base}/project-${page.params.project}/sites/create-site/repositories/repository-${e.id}?installation=${$installation.$id}`;
         goto(target);
     }
 </script>
@@ -33,7 +34,7 @@
                 bind:selectedRepository
                 product="sites"
                 action="button"
-                on:connect={onConnect} />
+                connect={onConnect} />
         </Fieldset>
     {:else}
         <Repositories
@@ -41,7 +42,7 @@
             bind:selectedRepository
             product="sites"
             action="button"
-            on:connect={onConnect} />
+            connect={onConnect} />
     {/if}
 
     <svelte:fragment slot="aside">

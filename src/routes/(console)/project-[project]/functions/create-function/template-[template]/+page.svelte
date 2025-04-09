@@ -288,13 +288,13 @@
                                         bind:hasInstallations
                                         bind:selectedRepository
                                         action="button"
-                                        on:connect={(e) => {
+                                        connect={(e) => {
                                             trackEvent(Click.ConnectRepositoryClick, {
                                                 from: 'template-wizard'
                                             });
-                                            repository.set(e.detail);
-                                            repositoryName = e.detail.name;
-                                            selectedRepository = e.detail.id;
+                                            repository.set(e);
+                                            repositoryName = e.name;
+                                            selectedRepository = e.id;
                                             showConfig = true;
                                         }} />
                                 {/if}
