@@ -17,7 +17,7 @@
     export let data;
 
     const ruleId = page.url.searchParams.get('rule');
-    let selectedTab: 'cname' | 'nameserver';
+    let selectedTab: 'cname' | 'nameserver' | 'a' | 'aaaa';
     let verified = false;
 
     let routeBase = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
@@ -27,7 +27,7 @@
         const isNewDomain =
             data.domainsList.domains.findIndex((rule) => rule.domain === page.params.domain) === -1;
         try {
-            if (selectedTab === 'cname') {
+            if (selectedTab !== 'nameserver') {
                 const ruleData = await sdk.forProject.proxy.updateRuleVerification(ruleId);
                 verified = ruleData.status === 'verified';
             } else if (isNewDomain && isCloud) {

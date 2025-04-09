@@ -13,8 +13,20 @@
 
     export let domain: string;
     export let verified = false;
+    export let variant: 'cname' | 'a' | 'aaaa';
 
     let subdomain = domain.split('.').slice(0, -2).join('.');
+
+    function setTarget() {
+        switch (variant) {
+            case 'cname':
+                return $consoleVariables._APP_DOMAIN_TARGET_CNAME;
+            case 'a':
+                return $consoleVariables._APP_DOMAIN_TARGET_A;
+            case 'aaaa':
+                return $consoleVariables._APP_DOMAIN_TARGET_AAAA;
+        }
+    }
 </script>
 
 <Layout.Stack gap="xl">
@@ -48,14 +60,11 @@
             <Table.Header.Cell {root}>Value</Table.Header.Cell>
         </svelte:fragment>
         <Table.Row.Base {root}>
-            <Table.Cell {root}>CNAME</Table.Cell>
-            <Table.Cell {root}>{subdomain}</Table.Cell>
+            <Table.Cell {root}>{variant.toUpperCase()}</Table.Cell>
+            <Table.Cell {root}>{subdomain || '@'}</Table.Cell>
             <Table.Cell {root}>
-                <InteractiveText
-                    variant="copy"
-                    isVisible
-                    text={$consoleVariables._APP_DOMAIN_TARGET_CNAME}>
-                    {$consoleVariables._APP_DOMAIN_TARGET_CNAME}</InteractiveText>
+                <InteractiveText variant="copy" isVisible text={setTarget()}>
+                    {setTarget()}</InteractiveText>
             </Table.Cell>
         </Table.Row.Base>
     </Table.Root>

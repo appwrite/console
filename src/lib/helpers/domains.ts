@@ -193,14 +193,6 @@ export function parseDnsRecords(content: string): Record<string, Partial<DnsReco
     return records;
 }
 
-/**
- * Parse a single line from a zone file
- * @param line Line to parse
- * @param defaultTTL Default TTL value
- * @param origin Domain origin
- * @param validTypes Array of valid record types
- * @returns Parsed DNS record
- */
 function parseLine(
     line: string,
     defaultTTL: number,
