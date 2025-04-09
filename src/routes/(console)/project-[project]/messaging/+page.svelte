@@ -94,7 +94,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Filters query={data.query} {columns} analyticsSource="messaging_messages" />
-            <ViewSelector view={data.view} {columns} hideView allowNoColumns />
+            <ViewSelector view={data.view} {columns} hideView />
             {#if $canWriteMessages}
                 <CreateMessageDropdown />
             {/if}

@@ -30,7 +30,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Filters query={data.query} {columns} analyticsSource="messaging_providers" />
-            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+            <ViewSelector view={View.Table} {columns} hideView />
             {#if $canWriteProviders}
                 <CreateProviderDropdown let:toggle>
                     <Button on:click={toggle} event="create_provider">
