@@ -75,7 +75,13 @@
 </script>
 
 <Popover let:show let:hide {placement} portal>
-    <button on:mouseenter={() => setTimeout(show, 150)} on:mouseleave={() => hidePopover(hide)}>
+    <button
+        on:mouseenter={() => {
+            if (!document.getElementById('actionmenuopen')) {
+                setTimeout(show, 150);
+            }
+        }}
+        on:mouseleave={() => hidePopover(hide)}>
         <slot>{capitalize(timeFromNow(time))}</slot>
     </button>
 

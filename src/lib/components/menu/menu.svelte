@@ -18,6 +18,9 @@
 </script>
 
 <div use:melt={$menubar}>
+    {#if $open}
+        <div style:display="none" id="actionmenuopen"></div>
+    {/if}
     <div use:melt={$trigger}>
         <slot />
     </div>
