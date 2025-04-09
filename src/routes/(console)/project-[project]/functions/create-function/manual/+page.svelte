@@ -48,7 +48,7 @@
     let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
-    let scopes: string[] = [];
+    let roles: string[] = [];
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
     let specification = specificationOptions[0].value;
@@ -61,7 +61,7 @@
                 id || ID.unique(),
                 name,
                 runtime,
-                undefined,
+                roles?.length ? roles : undefined,
                 undefined,
                 undefined,
                 undefined,
@@ -69,7 +69,7 @@
                 undefined,
                 entrypoint,
                 undefined,
-                scopes,
+                undefined,
                 undefined,
                 undefined,
                 undefined,
@@ -188,7 +188,7 @@
                 options={runtimeOptions}
                 showEntrypoint />
 
-            <Configuration bind:buildCommand bind:scopes />
+            <Configuration bind:buildCommand bind:roles />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
