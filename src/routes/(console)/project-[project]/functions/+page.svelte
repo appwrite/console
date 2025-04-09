@@ -77,7 +77,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search functions" />
+        <SearchQuery search={data.search} placeholder="Search by name or ID" />
 
         <Button href={`${base}/project-${project}/functions/create-function`}>
             <Icon icon={IconPlus} slot="start" />

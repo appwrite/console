@@ -90,7 +90,7 @@
         <Layout.Stack direction="row" alignItems="center">
             <SearchQuery
                 search={data.search}
-                placeholder="Search by ID, description, type, or status" />
+                placeholder="Search by description, type, status, or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Filters query={data.query} {columns} analyticsSource="messaging_messages" />
