@@ -89,6 +89,7 @@
 
 <Wizard
     title="Create email message"
+    columnSize="s"
     href={`${base}/project-${page.params.project}/messaging/`}
     bind:showExitModal
     column
