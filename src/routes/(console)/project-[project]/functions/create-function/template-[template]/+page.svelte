@@ -150,8 +150,6 @@
                     func.$id
                 );
 
-                console.log(variables);
-
                 // Add variables
                 const promises = variables.map((variable) =>
                     sdk.forProject.functions.createVariable(

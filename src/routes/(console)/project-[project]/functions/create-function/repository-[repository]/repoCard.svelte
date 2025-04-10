@@ -17,9 +17,7 @@
                 {repository?.organization}/{repository?.name}
             </Typography.Text>
         </Layout.Stack>
-        <Button
-            secondary
-            href={`${base}/project-${page.params.project}/sites/create-site/repositories`}>
+        <Button secondary href={`${base}/project-${page.params.project}/functions/create-function`}>
             Change
         </Button>
     </Layout.Stack>

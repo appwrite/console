@@ -269,7 +269,7 @@
                     <Button
                         secondary
                         on:mousedown={() => {
-                            showEditorModal = true;
+                            showVariablesUpload = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
                         }}>
                         <Icon slot="start" icon={IconUpload} /> Import .env
@@ -415,7 +415,7 @@
                 {#if sum > limit}
                     <Layout.Stack direction="row" justifyContent="space-between">
                         <p class="text">Total variables: {sum}</p>
-                        <PaginationInline {sum} {limit} bind:offset hidePages />
+                        <PaginationInline total={sum} {limit} bind:offset hidePages />
                     </Layout.Stack>
                 {/if}
             </Layout.Stack>

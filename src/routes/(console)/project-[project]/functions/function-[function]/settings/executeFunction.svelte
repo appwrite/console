@@ -26,12 +26,7 @@
             <Layout.Stack gap="xxxs" inline>
                 <Typography.Caption variant="400">Updated</Typography.Caption>
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                    <Tooltip>
-                        {capitalize(timeFromNow($func.$updatedAt))}
-                        <span slot="tooltip">
-                            {toLocaleDateTime($func.$updatedAt)}
-                        </span>
-                    </Tooltip>
+                    {toLocaleDateTime($func.$updatedAt)}
                 </Typography.Text>
             </Layout.Stack>
             <Layout.Stack gap="xxxs" inline>
