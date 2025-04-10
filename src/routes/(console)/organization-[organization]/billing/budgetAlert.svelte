@@ -102,6 +102,16 @@
                     </svelte:fragment>
                     Upgrade to a Pro plan to manage when you receive billing alerts for your organization.
                 </Alert>
+            {:else if !$currentPlan.budgetCapEnabled}
+                <Alert type="info">
+                    <svelte:fragment slot="title">Billing alerts disabled</svelte:fragment>
+                    Billing alerts are disabled for your current plan. For more information
+                    <a
+                        class="link"
+                        href="https://appwrite.io/pricing"
+                        target="_blank"
+                        rel="noopener noreferrer">view our pricing guide.</a>
+                </Alert>
             {:else}
                 <FormList>
                     <Alert type="info">

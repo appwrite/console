@@ -71,6 +71,16 @@
                         target="_blank"
                         rel="noopener noreferrer">view our pricing guide.</a>
                 </Alert>
+            {:else if !$currentPlan.budgetCapEnabled}
+                <Alert type="info">
+                    <svelte:fragment slot="title">Budget cap disabled</svelte:fragment>
+                    Budget caps are disabled for your current plan. For more information
+                    <a
+                        class="link"
+                        href="https://appwrite.io/pricing"
+                        target="_blank"
+                        rel="noopener noreferrer">view our pricing guide.</a>
+                </Alert>
             {:else}
                 <FormList>
                     <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
