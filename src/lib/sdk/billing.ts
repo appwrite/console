@@ -340,6 +340,7 @@ export type Plan = {
         seats: PlanAddon;
     };
     trialDays: number;
+    budgetCapEnabled: boolean;
     isAvailable: boolean;
     selfService: boolean;
     premiumSupport: boolean;

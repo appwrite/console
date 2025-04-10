@@ -71,6 +71,12 @@
                         target="_blank"
                         rel="noopener noreferrer">view our pricing guide.</a>
                 </Alert>
+            {:else if !$currentPlan.budgetCapEnabled}
+                <Alert type="info">
+                    <svelte:fragment slot="title">Budget cap disabled</svelte:fragment>
+                    Budget caps are not supported on your current plan. For more information, please
+                    reach out to your customer success manager.
+                </Alert>
             {:else}
                 <FormList>
                     <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
