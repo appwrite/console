@@ -7,7 +7,7 @@
     export let verified = false;
 
     const nameserverList = $consoleVariables?._APP_DOMAINS_NAMESERVERS
-        ? $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',')
+        ? $consoleVariables?._APP_DOMAINS_NAMESERVERS?.split(',')
         : ['ns1.appwrite.io', 'ns2.appwrite.io'];
 </script>
 

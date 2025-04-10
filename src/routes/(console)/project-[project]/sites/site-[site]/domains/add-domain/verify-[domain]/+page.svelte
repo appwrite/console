@@ -9,7 +9,6 @@
         Tabs,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import VerificationFieldset from './verificationFieldset.svelte';
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
@@ -28,8 +27,10 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
+    let isSubDomain = $derived(page.params.domain?.split('.')?.length >= 3);
+
     let selectedTab: 'cname' | 'nameserver' | 'a' | 'aaaa' = $state(
-        !!$consoleVariables._APP_DOMAIN_TARGET_CNAME
+        !!$consoleVariables._APP_DOMAIN_TARGET_CNAME && isSubDomain
             ? 'cname'
             : !!$consoleVariables._APP_DOMAIN_TARGET_A
               ? 'a'
@@ -41,7 +42,6 @@
 
     let routeBase = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
     let isSubmitting = $state(writable(false));
-    let isSubDomain = $derived(page.params.domain?.split('.')?.length >= 3);
 
     async function verify() {
         const isNewDomain =

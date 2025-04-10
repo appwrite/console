@@ -15,7 +15,7 @@
     export let verified = false;
     export let variant: 'cname' | 'a' | 'aaaa';
 
-    let subdomain = domain.split('.').slice(0, -2).join('.');
+    let subdomain = domain?.split('.')?.slice(0, -2)?.join('.');
 
     function setTarget() {
         switch (variant) {
