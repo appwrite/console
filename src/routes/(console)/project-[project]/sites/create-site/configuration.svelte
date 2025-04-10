@@ -180,114 +180,118 @@
                             <Paginator
                                 items={variables}
                                 limit={6}
-                                let:paginatedItems
                                 hideFooter={variables.length <= 6}>
-                                <Table.Root
-                                    let:root
-                                    columns={[
-                                        { id: 'key', width: 200 },
-                                        { id: 'value' },
-                                        { id: 'actions', width: 40 }
-                                    ]}>
-                                    <svelte:fragment slot="header" let:root>
-                                        <Table.Header.Cell column="key" {root}
-                                            >Key</Table.Header.Cell>
-                                        <Table.Header.Cell column="value" {root}
-                                            >Value</Table.Header.Cell>
-                                        <Table.Header.Cell column="actions" {root}
-                                        ></Table.Header.Cell>
-                                    </svelte:fragment>
-                                    {#each paginatedItems as variable}
-                                        <Table.Row.Base {root}>
-                                            <Table.Cell column="key" {root}
-                                                >{variable.key}</Table.Cell>
-                                            <Table.Cell column="value" {root}>
-                                                <!-- TODO: fix max width -->
-                                                <div style="max-width: 20rem">
-                                                    {#if variable.secret}
-                                                        <Tooltip maxWidth="26rem">
-                                                            <Badge
-                                                                content="Secret"
-                                                                variant="secondary"
-                                                                size="s" />
-                                                            <svelte:fragment slot="tooltip">
-                                                                This value is secret, you cannot see
-                                                                its value.
+                                {#snippet children(paginatedItems: typeof variables)}
+                                    <Table.Root
+                                        let:root
+                                        columns={[
+                                            { id: 'key', width: 200 },
+                                            { id: 'value' },
+                                            { id: 'actions', width: 40 }
+                                        ]}>
+                                        <svelte:fragment slot="header" let:root>
+                                            <Table.Header.Cell column="key" {root}
+                                                >Key</Table.Header.Cell>
+                                            <Table.Header.Cell column="value" {root}
+                                                >Value</Table.Header.Cell>
+                                            <Table.Header.Cell column="actions" {root}
+                                            ></Table.Header.Cell>
+                                        </svelte:fragment>
+                                        {#each paginatedItems as variable}
+                                            <Table.Row.Base {root}>
+                                                <Table.Cell column="key" {root}
+                                                    >{variable.key}</Table.Cell>
+                                                <Table.Cell column="value" {root}>
+                                                    <!-- TODO: fix max width -->
+                                                    <div style="max-width: 20rem">
+                                                        {#if variable.secret}
+                                                            <Tooltip maxWidth="26rem">
+                                                                <Badge
+                                                                    content="Secret"
+                                                                    variant="secondary"
+                                                                    size="s" />
+                                                                <svelte:fragment slot="tooltip">
+                                                                    This value is secret, you cannot
+                                                                    see its value.
+                                                                </svelte:fragment>
+                                                            </Tooltip>
+                                                        {:else}
+                                                            <InteractiveText
+                                                                variant="secret"
+                                                                isVisible={false}
+                                                                text={variable.value} />
+                                                        {/if}
+                                                    </div>
+                                                </Table.Cell>
+                                                <Table.Cell column="actions" {root}>
+                                                    <div style="margin-inline-start: auto">
+                                                        <Popover
+                                                            padding="none"
+                                                            placement="bottom-end"
+                                                            let:toggle>
+                                                            <PinkButton.Button
+                                                                icon
+                                                                variant="text"
+                                                                size="s"
+                                                                aria-label="More options"
+                                                                on:click={(e) => {
+                                                                    e.preventDefault();
+                                                                    toggle(e);
+                                                                }}>
+                                                                <Icon
+                                                                    icon={IconDotsHorizontal}
+                                                                    size="s" />
+                                                            </PinkButton.Button>
+
+                                                            <svelte:fragment
+                                                                slot="tooltip"
+                                                                let:toggle>
+                                                                <ActionMenu.Root>
+                                                                    {#if !variable?.secret}
+                                                                        <ActionMenu.Item.Button
+                                                                            leadingIcon={IconPencil}
+                                                                            on:click={(e) => {
+                                                                                toggle(e);
+                                                                                currentVariable =
+                                                                                    variable;
+                                                                                showUpdate = true;
+                                                                            }}>
+                                                                            Update
+                                                                        </ActionMenu.Item.Button>
+                                                                    {/if}
+                                                                    {#if !variable?.secret}
+                                                                        <ActionMenu.Item.Button
+                                                                            leadingIcon={IconEyeOff}
+                                                                            on:click={(e) => {
+                                                                                toggle(e);
+
+                                                                                currentVariable =
+                                                                                    variable;
+                                                                                showSecretModal = true;
+                                                                            }}>
+                                                                            Secret
+                                                                        </ActionMenu.Item.Button>
+                                                                    {/if}
+                                                                    <ActionMenu.Item.Button
+                                                                        status="danger"
+                                                                        leadingIcon={IconTrash}
+                                                                        on:click={(e) => {
+                                                                            toggle(e);
+                                                                            currentVariable =
+                                                                                variable;
+                                                                            showDelete = true;
+                                                                        }}>
+                                                                        Delete
+                                                                    </ActionMenu.Item.Button>
+                                                                </ActionMenu.Root>
                                                             </svelte:fragment>
-                                                        </Tooltip>
-                                                    {:else}
-                                                        <InteractiveText
-                                                            variant="secret"
-                                                            isVisible={false}
-                                                            text={variable.value} />
-                                                    {/if}
-                                                </div>
-                                            </Table.Cell>
-                                            <Table.Cell column="actions" {root}>
-                                                <div style="margin-inline-start: auto">
-                                                    <Popover
-                                                        padding="none"
-                                                        placement="bottom-end"
-                                                        let:toggle>
-                                                        <PinkButton.Button
-                                                            icon
-                                                            variant="text"
-                                                            size="s"
-                                                            aria-label="More options"
-                                                            on:click={(e) => {
-                                                                e.preventDefault();
-                                                                toggle(e);
-                                                            }}>
-                                                            <Icon
-                                                                icon={IconDotsHorizontal}
-                                                                size="s" />
-                                                        </PinkButton.Button>
-
-                                                        <svelte:fragment slot="tooltip" let:toggle>
-                                                            <ActionMenu.Root>
-                                                                {#if !variable?.secret}
-                                                                    <ActionMenu.Item.Button
-                                                                        leadingIcon={IconPencil}
-                                                                        on:click={(e) => {
-                                                                            toggle(e);
-                                                                            currentVariable =
-                                                                                variable;
-                                                                            showUpdate = true;
-                                                                        }}>
-                                                                        Update
-                                                                    </ActionMenu.Item.Button>
-                                                                {/if}
-                                                                {#if !variable?.secret}
-                                                                    <ActionMenu.Item.Button
-                                                                        leadingIcon={IconEyeOff}
-                                                                        on:click={(e) => {
-                                                                            toggle(e);
-
-                                                                            currentVariable =
-                                                                                variable;
-                                                                            showSecretModal = true;
-                                                                        }}>
-                                                                        Secret
-                                                                    </ActionMenu.Item.Button>
-                                                                {/if}
-                                                                <ActionMenu.Item.Button
-                                                                    status="danger"
-                                                                    leadingIcon={IconTrash}
-                                                                    on:click={(e) => {
-                                                                        toggle(e);
-                                                                        currentVariable = variable;
-                                                                        showDelete = true;
-                                                                    }}>
-                                                                    Delete
-                                                                </ActionMenu.Item.Button>
-                                                            </ActionMenu.Root>
-                                                        </svelte:fragment>
-                                                    </Popover>
-                                                </div>
-                                            </Table.Cell>
-                                        </Table.Row.Base>
-                                    {/each}
-                                </Table.Root>
+                                                        </Popover>
+                                                    </div>
+                                                </Table.Cell>
+                                            </Table.Row.Base>
+                                        {/each}
+                                    </Table.Root>
+                                {/snippet}
                             </Paginator>
                         {:else}
                             <Empty on:click={() => (showCreate = true)}

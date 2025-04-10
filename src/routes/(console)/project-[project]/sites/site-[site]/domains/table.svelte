@@ -36,12 +36,12 @@
                                 {domain.domain}
                             </Typography.Text>
                         </Link>
-                    {:else if column.id === 'redirectUrl'}
-                        <!-- TODO design redirect status code -->
-                        {domain?.redirectUrl || 'No redirect'}
-                        {domain?.redirectStatusCode ? `(${domain.redirectStatusCode})` : ''}
-                    {:else if column.id === 'deploymentVcsProviderBranch'}
-                        {domain.deploymentVcsProviderBranch || '-'}
+                    {:else if column.id === 'target'}
+                        {domain?.redirectUrl
+                            ? 'Redirect to ' + domain.redirectUrl
+                            : domain?.deploymentVcsProviderBranch
+                              ? 'Deployed from' + domain.deploymentVcsProviderBranch
+                              : '-'}
                     {/if}
                 </Table.Cell>
             {/each}

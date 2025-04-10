@@ -82,7 +82,7 @@
 <Container>
     <Layout.GridFraction start={1} end={3} gap="xxl">
         <Layout.Stack gap="xl">
-            <SearchQuery search={data.search} placeholder="Search template" />
+            <SearchQuery placeholder="Search template" />
             <Layout.Stack>
                 <Accordion title="Use case">
                     <Layout.Stack>
@@ -140,86 +140,88 @@
         </Layout.Stack>
         <Layout.Stack gap="l">
             {#if data.templates?.length > 0}
-                <Paginator
-                    items={data.templates}
-                    let:paginatedItems
-                    limit={12}
-                    hidePages={false}
-                    hasLimit>
-                    <Layout.Grid columns={2} columnsXL={3} columnsXS={1}>
-                        {#each paginatedItems as template}
-                            {@const baseRuntimes = getBaseRuntimes(template.runtimes)}
-                            {@const displayed = baseRuntimes.slice(0, 2)}
-                            {@const hidden = baseRuntimes.slice(1, -1)}
-                            <PinkCard.Base radius="m" padding="xs">
-                                <Layout.Stack height="100%" justifyContent="space-between" gap="xl">
-                                    <Layout.Stack gap="xxxs">
-                                        <Typography.Text
-                                            variant="m-500"
-                                            color="--fgcolor-neutral-primary">
-                                            {template.name}
-                                        </Typography.Text>
-
-                                        <Typography.Text variant="m-400">
-                                            {template.tagline}
-                                        </Typography.Text>
-                                    </Layout.Stack>
-
+                <Paginator items={data.templates} limit={12} hidePages={false} hasLimit>
+                    {#snippet children(paginatedItems: typeof data.templates)}
+                        <Layout.Grid columns={2} columnsXL={3} columnsXS={1}>
+                            {#each paginatedItems as template}
+                                {@const baseRuntimes = getBaseRuntimes(template.runtimes)}
+                                {@const displayed = baseRuntimes.slice(0, 2)}
+                                {@const hidden = baseRuntimes.slice(1, -1)}
+                                <PinkCard.Base radius="m" padding="xs">
                                     <Layout.Stack
-                                        direction="row"
+                                        height="100%"
                                         justifyContent="space-between"
-                                        alignItems="center">
-                                        <AvatarGroup>
-                                            {#each displayed as runtime}
-                                                {@const icon = getIconFromRuntime(runtime.name)}
-                                                {#if icon}
-                                                    <Avatar alt={runtime.name} size="xs">
-                                                        <SvgIcon name={icon} iconSize="small" />
-                                                    </Avatar>
-                                                {/if}
-                                            {/each}
-                                            {#if hidden.length}
-                                                <Tooltip>
-                                                    <Avatar alt="hidden runtime number" size="xs">
-                                                        <span style:font-size="10px">
-                                                            +{hidden.length}
-                                                        </span>
-                                                    </Avatar>
-                                                    <span slot="tooltip">
-                                                        {hidden.map((n) => n.name).join(', ')}
-                                                    </span>
-                                                </Tooltip>
-                                            {/if}
-                                        </AvatarGroup>
+                                        gap="xl">
+                                        <Layout.Stack gap="xxxs">
+                                            <Typography.Text
+                                                variant="m-500"
+                                                color="--fgcolor-neutral-primary">
+                                                {template.name}
+                                            </Typography.Text>
+
+                                            <Typography.Text variant="m-400">
+                                                {template.tagline}
+                                            </Typography.Text>
+                                        </Layout.Stack>
+
                                         <Layout.Stack
                                             direction="row"
-                                            gap="s"
-                                            alignItems="center"
-                                            inline>
-                                            <Button
-                                                href={`${base}/project-${page.params.project}/functions/templates/template-${template.id}`}
-                                                text>
-                                                <span class="text">Details</span>
-                                            </Button>
-                                            {#if $canWriteFunctions}
-                                                <ContainerButton
-                                                    title="functions"
-                                                    disabled={buttonDisabled}
-                                                    buttonType="secondary"
-                                                    buttonHref={`${base}/project-${page.params.project}/functions/create-function/template-${template.id}`}
-                                                    showIcon={false}
-                                                    buttonText="Create"
-                                                    buttonEventData={{
-                                                        source: 'functions_template'
-                                                    }}
-                                                    buttonEvent="create_function" />
-                                            {/if}
+                                            justifyContent="space-between"
+                                            alignItems="center">
+                                            <AvatarGroup>
+                                                {#each displayed as runtime}
+                                                    {@const icon = getIconFromRuntime(runtime.name)}
+                                                    {#if icon}
+                                                        <Avatar alt={runtime.name} size="xs">
+                                                            <SvgIcon name={icon} iconSize="small" />
+                                                        </Avatar>
+                                                    {/if}
+                                                {/each}
+                                                {#if hidden.length}
+                                                    <Tooltip>
+                                                        <Avatar
+                                                            alt="hidden runtime number"
+                                                            size="xs">
+                                                            <span style:font-size="10px">
+                                                                +{hidden.length}
+                                                            </span>
+                                                        </Avatar>
+                                                        <span slot="tooltip">
+                                                            {hidden.map((n) => n.name).join(', ')}
+                                                        </span>
+                                                    </Tooltip>
+                                                {/if}
+                                            </AvatarGroup>
+                                            <Layout.Stack
+                                                direction="row"
+                                                gap="s"
+                                                alignItems="center"
+                                                inline>
+                                                <Button
+                                                    href={`${base}/project-${page.params.project}/functions/templates/template-${template.id}`}
+                                                    text>
+                                                    <span class="text">Details</span>
+                                                </Button>
+                                                {#if $canWriteFunctions}
+                                                    <ContainerButton
+                                                        title="functions"
+                                                        disabled={buttonDisabled}
+                                                        buttonType="secondary"
+                                                        buttonHref={`${base}/project-${page.params.project}/functions/create-function/template-${template.id}`}
+                                                        showIcon={false}
+                                                        buttonText="Create"
+                                                        buttonEventData={{
+                                                            source: 'functions_template'
+                                                        }}
+                                                        buttonEvent="create_function" />
+                                                {/if}
+                                            </Layout.Stack>
                                         </Layout.Stack>
                                     </Layout.Stack>
-                                </Layout.Stack>
-                            </PinkCard.Base>
-                        {/each}
-                    </Layout.Grid>
+                                </PinkCard.Base>
+                            {/each}
+                        </Layout.Grid>
+                    {/snippet}
                 </Paginator>
             {:else if data?.search}
                 <EmptySearch hidePagination search={data.search}>

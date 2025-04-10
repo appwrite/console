@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { EmptySearch, PaginationWithLimit, Paginator, SvgIcon } from '$lib/components';
+    import { EmptySearch, Paginator, SvgIcon } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import { page } from '$app/state';
     import Wizard from '$lib/layout/wizard.svelte';
@@ -125,43 +125,40 @@
     </svelte:fragment>
     <Layout.Stack gap="l">
         {#if data.templates?.length > 0}
-            <Paginator
-                items={data.templates}
-                let:paginatedItems
-                limit={12}
-                hidePages={false}
-                hasLimit>
-                <Layout.Grid columns={3} columnsXS={2} columnsXXS={1}>
-                    {#each paginatedItems as template (template.name)}
-                        {@const templateFrameworks = template.frameworks.map((t) => t.name)}
+            <Paginator items={data.templates} limit={12} hidePages={false} hasLimit>
+                {#snippet children(paginatedItems: typeof data.templates)}
+                    <Layout.Grid columns={3} columnsXS={2} columnsXXS={1}>
+                        {#each paginatedItems as template (template.name)}
+                            {@const templateFrameworks = template.frameworks.map((t) => t.name)}
 
-                        <Card.Link
-                            variant="secondary"
-                            href={`${base}/project-${page.params.project}/sites/create-site/templates/template-${template.key}`}
-                            padding="xxs">
-                            <Card.Media
-                                title={template.name}
-                                src={$app.themeInUse === 'dark'
-                                    ? template?.screenshotDark ||
-                                      `${base}/images/sites/screenshot-placeholder-dark.svg`
-                                    : template?.screenshotLight ||
-                                      `${base}/images/sites/screenshot-placeholder-light.svg`}
-                                alt={template.name}
-                                avatar>
-                                <svelte:fragment slot="avatar">
-                                    <Tooltip>
-                                        <SvgIcon
-                                            name={getFrameworkIcon(templateFrameworks[0])}
-                                            iconSize="small" />
-                                        <svelte:fragment slot="tooltip">
-                                            {capitalize(templateFrameworks[0])}
-                                        </svelte:fragment>
-                                    </Tooltip>
-                                </svelte:fragment>
-                            </Card.Media>
-                        </Card.Link>
-                    {/each}
-                </Layout.Grid>
+                            <Card.Link
+                                variant="secondary"
+                                href={`${base}/project-${page.params.project}/sites/create-site/templates/template-${template.key}`}
+                                padding="xxs">
+                                <Card.Media
+                                    title={template.name}
+                                    src={$app.themeInUse === 'dark'
+                                        ? template?.screenshotDark ||
+                                          `${base}/images/sites/screenshot-placeholder-dark.svg`
+                                        : template?.screenshotLight ||
+                                          `${base}/images/sites/screenshot-placeholder-light.svg`}
+                                    alt={template.name}
+                                    avatar>
+                                    <svelte:fragment slot="avatar">
+                                        <Tooltip>
+                                            <SvgIcon
+                                                name={getFrameworkIcon(templateFrameworks[0])}
+                                                iconSize="small" />
+                                            <svelte:fragment slot="tooltip">
+                                                {capitalize(templateFrameworks[0])}
+                                            </svelte:fragment>
+                                        </Tooltip>
+                                    </svelte:fragment>
+                                </Card.Media>
+                            </Card.Link>
+                        {/each}
+                    </Layout.Grid>
+                {/snippet}
             </Paginator>
         {:else}
             <EmptySearch

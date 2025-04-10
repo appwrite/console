@@ -7,19 +7,13 @@ export const columns = writable<Column[]>([
         title: 'Domain',
         type: 'string',
         format: 'string',
-        width: { min: 200, max: 550 }
+        width: { min: 200 }
     },
 
     {
-        id: 'redirectUrl',
-        title: 'Redirect to',
+        id: 'target',
+        title: 'Target',
         type: 'string',
         width: { min: 120, max: 400 }
-    },
-    {
-        id: 'deploymentVcsProviderBranch',
-        title: 'Production branch',
-        type: 'string',
-        width: { min: 90, max: 220 }
     }
 ]);
