@@ -33,7 +33,6 @@
         previousPage = from?.url?.pathname || previousPage;
     });
 
-    let hasInstallations: boolean;
     let selectedRepository: string;
 
     const featuredTemplatesList = data.templatesList.templates
@@ -101,7 +100,6 @@
                             <Typography.Title size="s">Connect Git repository</Typography.Title>
 
                             <Repositories
-                                bind:hasInstallations
                                 bind:selectedRepository
                                 action="button"
                                 callbackState={{
@@ -110,7 +108,7 @@
                                 }}
                                 {connect} />
                         </Layout.Stack>
-                        {#if hasInstallations}
+                        {#if data.installations.total}
                             <Layout.Stack gap="l">
                                 <Divider />
                                 <Link variant="quiet" href="#/">

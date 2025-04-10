@@ -21,7 +21,7 @@
             await sdk.forProject.functions.createDeployment(
                 $func.$id,
                 files[0],
-                undefined,
+                true,
                 undefined,
                 undefined
             );

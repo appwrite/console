@@ -24,7 +24,7 @@
 
     let {
         action = $bindable('select'),
-        selectedRepository = $bindable(null),
+        selectedRepository = $bindable(undefined),
         installationList = $bindable($installations),
         hasInstallations = $bindable($installations?.total > 0),
         product = 'functions',

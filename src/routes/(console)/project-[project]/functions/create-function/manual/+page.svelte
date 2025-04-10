@@ -68,7 +68,7 @@
                 true,
                 undefined,
                 entrypoint,
-                undefined,
+                buildCommand,
                 undefined,
                 undefined,
                 undefined,
@@ -99,8 +99,8 @@
                 func.$id,
                 files[0],
                 true,
-                entrypoint,
-                buildCommand
+                undefined,
+                undefined
             );
 
             trackEvent(Submit.FunctionCreate, {

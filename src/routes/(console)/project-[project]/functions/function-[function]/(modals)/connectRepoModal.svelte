@@ -27,7 +27,6 @@
     let selectedInstallationId = '';
     let selectedRepository = '';
     let installations = { installations: [], total: 0 };
-    let hasInstallations = !!installations?.total;
     let error = '';
 
     onMount(async () => {
@@ -36,8 +35,7 @@
             $installation = installations.installations[0];
         }
         selectedInstallationId = installations.total ? installations.installations[0]?.$id : '';
-        hasInstallations = !!installations?.total;
-        if (hasInstallations) {
+        if (!!installations?.total) {
             repositoryBehaviour = 'existing';
         }
         console.log(selectedInstallationId);
@@ -99,7 +97,7 @@
     <span slot="description">
         Connect your function to an existing repository or create a new one.
     </span>
-    {#if hasInstallations}
+    {#if !!installations?.total}
         <Layout.Stack gap="xl">
             <RepositoryBehaviour bind:repositoryBehaviour />
             {#if repositoryBehaviour === 'new'}
@@ -110,7 +108,6 @@
                     {installations} />
             {:else}
                 <Repositories
-                    bind:hasInstallations
                     bind:selectedRepository
                     action="button"
                     {callbackState}

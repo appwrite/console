@@ -13,7 +13,6 @@
 
     let { data } = $props();
 
-    let hasInstallations = $derived(!!data?.installations?.total);
     let selectedRepository: string = $state(null);
 
     function onConnect(e: Models.ProviderRepository) {
@@ -27,28 +26,22 @@
 </script>
 
 <Wizard title="Create site" href={`${base}/project-${page.params.project}/sites/`} hideFooter>
-    {#if hasInstallations}
+    {#if !!data?.installations?.total}
         <Fieldset legend="Git repository">
             <Repositories
-                bind:hasInstallations
                 bind:selectedRepository
                 product="sites"
                 action="button"
                 connect={onConnect} />
         </Fieldset>
     {:else}
-        <Repositories
-            bind:hasInstallations
-            bind:selectedRepository
-            product="sites"
-            action="button"
-            connect={onConnect} />
+        <Repositories bind:selectedRepository product="sites" action="button" connect={onConnect} />
     {/if}
 
     <svelte:fragment slot="aside">
         <Card radius="s" padding="s">
             <Layout.Stack gap="l">
-                {#if !hasInstallations}
+                {#if !data?.installations?.total}
                     <Layout.Stack gap="xxs">
                         <Typography.Text variation="m-400">
                             Don't have a repository set up yet? Explore our templates, available in

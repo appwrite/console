@@ -44,7 +44,6 @@
 
     let showExitModal = false;
     let isCreatingRepository = false;
-    let hasInstallations = !!data?.installations?.total;
 
     let formComponent: Form;
     let isSubmitting = writable(false);
@@ -258,7 +257,7 @@
                     <ConnectBehaviour bind:connectBehaviour />
                 </Layout.Stack>
                 {#if connectBehaviour === 'now'}
-                    {#if hasInstallations}
+                    {#if !!data?.installations?.total}
                         <Fieldset legend="Git repository">
                             <Layout.Stack gap="xl">
                                 <RepositoryBehaviour bind:repositoryBehaviour />
@@ -285,7 +284,6 @@
                                     </Layout.Stack>
                                 {:else}
                                     <Repositories
-                                        bind:hasInstallations
                                         bind:selectedRepository
                                         action="button"
                                         connect={(e) => {
