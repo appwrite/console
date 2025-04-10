@@ -55,8 +55,6 @@
 
     async function create() {
         try {
-            console.log(runtime);
-
             const func = await sdk.forProject.functions.create(
                 id || ID.unique(),
                 name,

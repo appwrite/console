@@ -67,6 +67,7 @@
             await invalidate(Dependencies.SITES_DOMAINS);
         } catch (error) {
             verified = false;
+            isSubmitting.set(false);
             addNotification({
                 type: 'error',
                 message: error.message
