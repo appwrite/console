@@ -14,17 +14,17 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
 
-    $: data = page.data as PageData;
-    $: project = page.params.project;
-    $: databaseId = page.params.database;
-    $: collectionId = page.params.collection;
+    let data = $derived(page.data) as PageData;
+    let project = $derived(page.params.project);
+    let databaseId = $derived(page.params.database);
+    let collectionId = $derived(page.params.collection);
 
-    $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
-        a.name.localeCompare(b.name)
+    const sortedCollections = $derived(() =>
+        data?.allCollections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    $: selectedCollection = sortedCollections?.find(
-        (collection) => collection.$id === collectionId
+    const selectedCollection = $derived(() =>
+        sortedCollections()?.find((collection) => collection.$id === collectionId)
     );
 
     let openBottomSheet = false;
@@ -49,7 +49,7 @@
             <div class="collection-content">
                 {#if data?.allCollections?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
-                        {#each sortedCollections as collection}
+                        {#each sortedCollections() as collection}
                             {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                             {@const isSelected = collectionId === collection.$id}
                             <li class:is-selected={isSelected}>
