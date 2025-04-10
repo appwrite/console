@@ -105,7 +105,8 @@
             {:else if !$currentPlan.budgetCapEnabled}
                 <Alert type="info">
                     <svelte:fragment slot="title">Budget cap disabled</svelte:fragment>
-                    Budget caps are not supported on your current plan. For more information, please reach out to your customer success manager.
+                    Budget caps are not supported on your current plan. For more information, please
+                    reach out to your customer success manager.
                 </Alert>
             {:else}
                 <FormList>
