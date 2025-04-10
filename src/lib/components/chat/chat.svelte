@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Divider, Card, Typography, Layout, Button, Icon } from '@appwrite.io/pink-svelte';
+    import { Divider, Typography, Layout, Button, Icon } from '@appwrite.io/pink-svelte';
     import {
         IconArrowUp,
         IconChevronDown,
@@ -21,6 +21,7 @@
 
 <section
     class="chat"
+    style:visibility={showChat ? 'visible' : 'hidden'}
     style:width={$isSmallViewport ? 'calc(100vw - 16px)' : showChat ? `${width}px` : 0}
     class:minimize-chat={minimizeChat}
     class:is-visible={showChat}
