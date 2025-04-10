@@ -22,12 +22,21 @@
     import { Badge, Card, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import LogsTimer from './logsTimer.svelte';
 
-    export let deployment: Models.Deployment;
-    export let hideTitle = false;
-    export let hideScrollButtons = false;
-    export let height = 'auto';
-    export let fullHeight = false;
-    export let emptyCopy = 'No logs available';
+    let {
+        deployment = $bindable(),
+        hideTitle = false,
+        hideScrollButtons = false,
+        height = 'auto',
+        fullHeight = false,
+        emptyCopy = 'No logs available'
+    }: {
+        deployment: Models.Deployment;
+        hideTitle?: boolean;
+        hideScrollButtons?: boolean;
+        height?: string;
+        fullHeight?: boolean;
+        emptyCopy?: string;
+    } = $props();
 
     function setCopy() {
         if (deployment.status === 'failed') {
@@ -62,7 +71,7 @@
         </Layout.Stack>
     {/if}
 
-    {#if ['waiting', 'processing'].includes(deployment.status) || (deployment.status === 'building' && deployment?.buildLogs?.length > 0)}
+    {#if ['waiting', 'processing'].includes(deployment.status) || (deployment.status === 'building' && !deployment?.buildLogs?.length)}
         <Card.Base variant="secondary">
             <Layout.Stack direction="row" justifyContent="center" gap="s">
                 <Spinner /> Waiting for build to start...
