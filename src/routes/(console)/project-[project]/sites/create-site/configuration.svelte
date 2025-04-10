@@ -59,6 +59,12 @@
         buildCommand ||= ssr?.buildCommand;
         outputDirectory ||= ssr?.outputDirectory;
     }
+
+    $: if (frameworkData) {
+        installCommand = ssr?.installCommand;
+        buildCommand = ssr?.buildCommand;
+        outputDirectory = ssr?.outputDirectory;
+    }
 </script>
 
 <Fieldset legend="Settings">
