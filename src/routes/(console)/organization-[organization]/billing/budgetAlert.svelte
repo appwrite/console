@@ -104,13 +104,8 @@
                 </Alert>
             {:else if !$currentPlan.budgetCapEnabled}
                 <Alert type="info">
-                    <svelte:fragment slot="title">Billing alerts disabled</svelte:fragment>
-                    Billing alerts are disabled for your current plan. For more information
-                    <a
-                        class="link"
-                        href="https://appwrite.io/pricing"
-                        target="_blank"
-                        rel="noopener noreferrer">view our pricing guide.</a>
+                    <svelte:fragment slot="title">Budget cap disabled</svelte:fragment>
+                    Budget caps are not supported on your current plan. For more information, please reach out to your customer success manager.
                 </Alert>
             {:else}
                 <FormList>
