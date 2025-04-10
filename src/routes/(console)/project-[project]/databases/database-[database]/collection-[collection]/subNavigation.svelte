@@ -19,11 +19,11 @@
     let databaseId = $derived(page.params.database);
     let collectionId = $derived(page.params.collection);
 
-    const sortedCollections = $derived(() =>
+    const sortedCollections = $derived.by(() =>
         data?.allCollections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    const selectedCollection = $derived(() =>
+    const selectedCollection = $derived.by(() =>
         sortedCollections()?.find((collection) => collection.$id === collectionId)
     );
 
@@ -49,7 +49,7 @@
             <div class="collection-content">
                 {#if data?.allCollections?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
-                        {#each sortedCollections() as collection}
+                        {#each sortedCollections as collection}
                             {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
                             {@const isSelected = collectionId === collection.$id}
                             <li class:is-selected={isSelected}>
