@@ -78,7 +78,7 @@
                     {/if}
                 </div>
             </div>
-            <div class="u-flex u-flex-vertical-mobile u-gap-mobile-6">
+            <div class="u-flex u-flex-vertical-mobile u-gap-mobile-6 u-cross-center">
                 <div class="u-flex-vertical u-gap-8">
                     <h3 class="body-text-2 u-bold">
                         {title}
