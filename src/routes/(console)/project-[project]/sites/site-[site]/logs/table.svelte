@@ -24,7 +24,8 @@
     {#each logs.executions as log}
         <Table.Row.Button
             {root}
-            on:click={() => {
+            on:click={(e) => {
+                e.stopPropagation();
                 openSheet = true;
                 selectedLogId = log.$id;
             }}>
