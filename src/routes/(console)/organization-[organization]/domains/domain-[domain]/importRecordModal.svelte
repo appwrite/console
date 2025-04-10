@@ -8,6 +8,7 @@
     import { removeFile } from '$lib/helpers/files';
     import { page } from '$app/state';
     import { createRecord, parseDnsRecords } from '$lib/helpers/domains';
+    import { sdk } from '$lib/stores/sdk';
 
     export let show = false;
     let files: FileList;
@@ -19,22 +20,23 @@
 
             const file = files[0];
             const content = await file.text();
-            const parsedRecords = parseDnsRecords(content);
+            // const parsedRecords = parseDnsRecords(content);
 
-            let recordCount = 0;
+            // let recordCount = 0;
 
-            for (const [type, records] of Object.entries(parsedRecords)) {
-                recordCount += records.length;
+            // for (const [type, records] of Object.entries(parsedRecords)) {
+            //     recordCount += records.length;
 
-                for (const record of records) {
-                    await createRecord(record, page.params.domain);
-                }
-            }
+            //     for (const record of records) {
+            //         await createRecord(record, page.params.domain);
+            //     }
+            // }
 
+            await sdk.forConsole.domains.updateZone(page.params.domain, content);
             show = false;
             addNotification({
                 type: 'success',
-                message: `${recordCount} DNS records have been imported successfully`
+                message: `DNS records have been imported successfully`
             });
             trackEvent(Submit.RecordCreate);
         } catch (e) {
