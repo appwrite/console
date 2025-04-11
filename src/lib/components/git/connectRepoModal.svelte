@@ -9,25 +9,33 @@
     import { Link } from '$lib/elements';
     import { NewRepository, Repositories } from '$lib/components/git';
     import ConnectGit from '$lib/components/git/connectGit.svelte';
-    import { Runtime, type Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
 
-    export let show = false;
-    export let func: Models.Function;
-    export let callbackState: Record<string, string> = null;
+    let {
+        show = $bindable(false),
+        product,
+        callbackState = null,
+        onlyExisting = false,
+        connect = async () => {}
+    }: {
+        show?: boolean;
+        product: 'functions' | 'sites';
+        callbackState?: Record<string, string>;
+        onlyExisting?: boolean;
+        connect?: (installationId: string, repositoryId: string) => Promise<void>;
+    } = $props();
 
-    let repositoryBehaviour: 'new' | 'existing' | undefined = undefined;
-    let repositoryName = '';
-    let repositoryPrivate = true;
-    let selectedInstallationId = '';
-    let selectedRepository = '';
-    let installations = { installations: [], total: 0 };
-    let error = '';
+    let repositoryBehaviour: 'new' | 'existing' | undefined = $state(
+        onlyExisting ? 'existing' : undefined
+    );
+    let repositoryName = $state('');
+    let repositoryPrivate = $state(true);
+    let selectedInstallationId = $state('');
+    let selectedRepository = $state('');
+    let installations = $state({ installations: [], total: 0 });
+    let error = $state('');
 
     onMount(async () => {
         installations = await sdk.forProject.vcs.listInstallations();
@@ -38,7 +46,6 @@
         if (!!installations?.total) {
             repositoryBehaviour = 'existing';
         }
-        console.log(selectedInstallationId);
     });
 
     async function connectRepo() {
@@ -53,30 +60,7 @@
                 selectedRepository = repo.id;
             }
 
-            if (!isValueOfStringEnum(Runtime, func.runtime)) {
-                throw new Error(`Invalid runtime: ${func.runtime}`);
-            }
-            await sdk.forProject.functions.update(
-                func.$id,
-                func.name,
-                func.runtime,
-                func.execute || undefined,
-                func.events || undefined,
-                func.schedule || undefined,
-                func.timeout || undefined,
-                func.enabled || undefined,
-                func.logging || undefined,
-                func.entrypoint,
-                func.commands || undefined,
-                func.scopes || undefined,
-                selectedInstallationId,
-                selectedRepository,
-                'main',
-                undefined,
-                undefined,
-                undefined
-            );
-            await invalidate(Dependencies.FUNCTION);
+            await connect(selectedInstallationId, selectedRepository);
             show = false;
             addNotification({
                 type: 'success',
@@ -95,11 +79,14 @@
     onSubmit={connectRepo}
     bind:error>
     <span slot="description">
-        Connect your function to an existing repository or create a new one.
+        Connect your {product === 'functions' ? 'function' : 'site'} to an existing repository or create
+        a new one.
     </span>
     {#if !!installations?.total}
         <Layout.Stack gap="xl">
-            <RepositoryBehaviour bind:repositoryBehaviour />
+            {#if !onlyExisting}
+                <RepositoryBehaviour bind:repositoryBehaviour />
+            {/if}
             {#if repositoryBehaviour === 'new'}
                 <NewRepository
                     bind:repositoryName
@@ -109,11 +96,12 @@
             {:else}
                 <Repositories
                     bind:selectedRepository
+                    {product}
                     action="button"
                     {callbackState}
                     connect={(e) => {
                         trackEvent(Click.ConnectRepositoryClick, {
-                            from: 'functions'
+                            from: product
                         });
                         repository.set(e);
                         repositoryName = e.name;

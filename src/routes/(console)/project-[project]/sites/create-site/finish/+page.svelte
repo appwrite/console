@@ -8,11 +8,15 @@
     import Button from '$lib/elements/forms/button.svelte';
     import OpenOnMobileModal from '../../(components)/openOnMobileModal.svelte';
     import SiteCard from '../../(components)/siteCard.svelte';
-    import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
     import { onMount } from 'svelte';
     import AddCollaboratorModal from '../../(components)/addCollaboratorModal.svelte';
     import { protocol } from '$routes/(console)/store';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { invalidate } from '$app/navigation';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Adapter, BuildRuntime, Framework } from '@appwrite.io/console';
+    import { Dependencies } from '$lib/constants';
+    import { ConnectRepoModal } from '$lib/components/git';
 
     export let data;
 
@@ -30,6 +34,34 @@
             showConnectRepositry = true;
         }
     });
+
+    async function connect(selectedInstallationId: string, selectedRepository: string) {
+        try {
+            await sdk.forProject.sites.update(
+                data.site.$id,
+                data.site.name,
+                data.site.framework as Framework,
+                data.site.enabled,
+                data.site.logging || undefined,
+                data.site.timeout,
+                data.site.installCommand,
+                data.site.buildCommand,
+                data.site.outputDirectory,
+                data.site.buildRuntime as BuildRuntime,
+                data.site.adapter as Adapter,
+                data.site.fallbackFile,
+                selectedInstallationId,
+                selectedRepository,
+                'main',
+                undefined,
+                undefined,
+                undefined
+            );
+            invalidate(Dependencies.SITE);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 </script>
 
 <Wizard column href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}`}>
@@ -173,9 +205,11 @@
 {#if showConnectRepositry}
     <ConnectRepoModal
         bind:show={showConnectRepositry}
-        site={data.site}
+        {connect}
+        product="sites"
         callbackState={{ connectRepo: 'true' }} />
 {/if}
+
 {#if showOpenOnMobile}
     <OpenOnMobileModal bind:show={showOpenOnMobile} proxyRuleList={data.proxyRuleList} />
 {/if}

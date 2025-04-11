@@ -22,8 +22,7 @@
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { ConnectGit, RepositoryCard } from '$lib/components/git';
-    import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
+    import { ConnectGit, ConnectRepoModal, RepositoryCard } from '$lib/components/git';
     import { showConnectRepo } from './store';
 
     export let site: Models.Site;
@@ -102,6 +101,34 @@
         branchesList.branches = sortBranches(branchesList.branches);
 
         selectedBranch = site?.providerBranch ?? branchesList.branches[0].name;
+    }
+
+    async function connect(selectedInstallationId: string, selectedRepository: string) {
+        try {
+            await sdk.forProject.sites.update(
+                site.$id,
+                site.name,
+                site.framework as Framework,
+                site.enabled,
+                site.logging || undefined,
+                site.timeout,
+                site.installCommand,
+                site.buildCommand,
+                site.outputDirectory,
+                site.buildRuntime as BuildRuntime,
+                site.adapter as Adapter,
+                site.fallbackFile,
+                selectedInstallationId,
+                selectedRepository,
+                'main',
+                undefined,
+                undefined,
+                undefined
+            );
+            invalidate(Dependencies.SITE);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     $: if (site?.installationId && site?.providerRepositoryId) {
@@ -223,7 +250,7 @@
 </Form>
 
 {#if $showConnectRepo}
-    <ConnectRepoModal bind:show={$showConnectRepo} {site} />
+    <ConnectRepoModal bind:show={$showConnectRepo} {connect} product="sites" />
 {/if}
 
 {#if showDisconnect}

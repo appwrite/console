@@ -2,13 +2,12 @@
     import { PaginationWithLimit, ViewSelector, EmptyFilter, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { type Models } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { View } from '$lib/helpers/load';
     import { ActionMenu, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import Table from './table.svelte';
     import RedeployModal from '../../redeployModal.svelte';
     import CreateGitDeploymentModal from './createGitDeploymentModal.svelte';
-    import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
     import { columns } from './store';
     import CreateManualDeploymentModal from './createManualDeploymentModal.svelte';
     // import DeploymentMetrics from './deploymentMetrics.svelte';
@@ -20,6 +19,7 @@
     import CreateCliModal from './createCliModal.svelte';
     import { ParsedTagList, QuickFilters } from '$lib/components/filters';
     import { page } from '$app/state';
+    import { ConnectRepoModal } from '$lib/components/git';
 
     export let data;
 
@@ -42,6 +42,34 @@
             }
         });
     });
+
+    async function connect(selectedInstallationId: string, selectedRepository: string) {
+        try {
+            await sdk.forProject.sites.update(
+                data.site.$id,
+                data.site.name,
+                data.site.framework as Framework,
+                data.site.enabled,
+                data.site.logging || undefined,
+                data.site.timeout,
+                data.site.installCommand,
+                data.site.buildCommand,
+                data.site.outputDirectory,
+                data.site.buildRuntime as BuildRuntime,
+                data.site.adapter as Adapter,
+                data.site.fallbackFile,
+                selectedInstallationId,
+                selectedRepository,
+                'main',
+                undefined,
+                undefined,
+                undefined
+            );
+            invalidate(Dependencies.SITE);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 </script>
 
 <Container>
@@ -137,7 +165,8 @@
 {#if showConnectRepo}
     <ConnectRepoModal
         bind:show={showConnectRepo}
-        site={data.site}
+        {connect}
+        product="sites"
         callbackState={{ connectRepo: 'true' }} />
 {/if}
 

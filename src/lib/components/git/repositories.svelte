@@ -20,7 +20,6 @@
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { connectGitHub } from '$lib/stores/git';
-    import { debounce } from '$lib/helpers/debounce';
 
     let {
         action = $bindable('select'),
