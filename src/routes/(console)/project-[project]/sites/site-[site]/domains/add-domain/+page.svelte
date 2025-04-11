@@ -26,18 +26,16 @@
 
     const routeBase = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
 
-    export let data;
+    let { data } = $props();
 
     let formComponent: Form;
-    let isSubmitting = writable(false);
-
-    let showConnectRepo = false;
-
-    let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = 'ACTIVE';
-    let domainName = '';
-    let redirect: string = null;
-    let statusCode = 307;
-    let branch = null;
+    let isSubmitting = $state(writable(false));
+    let showConnectRepo = $state(false);
+    let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = $state('ACTIVE');
+    let domainName = $state('');
+    let redirect: string = $state(null);
+    let statusCode = $state(307);
+    let branch: string = $state(null);
 
     onMount(() => {
         if (
