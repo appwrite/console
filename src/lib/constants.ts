@@ -7,9 +7,9 @@ export const REGION_FRA = 'fra';
 export const REGION_SYD = 'syd';
 export const REGION_NYC = 'nyc';
 
-export const SUBDOMAIN_FRA = 'fra-';
-export const SUBDOMAIN_SYD = 'syd-';
-export const SUBDOMAIN_NYC = 'nyc-';
+export const SUBDOMAIN_FRA = 'fra.';
+export const SUBDOMAIN_SYD = 'syd.';
+export const SUBDOMAIN_NYC = 'nyc.';
 
 export enum Dependencies {
     FACTORS = 'dependency:factors',
