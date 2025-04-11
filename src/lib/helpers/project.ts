@@ -40,5 +40,5 @@ export function getProjectEndpoint(): string {
     const currentProjectRegion = get(projectRegion);
     const { protocol, hostname, href } = new URL(sdk.forConsole.client.config.endpoint);
 
-    return currentProjectRegion ? `${protocol}//${currentProjectRegion.$id}-${hostname}/v1` : href;
+    return currentProjectRegion ? `${protocol}//${currentProjectRegion.$id}.${hostname}/v1` : href;
 }
