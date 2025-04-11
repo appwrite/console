@@ -18,7 +18,7 @@
 
     <div class="boxes-wrapper u-margin-block-start-24">
         {#if $domain.status === 'created'}
-            <Retry on:error={onRetryError} />
+            <Retry on:error={onRetryError} showTitle={false} />
         {:else}
             <div class="u-flex u-gap-8 u-cross-center">
                 <span class="icon-check u-color-text-success" aria-hidden="true" />

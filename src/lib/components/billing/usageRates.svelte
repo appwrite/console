@@ -50,6 +50,13 @@
     ];
 
     $: isFree = org.billingPlan === BillingPlan.FREE;
+
+    // equal or above means unlimited!
+    $: getCorrectSeatsCountValue = (count: number): string | number => {
+        // php int max is always larger than js
+        const exceedsSafeLimit = count >= Number.MAX_SAFE_INTEGER;
+        return exceedsSafeLimit ? 'Unlimited' : count || 0;
+    };
 </script>
 
 <Modal bind:show size="big" headerDivider={false} title="Usage rates">
@@ -67,7 +74,7 @@
             following rates. Next billing period: {toLocaleDate(nextDate)}.
         </p>
     {/if}
-    <Table noStyles>
+    <Table noStyles noMargin>
         <TableHeader>
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Limit</TableCellHead>
@@ -81,16 +88,16 @@
                     <TableRow>
                         <TableCellText title="resource">{usage.resource}</TableCellText>
                         <TableCellText title="limit">
-                            {plan[usage.id] || 'Unlimited'}
+                            {getCorrectSeatsCountValue(plan.addons.seats.limit)}
                         </TableCellText>
                         {#if !isFree}
                             <TableCellText title="rate">
-                                {formatCurrency(plan.addons.member.price)}/{usage?.unit}
+                                {formatCurrency(plan.addons.seats.price)}/{usage?.unit}
                             </TableCellText>
                         {/if}
                     </TableRow>
                 {:else}
-                    {@const addon = plan.addons[usage.id]}
+                    {@const addon = plan.usage[usage.id]}
                     <TableRow>
                         <TableCellText title="resource">{usage.resource}</TableCellText>
                         <TableCellText title="limit">

@@ -4,7 +4,7 @@
     import GitConfiguration from './steps/gitConfiguration.svelte';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { func } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+    import { func } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/store';
     import { choices, installation, repository } from './store';
     import { wizard } from '$lib/stores/wizard';
     import { invalidate } from '$app/navigation';
@@ -13,31 +13,35 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
+    import { page } from '$app/stores';
 
     async function createGitHubInstallation() {
         try {
             if (!isValueOfStringEnum(Runtime, $func.runtime)) {
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
-            await sdk.forProject.functions.update(
-                $func.$id,
-                $func.name,
-                $func.runtime,
-                $func.execute || undefined,
-                $func.events || undefined,
-                $func.schedule || undefined,
-                $func.timeout || undefined,
-                $func.enabled || undefined,
-                $func.logging || undefined,
-                $func.entrypoint || undefined,
-                $func.commands || undefined,
-                $func.scopes || undefined,
-                $installation.$id,
-                $repository.id,
-                $choices.branch,
-                $choices.silentMode || undefined,
-                $choices.rootDir
-            );
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .functions.update(
+                    $func.$id,
+                    $func.name,
+                    $func.runtime,
+                    $func.execute || undefined,
+                    $func.events || undefined,
+                    $func.schedule || undefined,
+                    $func.timeout || undefined,
+                    $func.enabled || undefined,
+                    $func.logging || undefined,
+                    $func.entrypoint || undefined,
+                    $func.commands || undefined,
+                    $func.scopes || undefined,
+                    $installation.$id,
+                    $repository.id,
+                    $choices.branch,
+                    $choices.silentMode || undefined,
+                    $choices.rootDir,
+                    $func.specification || undefined
+                );
             trackEvent(Submit.FunctionConnectRepo, {
                 customId: !!$func.$id
             });

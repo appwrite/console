@@ -41,10 +41,20 @@
 
     export function accumulateFromEndingTotal(
         metrics: Models.Metric[],
-        endingTotal: number
+        endingTotal: number,
+        startingDayToFillZero: Date = null
     ): Array<[string, number]> {
-        return metrics.reduceRight(
+        return (metrics ?? []).reduceRight(
             (acc, curr) => {
+                if (startingDayToFillZero !== null && startingDayToFillZero instanceof Date) {
+                    const date = new Date(curr.date);
+                    if (date > startingDayToFillZero) {
+                        acc.data.unshift([date.toISOString(), 0]);
+                        acc.total -= 0;
+
+                        return acc;
+                    }
+                }
                 acc.data.unshift([curr.date, acc.total]);
                 acc.total -= curr.value;
                 return acc;
@@ -58,12 +68,12 @@
 </script>
 
 <script lang="ts">
-    import { Container } from '$lib/layout';
-    import { BarChart } from '$lib/charts';
-    import { formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { Card, SecondaryTabs, SecondaryTabsItem, Heading } from '$lib/components';
-    import { ProjectUsageRange, type Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
+    import { BarChart } from '$lib/charts';
+    import { Card, Heading, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
+    import { formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { Container } from '$lib/layout';
+    import { ProjectUsageRange, type Models } from '@appwrite.io/console';
 
     type MetricMetadata = {
         title: string;
@@ -75,24 +85,28 @@
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;
     export let path: string = null;
+    export let hideSelectPeriod: boolean = false;
+    export let isCumulative: boolean = false;
 </script>
 
 <Container>
     <div class="u-flex u-main-space-between common-section">
         <Heading tag="h2" size="5">{title}</Heading>
-        <SecondaryTabs>
-            <SecondaryTabsItem href={`${path}/24h`} disabled={$page.params.period === '24h'}>
-                24h
-            </SecondaryTabsItem>
-            <SecondaryTabsItem
-                href={`${path}/30d`}
-                disabled={!$page.params.period || $page.params.period === '30d'}>
-                30d
-            </SecondaryTabsItem>
-            <SecondaryTabsItem href={`${path}/90d`} disabled={$page.params.period === '90d'}>
-                90d
-            </SecondaryTabsItem>
-        </SecondaryTabs>
+        {#if !hideSelectPeriod}
+            <SecondaryTabs>
+                <SecondaryTabsItem href={`${path}/24h`} disabled={$page.params.period === '24h'}>
+                    24h
+                </SecondaryTabsItem>
+                <SecondaryTabsItem
+                    href={`${path}/30d`}
+                    disabled={!$page.params.period || $page.params.period === '30d'}>
+                    30d
+                </SecondaryTabsItem>
+                <SecondaryTabsItem href={`${path}/90d`} disabled={$page.params.period === '90d'}>
+                    90d
+                </SecondaryTabsItem>
+            </SecondaryTabs>
+        {/if}
     </div>
     <Card>
         {#if count}
@@ -105,7 +119,9 @@
                     series={[
                         {
                             name: countMetadata.legend,
-                            data: accumulateFromEndingTotal(count, total)
+                            data: isCumulative
+                                ? count.map((m) => [m.date, m.value])
+                                : accumulateFromEndingTotal(count, total)
                         }
                     ]} />
             </div>

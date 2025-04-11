@@ -4,11 +4,12 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { createProject, regions } from './store';
+    import { createProject } from './store';
     import type { Region } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
+    import { regions } from '$routes/(console)/organization-[organization]/store';
 
     let prefs: Models.Preferences;
 
@@ -35,6 +36,7 @@
             });
         }
     }
+
     async function unNotifyRegion(selectedRegion: Region) {
         try {
             let newPrefs = { ...prefs };
@@ -77,13 +79,15 @@
                         return 1;
                     }
                     return -1;
-                }) as region}
+                }) as region, index}
                 <li>
                     <RegionCard
                         name="region"
                         bind:group={$createProject.region}
                         value={region.$id}
-                        disabled={region.disabled}>
+                        disabled={region.disabled}
+                        autofocus={index === 0}>
+                        <!-- focus first item so enter key works! -->
                         <div
                             class="u-flex u-flex-vertical u-gap-8 u-justify-main-center u-cross-center u-margin-inline-auto">
                             {#if region.disabled}
