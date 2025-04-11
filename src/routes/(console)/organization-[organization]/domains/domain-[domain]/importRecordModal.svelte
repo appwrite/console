@@ -7,8 +7,9 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { removeFile } from '$lib/helpers/files';
     import { page } from '$app/state';
-    import { createRecord, parseDnsRecords } from '$lib/helpers/domains';
     import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let show = false;
     let files: FileList;
@@ -20,19 +21,9 @@
 
             const file = files[0];
             const content = await file.text();
-            // const parsedRecords = parseDnsRecords(content);
-
-            // let recordCount = 0;
-
-            // for (const [type, records] of Object.entries(parsedRecords)) {
-            //     recordCount += records.length;
-
-            //     for (const record of records) {
-            //         await createRecord(record, page.params.domain);
-            //     }
-            // }
 
             await sdk.forConsole.domains.updateZone(page.params.domain, content);
+            invalidate(Dependencies.DOMAIN);
             show = false;
             addNotification({
                 type: 'success',

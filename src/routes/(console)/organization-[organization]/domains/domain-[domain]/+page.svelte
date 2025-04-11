@@ -23,6 +23,8 @@
     import Table from './table.svelte';
     import AddPresetModal from './addPresetModal.svelte';
     import ImportRecordModal from './importRecordModal.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let data;
 
@@ -30,6 +32,34 @@
     let showPresetModal = false;
     let showImportModal = false;
     let selectedPreset = '';
+
+    async function downloadRecords() {
+        try {
+            const zone = await sdk.forConsole.domains.getZone(data.domain.$id);
+
+            if ('message' in zone) {
+                const blob = new Blob([zone.message as string], { type: 'text/plain' });
+
+                // Create download link
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = `${data.domain.domain}.txt`;
+
+                // Trigger download and clean up
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(downloadLink.href);
+            } else {
+                throw new Error('Failed to download records');
+            }
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
 </script>
 
 <Container>
@@ -45,7 +75,7 @@
                             Import zone file
                         </Button>
                         <Tooltip>
-                            <PinkButton.Button variant="secondary" icon>
+                            <PinkButton.Button variant="secondary" icon on:click={downloadRecords}>
                                 <Icon icon={IconDownload} size="s" />
                             </PinkButton.Button>
                             <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
