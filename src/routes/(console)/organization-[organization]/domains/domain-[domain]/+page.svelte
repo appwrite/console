@@ -40,12 +40,10 @@
             if ('message' in zone) {
                 const blob = new Blob([zone.message as string], { type: 'text/plain' });
 
-                // Create download link
                 const downloadLink = document.createElement('a');
                 downloadLink.href = URL.createObjectURL(blob);
                 downloadLink.download = `${data.domain.domain}.txt`;
 
-                // Trigger download and clean up
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
