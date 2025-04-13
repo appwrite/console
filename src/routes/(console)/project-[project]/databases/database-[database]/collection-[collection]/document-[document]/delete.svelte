@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal, Trim } from '$lib/components';
+    import { Confirm, Trim } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -52,7 +52,7 @@
     ) as Models.AttributeRelationship[];
 </script>
 
-<Modal title="Delete document" onSubmit={handleDelete} bind:show={showDelete}>
+<Confirm title="Delete document" onSubmit={handleDelete} bind:open={showDelete}>
     <p data-private>
         Are you sure you want to delete <b
             >the document from <span data-private>{$collection.name}</span></b
@@ -108,4 +108,4 @@
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button danger submit disabled={relAttributes?.length && !checked}>Delete</Button>
     </svelte:fragment>
-</Modal>
+</Confirm>
