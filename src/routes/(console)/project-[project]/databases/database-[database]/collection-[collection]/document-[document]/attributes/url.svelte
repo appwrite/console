@@ -6,12 +6,14 @@
     export let label: string;
     export let value: string | null;
     export let attribute: Models.AttributeUrl;
+
+    $: nullable = attribute.required ? false : !value;
 </script>
 
 <InputURL
     {id}
     {label}
+    {nullable}
     placeholder="Enter URL"
-    nullable={!attribute.required}
     required={attribute.required}
     bind:value />
