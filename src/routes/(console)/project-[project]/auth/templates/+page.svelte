@@ -44,6 +44,8 @@
     import EmailInviteTemplate from './emailInviteTemplate.svelte';
     import Email2FaTemplate from './email2FATemplate.svelte';
     import EmailSessionAlertTemplate from './emailSessionAlertTemplate.svelte';
+    import EmailMfaEnabledTemplate from './emailMfaEnabledTemplate.svelte';
+    import EmailMfaDisabledTemplate from './emailMfaDisabledTemplate.svelte';
 
     // import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
     // import SmsLoginTemplate from './smsLoginTemplate.svelte';
@@ -69,6 +71,8 @@
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
     $: email2FAVerificationOpen = emailOpen === 'mfaChallenge';
+    $: emailMfaEnabledOpen = emailOpen === 'mfaEnabled';
+    $: emailMfaDisabledOpen = emailOpen === 'mfaDisabled';
     $: emailSessionAlertOpen = emailOpen === 'sessionAlert';
 
     // let smsOpen = 'verification';
@@ -200,6 +204,27 @@
                     <p class="text">Send a two-factor authentication email to a user.</p>
                     <Email2FaTemplate />
                 </CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={emailMfaEnabledOpen}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('mfaEnabled');
+                    }}>
+                    <svelte:fragment slot="title">MFA enabled</svelte:fragment>
+                    <p class="text">Send an email to a user when MFA is enabled.</p>
+                    <EmailMfaEnabledTemplate />
+                </CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={emailMfaDisabledOpen}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('mfaDisabled');
+                    }}>
+                    <svelte:fragment slot="title">MFA disabled</svelte:fragment>
+                    <p class="text">Send an email to a user when MFA is disabled.</p>
+                    <EmailMfaDisabledTemplate />
+                </CollapsibleItem>
+
                 <CollapsibleItem
                     bind:open={emailSessionAlertOpen}
                     on:click={(e) => {
