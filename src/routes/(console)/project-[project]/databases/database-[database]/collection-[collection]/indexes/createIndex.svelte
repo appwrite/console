@@ -158,7 +158,7 @@
             </Layout.Stack>
         {/each}
         <div>
-            <Button secondary on:click={addAttribute} disabled={addAttributeDisabled}>
+            <Button compact on:click={addAttribute} disabled={addAttributeDisabled}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add attribute
             </Button>
