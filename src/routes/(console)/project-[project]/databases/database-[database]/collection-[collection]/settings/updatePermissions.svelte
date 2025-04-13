@@ -48,12 +48,8 @@
         }
     }
 
-    $: if (
-        collectionPermissions &&
-        symmetricDifference(collectionPermissions, $collection.$permissions).length
-    ) {
-        arePermsDisabled = false;
-    } else arePermsDisabled = true;
+    $: arePermsDisabled = !(collectionPermissions &&
+        symmetricDifference(collectionPermissions, $collection.$permissions).length);
 </script>
 
 <CardGrid>
