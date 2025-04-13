@@ -94,7 +94,7 @@
                 {/if}
                 <div>
                     <Button
-                        secondary
+                        compact
                         disabled={addAttributeDisabled}
                         on:click={() => {
                             names[names.length] = null;
