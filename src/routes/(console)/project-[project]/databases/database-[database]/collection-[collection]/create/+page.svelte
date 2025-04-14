@@ -86,6 +86,7 @@
     href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/`}
     bind:showExitModal
     column
+    columnSize="s"
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xxl">

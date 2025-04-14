@@ -57,9 +57,8 @@
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
         <svelte:fragment slot="title">Display name</svelte:fragment>
-        Select string attributes as display names for your documents. The selected names will be used
-        as short forms to identify documents in the Appwrite console, like when creating database relationships.
-        You can specify up to 5 names.
+        Select up to 5 string attributes to display as document names in the Appwrite console. These
+        help identify documents in places like relationships.
 
         <svelte:fragment slot="aside">
             <Layout.Stack gap="s">
@@ -94,7 +93,7 @@
                 {/if}
                 <div>
                     <Button
-                        secondary
+                        compact
                         disabled={addAttributeDisabled}
                         on:click={() => {
                             names[names.length] = null;

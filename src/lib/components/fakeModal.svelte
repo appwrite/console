@@ -45,7 +45,7 @@
         }
     }
 
-    $: if (backdrop) {
+    $: if (backdrop && show && !document.body.contains(backdrop)) {
         document.body.appendChild(backdrop);
     }
 

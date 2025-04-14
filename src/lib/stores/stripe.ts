@@ -62,7 +62,7 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         }
 
         // Element needs to be submitted before confirming the setup intent
-        elements.submit();
+        await elements.submit();
 
         const baseUrl = 'https://cloud.appwrite.io/console';
         const accountUrl = `${baseUrl}/account/payments?clientSecret=${clientSecret}`;

@@ -19,9 +19,9 @@
     async function handleSubmit() {
         try {
             const card = await submitStripeCard(name, page?.params?.organization ?? null);
+            show = false;
             invalidate(Dependencies.PAYMENT_METHODS);
             dispatch('submit', card);
-            show = false;
             addNotification({
                 type: 'success',
                 message: 'A new payment method has been added to your account'
