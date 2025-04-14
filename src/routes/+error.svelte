@@ -7,7 +7,10 @@
 </script>
 
 <Unauthenticated>
-    <Typography.Title size="xl">{page.error.status || 'Invalid Argument'}</Typography.Title>
+    <Typography.Title size="xl"
+        >{'status' in page.error
+            ? page.error.status || 'Invalid Argument'
+            : 'Invalid Argument'}</Typography.Title>
     <Typography.Title>{page.error.message}</Typography.Title>
     <Button href={base}>Back to the console</Button>
 </Unauthenticated>

@@ -27,7 +27,7 @@
         sortedCollections()?.find((collection) => collection.$id === collectionId)
     );
 
-    let openBottomSheet = false;
+    let openBottomSheet = $state(false);
 
     function onResize() {
         if (openBottomSheet && !$isTabletViewport) {
@@ -95,7 +95,7 @@
                     type="button"
                     class="trigger"
                     aria-label="Open collections"
-                    on:click={() => {
+                    onclick={() => {
                         openBottomSheet = !openBottomSheet;
                     }}>
                     <span class="orgName">{selectedCollection.name}</span>

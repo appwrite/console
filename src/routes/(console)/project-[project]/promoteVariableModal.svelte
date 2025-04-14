@@ -22,16 +22,12 @@
     {#if isConflicting}
         <p data-private>
             Promoting this variable will overwrite your global variable with the same name. Are you
-            sure you want to promote <InlineCode code={selectedVar.key}
-                >{selectedVar.key}</InlineCode
-            >?
+            sure you want to promote <InlineCode code={selectedVar.key} />?
         </p>
     {:else}
         <p data-private>
-            Are you sure you want to promote <InlineCode code={selectedVar.key}
-                >{selectedVar.key}</InlineCode
-            >? This will convert it to a global variable that can be accessed by other resources in
-            your project.
+            Are you sure you want to promote <InlineCode code={selectedVar.key} />? This will
+            convert it to a global variable that can be accessed by other resources in your project.
         </p>
     {/if}
     <svelte:fragment slot="footer">

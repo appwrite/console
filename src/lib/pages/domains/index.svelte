@@ -31,7 +31,6 @@
     import { page } from '$app/state';
     import { base } from '$app/paths';
 
-    export let search: string = null;
     export let rules: Models.ProxyRuleList;
     export let dependency: Dependencies;
 
@@ -58,7 +57,7 @@
 {#if $canWriteRules}
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery {search} placeholder="Search by name" />
+            <SearchQuery placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button

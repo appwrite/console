@@ -165,7 +165,7 @@
             {#if invoiceList.total > limit}
                 <div class="u-flex u-main-space-between">
                     <p class="text">Total results: {invoiceList.total}</p>
-                    <PaginationInline {limit} bind:offset sum={invoiceList.total} hidePages />
+                    <PaginationInline {limit} bind:offset total={invoiceList.total} hidePages />
                 </div>
             {/if}
         {:else}

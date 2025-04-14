@@ -18,7 +18,7 @@
     import Row from './row.svelte';
     import { Icon, Selector, Table } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
-    import type { Column } from '@appwrite.io/pink-svelte/dist/table';
+    import type { Column } from '$lib/helpers/types';
 
     export let withCreate = false;
     export let permissions: string[] = [];

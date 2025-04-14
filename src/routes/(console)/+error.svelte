@@ -8,7 +8,10 @@
 
 <Container>
     <div>
-        <Typography.Title size="xl">{page.error.status || 'Invalid Argument'}</Typography.Title>
+        <Typography.Title size="xl"
+            >{'status' in page.error
+                ? page.error.status || 'Invalid Argument'
+                : 'Invalid Argument'}</Typography.Title>
         <Typography.Title>{page.error.message}</Typography.Title>
     </div>
     <div>

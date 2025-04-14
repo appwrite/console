@@ -68,8 +68,7 @@
             <Table.Row.Base {root}>
                 <Table.Cell {root} column="ns">NS</Table.Cell>
                 <Table.Cell {root} column="action">
-                    <InteractiveText variant="copy" isVisible text={nameserver}>
-                        {nameserver}</InteractiveText>
+                    <InteractiveText variant="copy" isVisible text={nameserver} />
                 </Table.Cell>
             </Table.Row.Base>
         {/each}
