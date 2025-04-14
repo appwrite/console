@@ -128,7 +128,7 @@
             '.'
             '.';
         height: calc(100% - var(--space-4));
-        background-color: white;
+        background-color: var(--bgcolor-neutral-primary);
         width: 100%;
         border: 1px solid var(--border-neutral);
         border-radius: var(--border-radius-m);

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AvatarInitials, Breadcrumbs } from '$lib/components/index.js';
+    import { AvatarInitials, Breadcrumbs, BottomSheet } from '$lib/components/index.js';
     import {
         Avatar,
         Divider,
@@ -7,9 +7,13 @@
         Card,
         Typography,
         Icon,
-        Button
+        Button,
+        ActionMenu,
+        ToggleButton,
+        Link
     } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
+    import { app } from '$lib/stores/app';
     import { organizationList } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
     import SidebarProject from '$lib/components/studio/sidebarProject.svelte';
@@ -19,10 +23,20 @@
     import { tierToPlan } from '$lib/stores/billing.js';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
     import Chat from '$lib/components/chat/chat.svelte';
-    import { IconMenuAlt4 } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChevronRight,
+        IconLogoutRight,
+        IconMenuAlt4,
+        IconMode,
+        IconMoon,
+        IconSun,
+        IconUser
+    } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { derived, writable } from 'svelte/store';
+    import { logout } from '$lib/helpers/logout';
+    import { Click, trackEvent } from '$lib/actions/analytics';
 
     let hasProjectSidebar = $state(false);
 
@@ -37,6 +51,34 @@
     let { loadedProjects = [] }: Props = $props();
 
     let showSideNavigation = $state(false);
+    let showChat = $state(false);
+    let shouldAnimateThemeToggle = $state(false);
+    let showAccountMenu = $state(false);
+    let activeTheme = $state($app.theme);
+
+    function updateTheme(theme: 'light' | 'dark' | 'auto') {
+        const themeInUse =
+            theme === 'auto'
+                ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? 'dark'
+                    : 'light'
+                : theme;
+
+        trackEvent('select_theme', {
+            value: theme === 'auto' ? 'system' : theme
+        });
+
+        app.update(() => ({
+            themeInUse: themeInUse,
+            theme: theme
+        }));
+    }
+
+    $effect(() => {
+        if (activeTheme) {
+            updateTheme(activeTheme);
+        }
+    });
 
     $effect(() => {
         showSideNavigation = !($isTabletViewport || $isSmallViewport);
@@ -56,7 +98,6 @@
             };
         });
     });
-    let showChat = $state(false);
 
     $effect(() => {
         if ($isSmallViewport || page.url.pathname.endsWith('studio')) {
@@ -132,7 +173,93 @@
                     </div>
                     <Breadcrumbs {organizations} />
                 </Layout.Stack>
-                <AvatarInitials name={$user?.name ?? ''} size="s" />
+                <Link.Button
+                    on:click={() => {
+                        showAccountMenu = !showAccountMenu;
+                        shouldAnimateThemeToggle = false;
+                        if (showAccountMenu) {
+                            trackEvent(Click.MenuDropDownClick);
+                        }
+                    }}>
+                    <div style:user-select="none">
+                        <AvatarInitials name={$user?.name ?? ''} size="s" />
+                    </div>
+                </Link.Button>
+
+                {#if showAccountMenu}
+                    <div class="account-container">
+                        <Card.Base padding="xxxs" shadow={true}>
+                            <Layout.Stack gap="xxs">
+                                <ActionMenu.Root>
+                                    <Layout.Stack gap="xxs">
+                                        <div
+                                            style:padding-inline-start="10px"
+                                            style:padding-inline-end="8px"
+                                            style:padding-block="4px">
+                                            <Typography.Text variant="m-500">
+                                                {$user.email}
+                                            </Typography.Text>
+                                        </div>
+                                        <ActionMenu.Item.Anchor
+                                            trailingIcon={IconUser}
+                                            size="l"
+                                            href={`${base}/account`}>
+                                            Account</ActionMenu.Item.Anchor>
+
+                                        <ActionMenu.Item.Button
+                                            trailingIcon={IconLogoutRight}
+                                            size="l"
+                                            on:click={() => logout()}
+                                            >Sign out</ActionMenu.Item.Button>
+                                        <div
+                                            style:padding-inline-start="10px"
+                                            style:padding-inline-end="8px">
+                                            <Layout.Stack
+                                                justifyContent="space-between"
+                                                direction="row"
+                                                alignItems="center">
+                                                <Typography.Text>Theme</Typography.Text>
+                                                <div
+                                                    class:keepTransformTransition={shouldAnimateThemeToggle}>
+                                                    <ToggleButton
+                                                        bind:active={activeTheme}
+                                                        on:change={() => {
+                                                            setTimeout(() => {
+                                                                shouldAnimateThemeToggle = true;
+                                                            }, 150);
+                                                        }}
+                                                        buttons={[
+                                                            {
+                                                                id: 'light',
+                                                                label: 'Light',
+                                                                icon: IconSun
+                                                            },
+                                                            {
+                                                                id: 'dark',
+                                                                label: 'Dark',
+                                                                icon: IconMoon
+                                                            },
+                                                            {
+                                                                id: 'auto',
+                                                                label: 'System',
+                                                                icon: IconMode
+                                                            }
+                                                        ]}></ToggleButton>
+                                                </div>
+                                            </Layout.Stack>
+                                        </div>
+                                    </Layout.Stack>
+                                </ActionMenu.Root>
+                            </Layout.Stack>
+                        </Card.Base>
+                    </div>
+                    <button
+                        class="account-backdrop"
+                        aria-label="Account menu"
+                        onclick={() => {
+                            showAccountMenu = false;
+                        }}></button>
+                {/if}
             </Layout.Stack>
         </header>
         <div
@@ -214,6 +341,65 @@
     onclick={() => {
         showSideNavigation = false;
     }}></button>
+
+{#if showAccountMenu && $isTabletViewport}
+    <BottomSheet.Menu
+        bind:isOpen={showAccountMenu}
+        menu={{
+            top: {
+                items: [
+                    {
+                        name: 'Account',
+                        leadingIcon: IconUser,
+                        href: `${base}/account`
+                    },
+                    {
+                        name: 'Sign out',
+                        leadingIcon: IconLogoutRight,
+                        onClick: logout
+                    }
+                ]
+            },
+            bottom: {
+                items: [
+                    {
+                        name: 'Theme',
+                        leadingIcon: IconMode,
+                        trailingIcon: IconChevronRight,
+                        subMenu: {
+                            top: {
+                                title: 'Theme',
+                                items: [
+                                    {
+                                        name: 'Light',
+                                        leadingIcon: IconSun,
+                                        onClick: () => {
+                                            updateTheme('light');
+                                        }
+                                    },
+                                    {
+                                        name: 'Dark',
+                                        leadingIcon: IconMoon,
+                                        onClick: () => {
+                                            updateTheme('dark');
+                                        }
+                                    },
+                                    {
+                                        name: 'System',
+                                        leadingIcon: IconMode,
+                                        onClick: () => {
+                                            updateTheme('auto');
+                                        }
+                                    }
+                                ]
+                            },
+                            bottom: undefined
+                        }
+                    }
+                ]
+            }
+        }}></BottomSheet.Menu>
+{/if}
 
 <style lang="scss">
     main {
@@ -316,5 +502,23 @@
         border-top-width: 1px;
         border-style: solid;
         border-color: var(--border-neutral);
+    }
+
+    .account-container {
+        position: absolute;
+        right: var(--space-7);
+        top: var(--base-44);
+        width: 244px;
+        display: flex;
+        z-index: 1;
+    }
+
+    .account-backdrop {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: transparent;
     }
 </style>
