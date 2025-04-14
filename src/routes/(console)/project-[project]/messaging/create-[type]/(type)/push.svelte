@@ -26,7 +26,7 @@
     let showCustomId = false;
     let id: string;
     let file: Models.File;
-    let data: Writable<[string, string][]> = writable([]);
+    let data: Writable<[string, string][]> = writable([['', '']]);
     let title: string;
     let body: string;
     let topics: string[];
@@ -135,51 +135,53 @@
                 </Layout.Stack>
             </Fieldset>
             <Fieldset legend="Custom data">
-                <Layout.Stack>
+                <Layout.Stack gap="l">
                     <Typography.Text>
                         A key/value payload of additional metadata that's hidden from users. Use
                         this to include information to support logic such as redirection and
                         routing.
                     </Typography.Text>
-                    {#each $data as [key, value], index}
-                        <Layout.Stack direction="row" alignItems="flex-end">
-                            <InputText
-                                id={`key-${index}`}
-                                bind:value={key}
-                                placeholder="Enter key"
-                                label={index === 0 ? 'Key' : undefined} />
-                            <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                    <Layout.Stack gap="s">
+                        {#each $data as [key, value], index}
+                            <Layout.Stack direction="row" alignItems="flex-end">
                                 <InputText
-                                    id={`value-${index}`}
-                                    bind:value
-                                    placeholder="Enter value"
-                                    label={index === 0 ? 'Value' : undefined} />
-                                <Button
-                                    icon
-                                    compact
-                                    disabled={(!key || !value) && index === 0}
-                                    on:click={() => {
-                                        if (index === 0 && $data?.length === 1) {
-                                            $data = [['', '']];
-                                        } else {
-                                            $data.splice(index, 1);
-                                            $data = $data;
-                                        }
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true"></span>
-                                </Button>
+                                    id={`key-${index}`}
+                                    bind:value={key}
+                                    placeholder="Enter key"
+                                    label={index === 0 ? 'Key' : undefined} />
+                                <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                                    <InputText
+                                        id={`value-${index}`}
+                                        bind:value
+                                        placeholder="Enter value"
+                                        label={index === 0 ? 'Value' : undefined} />
+                                    <Button
+                                        icon
+                                        compact
+                                        disabled={(!key || !value) && index === 0}
+                                        on:click={() => {
+                                            if (index === 0 && $data?.length === 1) {
+                                                $data = [['', '']];
+                                            } else {
+                                                $data.splice(index, 1);
+                                                $data = $data;
+                                            }
+                                        }}>
+                                        <span class="icon-x" aria-hidden="true"></span>
+                                    </Button>
+                                </Layout.Stack>
                             </Layout.Stack>
-                        </Layout.Stack>
-                    {/each}
-                    <div>
-                        <Button
-                            secondary
-                            disabled={$data.length > 0 && $data[$data.length - 1][0] === ''}
-                            on:click={() => ($data = [...$data, ['', '']])}>
-                            <Icon icon={IconPlus} slot="start" size="s" />
-                            Add data
-                        </Button>
-                    </div>
+                        {/each}
+                        <div>
+                            <Button
+                                compact
+                                disabled={$data.length > 0 && $data[$data.length - 1][0] === ''}
+                                on:click={() => ($data = [...$data, ['', '']])}>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Add data
+                            </Button>
+                        </div>
+                    </Layout.Stack>
                 </Layout.Stack>
             </Fieldset>
             <Fieldset legend="Targets">

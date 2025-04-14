@@ -1,8 +1,14 @@
 <script lang="ts">
     import { type ComponentProps } from 'svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { timeFromNow, toLocaleDateTime, toLocalDateTimeISO } from '$lib/helpers/date';
+    import {
+        timeFromNow,
+        toLocaleDateTime,
+        toLocalDateTimeISO,
+        toISOString
+    } from '$lib/helpers/date';
     import { Badge, InteractiveText, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
+    import { menuOpen } from '$lib/components/menu/store';
 
     export let time: string = '';
     export let placement: ComponentProps<Popover>['placement'] = 'bottom';
@@ -70,7 +76,13 @@
 </script>
 
 <Popover let:show let:hide {placement} portal>
-    <button on:mouseenter={() => setTimeout(show, 150)} on:mouseleave={() => hidePopover(hide)}>
+    <button
+        on:mouseenter={() => {
+            if (!$menuOpen) {
+                setTimeout(show, 150);
+            }
+        }}
+        on:mouseleave={() => hidePopover(hide)}>
         <slot>{capitalize(timeFromNow(time))}</slot>
     </button>
 
@@ -99,7 +111,7 @@
                         isVisible
                         variant="copy"
                         text={toLocaleDateTime(time, 'UTC')}
-                        value={new Date(time).toISOString()} />
+                        value={toISOString(time)} />
 
                     <Badge variant="secondary" content="UTC" size="xs" />
                 </Layout.Stack>

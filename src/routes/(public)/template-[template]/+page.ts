@@ -2,13 +2,17 @@ import { BillingPlan } from '$lib/constants.js';
 import { sdk } from '$lib/stores/sdk.js';
 import { ID, type Models } from '@appwrite.io/console';
 import { isCloud } from '$lib/system.js';
-import { redirect } from '@sveltejs/kit';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
+import type { OrganizationList } from '$lib/stores/organization.js';
+import { redirectTo } from '$routes/store.js';
 
 export const load = async ({ parent, url, params }) => {
-    if (!isCloud) redirect(303, '/');
-
     const { account } = await parent();
+
+    if (!account && !isCloud) {
+        redirectTo.set(url.pathname + url.search);
+        redirect(302, '/console/login?redirect=' + url.pathname + url.search);
+    }
 
     if (!url.searchParams.has('type')) {
         error(404, 'Type is not optional');
@@ -27,10 +31,13 @@ export const load = async ({ parent, url, params }) => {
         default:
             error(404, 'Type is not valid');
     }
-    const organizations = account?.$id
-        ? await sdk.forConsole.billing.listOrganization()
-        : undefined;
-    // const organizations = account?.$id ? await sdk.forConsole.teams.list() : undefined;
+
+    let organizations: Models.TeamList<Record<string, unknown>> | OrganizationList | undefined;
+    if (isCloud) {
+        organizations = account?.$id ? await sdk.forConsole.billing.listOrganization() : undefined;
+    } else {
+        organizations = account?.$id ? await sdk.forConsole.teams.list() : undefined;
+    }
 
     if (!organizations?.total && account?.$id) {
         await sdk.forConsole.billing.createOrganization(

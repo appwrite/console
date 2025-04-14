@@ -20,8 +20,6 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
 
-    // type RecordType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'TXT' | 'NS' | 'SRV' | 'CAA' | 'PTR';
-
     export let show = false;
     export let selectedRecord: DnsRecord;
 
@@ -30,7 +28,6 @@
 
     async function handleSubmit() {
         try {
-            //TODO: update DNS record
             switch (record.type) {
                 case 'A':
                     await sdk.forConsole.domains.updateRecordA(

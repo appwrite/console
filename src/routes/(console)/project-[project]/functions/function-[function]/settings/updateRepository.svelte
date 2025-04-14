@@ -22,9 +22,8 @@
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { ConnectGit, RepositoryCard } from '$lib/components/git';
+    import { ConnectGit, ConnectRepoModal, RepositoryCard } from '$lib/components/git';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import ConnectRepoModal from '../(modals)/connectRepoModal.svelte';
 
     export let func: Models.Function;
     export let installations: Models.InstallationList;
@@ -114,6 +113,37 @@
         selectedBranch !== func?.providerBranch ||
         silentMode !== func?.providerSilentMode ||
         selectedDir !== func?.providerRootDirectory;
+
+    async function connect(selectedInstallationId: string, selectedRepository: string) {
+        try {
+            if (!isValueOfStringEnum(Runtime, func.runtime)) {
+                throw new Error(`Invalid runtime: ${func.runtime}`);
+            }
+            await sdk.forProject.functions.update(
+                func.$id,
+                func.name,
+                func.runtime as Runtime,
+                func.execute || undefined,
+                func.events || undefined,
+                func.schedule || undefined,
+                func.timeout || undefined,
+                func.enabled || undefined,
+                func.logging || undefined,
+                func.entrypoint,
+                func.commands || undefined,
+                func.scopes || undefined,
+                selectedInstallationId,
+                selectedRepository,
+                'main',
+                undefined,
+                undefined,
+                undefined
+            );
+            await invalidate(Dependencies.FUNCTION);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 </script>
 
 <Form onSubmit={updateConfiguration}>
@@ -224,7 +254,7 @@
 </Form>
 
 {#if showConnectRepo}
-    <ConnectRepoModal bind:show={showConnectRepo} {func} />
+    <ConnectRepoModal bind:show={showConnectRepo} {connect} product="functions" />
 {/if}
 
 {#if showDisconnect}

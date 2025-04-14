@@ -10,7 +10,7 @@
 </script>
 
 <CardContainer
-    showEmpty={$canWriteDatabases}
+    disableEmpty={!$canWriteDatabases}
     total={data.databases.total}
     on:click={() => (showCreate = true)}
     event="database"

@@ -157,7 +157,7 @@
     let:root
     allowSelection
     bind:selectedRows
-    columns={[{ id: '$id', width: 150 }, ...$columns, { id: '$created' }, { id: '$updated' }]}>
+    columns={[{ id: '$id', width: 200 }, ...$columns, { id: '$created' }, { id: '$updated' }]}>
     <svelte:fragment slot="header" let:root>
         <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
         {#each $columns as column}

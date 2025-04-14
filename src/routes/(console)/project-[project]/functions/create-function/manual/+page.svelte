@@ -48,28 +48,26 @@
     let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
-    let scopes: string[] = [];
+    let roles: string[] = [];
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
     let specification = specificationOptions[0].value;
 
     async function create() {
         try {
-            console.log(runtime);
-
             const func = await sdk.forProject.functions.create(
                 id || ID.unique(),
                 name,
                 runtime,
-                undefined,
+                roles?.length ? roles : undefined,
                 undefined,
                 undefined,
                 undefined,
                 true,
                 undefined,
                 entrypoint,
+                buildCommand,
                 undefined,
-                scopes,
                 undefined,
                 undefined,
                 undefined,
@@ -99,8 +97,8 @@
                 func.$id,
                 files[0],
                 true,
-                entrypoint,
-                buildCommand
+                undefined,
+                undefined
             );
 
             trackEvent(Submit.FunctionCreate, {
@@ -188,7 +186,7 @@
                 options={runtimeOptions}
                 showEntrypoint />
 
-            <Configuration bind:buildCommand bind:scopes />
+            <Configuration bind:buildCommand bind:roles />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

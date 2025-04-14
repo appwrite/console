@@ -41,7 +41,7 @@
 </div>
 
 <div class="menu subMenu" use:melt={$subMenu}>
-    <Card.Base padding="xxxs">
+    <Card.Base padding="none">
         <div use:melt={$radioGroup}>
             {#each filter.options as option (option.value + option.checked)}
                 {#if variant === 'radio'}

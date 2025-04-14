@@ -42,10 +42,11 @@
     $: selectedLog = logs?.find((log) => log.$id === selectedLogId);
     $: isFirstLog = logs.findIndex((log) => log.$id === selectedLogId) === 0;
     $: isLastLog = logs.findIndex((log) => log.$id === selectedLogId) === logs.length - 1;
-    $: console.log(selectedLog);
 </script>
 
-<Sheet bind:open>
+<svelte:window onclick={() => (open = false)} />
+
+<Sheet bind:open closeOnBlur={false}>
     <div slot="header" style:width="100%">
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Layout.Stack direction="row" gap="m" alignItems="center">

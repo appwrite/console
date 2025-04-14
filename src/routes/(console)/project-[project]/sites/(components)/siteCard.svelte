@@ -72,7 +72,7 @@
                         <DeploymentDomains
                             domains={proxyRuleList}
                             {hideQRCode}
-                            on:showQR={() => (show = !show)} />
+                            showQR={() => (show = !show)} />
                     </Layout.Stack>
                 </Layout.Stack>
 
@@ -186,8 +186,8 @@
     </Layout.Stack>
 </Card>
 
-{#if show && siteUrl}
-    <OpenOnMobileModal bind:show siteURL={siteUrl} />
+{#if show && proxyRuleList.total}
+    <OpenOnMobileModal bind:show {proxyRuleList} />
 {/if}
 
 <style lang="scss">

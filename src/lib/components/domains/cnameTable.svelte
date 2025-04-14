@@ -54,8 +54,8 @@
                 <InteractiveText
                     variant="copy"
                     isVisible
-                    text={$consoleVariables._APP_DOMAIN_TARGET}>
-                    {$consoleVariables._APP_DOMAIN_TARGET}</InteractiveText>
+                    text={$consoleVariables._APP_DOMAIN_TARGET_CNAME}>
+                    {$consoleVariables._APP_DOMAIN_TARGET_CNAME}</InteractiveText>
             </Table.Cell>
         </Table.Row.Base>
     </Table.Root>

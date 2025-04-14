@@ -11,43 +11,37 @@
     import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
 
-    export let data;
-    let hasInstallations = !!data?.installations?.total;
-    let selectedRepository: string = null;
+    let { data } = $props();
 
-    function onConnect(e: CustomEvent<Models.ProviderRepository>) {
+    let selectedRepository: string = $state(null);
+
+    function onConnect(e: Models.ProviderRepository) {
         trackEvent(Click.ConnectRepositoryClick, {
             from: 'cover'
         });
-        repository.set(e.detail);
-        const target = `${base}/project-${page.params.project}/sites/create-site/repositories/repository-${e.detail.id}?installation=${$installation.$id}`;
+        repository.set(e);
+        const target = `${base}/project-${page.params.project}/sites/create-site/repositories/repository-${e.id}?installation=${$installation.$id}`;
         goto(target);
     }
 </script>
 
 <Wizard title="Create site" href={`${base}/project-${page.params.project}/sites/`} hideFooter>
-    {#if hasInstallations}
+    {#if !!data?.installations?.total}
         <Fieldset legend="Git repository">
             <Repositories
-                bind:hasInstallations
                 bind:selectedRepository
                 product="sites"
                 action="button"
-                on:connect={onConnect} />
+                connect={onConnect} />
         </Fieldset>
     {:else}
-        <Repositories
-            bind:hasInstallations
-            bind:selectedRepository
-            product="sites"
-            action="button"
-            on:connect={onConnect} />
+        <Repositories bind:selectedRepository product="sites" action="button" connect={onConnect} />
     {/if}
 
     <svelte:fragment slot="aside">
         <Card radius="s" padding="s">
             <Layout.Stack gap="l">
-                {#if !hasInstallations}
+                {#if !data?.installations?.total}
                     <Layout.Stack gap="xxs">
                         <Typography.Text variation="m-400">
                             Don't have a repository set up yet? Explore our templates, available in

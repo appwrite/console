@@ -70,8 +70,7 @@
     }
 
     $: state = $isTabletViewport ? 'closed' : getSidebarState();
-    $: pathname = page.url.pathname;
-    $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(pathname);
+    $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(page.url.pathname);
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
@@ -145,7 +144,7 @@
                         <a
                             href={`/console/project-${project.$id}/overview`}
                             class="link"
-                            class:active={pathname.includes('overview')}
+                            class:active={page.url.pathname.includes('overview')}
                             on:click={() => {
                                 trackEvent(Click.MenuOverviewClick);
                                 sideBarIsOpen = false;
@@ -175,7 +174,7 @@
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={pathname.includes(projectOption.slug)}
+                                class:active={page.url.pathname.includes(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
@@ -206,7 +205,7 @@
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={pathname.includes(projectOption.slug)}
+                                class:active={page.url.pathname.includes(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;

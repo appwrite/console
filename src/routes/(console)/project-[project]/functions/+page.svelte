@@ -77,7 +77,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search functions" />
+        <SearchQuery placeholder="Search by name or ID" />
 
         <Button href={`${base}/project-${project}/functions/create-function`}>
             <Icon icon={IconPlus} slot="start" />
@@ -88,12 +88,12 @@
     {#if data.functions.total}
         <CardContainer
             {offset}
-            showEmpty={$canWriteFunctions}
+            disableEmpty={!$canWriteFunctions}
             event="functions"
             total={data.functions.total}
             service="functions"
             on:click={() => goto(`${base}/project-${project}/functions/create-function`)}>
-            {#each data.functions.functions as func}
+            {#each data.functions.functions as func (func.$id)}
                 <GridItem1 href={`${base}/project-${project}/functions/function-${func.$id}`}>
                     <svelte:fragment slot="title">
                         <Layout.Stack gap="l" alignItems="center" direction="row" inline>

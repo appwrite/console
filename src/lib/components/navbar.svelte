@@ -243,8 +243,11 @@
                                                 class:keepTransformTransition={shouldAnimateThemeToggle}>
                                                 <ToggleButton
                                                     bind:active={activeTheme}
-                                                    on:change={() =>
-                                                        (shouldAnimateThemeToggle = true)}
+                                                    on:change={() => {
+                                                        setTimeout(() => {
+                                                            shouldAnimateThemeToggle = true;
+                                                        }, 150);
+                                                    }}
                                                     buttons={[
                                                         {
                                                             id: 'light',

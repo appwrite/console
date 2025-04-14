@@ -215,7 +215,7 @@
                     {groups}
                     on:create={create}
                     let:toggle>
-                    <Button secondary icon on:click={toggle}>
+                    <Button compact icon on:click={toggle}>
                         <Icon icon={IconPlus} size="s" />
                     </Button>
                 </Actions>

@@ -14,17 +14,17 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
 
-    $: data = page.data as PageData;
-    $: project = page.params.project;
-    $: databaseId = page.params.database;
-    $: collectionId = page.params.collection;
+    let data = $derived(page.data) as PageData;
+    let project = $derived(page.params.project);
+    let databaseId = $derived(page.params.database);
+    let collectionId = $derived(page.params.collection);
 
-    $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
-        a.name.localeCompare(b.name)
+    const sortedCollections = $derived.by(() =>
+        data?.allCollections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    $: selectedCollection = sortedCollections?.find(
-        (collection) => collection.$id === collectionId
+    const selectedCollection = $derived.by(() =>
+        sortedCollections()?.find((collection) => collection.$id === collectionId)
     );
 
     let openBottomSheet = false;

@@ -33,7 +33,6 @@
         previousPage = from?.url?.pathname || previousPage;
     });
 
-    let hasInstallations: boolean;
     let selectedRepository: string;
 
     const featuredTemplatesList = data.templatesList.templates
@@ -57,12 +56,10 @@
         baseRuntimesList.some((base) => base.$id === r.name)
     );
 
-    function connect(e: CustomEvent<Models.ProviderRepository>) {
+    function connect(e: Models.ProviderRepository) {
         trackEvent(Click.ConnectRepositoryClick, { from: 'cover' });
-        repository.set(e.detail);
-        goto(
-            `${wizardBase}/create-function/repository-${e.detail.id}?installation=${$installation.$id}`
-        );
+        repository.set(e);
+        goto(`${wizardBase}/create-function/repository-${e.id}?installation=${$installation.$id}`);
     }
 </script>
 
@@ -103,16 +100,15 @@
                             <Typography.Title size="s">Connect Git repository</Typography.Title>
 
                             <Repositories
-                                bind:hasInstallations
                                 bind:selectedRepository
                                 action="button"
                                 callbackState={{
                                     from: 'github',
                                     to: 'cover'
                                 }}
-                                on:connect={connect} />
+                                {connect} />
                         </Layout.Stack>
-                        {#if hasInstallations}
+                        {#if data.installations.total}
                             <Layout.Stack gap="l">
                                 <Divider />
                                 <Link variant="quiet" href="#/">

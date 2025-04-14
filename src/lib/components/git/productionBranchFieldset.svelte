@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
-    import { Fieldset, Layout, Selector, Skeleton } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Input, Layout, Selector, Skeleton } from '@appwrite.io/pink-svelte';
     import SelectRootModal from './selectRootModal.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { sortBranches } from '$lib/stores/vcs';
@@ -60,7 +60,7 @@
                     return a.label > b.label ? 1 : -1;
                 }) ?? []}
         <Layout.Stack gap="xl">
-            <InputSelect
+            <Input.ComboBox
                 required
                 id="branch"
                 label="Production branch"

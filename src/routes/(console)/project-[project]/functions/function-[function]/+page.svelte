@@ -74,7 +74,7 @@
                     deployment={activeDeployment}
                     proxyRuleList={data.proxyRuleList}
                     activeDeployment>
-                    <svelte:fragment slot="footer">
+                    {#snippet footer()}
                         <Layout.Stack direction="row" gap="s" alignItems="center" inline>
                             <Menu>
                                 <Button secondary icon text>
@@ -112,7 +112,7 @@
                                 Execute
                             </Button>
                         </Layout.Stack>
-                    </svelte:fragment>
+                    {/snippet}
                 </DeploymentCard>
             {:else if data.activeDeployment?.status === 'building'}
                 <Card.Base padding="none">
@@ -171,9 +171,7 @@
                 <Layout.Stack>
                     <Layout.Stack direction="row" alignItems="center">
                         <Layout.Stack direction="row" gap="s" wrap="wrap">
-                            {#if data.deploymentList.total}
-                                <QuickFilters {columns} analyticsSource="function_deployments" />
-                            {/if}
+                            <QuickFilters {columns} analyticsSource="function_deployments" />
                         </Layout.Stack>
                         <Layout.Stack direction="row" gap="s" inline>
                             {#if data.deploymentList.total}

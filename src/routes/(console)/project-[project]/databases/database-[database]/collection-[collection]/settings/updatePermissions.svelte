@@ -48,22 +48,19 @@
         }
     }
 
-    $: if (
+    $: arePermsDisabled = !(
         collectionPermissions &&
         symmetricDifference(collectionPermissions, $collection.$permissions).length
-    ) {
-        arePermsDisabled = false;
-    } else arePermsDisabled = true;
+    );
 </script>
 
 <CardGrid>
     <svelte:fragment slot="title">Permissions</svelte:fragment>
-    Choose who can access your collection and documents. For more about
-    <Link.Anchor
+    Choose who can access your collection and documents. <Link.Anchor
         href="https://appwrite.io/docs/products/databases/permissions"
         target="_blank"
         rel="noopener noreferrer">
-        Permissions
+        Learn more
     </Link.Anchor>.
     <svelte:fragment slot="aside">
         {#if collectionPermissions}

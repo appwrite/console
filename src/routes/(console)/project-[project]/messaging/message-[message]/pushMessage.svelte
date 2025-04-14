@@ -114,7 +114,7 @@
                 bind:value={file}
                 label="Media"
                 optionalText="(Optional)" />
-            <Layout.Stack>
+            <Layout.Stack gap="s">
                 {#each customData || [] as [key, value], index}
                     <Layout.Stack direction="row" alignItems="flex-end">
                         <InputText
@@ -146,7 +146,7 @@
                 {/each}
                 <div>
                     <Button
-                        secondary
+                        compact
                         disabled={customData.length > 0 &&
                             customData[customData.length - 1][0] === ''}
                         on:click={() => (customData = [...customData, ['', '']])}>

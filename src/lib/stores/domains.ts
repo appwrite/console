@@ -20,3 +20,15 @@ export const statusCodeOptions = [
         value: 308
     }
 ];
+
+export type RecordType =
+    | 'A'
+    | 'AAAA'
+    | 'CNAME'
+    | 'MX'
+    | 'TXT'
+    | 'NS'
+    | 'SRV'
+    | 'CAA'
+    | 'HTTPS'
+    | 'ALIAS';

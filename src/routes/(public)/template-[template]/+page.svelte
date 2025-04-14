@@ -5,20 +5,14 @@
     import { SvgIcon } from '$lib/components/index.js';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
     import { getFlagUrl } from '$lib/helpers/flag.js';
-    import type { Region } from '$lib/sdk/billing.js';
+    import type { AllowedRegions, Region as RegionType } from '$lib/sdk/billing.js';
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { getFrameworkIcon } from '$lib/stores/sites.js';
     import { isCloud } from '$lib/system';
-    import {
-        ID,
-        OAuthProvider,
-        Query,
-        type Models,
-        type Region as AppwriteRegion
-    } from '@appwrite.io/console';
-    import { IconGithub, IconPencil, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { ID, OAuthProvider, Query, type Models, Region } from '@appwrite.io/console';
+    import { IconGithub, IconPencil, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
     import {
         Card,
         Divider,
@@ -39,8 +33,8 @@
     );
     let projectName = $state<string>();
     let showCustomId = $state(false);
-    let region = $state<string>();
-    let regions = $state<Array<Region>>([]);
+    let region = $state<AllowedRegions>();
+    let regions = $state<Array<RegionType>>([]);
     let id = $state<string>();
 
     function getRegions() {
@@ -97,17 +91,19 @@
     async function handleSubmit() {
         if (selectedProject === null) {
             try {
-                await sdk.forConsole.projects.create(
+                const p = await sdk.forConsole.projects.create(
                     id ?? ID.unique(),
                     projectName,
                     selectedOrg,
-                    region as AppwriteRegion
+                    isCloud ? (region as Region) : Region.Default
                 );
                 trackEvent(Submit.ProjectCreate, {
                     customId: !!id,
                     selectedOrg,
                     teamId: selectedOrg
                 });
+
+                selectedProject = p.$id;
 
                 window.location.href = generateUrl();
             } catch (e) {
@@ -124,7 +120,6 @@
 
     $effect(() => {
         if (selectedOrg !== undefined) {
-            console.log('test');
             fetchProjects();
         }
     });
@@ -138,16 +133,16 @@
     <Card.Base padding="s" radius="l">
         <Layout.Stack gap="xl">
             <Layout.Stack gap="l">
-                <Typography.Title size="l">
+                <Typography.Title size="m">
                     Deploy {data.product}
                 </Typography.Title>
                 <Card.Base variant="secondary" padding="xxxs" radius="s">
-                    <Layout.GridFraction start={4} end={5}>
+                    <Layout.GridFraction start={5} end={6}>
                         {#if isSiteTemplate(data.template, data.product)}
                             {@const framework = data.template.frameworks[0]}
                             <Image
                                 border
-                                radius="s"
+                                radius="xs"
                                 ratio="16/9"
                                 style=" align-self: start"
                                 src={$app.themeInUse === 'dark'
@@ -156,7 +151,7 @@
                                     : data.template.screenshotLight ||
                                       `${base}/images/sites/screenshot-placeholder-light.svg`}
                                 alt="Screenshot" />
-                            <Layout.Stack gap="xl">
+                            <Layout.Stack gap="xxl" justifyContent="center">
                                 <Layout.Stack gap="xxs">
                                     <Typography.Text
                                         variant="m-500"
@@ -209,8 +204,8 @@
                                                 value: p.$id
                                             })),
                                             {
-                                                label: 'Create a new project',
-                                                leadingIcon: IconPlus,
+                                                label: 'Create project',
+                                                leadingIcon: IconPlusSm,
                                                 value: null
                                             }
                                         ]}
@@ -231,7 +226,8 @@
                                                 on:click={() => {
                                                     showCustomId = true;
                                                 }}
-                                                ><Icon slot="start" icon={IconPencil} /> Project ID</Tag>
+                                                ><Icon slot="start" icon={IconPencil} size="s" /> Project
+                                                ID</Tag>
                                         </div>
                                     {/if}
                                     <CustomId
@@ -240,15 +236,17 @@
                                         isProject
                                         bind:id />
                                 </Layout.Stack>
-                                {#if isCloud && regions.length > 0}
+                                {#if isCloud}
                                     <Layout.Stack gap="xs">
                                         <Input.Select
+                                            required
                                             bind:value={region}
                                             placeholder="Select a region"
                                             options={getRegions()}
                                             label="Region" />
-                                        <Typography.Text
-                                            >Region cannot be changed after creation</Typography.Text>
+                                        <Typography.Text>
+                                            Region cannot be changed after creation
+                                        </Typography.Text>
                                     </Layout.Stack>
                                 {/if}
                             {/if}

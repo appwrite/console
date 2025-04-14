@@ -269,6 +269,7 @@
         transition: opacity 0.5s var(--animation-type);
 
         @media (min-width: 768px) {
+            margin-top: 50px;
             margin-bottom: 50px;
         }
     }

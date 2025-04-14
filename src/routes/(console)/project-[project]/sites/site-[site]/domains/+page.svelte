@@ -16,7 +16,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search domain" />
+        <SearchQuery placeholder="Search domain" />
         <Button
             href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}
             on:click={() => {

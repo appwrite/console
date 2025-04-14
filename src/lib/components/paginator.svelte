@@ -9,7 +9,8 @@
         hideFooter = false,
         hidePages = true,
         hasLimit = false,
-        name = 'items'
+        name = 'items',
+        children
     } = $props();
 
     let total = $derived(items.length);
@@ -20,7 +21,7 @@
 </script>
 
 <Layout.Stack gap="s">
-    <slot {paginatedItems} {limit} />
+    {@render children(paginatedItems, limit)}
 
     {#if !hideFooter}
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
