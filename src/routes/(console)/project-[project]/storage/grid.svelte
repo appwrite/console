@@ -13,7 +13,7 @@
 </script>
 
 <CardContainer
-    showEmpty={$canWriteBuckets}
+    disableEmpty={!$canWriteBuckets}
     total={data.buckets.total}
     offset={data.offset}
     event="bucket"

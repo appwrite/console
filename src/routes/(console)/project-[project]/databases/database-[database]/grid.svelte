@@ -12,7 +12,7 @@
 </script>
 
 <CardContainer
-    showEmpty={$canWriteCollections}
+    disableEmpty={!$canWriteCollections}
     total={data.collections.total}
     on:click={() => (showCreate = true)}
     event="collection">

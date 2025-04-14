@@ -175,7 +175,7 @@
 
     {#if data.projects.total}
         <CardContainer
-            showEmpty={$canWriteProjects}
+            disableEmpty={!$canWriteProjects}
             total={data.projects.total}
             offset={data.offset}
             on:click={handleCreateProject}>

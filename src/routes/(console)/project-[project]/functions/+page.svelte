@@ -88,7 +88,7 @@
     {#if data.functions.total}
         <CardContainer
             {offset}
-            showEmpty={$canWriteFunctions}
+            disableEmpty={!$canWriteFunctions}
             event="functions"
             total={data.functions.total}
             service="functions"
