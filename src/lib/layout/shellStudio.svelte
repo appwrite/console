@@ -262,15 +262,6 @@
 
         margin-inline-start: 8px;
 
-        &::before {
-            content: '';
-            cursor: col-resize;
-            position: absolute;
-            height: 100%;
-            width: 1px;
-            background-color: var(--border-neutral);
-        }
-
         &::after {
             content: '';
             cursor: col-resize;
