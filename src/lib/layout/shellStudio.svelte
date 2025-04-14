@@ -64,7 +64,7 @@
         }
     });
 
-    let resizer;
+    let resizer = $state(null);
     let resizerLeftPosition = $state(page.data?.subNavigation ? 524 : 500);
     let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 52);
     let chatWidth = $state(resizerLeftPosition - resizerLeftOffset);
@@ -88,7 +88,7 @@
     function resize(event) {
         if (!isResizing) return;
         if (resizer) {
-            resizerLeftPosition = event.touches ? event.touches[0].clientX : event.clientX;
+            resizerLeftPosition = (event.touches ? event.touches[0].clientX : event.clientX) - 10;
             const maxSize = page.data?.subNavigation
                 ? window.innerWidth - 660
                 : window.innerWidth - 460;
@@ -253,16 +253,18 @@
     }
 
     .resizer {
-        width: 7px;
+        width: 8px;
+        cursor: col-resize;
         margin-inline: 10px;
         position: absolute;
         height: calc(100vh - 82px);
         margin-block-start: 6px;
-        cursor: col-resize;
+
         margin-inline-start: 8px;
 
         &::before {
             content: '';
+            cursor: col-resize;
             position: absolute;
             height: 100%;
             width: 1px;
@@ -271,6 +273,7 @@
 
         &::after {
             content: '';
+            cursor: col-resize;
             position: absolute;
             height: 100%;
             width: 2px;
