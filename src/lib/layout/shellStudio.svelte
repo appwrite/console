@@ -56,11 +56,11 @@
             };
         });
     });
-    const showChat = writable(false);
+    let showChat = $state(false);
 
     $effect(() => {
-        if (page.url.pathname.endsWith('studio')) {
-            showChat.set(true);
+        if ($isSmallViewport || page.url.pathname.endsWith('studio')) {
+            showChat = true;
         }
     });
 
@@ -142,7 +142,7 @@
             {#if $isSmallViewport}
                 {#if hasProjectSidebar}
                     <Chat
-                        bind:showChat={$showChat}
+                        bind:showChat
                         width={chatWidth}
                         hasSubNavigation={page.data?.subNavigation} />
                 {/if}
@@ -157,11 +157,8 @@
             {:else}
                 <Layout.Stack direction="row" gap="l">
                     {#if hasProjectSidebar}
-                        <Chat
-                            bind:showChat={$showChat}
-                            width={chatWidth}
-                            hasSubNavigation={false} />
-                        {#if $showChat}
+                        <Chat bind:showChat width={chatWidth} hasSubNavigation={false} />
+                        {#if showChat}
                             <div
                                 class="resizer"
                                 style:left={`${resizerLeftPosition}px`}
@@ -199,7 +196,7 @@
             {#if page.data.project}
                 <SidebarProject
                     project={page.data.project}
-                    bind:showChat={$showChat}
+                    bind:showChat
                     bind:isOpen={showSideNavigation} />
             {/if}
         {:else}
