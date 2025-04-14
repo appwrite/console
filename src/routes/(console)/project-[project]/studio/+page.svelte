@@ -33,10 +33,12 @@
         }
     ];
 
-    let terminalOpen;
+    let terminalOpen = $state(false);
     let asideRef;
     let isResizing = false;
-    let terminalHeight = 300;
+    let terminalHeight = $state(300);
+
+    $inspect(terminalHeight);
 
     function startResize(event) {
         isResizing = true;
@@ -52,12 +54,15 @@
         if (!isResizing) return;
 
         const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+        const maxHeight = window.innerHeight - 400;
 
-        terminalHeight =
+        let height =
             asideRef.getBoundingClientRect().y -
             clientY +
             asideRef.getBoundingClientRect().height -
             32;
+
+        terminalHeight = height < maxHeight ? height : maxHeight;
     }
 
     function stopResize() {
