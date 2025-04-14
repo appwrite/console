@@ -104,15 +104,12 @@
         <iframe src={frameUrl} id="preview-iframe"></iframe>
     </div>
     <div></div>
-    {#if terminalOpen}<div
-            class="terminal-slider"
-            on:mousedown={startResize}
-            on:touchmove={startResize}>
-        </div>
-    {/if}
     <aside bind:this={asideRef}>
         <details bind:open={terminalOpen}>
-            <summary>
+            <summary
+                on:mousedown={startResize}
+                on:touchmove={startResize}
+                class:terminal-slider={terminalOpen}>
                 <Layout.Stack direction="row" justify="space-between">
                     <Layout.Stack direction="row" alignItems="center" gap="xs">
                         <Icon icon={IconTerminal} color="--fgcolor-neutral-tertiary" />
@@ -168,10 +165,6 @@
     }
 
     .terminal-slider {
-        height: 4px;
-        background-color: var(--bgcolor-neutral-default);
-        width: calc(100% + 2 * var(--space-9));
-        margin-inline-start: calc(-1 * var(--space-9));
         cursor: row-resize;
     }
 </style>
