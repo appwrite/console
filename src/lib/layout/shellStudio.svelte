@@ -65,8 +65,8 @@
     });
 
     let resizer;
-    let resizerLeftPosition = $state(page.data?.subNavigation ? 360 : 500);
-    let resizerLeftOffset = $state(page.data?.subNavigation ? 0 : 52);
+    let resizerLeftPosition = $state(page.data?.subNavigation ? 524 : 500);
+    let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 52);
     let chatWidth = $state(resizerLeftPosition - resizerLeftOffset);
 
     $effect(() => {
@@ -88,8 +88,7 @@
     function resize(event) {
         if (!isResizing) return;
         if (resizer) {
-            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-            resizerLeftPosition = page.data?.subNavigation ? clientX - 280 : clientX;
+            resizerLeftPosition = event.touches ? event.touches[0].clientX : event.clientX;
             const maxSize = page.data?.subNavigation
                 ? window.innerWidth - 660
                 : window.innerWidth - 460;
@@ -161,7 +160,7 @@
                         <Chat
                             bind:showChat={$showChat}
                             width={chatWidth}
-                            hasSubNavigation={page.data?.subNavigation} />
+                            hasSubNavigation={false} />
                         {#if $showChat}
                             <div
                                 class="resizer"
@@ -174,12 +173,24 @@
                     {/if}
 
                     <Card.Base>
-                        <Layout.Stack>
-                            {#if page.data?.header}
-                                <svelte:component this={page.data.header} />
-                            {/if}
-                            <slot />
-                        </Layout.Stack>
+                        {#if page.data.subNavigation}
+                            <svelte:component this={page.data.subNavigation} />
+                            <div style:padding-left="200px" style:min-height="calc(100vh - 98px)">
+                                <Layout.Stack>
+                                    {#if page.data?.header}
+                                        <svelte:component this={page.data.header} />
+                                    {/if}
+                                    <slot />
+                                </Layout.Stack>
+                            </div>
+                        {:else}
+                            <Layout.Stack>
+                                {#if page.data?.header}
+                                    <svelte:component this={page.data.header} />
+                                {/if}
+                                <slot />
+                            </Layout.Stack>
+                        {/if}
                     </Card.Base>
                 </Layout.Stack>
             {/if}
@@ -190,11 +201,6 @@
                     project={page.data.project}
                     bind:showChat={$showChat}
                     bind:isOpen={showSideNavigation} />
-            {/if}
-            {#if page.data.subNavigation}
-                <div class="sub-navigation">
-                    <svelte:component this={page.data.subNavigation} />
-                </div>
             {/if}
         {:else}
             <SidebarOrganization
@@ -245,15 +251,6 @@
             @media (min-width: 1024px) {
                 width: calc(100vw - 52px);
                 margin-left: 52px;
-            }
-
-            &.sub-navigation {
-                margin-top: 96px;
-                @media (min-width: 1024px) {
-                    margin-top: 48px;
-                    width: calc(100vw - 320px);
-                    margin-left: 215px;
-                }
             }
         }
     }
@@ -321,20 +318,12 @@
         }
     }
 
-    .sub-navigation {
-        position: fixed;
-
-        @media (min-width: 1024px) {
-            left: 53px;
-        }
-        nav {
-            top: 49px;
-        }
-    }
-
-    :global(.sub-navigation nav),
-    :global(.sub-navigation header) {
-        --bgcolor-neutral-primary: var(--bgcolor-neutral-default);
-        --border-width-s: 0;
+    :global(.sub-navigation nav) {
+        margin-left: -25px;
+        border-top-left-radius: var(--border-radius-m);
+        border-left-width: 1px;
+        border-top-width: 1px;
+        border-style: solid;
+        border-color: var(--border-neutral);
     }
 </style>
