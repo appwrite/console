@@ -11,7 +11,9 @@
 </script>
 
 {#if isStudio}
-    <slot name="header" />
+    <Layout.Stack direction="row" alignItems="center">
+        <slot name="header" />
+    </Layout.Stack>
     <slot />
 {:else}
     <div class="top-cover-console" class:no-padding={isStudio} style:block-size={blocksize}>
