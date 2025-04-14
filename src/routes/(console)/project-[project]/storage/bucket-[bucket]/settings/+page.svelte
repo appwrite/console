@@ -376,11 +376,13 @@
             all file types.
             <svelte:fragment slot="aside">
                 <Layout.Stack gap="s">
-                    <InputTags
-                        id="user-labels"
-                        label="Labels"
-                        placeholder="Select or type user labels"
-                        bind:tags={extensions} />
+                    {#key extensions.length}
+                        <InputTags
+                            id="user-labels"
+                            label="Labels"
+                            placeholder="Select or type user labels"
+                            bind:tags={extensions} />
+                    {/key}
                     <Layout.Stack direction="row">
                         {#each suggestedExtensions as ext}
                             <Tag
