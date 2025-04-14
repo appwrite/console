@@ -6,6 +6,7 @@
     export let disabled = false;
     export let external = false;
     export let event: string = null;
+    export let iconStyle: string = '';
 
     function track() {
         if (!event) {
@@ -29,7 +30,7 @@
         rel={external ? 'noopener noreferrer' : ''}>
         <span class="text"><slot /></span>
         {#if icon}
-            <span class={`icon-${icon}`} aria-hidden="true" />
+            <span class={`icon-${icon}`} style={iconStyle} aria-hidden="true" />
         {/if}
     </a>
 </li>

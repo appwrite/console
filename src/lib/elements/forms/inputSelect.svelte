@@ -18,6 +18,7 @@
     export let options: {
         value: string | boolean | number | null;
         label: string;
+        disabled?: boolean;
     }[];
     export let isMultiple = false;
     export let fullWidth = false;
@@ -100,7 +101,10 @@
                 <option value={null} disabled selected hidden>{placeholder}</option>
             {/if}
             {#each options as option}
-                <option value={option.value} selected={option.value === value}>
+                <option
+                    value={option.value}
+                    selected={option.value === value}
+                    disabled={option.disabled}>
                     {option.label}
                 </option>
             {/each}

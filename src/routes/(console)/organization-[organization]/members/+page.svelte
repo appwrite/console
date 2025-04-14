@@ -1,7 +1,15 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { AvatarInitials, DropList, DropListItem, PaginationWithLimit } from '$lib/components';
+    import {
+        AvatarInitials,
+        Drop,
+        DropList,
+        DropListItem,
+        PaginationWithLimit
+    } from '$lib/components';
+    import Upgrade from '$lib/components/roles/upgrade.svelte';
     import { Pill } from '$lib/elements';
     import {
         TableBody,
@@ -13,18 +21,15 @@
         TableScroll
     } from '$lib/elements/table';
     import { Container, ContainerHeader } from '$lib/layout';
+    import { getRoleLabel } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { newMemberModal, organization } from '$lib/stores/organization';
+    import { isOwner } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import Delete from '../deleteMember.svelte';
-    import { base } from '$app/paths';
-    import { isOwner } from '$lib/stores/roles';
+    import type { PageData } from './$types';
     import Edit from './edit.svelte';
-    import { getRoleLabel } from '$lib/stores/billing';
-    import { Drop } from '$lib/components';
-    import Upgrade from '$lib/components/roles/upgrade.svelte';
 
     export let data: PageData;
 
@@ -113,9 +118,11 @@
                     <TableRow>
                         <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <AvatarInitials size={40} name={member.userName} />
+                                <AvatarInitials
+                                    size={40}
+                                    name={member.userName || member.userEmail} />
                                 <span class="text u-trim">
-                                    {member.userName ? member.userName : 'n/a'}
+                                    {member.userName || 'n/a'}
                                 </span>
                                 {#if member.invited && !member.joined}
                                     <Pill warning>Pending</Pill>

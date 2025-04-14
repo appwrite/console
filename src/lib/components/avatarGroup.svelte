@@ -9,6 +9,9 @@
     export let bordered = false;
     export let color = '';
 
+    let classes = '';
+    export { classes as class };
+
     enum Sizes {
         xsmall = 'is-size-x-small',
         small = 'is-size-small',
@@ -18,7 +21,7 @@
     }
 </script>
 
-<ul class="avatars-group" class:is-with-border={bordered}>
+<ul class="avatars-group {classes}" class:is-with-border={bordered}>
     {#each avatars as name, index}
         {#if index < 2}
             <li class="avatars-group-item">

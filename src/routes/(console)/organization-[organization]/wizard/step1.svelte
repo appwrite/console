@@ -4,12 +4,22 @@
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { createProject, regions } from './store';
+    import { createProject } from './store';
+    import { regionFlagUrls, regions } from '../store';
+    import { organization } from '$lib/stores/organization';
 
     let showCustomId = false;
 
-    sdk.forConsole.billing.listRegions().then(regions.set);
+    if (!$regions?.regions) {
+        sdk.forConsole.billing.listRegions($organization.$id).then(regions.set);
+    }
 </script>
+
+<svelte:head>
+    {#each $regionFlagUrls as image}
+        <link rel="preload" as="image" href={image} />
+    {/each}
+</svelte:head>
 
 <WizardStep>
     <svelte:fragment slot="title">Details</svelte:fragment>
@@ -31,6 +41,7 @@
             </div>
         {:else}
             <CustomId
+                autofocus
                 bind:show={showCustomId}
                 name="Project"
                 isProject={true}

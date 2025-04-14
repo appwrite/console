@@ -1,7 +1,7 @@
 import '@appwrite.io/pink';
 import '@appwrite.io/pink-icons';
 import 'tippy.js/dist/tippy.css';
-import { getApiEndpoint, sdk } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
@@ -9,14 +9,13 @@ import { redirectTo } from './store';
 import { base } from '$app/paths';
 import type { Account } from '$lib/stores/user';
 import type { AppwriteException } from '@appwrite.io/console';
+import { isCloud } from '$lib/system';
+import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
 export const ssr = false;
 
 export const load: LayoutLoad = async ({ depends, url, route }) => {
     depends(Dependencies.ACCOUNT);
-
-    console.log(getApiEndpoint());
-    sdk.forProject.client.setEndpoint(getApiEndpoint());
 
     const [account, error] = (await sdk.forConsole.account
         .get()
@@ -31,7 +30,9 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     if (account) {
         return {
             account: account,
-            organizations: await sdk.forConsole.teams.list()
+            organizations: !isCloud
+                ? await sdk.forConsole.teams.list()
+                : await sdk.forConsole.billing.listOrganization()
         };
     }
 
@@ -49,6 +50,10 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     if (!isPublicRoute) {
+        if (isCloud) {
+            checkPricingRefAndRedirect(url.searchParams, true);
+        }
+
         redirect(303, withParams(`${base}/login`, url.searchParams));
     }
 };

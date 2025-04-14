@@ -16,7 +16,6 @@
     import Baa from './BAA.svelte';
     import Soc2 from './Soc2.svelte';
 
-    export let data;
     let name: string;
     let showDelete = false;
 
@@ -42,7 +41,7 @@
         }
     }
 
-    $: avatars = $members.memberships.map((team) => team.userName);
+    $: avatars = $members.memberships.map((m) => m.userName || m.userEmail);
     $: orgProjects = `${$projects.total} ${$projects.total === 1 ? 'project' : 'projects'}`;
     $: orgMembers = `${$organization.total} ${$organization.total === 1 ? 'member' : 'members'}`;
 </script>
@@ -106,4 +105,4 @@
     {/if}
 </Container>
 
-<Delete bind:showDelete invoices={data.invoices} />
+<Delete bind:showDelete />

@@ -1,6 +1,5 @@
 import { Client, type Models, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
-import { getProjectId } from '$lib/helpers/project';
 import { getApiEndpoint } from '$lib/stores/sdk';
 
 type UploaderFile = {
@@ -18,11 +17,10 @@ export type Uploader = {
     files: UploaderFile[];
 };
 
-const temporaryStorage = () => {
-    const clientProject = new Client()
-        .setEndpoint(getApiEndpoint())
-        .setMode('admin')
-        .setProject(getProjectId());
+const temporaryStorage = (region: string, projectId: string) => {
+    const clientProject = new Client().setMode('admin');
+    const endpoint = getApiEndpoint(region);
+    clientProject.setEndpoint(endpoint).setProject(projectId);
 
     return new Storage(clientProject);
 };
@@ -66,7 +64,14 @@ const createUploader = () => {
                 isCollapsed: false,
                 files: []
             }),
-        uploadFile: async (bucketId: string, id: string, file: File, permissions: string[]) => {
+        uploadFile: async (
+            region: string,
+            projectId: string,
+            bucketId: string,
+            id: string,
+            file: File,
+            permissions: string[]
+        ) => {
             const newFile: UploaderFile = {
                 $id: id,
                 bucketId: bucketId,
@@ -81,7 +86,7 @@ const createUploader = () => {
                 n.files.unshift(newFile);
                 return n;
             });
-            const uploadedFile = await temporaryStorage().createFile(
+            const uploadedFile = await temporaryStorage(region, projectId).createFile(
                 bucketId,
                 id ?? 'unique()',
                 file,

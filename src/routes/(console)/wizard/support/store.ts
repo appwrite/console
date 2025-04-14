@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 
 export type SupportData = {
     message: string;
+    subject: string;
     category: string;
     file?: File | null;
     project?: string;
@@ -9,6 +10,7 @@ export type SupportData = {
 
 export const supportData = writable<SupportData>({
     message: '',
+    subject: '',
     category: 'general',
     file: null
 });

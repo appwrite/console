@@ -8,9 +8,11 @@
     export let show = false;
     export let size: 'small' | 'big' | 'huge' = null;
     export let icon: string = null;
+    export let iconNotMobile: boolean = false;
     export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;
     export let closable = true;
+    export let closeByEscape = true;
     export let headerDivider = true;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
@@ -31,7 +33,7 @@
     }
 </script>
 
-<ModalWrapper bind:show {size} {headerDivider} let:close>
+<ModalWrapper bind:show {size} {headerDivider} {closeByEscape} let:close>
     <Form isModal {onSubmit}>
         <header class="modal-header">
             <div class="u-flex u-main-space-between u-cross-center u-gap-16">
@@ -39,6 +41,7 @@
                     {#if icon}
                         <div
                             class="avatar is-medium"
+                            class:is-not-mobile={iconNotMobile}
                             class:is-success={state === 'success'}
                             class:is-warning={state === 'warning'}
                             class:is-danger={state === 'error'}

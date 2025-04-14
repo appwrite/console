@@ -3,9 +3,7 @@
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Card, Heading } from '$lib/components';
-    import CustomId from '$lib/components/customId.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Pill } from '$lib/elements';
     import { Button, Form, InputSelect, InputText } from '$lib/elements/forms';
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Container } from '$lib/layout';
@@ -14,40 +12,34 @@
     import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { tierToPlan, type Tier, plansInfo } from '$lib/stores/billing';
+    import { tierToPlan, type Tier, plansInfo, isOrganization } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
+    import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
 
     let name: string;
-    let id: string;
-    let showCustomId = false;
     let plan: Tier;
 
     const options = isCloud
         ? [
               {
                   value: BillingPlan.FREE,
-                  label: `${tierToPlan(BillingPlan.FREE).name} - ${formatCurrency($plansInfo.get(BillingPlan.FREE).price)}/month`
+                  label: `${tierToPlan(BillingPlan.FREE).name} - ${formatCurrency($plansInfo.get(BillingPlan.FREE).price)} / month`
               },
               {
                   value: BillingPlan.PRO,
-                  label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
+                  label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)} / month + add-ons`
+              },
+              {
+                  value: BillingPlan.SCALE,
+                  label: `${tierToPlan(BillingPlan.SCALE).name} - ${formatCurrency($plansInfo.get(BillingPlan.SCALE).price)}/month + usage`
               }
-              // {
-              //     value: BillingPlan.SCALE,
-              //     label: `${tierToPlan(BillingPlan.SCALE).name} - ${formatCurrency($plansInfo.get(BillingPlan.SCALE).price)}/month + usage`
-              // }
           ]
         : [];
 
     onMount(() => {
         if (isCloud) {
-            if ($page.url.searchParams.has('type')) {
-                const paramType = $page.url.searchParams.get('type');
-                if (paramType === 'createPro') {
-                    goto(`${base}/create-organization`);
-                }
-            }
+            checkPricingRefAndRedirect($page.url.searchParams);
         }
     });
 
@@ -57,22 +49,28 @@
             if (plan === BillingPlan.FREE) {
                 try {
                     const org = await sdk.forConsole.billing.createOrganization(
-                        id ?? ID.unique(),
+                        ID.unique(),
                         orgName,
                         plan,
                         null,
                         null
                     );
                     trackEvent(Submit.OrganizationCreate, {
-                        customId: !!id,
                         plan: tierToPlan(plan)?.name
                     });
                     await invalidate(Dependencies.ACCOUNT);
-                    await goto(`${base}/organization-${org.$id}`);
-                    addNotification({
-                        message: `${orgName} organization successfully created`,
-                        type: 'success'
-                    });
+                    if (isOrganization(org)) {
+                        await goto(`${base}/organization-${org.$id}`);
+                        addNotification({
+                            message: `${orgName} organization successfully created`,
+                            type: 'success'
+                        });
+                    } else {
+                        addNotification({
+                            message: `${org.message}`,
+                            type: 'error'
+                        });
+                    }
                 } catch (error) {
                     addNotification({
                         message: error.message,
@@ -85,7 +83,7 @@
             }
         } else {
             try {
-                const org = await sdk.forConsole.teams.create(id ?? ID.unique(), orgName);
+                const org = await sdk.forConsole.teams.create(ID.unique(), orgName);
 
                 await invalidate(Dependencies.ACCOUNT);
                 await goto(`${base}/organization-${org.$id}`);
@@ -116,17 +114,6 @@
                     placeholder="Organization name"
                     hideRequired
                     bind:value={name} />
-                {#if !showCustomId}
-                    <div>
-                        <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                            <span class="icon-pencil" aria-hidden="true" /><span class="text">
-                                Organization ID
-                            </span>
-                        </Pill>
-                    </div>
-                {:else}
-                    <CustomId bind:show={showCustomId} name="Organization" isProject bind:id />
-                {/if}
                 {#if isCloud}
                     <div class="u-margin-block-start-8">
                         <h3><b>Plan</b></h3>

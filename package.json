@@ -19,13 +19,13 @@
         "e2e:ui": "playwright test tests/e2e --ui"
     },
     "dependencies": {
-        "@appwrite.io/console": "1.4.4",
+        "@appwrite.io/console": "1.5.2",
         "@appwrite.io/pink": "0.25.0",
         "@appwrite.io/pink-icons": "0.25.0",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",
-        "ai": "^2.2.37",
+        "@ai-sdk/svelte": "^1.1.24",
         "analytics": "^0.8.14",
         "cron-parser": "^4.9.0",
         "dayjs": "^1.11.13",
@@ -36,6 +36,7 @@
         "plausible-tracker": "^0.3.9",
         "pretty-bytes": "^6.1.1",
         "prismjs": "^1.29.0",
+        "remarkable": "^2.0.1",
         "svelte-confetti": "^1.4.0",
         "tippy.js": "^6.3.7"
     },
@@ -52,6 +53,7 @@
         "@testing-library/user-event": "^14.5.2",
         "@types/deep-equal": "^1.0.4",
         "@types/prismjs": "^1.26.5",
+        "@types/remarkable": "^2.0.8",
         "@typescript-eslint/eslint-plugin": "^7.18.0",
         "@typescript-eslint/parser": "^7.18.0",
         "@vitest/ui": "^1.6.0",
@@ -71,7 +73,7 @@
         "tslib": "^2.8.1",
         "typescript": "^5.6.3",
         "vite": "^5.4.11",
-        "vitest": "^1.6.0"
+        "vitest": "^1.6.1"
     },
     "type": "module",
     "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf"

@@ -15,6 +15,7 @@ export const templateConfig = writable<{
     repositoryId: string;
     execute?: boolean;
     scopes?: string[];
+    specification?: string;
 }>();
 export const repository = writable<Models.ProviderRepository>();
 export const installation = writable<Models.Installation>();

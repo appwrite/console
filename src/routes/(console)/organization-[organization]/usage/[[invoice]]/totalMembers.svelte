@@ -46,7 +46,7 @@
                     <span
                         class="icon-info"
                         use:tooltip={{
-                            content: `You can add unlimited organization members on the ${tierToPlan($organization.billingPlan).name} plan ${$organization.billingPlan === BillingPlan.PRO ? `for ${formatCurrency(plan.addons.member.price)} each per billing period.` : '.'}`
+                            content: `You can add unlimited organization members on the ${tierToPlan($organization.billingPlan).name} plan ${$organization.billingPlan === BillingPlan.PRO ? `for ${formatCurrency(plan.addons.seats.price)} each per billing period.` : '.'}`
                         }}></span>
                 </p>
             </div>
@@ -64,9 +64,11 @@
                             <TableRow>
                                 <TableCell title="name">
                                     <div class="u-flex u-gap-12 u-cross-center">
-                                        <AvatarInitials size={32} name={member.userName} />
+                                        <AvatarInitials
+                                            size={32}
+                                            name={member.userName || member.userEmail} />
                                         <span class="text u-trim">
-                                            {member.userName ? member.userName : member.userEmail}
+                                            {member.userName || member.userEmail}
                                         </span>
                                     </div>
                                 </TableCell>

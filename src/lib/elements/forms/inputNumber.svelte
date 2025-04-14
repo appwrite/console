@@ -24,10 +24,16 @@
     let error: string;
 
     onMount(() => {
-        if (element && autofocus) {
-            element.focus();
+        if (autofocus) {
+            addInputFocus();
         }
     });
+
+    export function addInputFocus() {
+        if (element) {
+            element.focus();
+        }
+    }
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();

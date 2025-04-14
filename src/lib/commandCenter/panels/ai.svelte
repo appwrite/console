@@ -1,9 +1,12 @@
 <script lang="ts">
+    import { Remarkable } from 'remarkable';
     import Template from './template.svelte';
+
+    const markdownInstance = new Remarkable();
 
     import { Alert, AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
-    import { useCompletion } from 'ai/svelte';
+    import { useCompletion } from '@ai-sdk/svelte';
     import { subPanels } from '../subPanels';
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
@@ -16,10 +19,9 @@
         headers: {
             'x-appwrite-project': 'console'
         },
-        credentials: 'include'
+        credentials: 'include',
+        streamProtocol: 'text'
     });
-
-    let question = $input;
 
     const examples = [
         'How to add platform in the console?',
@@ -87,9 +89,46 @@
 
     $: answer = parseCompletion($completion);
 
+    function renderMarkdown(answer: string): string {
+        const trimmedAnswer = answer
+            .trim()
+            .replace(/[ \t]+/g, ' ')
+            .replace(/\n[ \t]+/g, '\n')
+            .replace(/\n+/g, '\n');
+
+        // targeting links in plain text.
+        const processedAnswer = trimmedAnswer
+            .replace(/(\[(.*?)]\((.*?)\))|https?:\/\/\S+/g, (match, fullMarkdownLink, _, __) =>
+                fullMarkdownLink ? match : `[${match}](${match})`
+            )
+            .replace(/https?:\/\/\S+##/g, (url) => url.replace(/##/, '#'));
+
+        const formattedAnswer = processedAnswer.replace(
+            /(^|\n)Sources:/g,
+            (_, prefix) => `${prefix}\nSources:`
+        );
+
+        let renderedHTML = markdownInstance.render(formattedAnswer);
+
+        // add target blank to open links in a new tab.
+        renderedHTML = renderedHTML.replace(/<a\s+href="([^"]+)"/g, '<a href="$1" target="_blank"');
+
+        return renderedHTML;
+    }
+
     function getInitials(name: string) {
         const [first, last] = name.split(' ');
         return `${first?.[0] ?? ''}${last?.[0] ?? ''}`;
+    }
+
+    let previousQuestion = '';
+    $: if ($input) {
+        previousQuestion = $input;
+    }
+
+    $: if (!$isLoading && answer) {
+        // reset input if answer received.
+        $input = '';
     }
 </script>
 
@@ -141,8 +180,8 @@
     {#if $isLoading || answer}
         <div class="content">
             <div class="u-flex u-gap-8 u-cross-center">
-                <div class="avatar is-size-x-small">{getInitials($user.name)}</div>
-                <p class="u-opacity-75">{question}</p>
+                <div class="avatar is-size-x-small">{getInitials($user.name || $user.email)}</div>
+                <p class="u-opacity-75">{previousQuestion}</p>
             </div>
             <div class="u-flex u-gap-8 u-margin-block-start-24">
                 <div class="logo">
@@ -154,7 +193,7 @@
                     {:else}
                         {#each answer as part}
                             {#if part.type === 'text'}
-                                <p>{part.value.trimStart()}</p>
+                                <p>{@html renderMarkdown(part.value.trim())}</p>
                             {:else if part.type === 'code'}
                                 {#key part.value}
                                     <div
@@ -191,12 +230,11 @@
 
     <div class="footer" slot="footer">
         <div class="u-flex u-cross-center u-gap-4">
-            <AvatarInitials size={32} name={$user.name} />
+            <AvatarInitials size={32} name={$user.name || $user.email} />
             <form
                 class="input-text-wrapper u-width-full-line"
                 style="--amount-of-buttons: 1;"
                 on:submit|preventDefault={(e) => {
-                    question = $input;
                     handleSubmit(e);
                 }}>
                 <!--  svelte-ignore a11y-autofocus -->
@@ -269,9 +307,19 @@
         .answer {
             overflow: hidden;
 
-            p {
+            p:first-of-type {
                 white-space: pre-wrap;
             }
+        }
+
+        :global(.answer ul),
+        :global(.answer ol) {
+            gap: 1rem;
+            display: grid;
+        }
+
+        :global(.answer a) {
+            text-decoration: underline;
         }
     }
 

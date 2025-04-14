@@ -75,7 +75,11 @@
         <TableBody>
             {#each rules.rules as domain, i}
                 <TableRow>
-                    <TableCellLink title="Domain" href={`http://${domain.domain}`} external noStyle>
+                    <TableCellLink
+                        title="Domain"
+                        href={`https://${domain.domain}`}
+                        external
+                        noStyle>
                         <span class="u-flex u-gap-4 u-cross-center">
                             <Trim>
                                 <span class="link">{domain.domain}</span>
@@ -135,7 +139,7 @@
                         {:else}
                             <Pill warning>
                                 <span class="icon-clock u-text-color-gray" aria-hidden="true" />
-                                <p class="text">Blocked by verification</p>
+                                <p class="text">blocked by verification</p>
                             </Pill>
                         {/if}
                     </TableCell>

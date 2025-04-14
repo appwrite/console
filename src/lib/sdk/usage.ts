@@ -185,6 +185,14 @@ export type UsageBuckets = {
      * Aggregated statistics of bucket storage files per period.
      */
     storage: Metric[];
+    /**
+     * Aggregated statistics of bucket image transformations per period.
+     */
+    imageTransformations: Metric[];
+    /**
+     * Total aggregated number of bucket image transformations.
+     */
+    imageTransformationsTotal: number;
 };
 /**
  * UsageFunctions
@@ -299,4 +307,29 @@ export type UsageProject = {
      * Aggregated statistics of total number of buckets.
      */
     bucketsTotal: number;
+
+    /**
+     * Aggregated statistics of total number of SMS sent.
+     */
+    authPhoneTotal: number;
+
+    /**
+     * Aggregated statistics of estimated SMS cost.
+     */
+    authPhoneEstimate: number;
+
+    /**
+     * Aggregated statistics of total number SMS by country.
+     */
+    authPhoneCountriesBreakdown: Models.MetricBreakdown[];
+
+    /**
+     * Array of image transformations per period.
+     */
+    imageTransformations: Metric[];
+
+    /**
+     * Aggregated statistics of total number of image transformations.
+     */
+    imageTransformationsTotal: number;
 };

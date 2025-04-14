@@ -28,7 +28,7 @@
 
     const getMemberships = async (teamId: string) => {
         const memberships = await sdk.forConsole.teams.listMemberships(teamId);
-        return memberships.memberships.map((team) => team.userName);
+        return memberships.memberships.map((team) => team.userName || team.userEmail);
     };
 
     function isCloudOrg(

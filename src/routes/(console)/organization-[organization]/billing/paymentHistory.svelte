@@ -23,12 +23,12 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Invoice, InvoiceList } from '$lib/sdk/billing';
-    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
-    import { organization } from '$lib/stores/organization';
+    import { base } from '$app/paths';
 
     let showDropdown = [];
     let showFailedError = false;
@@ -40,7 +40,6 @@
     };
 
     const limit = 5;
-    const endpoint = getApiEndpoint();
 
     onMount(request);
 
@@ -48,8 +47,6 @@
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
-            Query.notEqual('from', $organization.billingCurrentInvoiceDate),
-            Query.notEqual('status', 'pending'),
             Query.orderDesc('$createdAt')
         ]);
     }
@@ -76,7 +73,7 @@
             <TableScroll noMargin transparent noStyles>
                 <TableHeader>
                     <TableCellHead width={100}>Due Date</TableCellHead>
-                    <TableCellHead width={80}>Status</TableCellHead>
+                    <TableCellHead width={110}>Status</TableCellHead>
                     <TableCellHead width={100}>Amount Due</TableCellHead>
                     <TableCellHead width={40} />
                 </TableHeader>
@@ -104,13 +101,16 @@
                                         </Pill>
                                         <svelte:fragment slot="list">
                                             <li>
-                                                The scheduled payment has failed. <Button
+                                                The scheduled payment has failed.
+                                                <Button
                                                     link
                                                     on:click={() => {
                                                         retryPayment(invoice);
                                                         showFailedError = false;
-                                                    }}>Try again</Button
-                                                >.
+                                                    }}
+                                                    >Try again
+                                                </Button>
+                                                .
                                             </li>
                                         </svelte:fragment>
                                     </DropList>
@@ -147,14 +147,14 @@
                                         <DropListLink
                                             icon="external-link"
                                             external
-                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
+                                            href={`${base}/organization-${$page.params.organization}/invoices/${invoice.$id}/view`}
                                             on:click={() => (showDropdown[i] = !showDropdown[i])}
                                             event="view_invoice">
                                             View invoice
                                         </DropListLink>
                                         <DropListLink
                                             icon="download"
-                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
+                                            href={`${base}/organization-${$page.params.organization}/invoices/${invoice.$id}/download`}
                                             on:click={() => {
                                                 showDropdown[i] = !showDropdown[i];
                                             }}
@@ -183,9 +183,13 @@
                 </TableBody>
             </TableScroll>
             <div class="u-flex u-main-space-between">
-                <p class="text">Total results: {invoiceList?.total ?? 0}</p>
-                <PaginationInline {limit} bind:offset sum={invoiceList?.total ?? 0} hidePages />
+                <p class="text">Total results: {invoiceList.total}</p>
+                <PaginationInline {limit} bind:offset sum={invoiceList.total} hidePages />
             </div>
+            <!--{:else if isLoadingInvoices}-->
+            <!--    <div class="loader-holder">-->
+            <!--        <div class="loader" />-->
+            <!--    </div>-->
         {:else}
             <EmptySearch hidePagination>
                 <p class="text u-text-center">
@@ -196,3 +200,11 @@
         {/if}
     </svelte:fragment>
 </CardGrid>
+
+<!--<style>-->
+<!--    .loader-holder {-->
+<!--        height: 100%;-->
+<!--        align-content: center;-->
+<!--        justify-items: center;-->
+<!--    }-->
+<!--</style>-->
