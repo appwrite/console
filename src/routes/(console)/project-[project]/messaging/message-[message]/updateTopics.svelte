@@ -126,7 +126,7 @@
                 {#if sum > limit}
                     <div class="u-flex u-main-space-between">
                         <p class="text">Total topics: {sum}</p>
-                        <PaginationInline {sum} {limit} bind:offset />
+                        <PaginationInline total={sum} {limit} bind:offset />
                     </div>
                 {/if}
             {:else if message.status == 'draft'}

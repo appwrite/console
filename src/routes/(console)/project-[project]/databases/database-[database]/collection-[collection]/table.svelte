@@ -33,7 +33,7 @@
     const collectionId = page.params.collection;
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
-    let relationshipData: [];
+    let relationshipData: Partial<Models.Document>[];
     let displayNames = {};
 
     onMount(async () => {
