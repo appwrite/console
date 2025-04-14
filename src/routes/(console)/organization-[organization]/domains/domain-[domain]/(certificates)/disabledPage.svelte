@@ -32,7 +32,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search by ID" />
+        <SearchQuery placeholder="Search by ID" />
     </Layout.Stack>
 
     {#if data.certificates.total}

@@ -25,7 +25,7 @@
             if (!Object.keys(uploaded).length) {
                 throw new Error('No variables found');
             }
-            const entries = Object.entries(uploaded);
+            const entries = Object.entries(uploaded) as [string, string][];
 
             for (const [key, value] of entries) {
                 if (value.length > 8192) {

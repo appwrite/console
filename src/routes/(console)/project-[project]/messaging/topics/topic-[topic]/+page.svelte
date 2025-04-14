@@ -101,8 +101,7 @@
                 </Button>
             </div>
         </div>
-        <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery search={data.search} placeholder="Search by type or IDs">
+        <SearchQuery placeholder="Search by type or IDs">
             <div class="u-flex u-gap-16 is-not-mobile">
                 <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
                 <ViewSelector view={View.Table} {columns} hideView />

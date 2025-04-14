@@ -41,7 +41,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search domains" />
+        <SearchQuery placeholder="Search domains" />
         <Layout.Stack direction="row" gap="m" inline>
             <ViewSelector view={View.Table} {columns} hideView />
             <Button
