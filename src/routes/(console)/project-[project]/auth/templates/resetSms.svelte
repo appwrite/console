@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -50,4 +50,4 @@
         <Button text secondary on:click={() => (show = false)}>Cancel</Button>
         <Button secondary submit>Reset</Button>
     </svelte:fragment>
-</Modal>
+</Modal> -->

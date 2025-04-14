@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import SmsTemplate from './smsTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
     import { page } from '$app/state';
@@ -43,4 +43,4 @@
         <Id value={'{{project}}'}>{'{{project}}'}</Id>
         <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
     </SmsTemplate>
-</div>
+</div> -->
