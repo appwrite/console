@@ -38,8 +38,6 @@
     let isResizing = false;
     let terminalHeight = $state(300);
 
-    $inspect(terminalHeight);
-
     function startResize(event) {
         isResizing = true;
         window.addEventListener('mousemove', resize);
