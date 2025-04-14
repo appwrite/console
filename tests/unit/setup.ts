@@ -4,7 +4,7 @@ import { beforeAll, vi } from 'vitest';
 beforeAll(() => {
     vi.mock('$app/environment', () => ({
         dev: true,
-        building: false,
+        building: true,
         browser: true,
         page: {
             params: {

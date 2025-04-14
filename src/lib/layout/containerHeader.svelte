@@ -28,6 +28,9 @@
     export let total: number = null;
     export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
     export let showAlert = true;
+    export let level: 'organization' | 'project' = 'project';
+    export let customPillText: string | undefined = undefined;
+    export let showPillMessage: boolean = true;
 
     export let buttonText: string = null;
     export let buttonMethod: () => void = null;
@@ -63,6 +66,8 @@
     const dispatch = createEventDispatcher();
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
+    // these can be organization level limitations as well.
+    // we need to migrate this sometime later, but soon!
     $: hasProjectLimitation =
         checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.FREE;
     $: hasUsageFees = hasProjectLimitation
@@ -125,11 +130,16 @@
 <header class:u-flex={isFlex} class="u-gap-12 common-section u-main-space-between u-flex-wrap">
     <div class="u-flex u-cross-child-center u-cross-center u-gap-16 u-flex-wrap">
         <Heading tag={titleTag} size={titleSize}>{title}</Heading>
-        {#if isCloud && isLimited}
+        {#if isCloud && isLimited && showPillMessage}
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info" />{total}/{limit} created
+                        <span class="icon-info" />
+                        {#if customPillText}
+                            {customPillText}
+                        {:else}
+                            {total}/{limit} created
+                        {/if}
                     </Pill>
                 {:else if $organization?.billingPlan !== BillingPlan.SCALE}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
@@ -139,9 +149,10 @@
                 <svelte:fragment slot="list">
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
                         {#if hasProjectLimitation}
+                            {@const count = limit > 1 ? serviceId : serviceId.replace('s', '')}
                             <p class="text">
                                 You are limited to {limit}
-                                {title.toLocaleLowerCase()} per project on the {tier} plan.
+                                {count} per {level} on the {tier} plan.
                                 {#if $organization?.billingPlan === BillingPlan.FREE}<Button
                                         link
                                         href={$upgradeURL}

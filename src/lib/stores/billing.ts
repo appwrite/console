@@ -32,6 +32,8 @@ import { organization, type Organization, type OrganizationError } from './organ
 import { canSeeBilling } from './roles';
 import { sdk } from './sdk';
 import { user } from './user';
+import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
+import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1' | 'ent-1';
 
@@ -58,11 +60,19 @@ export const roles = [
     }
 ];
 
+export const teamStatusReadonly = 'readonly';
+export const billingLimitOutstandingInvoice = 'outstanding_invoice';
+
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
 export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
+
+export const showBudgetAlert = derived(
+    page,
+    ($page) => ($page.data.organization?.billingLimits.budgetLimit ?? 0) >= 100
+);
 
 export function getRoleLabel(role: string) {
     return roles.find((r) => r.value === role)?.label ?? role;
@@ -139,6 +149,14 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     const info = get(plansInfo);
     if (!info) return 0;
     plan ??= info.get(tier ?? get(organization)?.billingPlan);
+    // members are no longer a variable on plan itself!
+    // the correct info for members/seats, resides in `addons`.
+    // plan > addons > seats/others
+    if (serviceId === 'members') {
+        // some don't include `limit`, so we fallback!
+        return plan?.['addons']['seats']['limit'] ?? 1;
+    }
+
     return plan?.[serviceId] ?? 0;
 }
 
@@ -264,13 +282,35 @@ export function calculateTrialDay(org: Organization) {
 }
 
 export async function checkForUsageLimit(org: Organization) {
-    if (org?.billingPlan !== BillingPlan.FREE) {
+    if (org?.status === teamStatusReadonly && org?.remarks === billingLimitOutstandingInvoice) {
+        headerAlert.add({
+            id: 'teamReadOnlyFailedInvoices',
+            component: TeamReadonlyAlert,
+            show: true,
+            importance: 11
+        });
+        readOnly.set(true);
+        return;
+    }
+    if (!org?.billingLimits && org?.status !== teamStatusReadonly) {
         readOnly.set(false);
         return;
     }
-    if (!org?.billingLimits) {
-        readOnly.set(false);
-        return;
+    if (org?.billingPlan !== BillingPlan.FREE) {
+        const { budgetLimit } = org?.billingLimits ?? {};
+
+        if (budgetLimit && budgetLimit >= 100) {
+            readOnly.set(false);
+            headerAlert.add({
+                id: 'budgetLimit',
+                component: BudgetLimitAlert,
+                show: true,
+                importance: 10
+            });
+
+            readOnly.set(true);
+            return;
+        }
     }
     const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
     const resources = [

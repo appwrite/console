@@ -13,7 +13,7 @@
 
     let showCustomId = false;
     let fileError: string = null;
-    const service = $currentPlan['fileSize'];
+    const service = $currentPlan?.['fileSize'];
 </script>
 
 <WizardStep>

@@ -11,9 +11,9 @@
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
     import type { Plan } from '$lib/sdk/billing';
-    export let currentPlan: Plan;
+    export let currentPlan: Plan | null;
 
-    const service = currentPlan['fileSize'];
+    const service = currentPlan?.['fileSize'];
     const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize, 1000);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
     $: selectedUnit = $unit;

@@ -35,6 +35,7 @@
         overlapContainerCover
         total={[readsTotal, writesTotal]}
         count={[reads, writes]}
+        legendNumberFormat="abbreviate"
         legendData={[
             { name: 'Reads', value: readsTotal },
             { name: 'Writes', value: writesTotal }

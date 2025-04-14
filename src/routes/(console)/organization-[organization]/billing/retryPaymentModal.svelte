@@ -20,6 +20,7 @@
     import { onMount } from 'svelte';
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { formatCurrency } from '$lib/helpers/numbers';
+    import { base } from '$app/paths';
 
     export let show = false;
     export let invoice: Invoice;
@@ -79,8 +80,12 @@
             await confirmPayment(
                 $organization.$id,
                 clientSecret,
-                paymentMethodId ? paymentMethodId : $organization.paymentMethodId
+                paymentMethodId ? paymentMethodId : $organization.paymentMethodId,
+                `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
             );
+
+            await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoice.$id);
+
             invalidate(Dependencies.ORGANIZATION);
             invalidate(Dependencies.INVOICES);
 
@@ -122,9 +127,9 @@
     title="Retry payment">
     <!-- TODO: format currency -->
     <p class="text">
-        Your payment of <span class="inline-tag">${formatCurrency(invoice.grossAmount)}</span> due
-        on {toLocaleDate(invoice.dueAt)} has failed. Retry your payment to avoid service interruptions
-        with your projects.
+        Your payment of <span class="inline-tag">{formatCurrency(invoice.grossAmount)}</span> due on {toLocaleDate(
+            invoice.dueAt
+        )} has failed. Retry your payment to avoid service interruptions with your projects.
     </p>
 
     <Button

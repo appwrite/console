@@ -14,6 +14,7 @@
     export let legendData: LegendData[];
     export let showHeader: boolean = true;
     export let overlapContainerCover = false;
+    export let legendNumberFormat: 'comma' | 'abbreviate' = 'comma';
 </script>
 
 <Container overlapCover={overlapContainerCover}>
@@ -55,7 +56,10 @@
                     }))} />
 
                 {#if legendData}
-                    <Legend {legendData} />
+                    <Legend
+                        {legendData}
+                        decimalsForAbbreviate={2}
+                        numberFormat={legendNumberFormat} />
                 {/if}
             </div>
         {/if}

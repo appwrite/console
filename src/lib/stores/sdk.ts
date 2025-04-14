@@ -61,13 +61,14 @@ const getSubdomain = (region?: string) => {
 const endpoint = getApiEndpoint();
 
 const clientConsole = new Client();
-clientConsole.setEndpoint(endpoint).setProject('console');
-
 const clientRealtime = new Client();
-clientRealtime.setProject('console');
-
 const clientProject = new Client();
-clientProject.setMode('admin');
+
+if (!building) {
+    clientConsole.setEndpoint(endpoint).setProject('console');
+    clientRealtime.setEndpoint(endpoint).setProject('console');
+    clientProject.setEndpoint(endpoint).setMode('admin');
+}
 
 const sdkForProject = {
     client: clientProject,

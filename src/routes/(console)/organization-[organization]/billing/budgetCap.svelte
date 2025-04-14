@@ -26,7 +26,7 @@
                 budget,
                 $organization.budgetAlerts
             );
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
                 isHtml: true,
@@ -51,7 +51,7 @@
 
 <Form onSubmit={updateBudget}>
     <CardGrid>
-        <Heading tag="h2" size="6">Budget cap</Heading>
+        <Heading id="update-budget" tag="h2" size="6">Budget cap</Heading>
 
         <p class="text">
             Restrict your resource usage by setting a budget cap. Cap usage is reset at the
@@ -70,6 +70,12 @@
                         href="https://appwrite.io/pricing"
                         target="_blank"
                         rel="noopener noreferrer">view our pricing guide.</a>
+                </Alert>
+            {:else if !$currentPlan.budgetCapEnabled}
+                <Alert type="info">
+                    <svelte:fragment slot="title">Budget cap disabled</svelte:fragment>
+                    Budget caps are not supported on your current plan. For more information, please
+                    reach out to your customer success manager.
                 </Alert>
             {:else}
                 <FormList>

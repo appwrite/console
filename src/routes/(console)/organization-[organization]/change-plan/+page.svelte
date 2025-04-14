@@ -274,12 +274,12 @@
         }
     }
 
-    $: isUpgrade = $plansInfo.get(billingPlan).order > $currentPlan.order;
-    $: isDowngrade = $plansInfo.get(billingPlan).order < $currentPlan.order;
+    $: isSamePlan = billingPlan === $currentPlan.$id;
+    $: isUpgrade = isSamePlan ? false : $plansInfo.get(billingPlan)?.order > $currentPlan.order;
+    $: isDowngrade = isSamePlan ? false : $plansInfo.get(billingPlan)?.order < $currentPlan.order;
     $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
-    $: isButtonDisabled = ($currentPlan?.$id as Tier) === billingPlan;
 </script>
 
 <svelte:head>
@@ -387,7 +387,7 @@
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled || !selfService}>
+            disabled={$isSubmitting || isSamePlan || !selfService}>
             Change plan
         </Button>
     </WizardSecondaryFooter>

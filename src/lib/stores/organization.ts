@@ -32,6 +32,8 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingPlanDowngrade?: Tier;
     billingAggregationId: string;
     billingInvoiceId: string;
+    status: string;
+    remarks: string;
 };
 
 export type OrganizationList = {
@@ -45,6 +47,7 @@ export type BillingLimits = {
     executions: number;
     storage: number;
     users: number;
+    budgetLimit: number;
 };
 
 export const newOrgModal = writable<boolean>(false);

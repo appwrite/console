@@ -340,6 +340,7 @@ export type Plan = {
         seats: PlanAddon;
     };
     trialDays: number;
+    budgetCapEnabled: boolean;
     isAvailable: boolean;
     selfService: boolean;
     premiumSupport: boolean;
@@ -737,6 +738,14 @@ export class Billing {
             },
             params
         );
+    }
+
+    async updateInvoiceStatus(organizationId: string, invoiceId: string): Promise<Invoice> {
+        const path = `/organizations/${organizationId}/invoices/${invoiceId}/status`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('PATCH', uri, {
+            'content-type': 'application/json'
+        });
     }
 
     async retryPayment(
