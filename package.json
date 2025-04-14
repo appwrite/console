@@ -35,7 +35,6 @@
         "dayjs": "^1.11.13",
         "deep-equal": "^2.2.3",
         "echarts": "^5.6.0",
-        "envfile": "^7.1.0",
         "ignore": "^6.0.2",
         "nanoid": "^5.1.5",
         "nanotar": "^0.1.1",

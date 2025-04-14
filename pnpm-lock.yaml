@@ -50,9 +50,6 @@ importers:
       echarts:
         specifier: ^5.6.0
         version: 5.6.0
-      envfile:
-        specifier: ^7.1.0
-        version: 7.1.0
       ignore:
         specifier: ^6.0.2
         version: 6.0.2
@@ -1891,11 +1888,6 @@ packages:
   entities@4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
     engines: {node: '>=0.12'}
-
-  envfile@7.1.0:
-    resolution: {integrity: sha512-dyH4QnnZsArCLhPASr29eqBWDvKpq0GggQFTmysTT/S9TTmt1JrEKNvTBc09Cd7ujVZQful2HBGRMe2agu7Krg==}
-    engines: {node: '>=8'}
-    hasBin: true
 
   es-define-property@1.0.1:
     resolution: {integrity: sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==}
@@ -5305,8 +5297,6 @@ snapshots:
   emoji-regex-xs@1.0.0: {}
 
   entities@4.5.0: {}
-
-  envfile@7.1.0: {}
 
   es-define-property@1.0.1: {}
 
