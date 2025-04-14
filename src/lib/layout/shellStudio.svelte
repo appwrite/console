@@ -24,33 +24,54 @@
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
     import { derived, writable } from 'svelte/store';
 
-    $: hasProjectSidebar = page.url.pathname.startsWith(base + '/project');
+    let hasProjectSidebar = $state(false);
 
-    export let loadedProjects: Array<NavbarProject> = [];
-    $: showSideNavigation = !($isTabletViewport || $isSmallViewport);
-
-    $: organizations = $organizationList.teams.map((org) => {
-        const billingPlan = org['billingPlan'];
-        return {
-            name: org.name,
-            $id: org.$id,
-            showUpgrade: billingPlan === BillingPlan.FREE,
-            tierName: isCloud ? (tierToPlan(billingPlan)?.name ?? '') : null,
-            isSelected: page.data?.organization?.$id === org.$id,
-            projects: loadedProjects
-        };
+    $effect(() => {
+        hasProjectSidebar = page.url.pathname.startsWith(base + '/project');
     });
 
+    type Props = {
+        loadedProjects: Array<NavbarProject>;
+    };
+
+    let { loadedProjects = [] }: Props = $props();
+
+    let showSideNavigation = $state(false);
+
+    $effect(() => {
+        showSideNavigation = !($isTabletViewport || $isSmallViewport);
+    });
+
+    let organizations = $state([]);
+    $effect(() => {
+        organizations = $organizationList.teams.map((org) => {
+            const billingPlan = org['billingPlan'];
+            return {
+                name: org.name,
+                $id: org.$id,
+                showUpgrade: billingPlan === BillingPlan.FREE,
+                tierName: isCloud ? (tierToPlan(billingPlan)?.name ?? '') : null,
+                isSelected: page.data?.organization?.$id === org.$id,
+                projects: loadedProjects
+            };
+        });
+    });
     const showChat = writable(false);
 
-    $: if (page.url.pathname.endsWith('studio')) {
-        showChat.set(true);
-    }
+    $effect(() => {
+        if (page.url.pathname.endsWith('studio')) {
+            showChat.set(true);
+        }
+    });
 
     let resizer;
-    $: resizerLeftPosition = page.data?.subNavigation ? 360 : 500;
-    $: resizerLeftOffset = page.data?.subNavigation ? 0 : 52;
-    $: chatWidth = resizerLeftPosition - resizerLeftOffset;
+    let resizerLeftPosition = $state(page.data?.subNavigation ? 360 : 500);
+    let resizerLeftOffset = $state(page.data?.subNavigation ? 0 : 52);
+    let chatWidth = $state(resizerLeftPosition - resizerLeftOffset);
+
+    $effect(() => {
+        chatWidth = resizerLeftPosition - resizerLeftOffset;
+    });
 
     let isResizing = false;
 
@@ -66,7 +87,6 @@
 
     function resize(event) {
         if (!isResizing) return;
-
         if (resizer) {
             const clientX = event.touches ? event.touches[0].clientX : event.clientX;
             resizerLeftPosition = page.data?.subNavigation ? clientX - 280 : clientX;
@@ -183,7 +203,6 @@
         {/if}
     </Layout.Stack>
 </main>
-
 <button
     type="button"
     class="overlay-button"
