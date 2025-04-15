@@ -130,14 +130,14 @@
                                     name={region.name} />
                                 {region.name}
 
-                                {#if !region.available}
+                                <!-- {#if !region.available}
                                     <Pill
                                         button
                                         event="upgrade_from_region_chooser"
                                         on:click={() => goto($upgradeURL)}>
                                         <span class="text">Upgrade</span>
                                     </Pill>
-                                {/if}
+                                {/if} -->
                             {/if}
                         </div>
                     </RegionCard>
