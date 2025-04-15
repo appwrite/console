@@ -9,8 +9,8 @@
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { regions } from '$lib/stores/organization';
-    import { goto } from '$app/navigation';
-    import { upgradeURL } from '$lib/stores/billing';
+    // import { goto } from '$app/navigation';
+    // import { upgradeURL } from '$lib/stores/billing';
 
     let prefs: Models.Preferences;
 
@@ -84,7 +84,7 @@
                         name="region"
                         bind:group={$createProject.region}
                         value={region.$id}
-                        disabled={region.disabled}
+                        disabled={region.disabled || !region.available}
                         autofocus={index === 0}>
                         <!-- focus first item so enter key works! -->
                         <div
@@ -127,6 +127,10 @@
                                     name={region.name} />
                                 {region.name}
 
+                                <!--
+                                Add when multiregion is officially released to public
+                                When backend sends available=true for nyc and syd for Pro/Scale/Enterprise users
+                                
                                 {#if !region.available}
                                     <Pill
                                         button
@@ -135,6 +139,7 @@
                                         <span class="text">Upgrade</span>
                                     </Pill>
                                 {/if}
+                                -->
                             {/if}
                         </div>
                     </RegionCard>
