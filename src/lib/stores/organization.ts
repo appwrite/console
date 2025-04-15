@@ -50,14 +50,6 @@ export type BillingLimits = {
     budgetLimit: number;
 };
 
-type Region = Models.ConsoleRegion & {
-    available: boolean;
-};
-
-type RegionList = {
-    regions: Region[];
-};
-
 export const newOrgModal = writable<boolean>(false);
 export const newMemberModal = writable<boolean>(false);
 export const organizationList = derived(
@@ -69,4 +61,4 @@ export const organization = derived(page, ($page) => $page.data?.organization as
 export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Plan);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
 
-export const regions = writable<RegionList | undefined>(undefined);
+export const regions = writable<Models.ConsoleRegionList | undefined>(undefined);
