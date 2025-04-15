@@ -19,7 +19,7 @@
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import { plansInfo } from '$lib/stores/billing';
+    import { plansInfo, type Tier } from '$lib/stores/billing';
     import { Fieldset, Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
@@ -66,7 +66,7 @@
     let coupon: string;
     let couponData = data?.couponData;
     let campaign = data?.campaign;
-    let billingPlan = BillingPlan.PRO;
+    let billingPlan: Tier = BillingPlan.PRO;
     let tempOrgId = null;
 
     $: onlyNewOrgs = (campaign && campaign.onlyNewOrgs) || (couponData && couponData.onlyNewOrgs);
@@ -197,10 +197,25 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: billingPlan =
-        selectedOrg?.billingPlan === BillingPlan.SCALE
-            ? BillingPlan.SCALE
-            : (campaign?.plan ?? BillingPlan.PRO);
+    function getBillingPlan(): Tier | undefined {
+        const plansInfo = page.data.plansInfo;
+        const campaignPlan =
+            campaign?.plan && plansInfo.get(campaign.plan) ? plansInfo.get(campaign.plan) : null;
+        const orgPlan =
+            selectedOrg?.billingPlan && plansInfo.get(selectedOrg.billingPlan)
+                ? plansInfo.get(selectedOrg.billingPlan)
+                : null;
+
+        if (!campaignPlan || !orgPlan) {
+            return;
+        }
+
+        return campaignPlan.order > orgPlan.order ? campaign.plan : selectedOrg?.billingPlan;
+    }
+
+    $: if (selectedOrg) {
+        billingPlan = getBillingPlan();
+    }
 </script>
 
 <svelte:head>
@@ -286,7 +301,7 @@
         </Form>
     </Layout.Stack>
     <svelte:fragment slot="aside">
-        {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+        {#if selectedOrg?.$id && selectedOrg?.billingPlan === billingPlan}
             <section
                 class="card"
                 style:--p-card-padding="1.5rem"
