@@ -19,7 +19,7 @@
         "e2e:ui": "playwright test tests/e2e --ui"
     },
     "dependencies": {
-        "@appwrite.io/console": "1.6.0",
+        "@appwrite.io/console": "https://pkg.pr.new/appwrite-labs/cloud/@appwrite.io/console@c985738",
         "@appwrite.io/pink": "0.25.0",
         "@appwrite.io/pink-icons": "0.25.0",
         "@popperjs/core": "^2.11.8",

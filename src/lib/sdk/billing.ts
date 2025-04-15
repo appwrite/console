@@ -260,19 +260,6 @@ export type AllowedRegions =
     | 'syd'
     | 'default'; //TODO: remove after migration
 
-export type Region = {
-    $id: AllowedRegions;
-    name: string;
-    disabled: boolean;
-    default: boolean;
-    flag: string;
-};
-
-export type RegionList = {
-    regions: Region[];
-    total: number;
-};
-
 export type Address = {
     $id: string;
     streetAddress: string;
@@ -1276,7 +1263,7 @@ export class Billing {
         );
     }
 
-    async listRegions(teamId: string): Promise<RegionList> {
+    async listRegions(teamId: string): Promise<Models.ConsoleRegionList> {
         const path = `/console/regions`;
         const params = {
             teamId

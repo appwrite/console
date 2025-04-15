@@ -7,7 +7,7 @@
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ID, Region } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
@@ -24,12 +24,7 @@
     async function create() {
         try {
             disabled = true;
-            const project = await sdk.forConsole.projects.create(
-                id ?? ID.unique(),
-                name,
-                teamId,
-                Region.Default
-            );
+            const project = await sdk.forConsole.projects.create(id ?? ID.unique(), name, teamId);
             show = false;
             dispatch('created', project);
             trackEvent(Submit.ProjectCreate, {

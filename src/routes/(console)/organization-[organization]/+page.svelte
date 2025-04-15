@@ -107,7 +107,7 @@
                 ID.unique(),
                 `Imported project ${new Date().toISOString()}`,
                 $page.params.organization,
-                Region.Default
+                Region.Fra // default
             );
             trackEvent(Submit.ProjectCreate, {
                 teamId: $page.params.organization
