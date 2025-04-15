@@ -78,7 +78,7 @@
                     return 1;
                 }
                 return -1;
-            }) as region, index}
+            }) as region, index (region.$id)}
                 <li>
                     <RegionCard
                         name="region"
@@ -86,7 +86,6 @@
                         value={region.$id}
                         disabled={region.disabled}
                         autofocus={index === 0}>
-                        <!-- focus first item so enter key works! -->
                         <div
                             class="u-flex u-flex-vertical u-gap-8 u-justify-main-center u-cross-center u-margin-inline-auto">
                             {#if region.disabled}
