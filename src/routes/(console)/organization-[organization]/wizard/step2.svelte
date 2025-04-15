@@ -9,8 +9,8 @@
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { regions } from '$lib/stores/organization';
-    import { goto } from '$app/navigation';
-    import { upgradeURL } from '$lib/stores/billing';
+    // import { goto } from '$app/navigation';
+    // import { upgradeURL } from '$lib/stores/billing';
 
     let prefs: Models.Preferences;
 
@@ -84,18 +84,22 @@
                         name="region"
                         bind:group={$createProject.region}
                         value={region.$id}
-                        disabled={region.disabled}
+                        disabled={!region.available}
                         autofocus={index === 0}>
                         <div
                             class="u-flex u-flex-vertical u-gap-8 u-justify-main-center u-cross-center u-margin-inline-auto">
-                            {#if region.disabled}
+                            {#if region.disabled || !region.available}
                                 <Flag
                                     width={40}
                                     height={30}
-                                    class={region.disabled ? 'u-opacity-50' : ''}
+                                    class={region.disabled || !region.available
+                                        ? 'u-opacity-50'
+                                        : ''}
                                     flag={region.flag}
                                     name={region.name} />
-                                <p class:u-opacity-50={region.disabled}>{region.name}</p>
+                                <p class:u-opacity-50={region.disabled || !region.available}>
+                                    {region.name}
+                                </p>
                                 {#if !notifications.includes(region.$id)}
                                     <Pill
                                         button
@@ -126,14 +130,14 @@
                                     name={region.name} />
                                 {region.name}
 
-                                {#if !region.available}
+                                <!-- {#if !region.available}
                                     <Pill
                                         button
                                         event="upgrade_from_region_chooser"
                                         on:click={() => goto($upgradeURL)}>
                                         <span class="text">Upgrade</span>
                                     </Pill>
-                                {/if}
+                                {/if} -->
                             {/if}
                         </div>
                     </RegionCard>
