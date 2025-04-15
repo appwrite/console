@@ -92,7 +92,9 @@
                                 <Flag
                                     width={40}
                                     height={30}
-                                    class={region.disabled || !region.available ? 'u-opacity-50' : ''}
+                                    class={region.disabled || !region.available
+                                        ? 'u-opacity-50'
+                                        : ''}
                                     flag={region.flag}
                                     name={region.name} />
                                 <p class:u-opacity-50={region.disabled || !region.available}>
