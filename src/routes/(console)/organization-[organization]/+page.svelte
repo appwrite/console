@@ -153,7 +153,13 @@
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography.Text variant="m-500" color="--fgcolor-neutral-secondary"
                 >Projects</Typography.Text>
-            <Button size="s">Create project</Button>
+            {#if $canWriteProjects}
+                <Button
+                    size="s"
+                    on:click={handleCreateProject}
+                    event="create_project"
+                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>Create project</Button>
+            {/if}
         </Layout.Stack>
 
         <Divider />
@@ -217,8 +223,8 @@
                         {#await allServiceDisabled(project) then isDisabled}
                             {#if isDisabled}
                                 <p>
-                                    <span class="icon-pause" aria-hidden="true"></span> All services are
-                                    disabled.
+                                    <span class="icon-pause" aria-hidden="true"></span> All services
+                                    are disabled.
                                 </p>
                             {/if}
                         {/await}

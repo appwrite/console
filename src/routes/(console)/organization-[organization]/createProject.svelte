@@ -10,6 +10,7 @@
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
+    import { consoleProfile } from '$lib/system';
 
     export let show = false;
     export let teamId: string;
@@ -20,7 +21,7 @@
     let error: string;
     let showCustomId = false;
     let disabled: boolean = false;
-    let name: string = 'Appwrite project';
+    let name: string = consoleProfile.defaultProjectName;
 
     async function create() {
         try {

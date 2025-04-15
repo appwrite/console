@@ -8,6 +8,7 @@ type Profile = {
     hasSites: boolean;
     hasProjectProgressBars: boolean;
     hasFullPageSignup: boolean;
+    defaultProjectName: string;
 };
 
 export const ConsoleCloudProfile: Profile = {
@@ -19,7 +20,8 @@ export const ConsoleCloudProfile: Profile = {
     hasStorage: true,
     hasSites: true,
     hasProjectProgressBars: true,
-    hasFullPageSignup: false
+    hasFullPageSignup: false,
+    defaultProjectName: 'Appwrite project'
 };
 
 export const ConsoleSelfhostedProfile: Profile = {
@@ -31,7 +33,8 @@ export const ConsoleSelfhostedProfile: Profile = {
     hasStorage: true,
     hasSites: true,
     hasProjectProgressBars: true,
-    hasFullPageSignup: false
+    hasFullPageSignup: false,
+    defaultProjectName: 'Appwrite project'
 };
 
 export const StudioProfile: Profile = {
@@ -43,5 +46,6 @@ export const StudioProfile: Profile = {
     hasStorage: true,
     hasSites: true,
     hasProjectProgressBars: false,
-    hasFullPageSignup: true
+    hasFullPageSignup: true,
+    defaultProjectName: 'Imagine project'
 };

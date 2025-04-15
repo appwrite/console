@@ -1,5 +1,6 @@
 import type { RegionList } from '$lib/sdk/billing';
 import { writable } from 'svelte/store';
+import { consoleProfile } from '$lib/system';
 
 export const createProject = writable<{
     id?: string;
@@ -7,7 +8,7 @@ export const createProject = writable<{
     region: string;
 }>({
     id: null,
-    name: 'Appwrite project',
+    name: consoleProfile.defaultProjectName,
     region: 'fra'
 });
 
