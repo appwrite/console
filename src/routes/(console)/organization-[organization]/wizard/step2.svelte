@@ -88,14 +88,16 @@
                         autofocus={index === 0}>
                         <div
                             class="u-flex u-flex-vertical u-gap-8 u-justify-main-center u-cross-center u-margin-inline-auto">
-                            {#if region.disabled}
+                            {#if region.disabled || !region.available}
                                 <Flag
                                     width={40}
                                     height={30}
                                     class={region.disabled ? 'u-opacity-50' : ''}
                                     flag={region.flag}
                                     name={region.name} />
-                                <p class:u-opacity-50={region.disabled}>{region.name}</p>
+                                <p class:u-opacity-50={region.disabled || !region.available}>
+                                    {region.name}
+                                </p>
                                 {#if !notifications.includes(region.$id)}
                                     <Pill
                                         button
