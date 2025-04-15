@@ -33,12 +33,7 @@
         TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import {
-        bytesToSize,
-        calculateSize,
-        humanFileSize,
-        sizeToBytes
-    } from '$lib/helpers/sizeConvertion';
+    import { calculateSize, humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
@@ -60,10 +55,6 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const usedStorage =
-        isCloud && data?.organizationUsage?.storageTotal
-            ? bytesToSize(data.organizationUsage.storageTotal, 'GB')
-            : null;
     const getPreview = (fileId: string) =>
         sdk
             .forProject($page.params.region, $page.params.project)
@@ -122,7 +113,7 @@
 <svelte:window on:beforeunload={beforeunload} />
 
 <Container>
-    <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={usedStorage}>
+    <ContainerHeader title="Files" serviceId="storage" isFlex={false}>
         <svelte:fragment let:isButtonDisabled>
             <SearchQuery search={data.search} placeholder="Search by filename">
                 <div
