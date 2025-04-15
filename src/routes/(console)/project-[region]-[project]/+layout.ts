@@ -5,7 +5,6 @@ import type { LayoutLoad } from './$types';
 import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
-import type { Organization } from '$lib/stores/organization';
 import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
 import { get } from 'svelte/store';
@@ -20,17 +19,17 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     try {
         const project = await sdk.forConsole.projects.get(params.project);
         const [organization, prefs, _] = await Promise.all([
-            sdk.forConsole.teams.get(project.teamId) as Promise<Organization>,
+            sdk.forConsole.teams.get(project.teamId),
             sdk.forConsole.account.getPrefs(),
             loadAvailableRegions(project.teamId)
         ]);
         if (prefs?.organization !== project.teamId) {
-            sdk.forConsole.account.updatePrefs({
+            await sdk.forConsole.account.updatePrefs({
                 ...prefs,
                 organization: project.teamId
             });
         }
-        preferences.loadTeamPrefs(project.teamId);
+        await preferences.loadTeamPrefs(project.teamId);
         let roles = isCloud ? [] : defaultRoles;
         let scopes = isCloud ? [] : defaultScopes;
         if (isCloud) {

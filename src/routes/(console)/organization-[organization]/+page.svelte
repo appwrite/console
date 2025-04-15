@@ -29,10 +29,9 @@
     import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import { onMount } from 'svelte';
-    import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { regions as regionsStore } from '$routes/(console)/organization-[organization]/store';
+    import { organization, regions as regionsStore } from '$lib/stores/organization';
 
     export let data;
 

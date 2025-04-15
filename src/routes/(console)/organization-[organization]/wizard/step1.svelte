@@ -3,15 +3,15 @@
     import { Pill } from '$lib/elements';
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
     import { createProject } from './store';
-    import { regionFlagUrls, regions } from '../store';
-    import { organization } from '$lib/stores/organization';
+    import { regionFlagUrls } from '../store';
+    import { organization, regions } from '$lib/stores/organization';
+    import { loadAvailableRegions } from '$routes/(console)/regions';
 
     let showCustomId = false;
 
     if (!$regions?.regions) {
-        sdk.forConsole.billing.listRegions($organization.$id).then(regions.set);
+        loadAvailableRegions($organization.$id);
     }
 </script>
 
