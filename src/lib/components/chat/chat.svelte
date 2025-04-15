@@ -95,7 +95,7 @@
         z-index: 2;
 
         @media (min-width: 768px) {
-            top: 48px;
+            top: 54px;
             height: calc(100vh - 70px);
         }
 
