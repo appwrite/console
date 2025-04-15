@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
-    import { regions } from '$routes/(console)/organization-[organization]/store';
+    import { regions } from '$lib/stores/organization';
 
     let prefs: Models.Preferences;
 
