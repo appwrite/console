@@ -9,6 +9,7 @@ export { default as WizardWithSteps } from './wizardWithSteps.svelte';
 export { default as WizardStep } from './wizardStep.svelte';
 export { default as Breadcrumbs } from './breadcrumbs.svelte';
 export { default as Unauthenticated } from './unauthenticated.svelte';
+export { default as UnauthenticatedStudio } from './unauthenticatedStudio.svelte';
 export { default as Usage, type UsagePeriods } from './usage.svelte';
 export { default as UsageMultiple } from './usageMultiple.svelte';
 export { default as Activity } from './activity.svelte';

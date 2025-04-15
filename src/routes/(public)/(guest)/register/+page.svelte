@@ -11,7 +11,7 @@
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
+    import { Unauthenticated, UnauthenticatedStudio } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID, OAuthProvider } from '@appwrite.io/console';
@@ -86,60 +86,59 @@
 </svelte:head>
 
 {#if consoleProfile.hasFullPageSignup}
-    <main class="full-page-signup">
-        <Modal title="Sign up" open dismissible={false}>
-            <Form onSubmit={register}>
-                <Layout.Stack>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        placeholder="Your name"
-                        autofocus
-                        required
-                        bind:value={name} />
-                    <InputEmail
-                        id="email"
-                        label="Email"
-                        placeholder="Your email"
-                        required
-                        bind:value={mail} />
-                    <InputPassword
-                        id="password"
-                        label="Password"
-                        placeholder="Your password"
-                        helper="Password must be at least 8 characters long"
-                        required
-                        bind:value={pass} />
-                    <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                        By registering, you agree that you have read, understand, and acknowledge
-                        our <Link.Anchor
-                            href="https://appwrite.io/privacy"
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            Privacy Policy</Link.Anchor>
-                        and accept our
-                        <Link.Anchor
-                            href="https://appwrite.io/terms"
-                            target="_blank"
-                            rel="noopener noreferrer">General Terms of Use</Link.Anchor
-                        >.</InputChoice>
-                    <Button fullWidth submit {disabled}>Sign up</Button>
-                    {#if isCloud}
-                        <span class="with-separators eyebrow-heading-3">or</span>
-                        <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
-                            <span class="icon-github" aria-hidden="true"></span>
-                            <span class="text">Sign up with GitHub</span>
-                        </Button>
-                    {/if}
-                    <Typography.Text variant="m-400">
-                        Already got an account? <Link.Anchor
-                            href={`${base}/login${page?.url?.search ?? ''}`}>Sign in</Link.Anchor>
-                    </Typography.Text>
+    <UnauthenticatedStudio title="Sign up">
+        <Form onSubmit={register}>
+            <Layout.Stack>
+                <InputText
+                    id="name"
+                    label="Name"
+                    placeholder="Your name"
+                    autofocus
+                    required
+                    bind:value={name} />
+                <InputEmail
+                    id="email"
+                    label="Email"
+                    placeholder="Your email"
+                    required
+                    bind:value={mail} />
+                <InputPassword
+                    id="password"
+                    label="Password"
+                    placeholder="Your password"
+                    helper="Password must be at least 8 characters long"
+                    required
+                    bind:value={pass} />
+                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                    By registering, you agree that you have read, understand, and acknowledge our <Link.Anchor
+                        href="https://appwrite.io/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        Privacy Policy</Link.Anchor>
+                    and accept our
+                    <Link.Anchor
+                        href="https://appwrite.io/terms"
+                        target="_blank"
+                        rel="noopener noreferrer">General Terms of Use</Link.Anchor
+                    >.</InputChoice>
+                <Button fullWidth submit {disabled}>Sign up</Button>
+                {#if isCloud}
+                    <span class="with-separators eyebrow-heading-3">or</span>
+                    <Button fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true"></span>
+                        <span class="text">Sign up with GitHub</span>
+                    </Button>
+                {/if}
+                <div></div>
+                <Layout.Stack direction="row" justifyContent="center">
+                    <a href={`${base}/login${page?.url?.search ?? ''}`}
+                        ><Typography.Text variant="m-500" color="--neutral-750"
+                            >Sign in instead</Typography.Text
+                        ></a>
                 </Layout.Stack>
-            </Form>
-        </Modal>
-    </main>
-    <div class="overlay-image" style:background-image={`url('${DesktopLight}');`}></div>
+            </Layout.Stack>
+        </Form>
+    </UnauthenticatedStudio>
 {:else}
     <Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
         <svelte:fragment slot="title">Sign up</svelte:fragment>

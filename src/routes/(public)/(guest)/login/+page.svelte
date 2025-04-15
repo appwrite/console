@@ -4,7 +4,7 @@
     import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Unauthenticated } from '$lib/layout';
+    import { Unauthenticated, UnauthenticatedStudio } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { consoleProfile, isCloud } from '$lib/system';
@@ -12,8 +12,7 @@
     import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
-    import { Layout, Card, Modal } from '@appwrite.io/pink-svelte';
-    import DesktopLight from './assets/desktop-light.png';
+    import { Layout, Card, Modal, Typography } from '@appwrite.io/pink-svelte';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -84,42 +83,44 @@
 </svelte:head>
 
 {#if consoleProfile.hasFullPageSignup}
-    <main class="full-page-signup">
-        <Modal title="Sign in" open dismissible={false}>
-            <Form onSubmit={login}>
-                <Layout.Stack>
-                    <InputEmail
-                        id="email"
-                        label="Email"
-                        placeholder="Email"
-                        autofocus={true}
-                        required={true}
-                        bind:value={mail} />
-                    <InputPassword
-                        id="password"
-                        label="Password"
-                        placeholder="Password"
-                        required={true}
-                        bind:value={pass} />
-                    <Button fullWidth submit {disabled}>Sign in</Button>
-                    {#if isCloud}
-                        <span class="with-separators eyebrow-heading-3">or</span>
-                        <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
-                            <span class="icon-github" aria-hidden="true"></span>
-                            <span class="text">Sign in with GitHub</span>
-                        </Button>
-                    {/if}
-                    <Layout.Stack direction="row" justifyContent="flex-start">
-                        <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
-                        <a href={`${base}/register${page?.url?.search ?? ''}`}>
-                            <span class="text">Sign Up</span>
-                        </a>
-                    </Layout.Stack>
+    <UnauthenticatedStudio title="Sign in"
+        ><Form onSubmit={login}>
+            <Layout.Stack>
+                <InputEmail
+                    id="email"
+                    label="Email"
+                    placeholder="Email"
+                    autofocus={true}
+                    required={true}
+                    bind:value={mail} />
+                <InputPassword
+                    id="password"
+                    label="Password"
+                    placeholder="Password"
+                    required={true}
+                    bind:value={pass} />
+                <Button fullWidth submit {disabled}>Sign in</Button>
+                {#if isCloud}
+                    <span class="with-separators eyebrow-heading-3">or</span>
+                    <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
+                        <span class="icon-github" aria-hidden="true"></span>
+                        <span class="text">Sign in with GitHub</span>
+                    </Button>
+                {/if}
+                <div></div>
+                <Layout.Stack direction="row" justifyContent="center">
+                    <a href={`${base}/recover`}
+                        ><Typography.Text variant="m-500" color="--neutral-750"
+                            >Forgot Password?</Typography.Text
+                        ></a>
+                    <span>-</span>
+                    <a href={`${base}/register${page?.url?.search ?? ''}`}>
+                        <Typography.Text variant="m-500" color="--neutral-750"
+                            >Sign up</Typography.Text>
+                    </a>
                 </Layout.Stack>
-            </Form>
-        </Modal>
-    </main>
-    <div class="overlay-image" style:background-image={`url('${DesktopLight}');`}></div>
+            </Layout.Stack>
+        </Form></UnauthenticatedStudio>
 {:else}
     <Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
         <svelte:fragment slot="title">Sign in</svelte:fragment>
@@ -162,30 +163,3 @@
         </svelte:fragment>
     </Unauthenticated>
 {/if}
-
-<style lang="scss">
-    .full-page-signup {
-        width: 100vw;
-        height: 100vh;
-        position: fixed;
-        z-index: 3;
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        div {
-            width: 600px;
-        }
-    }
-
-    .overlay-image {
-        width: 100vw;
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        filter: blur(4px);
-        background-size: cover;
-    }
-</style>
