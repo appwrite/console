@@ -25,7 +25,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             loadAvailableRegions(project.teamId)
         ]);
         if (prefs?.organization !== project.teamId) {
-            await sdk.forConsole.account.updatePrefs({
+            sdk.forConsole.account.updatePrefs({
                 ...prefs,
                 organization: project.teamId
             });
