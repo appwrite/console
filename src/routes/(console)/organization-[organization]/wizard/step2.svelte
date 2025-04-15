@@ -9,8 +9,8 @@
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { regions } from '$lib/stores/organization';
-    import { goto } from '$app/navigation';
-    import { upgradeURL } from '$lib/stores/billing';
+    // import { goto } from '$app/navigation';
+    // import { upgradeURL } from '$lib/stores/billing';
 
     let prefs: Models.Preferences;
 
