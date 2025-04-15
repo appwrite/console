@@ -9,8 +9,8 @@
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { regions } from '$lib/stores/organization';
-    // import { goto } from '$app/navigation';
-    // import { upgradeURL } from '$lib/stores/billing';
+    import { goto } from '$app/navigation';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let prefs: Models.Preferences;
 
@@ -78,15 +78,14 @@
                     return 1;
                 }
                 return -1;
-            }) as region, index}
+            }) as region, index (region.$id)}
                 <li>
                     <RegionCard
                         name="region"
                         bind:group={$createProject.region}
                         value={region.$id}
-                        disabled={region.disabled || !region.available}
+                        disabled={region.disabled}
                         autofocus={index === 0}>
-                        <!-- focus first item so enter key works! -->
                         <div
                             class="u-flex u-flex-vertical u-gap-8 u-justify-main-center u-cross-center u-margin-inline-auto">
                             {#if region.disabled}
@@ -127,10 +126,6 @@
                                     name={region.name} />
                                 {region.name}
 
-                                <!--
-                                Add when multiregion is officially released to public
-                                When backend sends available=true for nyc and syd for Pro/Scale/Enterprise users
-                                
                                 {#if !region.available}
                                     <Pill
                                         button
@@ -139,7 +134,6 @@
                                         <span class="text">Upgrade</span>
                                     </Pill>
                                 {/if}
-                                -->
                             {/if}
                         </div>
                     </RegionCard>
