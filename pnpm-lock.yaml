@@ -15,14 +15,14 @@ importers:
         specifier: 0.25.0
         version: 0.25.0
       '@appwrite.io/pink-icons-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@207628e
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@207628e(svelte@5.25.3)
+        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@d1ce27d
+        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@d1ce27d(svelte@5.25.3)
       '@appwrite.io/pink-legacy':
         specifier: ^1.0.3
         version: 1.0.3
       '@appwrite.io/pink-svelte':
-        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@bf1860d
-        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@bf1860d(react-dom@18.3.1(react@18.3.1))(svelte@5.25.3)
+        specifier: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@d1ce27d
+        version: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@d1ce27d(react-dom@18.3.1(react@18.3.1))(svelte@5.25.3)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -221,14 +221,14 @@ packages:
     resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@e2f082e}
     version: 1.2.1
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@207628e':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@207628e}
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@d1ce27d':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@d1ce27d}
     version: 1.0.0-next.7
     peerDependencies:
       svelte: ^4.0.0
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bf1860d7e0303bd31f1204d65b3a188030e758d6':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bf1860d7e0303bd31f1204d65b3a188030e758d6}
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@d1ce27d540ad790dc823ce0f8d5f50294f482948':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@d1ce27d540ad790dc823ce0f8d5f50294f482948}
     version: 1.0.0-next.7
     peerDependencies:
       svelte: ^4.0.0
@@ -242,8 +242,8 @@ packages:
   '@appwrite.io/pink-legacy@1.0.3':
     resolution: {integrity: sha512-GGde5fmPhs+s6/3aFeMPc/kKADG/gTFkYQSy6oBN8pK0y0XNCLrZZgBv+EBbdhwdtqVEWXa0X85Mv9w7jcIlwQ==}
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@bf1860d':
-    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@bf1860d}
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@d1ce27d':
+    resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@d1ce27d}
     version: 1.0.0-next.85
     peerDependencies:
       react-dom: ^18.0.0
@@ -606,6 +606,11 @@ packages:
 
   '@melt-ui/svelte@0.86.5':
     resolution: {integrity: sha512-aaVfc0pxCf6B3ByrzGJ+hB2Sop9wJamw2lNHZlzaolU0Ew1D6O9CbeJElGODT8IbH8/bhI3LcN0nCJRh2ePq+A==}
+    peerDependencies:
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.118
+
+  '@melt-ui/svelte@0.86.6':
+    resolution: {integrity: sha512-Jer+M7DgIwT5IHfTayb4Iw/fkkxWNmC/mqn/nMh9JrbPbkxmyabfLQnhJ+JDn5HK77f84j34lubO3iqFtYAfMg==}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.118
 
@@ -3531,11 +3536,11 @@ snapshots:
 
   '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@e2f082e': {}
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@207628e(svelte@5.25.3)':
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@d1ce27d(svelte@5.25.3)':
     dependencies:
       svelte: 5.25.3
 
-  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bf1860d7e0303bd31f1204d65b3a188030e758d6(svelte@5.25.3)':
+  '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@d1ce27d540ad790dc823ce0f8d5f50294f482948(svelte@5.25.3)':
     dependencies:
       svelte: 5.25.3
 
@@ -3548,12 +3553,12 @@ snapshots:
       '@appwrite.io/pink-icons': 1.0.0
       the-new-css-reset: 1.11.3
 
-  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@bf1860d(react-dom@18.3.1(react@18.3.1))(svelte@5.25.3)':
+  '@appwrite.io/pink-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@d1ce27d(react-dom@18.3.1(react@18.3.1))(svelte@5.25.3)':
     dependencies:
-      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bf1860d7e0303bd31f1204d65b3a188030e758d6(svelte@5.25.3)
+      '@appwrite.io/pink-icons-svelte': https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@d1ce27d540ad790dc823ce0f8d5f50294f482948(svelte@5.25.3)
       '@floating-ui/dom': 1.6.13
-      '@melt-ui/pp': 0.3.2(@melt-ui/svelte@0.86.5(svelte@5.25.3))(svelte@5.25.3)
-      '@melt-ui/svelte': 0.86.5(svelte@5.25.3)
+      '@melt-ui/pp': 0.3.2(@melt-ui/svelte@0.86.6(svelte@5.25.3))(svelte@5.25.3)
+      '@melt-ui/svelte': 0.86.6(svelte@5.25.3)
       ansicolor: 2.0.3
       d3: 7.9.0
       fuse.js: 7.1.0
@@ -3871,7 +3876,24 @@ snapshots:
       magic-string: 0.30.17
       svelte: 5.25.3
 
+  '@melt-ui/pp@0.3.2(@melt-ui/svelte@0.86.6(svelte@5.25.3))(svelte@5.25.3)':
+    dependencies:
+      '@melt-ui/svelte': 0.86.6(svelte@5.25.3)
+      estree-walker: 3.0.3
+      magic-string: 0.30.17
+      svelte: 5.25.3
+
   '@melt-ui/svelte@0.86.5(svelte@5.25.3)':
+    dependencies:
+      '@floating-ui/core': 1.6.9
+      '@floating-ui/dom': 1.6.13
+      '@internationalized/date': 3.7.0
+      dequal: 2.0.3
+      focus-trap: 7.6.4
+      nanoid: 5.1.5
+      svelte: 5.25.3
+
+  '@melt-ui/svelte@0.86.6(svelte@5.25.3)':
     dependencies:
       '@floating-ui/core': 1.6.9
       '@floating-ui/dom': 1.6.13
