@@ -84,7 +84,7 @@
                         name="region"
                         bind:group={$createProject.region}
                         value={region.$id}
-                        disabled={region.disabled}
+                        disabled={!region.available}
                         autofocus={index === 0}>
                         <div
                             class="u-flex u-flex-vertical u-gap-8 u-justify-main-center u-cross-center u-margin-inline-auto">
