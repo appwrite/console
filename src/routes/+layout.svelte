@@ -24,11 +24,12 @@
     import { isSmallViewport, updateViewport } from '$lib/stores/viewport';
     import { feedback } from '$lib/stores/feedback';
     import { isStudio } from '$lib/system.js';
+    import { ThemeDarkStudio } from '$themes';
 
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
             case 'dark':
-                return isCloud ? ThemeDarkCloud : ThemeDark;
+                return isStudio ? ThemeDarkStudio : isCloud ? ThemeDarkCloud : ThemeDark;
             case 'light':
                 return isStudio ? ThemeLightStudio : isCloud ? ThemeLightCloud : ThemeLight;
         }
