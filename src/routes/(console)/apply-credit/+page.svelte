@@ -198,12 +198,11 @@
     ) as Organization;
 
     function getBillingPlan(): Tier | undefined {
-        const plansInfo = page.data.plansInfo;
         const campaignPlan =
-            campaign?.plan && plansInfo.get(campaign.plan) ? plansInfo.get(campaign.plan) : null;
+            campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
         const orgPlan =
-            selectedOrg?.billingPlan && plansInfo.get(selectedOrg.billingPlan)
-                ? plansInfo.get(selectedOrg.billingPlan)
+            selectedOrg?.billingPlan && $plansInfo.get(selectedOrg.billingPlan)
+                ? $plansInfo.get(selectedOrg.billingPlan)
                 : null;
 
         if (!campaignPlan || !orgPlan) {
