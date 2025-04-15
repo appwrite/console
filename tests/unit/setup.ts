@@ -2,14 +2,20 @@ import '@testing-library/jest-dom/vitest';
 import { beforeAll, vi } from 'vitest';
 
 beforeAll(() => {
+    vi.mock('$app/environment', () => ({
+        dev: true,
+        building: true,
+        browser: true,
+        page: {
+            params: {
+                project: 'tests',
+                region: 'tests'
+            }
+        }
+    }));
     vi.mock('$app/navigation', () => ({
         goto: vi.fn(),
         beforeNavigate: vi.fn()
-    }));
-    vi.mock('$app/environment', () => ({
-        dev: true,
-        browser: true,
-        building: true
     }));
     vi.mock('$env/static/public', () => import.meta.env);
     vi.mock('$env/dynamic/public', () => ({

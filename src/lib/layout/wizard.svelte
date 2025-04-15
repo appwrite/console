@@ -30,6 +30,10 @@
     export let finalAction = 'Create';
     export let finalMethod: () => Promise<void> = null;
 
+    // If the parent layout manages hiding the wizard via dispatched `exit` events,
+    // the wizard won't hide automatically when `manualExitControl` is true. Handle it manually.
+    export let manualExitControl = false;
+
     const dispatch = createEventDispatcher();
 
     let showExitModal = false;
@@ -41,8 +45,9 @@
             trackEvent('wizard_exit', {
                 from: 'escape'
             });
-            dispatch('exit');
-            wizard.hide();
+
+            dispatch('exit', { optional: steps.get($wizard.step).optional });
+            if (!manualExitControl) wizard.hide();
         }
     }
 
@@ -53,8 +58,8 @@
             trackEvent('wizard_exit', {
                 from: 'button'
             });
-            dispatch('exit');
-            wizard.hide();
+            dispatch('exit', { optional: steps.get($wizard.step).optional });
+            if (!manualExitControl) wizard.hide();
         }
     }
 
@@ -203,7 +208,7 @@
             <div class="u-z-index-5 form-footer">
                 <div class="u-flex u-main-end u-gap-12">
                     {#if !isLastStep && currentStep?.optional}
-                        <Button text on:click={() => dispatch('finish')}>
+                        <Button text on:click={() => dispatch('finish', { skipped: true })}>
                             Skip optional steps
                         </Button>
                     {/if}

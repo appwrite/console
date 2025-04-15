@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -21,7 +22,9 @@
     ];
 
     onMount(async () => {
-        const countryList = await sdk.forProject.locale.listCountries();
+        const countryList = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .locale.listCountries();
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,
@@ -62,11 +65,13 @@
      * which really shouldn't happen, but here we are, playing it safe!
      */
     $: if (show && !selectedAddress.country) {
-        sdk.forProject.locale.get().then((locale) => {
-            if (locale.countryCode) {
-                selectedAddress.country = locale.countryCode;
-            }
-        });
+        sdk.forProject($page.params.region, $page.params.project)
+            .locale.get()
+            .then((locale) => {
+                if (locale.countryCode) {
+                    selectedAddress.country = locale.countryCode;
+                }
+            });
     }
 </script>
 

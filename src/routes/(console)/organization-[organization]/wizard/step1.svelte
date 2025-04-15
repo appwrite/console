@@ -5,12 +5,13 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createProject } from './store';
-    import { regionFlagUrls, regions } from '$routes/(console)/organization-[organization]/store';
+    import { regionFlagUrls, regions } from '../store';
+    import { organization } from '$lib/stores/organization';
 
     let showCustomId = false;
 
     if (!$regions?.regions) {
-        sdk.forConsole.billing.listRegions().then(regions.set);
+        sdk.forConsole.billing.listRegions($organization.$id).then(regions.set);
     }
 </script>
 

@@ -33,44 +33,52 @@
                 (r) => r.name === $templateConfig.runtime
             );
 
-            const response = await sdk.forProject.functions.create(
-                $templateConfig.$id || ID.unique(),
-                $templateConfig.name,
-                $templateConfig.runtime,
-                $templateConfig?.execute ? $template.permissions || undefined : undefined,
-                $template.events || undefined,
-                $template.cron || undefined,
-                $template.timeout || undefined,
-                undefined,
-                undefined,
-                runtimeDetail.entrypoint,
-                runtimeDetail.commands || undefined,
-                $templateConfig?.scopes?.length ? $templateConfig.scopes : undefined,
-                $templateConfig.repositoryBehaviour === 'manual' ? undefined : $installation.$id,
-                $templateConfig.repositoryBehaviour === 'manual' ? undefined : $repository.id,
-                $templateConfig.repositoryBehaviour === 'manual' ? undefined : $choices.branch,
-                $templateConfig.repositoryBehaviour === 'manual'
-                    ? undefined
-                    : $choices.silentMode || undefined,
-                $templateConfig.repositoryBehaviour === 'manual'
-                    ? undefined
-                    : $choices.rootDir || undefined,
-                $template.providerRepositoryId || undefined,
-                $template.providerOwner || undefined,
-                runtimeDetail.providerRootDirectory || undefined,
-                $template.providerVersion || undefined,
-                $templateConfig.specification || undefined
-            );
+            const response = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .functions.create(
+                    $templateConfig.$id || ID.unique(),
+                    $templateConfig.name,
+                    $templateConfig.runtime,
+                    $templateConfig?.execute ? $template.permissions || undefined : undefined,
+                    $template.events || undefined,
+                    $template.cron || undefined,
+                    $template.timeout || undefined,
+                    undefined,
+                    undefined,
+                    runtimeDetail.entrypoint,
+                    runtimeDetail.commands || undefined,
+                    $templateConfig?.scopes?.length ? $templateConfig.scopes : undefined,
+                    $templateConfig.repositoryBehaviour === 'manual'
+                        ? undefined
+                        : $installation.$id,
+                    $templateConfig.repositoryBehaviour === 'manual' ? undefined : $repository.id,
+                    $templateConfig.repositoryBehaviour === 'manual' ? undefined : $choices.branch,
+                    $templateConfig.repositoryBehaviour === 'manual'
+                        ? undefined
+                        : $choices.silentMode || undefined,
+                    $templateConfig.repositoryBehaviour === 'manual'
+                        ? undefined
+                        : $choices.rootDir || undefined,
+                    $template.providerRepositoryId || undefined,
+                    $template.providerOwner || undefined,
+                    runtimeDetail.providerRootDirectory || undefined,
+                    $template.providerVersion || undefined,
+                    $templateConfig.specification || undefined
+                );
 
             if ($templateConfig.variables) {
                 const promises = Object.entries($templateConfig.variables).map(([key, value]) =>
-                    sdk.forProject.functions.createVariable(response.$id, key, value?.toString())
+                    sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .functions.createVariable(response.$id, key, value?.toString())
                 );
 
                 await Promise.all(promises);
             }
 
-            goto(`${base}/project-${$page.params.project}/functions/function-${response.$id}`);
+            goto(
+                `${base}/project-${$page.params.region}-${$page.params.project}/functions/function-${response.$id}`
+            );
             addNotification({
                 message: `${response.name} has been created`,
                 type: 'success'

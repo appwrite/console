@@ -10,6 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
+    import { page } from '$app/stores';
     import { base } from '$app/paths';
 
     export let show = false;
@@ -41,11 +42,13 @@
                 : null
             : null;
 
-        const locale = await sdk.forProject.locale.get();
+        const locale = await sdk.forProject($page.params.region, $page.params.project).locale.get();
         if (locale?.countryCode) {
             country = locale.countryCode;
         }
-        const countryList = await sdk.forProject.locale.listCountries();
+        const countryList = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .locale.listCountries();
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,

@@ -7,6 +7,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import type { Dependencies } from '$lib/constants';
+    import { page } from '$app/stores';
 
     export let showDelete = false;
     export let selectedDomain: Models.ProxyRule;
@@ -14,7 +15,9 @@
 
     async function deleteDomain() {
         try {
-            await sdk.forProject.proxy.deleteRule(selectedDomain.$id);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .proxy.deleteRule(selectedDomain.$id);
             await invalidate(dependency);
             showDelete = false;
             addNotification({

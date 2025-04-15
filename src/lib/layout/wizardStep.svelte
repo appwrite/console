@@ -34,6 +34,10 @@
 <slot />
 
 <style>
+    header {
+        margin-block-end: 1.25rem;
+    }
+
     .hide-divider {
         padding-block-end: 0;
         border-block-end: none;

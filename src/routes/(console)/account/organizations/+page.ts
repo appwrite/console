@@ -7,14 +7,14 @@ import { isCloud } from '$lib/system';
 
 export const load: PageLoad = async ({ url, route }) => {
     const page = getPage(url);
-    const limit = getLimit(url, route, CARD_LIMIT);
+    const limit = getLimit('console', url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
 
     const queries = [Query.offset(offset), Query.limit(limit), Query.orderDesc('')];
 
-    const organizations = isCloud
-        ? await sdk.forConsole.billing.listOrganization(queries)
-        : await sdk.forConsole.teams.list(queries);
+    const organizations = !isCloud
+        ? await sdk.forConsole.teams.list(queries)
+        : await sdk.forConsole.billing.listOrganization(queries);
 
     return {
         offset,

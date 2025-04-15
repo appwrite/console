@@ -6,6 +6,7 @@
     import { Query, type Models } from '@appwrite.io/console';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
+    import { page } from '$app/stores';
 
     export let show: boolean;
     export let groups: Writable<Map<string, Permission>>;
@@ -31,10 +32,9 @@
 
     async function request() {
         if (!show) return;
-        results = await sdk.forProject.users.list(
-            [Query.limit(5), Query.offset(offset)],
-            search || undefined
-        );
+        results = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .users.list([Query.limit(5), Query.offset(offset)], search || undefined);
     }
 
     function onSelection(event: Event, role: string) {

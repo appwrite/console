@@ -49,20 +49,21 @@
 
     function getPreview(bucketId: string, fileId: string, size: number = 64) {
         return (
-            sdk.forProject.storage.getFilePreview(bucketId, fileId, size, size).toString() +
-            '&mode=admin'
+            sdk
+                .forProject($page.params.region, $page.params.project)
+                .storage.getFilePreview(bucketId, fileId, size, size)
+                .toString() + '&mode=admin'
         );
     }
 
     async function uploadFile() {
         try {
             uploading = true;
-            const file = await sdk.forProject.storage.createFile(
-                selectedBucket,
-                ID.unique(),
-                fileSelector.files[0],
-                [Permission.read(Role.any())]
-            );
+            const file = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .storage.createFile(selectedBucket, ID.unique(), fileSelector.files[0], [
+                    Permission.read(Role.any())
+                ]);
             search.set($search === null ? '' : null);
             selectFile(file);
         } catch (e) {
@@ -108,7 +109,9 @@
     let currentFile: Models.File = null;
     let buckets: Promise<Models.BucketList> = loadBuckets();
     async function loadBuckets() {
-        const response = await sdk.forProject.storage.listBuckets();
+        const response = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .storage.listBuckets();
         const bucket = response.buckets[0] ?? null;
         if (bucket) {
             currentBucket = bucket;
@@ -120,8 +123,9 @@
 
     $: files =
         currentBucket &&
-        sdk.forProject.storage
-            .listFiles(
+        sdk
+            .forProject($page.params.region, $page.params.project)
+            .storage.listFiles(
                 currentBucket.$id,
                 [Query.startsWith('mimeType', mimeTypeQuery), Query.orderDesc('$createdAt')],
                 $search || undefined
@@ -516,7 +520,7 @@
                                     <Button
                                         secondary
                                         external
-                                        href={`${base}/project-${$page.params.project}/storage`}>
+                                        href={`${base}/project-${$page.params.region}-${$page.params.project}/storage`}>
                                         Create bucket
                                     </Button>
                                 </div>

@@ -36,6 +36,7 @@
             });
         }
     }
+
     async function unNotifyRegion(selectedRegion: Region) {
         try {
             let newPrefs = { ...prefs };
