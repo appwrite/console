@@ -5,11 +5,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createProject } from './store';
-    import type { Region } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { regions } from '$lib/stores/organization';
+    import { goto } from '$app/navigation';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let prefs: Models.Preferences;
 
@@ -17,7 +18,7 @@
         prefs = $page.data.account.prefs;
     });
 
-    async function notifyRegion(selectedRegion: Region) {
+    async function notifyRegion(selectedRegion: Models.ConsoleRegion) {
         try {
             let newPrefs = { ...prefs };
             newPrefs.notifications ??= [];
@@ -37,7 +38,7 @@
         }
     }
 
-    async function unNotifyRegion(selectedRegion: Region) {
+    async function unNotifyRegion(selectedRegion: Models.ConsoleRegion) {
         try {
             let newPrefs = { ...prefs };
             newPrefs.notifications = newPrefs.notifications ?? [];
@@ -72,14 +73,12 @@
         <ul
             class="grid-box u-margin-block-start-16"
             style="--p-grid-item-size:12em; --p-grid-item-size-small-screens:12rem; --grid-gap: 1rem;">
-            {#each $regions.regions
-                .filter((r) => r.$id !== 'default')
-                .sort((regionA, regionB) => {
-                    if (regionA.disabled >= regionB.disabled) {
-                        return 1;
-                    }
-                    return -1;
-                }) as region, index}
+            {#each $regions.regions.sort((regionA, regionB) => {
+                if (regionA.disabled >= regionB.disabled) {
+                    return 1;
+                }
+                return -1;
+            }) as region, index}
                 <li>
                     <RegionCard
                         name="region"
@@ -127,6 +126,15 @@
                                     flag={region.flag}
                                     name={region.name} />
                                 {region.name}
+
+                                {#if !region.available}
+                                    <Pill
+                                        button
+                                        event="upgrade_from_region_chooser"
+                                        on:click={() => goto($upgradeURL)}>
+                                        <span class="text">Upgrade</span>
+                                    </Pill>
+                                {/if}
                             {/if}
                         </div>
                     </RegionCard>
