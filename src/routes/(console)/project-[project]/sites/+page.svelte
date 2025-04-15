@@ -90,7 +90,7 @@
             single
             allowCreate={$canWriteSites}
             href="https://appwrite.io/docs/products/sites"
-            description="Deploy, manage, and scale your web applications effortlessly with Sites. "
+            description="Deploy and manage your web your web applications with Sites. "
             target="site"
             src={$app.themeInUse === 'dark' ? EmptyDark : EmptyLight}
             on:click={() => (show = true)}>
