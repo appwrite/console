@@ -10,6 +10,7 @@
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import Table from './table.svelte';
+    import { canWriteRules } from '$lib/stores/roles.js';
 
     export let data;
 </script>
@@ -18,6 +19,7 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery placeholder="Search domain" />
         <Button
+            disabled={!$canWriteRules}
             href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}
             on:click={() => {
                 trackEvent(Click.DomainCreateClick, {

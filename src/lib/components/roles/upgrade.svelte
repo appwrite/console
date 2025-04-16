@@ -13,7 +13,7 @@
         {#if isCloud}
             {#if $organization?.billingPlan !== BillingPlan.FREE}
                 <Typography.Text variant="m-600">Roles</Typography.Text>
-                <Typography.Text>Owner, Developer, Editor, Analyst and Billing.</Typography.Text>
+                <Typography.Text>Owner, Developer, Editor, Analyst, Designer and Billing.</Typography.Text>
                 <Typography.Text>
                     <Link.Anchor
                         target="_blank"
@@ -29,7 +29,7 @@
                     <Badge variant="secondary" size="xs" content="Pro plan" />
                 </Layout.Stack>
                 <Typography.Text>
-                    Upgrade to Pro to assign new roles to members such as Owner, Developer, Editor
+                    Upgrade to Pro to assign new roles to members such as Owner, Developer, Editor, Designer
                     or Analyst.
                 </Typography.Text>
 

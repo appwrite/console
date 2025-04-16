@@ -20,6 +20,7 @@
     import { ParsedTagList, QuickFilters } from '$lib/components/filters';
     import { page } from '$app/state';
     import { ConnectRepoModal } from '$lib/components/git';
+    import { canWriteSites } from '$lib/stores/roles.js';
 
     export let data;
 
@@ -90,7 +91,7 @@
                             <ViewSelector view={View.Table} {columns} hideView />
                         {/if}
                         <Popover padding="none" let:toggle>
-                            <Button size="s" on:click={toggle}>
+                            <Button size="s" disabled={!$canWriteSites} on:click={toggle}>
                                 <Icon size="s" icon={IconPlus} />
                                 Create deployment
                             </Button>
