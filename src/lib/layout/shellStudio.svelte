@@ -161,15 +161,17 @@
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Layout.Stack direction="row" alignItems="center" gap="none">
                     <div class="only-mobile-tablet">
-                        <Button.Button
-                            variant="secondary"
-                            size="xs"
-                            on:click={() => {
-                                showSideNavigation = !showSideNavigation;
-                            }}
-                            ><Icon
-                                icon={IconMenuAlt4}
-                                color="--fgcolor-neutral-tertiary" /></Button.Button>
+                        {#if page.data.organization}
+                            <Button.Button
+                                variant="secondary"
+                                size="xs"
+                                on:click={() => {
+                                    showSideNavigation = !showSideNavigation;
+                                }}
+                                ><Icon
+                                    icon={IconMenuAlt4}
+                                    color="--fgcolor-neutral-tertiary" /></Button.Button>
+                        {/if}
                     </div>
                     <Breadcrumbs {organizations} />
                 </Layout.Stack>
@@ -326,7 +328,7 @@
                     bind:showChat
                     bind:isOpen={showSideNavigation} />
             {/if}
-        {:else}
+        {:else if page.data.organization}
             <SidebarOrganization
                 organization={page.data.organization}
                 bind:isOpen={showSideNavigation} />

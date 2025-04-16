@@ -34,7 +34,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     if (userVisitedEducationPage()) {
         await handleGithubEducationMembership(account.name, account.email);
         redirect(303, base);
-    } else if (organizations.total) {
+    } else if (organizations.total || isStudio) {
         const teamId = account.prefs.organization ?? organizations.teams[0].$id;
         if (!teamId) {
             redirect(303, `${base}/account/organizations${url.search}`);

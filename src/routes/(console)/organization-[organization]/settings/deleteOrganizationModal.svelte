@@ -10,7 +10,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { projects } from '../store';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isStudio } from '$lib/system';
     import type { InvoiceList } from '$lib/sdk/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { tierToPlan } from '$lib/stores/billing';
@@ -36,7 +36,9 @@
             if ($organizationList?.total > 1) {
                 await goto(`${base}/account/organizations`);
             } else {
-                await goto(`${base}/onboarding/create-project`);
+                await goto(
+                    isStudio ? `${base}/account/organizations` : `${base}/onboarding/create-project`
+                );
             }
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
