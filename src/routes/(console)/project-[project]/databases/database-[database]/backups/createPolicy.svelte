@@ -22,12 +22,11 @@
     import { InputNumber } from '$lib/elements/forms/index.js';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
-    import { wizard } from '$lib/stores/wizard';
-    import SupportWizard from '$routes/(console)/supportWizard.svelte';
-
     import { Card, Icon, Layout, Link, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
+    import { goto } from '$app/navigation';
+    import { upgradeURL } from '$lib/stores/billing';
 
     export let isShowing: boolean;
     export let isFromBackupsTab: boolean = false;
@@ -181,11 +180,15 @@
         {#if title || subtitle}
             <div class="body-text-2">
                 {#if title}
-                    <h3 class="u-bold">{title}</h3>
+                    <Typography.Text variant="m-600">
+                        {title}
+                    </Typography.Text>
                 {/if}
 
                 {#if subtitle}
-                    <span>{subtitle}</span>
+                    <Typography.Caption variant="400">
+                        {subtitle}
+                    </Typography.Caption>
                 {/if}
             </div>
         {/if}
@@ -211,8 +214,8 @@
                         on:click={() => {
                             isShowing = false;
                             $showCreatePolicy = false;
-                            wizard.start(SupportWizard);
-                        }}>Contact support</Button> to upgrade your plan and add customized backup policies.
+                            goto($upgradeURL);
+                        }}>Upgrade your plan</Button> to add customized backup policies.
                 </Layout.Stack>
             </Layout.Stack>
         {:else}
@@ -227,9 +230,9 @@
                         <Link.Button
                             on:click={() => {
                                 isShowing = false;
-                                wizard.start(SupportWizard);
-                            }}>Contact support</Link.Button>
-                        to upgrade your plan and add customized backup policies.
+                                goto($upgradeURL);
+                            }}>Upgrade your plan</Link.Button>
+                        to add customized backup policies.
                     </Typography.Text>
                 </InputSwitch>
             </Layout.Stack>

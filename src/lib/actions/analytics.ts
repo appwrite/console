@@ -138,6 +138,8 @@ export function isTrackingAllowed() {
 }
 
 export enum Click {
+    BackupCopyIdClick = 'click_backup_copy_id',
+    BackupDeleteClick = 'click_backup_delete',
     BackupRestoreClick = 'click_backup_restore',
     BreadcrumbClick = 'click_breadcrumb',
     ConnectRepositoryClick = 'click_connect_repository',

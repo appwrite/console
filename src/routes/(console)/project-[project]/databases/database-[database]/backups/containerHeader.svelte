@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Pill } from '$lib/elements';
     import { DropList } from '$lib/components';
-    import { wizard } from '$lib/stores/wizard';
     import { Button } from '$lib/elements/forms';
-    import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Badge, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { goto } from '$app/navigation';
+    import { upgradeURL } from '$lib/stores/billing';
 
     export let isFlex = true;
     export let title: string;
@@ -55,9 +55,8 @@
                                     class="u-underline"
                                     on:click={() => {
                                         showDropdown = !showDropdown;
-                                        wizard.start(SupportWizard);
-                                    }}>Contact support</button> to upgrade your plan and add customized
-                                backup policies.
+                                        goto($upgradeURL);
+                                    }}>Upgrade your plan</button> to add customized backup policies.
                             </span>
                         </slot>
                     </svelte:fragment>
