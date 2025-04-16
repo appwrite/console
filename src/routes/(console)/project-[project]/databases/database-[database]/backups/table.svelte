@@ -240,6 +240,7 @@
                                     toggle(e);
                                     copy(backup.$id);
                                     showDropdown[index] = false;
+                                    trackEvent(Click.BackupCopyIdClick);
                                 }}>
                                 Copy ID
                             </ActionMenu.Item.Button>
@@ -251,7 +252,7 @@
                                     showDelete = true;
                                     selectedBackup = backup;
                                     showDropdown[index] = false;
-                                    trackEvent('click_backup_delete');
+                                    trackEvent(Click.BackupDeleteClick);
                                 }}>
                                 Delete
                             </ActionMenu.Item.Button>

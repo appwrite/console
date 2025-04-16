@@ -180,11 +180,15 @@
         {#if title || subtitle}
             <div class="body-text-2">
                 {#if title}
-                    <h3 class="u-bold">{title}</h3>
+                    <Typography.Text variant="m-600">
+                        {title}
+                    </Typography.Text>
                 {/if}
 
                 {#if subtitle}
-                    <span>{subtitle}</span>
+                    <Typography.Caption variant="400">
+                        {subtitle}
+                    </Typography.Caption>
                 {/if}
             </div>
         {/if}
