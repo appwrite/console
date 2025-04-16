@@ -25,6 +25,7 @@
     import { IconArrowDown, IconCheck, IconClock } from '@appwrite.io/pink-icons-svelte';
     import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';
     import { slide } from 'svelte/transition';
+    import { showPrompt } from '$lib/stores/chat';
 
     const plugins: Plugin[] = [
         {
@@ -46,6 +47,10 @@
     const chunks = parser.parsed;
     let autoscroll = true;
     let streaming = false;
+
+    $: if ($showPrompt) {
+        exampleStream();
+    }
 
     let chunkSize = 40;
     let delayMs = 25;

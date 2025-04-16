@@ -12,9 +12,9 @@
     import { base } from '$app/paths';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { ComponentType } from 'svelte';
+    import { showChat } from '$lib/stores/chat';
 
     export let project;
-    export let showChat;
     export let isOpen;
 
     const menuItems: Array<
@@ -53,7 +53,7 @@
         {#if !$isSmallViewport}
             <ActionMenu.Item.Button
                 on:click={() => {
-                    showChat = !showChat;
+                    showChat.set(!$showChat);
                     if ($isTabletViewport) {
                         isOpen = false;
                     }

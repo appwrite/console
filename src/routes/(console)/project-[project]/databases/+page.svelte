@@ -90,6 +90,7 @@
             href="https://appwrite.io/docs/products/databases/databases"
             target="database"
             allowCreate={$canWriteDatabases}
+            prompt="I would like help with databases"
             on:click={() => (showCreate = true)} />
     {/if}
 </Container>

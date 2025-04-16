@@ -8,23 +8,23 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import Conversation from './conversation.svelte';
+    import { showChat } from '$lib/stores/chat';
 
     type Props = {
-        showChat: boolean;
         width: number;
         hasSubNavigation: boolean;
     };
-    let { showChat = $bindable(), width, hasSubNavigation }: Props = $props();
+    let { width, hasSubNavigation }: Props = $props();
 
     let minimizeChat = $state($isSmallViewport ? true : false);
 </script>
 
 <section
     class="chat"
-    style:visibility={showChat ? 'visible' : 'hidden'}
-    style:width={$isSmallViewport ? 'calc(100vw - 16px)' : showChat ? `${width}px` : 0}
+    style:visibility={$showChat ? 'visible' : 'hidden'}
+    style:width={$isSmallViewport ? 'calc(100vw - 16px)' : $showChat ? `${width}px` : 0}
     class:minimize-chat={minimizeChat}
-    class:is-visible={showChat}
+    class:is-visible={$showChat}
     class:sub-navigation={hasSubNavigation}>
     <div class="chat-content">
         {#if !minimizeChat}
@@ -39,7 +39,7 @@
                             if ($isSmallViewport) {
                                 minimizeChat = !minimizeChat;
                             } else {
-                                showChat = false;
+                                showChat.set(false);
                             }
                         }}
                         ><Icon
@@ -76,7 +76,10 @@
         </div>
     </div>
 </section>
-<div class="chat-placeholder" class:is-visible={showChat} style:width={showChat ? `${width}px` : 0}>
+<div
+    class="chat-placeholder"
+    class:is-visible={$showChat}
+    style:width={$showChat ? `${width}px` : 0}>
 </div>
 {#if $isSmallViewport}
     <button

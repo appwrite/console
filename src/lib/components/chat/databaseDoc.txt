@@ -1,0 +1,36 @@
+Databases are the largest organizational unit in Appwrite.
+Each database contains a group of [collections](/docs/products/databases/collections).
+In future versions, different databases may be backed by a different database technology of your choosing.
+
+# Create in Console
+The easiest way to create a database using the Appwrite Console.
+You can create a database by navigating to the **Databases** page and clicking **Create database**.
+
+
+
+# Create using Server SDKs
+You can programmatically create databases using a [Server SDK](/docs/sdks#server). Appwrite [Server SDKs](/docs/sdks#server) require an [API key](/docs/advanced/platform/api-keys).
+
+```js
+const sdk = require('node-appwrite');
+
+// Init SDK
+const client = new sdk.Client();
+
+const databases = new sdk.Databases(client);
+
+client
+    .setEndpoint('https://cloud.appwrite.io/v1')
+    .setProject('<PROJECT_ID>')
+    .setKey('919c2d18fb5d4...a2ae413da83346ad2')
+;
+
+const promise = databases.create('<DATABASE_ID>'
+, '[NAME]');
+
+promise.then(function (response) {
+    console.log(response);
+}, function (error) {
+    console.log(error);
+});
+```

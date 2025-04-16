@@ -37,6 +37,7 @@
     import { derived, writable } from 'svelte/store';
     import { logout } from '$lib/helpers/logout';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { showChat } from '$lib/stores/chat';
 
     let hasProjectSidebar = $state(false);
 
@@ -51,7 +52,6 @@
     let { loadedProjects = [] }: Props = $props();
 
     let showSideNavigation = $state(false);
-    let showChat = $state(false);
     let shouldAnimateThemeToggle = $state(false);
     let showAccountMenu = $state(false);
     let activeTheme = $state($app.theme);
@@ -101,7 +101,7 @@
 
     $effect(() => {
         if ($isSmallViewport || page.url.pathname.endsWith('studio')) {
-            showChat = true;
+            showChat.set(true);
         }
     });
 
@@ -270,10 +270,7 @@
             class:sub-navigation={page.data.subNavigation}>
             {#if $isSmallViewport}
                 {#if hasProjectSidebar}
-                    <Chat
-                        bind:showChat
-                        width={chatWidth}
-                        hasSubNavigation={page.data?.subNavigation} />
+                    <Chat width={chatWidth} hasSubNavigation={page.data?.subNavigation} />
                 {/if}
                 <Card.Base>
                     <Layout.Stack>
@@ -286,8 +283,8 @@
             {:else}
                 <Layout.Stack direction="row" gap="l">
                     {#if hasProjectSidebar}
-                        <Chat bind:showChat width={chatWidth} hasSubNavigation={false} />
-                        {#if showChat}
+                        <Chat width={chatWidth} hasSubNavigation={false} />
+                        {#if $showChat}
                             <div
                                 class="resizer"
                                 style:left={`${resizerLeftPosition}px`}
@@ -323,10 +320,7 @@
         </div>
         {#if hasProjectSidebar}
             {#if page.data.project}
-                <SidebarProject
-                    project={page.data.project}
-                    bind:showChat
-                    bind:isOpen={showSideNavigation} />
+                <SidebarProject project={page.data.project} bind:isOpen={showSideNavigation} />
             {/if}
         {:else if page.data.organization}
             <SidebarOrganization
