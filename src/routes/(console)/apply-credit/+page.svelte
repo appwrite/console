@@ -249,7 +249,7 @@
                     </Layout.Stack>
                 </Fieldset>
                 {#if (selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
-                    <Fieldset legend="Billing">
+                    <Fieldset legend="Payment">
                         <Layout.Stack gap="xl">
                             {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
                                 <SelectPaymentMethod
