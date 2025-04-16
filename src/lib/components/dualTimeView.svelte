@@ -69,7 +69,7 @@
             if (!isMouseOverTooltip) {
                 hideTooltip();
             }
-        }, 50);
+        }, 150);
     }
 
     $: timeToString = time ? timeDifference(time) : 'Invalid time';
