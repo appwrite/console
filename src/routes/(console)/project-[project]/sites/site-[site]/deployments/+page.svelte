@@ -1,7 +1,7 @@
 <script lang="ts">
     import { PaginationWithLimit, ViewSelector, EmptyFilter, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { View } from '$lib/helpers/load';
     import { ActionMenu, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
@@ -76,6 +76,51 @@
     <Layout.Stack gap="xxxl">
         <!-- TODO: re-enable metrics after backend changes -->
         <!-- <DeploymentMetrics deploymentList={data.deploymentList} /> -->
+
+        <!-- TODO: re-enable once component is complete -->
+        <!-- <ResponsiveContainerHeader
+            view={View.Table}
+            {columns}
+            hasFilters
+            analyticsSource="site_deployments"
+            hideView>
+            <Popover padding="none" let:toggle>
+                <Button size="s" on:click={toggle}>
+                    <Icon size="s" icon={IconPlus} />
+                    Create deployment
+                </Button>
+                <svelte:fragment slot="tooltip" let:toggle>
+                    <ActionMenu.Root>
+                        <ActionMenu.Item.Button
+                            badge="Recommended"
+                            on:click={(e) => {
+                                toggle(e);
+                                if (!hasInstallation) {
+                                    showConnectRepo = true;
+                                } else {
+                                    showCreateDeployment = true;
+                                }
+                            }}>
+                            Git
+                        </ActionMenu.Item.Button>
+                        <ActionMenu.Item.Button
+                            on:click={(e) => {
+                                toggle(e);
+                                showConnectCLI = true;
+                            }}>
+                            CLI
+                        </ActionMenu.Item.Button>
+                        <ActionMenu.Item.Button
+                            on:click={(e) => {
+                                toggle(e);
+                                showConnectManual = true;
+                            }}>
+                            Manual
+                        </ActionMenu.Item.Button>
+                    </ActionMenu.Root>
+                </svelte:fragment>
+            </Popover>
+        </ResponsiveContainerHeader> -->
         <Layout.Stack gap="l">
             <Layout.Stack>
                 <Layout.Stack justifyContent="space-between" direction="row">

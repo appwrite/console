@@ -92,7 +92,7 @@
                 this={option.component}
                 editing
                 bind:data={selectedAttribute}
-                on:close={() => (option = null)} />
+                onclose={() => (option = null)} />
         {/if}
     {/if}
 
