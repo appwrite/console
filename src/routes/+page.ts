@@ -34,7 +34,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     if (userVisitedEducationPage()) {
         await handleGithubEducationMembership(account.name, account.email);
         redirect(303, base);
-    } else if (organizations.total || isStudio) {
+    } else if (organizations.total) {
         const teamId = account.prefs.organization ?? organizations.teams[0].$id;
         if (!teamId) {
             redirect(303, `${base}/account/organizations${url.search}`);
@@ -46,7 +46,12 @@ export const load: PageLoad = async ({ parent, url }) => {
             );
         }
     } else {
-        redirect(303, `${base}/onboarding/create-project${url.search}`);
+        redirect(
+            303,
+            isStudio
+                ? `${base}/account/organizations`
+                : `${base}/onboarding/create-project${url.search}`
+        );
     }
 };
 
