@@ -56,6 +56,10 @@ export const roles = [
     {
         label: 'Billing',
         value: 'billing'
+    },
+    {
+        label: 'Designer',
+        value: 'designer'
     }
 ];
 

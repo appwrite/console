@@ -17,6 +17,7 @@
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
     import { columns } from './store';
+    import { canWriteRules } from '$lib/stores/roles';
 
     let {
         domains
@@ -93,6 +94,7 @@
                                 <ActionMenu.Item.Button
                                     status="danger"
                                     leadingIcon={IconTrash}
+                                    disabled={!$canWriteRules}
                                     on:click={(e) => {
                                         selectedDomain = domain;
                                         showDelete = true;

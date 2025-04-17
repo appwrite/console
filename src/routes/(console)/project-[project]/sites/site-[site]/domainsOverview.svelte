@@ -12,6 +12,7 @@
     import { Card, Trim } from '$lib/components';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { RuleTrigger } from '$lib/stores/sdk';
+    import { canWriteRules } from '$lib/stores/roles';
 
     export let proxyRuleList: Models.ProxyRuleList;
 
@@ -51,6 +52,7 @@
                     <div>
                         <Button
                             secondary
+                            disabled={!$canWriteRules}
                             size="s"
                             on:click={() => {
                                 trackEvent(Click.DomainCreateClick, {
