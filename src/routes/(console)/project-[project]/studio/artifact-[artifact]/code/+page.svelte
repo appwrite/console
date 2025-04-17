@@ -4,7 +4,7 @@
     import Filesystem from '$lib/components/editor/filesystem.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
 
-    import html from '../../../../../app.html?raw';
+    import html from '../../../../../../app.html?raw';
     import js from './app.js?raw';
     import css from './app.css?raw';
 

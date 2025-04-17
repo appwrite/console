@@ -100,7 +100,7 @@
     });
 
     $effect(() => {
-        if ($isSmallViewport || page.url.pathname.endsWith('studio')) {
+        if ($isSmallViewport || page.url.pathname.includes('artifact-')) {
             showChat.set(true);
         }
     });

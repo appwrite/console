@@ -7,12 +7,14 @@
         IconFolder,
         IconSparkles,
         IconTemplate,
-        IconUserGroup
+        IconUserGroup,
+        IconViewGrid
     } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { ComponentType } from 'svelte';
     import { showChat } from '$lib/stores/chat';
+    import { page } from '$app/state';
 
     export let project;
     export let isOpen;
@@ -20,7 +22,7 @@
     const menuItems: Array<
         { type: 'divider' } | { type: 'item'; label: string; path: string; icon: ComponentType }
     > = [
-        { type: 'item', label: 'Studio', path: 'studio', icon: IconTemplate },
+        { type: 'item', label: 'Studio', path: 'studio', icon: IconViewGrid },
         { type: 'divider' },
         { type: 'item', label: 'Auth', path: 'auth', icon: IconUserGroup },
         { type: 'item', label: 'Databases', path: 'databases', icon: IconDatabase },
@@ -37,6 +39,11 @@
             {#each menuItems as menuItem}
                 {#if menuItem.type === 'item'}
                     <ActionMenu.Item.Anchor
+                        style={`background-color: ${
+                            page.url.pathname.includes(menuItem.path)
+                                ? 'var(--overlay-neutral-hover)'
+                                : 'auto'
+                        }`}
                         href={`${base}/project-${project.$id}/${menuItem.path}`}
                         leadingIcon={menuItem.icon}
                         on:click={() => {

@@ -44,3 +44,10 @@ function createStats() {
 }
 
 export const stats = createStats();
+export const artifacts = writable<
+    Array<{
+        $id: string;
+        title: string;
+        url?: string | null;
+    }>
+>([]);
