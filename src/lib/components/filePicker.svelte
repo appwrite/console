@@ -205,10 +205,10 @@
                                         disabled={uploading}
                                         on:click={() => fileSelector.click()}>
                                         <input
-                                            tabindex="-1"
                                             type="file"
-                                            accept="image/*"
+                                            tabindex="-1"
                                             class="u-hide"
+                                            accept={mimeTypeQuery}
                                             on:change={uploadFile}
                                             bind:this={fileSelector} />
                                         {#if uploading}

@@ -24,7 +24,7 @@
     );
 
     const selectedCollection = $derived.by(() =>
-        sortedCollections()?.find((collection) => collection.$id === collectionId)
+        sortedCollections?.find((collection) => collection.$id === collectionId)
     );
 
     let openBottomSheet = $state(false);

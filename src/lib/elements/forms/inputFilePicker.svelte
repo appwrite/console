@@ -25,7 +25,7 @@
         <Label {optionalText} {tooltip} hide={!label}>
             {label}{#if $$slots.popover && isPopoverDefined}
                 <Drop bind:show display="inline-block">
-                    <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
+                    <!-- TODO: make un-clicked icon greyed out and hover and clicked filled -->
                     &nbsp;<button
                         type="button"
                         on:click={() => (show = !show)}
