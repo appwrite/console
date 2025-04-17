@@ -28,7 +28,15 @@
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Badge, Divider, Icon, Typography, Card, Layout } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        Divider,
+        Icon,
+        Typography,
+        Card,
+        Layout,
+        Table
+    } from '@appwrite.io/pink-svelte';
     import {
         IconAndroid,
         IconApple,
@@ -40,6 +48,8 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
+    import type { Column } from '@appwrite.io/pink-svelte/dist/table';
+    import { timeFromNow } from '$lib/helpers/date';
 
     export let data;
 
@@ -146,6 +156,8 @@
     function findRegion(project: Models.Project) {
         return regions.regions.find((region) => region.$id === project.region);
     }
+
+    const columns: Column[] = [{ id: 'name' }, { id: 'updated' }];
 </script>
 
 {#if isStudio}
@@ -164,18 +176,20 @@
 
         <Divider />
 
-        <Layout.Grid gap="l" columnsS={3} columns={4} columnsL={4} columnsXL={5}>
-            <!-- TODO: this now maps over projects, but probably will be more like artifacts (and location might be different-->
+        <Table.Root let:root {columns}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="name" {root}>Project name</Table.Header.Cell>
+                <Table.Header.Cell column="updated" {root}>Updated</Table.Header.Cell>
+            </svelte:fragment>
+
             {#each data.projects.projects as project}
-                <a href={`${base}/project-${project.$id}`}
-                    ><Card.Media
-                        src="https://picsum.photos/260/150"
-                        alt=""
-                        description={project.description}
-                        title={project.name}></Card.Media
-                    ></a>
+                <Table.Row.Link href={`${base}/project-${project.$id}`} {root}>
+                    <Table.Cell column="name" {root}>{project.name}</Table.Cell>
+                    <Table.Cell column="updated" {root}
+                        >{timeFromNow(project.$updatedAt)}</Table.Cell>
+                </Table.Row.Link>
             {/each}
-        </Layout.Grid>
+        </Table.Root>
     </Layout.Stack>
 {:else}
     <Container>
