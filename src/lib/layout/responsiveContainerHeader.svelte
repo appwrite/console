@@ -56,7 +56,6 @@
         const paramQueries = p.to.url.searchParams.get('query');
         const localQueries = queryParamToMap(paramQueries || '[]');
         const localTags = Array.from(localQueries.keys());
-        // console.log(paramQueries, localQueries, localTags);
         setFilters(localTags, filterCols, $columns);
         filterCols = filterCols;
     });
@@ -123,6 +122,25 @@
     </Layout.Stack>
 </header>
 
+{#if showDisplaySettingsModal}
+    <DisplaySettingsModal
+        bind:show={showDisplaySettingsModal}
+        {columns}
+        {hideColumns}
+        {hideView}
+        bind:view />
+{/if}
+
+{#if $isSmallViewport && showFilters}
+    <FiltersBottomSheet
+        bind:openBottomSheet={showFilters}
+        {columns}
+        {analyticsSource}
+        bind:filterCols />
+{/if}
+
+<!-- SNIPPETS -->
+
 {#snippet searchButton(icon = false)}
     <Button ariaLabel="Search" on:click={() => (showSearch = !showSearch)} secondary {icon}>
         <Icon icon={IconSearch} />
@@ -144,20 +162,3 @@
         <Icon icon={IconFilterLine} />
     </Button>
 {/snippet}
-
-{#if showDisplaySettingsModal}
-    <DisplaySettingsModal
-        bind:show={showDisplaySettingsModal}
-        {columns}
-        {hideColumns}
-        {hideView}
-        bind:view />
-{/if}
-
-{#if $isSmallViewport && showFilters}
-    <FiltersBottomSheet
-        bind:openBottomSheet={showFilters}
-        {columns}
-        {analyticsSource}
-        bind:filterCols />
-{/if}

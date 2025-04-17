@@ -1,13 +1,10 @@
 <script lang="ts">
-    import { InputCheckbox } from '$lib/elements/forms';
     import { page } from '$app/state';
     import type { Writable } from 'svelte/store';
     import { preferences } from '$lib/stores/preferences';
     import { onMount, type Snippet } from 'svelte';
-    import { View } from '$lib/helpers/load';
     import type { Column } from '$lib/helpers/types';
-    import { ActionMenu, Icon, Layout, Popover, Button, Selector } from '@appwrite.io/pink-svelte';
-    import { IconViewBoards } from '@appwrite.io/pink-icons-svelte';
+    import { ActionMenu, Layout, Popover, Selector } from '@appwrite.io/pink-svelte';
 
     let {
         columns,
