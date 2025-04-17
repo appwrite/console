@@ -49,5 +49,6 @@ export const artifacts = writable<
         $id: string;
         title: string;
         url?: string | null;
+        previewUrl?: string;
     }>
 >([]);

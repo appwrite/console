@@ -44,17 +44,20 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             {
                 $id: 'RE1xJXnaCX',
                 title: 'Dashboard',
-                url: null
+                url: null,
+                previewUrl: 'https://getbootstrap.com/docs/5.3/examples/blog/'
             },
             {
                 $id: 'jABosmZQhY',
                 title: 'Sign in screen',
-                url: 's-130328439.imagine.dev'
+                url: 's-130328439.imagine.dev',
+                previewUrl: 'https://getbootstrap.com/'
             },
             {
                 $id: 'U1aolAia1m',
                 title: 'Mobile app',
-                url: null
+                url: null,
+                previewUrl: 'https://www.posthog.com/'
             }
         ]);
 

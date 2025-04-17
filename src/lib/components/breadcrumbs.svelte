@@ -14,6 +14,8 @@
     import { base } from '$app/paths';
     import { newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/stores';
+    import { artifacts } from '$routes/(console)/project-[project]/store';
 
     type Project = {
         name: string;
@@ -60,13 +62,28 @@
         }
     } = createMenu();
 
+    const {
+        elements: {
+            trigger: triggerArtifacts,
+            menu: menuArtifacts,
+            item: itemArtifacts,
+            separator: separatorArtifacts
+        }
+    } = createMenu();
+
     export let organizations: Organization[] = [];
+
+    $: displayArtifacts = $page.url.pathname.includes('artifact') && isStudio ? $artifacts : [];
 
     $: selectedOrg = organizations.find((organization) => organization.isSelected);
     $: selectedProject = selectedOrg?.projects.find((project) => project.isSelected);
+    $: selectedArtifact = displayArtifacts.find((artifact) =>
+        $page.url.pathname.endsWith(artifact.$id)
+    );
 
     let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
+    let artifactsBottomSheetOpen = false;
 
     function createOrg() {
         trackEvent(Click.OrganizationClickCreate, { source: 'breadcrumbs' });
@@ -145,6 +162,54 @@
                                         return {
                                             name: 'All projects',
                                             href: `${base}/organization-${selectedOrg?.$id}`
+                                        };
+                                    }
+                                    return null;
+                                })
+                                .filter((project) => project !== null)
+                  }
+                : {
+                      items: [
+                          {
+                              name: 'Create project',
+                              trailingIcon: IconPlus,
+                              href: `${base}/organization-${selectedOrg?.$id}?create-project`
+                          }
+                      ]
+                  },
+        bottom:
+            selectedOrg?.projects.length > 1
+                ? {
+                      items: [
+                          {
+                              name: 'Create project',
+                              trailingIcon: IconPlus,
+                              href: `${base}/organization-${selectedOrg?.$id}?create-project`
+                          }
+                      ]
+                  }
+                : undefined
+    };
+
+    let artifactsBottomSheet: SheetMenu;
+    $: artifactsBottomSheet = {
+        top:
+            displayArtifacts.length > 1
+                ? {
+                      title: 'Switch artifact',
+                      items: !selectedOrg
+                          ? []
+                          : displayArtifacts
+                                .map((artifact, index) => {
+                                    if (index < 4) {
+                                        return {
+                                            name: artifact.title,
+                                            href: `${base}/project-${selectedProject.$id}/studio/artifact-${artifact.$id}`
+                                        };
+                                    } else if (index === 4) {
+                                        return {
+                                            name: 'All artifacts',
+                                            href: `${base}/project-${selectedProject.$id}/studio`
                                         };
                                     }
                                     return null;
@@ -344,10 +409,69 @@
             </Card.Base>
         </div>
     {/if}
+    {#if isStudio && displayArtifacts.length > 0 && selectedProject}
+        <span class="breadcrumb-separator">/</span>
+        {#if !$isSmallViewport}
+            <button
+                type="button"
+                class="trigger"
+                use:melt={$triggerArtifacts}
+                aria-label="Open artifacts tab">
+                <span class="projectName">{selectedArtifact.title}</span>
+                <Icon icon={IconChevronDown} size="s" />
+            </button>
+        {:else}
+            <button
+                type="button"
+                class="trigger"
+                on:click={() => (artifactsBottomSheetOpen = true)}
+                aria-label="Open artifacts tab">
+                <span class="projectName">{selectedArtifact.title}</span>
+                <Icon icon={IconChevronDown} size="s" />
+            </button>
+        {/if}
+
+        <div class="menu" use:melt={$menuArtifacts}>
+            <Card.Base padding="xxxs" shadow={true}>
+                {#if displayArtifacts.length > 1}
+                    {#each displayArtifacts as artifact, index}
+                        {#if index < 4}
+                            <div use:melt={$itemArtifacts}>
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Anchor
+                                        href={`${base}/project-${selectedProject.$id}/studio/artifact-${artifact.$id}`}
+                                        >{artifact.title}</ActionMenu.Item.Anchor
+                                    ></ActionMenu.Root>
+                            </div>
+                        {:else if index === 4}
+                            <div use:melt={$itemArtifacts}>
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Anchor
+                                        href={`${base}/project-${selectedProject.$id}/studio`}
+                                        >All artifacts</ActionMenu.Item.Anchor
+                                    ></ActionMenu.Root>
+                            </div>
+                        {/if}
+                    {/each}
+                    <div class="separator" use:melt={$separatorArtifacts}></div>
+                {/if}
+                <div use:melt={$itemArtifacts}>
+                    <ActionMenu.Root>
+                        <ActionMenu.Item.Anchor
+                            leadingIcon={IconPlusSm}
+                            href={`${base}/project-${selectedProject.$id}/studio?create-project`}
+                            >Create artifact</ActionMenu.Item.Anchor
+                        ></ActionMenu.Root>
+                </div>
+            </Card.Base>
+        </div>
+    {/if}
 </div>
 <BottomSheet.Menu bind:isOpen={organisationBottomSheetOpen} menu={organizationsBottomSheet}
 ></BottomSheet.Menu>
 <BottomSheet.Menu bind:isOpen={projectsBottomSheetOpen} menu={projectsBottomSheet}
+></BottomSheet.Menu>
+<BottomSheet.Menu bind:isOpen={artifactsBottomSheetOpen} menu={artifactsBottomSheet}
 ></BottomSheet.Menu>
 
 <style lang="scss">

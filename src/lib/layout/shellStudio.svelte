@@ -38,6 +38,7 @@
     import { logout } from '$lib/helpers/logout';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { showChat } from '$lib/stores/chat';
+    import { artifacts } from '$routes/(console)/project-[project]/store';
 
     let hasProjectSidebar = $state(false);
 

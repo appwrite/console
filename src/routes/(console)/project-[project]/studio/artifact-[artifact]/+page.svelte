@@ -13,10 +13,16 @@
         IconTerminal
     } from '@appwrite.io/pink-icons-svelte';
     import { InputText } from '$lib/elements/forms';
-
-    const frameUrl = 'https://getbootstrap.com/docs/5.3/examples/blog/';
+    import { artifacts } from '$routes/(console)/project-[project]/store';
 
     const projectId = page.params.project;
+    let selectedArtifact = $derived(
+        $artifacts.find((artifact) => page.params.artifact === artifact.$id)
+    );
+    let frameUrl = $derived.by(() => {
+        return selectedArtifact.previewUrl;
+    });
+    console.log('frameUrl', frameUrl);
     const path = `${base}/project-${projectId}/studio`;
     const tabs = [
         {
