@@ -8,7 +8,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
     import { user } from '$lib/stores/user';
@@ -60,13 +60,13 @@
     function onGithubLogin() {
         let url = window.location.origin;
 
-        if ($page.url.searchParams) {
-            const redirect = $page.url.searchParams.get('redirect');
-            $page.url.searchParams.delete('redirect');
+        if (page.url.searchParams) {
+            const redirect = page.url.searchParams.get('redirect');
+            page.url.searchParams.delete('redirect');
             if (redirect) {
-                url = `${redirect}${$page.url.search}`;
+                url = `${redirect}${page.url.search}`;
             } else {
-                url = `${base}${$page.url.search ?? ''}`;
+                url = `${base}${page.url.search ?? ''}`;
             }
         }
         sdk.forConsole.account.createOAuth2Session(
@@ -104,7 +104,7 @@
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
                     <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
-                        <span class="icon-github" aria-hidden="true" />
+                        <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign in with GitHub</span>
                     </Button>
                 {/if}
@@ -116,7 +116,7 @@
             <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
         </li>
         <li class="inline-links-item">
-            <a href={`${base}/register${$page?.url?.search ?? ''}`}>
+            <a href={`${base}/register${page?.url?.search ?? ''}`}>
                 <span class="text">Sign Up</span>
             </a>
         </li>

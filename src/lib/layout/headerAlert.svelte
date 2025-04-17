@@ -18,6 +18,7 @@
         }
         if (sidebar) {
             sidebar.style.top = `${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px`;
+            sidebar.style.height = `calc(100vh - (${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px))`;
         }
         if (contentSection) {
             contentSection.style.paddingBlockStart = `${alertHeight}px`;
@@ -49,7 +50,7 @@
             class:icon-check-circle={type === 'success'}
             class:icon-exclamation={type === 'warning'}
             class:icon-exclamation-circle={type === 'error'}
-            class:icon-info={type === 'info' || type === 'default'} />
+            class:icon-info={type === 'info' || type === 'default'}></span>
 
         <div class="alert-content">
             {#if title || $$slots.title}

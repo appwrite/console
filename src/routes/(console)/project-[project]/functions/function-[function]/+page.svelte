@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { PaginationWithLimit, ViewSelector, EmptyFilter } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { columns, deploymentList, func } from './store';
@@ -51,7 +51,7 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create deployment`}>Documentation</Button>
-                    <CreateActionMenu let:toggle>
+                    <CreateActionMenu let:toggle installations={data.installations}>
                         <Button secondary on:click={toggle} event="create_deployment">
                             Create deployment
                         </Button>
@@ -74,7 +74,7 @@
                     deployment={activeDeployment}
                     proxyRuleList={data.proxyRuleList}
                     activeDeployment>
-                    <svelte:fragment slot="footer">
+                    {#snippet footer()}
                         <Layout.Stack direction="row" gap="s" alignItems="center" inline>
                             <Menu>
                                 <Button secondary icon text>
@@ -99,7 +99,7 @@
                                             {toggle} />
                                         <ActionMenu.Item.Anchor
                                             trailingIcon={IconTerminal}
-                                            href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
+                                            href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/deployment-${activeDeployment.$id}`}>
                                             Build logs
                                         </ActionMenu.Item.Anchor>
                                     </ActionMenu.Root>
@@ -107,12 +107,12 @@
                             </Menu>
                             <Button
                                 secondary
-                                href={`${base}/project-${$page.params.project}/functions/function-${$func.$id}/executions/execute-function`}
+                                href={`${base}/project-${page.params.project}/functions/function-${$func.$id}/executions/execute-function`}
                                 disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
                                 Execute
                             </Button>
                         </Layout.Stack>
-                    </svelte:fragment>
+                    {/snippet}
                 </DeploymentCard>
             {:else if data.activeDeployment?.status === 'building'}
                 <Card.Base padding="none">
@@ -134,7 +134,7 @@
                                 ariaLabel={`create deployment`}>Documentation</Button>
                             <Button
                                 secondary
-                                href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployments/deplyoment-${activeDeployment?.$id}`}>
+                                href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/deployments/deplyoment-${activeDeployment?.$id}`}>
                                 View logs</Button>
                         </span>
                     </Empty>
@@ -157,7 +157,7 @@
                                 text
                                 event="empty_documentation"
                                 ariaLabel={`create deployment`}>Documentation</Button>
-                            <CreateActionMenu let:toggle>
+                            <CreateActionMenu let:toggle installations={data.installations}>
                                 <Button secondary on:click={toggle} event="create_deployment">
                                     Create deployment
                                 </Button>
@@ -171,15 +171,13 @@
                 <Layout.Stack>
                     <Layout.Stack direction="row" alignItems="center">
                         <Layout.Stack direction="row" gap="s" wrap="wrap">
-                            {#if data.deploymentList.total}
-                                <QuickFilters {columns} analyticsSource="function_deployments" />
-                            {/if}
+                            <QuickFilters {columns} analyticsSource="function_deployments" />
                         </Layout.Stack>
                         <Layout.Stack direction="row" gap="s" inline>
                             {#if data.deploymentList.total}
                                 <ViewSelector view={View.Table} {columns} hideView />
                             {/if}
-                            <CreateActionMenu let:toggle>
+                            <CreateActionMenu let:toggle installations={data.installations}>
                                 <Button on:click={toggle} event="create_deployment">
                                     <Icon icon={IconPlus} size="s" slot="start" />
                                     Create deployment

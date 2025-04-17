@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { VARS } from '$lib/system';
 import { get, writable } from 'svelte/store';
-import type { SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
 import { Submit, trackEvent } from '$lib/actions/analytics';
@@ -23,7 +23,7 @@ export type FeedbackData = {
 export type FeedbackOption = {
     type: Feedback['type'];
     desc?: string;
-    component: typeof SvelteComponent<unknown>;
+    component: Component;
 };
 
 export const feedbackOptions: FeedbackOption[] = [
@@ -114,7 +114,6 @@ function createFeedbackStore() {
             name?: string,
             email?: string,
             // eslint-disable-next-line
-            // @ts-expect-error
             billingPlan?: string,
             value?: number
         ) => {

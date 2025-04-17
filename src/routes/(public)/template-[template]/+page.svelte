@@ -1,27 +1,66 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import CustomId from '$lib/components/customId.svelte';
     import { SvgIcon } from '$lib/components/index.js';
     import { Button, Form, InputSelect } from '$lib/elements/forms';
+    import { getFlagUrl } from '$lib/helpers/flag.js';
+    import type { AllowedRegions, Region as RegionType } from '$lib/sdk/billing.js';
     import { app } from '$lib/stores/app';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { getFrameworkIcon } from '$lib/stores/sites.js';
-    import { OAuthProvider, Query, type Models } from '@appwrite.io/console';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { Card, Divider, Icon, Image, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { isCloud } from '$lib/system';
+    import { ID, OAuthProvider, Query, type Models, Region } from '@appwrite.io/console';
+    import { IconGithub, IconPencil, IconPlus, IconPlusSm } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Card,
+        Divider,
+        Icon,
+        Image,
+        Input,
+        Layout,
+        Tag,
+        Typography
+    } from '@appwrite.io/pink-svelte';
 
-    export let data;
+    let { data } = $props();
 
-    let projects: Models.ProjectList;
-    let selectedProject: string;
-    let selectedOrg = data?.organizations?.total ? data.organizations.teams[0].$id : undefined;
+    let projects = $state<Models.ProjectList>();
+    let selectedProject = $state<string>();
+    let selectedOrg = $state(
+        data?.organizations?.total ? data.organizations.teams[0].$id : undefined
+    );
+    let projectName = $state<string>();
+    let showCustomId = $state(false);
+    let region = $state<AllowedRegions>();
+    let regions = $state<Array<RegionType>>([]);
+    let id = $state<string>();
+
+    function getRegions() {
+        return regions
+            .filter((region) => region.$id !== 'default')
+            .sort((regionA, regionB) => {
+                if (regionA.disabled && !regionB.disabled) {
+                    return 1;
+                }
+                return regionA.name > regionB.name ? 1 : -1;
+            })
+            .map((region) => {
+                return {
+                    label: region.name,
+                    value: region.$id,
+                    leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
+                    disabled: region.disabled
+                };
+            });
+    }
 
     function isSiteTemplate(
         template: Models.TemplateFunction | Models.TemplateSite,
         product: 'site' | 'function'
     ): template is Models.TemplateSite {
-        return product === 'site';
+        return product === 'site' && 'frameworks' in template;
     }
 
     function onGithubLogin() {
@@ -38,7 +77,7 @@
             Query.equal('teamId', selectedOrg),
             Query.orderDesc('')
         ]);
-        selectedProject = projects.projects[0].$id;
+        selectedProject = projects?.total ? projects.projects[0].$id : null;
     }
 
     function generateUrl() {
@@ -50,16 +89,40 @@
     }
 
     async function handleSubmit() {
-        if (selectedProject !== null) {
-            await goto(
-                `${base}/template-${$page.params.template}/redirect-${selectedOrg}?route=${generateUrl()}`
-            );
+        if (selectedProject === null) {
+            try {
+                const p = await sdk.forConsole.projects.create(
+                    id ?? ID.unique(),
+                    projectName,
+                    selectedOrg,
+                    isCloud ? (region as Region) : Region.Default
+                );
+                trackEvent(Submit.ProjectCreate, {
+                    customId: !!id,
+                    selectedOrg,
+                    teamId: selectedOrg
+                });
+
+                selectedProject = p.$id;
+
+                window.location.href = generateUrl();
+            } catch (e) {
+                trackError(e, Submit.ProjectCreate);
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+            }
+        } else {
+            window.location.href = generateUrl();
         }
     }
 
-    $: if (selectedOrg !== undefined) {
-        fetchProjects();
-    }
+    $effect(() => {
+        if (selectedOrg !== undefined) {
+            fetchProjects();
+        }
+    });
 </script>
 
 <svelte:head>
@@ -70,16 +133,16 @@
     <Card.Base padding="s" radius="l">
         <Layout.Stack gap="xl">
             <Layout.Stack gap="l">
-                <Typography.Title size="l">
+                <Typography.Title size="m">
                     Deploy {data.product}
                 </Typography.Title>
                 <Card.Base variant="secondary" padding="xxxs" radius="s">
-                    <Layout.GridFraction start={4} end={5}>
+                    <Layout.GridFraction start={5} end={6}>
                         {#if isSiteTemplate(data.template, data.product)}
                             {@const framework = data.template.frameworks[0]}
                             <Image
                                 border
-                                radius="s"
+                                radius="xs"
                                 ratio="16/9"
                                 style=" align-self: start"
                                 src={$app.themeInUse === 'dark'
@@ -88,7 +151,7 @@
                                     : data.template.screenshotLight ||
                                       `${base}/images/sites/screenshot-placeholder-light.svg`}
                                 alt="Screenshot" />
-                            <Layout.Stack gap="xl">
+                            <Layout.Stack gap="xxl" justifyContent="center">
                                 <Layout.Stack gap="xxs">
                                     <Typography.Text
                                         variant="m-500"
@@ -129,28 +192,75 @@
                                 }))}
                                 bind:value={selectedOrg} />
 
-                            {#key selectedOrg}
-                                {#if projects?.total}
+                            {#if projects?.total}
+                                {#key selectedProject}
                                     <InputSelect
                                         id="project"
                                         label="Project"
                                         required
-                                        options={projects.projects.map((p) => ({
-                                            label: p.name,
-                                            value: p.$id
-                                        }))}
+                                        options={[
+                                            ...projects.projects.map((p) => ({
+                                                label: p.name,
+                                                value: p.$id
+                                            })),
+                                            {
+                                                label: 'Create project',
+                                                leadingIcon: IconPlusSm,
+                                                value: null
+                                            }
+                                        ]}
                                         bind:value={selectedProject} />
+                                {/key}
+                            {/if}
+                            {#if selectedProject === null}
+                                <Layout.Stack direction="column" gap="s">
+                                    <Input.Text
+                                        label="Name"
+                                        placeholder="Project name"
+                                        required
+                                        bind:value={projectName} />
+                                    {#if !showCustomId}
+                                        <div>
+                                            <Tag
+                                                size="s"
+                                                on:click={() => {
+                                                    showCustomId = true;
+                                                }}
+                                                ><Icon slot="start" icon={IconPencil} size="s" /> Project
+                                                ID</Tag>
+                                        </div>
+                                    {/if}
+                                    <CustomId
+                                        bind:show={showCustomId}
+                                        name="Project"
+                                        isProject
+                                        bind:id />
+                                </Layout.Stack>
+                                {#if isCloud}
+                                    <Layout.Stack gap="xs">
+                                        <Input.Select
+                                            required
+                                            bind:value={region}
+                                            placeholder="Select a region"
+                                            options={getRegions()}
+                                            label="Region" />
+                                        <Typography.Text>
+                                            Region cannot be changed after creation
+                                        </Typography.Text>
+                                    </Layout.Stack>
                                 {/if}
-                            {/key}
+                            {/if}
+
                             <Divider />
                             <Layout.Stack direction="row-reverse">
-                                {#if selectedProject !== null}
-                                    <div>
-                                        <Button disabled={!selectedOrg || !selectedProject} submit>
-                                            <span class="text">Continue</span>
-                                        </Button>
-                                    </div>
-                                {/if}
+                                <div>
+                                    <Button
+                                        disabled={!selectedOrg ||
+                                            (!selectedProject && !projectName && !region)}
+                                        submit>
+                                        <span class="text">Continue</span>
+                                    </Button>
+                                </div>
                             </Layout.Stack>
                         </Layout.Stack>
                     </Form>

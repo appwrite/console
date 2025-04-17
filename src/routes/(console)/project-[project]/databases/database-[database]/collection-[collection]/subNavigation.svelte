@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { showCreate } from '../store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
@@ -14,20 +14,20 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
 
-    $: data = $page.data as PageData;
-    $: project = $page.params.project;
-    $: databaseId = $page.params.database;
-    $: collectionId = $page.params.collection;
+    let data = $derived(page.data) as PageData;
+    let project = $derived(page.params.project);
+    let databaseId = $derived(page.params.database);
+    let collectionId = $derived(page.params.collection);
 
-    $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
-        a.name.localeCompare(b.name)
+    const sortedCollections = $derived.by(() =>
+        data?.allCollections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    $: selectedCollection = sortedCollections?.find(
-        (collection) => collection.$id === collectionId
+    const selectedCollection = $derived.by(() =>
+        sortedCollections()?.find((collection) => collection.$id === collectionId)
     );
 
-    let openBottomSheet = false;
+    let openBottomSheet = $state(false);
 
     function onResize() {
         if (openBottomSheet && !$isTabletViewport) {
@@ -95,7 +95,7 @@
                     type="button"
                     class="trigger"
                     aria-label="Open collections"
-                    on:click={() => {
+                    onclick={() => {
                         openBottomSheet = !openBottomSheet;
                     }}>
                     <span class="orgName">{selectedCollection.name}</span>

@@ -1,16 +1,16 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import { canWriteDatabases } from '$lib/stores/roles';
     import type { PageData } from './$types';
     export let data: PageData;
     export let showCreate = false;
-    const project = $page.params.project;
+    const project = page.params.project;
 </script>
 
 <CardContainer
-    showEmpty={$canWriteDatabases}
+    disableEmpty={!$canWriteDatabases}
     total={data.databases.total}
     on:click={() => (showCreate = true)}
     event="database"
@@ -22,7 +22,7 @@
                 {#if data.lastBackups && data.lastBackups[database.$id]}
                     Last backup: {data.lastBackups[database.$id]}
                 {:else if !data.policies || !data.policies[database.$id]}
-                    <span class="icon-exclamation" /> No backup policies
+                    <span class="icon-exclamation"></span> No backup policies
                 {:else}
                     Last backup: No backups yet
                 {/if}

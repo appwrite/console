@@ -3,7 +3,6 @@
     import { Navbar, Sidebar } from '$lib/components';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
     import { page } from '$app/stores';
-    import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import { setContext } from 'svelte';
@@ -141,8 +140,9 @@
 <main
     class:has-alert={$activeHeaderAlert?.show}
     class:is-open={$showSubNavigation}
-    class:u-hide={$wizard.show || $log.show || $wizard.cover}
+    class:u-hide={$wizard.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
+    class:no-header={!showHeader}
     style:--p-side-size={sideSize}>
     {#if showHeader}
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
@@ -174,6 +174,8 @@
 
     <button
         type="button"
+        class="overlay-button"
+        aria-label="Close sidebar"
         class:overlay={$isSidebarOpen}
         on:click={() => {
             $isSidebarOpen = false;
@@ -210,6 +212,14 @@
         min-height: calc(100vh - 48px);
     }
 
+    .no-header {
+        min-height: 100vh;
+
+        .content {
+            margin-block-start: 0;
+        }
+    }
+
     :global(main:has(.sub-navigation)) {
         .main-content {
             @media (min-width: 1024px) {
@@ -230,12 +240,13 @@
         transition:
             backdrop-filter 0.5s ease-in-out,
             background-color 0.35s ease-in-out;
-
+    }
+    .overlay-button {
         @media (min-width: 1024px) {
             display: none;
         }
     }
     main {
-        min-height: 100vh;
+        min-height: calc(100vh - 48px);
     }
 </style>

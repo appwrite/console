@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Alert, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -54,8 +54,8 @@
     async function create() {
         try {
             const { $id } = await sdk.forProject.databases.createDocument(
-                $page.params.database,
-                $page.params.collection,
+                page.params.database,
+                page.params.collection,
                 $createDocument.id ?? ID.unique(),
                 $createDocument.document,
                 $createDocument.permissions
@@ -69,7 +69,7 @@
                 customId: !!$createDocument.id
             });
             goto(
-                `${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}/document-${$id}`
+                `${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/document-${$id}`
             );
         } catch (error) {
             addNotification({
@@ -83,9 +83,10 @@
 
 <Wizard
     title="Create document"
-    href={`${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}/`}
+    href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/`}
     bind:showExitModal
     column
+    columnSize="s"
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xxl">

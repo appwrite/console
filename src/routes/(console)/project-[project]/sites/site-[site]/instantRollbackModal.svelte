@@ -123,43 +123,46 @@
                 {@const items = prodReadyDeployments.deployments.filter(
                     (prodDeployment) => prodDeployment.$id !== deployment.$id
                 )}
-                <Paginator {items} let:paginatedItems hideFooter={items?.length <= 6} limit={6}>
-                    {#each paginatedItems as prodDeployment}
-                        <LabelCard
-                            padding="xs"
-                            radius="s"
-                            title={toLocaleDateTime(prodDeployment.$createdAt)}
-                            bind:group={selectedDeploymentId}
-                            value={prodDeployment.$id}>
-                            <Layout.Stack gap="s" direction="row" alignItems="center">
-                                <Typography.Caption
-                                    variant="400"
-                                    color="--fgcolor-neutral-secondary">
-                                    {calculateSize(deployment.buildSize)}
-                                </Typography.Caption>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="2"
-                                    height="3"
-                                    viewBox="0 0 2 3"
-                                    fill="none">
-                                    <circle cx="1" cy="1.5" r="1" fill="currentColor" />
-                                </svg>
-                                <Typography.Caption
-                                    variant="400"
-                                    color="--fgcolor-neutral-secondary"
-                                    truncate>
-                                    {capitalize(timeFromNow(prodDeployment.$createdAt))}
-                                    {#if prodDeployment?.providerCommitAuthorUrl && prodDeployment?.providerCommitAuthor}
-                                        by <Link
-                                            size="s"
-                                            href={prodDeployment.providerCommitAuthorUrl}
-                                            external>{prodDeployment.providerCommitAuthor}</Link>
-                                    {/if}
-                                </Typography.Caption>
-                            </Layout.Stack>
-                        </LabelCard>
-                    {/each}
+                <Paginator {items} hideFooter={items?.length <= 6} limit={6}>
+                    {#snippet children(paginatedItems: typeof items)}
+                        {#each paginatedItems as prodDeployment}
+                            <LabelCard
+                                padding="xs"
+                                radius="s"
+                                title={toLocaleDateTime(prodDeployment.$createdAt)}
+                                bind:group={selectedDeploymentId}
+                                value={prodDeployment.$id}>
+                                <Layout.Stack gap="s" direction="row" alignItems="center">
+                                    <Typography.Caption
+                                        variant="400"
+                                        color="--fgcolor-neutral-secondary">
+                                        {calculateSize(deployment.buildSize)}
+                                    </Typography.Caption>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="2"
+                                        height="3"
+                                        viewBox="0 0 2 3"
+                                        fill="none">
+                                        <circle cx="1" cy="1.5" r="1" fill="currentColor" />
+                                    </svg>
+                                    <Typography.Caption
+                                        variant="400"
+                                        color="--fgcolor-neutral-secondary"
+                                        truncate>
+                                        {capitalize(timeFromNow(prodDeployment.$createdAt))}
+                                        {#if prodDeployment?.providerCommitAuthorUrl && prodDeployment?.providerCommitAuthor}
+                                            by <Link
+                                                size="s"
+                                                href={prodDeployment.providerCommitAuthorUrl}
+                                                external
+                                                >{prodDeployment.providerCommitAuthor}</Link>
+                                        {/if}
+                                    </Typography.Caption>
+                                </Layout.Stack>
+                            </LabelCard>
+                        {/each}
+                    {/snippet}
                 </Paginator>
             {/if}
         </Layout.Stack>

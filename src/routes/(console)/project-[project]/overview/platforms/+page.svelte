@@ -60,7 +60,7 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import type { PageData } from './$types';
     import { canWritePlatforms } from '$lib/stores/roles';
@@ -103,7 +103,7 @@
         'react-native-ios' = 'iOS',
         'web' = 'Web'
     }
-    const path = `${base}/project-${$page.params.project}/overview/platforms`;
+    const path = `${base}/project-${page.params.project}/overview/platforms`;
 
     function getPlatformInfo(platform: string): ComponentType {
         if (platform.includes('flutter')) {

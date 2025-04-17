@@ -9,7 +9,7 @@
 
 <Pill success={enabled} danger={!enabled} on:click>
     <span class="text u-font-size-12 u-trim">
-        <span class={iconClass} aria-hidden="true" {style} />
+        <span class={iconClass} aria-hidden="true" {style}></span>
 
         <span>{enabled ? 'enabled' : 'stopped'}</span>
     </span>

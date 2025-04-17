@@ -101,7 +101,7 @@
 </script>
 
 {#if width}
-    <div class="progress-bar" class:progress-bar-hiding={completed} style={barStyle} />
+    <div class="progress-bar" class:progress-bar-hiding={completed} style={barStyle}></div>
 {/if}
 
 <style>

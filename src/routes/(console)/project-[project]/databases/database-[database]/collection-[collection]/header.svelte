@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
@@ -8,9 +8,9 @@
     import { collection } from './store';
     import { isTabletViewport } from '$lib/stores/viewport';
 
-    $: projectId = $page.params.project;
-    $: databaseId = $page.params.database;
-    $: collectionId = $page.params.collection;
+    $: projectId = page.params.project;
+    $: databaseId = page.params.database;
+    $: collectionId = page.params.collection;
     $: path = `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
     $: tabs = [
         {
@@ -65,7 +65,7 @@
             {#each tabs as tab}
                 <Tab
                     href={tab.href}
-                    selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
                     event={tab.event}>
                     {tab.title}
                 </Tab>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -10,7 +10,7 @@
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
     let collectionDocumentSecurity: boolean = null;
 

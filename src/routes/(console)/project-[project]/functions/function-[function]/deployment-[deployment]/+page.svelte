@@ -4,11 +4,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { type Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Activate from '../(modals)/activateModal.svelte';
-    import Cancel from '../(modals)/cancel.svelte';
+    import Cancel from '../(modals)/cancelDeploymentModal.svelte';
     import DeploymentCard from '../(components)/deploymentCard.svelte';
     import Delete from '../(modals)/deleteModal.svelte';
     import {
@@ -29,23 +29,19 @@
 
     export let data;
 
-    let logs = '';
     let showDelete = false;
     let showCancel = false;
     let showActivate = false;
 
     onMount(() => {
-        logs = data.deployment.buildLogs;
-
         const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
             'console',
             (message) => {
                 if (
                     message.events.includes(
-                        `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
+                        `functions.${page.params.function}.deployments.${page.params.deployment}.update`
                     )
                 ) {
-                    logs = message.payload['logs'];
                     if (message.payload.status === 'ready') {
                         invalidate(Dependencies.DEPLOYMENT);
                     }
@@ -76,7 +72,7 @@
 
 <Container>
     <DeploymentCard proxyRuleList={data.proxyRuleList} deployment={data.deployment}>
-        <svelte:fragment slot="footer">
+        {#snippet footer()}
             <Layout.Stack direction="row" inline>
                 {#if data.deployment.status === 'processing' || data.deployment.status === 'building' || data.deployment.status === 'waiting'}
                     <Button
@@ -94,7 +90,7 @@
                                 <ActionMenu.Item.Anchor
                                     on:click={toggle}
                                     href={getSourceDownload(
-                                        $page.params.function,
+                                        page.params.function,
                                         data.deployment.$id
                                     )}
                                     external>
@@ -105,7 +101,7 @@
                                     disabled={data.deployment?.status !== 'ready'}
                                     on:click={toggle}
                                     href={getOutputDownload(
-                                        $page.params.function,
+                                        page.params.function,
                                         data.deployment.$id
                                     )}
                                     external>
@@ -124,7 +120,7 @@
                         }}>Activate</Button>
                 {/if}
             </Layout.Stack>
-        </svelte:fragment>
+        {/snippet}
     </DeploymentCard>
 
     <Card.Base padding="s">
@@ -148,7 +144,7 @@
                     {#if ['processing', 'building'].includes(data.deployment.status)}
                         <Typography.Code color="--fgcolor-neutral-secondary">
                             <Layout.Stack direction="row" alignItems="center" inline>
-                                <p use:timer={{ start: data.deployment.$createdAt }} />
+                                <p use:timer={{ start: data.deployment.$createdAt }}></p>
                                 <Spinner size="s" />
                             </Layout.Stack>
                         </Typography.Code>

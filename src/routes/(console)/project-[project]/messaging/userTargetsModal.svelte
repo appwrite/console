@@ -174,7 +174,7 @@
             {/each}
             <div class="u-flex u-main-space-between u-cross-center">
                 <p class="text">Total results: {totalResults}</p>
-                <PaginationInline limit={5} bind:offset sum={totalResults} hidePages />
+                <PaginationInline limit={5} bind:offset total={totalResults} hidePages />
             </div>
         {:else if search}
             <EmptySearch hidePagination {search}>

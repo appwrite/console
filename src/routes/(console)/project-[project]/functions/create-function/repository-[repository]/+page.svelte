@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
@@ -50,7 +50,7 @@
     let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
-    let scopes: string[] = [];
+    let roles: string[] = [];
     let branch: string;
     let rootDir = './';
     let variables: Partial<Models.Variable>[] = [];
@@ -69,7 +69,7 @@
                 id || ID.unique(),
                 name,
                 runtime,
-                undefined,
+                roles?.length ? roles : undefined,
                 undefined,
                 undefined,
                 undefined,
@@ -77,7 +77,7 @@
                 undefined,
                 entrypoint,
                 buildCommand,
-                scopes,
+                undefined,
                 $installation.$id,
                 $repository.id,
                 branch,
@@ -88,7 +88,7 @@
 
             // Add domain
             await sdk.forProject.proxy.createFunctionRule(
-                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
                 func.$id
             );
 
@@ -115,7 +115,7 @@
                 runtime: runtime
             });
 
-            await goto(`${base}/project-${$page.params.project}/functions/function-${func.$id}`);
+            await goto(`${base}/project-${page.params.project}/functions/function-${func.$id}`);
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
@@ -135,7 +135,7 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/functions`}
+    href={`${base}/project-${page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -159,7 +159,7 @@
                 installationId={data.installation.$id}
                 repositoryId={data.repository.id} />
 
-            <Configuration bind:buildCommand bind:scopes />
+            <Configuration bind:buildCommand bind:roles />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

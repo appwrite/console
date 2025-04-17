@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputSelect } from '$lib/elements/forms';
@@ -34,7 +34,7 @@
     $: options = organizations.total
         ? organizations.teams
               .map((org) => ({ label: org.name, value: org.$id }))
-              .filter((org) => org.value !== $page.params.organization)
+              .filter((org) => org.value !== page.params.organization)
         : [];
 </script>
 

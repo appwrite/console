@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { Avatar, Icon, Layout, Popover, Table, Typography } from '@appwrite.io/pink-svelte';
     import { columns } from './store';
@@ -33,7 +33,7 @@
     {#each siteList.sites as site}
         <Table.Row.Link
             {root}
-            href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}>
+            href={`${base}/project-${page.params.project}/sites/site-${site.$id}`}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === 'name'}
@@ -46,9 +46,9 @@
                     {:else if column.id === 'domains'}
                         {site[column.id]}
                     {:else if column.id === 'deployed'}
-                        {#if site.latestDeploymentStatus === 'building'}
+                        {#if site?.latestDeploymentStatus === 'building'}
                             Building {timer(site.latestDeploymentCreatedAt)}
-                        {:else if site.latestDeploymentStatus === 'failed'}
+                        {:else if site?.latestDeploymentStatus === 'failed'}
                             <Popover let:toggle portal>
                                 <button on:mouseenter={(e) => toggle(e)}>
                                     <Layout.Stack
@@ -69,14 +69,15 @@
                                         Last deployment failed {timeFromNow(
                                             site.latestDeploymentCreatedAt
                                         )}. <Link
-                                            href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
+                                            href={`${base}/project-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
                                             View logs
                                         </Link>
                                     </Typography.Text>
                                 </svelte:fragment>
                             </Popover>
                         {:else}
-                            <DualTimeView time={site.latestDeploymentCreatedAt} />
+                            <DualTimeView
+                                time={site?.latestDeploymentCreatedAt ?? site.$createdAt} />
                         {/if}
                     {:else if column.id === '$createdAt'}
                         {toLocaleDateTime(site[column.id])}

@@ -34,7 +34,7 @@
         {disabled}
         href={buttonHref}>
         {#if showIcon}
-            <span class={`icon-${icon}`} aria-hidden="true" />
+            <span class={`icon-${icon}`} aria-hidden="true"></span>
         {/if}
         <span class="text">{buttonText}</span>
     </Button>

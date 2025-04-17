@@ -9,7 +9,7 @@
     import { user } from '$lib/stores/user';
     import { organization } from '$lib/stores/organization';
     import { addNotification } from '$lib/stores/notifications';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     $: $selectedFeedback = feedbackOptions.find((option) => option.type === $feedback.type);
 
@@ -18,7 +18,7 @@
             await feedback.submitFeedback(
                 `feedback-${$feedback.type}`,
                 $feedbackData.message,
-                $page.url.href,
+                page.url.href,
                 $user.name,
                 $user.email,
                 $organization.billingPlan,

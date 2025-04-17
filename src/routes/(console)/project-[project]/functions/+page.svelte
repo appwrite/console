@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import {
         CardContainer,
@@ -32,16 +32,16 @@
 
     let offset = 0;
 
-    const project = $page.params.project;
+    const project = page.params.project;
 
     onMount(async () => {
-        const from = $page.url.searchParams.get('from');
+        const from = page.url.searchParams.get('from');
         if (from === 'github') {
-            const to = $page.url.searchParams.get('to');
+            const to = page.url.searchParams.get('to');
             switch (to) {
                 case 'template': {
-                    const template = $page.url.searchParams.get('template');
-                    const templateConfig = $page.url.searchParams.get('templateConfig');
+                    const template = page.url.searchParams.get('template');
+                    const templateConfig = page.url.searchParams.get('templateConfig');
                     goto(
                         `${base}/project-${project}/functions/create-function/template-${template}?templateConfig=${templateConfig}`
                     );
@@ -77,7 +77,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search functions" />
+        <SearchQuery placeholder="Search by name or ID" />
 
         <Button href={`${base}/project-${project}/functions/create-function`}>
             <Icon icon={IconPlus} slot="start" />
@@ -88,12 +88,12 @@
     {#if data.functions.total}
         <CardContainer
             {offset}
-            showEmpty={$canWriteFunctions}
+            disableEmpty={!$canWriteFunctions}
             event="functions"
             total={data.functions.total}
             service="functions"
             on:click={() => goto(`${base}/project-${project}/functions/create-function`)}>
-            {#each data.functions.functions as func}
+            {#each data.functions.functions as func (func.$id)}
                 <GridItem1 href={`${base}/project-${project}/functions/function-${func.$id}`}>
                     <svelte:fragment slot="title">
                         <Layout.Stack gap="l" alignItems="center" direction="row" inline>
@@ -128,7 +128,7 @@
             total={data.functions.total} />
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="functions">
-            <Button secondary href={`${base}/project-${$page.params.project}/functions`}>
+            <Button secondary href={`${base}/project-${page.params.project}/functions`}>
                 Clear search
             </Button>
         </EmptySearch>

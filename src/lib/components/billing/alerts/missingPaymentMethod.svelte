@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
@@ -8,7 +8,7 @@
     import { orgMissingPaymentMethod } from '$routes/(console)/store';
 </script>
 
-{#if ($orgMissingPaymentMethod.billingPlan === BillingPlan.PRO || $orgMissingPaymentMethod.billingPlan === BillingPlan.SCALE) && !$orgMissingPaymentMethod.paymentMethodId && !$orgMissingPaymentMethod.backupPaymentMethodId && !hideBillingHeaderRoutes.includes($page.url.pathname)}
+{#if ($orgMissingPaymentMethod.billingPlan === BillingPlan.PRO || $orgMissingPaymentMethod.billingPlan === BillingPlan.SCALE) && !$orgMissingPaymentMethod.paymentMethodId && !$orgMissingPaymentMethod.backupPaymentMethodId && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert
         type="error"
         title={`Payment method required for ${$orgMissingPaymentMethod.name}`}>

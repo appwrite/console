@@ -12,6 +12,7 @@
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export let message: Models.Message & { data: Record<string, any> };
 
     let title = '';
@@ -113,7 +114,7 @@
                 bind:value={file}
                 label="Media"
                 optionalText="(Optional)" />
-            <Layout.Stack>
+            <Layout.Stack gap="s">
                 {#each customData || [] as [key, value], index}
                     <Layout.Stack direction="row" alignItems="flex-end">
                         <InputText
@@ -138,14 +139,14 @@
                                     }
                                     customData = customData.filter((_, i) => i !== index);
                                 }}>
-                                <span class="icon-x" aria-hidden="true" />
+                                <span class="icon-x" aria-hidden="true"></span>
                             </Button>
                         </Layout.Stack>
                     </Layout.Stack>
                 {/each}
                 <div>
                     <Button
-                        secondary
+                        compact
                         disabled={customData.length > 0 &&
                             customData[customData.length - 1][0] === ''}
                         on:click={() => (customData = [...customData, ['', '']])}>

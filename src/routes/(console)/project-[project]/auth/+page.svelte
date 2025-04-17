@@ -5,7 +5,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import {
         AvatarInitials,
         Copy,
@@ -21,7 +21,7 @@
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { Badge, Icon, Table, Layout } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Table, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
     import { IconDuplicate, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { canWriteUsers } from '$lib/stores/roles';
@@ -31,11 +31,11 @@
 
     export let data: PageData;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     const columns = writable<Column[]>([
         { id: '$id', title: 'User ID', type: 'string', width: 200 },
         { id: 'name', title: 'Name', type: 'string', width: { min: 260 } },
-        { id: 'identifiers', title: 'Identifiers', type: 'string', width: { min: 140 } },
+        { id: 'identifiers', title: 'Identifiers', type: 'string', width: { min: 260 } },
         { id: 'status', title: 'Status', type: 'string', width: { min: 140 } },
         { id: 'labels', title: 'Labels', type: 'string', hide: true, width: { min: 140 } },
         { id: 'joined', title: 'Joined', type: 'string', width: { min: 140 } },
@@ -56,10 +56,10 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID" />
+            <SearchQuery placeholder="Search by name, email, phone, or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+            <ViewSelector view={View.Table} {columns} hideView />
             <Button on:mousedown={() => ($showCreateUser = true)} event="create_user" size="s">
                 <Icon size="s" icon={IconPlus} slot="start" />
                 <span class="text">Create user</span>
@@ -90,25 +90,30 @@
                                     {#if user.email || user.phone}
                                         {#if user.name}
                                             <AvatarInitials size="xs" name={user.name} />
-                                            <span>
+                                            <Typography.Text truncate>
                                                 {user.name}
-                                            </span>
+                                            </Typography.Text>
                                         {:else}
                                             <div class="avatar is-size-small">
-                                                <span class="icon-minus-sm" aria-hidden="true" />
+                                                <span class="icon-minus-sm" aria-hidden="true"
+                                                ></span>
                                             </div>
                                         {/if}
                                     {:else}
                                         <div class="avatar is-size-small">
-                                            <span class="icon-anonymous" aria-hidden="true" />
+                                            <span class="icon-anonymous" aria-hidden="true"></span>
                                         </div>
-                                        <span class="text u-trim">{user.name}</span>
+                                        <Typography.Text truncate>
+                                            {user.name}
+                                        </Typography.Text>
                                     {/if}
                                 </Layout.Stack>
                             {:else if id === 'identifiers'}
-                                {user.email && user.phone
-                                    ? [user.email, user.phone].join(',')
-                                    : user.email || user.phone}
+                                <Typography.Text truncate>
+                                    {user.email && user.phone
+                                        ? [user.email, user.phone].join(',')
+                                        : user.email || user.phone}
+                                </Typography.Text>
                             {:else if id === 'status'}
                                 {#if user.status}
                                     {@const success =
@@ -132,7 +137,9 @@
                                         content="blocked" />
                                 {/if}
                             {:else if id === 'labels'}
-                                {user.labels.join(', ')}
+                                <Typography.Text truncate>
+                                    {user.labels.join(', ')}
+                                </Typography.Text>
                             {:else if id === 'joined'}
                                 {toLocaleDateTime(user.registration)}
                             {:else if id === 'lastActivity'}

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import {
@@ -39,7 +39,7 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import Aside from './aside.svelte';
 
-    let previousPage: string = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/executions`;
+    let previousPage: string = `${base}/project-${page.params.project}/functions/function-${page.params.function}/executions`;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -103,7 +103,7 @@
                 isScheduled ? dateTime.toISOString() : undefined
             );
             await goto(
-                `${base}/project-${$page.params.project}/functions/function-${func.$id}/executions`
+                `${base}/project-${page.params.project}/functions/function-${func.$id}/executions`
             );
             invalidate(Dependencies.EXECUTIONS);
             addNotification({

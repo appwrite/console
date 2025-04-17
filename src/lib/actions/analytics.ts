@@ -1,7 +1,7 @@
 import Analytics, { type AnalyticsPlugin } from 'analytics';
 import Plausible from 'plausible-tracker';
 import { get } from 'svelte/store';
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import { user } from '$lib/stores/user';
 import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
@@ -55,13 +55,12 @@ export function trackEvent(name: string, data: object = null): void {
         return;
     }
 
-    const currentPage = get(page);
-    const path = currentPage.route.id;
+    const path = page.route.id;
 
-    if (currentPage.params?.project) {
+    if (page.params?.project) {
         data = {
             ...data,
-            project: currentPage.params.project
+            project: page.params.project
         };
     }
 
@@ -139,6 +138,8 @@ export function isTrackingAllowed() {
 }
 
 export enum Click {
+    BackupCopyIdClick = 'click_backup_copy_id',
+    BackupDeleteClick = 'click_backup_delete',
     BackupRestoreClick = 'click_backup_restore',
     BreadcrumbClick = 'click_breadcrumb',
     ConnectRepositoryClick = 'click_connect_repository',

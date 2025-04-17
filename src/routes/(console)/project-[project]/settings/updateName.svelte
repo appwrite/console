@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, CopyInput } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -13,7 +13,7 @@
     import { canWriteProjects } from '$lib/stores/roles';
 
     const endpoint = sdk.forConsole.client.config.endpoint;
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     let name: string = null;
 

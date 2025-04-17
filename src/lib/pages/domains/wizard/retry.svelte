@@ -64,11 +64,11 @@
     <CnameTable />
 {:else if domain.status === 'unverified'}
     <div class="u-flex u-gap-8 u-cross-center">
-        <span class="icon-exclamation-circle u-color-text-danger" aria-hidden="true" />
+        <span class="icon-exclamation-circle u-color-text-danger" aria-hidden="true"></span>
         <p class="u-stretch">Generation failed</p>
         <Button secondary on:click={retry} disabled={retrying}>
             {#if retrying}
-                <div class="loader u-text-color-gray" />
+                <div class="loader u-text-color-gray"></div>
             {:else}
                 Retry
             {/if}

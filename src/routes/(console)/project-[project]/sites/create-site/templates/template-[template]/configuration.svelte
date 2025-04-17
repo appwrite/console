@@ -11,9 +11,9 @@
     import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout, Popover, Icon, Accordion } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { type SvelteComponent } from 'svelte';
+    import { type Component } from 'svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { project } from '$routes/(console)/project-[project]/store';
 
     export let variables: Partial<Models.TemplateVariable>[] = [];
@@ -37,8 +37,8 @@
             variable.value = getApiEndpoint();
             variable.placeholder = getApiEndpoint();
         } else if (variable.value === '{projectId}') {
-            variable.value = $page.params.project;
-            variable.placeholder = $page.params.project;
+            variable.value = page.params.project;
+            variable.placeholder = page.params.project;
         } else if (variable.value === '{projectName}') {
             variable.value = $project.name;
             variable.placeholder = $project.name;
@@ -46,7 +46,7 @@
     });
     variables = [...variables];
 
-    function selectComponent(variableType: string): typeof SvelteComponent<unknown> {
+    function selectComponent(variableType: string): Component {
         switch (variableType) {
             case 'password':
                 return InputPassword;

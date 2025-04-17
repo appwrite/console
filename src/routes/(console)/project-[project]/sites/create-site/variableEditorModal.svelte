@@ -4,7 +4,7 @@
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import { parse } from 'envfile';
+    import { parse } from '$lib/helpers/envfile';
     import { Alert, Icon, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
     import { InputTextarea } from '$lib/elements/forms';

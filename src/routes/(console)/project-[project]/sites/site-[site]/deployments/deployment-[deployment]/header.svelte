@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
     import { deployment } from './store';
@@ -9,7 +9,7 @@
 <Cover>
     <svelte:fragment slot="header">
         <CoverTitle
-            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments`}>
+            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/deployments`}>
             Deployment
         </CoverTitle>
         <Id value={$deployment.$id}>{$deployment.$id}</Id>

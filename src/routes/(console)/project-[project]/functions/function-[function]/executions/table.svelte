@@ -14,8 +14,8 @@
     export let columns: Column[];
     export let logs: Models.ExecutionList;
 
-    let openSheet = false;
     let selectedLogId: string = null;
+    let open = false;
 </script>
 
 <Table.Root {columns} let:root>
@@ -27,8 +27,9 @@
     {#each logs.executions as log}
         <Table.Row.Button
             {root}
-            on:click={() => {
-                openSheet = true;
+            on:click={(e) => {
+                e.stopPropagation();
+                open = true;
                 selectedLogId = log.$id;
             }}>
             {#each columns as column}
@@ -67,7 +68,6 @@
                                 <Status
                                     status={logStatusConverter(status)}
                                     label={capitalize(status)}>
-                                    {status}
                                 </Status>
                             </div>
                             <span slot="tooltip">
@@ -83,4 +83,4 @@
     {/each}
 </Table.Root>
 
-<Sheet bind:open={openSheet} bind:selectedLogId logs={logs.executions} logging={$func.logging} />
+<Sheet bind:open bind:selectedLogId logs={logs.executions} logging={$func.logging} />

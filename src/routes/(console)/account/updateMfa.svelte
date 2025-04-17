@@ -14,7 +14,7 @@
     import type { Models } from '@appwrite.io/console';
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
     import { Pill } from '$lib/elements';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { onMount } from 'svelte';
     import { Badge, Divider, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
 
@@ -29,7 +29,7 @@
         .map(([factor, _]) => factor);
     $: enabledMethods = enabledFactors.filter((factor) => factor !== 'recoveryCode');
 
-    $: cleanUrl = $page.url.origin + $page.url.pathname;
+    $: cleanUrl = page.url.origin + page.url.pathname;
 
     let creatingVerification = false;
 
@@ -53,7 +53,7 @@
     }
 
     async function updateEmailVerification() {
-        const searchParams = $page.url.searchParams;
+        const searchParams = page.url.searchParams;
         const userId = searchParams.get('userId');
         const secret = searchParams.get('secret');
 
@@ -157,7 +157,7 @@
                         <EyebrowHeading tag="h3" size={3} class="u-normal">Methods</EyebrowHeading>
                         <Layout.Stack direction="row">
                             <div class="avatar is-size-x-small">
-                                <span class="icon-device-mobile" aria-hidden="true" />
+                                <span class="icon-device-mobile" aria-hidden="true"></span>
                             </div>
                             <Layout.Stack gap="xxxs">
                                 <Layout.Stack gap="s">
@@ -191,7 +191,7 @@
                             <Layout.Stack>
                                 <Layout.Stack direction="row">
                                     <div class="avatar is-size-x-small">
-                                        <span class="icon-mail" aria-hidden="true" />
+                                        <span class="icon-mail" aria-hidden="true"></span>
                                     </div>
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack gap="s" direction="row">
@@ -211,7 +211,7 @@
                             <Layout.Stack>
                                 <Layout.Stack direction="row">
                                     <div class="avatar is-size-x-small">
-                                        <span class="icon-mail" aria-hidden="true" />
+                                        <span class="icon-mail" aria-hidden="true"></span>
                                     </div>
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack gap="s" direction="row">
@@ -239,7 +239,7 @@
                             <Layout.Stack>
                                 <Layout.Stack direction="row">
                                     <div class="avatar is-size-x-small">
-                                        <span class="icon-send" aria-hidden="true" />
+                                        <span class="icon-send" aria-hidden="true"></span>
                                     </div>
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack gap="s" direction="row">
@@ -265,7 +265,7 @@
                             <Layout.Stack>
                                 <Layout.Stack direction="row">
                                     <div class="avatar is-size-x-small">
-                                        <span class="icon-lock-open" aria-hidden="true" />
+                                        <span class="icon-lock-open" aria-hidden="true"></span>
                                     </div>
                                     <Layout.Stack gap="xxxs">
                                         <Layout.Stack gap="s" direction="row">

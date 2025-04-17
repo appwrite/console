@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { AvatarGroup, Tab, Tabs } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
@@ -30,7 +30,7 @@
     });
 
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
-    $: organizationId = $page.params.organization;
+    $: organizationId = page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
     $: tabs = [
         {
@@ -126,7 +126,7 @@
             {#each tabs as tab}
                 <Tab
                     href={tab.href}
-                    selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
                     event={tab.event}>
                     {tab.title}
                 </Tab>

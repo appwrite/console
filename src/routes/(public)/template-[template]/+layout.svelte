@@ -1,15 +1,15 @@
 <script lang="ts">
     import { app } from '$lib/stores/app';
-
     import { Typography } from '@appwrite.io/pink-svelte';
+
+    let { children } = $props();
 </script>
 
 <div class="auth-bg">
     <section class="console-container">
-        <slot />
+        {@render children()}
     </section>
     <footer>
-        <Typography.Eyebrow color="--fgcolor-neutral-secondary">POWERED BY</Typography.Eyebrow>
         {#if $app.themeInUse === 'dark'}
             <img
                 src="/console/images/appwrite-logo-dark.svg"
@@ -29,7 +29,7 @@
 <style lang="scss">
     .auth-bg {
         position: fixed;
-        background: var(--bgcolor-neutral-primary, #fff);
+        background: var(--bgcolor-neutral-default, #fff);
         background-size: cover;
         top: 0;
         left: 0;

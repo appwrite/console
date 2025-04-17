@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { SubMenu } from '$lib/components/menu';
     import { type Models } from '@appwrite.io/console';
     import { IconDownload } from '@appwrite.io/pink-icons-svelte';
@@ -19,7 +19,7 @@
             <ActionMenu.Root noPadding>
                 <ActionMenu.Item.Anchor
                     on:click={toggle}
-                    href={getSourceDownload($page.params.function, deployment.$id)}
+                    href={getSourceDownload(page.params.function, deployment.$id)}
                     external>
                     Download source
                 </ActionMenu.Item.Anchor>
@@ -27,7 +27,7 @@
                 <ActionMenu.Item.Anchor
                     disabled={deployment?.status !== 'ready'}
                     on:click={toggle}
-                    href={getOutputDownload($page.params.function, deployment.$id)}
+                    href={getOutputDownload(page.params.function, deployment.$id)}
                     external>
                     Download output
                 </ActionMenu.Item.Anchor>

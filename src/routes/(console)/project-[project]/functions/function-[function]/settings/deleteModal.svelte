@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -23,7 +23,7 @@
                 type: 'success',
                 message: `Function has been deleted`
             });
-            await goto(`${base}/project-${$page.params.project}/functions`);
+            await goto(`${base}/project-${page.params.project}/functions`);
             trackEvent(Submit.FunctionDelete);
         } catch (e) {
             error = e.message;

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
         CreditsApplied,
@@ -78,8 +78,8 @@
         if (!$organizationList?.total || campaign?.onlyNewOrgs) {
             selectedOrgId = newOrgId;
         }
-        if ($page.url.searchParams.has('org')) {
-            selectedOrgId = $page.url.searchParams.get('org');
+        if (page.url.searchParams.has('org')) {
+            selectedOrgId = page.url.searchParams.get('org');
             canSelectOrg = false;
         }
         if (campaign?.plan) {
@@ -147,7 +147,7 @@
                         collaborator,
                         undefined,
                         undefined,
-                        `${$page.url.origin}${base}/invite`
+                        `${page.url.origin}${base}/invite`
                     );
                 });
             }
@@ -249,7 +249,7 @@
                     </Layout.Stack>
                 </Fieldset>
                 {#if (selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
-                    <Fieldset legend="Billing">
+                    <Fieldset legend="Payment">
                         <Layout.Stack gap="xl">
                             {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
                                 <SelectPaymentMethod
@@ -337,7 +337,8 @@
             }}
             disabled={$isSubmitting}>
             {#if $isSubmitting}
-                <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
+                <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true"
+                ></span>
             {/if}
             {#if selectedOrgId === newOrgId}
                 Create organization

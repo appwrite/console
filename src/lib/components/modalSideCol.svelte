@@ -32,7 +32,7 @@
                                 from: 'button'
                             })}
                         on:click={close}>
-                        <span class="icon-x" aria-hidden="true" />
+                        <span class="icon-x" aria-hidden="true"></span>
                     </button>
                 </div>
                 <p class="u-margin-block-start-4">

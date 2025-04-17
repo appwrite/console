@@ -7,7 +7,7 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
     import { goto, invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import { getProjectId } from '$lib/helpers/project';
@@ -34,7 +34,7 @@
 
     function showRestoreNotification(newDatabaseId: string, newDatabaseName: string) {
         if (newDatabaseId && newDatabaseName && lastDatabaseRestorationId !== newDatabaseId) {
-            const project = $page.params.project;
+            const project = page.params.project;
             lastDatabaseRestorationId = newDatabaseId;
 
             addNotification({
@@ -158,13 +158,13 @@
                             on:click={() => {
                                 openStates[key] = !openStates[key];
                             }}>
-                            <span class="icon-cheveron-up" aria-hidden="true" />
+                            <span class="icon-cheveron-up" aria-hidden="true"></span>
                         </button>
                         <button
                             class="upload-box-button"
                             aria-label="close backup restore box"
                             on:click={() => handleClose(key)}>
-                            <span class="icon-x" aria-hidden="true" />
+                            <span class="icon-x" aria-hidden="true"></span>
                         </button>
                     </header>
 
@@ -186,7 +186,8 @@
                                         <div
                                             class="progress-bar-container"
                                             class:is-danger={item.status === 'failed'}
-                                            style="--graph-size:{graphSize(item.status)}%" />
+                                            style="--graph-size:{graphSize(item.status)}%">
+                                        </div>
                                     </section>
                                 </li>
                             {/each}

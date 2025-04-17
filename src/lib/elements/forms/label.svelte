@@ -1,21 +1,11 @@
 <script lang="ts">
     import { Tooltip } from '@appwrite.io/pink-svelte';
 
-    interface $$Props extends Partial<HTMLLabelElement> {
-        required?: boolean;
-        hideRequired?: boolean;
-        optionalText?: string | undefined;
-        hide?: boolean;
-        tooltip?: string;
-        for?: string;
-        class?: string;
-    }
-
-    export let required: $$Props['required'] = false;
-    export let hideRequired: $$Props['hideRequired'] = false;
-    export let optionalText: $$Props['optionalText'] = undefined;
-    export let hide: $$Props['hide'] = false;
-    export let tooltip: $$Props['tooltip'] = null;
+    export let required = false;
+    export let hideRequired = false;
+    export let optionalText: string | undefined = undefined;
+    export let hide = false;
+    export let tooltip: string = null;
 </script>
 
 <label
@@ -32,7 +22,7 @@
 
 {#if tooltip}
     <Tooltip placement="top">
-        <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)" />
+        <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)"></span>
         <div slot="tooltip">{tooltip}</div>
     </Tooltip>
 {/if}

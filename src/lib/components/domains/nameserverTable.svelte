@@ -7,7 +7,7 @@
     export let verified = false;
 
     const nameserverList = $consoleVariables?._APP_DOMAINS_NAMESERVERS
-        ? $consoleVariables?._APP_DOMAINS_NAMESERVERS.split(',')
+        ? $consoleVariables?._APP_DOMAINS_NAMESERVERS?.split(',')
         : ['ns1.appwrite.io', 'ns2.appwrite.io'];
 </script>
 
@@ -37,8 +37,7 @@
         <Table.Row.Base {root}>
             <Table.Cell {root}>NS</Table.Cell>
             <Table.Cell {root}>
-                <InteractiveText variant="copy" isVisible text={nameserver}>
-                    {nameserver}</InteractiveText>
+                <InteractiveText variant="copy" isVisible text={nameserver} />
             </Table.Cell>
         </Table.Row.Base>
     {/each}
