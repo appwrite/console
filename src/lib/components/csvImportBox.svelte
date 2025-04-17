@@ -1,34 +1,95 @@
 <script lang="ts">
-    import { type Payload } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
-    import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
+    import { page } from '$app/state';
+    import { sdk } from '$lib/stores/sdk';
+    import { Dependencies } from '$lib/constants';
+    import { goto, invalidate } from '$app/navigation';
+    import { getProjectId } from '$lib/helpers/project';
     import { Typography } from '@appwrite.io/pink-svelte';
-    import { page } from '$app/stores';
-    let importItems: Map<string, string> = new Map<string, string>();
+    import { writable, type Writable } from 'svelte/store';
+    import { addNotification } from '$lib/stores/notifications';
+    import { type Models, type Payload, Query } from '@appwrite.io/console';
 
-    function showCompletionNotification(databaseId: string, collectionId: string) {
-        const projectId = $page.params.project;
+    type ImportItem = {
+        status: string;
+        collection?: string;
+    };
+
+    type ImportItemsMap = Map<string, ImportItem>;
+
+    /**
+     * Keeps a track of the active and ongoing csv migrations.
+     *
+     * The structure is as follows -
+     * `{ migrationId: { status: status, collection: collection } }`
+     */
+    const importItems: Writable<ImportItemsMap> = writable(new Map());
+
+    async function showCompletionNotification(databaseId: string, collectionId: string) {
+        const projectId = page.params.project;
+        await invalidate(Dependencies.DOCUMENTS);
+        const url = `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
+
         addNotification({
             type: 'success',
             isHtml: true,
-            message: `Documents import through CSV complete.`,
-            buttons: [
-                {
-                    name: 'View imported documents',
-                    method: () => {
-                        goto(
-                            `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`
-                        );
-                    }
-                }
-            ]
+            message: `CSV import finished successfully.`,
+            buttons:
+                collectionId === page.params.collection
+                    ? undefined
+                    : [
+                          {
+                              name: 'View documents',
+                              method: () => goto(url)
+                          }
+                      ]
         });
     }
 
-    // TODO: @itznotabug, update after the SDK is available
-    function updateOrAddItem(payload: Payload) {}
+    async function updateOrAddItem(importData: Payload | Models.Migration) {
+        if (importData.source.toLowerCase() !== 'csv') return;
+
+        const existing = $importItems.get(importData.$id);
+        if (existing?.status === importData.status) return;
+
+        const status = importData.status;
+        const resourceId = importData.resourceId ?? '';
+        const [databaseId, collectionId] = resourceId.split(':') ?? [];
+
+        let collectionName = existing?.collection ?? null;
+
+        console.log([importData.status, text(importData.status)].join(', '));
+
+        // fetch if we don't have it
+        if (!existing && collectionId) {
+            try {
+                const collection = await sdk.forProject.databases.getCollection(
+                    databaseId,
+                    collectionId
+                );
+                collectionName = collection.name;
+            } catch (err) {
+                collectionName = null;
+            }
+        }
+
+        importItems.update((items) => {
+            items.set(importData.$id, { status, collection: collectionName });
+            return items;
+        });
+
+        if (status === 'completed') {
+            await showCompletionNotification(databaseId, collectionId);
+        }
+    }
+
+    function clear() {
+        importItems.update((items) => {
+            items.clear();
+            return items;
+        });
+    }
 
     function graphSize(status: string): number {
         switch (status) {
@@ -57,23 +118,22 @@
     }
 
     onMount(() => {
-        // Mocking data
-        //showCsvImportBox = true;
-        // importItems.set(ID.unique(), 'something here')
-        // importItems.set(ID.unique(), 'something here 2')
-        // no idea yet on what events to observe
-        // return sdk.forConsole.client.subscribe('console', (response) => {
-        //     if (!response.channels.includes(`projects.${getProjectId()}`)) return;
-        //
-        //     // TODO: @itznotabug, update after SDK is available
-        //     if (response.events.includes('*')) {
-        //         updateOrAddItem(response.payload);
-        //     }
-        // });
+        sdk.forProject.migrations
+            .list([Query.equal('source', 'CSV'), Query.equal('status', ['pending', 'processing'])])
+            .then((migrations) => {
+                migrations.migrations.forEach(updateOrAddItem);
+            });
+
+        return sdk.forConsole.client.subscribe('console', (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+            if (response.events.includes('migrations.*')) {
+                updateOrAddItem(response.payload);
+            }
+        });
     });
 
     $: isOpen = true;
-    $: showCsvImportBox = importItems.size > 0;
+    $: showCsvImportBox = $importItems.size > 0;
 </script>
 
 {#if showCsvImportBox}
@@ -82,7 +142,7 @@
             <header class="upload-box-header">
                 <h4 class="upload-box-title">
                     <Typography.Text variant="m-500">
-                        Importing documents ({importItems.size})
+                        Importing documents ({$importItems.size})
                     </Typography.Text>
                 </h4>
                 <button
@@ -92,17 +152,17 @@
                     on:click={() => {
                         isOpen = !isOpen;
                     }}>
-                    <span class="icon-cheveron-up" aria-hidden="true" />
+                    <span class="icon-cheveron-up" aria-hidden="true"></span>
                 </button>
                 <button
                     class="upload-box-button"
                     aria-label="close backup restore box"
-                    on:click={() => (importItems = new Map())}>
-                    <span class="icon-x" aria-hidden="true" />
+                    on:click={clear}>
+                    <span class="icon-x" aria-hidden="true"></span>
                 </button>
             </header>
 
-            {#each [...importItems.entries()] as [key, value]}
+            {#each [...$importItems.entries()] as [key, value] (key)}
                 <div class="upload-box-content" class:is-open={isOpen}>
                     <ul class="upload-box-list">
                         <li class="upload-box-item">
@@ -110,17 +170,20 @@
                                 <div
                                     class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                     <Typography.Text>
-                                        {text(key)}
+                                        {text(value.status)}
                                     </Typography.Text>
 
-                                    <Typography.Caption variant="400">
-                                        Collection name
-                                    </Typography.Caption>
+                                    {#if value.collection}
+                                        <Typography.Caption variant="400">
+                                            {value.collection}
+                                        </Typography.Caption>
+                                    {/if}
                                 </div>
                                 <div
                                     class="progress-bar-container"
-                                    class:is-danger={key.status === 'failed'}
-                                    style="--graph-size:{graphSize(key.status)}%" />
+                                    class:is-danger={value.status === 'failed'}
+                                    style="--graph-size:{graphSize(value.status)}%">
+                                </div>
                             </section>
                         </li>
                     </ul>

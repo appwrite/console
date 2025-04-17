@@ -8,32 +8,24 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
-    import {
-        Card,
-        Icon,
-        Layout,
-        Empty as PinkEmpty,
-        Typography,
-        Table as PinkTable,
-        Tooltip,
-        Upload
-    } from '@appwrite.io/pink-svelte';
+    import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
     import { collection, columns, isCsvImportInProgress } from './store';
     import Table from './table.svelte';
-    import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { readColumnsFromCSV, removeFile } from '$lib/helpers/files';
+    import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import FilePicker from '$lib/components/filePicker.svelte';
+    import type { Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let data: PageData;
 
-    let files: FileList;
     let showImportCSV = false;
-    let showValidityAlert = false;
     let showCreateAttribute = false;
     let selectedAttribute: Option['name'] = null;
 
@@ -52,37 +44,31 @@
     $: hasAttributes = !!$collection.attributes.length;
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
 
-    let differences: Record<string, string[]> = {};
-    async function checkCsvAttrsValidity() {
-        if (!files.length) {
-            differences = { csv: [], collection: [] };
-            return;
+    async function onSelect(file: Models.File) {
+        $isCsvImportInProgress = true;
+
+        try {
+            await sdk.forProject.migrations.createCsvMigration(
+                file.bucketId,
+                file.$id,
+                `${page.params.database}:${page.params.collection}`
+            );
+
+            addNotification({
+                type: 'success',
+                message: 'Documents import from csv has started'
+            });
+
+            trackEvent(Submit.DatabaseImportCsv);
+        } catch (e) {
+            trackError(e, Submit.DatabaseImportCsv);
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        } finally {
+            $isCsvImportInProgress = false;
         }
-
-        const columns = await readColumnsFromCSV(files[0]);
-        const expected = $collection.attributes.map((attr) => attr.key);
-
-        showValidityAlert = !(
-            columns.length === expected.length && columns.every((col, i) => col === expected[i])
-        );
-
-        if (showValidityAlert) {
-            differences = {
-                csv: Array.from({ length: columns.length }, (_, i) => columns[i] || ''),
-                collection: Array.from(
-                    { length: $collection.attributes.length },
-                    (_, i) => expected[i] || ''
-                )
-            };
-        } else {
-            differences = { csv: [], collection: [] };
-        }
-    }
-
-    $: if (!showImportCSV) {
-        files = null;
-        showValidityAlert = false;
-        differences = { csv: [], collection: [] };
     }
 </script>
 
@@ -98,7 +84,7 @@
                 <ViewSelector view={data.view} {columns} hideView />
                 <Button
                     secondary
-                    event="import_documents"
+                    event={Click.DatabaseImportCsv}
                     disabled={!(hasAttributes && hasValidAttributes)}
                     on:click={() => (showImportCSV = true)}>
                     Import CSV
@@ -203,75 +189,7 @@
         bind:selectedOption={selectedAttribute} />
 {/if}
 
-<Modal
-    title="Import CSV"
-    bind:show={showImportCSV}
-    onSubmit={() => {
-        // todo: trigger upload and import once SDK is available.
-        showImportCSV = false;
-        $isCsvImportInProgress = true;
-    }}>
-    <Typography.Text slot="description">
-        Select a CSV file to upload. Ensure the file is properly formatted before proceeding.
-        <!-- TODO: @itznotabug, need a docs link here -->
-        <Button compact href="https://appwrite.io/docs/products/databases">Learn more.</Button>
-    </Typography.Text>
-
-    <Upload.Dropzone
-        required
-        bind:files
-        title="Upload CSV"
-        extensions={['csv']}
-        on:change={checkCsvAttrsValidity}>
-        <Layout.Stack alignItems="center" gap="s">
-            <Layout.Stack alignItems="center" gap="s">
-                <Layout.Stack alignItems="center" justifyContent="center" direction="row" gap="s">
-                    <Typography.Text variant="l-500">
-                        Drag and drop file here or click to upload
-                    </Typography.Text>
-                    <Tooltip maxWidth="fit-content" placement="top">
-                        <Layout.Stack alignItems="center" justifyContent="center" inline>
-                            <Icon icon={IconInfo} size="s" />
-                        </Layout.Stack>
-                        <svelte:fragment slot="tooltip">Only csv files allowed</svelte:fragment>
-                    </Tooltip>
-                </Layout.Stack>
-            </Layout.Stack>
-        </Layout.Stack>
-    </Upload.Dropzone>
-    {#if files?.length}
-        <!-- TODO: torsten, the types issue with FileList-->
-        <Upload.List bind:files on:remove={(e) => (files = removeFile(e.detail, files))} />
-    {/if}
-
-    {#if showValidityAlert}
-        <!-- TODO: @itznotabug, need to brainstorm for design on this one -->
-        <Layout.Stack gap="s">
-            <Typography.Text>
-                The uploaded CSV does not match the collection's attribute structure.
-            </Typography.Text>
-
-            <PinkTable.Root columns={2} let:root stickyHeaders maxHeight="16rem">
-                <svelte:fragment slot="header" let:root>
-                    <PinkTable.Header.Cell column="csv" {root}>CSV</PinkTable.Header.Cell>
-                    <PinkTable.Header.Cell column="collection" {root}
-                        >Collection</PinkTable.Header.Cell>
-                </svelte:fragment>
-                {#each differences.csv as csvKey, i}
-                    <PinkTable.Row.Base {root}>
-                        <PinkTable.Cell column="csv" {root}>{csvKey ?? '-'}</PinkTable.Cell>
-                        <PinkTable.Cell column="collection" {root}
-                            >{differences.collection[i] ?? '-'}</PinkTable.Cell>
-                    </PinkTable.Row.Base>
-                {/each}
-            </PinkTable.Root>
-        </Layout.Stack>
-    {/if}
-
-    <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showImportCSV = false)}>Cancel</Button>
-        <Button
-            disabled={files ? (showValidityAlert ? showValidityAlert : files?.length === 0) : true}
-            submit>Import</Button>
-    </svelte:fragment>
-</Modal>
+{#if showImportCSV}
+   <!-- CSVs can be text/plain or text/csv sometimes! -->
+    <FilePicker {onSelect} mimeTypeQuery="text/" bind:show={showImportCSV} />
+{/if}
