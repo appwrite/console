@@ -2,13 +2,11 @@ Databases are the largest organizational unit in Appwrite.
 Each database contains a group of [collections](/docs/products/databases/collections).
 In future versions, different databases may be backed by a different database technology of your choosing.
 
-# Create in Console
+## Create in Console
 The easiest way to create a database using the Appwrite Console.
 You can create a database by navigating to the **Databases** page and clicking **Create database**.
 
-
-
-# Create using Server SDKs
+## Create using Server SDKs
 You can programmatically create databases using a [Server SDK](/docs/sdks#server). Appwrite [Server SDKs](/docs/sdks#server) require an [API key](/docs/advanced/platform/api-keys).
 
 ```js

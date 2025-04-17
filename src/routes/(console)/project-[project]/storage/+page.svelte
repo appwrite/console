@@ -20,6 +20,7 @@
     import Table from './table.svelte';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { consoleProfile } from '$lib/system';
 
     export let data: PageData;
 
@@ -70,6 +71,9 @@
             single
             href="https://appwrite.io/docs/products/storage"
             target="bucket"
+            description={consoleProfile.hasChat
+                ? 'Storage allows you to manage files in your project.'
+                : 'Need a hand? Learn more in our documentation.'}
             on:click={() => showCreateBucket.set(true)} />
     {/if}
 </Container>

@@ -30,6 +30,7 @@
     import { canWriteMessages } from '$lib/stores/roles';
     import { Badge, FloatingActionBar, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
     import { Confirm } from '$lib/components';
+    import { consoleProfile } from '$lib/system';
 
     export let data;
 
@@ -199,7 +200,13 @@
             </div>
         </EmptySearch>
     {:else}
-        <Empty single target="message" on:click={() => ($showCreate = true)}>
+        <Empty
+            single
+            target="message"
+            on:click={() => ($showCreate = true)}
+            description={consoleProfile.hasChat
+                ? 'Messaging let you send push notifications, email, or SMS.'
+                : 'Need a hand? Learn more in our documentation.'}>
             <svelte:fragment slot="actions">
                 <Button
                     external

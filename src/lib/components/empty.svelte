@@ -13,7 +13,6 @@
     export let description = 'Need a hand? Learn more in our documentation.';
     export let disabled = false;
     export let src: string = null;
-    export let prompt: string = null;
 
     function track() {
         if (!allowCreate) {
@@ -31,14 +30,14 @@
     <Card.Base padding="none">
         <Empty title={`Create your first ${target}`} {description} {src}>
             <slot name="actions" slot="actions">
-                {#if consoleProfile.hasChat && prompt}
+                {#if consoleProfile.hasChat}
                     <Button
                         text
                         size="s"
                         on:click={() => {
                             showChat.set(true);
                             showPrompt.set(true);
-                        }}>Ask help</Button>
+                        }}>Learn more</Button>
                 {:else}<Button
                         external
                         {href}
