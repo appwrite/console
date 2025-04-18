@@ -44,7 +44,7 @@
                 href={`${base}/project-${project}/databases/database-${databaseId}`}
                 class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
                 <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
-                {data.database.name}
+                {data.database?.name}
             </a>
             <div class="collection-content">
                 {#if data?.allCollections?.total}

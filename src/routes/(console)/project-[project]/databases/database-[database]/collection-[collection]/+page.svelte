@@ -190,6 +190,6 @@
 {/if}
 
 {#if showImportCSV}
-   <!-- CSVs can be text/plain or text/csv sometimes! -->
+    <!-- CSVs can be text/plain or text/csv sometimes! -->
     <FilePicker {onSelect} mimeTypeQuery="text/" bind:show={showImportCSV} />
 {/if}

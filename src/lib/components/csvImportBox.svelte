@@ -50,33 +50,40 @@
     async function updateOrAddItem(importData: Payload | Models.Migration) {
         if (importData.source.toLowerCase() !== 'csv') return;
 
-        const existing = $importItems.get(importData.$id);
-        if (existing?.status === importData.status) return;
-
         const status = importData.status;
         const resourceId = importData.resourceId ?? '';
         const [databaseId, collectionId] = resourceId.split(':') ?? [];
 
-        let collectionName = existing?.collection ?? null;
+        const current = $importItems.get(importData.$id);
+        let collectionName = current?.collection ?? null;
 
-        console.log([importData.status, text(importData.status)].join(', '));
-
-        // fetch if we don't have it
-        if (!existing && collectionId) {
+        if (!collectionName && collectionId) {
             try {
                 const collection = await sdk.forProject.databases.getCollection(
                     databaseId,
                     collectionId
                 );
                 collectionName = collection.name;
-            } catch (err) {
+            } catch {
                 collectionName = null;
             }
         }
 
         importItems.update((items) => {
-            items.set(importData.$id, { status, collection: collectionName });
-            return items;
+            const existing = items.get(importData.$id);
+
+            const isDone = (s: string) => s === 'completed' || s === 'failed';
+            const isInProgress = (s: string) => ['pending', 'processing', 'uploading'].includes(s);
+
+            const shouldSkip =
+                (existing && isDone(existing.status) && isInProgress(status)) ||
+                existing?.status === status;
+
+            if (shouldSkip) return items;
+
+            const next = new Map(items);
+            next.set(importData.$id, { status, collection: collectionName ?? undefined });
+            return next;
         });
 
         if (status === 'completed') {
@@ -109,9 +116,9 @@
 
     function text(status: string) {
         if (status === 'completed') {
-            return `CSV import complete`;
+            return 'CSV import complete';
         } else if (status === 'failed') {
-            return `CSV import failed`;
+            return 'CSV import failed';
         } else {
             return 'Preparing CSV for import...';
         }
@@ -127,7 +134,7 @@
         return sdk.forConsole.client.subscribe('console', (response) => {
             if (!response.channels.includes(`projects.${getProjectId()}`)) return;
             if (response.events.includes('migrations.*')) {
-                updateOrAddItem(response.payload);
+                updateOrAddItem(response.payload as Payload);
             }
         });
     });
