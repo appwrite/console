@@ -1,13 +1,7 @@
 <script lang="ts">
-    import { Button, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import {
-        FormList,
-        InputNumber,
-        InputPassword,
-        InputText,
-        InputTextarea
-    } from '$lib/elements/forms';
     import { provider } from '.';
+    import { Button, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { InputNumber, InputPassword, InputText, InputTextarea } from '$lib/elements/forms';
 
     export let formSubmitted = false;
 
@@ -46,7 +40,8 @@
 
 <Layout.Stack gap="xl">
     {#if $provider.provider === 'appwrite'}
-        <FormList>
+        <Layout.Stack gap="l">
+            <Layout.Stack></Layout.Stack>
             <InputText
                 id="endpoint"
                 label="Endpoint"
@@ -65,19 +60,20 @@
                 required
                 placeholder="Enter API Key"
                 bind:value={$provider.apiKey} />
-        </FormList>
+        </Layout.Stack>
     {:else if $provider.provider === 'firebase'}
-        <FormList>
+        <Layout.Stack gap="l">
             <InputTextarea
                 id="credentials"
                 label="Service Account JSON credentials"
                 required
                 bind:value={$provider.serviceAccount}
                 placeholder="Enter Service Account JSON credentials" />
-        </FormList>
+        </Layout.Stack>
     {:else if $provider.provider === 'supabase'}
-        <FormList>
-            <Typography.Text size="m" variant="m-400">Postgres credentials</Typography.Text>
+        <Layout.Stack gap="l">
+            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary"
+                >Postgres credentials</Typography.Text>
 
             <InputText
                 id="host"
@@ -101,7 +97,8 @@
                 placeholder="Enter password"
                 bind:value={$provider.password} />
 
-            <Typography.Text size="m" variant="m-400">Supabase credentials</Typography.Text>
+            <Typography.Text variant="m-400" color="--fgcolor-neutral-primary"
+                >Supabase credentials</Typography.Text>
 
             <InputText
                 id="endpoint"
@@ -116,9 +113,9 @@
                 required
                 placeholder="Enter API Key"
                 bind:value={$provider.apiKey} />
-        </FormList>
+        </Layout.Stack>
     {:else if $provider.provider === 'nhost'}
-        <FormList>
+        <Layout.Stack gap="l">
             <InputText
                 id="region"
                 label="Region"
@@ -155,7 +152,7 @@
                 required
                 placeholder="Enter admin secret"
                 bind:value={$provider.adminSecret} />
-        </FormList>
+        </Layout.Stack>
     {/if}
 
     <Layout.Stack direction="row" justifyContent="flex-end">

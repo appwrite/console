@@ -20,7 +20,6 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
-    import { FormList } from '$lib/elements/forms';
     import { EyebrowHeading } from '$lib/components';
     import Credentials from './credentials.svelte';
     import ResourceForm from '$routes/(console)/(migration-wizard)/resource-form.svelte';
@@ -124,7 +123,7 @@
 </script>
 
 <Wizard title="Create migration" bind:showExitModal confirmExit {onExit}>
-    <FormList>
+    <Layout.Stack gap="l">
         <Layout.Stack gap="xxl">
             <Fieldset legend="Source">
                 <Layout.Stack gap="xl">
@@ -185,7 +184,7 @@
                 </Fieldset>
             {/if}
         </Layout.Stack>
-    </FormList>
+    </Layout.Stack>
 
     <svelte:fragment slot="aside">
         <Card.Base variant="primary" radius="s" padding="m">

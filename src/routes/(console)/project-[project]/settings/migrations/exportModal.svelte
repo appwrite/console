@@ -6,7 +6,7 @@
     import { getFormData } from '$lib/helpers/form';
     import { feedback } from '$lib/stores/feedback';
     import { Alert, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
+    import { Button, InputText, InputTextarea } from '$lib/elements/forms';
 
     export let show = false;
 
@@ -108,22 +108,10 @@
         redirecting = false;
         window.location.href = dest;
     };
-
-    function handleInvalid(event: Event) {
-        const input = event.target as HTMLInputElement;
-        const value = input.value;
-
-        if (!isValidEndpoint(value)) {
-            input.setCustomValidity('Please enter a valid endpoint');
-        } else {
-            input.setCustomValidity('');
-        }
-        input.reportValidity();
-    }
 </script>
 
 <Modal title="Export to self-hosted instance" bind:show {onSubmit}>
-    <FormList>
+    <Layout.Stack gap="l">
         <Alert.Inline status="info">
             <svelte:fragment slot="title">API key creation</svelte:fragment>
             By initiating the transfer, an API key will be automatically generated in the background,
@@ -136,12 +124,7 @@
             autofocus
             bind:value={endpointUrl}
             label="Endpoint self-hosted instance"
-            placeholder="https://<YOUR_APPWRITE_HOSTNAME>"
-            on:input={(e) => {
-                if (!redirecting) return;
-                handleInvalid(e);
-            }}
-        />
+            placeholder="https://<YOUR_APPWRITE_HOSTNAME>" />
 
         <Box>
             <Layout.Stack gap="xl">
@@ -157,7 +140,7 @@
                 <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
             </Layout.Stack>
         </Box>
-    </FormList>
+    </Layout.Stack>
 
     <Layout.Stack
         direction="row"
