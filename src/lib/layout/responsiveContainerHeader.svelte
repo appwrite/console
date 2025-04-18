@@ -66,9 +66,11 @@
         {#if $isSmallViewport}
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row">
-                    <div style={`--button-width: 100%; width: 100%`}>
-                        {@render children()}
-                    </div>
+                    {#if children}
+                        <div style={`--button-width: 100%; width: 100%`}>
+                            {@render children()}
+                        </div>
+                    {/if}
                     {#if numberOfOptions === 1}
                         {#if hasSearch}
                             {@render searchButton(true)}

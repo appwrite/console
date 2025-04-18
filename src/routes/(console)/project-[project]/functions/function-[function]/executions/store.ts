@@ -39,7 +39,6 @@ export const columns = writable<Column[]>([
         id: 'responseStatusCode',
         title: 'Status code',
         type: 'integer',
-        hide: true,
         width: { min: 100, max: 200 },
         format: 'integer',
         elements: [

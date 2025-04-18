@@ -35,25 +35,23 @@
                         {#key column.id}
                             <Id value={log.$id}>{log.$id}</Id>
                         {/key}
+                    {:else if column.id === 'requestMethod'}
+                        <Typography.Code size="m">
+                            {log.requestMethod}
+                        </Typography.Code>
+                    {:else if column.id === 'responseStatusCode'}
+                        <div>
+                            <Badge
+                                variant="secondary"
+                                type={log.responseStatusCode >= 400 ? 'error' : 'success'}
+                                content={log.responseStatusCode.toString()} />
+                        </div>
+                    {:else if column.id === 'requestPath'}
+                        <Typography.Code size="m">
+                            {log.requestPath}
+                        </Typography.Code>
                     {:else if column.id === '$createdAt'}
                         <DualTimeView time={log.$createdAt} />
-                    {:else if column.id === 'responseStatusCode'}
-                        {log.responseStatusCode}
-                    {:else if column.id === 'requestPath'}
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
-                            <div>
-                                <Badge
-                                    variant="secondary"
-                                    type={log.responseStatusCode >= 400 ? 'error' : 'success'}
-                                    content={log.responseStatusCode.toString()} />
-                            </div>
-                            <Typography.Code size="m">
-                                {log.requestMethod}
-                            </Typography.Code>
-                            <Typography.Code size="m">
-                                {log.requestPath}
-                            </Typography.Code>
-                        </Layout.Stack>
                     {/if}
                 </Table.Cell>
             {/each}
