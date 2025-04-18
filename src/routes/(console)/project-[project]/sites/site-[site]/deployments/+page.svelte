@@ -73,7 +73,7 @@
 
 <Container>
     <Layout.Stack gap="xxxl">
-        <DeploymentMetrics deploymentList={data.deploymentList} />
+        <DeploymentMetrics />
 
         <!-- TODO: re-enable once component is complete -->
         <Layout.Stack gap="l">
