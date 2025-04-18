@@ -19,17 +19,17 @@
         <Heading tag="h2" size="5">Functions</Heading>
         <SecondaryTabs>
             <SecondaryTabsItem
-                href={`${base}/project-${data.project.$id}/functions/function-${data.function.$id}/usage/24h`}
+                href={`${base}/project-${data.project.region}-${data.project.$id}/functions/function-${data.function.$id}/usage/24h`}
                 disabled={($page.params.period ?? '24h') === '24h'}>
                 24h
             </SecondaryTabsItem>
             <SecondaryTabsItem
-                href={`${base}/project-${data.project.$id}/functions/function-${data.function.$id}/usage/30d`}
+                href={`${base}/project-${data.project.region}-${data.project.$id}/functions/function-${data.function.$id}/usage/30d`}
                 disabled={$page.params.period === '30d'}>
                 30d
             </SecondaryTabsItem>
             <SecondaryTabsItem
-                href={`${base}/project-${data.project.$id}/functions/function-${data.function.$id}/usage/90d`}
+                href={`${base}/project-${data.project.region}-${data.project.$id}/functions/function-${data.function.$id}/usage/90d`}
                 disabled={$page.params.period === '90d'}>
                 90d
             </SecondaryTabsItem>

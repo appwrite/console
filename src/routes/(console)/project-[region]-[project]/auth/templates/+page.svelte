@@ -111,7 +111,7 @@
                 buttons={[
                     {
                         slot: 'SMTP settings',
-                        href: `${base}/project-${data.project.$id}/settings/smtp`
+                        href: `${base}/project-${data.project.region}-${data.project.$id}/settings/smtp`
                     }
                 ]}>
                 <svelte:fragment slot="title">
@@ -213,7 +213,7 @@
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button href={`${base}/project-${data.project.$id}/settings/smtp`} secondary>
+            <Button href={`${base}/project-${data.project.region}-${data.project.$id}/settings/smtp`} secondary>
                 SMTP settings
             </Button>
         </svelte:fragment>
