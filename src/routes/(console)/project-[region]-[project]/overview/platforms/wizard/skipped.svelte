@@ -8,6 +8,7 @@
     const showSkippedModal = writable(false);
 
     async function closeWizard() {
+        await invalidateDependencies();
         wizard.hide();
         createPlatform.reset();
     }
