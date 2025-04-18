@@ -26,7 +26,7 @@
 
     export let data;
 
-    $: baseRoute = `${base}/project-${data.project.$id}`;
+    $: baseRoute = `${base}/project-${data.project.region}-${data.project.$id}`;
     $: network = data.usage.network;
     $: users = data.usage.users;
     $: usersTotal = data.usage.usersTotal;
