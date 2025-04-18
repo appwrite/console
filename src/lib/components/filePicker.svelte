@@ -282,7 +282,7 @@
                                                         Created
                                                     </Table.Header.Cell>
                                                 </svelte:fragment>
-                                                {#each response?.files as file}
+                                                {#each response?.files as file (file.$id)}
                                                     <Table.Row.Button
                                                         {root}
                                                         on:click={() => selectFile(file)}>
@@ -291,10 +291,8 @@
                                                                 class="u-inline-flex u-cross-center u-gap-12">
                                                                 <Selector.Radio
                                                                     name="file"
-                                                                    group="file"
                                                                     value={file.$id}
-                                                                    checked={file.$id ===
-                                                                        selectedFile} />
+                                                                    bind:group={selectedFile} />
                                                                 <img
                                                                     style:border-radius="var(--border-radius-xsmall)"
                                                                     width="28"
