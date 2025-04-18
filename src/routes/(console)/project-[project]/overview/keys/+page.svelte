@@ -8,7 +8,7 @@
     import { Table } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     export let data: PageData;
 
@@ -16,28 +16,28 @@
 </script>
 
 {#if data.keys.total}
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Name</Table.Header.Cell>
-            <Table.Header.Cell>Last accessed</Table.Header.Cell>
-            <Table.Header.Cell>Expiration date</Table.Header.Cell>
-            <Table.Header.Cell>Scopes</Table.Header.Cell>
+    <Table.Root columns={4} let:root>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell {root}>Last accessed</Table.Header.Cell>
+            <Table.Header.Cell {root}>Expiration date</Table.Header.Cell>
+            <Table.Header.Cell {root}>Scopes</Table.Header.Cell>
         </svelte:fragment>
         {#each data.keys.keys as key}
-            <Table.Link href={`keys/${key.$id}`}>
-                <Table.Cell>
+            <Table.Row.Link href={`keys/${key.$id}`} {root}>
+                <Table.Cell {root}>
                     {key.name}
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell {root}>
                     {key.accessedAt ? toLocaleDate(key.accessedAt) : 'never'}
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell {root}>
                     {key.expire ? toLocaleDateTime(key.expire) : 'never'}
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell {root}>
                     {key.scopes.length} Scopes
                 </Table.Cell>
-            </Table.Link>
+            </Table.Row.Link>
         {/each}
     </Table.Root>
 {:else}
@@ -46,5 +46,5 @@
         allowCreate={$canWriteKeys}
         href="https://appwrite.io/docs/advanced/platform/api-keys"
         target="API key"
-        on:click={() => goto(`${base}/project-${$page.params.project}/overview/keys/create`)} />
+        on:click={() => goto(`${base}/project-${page.params.project}/overview/keys/create`)} />
 {/if}

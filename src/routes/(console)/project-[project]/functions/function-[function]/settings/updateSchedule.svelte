@@ -1,18 +1,19 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputCron } from '$lib/elements/forms';
+    import { Button, Form, InputCron } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
+    import { Link } from '$lib/elements';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     let functionSchedule: string = null;
 
     onMount(async () => {
@@ -63,20 +64,11 @@
     <CardGrid>
         <svelte:fragment slot="title">Schedule</svelte:fragment>
         Set a Cron schedule to trigger your function. Leave blank for no schedule.
-        <a
-            href="https://appwrite.io/docs/products/functions/execution#schedule"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">
-            More details on Cron syntax here</a
+        <Link href="https://appwrite.io/docs/products/functions/execution#schedule" external>
+            Learn more</Link
         >.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputCron
-                    bind:value={functionSchedule}
-                    label="Schedule (Cron Syntax)"
-                    id="schedule" />
-            </FormList>
+            <InputCron bind:value={functionSchedule} label="Schedule (Cron syntax)" id="schedule" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

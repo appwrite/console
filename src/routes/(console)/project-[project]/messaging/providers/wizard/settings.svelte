@@ -6,9 +6,7 @@
     import SettingsFormList from '../settingsFormList.svelte';
     import { newMemberModal } from '$lib/stores/organization';
     import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
-    import Provider from '../../provider.svelte';
     import { MessagingProviderType } from '@appwrite.io/console';
-    import ProviderTypeComponent from '$routes/(console)/project-[project]/messaging/providerType.svelte';
     import {
         Collapsible,
         CollapsibleItem,
@@ -82,7 +80,7 @@
                                         <span
                                             class="icon-info"
                                             style:--p-text-size="1.25rem"
-                                            aria-hidden="true" />
+                                            aria-hidden="true"></span>
                                     </div>
                                     <span class="title body-text-2 u-small" class:u-bold={open}
                                         >How to enable {getProviderText($provider)}
@@ -101,7 +99,7 @@
                         </CollapsibleItem>
                     </Collapsible>
                 </div>
-                <div class="u-margin-block-start-4 u-sep-block-end" />
+                <div class="u-margin-block-start-4 u-sep-block-end"></div>
             {/if}
 
             <ClickableList>
@@ -114,11 +112,11 @@
                                 <span
                                     class="icon-book-open"
                                     style:--p-text-size="1.25rem"
-                                    aria-hidden="true" />
+                                    aria-hidden="true"></span>
                             </div>
                             <p>Read the full guide in the documentation</p>
                         </div>
-                        <span class="icon-arrow-sm-right u-font-size-20" aria-hidden="true" />
+                        <span class="icon-arrow-sm-right u-font-size-20" aria-hidden="true"></span>
                     </div>
                 </ClickableListItem>
                 <ClickableListItem on:click={() => ($newMemberModal = true)}>
@@ -128,11 +126,11 @@
                                 <span
                                     class="icon-user-group"
                                     style:--p-text-size="1.25rem"
-                                    aria-hidden="true" />
+                                    aria-hidden="true"></span>
                             </div>
                             <p>Invite a team member to complete this step</p>
                         </div>
-                        <span class="icon-arrow-sm-right u-font-size-20" aria-hidden="true" />
+                        <span class="icon-arrow-sm-right u-font-size-20" aria-hidden="true"></span>
                     </div>
                 </ClickableListItem>
             </ClickableList>

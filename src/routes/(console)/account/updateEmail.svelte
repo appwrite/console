@@ -3,7 +3,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputPassword, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputPassword, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
@@ -39,22 +39,20 @@
     <CardGrid>
         <svelte:fragment slot="title">Email</svelte:fragment>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="email"
-                    label="Email"
-                    placeholder="Enter email"
-                    bind:value={email}
-                    required />
-                {#if email !== $user.email && email}
-                    <InputPassword
-                        id="emailPassword"
-                        label="Password"
-                        placeholder="Enter password"
-                        required
-                        bind:value={emailPassword} />
-                {/if}
-            </FormList>
+            <InputText
+                id="email"
+                label="Email"
+                placeholder="Enter email"
+                bind:value={email}
+                required />
+            {#if email !== $user.email && email}
+                <InputPassword
+                    id="emailPassword"
+                    label="Password"
+                    placeholder="Enter password"
+                    required
+                    bind:value={emailPassword} />
+            {/if}
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

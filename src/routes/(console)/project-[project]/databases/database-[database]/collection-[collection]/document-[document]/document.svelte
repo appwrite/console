@@ -4,7 +4,7 @@
     import { collection } from '../store';
     import { doc } from './store';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
@@ -16,9 +16,9 @@
 
     let disableUpdate = true;
     let currentDoc: string;
-    const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
-    const documentId = $page.params.document;
+    const databaseId = page.params.database;
+    const collectionId = page.params.collection;
+    const documentId = page.params.document;
 
     const work = writable(
         Object.keys($doc)

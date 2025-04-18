@@ -40,7 +40,7 @@
 </script>
 
 <script lang="ts">
-    import { InputNumber, InputChoice } from '$lib/elements/forms';
+    import { InputNumber } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeFloat> = {

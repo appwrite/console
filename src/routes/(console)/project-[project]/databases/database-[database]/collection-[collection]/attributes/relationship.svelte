@@ -47,15 +47,14 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputSelect, InputSelectSearch } from '$lib/elements/forms';
+    import { InputText, InputSelect } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
-    import { Box, LabelCard } from '$lib/components';
+    import { page } from '$app/state';
+    import { Box } from '$lib/components';
     import { collection } from '../store';
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
-    import { SelectSearchItem } from '$lib/elements';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Card, Layout } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight, IconSwitchHorizontal } from '@appwrite.io/pink-icons-svelte';
@@ -65,7 +64,7 @@
     export let editing = false;
 
     // Constants
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
     const relationshipType = [
         { value: 'oneToOne', label: 'One to one' },
         { value: 'oneToMany', label: 'One to many' },
@@ -161,19 +160,6 @@
     bind:value={data.relatedCollection}
     on:change={updateKeyName}
     options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
-
-<!-- <div>
-    <InputSelectSearch
-        id="related"
-        label="Related Collection"
-        bind:value={data.relatedCollection}
-        required
-        placeholder="Select a collection"
-        disabled={editing}
-        options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
-        on:select={updateKeyName}>
-    </InputSelectSearch>
-</div> -->
 
 {#if data?.relatedCollection}
     <InputText

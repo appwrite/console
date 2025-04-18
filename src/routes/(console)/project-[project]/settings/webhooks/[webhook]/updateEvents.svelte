@@ -1,11 +1,10 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Empty, EventModal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
-    import { TableCell, TableCellText, TableList } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -15,7 +14,7 @@
     import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     const eventSet: Writable<Set<string>> = writable(new Set());
 
     let showCreateEvent = false;
@@ -73,10 +72,10 @@
         Set the events that will trigger your webhook. Maximum 100 events allowed.
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
-                <Table.Root>
+                <Table.Root columns={1} let:root>
                     {#each Array.from($eventSet) as event}
-                        <Table.Row>
-                            <Table.Cell>
+                        <Table.Row.Base {root}>
+                            <Table.Cell {root}>
                                 <Layout.Stack
                                     direction="row"
                                     justifyContent="space-between"
@@ -93,7 +92,7 @@
                                     </Button>
                                 </Layout.Stack>
                             </Table.Cell>
-                        </Table.Row>
+                        </Table.Row.Base>
                     {/each}
                 </Table.Root>
                 <div>

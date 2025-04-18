@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import {
         registerCommands,
         registerSearchers,
@@ -10,7 +10,6 @@
     import { fileSearcher } from '$lib/commandCenter/searchers';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { project } from '../../store';
-    import { showCreateFile } from './+page.svelte';
     import { bucket } from './store';
     import { IconKey, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
@@ -18,11 +17,11 @@
         {
             label: 'Create file',
             async callback() {
-                if (!$page.url.pathname.endsWith($bucket.$id)) {
+                if (!page.url.pathname.endsWith($bucket.$id)) {
                     goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/create`);
                 }
             },
-            keys: $page.url.pathname.endsWith($bucket.$id) ? ['c'] : ['c', 'f'],
+            keys: page.url.pathname.endsWith($bucket.$id) ? ['c'] : ['c', 'f'],
             group: 'files',
             icon: IconPlus
         },
@@ -66,7 +65,7 @@
             callback() {
                 goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}`);
             },
-            disabled: $page.url.pathname.endsWith($bucket.$id),
+            disabled: page.url.pathname.endsWith($bucket.$id),
             keys: ['g', 'f'],
             group: 'navigation',
             rank: 10
@@ -76,7 +75,7 @@
             callback() {
                 goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/usage`);
             },
-            disabled: $page.url.pathname.endsWith('usage'),
+            disabled: page.url.pathname.endsWith('usage'),
             keys: ['g', 'u'],
             group: 'navigation',
             rank: 10
@@ -86,7 +85,7 @@
             callback() {
                 goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/settings`);
             },
-            disabled: $page.url.pathname.endsWith('settings') || !$canWriteBuckets,
+            disabled: page.url.pathname.endsWith('settings') || !$canWriteBuckets,
             keys: ['g', 's'],
             group: 'navigation',
             rank: 10

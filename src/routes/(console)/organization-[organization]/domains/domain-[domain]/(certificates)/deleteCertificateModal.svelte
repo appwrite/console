@@ -6,11 +6,14 @@
     import { Confirm } from '$lib/components';
 
     export let show = false;
-    export let selectedCertificate;
+    export let selectedCertificate; //TODO: add type
 
     let error = '';
 
     async function deleteCertificate() {
+        // not marked as unused.
+        console.log(selectedCertificate);
+
         try {
             //TODO: add method
             await invalidate(Dependencies.DOMAIN);

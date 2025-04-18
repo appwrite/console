@@ -35,7 +35,7 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputChoice } from '$lib/elements/forms';
+    import { InputText } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeIp>;

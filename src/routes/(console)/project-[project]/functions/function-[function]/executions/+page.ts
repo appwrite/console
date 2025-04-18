@@ -5,7 +5,9 @@ import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
 
-export const load: PageLoad = async ({ params, depends, url, route }) => {
+export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
+    const { function: func } = await parent();
+
     depends(Dependencies.EXECUTIONS);
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
@@ -19,6 +21,7 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
         offset,
         limit,
         query,
+        func,
         executions: await sdk.forProject.functions.listExecutions(params.function, [
             Query.limit(limit),
             Query.offset(offset),

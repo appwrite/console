@@ -23,6 +23,7 @@ export const canWriteCollections = derived(scopes, ($scopes) =>
     $scopes.includes('collections.write')
 );
 export const canWriteSites = derived(scopes, ($scopes) => $scopes.includes('sites.write'));
+export const canWriteDomains = derived(scopes, ($scopes) => $scopes.includes('domains.write')); //TODO: check if correct
 
 export const canWriteDocuments = derived(scopes, ($scopes) => $scopes.includes('documents.write'));
 export const canWriteExecutions = derived(scopes, ($scopes) =>

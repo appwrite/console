@@ -1,25 +1,24 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IndexType } from '@appwrite.io/console';
     import { isRelationship } from '../document-[document]/attributes/store';
     import { type Attributes, collection, indexes } from '../store';
-    import Select from './select.svelte';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
     let key = '';
     let error: string;
@@ -87,7 +86,7 @@
             ]);
 
             goto(
-                `${base}/project-${$page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
+                `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
             );
 
             addNotification({
@@ -153,13 +152,13 @@
                         on:click={() => {
                             attributeList = remove(attributeList, i);
                         }}>
-                        <span class="icon-x" aria-hidden="true" />
+                        <span class="icon-x" aria-hidden="true"></span>
                     </Button>
                 </Layout.Stack>
             </Layout.Stack>
         {/each}
         <div>
-            <Button secondary on:click={addAttribute} disabled={addAttributeDisabled}>
+            <Button compact on:click={addAttribute} disabled={addAttributeDisabled}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add attribute
             </Button>

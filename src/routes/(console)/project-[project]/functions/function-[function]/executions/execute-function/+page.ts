@@ -8,11 +8,12 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
 
     return {
         func: data.function,
-        activeDeployment: data.function.deployment
+        activeDeployment: data.function.deploymentId
             ? await sdk.forProject.functions.getDeployment(
                   params.function,
-                  data.function.deployment
+                  data.function.deploymentId
               )
-            : null
+            : null,
+        proxyRuleList: data.proxyRuleList
     };
 };

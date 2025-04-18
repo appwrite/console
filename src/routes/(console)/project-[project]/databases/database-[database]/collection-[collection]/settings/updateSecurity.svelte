@@ -1,16 +1,16 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, FormList, InputSwitch } from '$lib/elements/forms';
+    import { Button, InputSwitch } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { collection } from '../store';
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
     let collectionDocumentSecurity: boolean = null;
 
@@ -47,12 +47,11 @@
 <CardGrid>
     <svelte:fragment slot="title">Document security</svelte:fragment>
     <svelte:fragment slot="aside">
-        <FormList>
-            <InputSwitch
-                bind:value={collectionDocumentSecurity}
-                id="security"
-                label="Document security" />
-        </FormList>
+        <InputSwitch
+            bind:value={collectionDocumentSecurity}
+            id="security"
+            label="Document security" />
+
         <p class="text">
             When document security is enabled, users will be able to access documents for which they
             have been granted <b>either document or collection permissions</b>.

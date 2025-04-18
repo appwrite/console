@@ -5,12 +5,11 @@
         InputSelect,
         InputText,
         InputTags,
-        FormList,
         InputSelectCheckbox,
         InputDateTime
     } from '$lib/elements/forms';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { tags, operators, addFilter, queries } from './store';
+    import { operators, addFilter, queries, type TagValue } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { TagList } from '.';
@@ -43,6 +42,8 @@
 
     $: isDisabled = !operator;
 
+    let localTags: TagValue[] = [];
+
     onMount(() => {
         value = column?.array ? [] : null;
         if (column?.type === 'datetime') {
@@ -66,7 +67,7 @@
         clear: void;
         apply: { applied: number };
     }>();
-    dispatch('apply', { applied: $tags.length });
+    dispatch('apply', { applied: localTags.length });
 </script>
 
 <div>
@@ -91,27 +92,24 @@
         </Layout.Stack>
         {#if column && operator && !operator?.hideInput}
             {#if column?.array}
-                <FormList class="u-margin-block-start-8">
-                    {#if column.format === 'enum'}
-                        <InputSelectCheckbox
-                            name="value"
-                            bind:tags={arrayValues}
-                            placeholder="Select value"
-                            options={column?.elements?.map((e) => ({
-                                label: e?.label ?? e,
-                                value: e?.value ?? e,
-                                checked: arrayValues.includes(e?.value ?? e)
-                            }))}>
-                        </InputSelectCheckbox>
-                    {:else}
-                        <InputTags
-                            label="values"
-                            showLabel={false}
-                            id="value"
-                            bind:tags={arrayValues}
-                            placeholder="Enter values" />
-                    {/if}
-                </FormList>
+                {#if column.format === 'enum'}
+                    <InputSelectCheckbox
+                        name="value"
+                        bind:tags={arrayValues}
+                        placeholder="Select value"
+                        options={column?.elements?.map((e) => ({
+                            label: e?.label ?? e,
+                            value: e?.value ?? e,
+                            checked: arrayValues.includes(e?.value ?? e)
+                        }))}>
+                    </InputSelectCheckbox>
+                {:else}
+                    <InputTags
+                        label="values"
+                        id="value"
+                        bind:tags={arrayValues}
+                        placeholder="Enter values" />
+                {/if}
             {:else}
                 <ul class="u-margin-block-start-8">
                     {#if column.format === 'enum'}
@@ -155,7 +153,12 @@
 
     {#if !singleCondition}
         <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
-            <TagList />
+            <TagList
+                tags={localTags}
+                on:remove={(e) => {
+                    queries.removeFilter(e.detail);
+                    queries.apply();
+                }} />
         </ul>
     {/if}
 </div>

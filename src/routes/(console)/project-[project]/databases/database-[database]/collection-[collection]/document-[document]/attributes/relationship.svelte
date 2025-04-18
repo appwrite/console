@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { PaginationInline } from '$lib/components';
-    import { SelectSearchItem } from '$lib/elements';
-    import { Button, InputSelectSearch, Label } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
@@ -11,6 +10,7 @@
     import { isRelationshipToMany } from './store';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
     export let id: string;
     export let label: string;
@@ -20,7 +20,7 @@
     export let optionalText: string | undefined = undefined;
     export let editing = false;
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
 
     let documentList: Models.DocumentList<Models.Document>;
     let search: string = null;
@@ -119,127 +119,62 @@
         <ul class="u-flex-vertical u-gap-4 u-margin-block-start-4">
             {#if !editing && relatedList?.length}
                 {#each relatedList as item, i}
-                    <li class="u-flex u-gap-16">
-                        <InputSelectSearch
-                            {id}
-                            label="Rel"
-                            showLabel={false}
-                            required
-                            bind:search
-                            bind:value={item}
-                            {options}
-                            let:option={o}>
-                            <SelectSearchItem data={o.data}>
-                                {o.label}
-                            </SelectSearchItem>
-                            <svelte:fragment slot="output" let:option={o}>
-                                <output class="input-text is-read-only">
-                                    <SelectSearchItem data={o.data}>
-                                        {o.label}
-                                    </SelectSearchItem>
-                                </output>
-                            </svelte:fragment>
-                        </InputSelectSearch>
-                        <Button
-                            text
-                            noMargin
-                            ariaLabel={`Delete item ${i}`}
-                            on:click={() => {
-                                relatedList.splice(i, 1);
-                                relatedList = relatedList;
-                                value = relatedList;
-                            }}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </Button>
-                    </li>
+                    <InputSelect {id} required bind:value={item} {options} />
+                    <Button
+                        extraCompact
+                        ariaLabel={`Delete item ${i}`}
+                        on:click={() => {
+                            relatedList.splice(i, 1);
+                            relatedList = relatedList;
+                            value = relatedList;
+                        }}>
+                        <span class="icon-x" aria-hidden="true"></span>
+                    </Button>
                 {/each}
             {/if}
 
             {#if showInput}
-                <li class="u-flex u-gap-16">
-                    <InputSelectSearch
-                        {id}
-                        label="Rel"
-                        showLabel={false}
-                        required
-                        placeholder={`Select ${attribute.key}`}
-                        bind:search
-                        bind:value={relatedList[total]}
-                        options={options?.filter((n) => !relatedList.includes(n.value))}
-                        on:select={() => {
-                            value = relatedList;
-                            showInput = false;
-                        }}
-                        let:option={o}>
-                        <SelectSearchItem data={o.data}>
-                            {o.label}
-                        </SelectSearchItem>
-                        <svelte:fragment slot="output" let:option={o}>
-                            <output class="input-text is-read-only">
-                                <SelectSearchItem data={o.data}>
-                                    {o.label}
-                                </SelectSearchItem>
-                            </output>
-                        </svelte:fragment>
-                    </InputSelectSearch>
-                    <Button
-                        text
-                        noMargin
-                        ariaLabel={`Hide input`}
-                        on:click={() => (showInput = false)}>
-                        <span class="icon-x" aria-hidden="true" />
-                    </Button>
-                </li>
+                <InputSelect
+                    {id}
+                    label="Rel"
+                    required
+                    placeholder={`Select ${attribute.key}`}
+                    bind:value={relatedList[total]}
+                    options={options?.filter((n) => !relatedList.includes(n.value))}
+                    on:change={() => {
+                        value = relatedList;
+                        showInput = false;
+                    }} />
+                <Button extraCompact ariaLabel={`Hide input`} on:click={() => (showInput = false)}>
+                    <span class="icon-x" aria-hidden="true"></span>
+                </Button>
             {/if}
             {#if paginatedItems && editing}
                 {#each paginatedItems as item, i}
-                    <li class="u-flex u-gap-16">
-                        <InputSelectSearch
-                            {id}
-                            label="Rel"
-                            showLabel={false}
-                            required
-                            bind:search
-                            bind:value={item}
-                            {options}
-                            let:option={o}>
-                            <SelectSearchItem data={o.data}>
-                                {o.label}
-                            </SelectSearchItem>
-                            <svelte:fragment slot="output" let:option={o}>
-                                <output class="input-text is-read-only">
-                                    <SelectSearchItem data={o.data}>
-                                        {o.label}
-                                    </SelectSearchItem>
-                                </output>
-                            </svelte:fragment>
-                        </InputSelectSearch>
-                        <Button
-                            text
-                            noMargin
-                            ariaLabel={`Delete item ${i}`}
-                            on:click={() => {
-                                relatedList.splice(i, 1);
-                                relatedList = relatedList;
-                                value = relatedList;
-                            }}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </Button>
-                    </li>
+                    <InputSelect {id} label="Rel" required bind:value={item} {options} />
+                    <Button
+                        extraCompact
+                        ariaLabel={`Delete item ${i}`}
+                        on:click={() => {
+                            relatedList.splice(i, 1);
+                            relatedList = relatedList;
+                            value = relatedList;
+                        }}>
+                        <span class="icon-x" aria-hidden="true"></span>
+                    </Button>
                 {/each}
             {/if}
         </ul>
         {#if editing}
             <div class="u-flex u-margin-block-start-32 u-main-space-between">
                 <p class="text">Total results: {total}</p>
-                <PaginationInline {limit} bind:offset sum={total} hidePages />
+                <PaginationInline {limit} bind:offset {total} hidePages />
             </div>
         {/if}
 
         {#if total > 0 && !editing}
             <Button
-                text
-                noMargin
+                extraCompact
                 disabled={showInput}
                 on:click={() => {
                     showInput = true;
@@ -250,29 +185,12 @@
         {/if}
     </div>
 {:else}
-    <InputSelectSearch
+    <InputSelect
         {id}
         {label}
-        {optionalText}
-        required={attribute.required}
-        name="documents"
-        placeholder={`Select ${attribute.key}`}
-        interactiveOutput
-        bind:search
-        bind:value={singleRel}
         {options}
-        let:option={o}
-        on:reset={() => (value = null)}
-        on:select={() => (value = singleRel)}>
-        <SelectSearchItem data={o.data}>
-            {o.label}
-        </SelectSearchItem>
-        <svelte:fragment slot="output" let:option={o}>
-            <output class="input-text">
-                <SelectSearchItem data={o.data}>
-                    {o.label}
-                </SelectSearchItem>
-            </output>
-        </svelte:fragment>
-    </InputSelectSearch>
+        required={attribute.required}
+        placeholder={`Select ${attribute.key}`}
+        bind:value={singleRel}
+        on:change={() => (value = singleRel)} />
 {/if}

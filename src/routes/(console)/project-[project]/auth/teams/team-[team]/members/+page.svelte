@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Empty, EmptySearch, AvatarInitials, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -21,7 +21,7 @@
     let showDelete = false;
     let selectedMembership: Models.Membership;
 
-    const project = $page.params.project;
+    const project = page.params.project;
 
     async function memberCreated() {
         invalidate(Dependencies.MEMBERSHIPS);
@@ -37,29 +37,38 @@
     </Layout.Stack>
 
     {#if data.memberships.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Name</Table.Header.Cell>
-                <Table.Header.Cell>Roles</Table.Header.Cell>
-                <Table.Header.Cell>Joined</Table.Header.Cell>
-                <Table.Header.Cell width="40px" />
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'name' },
+                { id: 'roles' },
+                { id: 'joined' },
+                { id: 'actions', width: 40 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+                <Table.Header.Cell column="roles" {root}>Roles</Table.Header.Cell>
+                <Table.Header.Cell column="joined" {root}>Joined</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
             {#each data.memberships.memberships as membership}
                 {@const username = membership.userName ? membership.userName : '-'}
-                <Table.Link href={`${base}/project-${project}/auth/user-${membership.userId}`}>
-                    <Table.Cell>
+                <Table.Row.Link
+                    {root}
+                    href={`${base}/project-${project}/auth/user-${membership.userId}`}>
+                    <Table.Cell column="name" {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={username} />
                             <span>{username}</span>
                         </Layout.Stack>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="roles" {root}>
                         {membership.roles}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="joined" {root}>
                         {toLocaleDateTime(membership.joined)}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="actions" {root}>
                         <button
                             class="button is-only-icon is-text"
                             aria-label="Delete item"
@@ -68,10 +77,10 @@
                                 showDelete = true;
                                 trackEvent(Click.MembershipDeleteClick);
                             }}>
-                            <span class="icon-trash" aria-hidden="true" />
+                            <span class="icon-trash" aria-hidden="true"></span>
                         </button>
                     </Table.Cell>
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
 
@@ -103,7 +112,7 @@
     {/if}
 </Container>
 
-<CreateMember teamId={$page.params.team} bind:showCreate on:created={memberCreated} />
+<CreateMember teamId={page.params.team} bind:showCreate on:created={memberCreated} />
 <DeleteMembership
     {selectedMembership}
     bind:showDelete

@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
-    import { DropList } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { wizard } from '$lib/stores/wizard';
-    import SupportWizard from '$routes/(console)/supportWizard.svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { DropList } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { IconInfo, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Badge, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { goto } from '$app/navigation';
+    import { upgradeURL } from '$lib/stores/billing';
 
     export let isFlex = true;
     export let title: string;
@@ -25,14 +25,27 @@
     class:is-disabled={buttonDisabled}
     class:u-flex={isFlex}
     class="u-gap-12 common-section u-main-space-between u-flex-wrap">
-    <div class="u-flex u-cross-child-center u-cross-center u-gap-12">
-        <div class="body-text-1 u-bold backups-title">{title}</div>
+    <Layout.Stack
+        direction="row"
+        gap="m"
+        alignContent="center"
+        alignItems="center"
+        justifyContent="space-between">
+        <Layout.Stack direction="row" gap="xs">
+            <Typography.Text variant="m-500">{title}</Typography.Text>
+            {#if title === 'Policies'}
+                <Badge size="xs" variant="secondary" content={policiesCreated.toString()} />
+            {/if}
+        </Layout.Stack>
 
         {#if title === 'Policies' && policiesCreated >= maxPolicies}
-            <div style="height: 40px; padding-block-start: 4px">
+            <div style:height="40px;" style:padding-block-start="4px">
                 <DropList bind:show={showDropdown} width="16">
-                    <Pill button on:click={() => (showDropdown = true)}>
-                        <span class="icon-info" />{policiesCreated}/{maxPolicies} created
+                    <Pill disabled={buttonDisabled} button on:click={() => (showDropdown = true)}>
+                        <Layout.Stack direction="row" gap="xs" alignItems="center" inline>
+                            <Icon icon={IconInfo} size="s" />
+                            {policiesCreated}/{maxPolicies} created
+                        </Layout.Stack>
                     </Pill>
                     <svelte:fragment slot="list">
                         <slot name="tooltip">
@@ -42,45 +55,31 @@
                                     class="u-underline"
                                     on:click={() => {
                                         showDropdown = !showDropdown;
-                                        wizard.start(SupportWizard);
-                                    }}>Contact support</button> to upgrade your plan and add customized
-                                backup policies.
+                                        goto($upgradeURL);
+                                    }}>Upgrade your plan</button> to add customized backup policies.
                             </span>
                         </slot>
                     </svelte:fragment>
                 </DropList>
             </div>
         {/if}
-    </div>
 
-    {#if title === 'Backups' || policiesCreated < maxPolicies}
-        <Button
-            event={buttonEvent}
-            on:click={buttonMethod}
-            disabled={buttonDisabled}
-            text={buttonType === 'text'}
-            secondary={buttonType === 'secondary'}>
-            <Icon icon={IconPlus} slot="start" size="s" />
-            {buttonText}
-        </Button>
-    {/if}
+        {#if title === 'Backups' || policiesCreated < maxPolicies}
+            <Button
+                event={buttonEvent}
+                on:click={buttonMethod}
+                disabled={buttonDisabled}
+                text={buttonType === 'text'}
+                secondary={buttonType === 'secondary'}>
+                <Icon icon={IconPlus} slot="start" size="s" />
+                {buttonText}
+            </Button>
+        {/if}
+    </Layout.Stack>
 </header>
 
 <style>
     .is-disabled {
         opacity: 0.5;
-    }
-
-    :global(.theme-light) .backups-title {
-        --p-body-text-color: #373b4d;
-        color: var(--p-body-text-color);
-    }
-
-    :global(.theme-dark) .backups-title {
-        color: hsl(var(--color-neutral-5));
-    }
-
-    :global(.small-radius-border-button) {
-        border-radius: var(--border-radius-small) !important;
     }
 </style>

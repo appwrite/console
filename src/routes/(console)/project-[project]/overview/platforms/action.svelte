@@ -1,6 +1,4 @@
 <script>
-    import DropList from '$lib/components/dropList.svelte';
-    import DropListItem from '$lib/components/dropListItem.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { canWritePlatforms } from '$lib/stores/roles';
     import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
@@ -13,8 +11,6 @@
         IconPlus,
         IconReact
     } from '@appwrite.io/pink-icons-svelte';
-
-    let showDropdown = false;
 </script>
 
 {#if $canWritePlatforms}

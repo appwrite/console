@@ -5,7 +5,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import {
         AvatarInitials,
         Copy,
@@ -21,7 +21,7 @@
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { Badge, Icon, Table, Layout } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Table, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
     import { IconDuplicate, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { canWriteUsers } from '$lib/stores/roles';
@@ -31,15 +31,21 @@
 
     export let data: PageData;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     const columns = writable<Column[]>([
-        { id: '$id', title: 'User ID', type: 'string', show: true, width: 140 },
-        { id: 'name', title: 'Name', type: 'string', show: true, width: 260 },
-        { id: 'identifiers', title: 'Identifiers', type: 'string', show: true, width: 140 },
-        { id: 'status', title: 'Status', type: 'string', show: true, width: 140 },
-        { id: 'labels', title: 'Labels', type: 'string', show: false, width: 140 },
-        { id: 'joined', title: 'Joined', type: 'string', show: true, width: 140 },
-        { id: 'lastActivity', title: 'Last activity', type: 'string', show: false, width: 140 }
+        { id: '$id', title: 'User ID', type: 'string', width: 200 },
+        { id: 'name', title: 'Name', type: 'string', width: { min: 260 } },
+        { id: 'identifiers', title: 'Identifiers', type: 'string', width: { min: 260 } },
+        { id: 'status', title: 'Status', type: 'string', width: { min: 140 } },
+        { id: 'labels', title: 'Labels', type: 'string', hide: true, width: { min: 140 } },
+        { id: 'joined', title: 'Joined', type: 'string', width: { min: 140 } },
+        {
+            id: 'lastActivity',
+            title: 'Last activity',
+            type: 'string',
+            hide: true,
+            width: { min: 140 }
+        }
     ]);
 
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
@@ -50,10 +56,10 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID" />
+            <SearchQuery placeholder="Search by name, email, phone, or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+            <ViewSelector view={View.Table} {columns} hideView />
             <Button on:mousedown={() => ($showCreateUser = true)} event="create_user" size="s">
                 <Icon size="s" icon={IconPlus} slot="start" />
                 <span class="text">Create user</span>
@@ -62,102 +68,88 @@
     </Layout.Stack>
 
     {#if data.users.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                {#each $columns as column (column.id)}
-                    {#if column.show}
-                        <Table.Header.Cell>{column.title}</Table.Header.Cell>
-                    {/if}
+        <Table.Root columns={$columns} let:root>
+            <svelte:fragment slot="header" let:root>
+                {#each $columns as { id, title } (id)}
+                    <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
                 {/each}
             </svelte:fragment>
             {#each data.users.users as user}
-                <Table.Link href={`${base}/project-${projectId}/auth/user-${user.$id}`}>
-                    {#each $columns as column (column.id)}
-                        {#if column.show}
-                            {#if column.id === '$id'}
-                                <Table.Cell width={column.width + 'px'}>
-                                    <Copy value={user.$id} event="user">
-                                        <Tag size="xs" variant="code">
-                                            <Icon size="s" icon={IconDuplicate} slot="start" />
-                                            {user.$id}
-                                        </Tag>
-                                    </Copy>
-                                </Table.Cell>
-                            {:else if column.id === 'name'}
-                                <Table.Cell>
-                                    <Layout.Stack direction="row" alignItems="center" gap="s">
-                                        {#if user.email || user.phone}
-                                            {#if user.name}
-                                                <AvatarInitials size="xs" name={user.name} />
-                                                <span>
-                                                    {user.name}
-                                                </span>
-                                            {:else}
-                                                <div class="avatar is-size-small">
-                                                    <span
-                                                        class="icon-minus-sm"
-                                                        aria-hidden="true" />
-                                                </div>
-                                            {/if}
+                <Table.Row.Link href={`${base}/project-${projectId}/auth/user-${user.$id}`} {root}>
+                    {#each $columns as { id } (id)}
+                        <Table.Cell column={id} {root}>
+                            {#if id === '$id'}
+                                <Copy value={user.$id} event="user">
+                                    <Tag size="xs" variant="code">
+                                        <Icon size="s" icon={IconDuplicate} slot="start" />
+                                        {user.$id}
+                                    </Tag>
+                                </Copy>
+                            {:else if id === 'name'}
+                                <Layout.Stack direction="row" alignItems="center" gap="s">
+                                    {#if user.email || user.phone}
+                                        {#if user.name}
+                                            <AvatarInitials size="xs" name={user.name} />
+                                            <Typography.Text truncate>
+                                                {user.name}
+                                            </Typography.Text>
                                         {:else}
                                             <div class="avatar is-size-small">
-                                                <span class="icon-anonymous" aria-hidden="true" />
+                                                <span class="icon-minus-sm" aria-hidden="true"
+                                                ></span>
                                             </div>
-                                            <span class="text u-trim">{user.name}</span>
                                         {/if}
-                                    </Layout.Stack>
-                                </Table.Cell>
-                            {:else if column.id === 'identifiers'}
-                                <Table.Cell>
+                                    {:else}
+                                        <div class="avatar is-size-small">
+                                            <span class="icon-anonymous" aria-hidden="true"></span>
+                                        </div>
+                                        <Typography.Text truncate>
+                                            {user.name}
+                                        </Typography.Text>
+                                    {/if}
+                                </Layout.Stack>
+                            {:else if id === 'identifiers'}
+                                <Typography.Text truncate>
                                     {user.email && user.phone
                                         ? [user.email, user.phone].join(',')
                                         : user.email || user.phone}
-                                </Table.Cell>
-                            {:else if column.id === 'status'}
-                                <Table.Cell>
-                                    {#if user.status}
-                                        {@const success =
-                                            user.emailVerification || user.phoneVerification}
-                                        <Badge
-                                            size="xs"
-                                            variant="secondary"
-                                            type={success ? 'success' : undefined}
-                                            content={user.emailVerification &&
-                                            user.phoneVerification
-                                                ? 'Verified'
-                                                : user.emailVerification
-                                                  ? 'Verified email'
-                                                  : user.phoneVerification
-                                                    ? 'Verified phone'
-                                                    : 'Unverified'} />
-                                    {:else}
-                                        <Badge
-                                            size="xs"
-                                            variant="secondary"
-                                            type="error"
-                                            content="blocked" />
-                                    {/if}
-                                </Table.Cell>
-                            {:else if column.id === 'labels'}
-                                <Table.Cell>
+                                </Typography.Text>
+                            {:else if id === 'status'}
+                                {#if user.status}
+                                    {@const success =
+                                        user.emailVerification || user.phoneVerification}
+                                    <Badge
+                                        size="xs"
+                                        variant="secondary"
+                                        type={success ? 'success' : undefined}
+                                        content={user.emailVerification && user.phoneVerification
+                                            ? 'Verified'
+                                            : user.emailVerification
+                                              ? 'Verified email'
+                                              : user.phoneVerification
+                                                ? 'Verified phone'
+                                                : 'Unverified'} />
+                                {:else}
+                                    <Badge
+                                        size="xs"
+                                        variant="secondary"
+                                        type="error"
+                                        content="blocked" />
+                                {/if}
+                            {:else if id === 'labels'}
+                                <Typography.Text truncate>
                                     {user.labels.join(', ')}
-                                </Table.Cell>
-                            {:else if column.id === 'joined'}
-                                <Table.Cell>
-                                    {toLocaleDateTime(user.registration)}
-                                </Table.Cell>
-                            {:else if column.id === 'lastActivity'}
-                                <Table.Cell>
-                                    {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
-                                </Table.Cell>
+                                </Typography.Text>
+                            {:else if id === 'joined'}
+                                {toLocaleDateTime(user.registration)}
+                            {:else if id === 'lastActivity'}
+                                {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
                             {:else}
-                                <Table.Cell width={column.width + 'px'}>
-                                    {user[column.id]}
-                                </Table.Cell>
+                                {user[id]}
                             {/if}
-                        {/if}
+                        </Table.Cell>
                     {/each}
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
 

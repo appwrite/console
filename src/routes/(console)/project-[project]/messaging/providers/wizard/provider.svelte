@@ -3,7 +3,7 @@
     import { providerType, provider, providerParams } from './store';
     import { CustomId, LabelCard } from '$lib/components';
     import { providers } from '../store';
-    import { FormList, InputText } from '$lib/elements/forms';
+    import { InputText } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Providers } from '../../provider.svelte';
     import { SmtpEncryption } from '@appwrite.io/console';
@@ -134,45 +134,43 @@
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Provider</svelte:fragment>
-    <div class="u-sep-block-start u-padding-block-end-32" />
-    <FormList gap={16}>
-        <InputText
-            id="name"
-            label="Name"
-            placeholder="Provider name"
-            bind:value={name}
-            autofocus
-            required />
+    <div class="u-sep-block-start u-padding-block-end-32"></div>
 
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Provider ID
-                    </span></Pill>
-            </div>
-        {:else}
-            <CustomId bind:show={showCustomId} name="Provider" bind:id autofocus={false} />
-        {/if}
-        <p class="u-margin-block-start-24">
-            Select a provider you would like to enable for sending {providers[$providerType].text}.
-        </p>
-        <div class="grid-box">
-            {#each Object.entries(providers[$providerType].providers) as [value, option]}
-                <LabelCard
-                    name="provider"
-                    {value}
-                    bind:group={$provider}
-                    imageIcon={option.imageIcon}
-                    icon={option.classIcon}>
-                    <svelte:fragment slot="title">{option.title}</svelte:fragment>
-                    {#if option.description}
-                        {option.description}
-                    {/if}
-                </LabelCard>
-            {/each}
+    <InputText
+        id="name"
+        label="Name"
+        placeholder="Provider name"
+        bind:value={name}
+        autofocus
+        required />
+
+    {#if !showCustomId}
+        <div>
+            <Pill button on:click={() => (showCustomId = !showCustomId)}
+                ><span class="icon-pencil" aria-hidden="true"></span><span class="text">
+                    Provider ID
+                </span></Pill>
         </div>
-    </FormList>
+    {:else}
+        <CustomId bind:show={showCustomId} name="Provider" bind:id autofocus={false} />
+    {/if}
+    <p class="u-margin-block-start-24">
+        Select a provider you would like to enable for sending {providers[$providerType].text}.
+    </p>
+    <div class="grid-box">
+        {#each Object.entries(providers[$providerType].providers) as [value, option]}
+            <LabelCard
+                name="provider"
+                {value}
+                bind:group={$provider}
+                icon={option.classIcon ?? option.imageIcon}>
+                <svelte:fragment slot="title">{option.title}</svelte:fragment>
+                {#if option.description}
+                    {option.description}
+                {/if}
+            </LabelCard>
+        {/each}
+    </div>
 </WizardStep>
 
 <style lang="scss">

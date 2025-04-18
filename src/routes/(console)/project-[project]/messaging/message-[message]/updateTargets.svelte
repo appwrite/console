@@ -1,6 +1,6 @@
 <script lang="ts">
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
-    import { CardGrid, Empty, PaginationInline, EmptySearch, Alert } from '$lib/components';
+    import { CardGrid, Empty, PaginationInline, EmptySearch } from '$lib/components';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -12,7 +12,7 @@
     import UserTargetsModal from '../userTargetsModal.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
 
     export let message: Models.Message & { data: Record<string, unknown> };
     export let selectedTargetsById: Record<string, Models.Target>;
@@ -130,20 +130,18 @@
             {#if hasDeletedUsers}
                 <div class:u-padding-block-end-16={dataSource.length}>
                     {#if hasDeletedUsers && !dataSource.length}
-                        <Alert type="info">
-                            <svelte:fragment slot="title"
-                                >There are no targets to show</svelte:fragment>
-                            This message was sent to users who are no longer available, so their information
-                            cannot be displayed.
-                        </Alert>
+                        <Alert.Inline status="info" title="There are no targets to show">
+                            This message was sent to users who are no longer available, so their
+                            information cannot be displayed.
+                        </Alert.Inline>
                     {:else}
-                        <Alert
-                            type="info"
+                        <Alert.Inline
+                            status="info"
                             dismissible={dataSource.length > 0}
                             on:dismiss={() => (hasDeletedUsers = false)}>
                             This message was sent to users who are no longer available, so their
                             information cannot be displayed.
-                        </Alert>
+                        </Alert.Inline>
                     {/if}
                 </div>
             {/if}
@@ -161,56 +159,51 @@
                 {/if}
 
                 <div class="u-flex u-flex-vertical u-gap-24">
-                    <Table.Root>
-                        <svelte:fragment slot="header">
-                            <Table.Header.Cell>Target</Table.Header.Cell>
-
-                            {#if recipientsAvailable}
-                                <Table.Header.Cell>Identifier</Table.Header.Cell>
-                            {/if}
-
-                            <Table.Header.Cell width="40px" />
+                    <Table.Root
+                        let:root
+                        columns={[
+                            { id: 'target' },
+                            { id: 'identifier', hide: !recipientsAvailable },
+                            { id: 'actions', width: 40 }
+                        ]}>
+                        <svelte:fragment slot="header" let:root>
+                            <Table.Header.Cell column="target" {root}>Target</Table.Header.Cell>
+                            <Table.Header.Cell column="identifier" {root}
+                                >Identifier</Table.Header.Cell>
+                            <Table.Header.Cell column="actions" {root} />
                         </svelte:fragment>
                         {#each dataSource.slice(offset, offset + limit) as source (source['$id'])}
-                            <Table.Row>
-                                <Table.Cell>
+                            <Table.Row.Base {root}>
+                                <Table.Cell column="target" {root}>
                                     {#if source['providerType'] === MessagingProviderType.Push}
                                         {source['name']}
                                     {:else}
                                         {source['identifier']}
                                     {/if}
                                 </Table.Cell>
-                                {#if recipientsAvailable}
-                                    <Table.Cell>
-                                        {source['name']}
-                                    </Table.Cell>
-                                {/if}
-
-                                <Table.Cell>
+                                <Table.Cell column="identifier" {root}>
+                                    {source['name']}
+                                </Table.Cell>
+                                <Table.Cell column="actions" {root}>
                                     {#if isDraft}
-                                        <div
-                                            class="u-flex u-main-end"
-                                            style="--p-button-size: 1.25rem">
-                                            <Button
-                                                text
-                                                class="is-only-icon"
-                                                ariaLabel="delete"
-                                                disabled={!isDraft}
-                                                on:click={() => removeTarget(source['$id'])}>
-                                                <span
-                                                    class="icon-x u-font-size-20"
-                                                    aria-hidden="true" />
-                                            </Button>
-                                        </div>
+                                        <Button
+                                            text
+                                            class="is-only-icon"
+                                            ariaLabel="delete"
+                                            disabled={!isDraft}
+                                            on:click={() => removeTarget(source['$id'])}>
+                                            <span class="icon-x u-font-size-20" aria-hidden="true"
+                                            ></span>
+                                        </Button>
                                     {/if}
                                 </Table.Cell>
-                            </Table.Row>
+                            </Table.Row.Base>
                         {/each}
                     </Table.Root>
                     {#if sum > limit}
                         <div class="u-flex u-main-space-between">
                             <p class="text">Total targets: {sum}</p>
-                            <PaginationInline {sum} {limit} bind:offset />
+                            <PaginationInline total={sum} {limit} bind:offset />
                         </div>
                     {/if}
                 </div>
@@ -222,10 +215,7 @@
                         No targets have been selected.
                         <p>
                             Need a hand? Check out our <Button
-                                link
-                                external
-                                href="https://appwrite.io/docs/products/messaging/targets"
-                                text>
+                                href="https://appwrite.io/docs/products/messaging/targets">
                                 documentation</Button
                             >.
                         </p>

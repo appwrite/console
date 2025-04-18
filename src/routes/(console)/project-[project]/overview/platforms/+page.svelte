@@ -60,9 +60,8 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
     import type { PageData } from './$types';
     import { canWritePlatforms } from '$lib/stores/roles';
     import { setOverviewAction } from '../context';
@@ -84,6 +83,7 @@
         IconReact
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentType } from 'svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
 
@@ -103,7 +103,7 @@
         'react-native-ios' = 'iOS',
         'web' = 'Web'
     }
-    const path = `${base}/project-${$page.params.project}/overview/platforms`;
+    const path = `${base}/project-${page.params.project}/overview/platforms`;
 
     function getPlatformInfo(platform: string): ComponentType {
         if (platform.includes('flutter')) {
@@ -123,27 +123,31 @@
 </script>
 
 {#if data.platforms.platforms.length}
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Name</Table.Header.Cell>
-            <Table.Header.Cell>Platform type</Table.Header.Cell>
-            <Table.Header.Cell>Last updated</Table.Header.Cell>
+    <Table.Root columns={3} let:root>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell {root}>Platform type</Table.Header.Cell>
+            <Table.Header.Cell {root}>Last updated</Table.Header.Cell>
         </svelte:fragment>
         {#each data.platforms.platforms as platform}
-            <Table.Link href={`${path}/${platform.$id}`}>
-                <Table.Cell>
+            <Table.Row.Link href={`${path}/${platform.$id}`} {root}>
+                <Table.Cell {root}>
                     {platform.name}
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell {root}>
                     <Layout.Stack direction="row" gap="s" alignItems="center">
                         <Icon icon={getPlatformInfo(platform.type)} />
                         {PlatformTypes[platform.type]}
                     </Layout.Stack>
                 </Table.Cell>
-                <Table.Cell>
-                    {platform.$updatedAt ? toLocaleDate(platform.$updatedAt) : 'never'}
+                <Table.Cell {root}>
+                    {#if platform.$updatedAt}
+                        <DualTimeView time={platform.$updatedAt} />
+                    {:else}
+                        never
+                    {/if}
                 </Table.Cell>
-            </Table.Link>
+            </Table.Row.Link>
         {/each}
     </Table.Root>
 {:else}

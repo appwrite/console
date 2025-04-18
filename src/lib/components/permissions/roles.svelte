@@ -78,24 +78,24 @@
 
 {#if [...$groups.keys()]?.length}
     <Layout.Stack>
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Role</Table.Header.Cell>
-                <Table.Header.Cell width="40px" />
+        <Table.Root columns={[{ id: 'role' }, { id: 'action', width: 40 }]} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="role" {root}>Role</Table.Header.Cell>
+                <Table.Header.Cell column="action" {root} />
             </svelte:fragment>
             {#each [...$groups.keys()].sort(sortRoles) as role}
-                <Table.Row>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="role" {root}>
                         <Row {role} />
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="action" {root}>
                         <Layout.Stack justifyContent="flex-end">
                             <Button compact icon on:click={() => deleteRole(role)}>
                                 <Icon icon={IconX} size="s" />
                             </Button>
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         </Table.Root>
         <Actions
@@ -107,7 +107,7 @@
             on:create={create}
             let:toggle>
             <div>
-                <Button text on:click={toggle}>
+                <Button compact on:click={toggle}>
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Add role
                 </Button>

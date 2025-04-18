@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page as pageStore } from '$app/stores';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent } from '$lib/actions/analytics';
@@ -65,7 +65,7 @@
     }
 
     onMount(() => {
-        return page.subscribe(($page) => {
+        return pageStore.subscribe(($page) => {
             const url = new URL($page.url);
             const sessionId = url.searchParams.get('sessionId');
             if (sessionId) {
@@ -85,17 +85,24 @@
         <Button secondary on:click={logoutAll}>Sign out all sessions</Button>
     </Layout.Stack>
 
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Client</Table.Header.Cell>
-            <Table.Header.Cell>Location</Table.Header.Cell>
-            <Table.Header.Cell>IP</Table.Header.Cell>
-            <Table.Header.Cell width="68px" />
+    <Table.Root
+        let:root
+        columns={[
+            { id: 'client' },
+            { id: 'location' },
+            { id: 'ip' },
+            { id: 'actions', width: 40 }
+        ]}>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>
+            <Table.Header.Cell column="location" {root}>Location</Table.Header.Cell>
+            <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
+            <Table.Header.Cell column="actions" {root} />
         </svelte:fragment>
         {#each data.sessions.sessions as session}
             {@const browser = getBrowser(session.clientCode)}
-            <Table.Row>
-                <Table.Cell>
+            <Table.Row.Base {root}>
+                <Table.Cell column="client" {root}>
                     <Layout.Stack direction="row" alignItems="center">
                         {#if session.clientName}
                             <div class="avatar is-size-small">
@@ -110,7 +117,7 @@
                                     <span
                                         class="icon-globe-alt"
                                         style="--p-text-size: 1.25rem"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"></span>
                                 {/if}
                             </div>
                             <Trim>
@@ -120,7 +127,7 @@
                                 {session.osVersion}
                             </Trim>
                         {:else}
-                            <span class="avatar is-color-empty" />
+                            <span class="avatar is-color-empty"></span>
                             <p class="text u-trim">Unknown</p>
                         {/if}
                         <div class="is-only-desktop">
@@ -131,18 +138,20 @@
                         {/if}
                     </Layout.Stack>
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell column="location" {root}>
                     {#if session.countryCode !== '--'}
                         {session.countryName}
                     {:else}
                         Unknown
                     {/if}
                 </Table.Cell>
-                <Table.Cell>{session.ip}</Table.Cell>
-                <Table.Cell>
+                <Table.Cell column="ip" {root}>
+                    {session.ip}
+                </Table.Cell>
+                <Table.Cell column="actions" {root}>
                     <Button size="xs" secondary on:click={() => logout(session)}>Sign out</Button>
                 </Table.Cell>
-            </Table.Row>
+            </Table.Row.Base>
         {/each}
     </Table.Root>
 </Container>

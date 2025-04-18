@@ -3,7 +3,7 @@
     import { sdk } from '$lib/stores/sdk';
     import CnameTable from './cnameTable.svelte';
     import { createEventDispatcher } from 'svelte';
-    import { Code, Trim } from '$lib/components';
+    import { Code } from '$lib/components';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
@@ -61,14 +61,14 @@
             rel="noopener noreferrer">contact support</Link.Anchor
         >.
     </Typography.Text>
-    <CnameTable bind:domain />
+    <CnameTable />
 {:else if domain.status === 'unverified'}
     <div class="u-flex u-gap-8 u-cross-center">
-        <span class="icon-exclamation-circle u-color-text-danger" aria-hidden="true" />
+        <span class="icon-exclamation-circle u-color-text-danger" aria-hidden="true"></span>
         <p class="u-stretch">Generation failed</p>
         <Button secondary on:click={retry} disabled={retrying}>
             {#if retrying}
-                <div class="loader u-text-color-gray" />
+                <div class="loader u-text-color-gray"></div>
             {:else}
                 Retry
             {/if}

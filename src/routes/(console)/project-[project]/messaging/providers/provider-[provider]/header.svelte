@@ -1,11 +1,11 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { Cover, CoverTitle } from '$lib/layout';
     import { provider } from './store';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 </script>
 
 <Cover>

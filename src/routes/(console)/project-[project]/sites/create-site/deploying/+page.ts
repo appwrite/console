@@ -1,9 +1,12 @@
-import { RuleType, sdk } from '$lib/stores/sdk';
+import { DeploymentResourceType, RuleTrigger, RuleType, sdk } from '$lib/stores/sdk';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { Query } from '@appwrite.io/console';
+import { Dependencies } from '$lib/constants';
 
-export const load: PageLoad = async ({ url }) => {
+export const load: PageLoad = async ({ url, depends, params }) => {
+    depends(Dependencies.DEPLOYMENT);
+    depends(Dependencies.SITE);
     if (!url.searchParams.has('site')) error(404, 'Site is not optional');
     if (!url.searchParams.has('deployment')) error(404, 'Deployment is not optional');
     const siteId = url.searchParams.get('site');
@@ -12,8 +15,11 @@ export const load: PageLoad = async ({ url }) => {
         sdk.forProject.sites.get(siteId),
         sdk.forProject.sites.getDeployment(siteId, deploymentId),
         sdk.forProject.proxy.listRules([
-            Query.equal('type', [RuleType.DEPLOYMENT]),
-            Query.equal('automation', `site=${siteId}`)
+            Query.equal('type', RuleType.DEPLOYMENT),
+            Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+            Query.equal('deploymentResourceId', siteId),
+            Query.equal('deploymentId', deploymentId),
+            Query.equal('trigger', RuleTrigger.MANUAL)
         ])
     ]);
 

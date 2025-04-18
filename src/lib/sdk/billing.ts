@@ -73,6 +73,7 @@ export type Coupon = {
     status: string; // 'active' | 'disabled' | 'expired'
     validity: number;
     campaign?: string;
+    onlyNewOrgs?: boolean;
 };
 
 export type Credit = {
@@ -267,6 +268,7 @@ export type Plan = {
     $id: string;
     name: string;
     price: number;
+    order: number;
     bandwidth: number;
     storage: number;
     members: number;

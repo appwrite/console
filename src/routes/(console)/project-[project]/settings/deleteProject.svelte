@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { BoxAvatar, CardGrid } from '$lib/components';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -68,17 +68,15 @@
     title="Delete project"
     bind:open={showDelete}
     bind:error>
-    <FormList>
-        <p>
-            <b>This project will be deleted</b>, along with all of its metadata, stats, and other
-            resources. <b>This action is irreversible</b>.
-        </p>
-        <InputText
-            label={`Enter "${$project.name}" to continue`}
-            placeholder="Enter name"
-            id="project-name"
-            autofocus
-            required
-            bind:value={name} />
-    </FormList>
+    <p>
+        <b>This project will be deleted</b>, along with all of its metadata, stats, and other
+        resources. <b>This action is irreversible</b>.
+    </p>
+    <InputText
+        label={`Enter "${$project.name}" to continue`}
+        placeholder="Enter name"
+        id="project-name"
+        autofocus
+        required
+        bind:value={name} />
 </Confirm>

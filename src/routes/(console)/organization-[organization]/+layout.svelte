@@ -3,7 +3,7 @@
     import CreateMember from './createMember.svelte';
     import Create from '../createOrganization.svelte';
     import { goto } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
     import { requestedMigration } from '$routes/store';
     import { openMigrationWizard } from '../(migration-wizard)';
@@ -23,7 +23,7 @@
                 goto(`${base}/organization-${data.organization.$id}/members`);
             },
             keys: ['g', 'm'],
-            disabled: $page.url.pathname.endsWith('/members') || !$isOwner,
+            disabled: page.url.pathname.endsWith('/members') || !$isOwner,
             group: 'navigation'
         },
         {
@@ -32,7 +32,7 @@
                 goto(`${base}/organization-${data.organization.$id}/settings`);
             },
             keys: ['g', 's'],
-            disabled: $page.url.pathname.endsWith('/settings') || !$isOwner,
+            disabled: page.url.pathname.endsWith('/settings') || !$isOwner,
             group: 'navigation'
         }
     ]);

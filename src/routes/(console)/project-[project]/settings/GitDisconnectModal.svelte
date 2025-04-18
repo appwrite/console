@@ -1,14 +1,15 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import Modal from '$lib/components/modal.svelte';
     import { Dependencies } from '$lib/constants';
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
-    import { SvgIcon } from '$lib/components';
+    import { Avatar, Confirm } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { IconGlobeAlt, IconLightningBolt } from '@appwrite.io/pink-icons-svelte';
 
     export let showGitDisconnect: boolean;
     export let selectedInstallation: Models.Installation;
@@ -41,39 +42,68 @@
             Query.equal('installationId', selectedInstallation.$id)
         ]);
     }
+
+    async function loadSites() {
+        return await sdk.forProject.sites.list([
+            Query.limit(100),
+            Query.equal('installationId', selectedInstallation.$id)
+        ]);
+    }
 </script>
 
-<Modal title="Disconnect installation" bind:show={showGitDisconnect} onSubmit={handleSubmit}>
-    {#await loadFunctions()}
+<Confirm title="Disconnect installation" bind:open={showGitDisconnect} onSubmit={handleSubmit}>
+    {#await Promise.all([loadFunctions(), loadSites()])}
         <div class="u-flex u-main-center">
             <div class="avatar is-size-x-small">
-                <div class="loader u-margin-16" />
+                <div class="loader u-margin-16"></div>
             </div>
         </div>
-    {:then functions}
-        {#if functions.total}
+    {:then [functions, sites]}
+        {#if functions?.total || sites?.total}
             <p>
                 Are you sure you want to disconnect this git installation? This will affect future
-                deployments to the following functions:
+                deployments to the following sites and functions:
             </p>
-            <div class="u-flex u-flex-vertical u-gap-12">
-                {#each functions.functions as func}
-                    <div class="u-flex u-main-start u-gap-8">
-                        <div class="avatar is-size-x-small">
-                            <SvgIcon name={func.runtime.split('-')[0]} />
-                        </div>
-                        <div
-                            class="u-cross-child-center u-flex u-main-space-between u-flex-wrap u-gap-8 u-width-full-line">
-                            <h6>{func.name}</h6>
-                            <p
-                                class="u-x-small u-cross-child-center"
-                                style="color: hsl(var(--color-neutral-70));">
-                                Last deployed: {toLocaleDateTime(func.$updatedAt)}
-                            </p>
-                        </div>
-                    </div>
+            <Layout.Stack>
+                {#each sites.sites as site}
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center">
+                        <Layout.Stack direction="row" gap="s" alignItems="center" inline>
+                            <Avatar size="xs" alt={site.name}>
+                                <Icon icon={IconGlobeAlt} size="s" />
+                            </Avatar>
+                            <Typography.Text color="--fgcolor-neutral-primary">
+                                {site.name}
+                            </Typography.Text>
+                        </Layout.Stack>
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Last deployed: {toLocaleDateTime(site.$updatedAt)}
+                        </Typography.Caption>
+                    </Layout.Stack>
                 {/each}
-            </div>
+                {#each functions.functions as func}
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center">
+                        <Layout.Stack direction="row" gap="s" alignItems="center" inline>
+                            {#if func?.runtime}
+                                <Avatar size="xs" alt={func.name}>
+                                    <Icon icon={IconLightningBolt} size="s" />
+                                </Avatar>
+                                <Typography.Text color="--fgcolor-neutral-primary">
+                                    {func.name}
+                                </Typography.Text>
+                            {/if}
+                        </Layout.Stack>
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            Last deployed: {toLocaleDateTime(func.$updatedAt)}
+                        </Typography.Caption>
+                    </Layout.Stack>
+                {/each}
+            </Layout.Stack>
         {:else}
             <p>Are you sure you want to disconnect this git installation?</p>
         {/if}
@@ -83,4 +113,4 @@
         <Button text on:click={() => (showGitDisconnect = false)}>Cancel</Button>
         <Button secondary submit={true}>Disconnect</Button>
     </svelte:fragment>
-</Modal>
+</Confirm>

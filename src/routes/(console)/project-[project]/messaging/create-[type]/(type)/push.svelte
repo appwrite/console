@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Icon, Layout, Tag, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -24,24 +24,9 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
     let showCustomId = false;
-
-    let docsUrl = 'https://appwrite.io/docs/products/messaging';
-
-    switch ($page.params.type) {
-        case MessagingProviderType.Email:
-            docsUrl += '/send-email-messages';
-            break;
-        case MessagingProviderType.Sms:
-            docsUrl += '/send-sms-messages';
-            break;
-        case MessagingProviderType.Push:
-            docsUrl += '/send-push-notifications';
-            break;
-    }
-
     let id: string;
     let file: Models.File;
-    let data: Writable<[string, string][]> = writable([]);
+    let data: Writable<[string, string][]> = writable([['', '']]);
     let title: string;
     let body: string;
     let topics: string[];
@@ -98,7 +83,7 @@
                 providerType: 'push',
                 status: response.status
             });
-            await goto(`${base}/project-${$page.params.project}/messaging/message-${response.$id}`);
+            await goto(`${base}/project-${page.params.project}/messaging/message-${response.$id}`);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -116,7 +101,7 @@
 
 <Wizard
     title="Create push message"
-    href={`${base}/project-${$page.params.project}/messaging/`}
+    href={`${base}/project-${page.params.project}/messaging/`}
     bind:showExitModal
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
@@ -150,58 +135,60 @@
                 </Layout.Stack>
             </Fieldset>
             <Fieldset legend="Custom data">
-                <Layout.Stack>
+                <Layout.Stack gap="l">
                     <Typography.Text>
                         A key/value payload of additional metadata that's hidden from users. Use
                         this to include information to support logic such as redirection and
                         routing.
                     </Typography.Text>
-                    {#each $data as [key, value], index}
-                        <Layout.Stack direction="row" alignItems="flex-end">
-                            <InputText
-                                id={`key-${index}`}
-                                bind:value={key}
-                                placeholder="Enter key"
-                                label={index === 0 ? 'Key' : undefined} />
-                            <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                    <Layout.Stack gap="s">
+                        {#each $data as [key, value], index}
+                            <Layout.Stack direction="row" alignItems="flex-end">
                                 <InputText
-                                    id={`value-${index}`}
-                                    bind:value
-                                    placeholder="Enter value"
-                                    label={index === 0 ? 'Value' : undefined} />
-                                <Button
-                                    icon
-                                    compact
-                                    disabled={(!key || !value) && index === 0}
-                                    on:click={() => {
-                                        if (index === 0 && $data?.length === 1) {
-                                            $data = [['', '']];
-                                        } else {
-                                            $data.splice(index, 1);
-                                            $data = $data;
-                                        }
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </Button>
+                                    id={`key-${index}`}
+                                    bind:value={key}
+                                    placeholder="Enter key"
+                                    label={index === 0 ? 'Key' : undefined} />
+                                <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
+                                    <InputText
+                                        id={`value-${index}`}
+                                        bind:value
+                                        placeholder="Enter value"
+                                        label={index === 0 ? 'Value' : undefined} />
+                                    <Button
+                                        icon
+                                        compact
+                                        disabled={(!key || !value) && index === 0}
+                                        on:click={() => {
+                                            if (index === 0 && $data?.length === 1) {
+                                                $data = [['', '']];
+                                            } else {
+                                                $data.splice(index, 1);
+                                                $data = $data;
+                                            }
+                                        }}>
+                                        <span class="icon-x" aria-hidden="true"></span>
+                                    </Button>
+                                </Layout.Stack>
                             </Layout.Stack>
-                        </Layout.Stack>
-                    {/each}
-                    <div>
-                        <Button
-                            secondary
-                            disabled={$data.length > 0 && $data[$data.length - 1][0] === ''}
-                            on:click={() => ($data = [...$data, ['', '']])}>
-                            <Icon icon={IconPlus} slot="start" size="s" />
-                            Add data
-                        </Button>
-                    </div>
+                        {/each}
+                        <div>
+                            <Button
+                                compact
+                                disabled={$data.length > 0 && $data[$data.length - 1][0] === ''}
+                                on:click={() => ($data = [...$data, ['', '']])}>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Add data
+                            </Button>
+                        </div>
+                    </Layout.Stack>
                 </Layout.Stack>
             </Fieldset>
             <Fieldset legend="Targets">
                 <Targets type={MessagingProviderType.Push} bind:topics bind:targets />
             </Fieldset>
             <Fieldset legend="Schedule">
-                <Schedule type={MessagingProviderType.Push} bind:scheduledAt {topics} {targets} />
+                <Schedule bind:scheduledAt {targets} />
             </Fieldset>
         </Layout.Stack>
     </Form>

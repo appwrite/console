@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Modal, Code, Alert } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { func } from '../store';
-    import SecondaryTabs from '$lib/components/secondaryTabs.svelte';
-    import SecondaryTabsItem from '$lib/components/secondaryTabsItem.svelte';
+    import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
+    import { Link } from '$lib/elements';
 
     export let show = false;
 
@@ -14,7 +14,7 @@
     let os = 'unknown';
     let category = 'Unix';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
 
     onMount(() => {
         lang = setLanguage($func.runtime);
@@ -55,95 +55,65 @@
     function setCodeSnippets(lang: string) {
         return {
             Unix: {
-                code: `appwrite functions createDeployment \\
+                code: `appwrite client --projectId="${page.params.project}" && \\
+appwrite functions createDeployment \\
     --functionId=${functionId} \\
-    --entrypoint='index.${lang}' \\
     --code="." \\
     --activate=true`,
                 language: 'bash'
             },
 
             CMD: {
-                code: `appwrite functions createDeployment ^
+                code: `appwrite client --projectId="${page.params.project}" && ^
+appwrite functions createDeployment ^
     --functionId=${functionId} ^
-    --entrypoint='index.${lang}' ^
     --code="." ^
-    --activate=true`,
+    --activate`,
                 language: 'CMD'
             },
             PowerShell: {
-                code: `appwrite functions createDeployment ,
+                code: `appwrite client --projectId="${page.params.project}" && ,
+appwrite functions createDeployment ,
     --functionId=${functionId} ,
-    --entrypoint='index.${lang}' ,
     --code="." ,
-    --activate=true`,
+    --activate`,
                 language: 'PowerShell'
             }
         };
     }
 </script>
 
-<Modal title="Create CLI deployment" bind:show>
-    <p class="text">
+<Modal title="Create CLI deployment" bind:show hideFooter>
+    <span slot="description">
         Deploy your function using the Appwrite CLI by running the following command inside your
         function's folder.
-    </p>
+    </span>
 
-    <Alert dismissible={false} type="warning">
-        If you did not create your function using the CLI, initialize your function by following our <a
-            href="https://appwrite.io/docs/tooling/command-line/installation"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">documentation</a
-        >.
-    </Alert>
+    <Layout.Stack gap="l">
+        <Layout.Stack gap="s">
+            <Tabs.Root let:root stretch>
+                {#each ['Unix', 'CMD', 'PowerShell'] as cat}
+                    <Tabs.Item.Button
+                        {root}
+                        on:click={() => (category = cat)}
+                        active={category === cat}>
+                        {cat}
+                    </Tabs.Item.Button>
+                {/each}
+            </Tabs.Root>
 
-    <div class="editor-border box">
-        <SecondaryTabs large class="u-sep-block-end u-padding-8">
-            {#each ['Unix', 'CMD', 'PowerShell'] as cat}
-                <SecondaryTabsItem
-                    stretch
-                    fullWidth
-                    center
-                    on:click={() => (category = cat)}
-                    disabled={category === cat}>
-                    {cat}
-                </SecondaryTabsItem>
-            {/each}
-        </SecondaryTabs>
+            <Code hideHeader lang="sh" code={codeSnippets[category].code} />
+        </Layout.Stack>
 
-        {#each ['Unix', 'CMD', 'PowerShell'] as cat}
-            {#if category === cat}
-                <Code
-                    withLineNumbers
-                    withCopy
-                    language="sh"
-                    class="cli-commands-code-box-no-outline"
-                    label={codeSnippets[cat].language}
-                    code={codeSnippets[cat].code} />
-            {/if}
-        {/each}
-    </div>
+        <Alert.Inline status="info">
+            If it's your first time using CLI, remember to <Link
+                href="https://appwrite.io/docs/tooling/command-line/installation#install-with-npm"
+                external>install CLI</Link> and <Link
+                href="https://appwrite.io/docs/tooling/command-line/installation#login"
+                external>login to your account</Link> before running deployment command.
+        </Alert.Inline>
+    </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>
     </svelte:fragment>
 </Modal>
-
-<style>
-    .box {
-        padding: unset;
-        background-color: unset;
-    }
-
-    .editor-border :global(.cli-commands-code-box-no-outline) {
-        margin: 1rem 0;
-        border: unset;
-        border-radius: unset;
-        background-color: unset;
-        padding: 0 var(--box-padding, 1.5rem) 0 var(--box-padding, 1.5rem);
-    }
-
-    :global(.editor-border .cli-commands-code-box-no-outline pre) {
-        background-color: unset;
-    }
-</style>

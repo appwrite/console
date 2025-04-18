@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -14,7 +14,6 @@
     } from '$lib/components';
     import Create from '../createTeam.svelte';
     import { goto } from '$app/navigation';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
@@ -23,10 +22,11 @@
     import { canWriteTeams } from '$lib/stores/roles';
     import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data: PageData;
 
-    const project = $page.params.project;
+    const project = page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
         await goto(`${base}/project-${project}/auth/teams/team-${event.detail.$id}`);
     };
@@ -35,7 +35,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search by name" />
+            <SearchQuery placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button on:mousedown={() => ($showCreateTeam = true)} event="create_user" size="s">
@@ -46,27 +46,29 @@
     </Layout.Stack>
 
     {#if data.teams.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Name</Table.Header.Cell>
-                <Table.Header.Cell>Members</Table.Header.Cell>
-                <Table.Header.Cell>Created</Table.Header.Cell>
+        <Table.Root columns={3} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell {root}>Name</Table.Header.Cell>
+                <Table.Header.Cell {root}>Members</Table.Header.Cell>
+                <Table.Header.Cell {root}>Created</Table.Header.Cell>
             </svelte:fragment>
             {#each data.teams.teams as team}
-                <Table.Link href={`${base}/project-${project}/auth/teams/team-${team.$id}`}>
-                    <Table.Cell>
+                <Table.Row.Link
+                    {root}
+                    href={`${base}/project-${project}/auth/teams/team-${team.$id}`}>
+                    <Table.Cell {root}>
                         <Layout.Stack direction="row" alignItems="center">
                             <AvatarInitials size="xs" name={team.name} />
                             <span class="u-trim">{team.name}</span>
                         </Layout.Stack>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell {root}>
                         {team.total} members
                     </Table.Cell>
-                    <Table.Cell>
-                        {toLocaleDateTime(team.$createdAt)}
+                    <Table.Cell {root}>
+                        <DualTimeView time={team.$createdAt} />
                     </Table.Cell>
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
 
@@ -77,7 +79,7 @@
             total={data.teams.total} />
     {:else if data.search}
         <EmptySearch target="teams" search={data.search} hidePagination={data.teams.total === 0}>
-            <Button secondary size="s" href={`${base}/project-${$page.params.project}/auth/teams`}>
+            <Button secondary size="s" href={`${base}/project-${page.params.project}/auth/teams`}>
                 Clear Search
             </Button>
         </EmptySearch>

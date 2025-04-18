@@ -1,12 +1,12 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    $: projectId = $page.params.project;
+    $: projectId = page.params.project;
     $: path = `${base}/project-${projectId}/functions`;
     $: tabs = [
         {
@@ -19,6 +19,11 @@
             href: `${path}/templates`,
             title: 'Templates',
             event: 'templates'
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage',
+            event: 'usage'
         }
     ];
 </script>
@@ -32,7 +37,7 @@
         {#each tabs as tab}
             <Tab
                 href={tab.href}
-                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                selected={isTabSelected(tab, page.url.pathname, path, tabs)}
                 event={tab.event}>
                 {tab.title}
             </Tab>

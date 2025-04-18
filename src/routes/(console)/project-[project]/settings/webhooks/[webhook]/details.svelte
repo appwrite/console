@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import Button from '$lib/elements/forms/button.svelte';
@@ -12,9 +12,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import FormList from '$lib/elements/forms/formList.svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     let enabled: boolean;
 
@@ -58,12 +57,10 @@
     <svelte:fragment slot="aside">
         <div class="u-flex u-gap-16">
             <ul class="u-stretch">
-                <FormList>
-                    <InputSwitch
-                        label={enabled ? 'Enabled' : 'Disabled'}
-                        id="enable-switch"
-                        bind:value={enabled} />
-                </FormList>
+                <InputSwitch
+                    label={enabled ? 'Enabled' : 'Disabled'}
+                    id="enable-switch"
+                    bind:value={enabled} />
 
                 <li style="margin-top:16px">Created: {toLocaleDateTime($webhook.$createdAt)}</li>
                 <li>Last updated: {toLocaleDateTime($webhook.$updatedAt)}</li>

@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
-    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
+    import { submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
     import type { PaymentList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
@@ -40,7 +40,7 @@
 
     async function handleSubmit() {
         try {
-            if (!selectedPaymentMethodId) {
+            if (selectedPaymentMethodId === '$new') {
                 const method = await submitStripeCard(name, $organization.$id);
                 selectedPaymentMethodId = method.$id;
             }
@@ -89,18 +89,6 @@
     }
 
     $: filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);
-
-    $: if (selectedPaymentMethodId === null && !$isStripeInitialized) {
-        initializeStripe();
-    }
-
-    $: if (selectedPaymentMethodId) {
-        isStripeInitialized.set(false);
-    }
-
-    $: if (!show) {
-        selectedPaymentMethodId = null;
-    }
 </script>
 
 <FakeModal bind:show bind:error onSubmit={handleSubmit} size="big" title="Replace payment method">

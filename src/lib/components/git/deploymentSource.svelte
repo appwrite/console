@@ -11,12 +11,16 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { ActionMenu, Layout, Popover, Icon } from '@appwrite.io/pink-svelte';
 
-    export let deployment: Models.Deployment;
+    let {
+        deployment
+    }: {
+        deployment: Models.Deployment;
+    } = $props();
 </script>
 
 {#if deployment.type === 'vcs'}
     <Popover padding="none" let:toggle>
-        <Layout.Stack>
+        <div>
             <Link
                 on:click={(e) => {
                     e.preventDefault();
@@ -26,7 +30,7 @@
                     <Icon icon={IconGithub} size="s" /> GitHub
                 </Layout.Stack>
             </Link>
-        </Layout.Stack>
+        </div>
         <svelte:fragment slot="tooltip">
             <ActionMenu.Root>
                 <ActionMenu.Item.Anchor

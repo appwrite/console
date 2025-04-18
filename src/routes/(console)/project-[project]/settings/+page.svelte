@@ -9,11 +9,11 @@
     import UpdateName from './updateName.svelte';
     import UpdateServices from './updateServices.svelte';
     import UpdateInstallations from './updateInstallations.svelte';
-    import UpdateVariables from '../updateVariables.svelte';
     import DeleteProject from './deleteProject.svelte';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { canWriteProjects } from '$lib/stores/roles';
     import ChangeOrganization from './changeOrganization.svelte';
+    import UpdateVariables from '../updateVariables.svelte';
 
     export let data;
 
@@ -59,8 +59,13 @@
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 
-    async function sdkUpdateVariable(variableId: string, key: string, value: string) {
-        await sdk.forProject.projectApi.updateVariable(variableId, key, value);
+    async function sdkUpdateVariable(
+        variableId: string,
+        key: string,
+        value: string,
+        secret: boolean
+    ) {
+        await sdk.forProject.projectApi.updateVariable(variableId, key, value, secret);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 

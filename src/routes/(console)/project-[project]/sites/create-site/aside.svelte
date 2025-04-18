@@ -4,7 +4,7 @@
     import { IconGithub, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import { consoleVariables } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
-    import { getFrameworkIcon } from '../store';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let framework: Partial<Models.Framework>;
     export let repositoryName: string;
@@ -73,7 +73,7 @@
                             <Trim alternativeTrim>
                                 {$consoleVariables._APP_OPTIONS_FORCE_HTTPS
                                     ? 'https://'
-                                    : 'http://'}{domain}.{$consoleVariables._APP_DOMAIN_TARGET}
+                                    : 'http://'}{domain}
                             </Trim>
                         {/key}
                     </Typography.Text>

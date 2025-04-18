@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { EmptySearch, PaginationWithLimit } from '$lib/components/index.js';
+    import { page } from '$app/state';
+    import { EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components/index.js';
     import { Button } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -9,7 +9,6 @@
     import { protocol } from '$routes/(console)/store.js';
     import {
         IconDotsHorizontal,
-        IconExternalLink,
         IconPlus,
         IconRefresh,
         IconTrash
@@ -30,59 +29,73 @@
     import { app } from '$lib/stores/app';
     import type { Domain } from '$lib/sdk/domains';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { columns } from './store';
+    import { View } from '$lib/helpers/load';
 
     export let data;
 
     let showDelete = false;
     let showRetry = false;
     let selectedDomain: Domain = null;
-
-    $: console.log(data.domains);
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search domains" />
-        <Button
-            on:click={() => {
-                trackEvent(Click.DomainCreateClick, {
-                    source: 'organization_domain_overview'
-                });
-            }}
-            href={`${base}/organization-${$page.params.organization}/domains/add-domain`}>
-            <Icon icon={IconPlus} size="s" />
-            Add domain
-        </Button>
+        <SearchQuery placeholder="Search domains" />
+        <Layout.Stack direction="row" gap="m" inline>
+            <ViewSelector view={View.Table} {columns} hideView />
+            <Button
+                on:click={() => {
+                    trackEvent(Click.DomainCreateClick, {
+                        source: 'organization_domain_overview'
+                    });
+                }}
+                href={`${base}/organization-${page.params.organization}/domains/add-domain`}>
+                <Icon icon={IconPlus} size="s" />
+                Add domain
+            </Button>
+        </Layout.Stack>
     </Layout.Stack>
 
     {#if data.domains.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Domain</Table.Header.Cell>
-                <Table.Header.Cell>Registrar</Table.Header.Cell>
-                <Table.Header.Cell>Nameservers</Table.Header.Cell>
-                <Table.Header.Cell>Expiry date</Table.Header.Cell>
-                <Table.Header.Cell>Renewal</Table.Header.Cell>
-                <Table.Header.Cell>Auto renewal</Table.Header.Cell>
-                <Table.Header.Cell />
+        <Table.Root let:root columns={[...$columns, { id: 'actions', width: 40 }]}>
+            <svelte:fragment slot="header" let:root>
+                {#each $columns as { id, title }}
+                    <Table.Header.Cell column={id} {root}>
+                        {title}
+                    </Table.Header.Cell>
+                {/each}
+                <Table.Header.Cell {root} column="actions"></Table.Header.Cell>
             </svelte:fragment>
             {#each data.domains.domains as domain}
-                <Table.Link
-                    href={`${base}/organization-${$page.params.organization}/domains/domain-${domain.$id}`}>
-                    <Table.Cell>
-                        <Link external icon href={`${$protocol}${domain.domain}`} variant="quiet">
-                            {domain.domain}
-                        </Link>
-                    </Table.Cell>
-                    <Table.Cell>{domain?.registrar || '-'}</Table.Cell>
-                    <Table.Cell>{domain?.nameservers || '-'}</Table.Cell>
-                    <Table.Cell>
-                        {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}</Table.Cell>
-                    <Table.Cell>
-                        {domain.renewal ? toLocaleDateTime(domain.renewal) : '-'}
-                    </Table.Cell>
-                    <Table.Cell>{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
-                    <Table.Cell>
+                <Table.Row.Link
+                    {root}
+                    href={`${base}/organization-${page.params.organization}/domains/domain-${domain.$id}`}>
+                    {#each $columns as column}
+                        <Table.Cell column={column.id} {root}>
+                            {#if column.id === 'domain'}
+                                <Link
+                                    external
+                                    icon
+                                    href={`${$protocol}${domain.domain}`}
+                                    variant="quiet">
+                                    {domain.domain}
+                                </Link>
+                            {:else if column.id === 'registrar'}
+                                {domain.registrar || '-'}
+                            {:else if column.id === 'nameservers'}
+                                {domain.nameservers || '-'}
+                            {:else if column.id === 'expiry_date'}
+                                {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
+                            {:else if column.id === 'renewal'}
+                                {domain?.renewal ? toLocaleDateTime(domain.renewal) : '-'}
+                            {:else if column.id === 'auto_renewal'}
+                                {domain?.autoRenewal ? 'On' : 'Off'}
+                            {/if}
+                        </Table.Cell>
+                    {/each}
+
+                    <Table.Cell column="actions" {root}>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-end" padding="none">
                                 <Button
@@ -97,7 +110,7 @@
 
                                 <svelte:fragment slot="tooltip" let:toggle>
                                     <ActionMenu.Root>
-                                        <!-- {#if domain.status !== 'verified'}
+                                        {#if domain.nameservers !== 'Appwrite'}
                                             <ActionMenu.Item.Button
                                                 leadingIcon={IconRefresh}
                                                 on:click={(e) => {
@@ -105,13 +118,16 @@
                                                     selectedDomain = domain;
                                                     showRetry = true;
                                                     toggle(e);
-                                                    trackEvent(Click.DomainRetryDomainVerificationClick, {
-                                                    source: 'organization_domain_overview'
-                                                });
+                                                    trackEvent(
+                                                        Click.DomainRetryDomainVerificationClick,
+                                                        {
+                                                            source: 'organization_domain_overview'
+                                                        }
+                                                    );
                                                 }}>
                                                 Retry
                                             </ActionMenu.Item.Button>
-                                        {/if} -->
+                                        {/if}
                                         <ActionMenu.Item.Button
                                             status="danger"
                                             leadingIcon={IconTrash}
@@ -131,7 +147,7 @@
                             </Popover>
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
 
@@ -175,7 +191,7 @@
                                 source: 'organization_domain_overview'
                             });
                         }}
-                        href={`${base}/organization-${$page.params.organization}/domains/add-domain`}
+                        href={`${base}/organization-${page.params.organization}/domains/add-domain`}
                         size="s">
                         Add domain
                     </Button>
@@ -189,6 +205,6 @@
     <DeleteDomainModal bind:show={showDelete} {selectedDomain} />
 {/if}
 
-<!-- {#if showRetry}
+{#if showRetry}
     <RetryDomainModal show={showRetry} {selectedDomain} />
-{/if} -->
+{/if}

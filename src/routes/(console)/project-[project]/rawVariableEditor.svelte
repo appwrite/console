@@ -5,7 +5,7 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
-    import { parse } from 'envfile';
+    import { parse } from '$lib/helpers/envfile';
     import { Icon, InlineCode, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { InputTextarea } from '$lib/elements/forms';
     import { IconDownload, IconDuplicate } from '@appwrite.io/pink-icons-svelte';
@@ -127,27 +127,11 @@
         window.URL.revokeObjectURL(url);
     }
 
-    function handleKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
-            if (tab === 'env') {
-                envCode += '\n';
-            } else {
-                jsonCode += '\n';
-            }
-        }
-    }
     $: isButtonDisabled =
         (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
-
-<Modal
-    title="Editor"
-    bind:show={showEditor}
-    onSubmit={handleSubmit}
-    bind:error
-    submitOnEnter={false}>
+<Modal title="Editor" bind:show={showEditor} onSubmit={handleSubmit} bind:error>
     <p slot="description">
         Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
         <InlineCode size="s" code={`.${tab}`} /> file.

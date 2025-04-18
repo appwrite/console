@@ -50,7 +50,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     const [invoices, usage, organizationMembers, plan] = await Promise.all([
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
-        sdk.forConsole.teams.listMemberships(params.organization),
+        sdk.forConsole.teams.listMemberships(params.organization, [Query.limit(100)]),
         sdk.forConsole.billing.getPlan(org.$id)
     ]);
 

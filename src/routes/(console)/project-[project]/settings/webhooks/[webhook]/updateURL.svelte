@@ -1,16 +1,16 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     let url: string = null;
 
     onMount(async () => {
@@ -50,14 +50,12 @@
     <CardGrid>
         <svelte:fragment slot="title">URL</svelte:fragment>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="url"
-                    label="POST URL"
-                    bind:value={url}
-                    required
-                    placeholder="https://example.com/callback" />
-            </FormList>
+            <InputText
+                id="url"
+                label="POST URL"
+                bind:value={url}
+                required
+                placeholder="https://example.com/callback" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

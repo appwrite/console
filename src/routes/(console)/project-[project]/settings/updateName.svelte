@@ -1,11 +1,11 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, CopyInput } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -13,7 +13,7 @@
     import { canWriteProjects } from '$lib/stores/roles';
 
     const endpoint = sdk.forConsole.client.config.endpoint;
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     let name: string = null;
 
@@ -61,14 +61,12 @@
         <CardGrid>
             <svelte:fragment slot="title">Name</svelte:fragment>
             <svelte:fragment slot="aside">
-                <FormList>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        bind:value={name}
-                        required
-                        placeholder="Enter name" />
-                </FormList>
+                <InputText
+                    id="name"
+                    label="Name"
+                    bind:value={name}
+                    required
+                    placeholder="Enter name" />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

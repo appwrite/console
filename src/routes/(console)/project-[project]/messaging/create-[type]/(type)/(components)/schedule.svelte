@@ -1,14 +1,11 @@
 <script lang="ts">
     import { Button, InputDate, InputSelect, InputTime } from '$lib/elements/forms';
     import Helper from '$lib/elements/forms/helper.svelte';
-    import { MessagingProviderType } from '@appwrite.io/console';
     import { isSameDay, toLocaleDateISO, toLocaleTimeISO } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import { Modal } from '$lib/components';
     import { Layout } from '@appwrite.io/pink-svelte';
 
-    export let type: MessagingProviderType;
-    export let topics: string[];
     export let targets: string[];
     export let scheduledAt: string;
 
@@ -18,22 +15,9 @@
     let date: string;
     let time: string;
     let dateTime: Date;
-    let docsUrl = `https://appwrite.io/docs/products/messaging`;
     let showConfirmation = false;
 
     let totalTargets = targets?.length ?? 0;
-
-    switch (type) {
-        case MessagingProviderType.Email:
-            docsUrl += '/send-email-messages';
-            break;
-        case MessagingProviderType.Sms:
-            docsUrl += '/send-sms-messages';
-            break;
-        case MessagingProviderType.Push:
-            docsUrl += '/send-push-notifications';
-            break;
-    }
 
     const options = [
         { label: 'Now', value: 'now' },

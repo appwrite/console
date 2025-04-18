@@ -1,8 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { CardContainer, GridItem1, Id } from '$lib/components';
-    import Pill from '$lib/elements/pill.svelte';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { Badge, Tooltip } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
@@ -10,11 +9,11 @@
     export let data: PageData;
     export let showCreate = false;
 
-    const project = $page.params.project;
+    const project = page.params.project;
 </script>
 
 <CardContainer
-    showEmpty={$canWriteBuckets}
+    disableEmpty={!$canWriteBuckets}
     total={data.buckets.total}
     offset={data.offset}
     event="bucket"
@@ -38,7 +37,7 @@
                     <span
                         class:u-opacity-20={!bucket.encryption}
                         class="icon-lock-closed"
-                        aria-hidden="true" />
+                        aria-hidden="true"></span>
                     <span slot="tooltip">
                         {bucket.encryption ? 'Encryption enabled' : 'Encryption disabled'}
                     </span>

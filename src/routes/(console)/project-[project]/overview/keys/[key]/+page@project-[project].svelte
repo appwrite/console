@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Box, CardGrid, Secret } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
@@ -106,14 +106,12 @@
             <svelte:fragment slot="title">Name</svelte:fragment>
             Choose any name that will help you distinguish between API keys.
             <svelte:fragment slot="aside">
-                <FormList>
-                    <InputText
-                        id="name"
-                        label="Name"
-                        bind:value={name}
-                        required
-                        placeholder="Enter name" />
-                </FormList>
+                <InputText
+                    id="name"
+                    label="Name"
+                    bind:value={name}
+                    required
+                    placeholder="Enter name" />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params }) => {
         const period = isValueOfStringEnum(FunctionUsageRange, params.period)
             ? params.period
             : FunctionUsageRange.ThirtyDays;
-        return sdk.forProject.functions.getFunctionUsage(params.function, period);
+        return sdk.forProject.functions.getUsage(params.function, period);
     } catch (e) {
         error(e.code, e.message);
     }

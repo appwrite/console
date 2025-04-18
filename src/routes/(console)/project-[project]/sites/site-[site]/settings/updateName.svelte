@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
     let siteName: string = null;
@@ -23,12 +23,13 @@
                 siteName,
                 site.framework as Framework,
                 site.enabled || undefined,
+                site.logging || undefined,
                 site.timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter,
+                site.adapter as Adapter,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
@@ -60,7 +61,7 @@
                 id="name"
                 label="Name"
                 placeholder="Enter name"
-                autocomplete={false}
+                required
                 bind:value={siteName} />
         </svelte:fragment>
 

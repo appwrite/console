@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import { providers } from './store';
     import Create from './create.svelte';
@@ -7,15 +6,11 @@
     import { Providers } from '../provider.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { MessagingProviderType } from '@appwrite.io/console';
-    import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { ActionMenu, Popover } from '@appwrite.io/pink-svelte';
 </script>
 
 <Popover let:toggle padding="none" placement="bottom-end">
-    <Button on:click={toggle} event="create_provider">
-        <Icon icon={IconPlus} slot="start" size="s" />
-        Create provider
-    </Button>
+    <slot {toggle} />
     <ActionMenu.Root slot="tooltip">
         {#each Object.entries(providers) as [type, option]}
             <ActionMenu.Item.Button

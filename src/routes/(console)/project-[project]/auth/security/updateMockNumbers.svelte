@@ -165,7 +165,6 @@
                             <InputOTP
                                 id={`value-${index}`}
                                 bind:value={number.otp}
-                                fullWidth
                                 placeholder="Enter value"
                                 label={index === 0 ? 'Verification code' : undefined}
                                 maxlength={6}
@@ -186,7 +185,7 @@
                                 on:click={() => {
                                     deletePhoneNumber(index);
                                 }}>
-                                <span class="icon-x" aria-hidden="true" />
+                                <span class="icon-x" aria-hidden="true"></span>
                             </Button>
                         </Layout.Stack>
                     </Layout.Stack>

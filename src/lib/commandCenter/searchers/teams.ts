@@ -5,6 +5,7 @@ import { get } from 'svelte/store';
 import type { Command, Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
 import { base } from '$app/paths';
+import { IconUserCircle } from '@appwrite.io/pink-icons-svelte';
 
 const getTeamCommand = (team: Models.Team<Models.Preferences>, projectId: string) =>
     ({
@@ -13,7 +14,7 @@ const getTeamCommand = (team: Models.Team<Models.Preferences>, projectId: string
             goto(`${base}/project-${projectId}/auth/teams/team-${team.$id}`);
         },
         group: 'teams',
-        icon: 'user-circle'
+        icon: IconUserCircle
     }) satisfies Command;
 
 export const teamSearcher = (async (query: string) => {

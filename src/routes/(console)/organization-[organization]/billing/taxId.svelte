@@ -3,7 +3,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -39,13 +39,7 @@
         <svelte:fragment slot="title">Tax ID</svelte:fragment>
         Add a tax identification number to your organization.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    label="Tax ID"
-                    placeholder="Enter tax ID"
-                    id="taxId"
-                    bind:value={taxId} />
-            </FormList>
+            <InputText label="Tax ID" placeholder="Enter tax ID" id="taxId" bind:value={taxId} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import type { TabElement } from '$lib/helpers/load';
@@ -9,7 +9,7 @@
     import { isCloud } from '$lib/system';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     const path = `${base}/project-${projectId}/settings`;
     const tabs: TabElement[] = [
         {
@@ -58,7 +58,7 @@
         {#each tabs as tab}
             <Tab
                 href={tab.href}
-                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                selected={isTabSelected(tab, page.url.pathname, path, tabs)}
                 event={tab.event}>
                 {tab.title}
             </Tab>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { PageData } from './$types';
@@ -8,7 +8,7 @@
     import { Tooltip, Table } from '@appwrite.io/pink-svelte';
 
     export let data: PageData;
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     function getPolicyDescription(cron: string): string {
         const [minute, hour, dayOfMonth, , dayOfWeek] = cron.split(' ');
@@ -20,30 +20,26 @@
     }
 </script>
 
-<Table.Root>
-    <svelte:fragment slot="header">
-        {#each $columns as column}
-            {#if column.show}
-                <Table.Header.Cell width={column.width}>{column.title}</Table.Header.Cell>
-            {/if}
+<Table.Root columns={$columns} let:root>
+    <svelte:fragment slot="header" let:root>
+        {#each $columns as { id, title }}
+            <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each data.databases.databases as database (database.$id)}
-        <Table.Link href={`${base}/project-${projectId}/databases/database-${database.$id}`}>
+        <Table.Row.Link
+            {root}
+            href={`${base}/project-${projectId}/databases/database-${database.$id}`}>
             {#each $columns as column}
-                {#if column.show}
+                <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key $columns}
-                            <Table.Cell width={column.width + 'px'}>
-                                <Id value={database.$id}>
-                                    {database.$id}
-                                </Id>
-                            </Table.Cell>
+                            <Id value={database.$id}>
+                                {database.$id}
+                            </Id>
                         {/key}
                     {:else if column.id === 'name'}
-                        <Table.Cell width={column.width + 'px'}>
-                            {database.name}
-                        </Table.Cell>
+                        {database.name}
                     {:else if column.id === 'backup'}
                         {@const policies = data.policies?.[database.$id] ?? null}
                         {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
@@ -51,31 +47,26 @@
                             ?.map((policy) => getPolicyDescription(policy.schedule))
                             .join(', ')}
 
-                        <Table.Cell width={column.width + 'px'}>
-                            <Tooltip placement="bottom" disabled={!policies || !lastBackup}>
-                                <span class="u-trim">
-                                    {#if !policies}
-                                        <span class="icon-exclamation" /> No backup policies
-                                    {:else}
-                                        {description}
-                                    {/if}
-                                </span>
-                                <span slot="tooltip">{`Last backup: ${lastBackup}`}</span>
-                            </Tooltip>
-                        </Table.Cell>
+                        <Tooltip
+                            placement="bottom"
+                            disabled={!policies || !lastBackup}
+                            maxWidth="fit-content">
+                            <span class="u-trim">
+                                {#if !policies}
+                                    <span class="icon-exclamation"></span> No backup policies
+                                {:else}
+                                    {description}
+                                {/if}
+                            </span>
+                            <span slot="tooltip">
+                                {`Last backup: ${lastBackup}`}
+                            </span>
+                        </Tooltip>
                     {:else}
-                        <Table.Cell width={column.width + 'px'}>
-                            {toLocaleDateTime(database[column.id])}
-                        </Table.Cell>
+                        {toLocaleDateTime(database[column.id])}
                     {/if}
-                {/if}
+                </Table.Cell>
             {/each}
-        </Table.Link>
+        </Table.Row.Link>
     {/each}
 </Table.Root>
-
-<style lang="scss">
-    .icon-exclamation {
-        color: hsl(var(--color-warning-100)) !important;
-    }
-</style>

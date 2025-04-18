@@ -5,7 +5,7 @@
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Selector, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
-    import { parse } from 'envfile';
+    import { parse } from '$lib/helpers/envfile';
 
     export let show = false;
     export let variables: Partial<Models.Variable>[];

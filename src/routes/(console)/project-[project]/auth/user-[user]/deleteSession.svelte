@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
@@ -13,7 +13,7 @@
 
     async function deleteSession() {
         try {
-            await sdk.forProject.users.deleteSession($page.params.user, selectedSessionId);
+            await sdk.forProject.users.deleteSession(page.params.user, selectedSessionId);
             await invalidate(Dependencies.SESSIONS);
             showDelete = false;
             addNotification({

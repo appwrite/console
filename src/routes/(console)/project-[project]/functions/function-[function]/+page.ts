@@ -19,10 +19,11 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         offset,
         limit,
         query,
-        activeDeployment: data.function.deployment
+        installations: data.installations,
+        activeDeployment: data.function.deploymentId
             ? await sdk.forProject.functions.getDeployment(
                   params.function,
-                  data.function.deployment
+                  data.function.deploymentId
               )
             : null,
         deploymentList: await sdk.forProject.functions.listDeployments(params.function, [

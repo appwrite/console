@@ -98,13 +98,13 @@
                     <Layout.Stack direction="row" gap="l" alignItems="center" alignContent="center">
                         <div class="icon-wrapper">
                             {#if hasError(entityCounter)}
-                                <i class="icon-exclamation" />
+                                <i class="icon-exclamation"></i>
                             {:else if isLoading(entityCounter)}
                                 <Spinner size="s" />
                             {:else if hasSucceeded(entityCounter)}
-                                <i class="icon-check" />
+                                <i class="icon-check"></i>
                             {:else}
-                                <i class="icon-clock" />
+                                <i class="icon-clock"></i>
                             {/if}
                         </div>
 

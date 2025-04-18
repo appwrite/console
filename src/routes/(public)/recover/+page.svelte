@@ -1,12 +1,12 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Button, Form, FormList, InputEmail, InputPassword } from '$lib/elements/forms';
+    import { Button, Form, InputEmail, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Divider, Layout, Link } from '@appwrite.io/pink-svelte';
 
@@ -18,8 +18,8 @@
     let confirmPassword: string;
 
     onMount(() => {
-        userId = $page.url.searchParams.get('userId');
-        secret = $page.url.searchParams.get('secret');
+        userId = page.url.searchParams.get('userId');
+        secret = page.url.searchParams.get('secret');
     });
 
     async function recover() {
@@ -68,7 +68,7 @@
     <svelte:fragment>
         {#if userId && secret}
             <Form onSubmit={setPassword}>
-                <FormList>
+                <Layout.Stack>
                     <InputPassword
                         label="New password"
                         placeholder="Enter password"
@@ -84,11 +84,11 @@
                         bind:value={confirmPassword} />
 
                     <Button fullWidth submit>Update</Button>
-                </FormList>
+                </Layout.Stack>
             </Form>
         {:else}
             <Form onSubmit={recover}>
-                <FormList>
+                <Layout.Stack>
                     <InputEmail
                         id="email"
                         label="Email"
@@ -98,7 +98,7 @@
                         bind:value={email} />
 
                     <Button fullWidth submit>Recover</Button>
-                </FormList>
+                </Layout.Stack>
             </Form>
         {/if}
     </svelte:fragment>

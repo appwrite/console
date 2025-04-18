@@ -2,12 +2,10 @@
     import { base } from '$app/paths';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import Create from './createProjectCloud.svelte';
     import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
-    import { wizard } from '$lib/stores/wizard';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
     import {
         CardContainer,
@@ -41,21 +39,29 @@
         IconUnity
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
+    import CreateProjectCloud from './createProjectCloud.svelte';
 
     export let data;
 
     let addOrganization = false;
     let showCreate = false;
+    let showCreateProjectCloud = false;
 
-    function allServiceDisabled(project: Models.Project): boolean {
+    async function allServiceDisabled(project: Models.Project) {
         let disabled = true;
-        services.load(project);
-        $services.list.forEach((service) => {
-            if (service.value) {
-                disabled = false;
-            }
-        });
-        return disabled;
+        try {
+            if (!project.$id) return false;
+            if (!project.platforms.length) return false;
+            services.load(project);
+            $services.list.forEach((service) => {
+                if (service.value) {
+                    disabled = false;
+                }
+            });
+            return disabled;
+        } catch (e) {
+            return true;
+        }
     }
 
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
@@ -66,7 +72,7 @@
 
     function handleCreateProject() {
         if (!$canWriteProjects) return;
-        if (isCloud) wizard.start(Create);
+        if (isCloud) showCreateProjectCloud = true;
         else showCreate = true;
     }
 
@@ -110,11 +116,11 @@
             const project = await sdk.forConsole.projects.create(
                 ID.unique(),
                 `Imported project ${new Date().toISOString()}`,
-                $page.params.organization,
+                page.params.organization,
                 Region.Default
             );
             trackEvent(Submit.ProjectCreate, {
-                teamId: $page.params.organization
+                teamId: page.params.organization
             });
             await goto(`${base}/project-${project.$id}/settings/migrations`);
             openImportWizard();
@@ -128,18 +134,17 @@
     onMount(async () => {
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
-            checkPricingRefAndRedirect($page.url.searchParams);
+            checkPricingRefAndRedirect(page.url.searchParams);
         }
 
-        const searchParams = $page.url.searchParams;
+        const searchParams = page.url.searchParams;
         if (searchParams.has('create-project')) {
             handleCreateProject();
         }
     });
 
-    function findRegion(project: Models.Project) {
-        const region = regions.regions.find((region) => region.$id === project.region);
-        return region;
+    function findRegion(project: Models.Project & { region?: string }) {
+        return regions.regions.find((region) => region.$id === project?.region);
     }
 </script>
 
@@ -170,7 +175,7 @@
 
     {#if data.projects.total}
         <CardContainer
-            showEmpty={$canWriteProjects}
+            disableEmpty={!$canWriteProjects}
             total={data.projects.total}
             offset={data.offset}
             on:click={handleCreateProject}>
@@ -185,11 +190,14 @@
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
-                    {#if allServiceDisabled(project)}
-                        <p>
-                            <span class="icon-pause" aria-hidden="true" /> All services are disabled.
-                        </p>
-                    {/if}
+                    {#await allServiceDisabled(project) then isDisabled}
+                        {#if isDisabled}
+                            <p>
+                                <span class="icon-pause" aria-hidden="true"></span> All services are
+                                disabled.
+                            </p>
+                        {/if}
+                    {/await}
 
                     {#each platforms as platform, i}
                         {#if i < 3}
@@ -233,4 +241,7 @@
 </Container>
 
 <CreateOrganization bind:show={addOrganization} />
-<CreateProject bind:show={showCreate} teamId={$page.params.organization} />
+<CreateProject bind:show={showCreate} teamId={page.params.organization} />
+{#if showCreateProjectCloud}
+    <CreateProjectCloud bind:showCreateProjectCloud regions={regions.regions} />
+{/if}

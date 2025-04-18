@@ -20,10 +20,10 @@
 <Fieldset legend="Events">
     <Layout.Stack gap="s">
         {#if events.length}
-            <Table.Root>
+            <Table.Root columns={1} let:root>
                 {#each events as event}
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell {root}>
                             <Layout.Stack
                                 direction="row"
                                 justifyContent="space-between"
@@ -40,7 +40,7 @@
                                 </Button>
                             </Layout.Stack>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
             <div>

@@ -1,10 +1,10 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputNumber } from '$lib/elements/forms';
+    import { Button, Form, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -12,7 +12,7 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     let timeout: number = null;
 
     onMount(async () => {
@@ -62,16 +62,14 @@
 <Form onSubmit={updateTimeout}>
     <CardGrid>
         <svelte:fragment slot="title">Timeout</svelte:fragment>
-        Limit the execution time of your function. Maximum value is 900 seconds (15 minutes).
+        Limit the execution time of your function. The maximum value is 900 seconds (15 minutes).
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputNumber
-                    min={1}
-                    max={900}
-                    id="time"
-                    label="Time (in seconds)"
-                    bind:value={timeout} />
-            </FormList>
+            <InputNumber
+                min={1}
+                max={900}
+                id="time"
+                label="Time (in seconds)"
+                bind:value={timeout} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

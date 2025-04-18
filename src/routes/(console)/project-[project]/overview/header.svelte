@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { Cover } from '$lib/layout';
     import { project } from '../store';
@@ -13,7 +13,7 @@
     import { trackEvent } from '$lib/actions/analytics';
 </script>
 
-{#if !$page.url.pathname.includes('get-started')}
+{#if !page.url.pathname.includes('get-started')}
     <Cover>
         <svelte:fragment slot="header">
             <Typography.Title color="--fgcolor-neutral-primary" size="xl">

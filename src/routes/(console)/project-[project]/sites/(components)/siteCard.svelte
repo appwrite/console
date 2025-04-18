@@ -14,15 +14,14 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
-
-    import { Button } from '$lib/elements/forms';
-    import { IconInfo, IconQrcode } from '@appwrite.io/pink-icons-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';
-    import DeploymentDomains from './deploymentDomains.svelte';
+    import DeploymentDomains from '$lib/components/git/deploymentDomains.svelte';
     import { app } from '$lib/stores/app';
     import { base } from '$app/paths';
     import { isCloud } from '$lib/system';
     import { getApiEndpoint } from '$lib/stores/sdk';
+    import { capitalize } from '$lib/helpers/string';
 
     export let deployment: Models.Deployment;
     export let proxyRuleList: Models.ProxyRuleList;
@@ -32,7 +31,7 @@
     let show = false;
     const siteUrl = proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : undefined;
 
-    $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
+    $: totalSize = humanFileSize(deployment?.totalSize ?? 0);
 
     function getScreenshot(theme: string, deployment: Models.Deployment) {
         if (theme === 'dark') {
@@ -49,10 +48,7 @@
     function getFilePreview(fileId: string) {
         // TODO: @Meldiron use sdk.forConsole.storage.getFilePreview
         const endpoint = getApiEndpoint();
-        return (
-            endpoint +
-            `/storage/buckets/screenshots/files/${fileId}/view?project=console&mode=admin`
-        );
+        return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
     }
 </script>
 
@@ -73,13 +69,11 @@
                         <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                             Domains
                         </Typography.Text>
-                        <DeploymentDomains domains={proxyRuleList} />
+                        <DeploymentDomains
+                            domains={proxyRuleList}
+                            {hideQRCode}
+                            showQR={() => (show = !show)} />
                     </Layout.Stack>
-                    {#if siteUrl && !hideQRCode}
-                        <Button icon secondary on:click={() => (show = true)}>
-                            <Icon icon={IconQrcode} size="l" />
-                        </Button>
-                    {/if}
                 </Layout.Stack>
 
                 <Layout.Stack direction="row" gap="xl">
@@ -89,7 +83,9 @@
                                 Status
                             </Typography.Text>
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                <Status status={deployment.status} label={deployment.status} />
+                                <Status
+                                    status={deployment.status}
+                                    label={capitalize(deployment.status)} />
                             </Typography.Text>
                         </Layout.Stack>
                     {:else}
@@ -106,13 +102,13 @@
 
                 <Layout.Stack gap="xxl" direction="row" wrap="wrap">
                     <Layout.Stack gap="xxl" direction="row" wrap="wrap" inline>
-                        {#if deployment?.buildTime}
+                        {#if deployment?.buildDuration}
                             <Layout.Stack gap="xxs" inline>
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
-                                    Build time
+                                    Build duration
                                 </Typography.Text>
                                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
-                                    {formatTimeDetailed(deployment.buildTime)}
+                                    {formatTimeDetailed(deployment.buildDuration)}
                                 </Typography.Text>
                             </Layout.Stack>
                         {/if}
@@ -168,7 +164,7 @@
                         </Layout.Stack>
                     </Layout.Stack>
                 </Layout.Stack>
-                <Layout.Stack gap="xxs">
+                <Layout.Stack gap="xxs" inline style="width: min-content;">
                     <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                         Source
                     </Typography.Text>
@@ -190,8 +186,8 @@
     </Layout.Stack>
 </Card>
 
-{#if show && siteUrl}
-    <OpenOnMobileModal bind:show siteURL={siteUrl} />
+{#if show && proxyRuleList.total}
+    <OpenOnMobileModal bind:show {proxyRuleList} />
 {/if}
 
 <style lang="scss">

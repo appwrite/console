@@ -17,11 +17,13 @@
         Card as PinkCard,
         Image,
         Badge,
-        Divider
+        Divider,
+        Icon
     } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { capitalize } from '$lib/helpers/string';
+    import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
 
     $: buttonDisabled =
         isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
@@ -84,13 +86,13 @@
                         href={`https://github.com/${$template.providerOwner}/${$template.providerRepositoryId}`}
                         external>
                         View source
-                        <span class="icon-external-link" />
+                        <Icon icon={IconExternalLink} size="s" slot="end" />
                     </Button>
                     {#if $canWriteFunctions}
                         <ContainerButton
                             title="functions"
                             disabled={buttonDisabled}
-                            buttonHref={`${base}/project-${$page.params.project}/functions/create-function/template-${$template.id}`}
+                            buttonHref={`${base}/project-${page.params.project}/functions/create-function/template-${$template.id}`}
                             showIcon={false}
                             buttonText="Create function"
                             buttonEvent="create_function" />

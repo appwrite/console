@@ -28,10 +28,9 @@
         IconRefresh,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { base } from '$app/paths';
 
-    export let search: string = null;
     export let rules: Models.ProxyRuleList;
     export let dependency: Dependencies;
 
@@ -58,11 +57,11 @@
 {#if $canWriteRules}
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery {search} placeholder="Search by name" />
+            <SearchQuery placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button
-                href={`${base}/project-${$page.params.project}/settings/domains/create`}
+                href={`${base}/project-${page.params.project}/settings/domains/create`}
                 event="create_user"
                 size="s">
                 <Icon size="s" icon={IconPlus} slot="start" />
@@ -72,25 +71,30 @@
     </Layout.Stack>
 {/if}
 {#if rules.total}
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Name</Table.Header.Cell>
-            <Table.Header.Cell>Verification status</Table.Header.Cell>
-            <Table.Header.Cell>Certificate status</Table.Header.Cell>
-            {#if $canWriteRules}
-                <Table.Header.Cell width="20px" />
-            {/if}
+    <Table.Root
+        let:root
+        columns={[
+            { id: 'name' },
+            { id: 'verification' },
+            { id: 'certificate' },
+            { id: 'action', width: 20, hide: !$canWriteRules }
+        ]}>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell column="verification" {root}>Verification status</Table.Header.Cell>
+            <Table.Header.Cell column="certificate" {root}>Certificate status</Table.Header.Cell>
+            <Table.Header.Cell column="action" {root} />
         </svelte:fragment>
         {#each rules.rules as domain}
-            <Table.Row>
-                <Table.Cell>
+            <Table.Row.Base {root}>
+                <Table.Cell column="name" {root}>
                     <Layout.Stack direction="row" alignItems="center">
                         <Link.Anchor href={`https://${domain.domain}`} target="_blank">
                             {domain.domain}
                         </Link.Anchor>
                     </Layout.Stack>
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell column="verification" {root}>
                     {#if domain.status === 'created'}
                         <Layout.Stack direction="row" alignItems="center">
                             <Badge variant="secondary" content="failed" type="error">
@@ -106,7 +110,7 @@
                         </Badge>
                     {/if}
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell column="certificate" {root}>
                     {#if domain.status === 'unverified'}
                         <Layout.Stack direction="row" alignItems="center">
                             <Badge variant="secondary" content="failed" type="error">
@@ -133,35 +137,33 @@
                         </Badge>
                     {/if}
                 </Table.Cell>
-                {#if $canWriteRules}
-                    <Table.Cell>
-                        <Popover let:toggle placement="bottom-start" padding="none">
-                            <Button text icon ariaLabel="more options" on:click={toggle}>
-                                <Icon icon={IconDotsHorizontal} size="s" />
-                            </Button>
-                            <ActionMenu.Root slot="tooltip">
-                                {#if domain.status !== 'verified'}
-                                    <ActionMenu.Item.Button
-                                        leadingIcon={IconRefresh}
-                                        on:click={() => openRetry(domain)}>
-                                        {domain.status === 'unverified'
-                                            ? 'Retry generation'
-                                            : 'Retry verification'}
-                                    </ActionMenu.Item.Button>
-                                {/if}
+                <Table.Cell column="action" {root}>
+                    <Popover let:toggle placement="bottom-start" padding="none">
+                        <Button text icon ariaLabel="more options" on:click={toggle}>
+                            <Icon icon={IconDotsHorizontal} size="s" />
+                        </Button>
+                        <ActionMenu.Root slot="tooltip">
+                            {#if domain.status !== 'verified'}
                                 <ActionMenu.Item.Button
-                                    leadingIcon={IconTrash}
-                                    on:click={() => {
-                                        selectedDomain = domain;
-                                        showDelete = true;
-                                    }}>
-                                    Delete
+                                    leadingIcon={IconRefresh}
+                                    on:click={() => openRetry(domain)}>
+                                    {domain.status === 'unverified'
+                                        ? 'Retry generation'
+                                        : 'Retry verification'}
                                 </ActionMenu.Item.Button>
-                            </ActionMenu.Root>
-                        </Popover>
-                    </Table.Cell>
-                {/if}
-            </Table.Row>
+                            {/if}
+                            <ActionMenu.Item.Button
+                                leadingIcon={IconTrash}
+                                on:click={() => {
+                                    selectedDomain = domain;
+                                    showDelete = true;
+                                }}>
+                                Delete
+                            </ActionMenu.Item.Button>
+                        </ActionMenu.Root>
+                    </Popover>
+                </Table.Cell>
+            </Table.Row.Base>
         {/each}
     </Table.Root>
 {:else}

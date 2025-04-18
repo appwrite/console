@@ -1,28 +1,33 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { showCreate } from '../store';
     import type { PageData } from './$types';
     import { showSubNavigation } from '$lib/stores/layout';
-    import { Icon, Sidebar, Navbar, Layout, Link } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown, IconDatabase, IconTable } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Sidebar, Navbar, Layout, Link, ActionMenu } from '@appwrite.io/pink-svelte';
+    import {
+        IconChevronDown,
+        IconDatabase,
+        IconPlus,
+        IconTable
+    } from '@appwrite.io/pink-icons-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { BottomSheet } from '$lib/components';
 
-    $: data = $page.data as PageData;
-    $: project = $page.params.project;
-    $: databaseId = $page.params.database;
-    $: collectionId = $page.params.collection;
+    let data = $derived(page.data) as PageData;
+    let project = $derived(page.params.project);
+    let databaseId = $derived(page.params.database);
+    let collectionId = $derived(page.params.collection);
 
-    $: sortedCollections = data?.allCollections?.collections?.sort((a, b) =>
-        a.$updatedAt > b.$updatedAt ? -1 : 1
+    const sortedCollections = $derived.by(() =>
+        data?.allCollections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
-    $: selectedCollection = sortedCollections?.find(
-        (collection) => collection.$id === collectionId
+    const selectedCollection = $derived.by(() =>
+        sortedCollections()?.find((collection) => collection.$id === collectionId)
     );
 
-    let openBottomSheet = false;
+    let openBottomSheet = $state(false);
 
     function onResize() {
         if (openBottomSheet && !$isTabletViewport) {
@@ -49,12 +54,14 @@
                             {@const isSelected = collectionId === collection.$id}
                             <li class:is-selected={isSelected}>
                                 <a
-                                    class="u-padding-block-4 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
+                                    class="u-padding-block-8 u-padding-inline-end-4 u-padding-inline-start-8 u-flex u-cross-center u-gap-8"
                                     {href}>
                                     <Icon
                                         icon={IconTable}
                                         size="s"
-                                        color="--fgcolor-neutral-weak" />
+                                        color={isSelected
+                                            ? '--fgcolor-neutral-tertiary'
+                                            : '--fgcolor-neutral-weak'} />
                                     <span class="text collection-name" data-private
                                         >{collection.name}</span>
                                 </a>
@@ -63,15 +70,16 @@
                     </ul>
                 {/if}
             </div>
-            <button
-                class="new-button body-text-2 u-gap-8 u-margin-inline-start-12 u-flex u-cross-center u-margin-block-start-8 is-full-width"
-                on:click={() => {
-                    $showCreate = true;
-                    $showSubNavigation = false;
-                }}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create collection</span>
-            </button>
+            <ActionMenu.Root noPadding width="167">
+                <ActionMenu.Item.Button
+                    on:click={() => {
+                        $showCreate = true;
+                        $showSubNavigation = false;
+                    }}
+                    leadingIcon={IconPlus}>
+                    Create collection
+                </ActionMenu.Item.Button>
+            </ActionMenu.Root>
         </section>
     </Sidebar.Base>
 {:else}
@@ -87,7 +95,7 @@
                     type="button"
                     class="trigger"
                     aria-label="Open collections"
-                    on:click={() => {
+                    onclick={() => {
                         openBottomSheet = !openBottomSheet;
                     }}>
                     <span class="orgName">{selectedCollection.name}</span>
@@ -181,7 +189,7 @@
         li:hover {
             color: var(--fgcolor-neutral-primary);
             border-radius: var(--border-radius-xs, 4px);
-            background: var(--bgcolor-neutral-tertiary, #fafafb);
+            background: var(--bgcolor-neutral-secondary);
         }
 
         .collection-name {
@@ -191,10 +199,6 @@
             line-clamp: 1;
             color: var(--fgcolor-neutral-secondary, #56565c);
         }
-    }
-
-    .new-button {
-        flex-shrink: 0;
     }
 
     :global(.sub-navigation header) {

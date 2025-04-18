@@ -1,15 +1,7 @@
 <script lang="ts">
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements/';
-    import {
-        Button,
-        InputPassword,
-        InputEmail,
-        InputText,
-        InputPhone,
-        FormList
-    } from '$lib/elements/forms';
+    import { Button, InputPassword, InputEmail, InputText, InputPhone } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
@@ -61,32 +53,21 @@
 </script>
 
 <Modal title="Create user" {error} bind:show={showCreate} onSubmit={create}>
-    <FormList>
-        <InputText
-            id="name"
-            label="Name"
-            placeholder="Enter name"
-            autofocus={true}
-            bind:value={name} />
-        <InputEmail id="email" label="Email" placeholder="Enter email" bind:value={mail} />
-        <InputPhone id="phone" label="Phone" placeholder="Enter phone" bind:value={phone} />
-        <InputPassword
-            id="password"
-            label="Password"
-            placeholder="Enter password"
-            bind:value={pass} />
+    <InputText id="name" label="Name" placeholder="Enter name" autofocus={true} bind:value={name} />
+    <InputEmail id="email" label="Email" placeholder="Enter email" bind:value={mail} />
+    <InputPhone id="phone" label="Phone" placeholder="Enter phone" bind:value={phone} />
+    <InputPassword id="password" label="Password" placeholder="Enter password" bind:value={pass} />
 
-        {#if !showDropdown}
-            <div>
-                <Tag
-                    size="s"
-                    on:click={() => {
-                        showDropdown = true;
-                    }}><Icon icon={IconPencil} /> User ID</Tag>
-            </div>
-        {/if}
-        <CustomId bind:show={showDropdown} name="User" bind:id fullWidth={true} />
-    </FormList>
+    {#if !showDropdown}
+        <div>
+            <Tag
+                size="s"
+                on:click={() => {
+                    showDropdown = true;
+                }}><Icon icon={IconPencil} /> User ID</Tag>
+        </div>
+    {/if}
+    <CustomId bind:show={showDropdown} name="User" bind:id />
     <svelte:fragment slot="footer">
         <Button text on:mousedown={() => (showCreate = false)}>Cancel</Button>
         <Button submit>Create</Button>

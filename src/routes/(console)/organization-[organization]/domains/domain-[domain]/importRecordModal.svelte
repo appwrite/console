@@ -5,6 +5,11 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { removeFile } from '$lib/helpers/files';
+    import { page } from '$app/state';
+    import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     export let show = false;
     let files: FileList;
@@ -12,12 +17,17 @@
 
     async function handleSubmit() {
         try {
-            //TODO: create DNS records
+            if (!files?.length) return;
 
+            const file = files[0];
+            const content = await file.text();
+
+            await sdk.forConsole.domains.updateZone(page.params.domain, content);
+            invalidate(Dependencies.DOMAIN);
             show = false;
             addNotification({
                 type: 'success',
-                message: `Presets have been added`
+                message: `DNS records have been imported successfully`
             });
             trackEvent(Submit.RecordCreate);
         } catch (e) {
@@ -25,6 +35,14 @@
             trackError(e, Submit.RecordCreate);
         }
     }
+
+    $: filesList = files?.length
+        ? Array.from(files).map((file) => {
+              let f = file as Partial<File> & { removable: boolean };
+              f.removable = true;
+              return f;
+          })
+        : [];
 </script>
 
 <Modal title="Import zone file" bind:show bind:error onSubmit={handleSubmit}>
@@ -34,24 +52,41 @@
         >.
     </span>
 
-    <Upload.Dropzone bind:files>
-        <Layout.Stack alignItems="center" gap="s">
-            <Layout.Stack alignItems="center" gap="s">
-                <Layout.Stack alignItems="center" justifyContent="center" direction="row" gap="s">
-                    <Typography.Text variant="l-500">
-                        Drag and drop file here or click to upload
-                    </Typography.Text>
-                    <Tooltip>
-                        <Layout.Stack alignItems="center" justifyContent="center" inline>
-                            <Icon icon={IconInfo} size="s" />
+    <Layout.Stack gap="xl">
+        <Layout.Stack gap="s">
+            <Typography.Text color="--fgcolor-neutral-primary">
+                Upload a .txt file with your DNS records
+            </Typography.Text>
+            <Upload.Dropzone bind:files extensions={['txt']}>
+                <Layout.Stack alignItems="center" gap="s">
+                    <Layout.Stack alignItems="center" gap="s">
+                        <Layout.Stack
+                            alignItems="center"
+                            justifyContent="center"
+                            direction="row"
+                            gap="s">
+                            <Typography.Text variant="l-500">
+                                Drag and drop file here or click to upload
+                            </Typography.Text>
+                            <Tooltip>
+                                <Layout.Stack alignItems="center" justifyContent="center" inline>
+                                    <Icon icon={IconInfo} size="s" />
+                                </Layout.Stack>
+                                <svelte:fragment slot="tooltip"
+                                    >Only .txt files allowed</svelte:fragment>
+                            </Tooltip>
                         </Layout.Stack>
-                        <svelte:fragment slot="tooltip">Only .txt files allowed</svelte:fragment>
-                    </Tooltip>
+                        <Typography.Caption variant="400">Max file size 10MB</Typography.Caption>
+                    </Layout.Stack>
                 </Layout.Stack>
-                <Typography.Caption variant="400">Max file size 10MB</Typography.Caption>
-            </Layout.Stack>
+            </Upload.Dropzone>
         </Layout.Stack>
-    </Upload.Dropzone>
+        {#if files?.length}
+            <Upload.List
+                bind:files={filesList}
+                on:remove={(e) => (files = removeFile(e.detail, files))} />
+        {/if}
+    </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button size="s" submit disabled={!files?.length}>Import</Button>

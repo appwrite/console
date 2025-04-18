@@ -6,13 +6,8 @@
     import type { Invoice } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { page } from '$app/stores';
-    import {
-        confirmPayment,
-        initializeStripe,
-        isStripeInitialized,
-        submitStripeCard
-    } from '$lib/stores/stripe';
+    import { page } from '$app/state';
+    import { confirmPayment, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
     import { PaymentBoxes } from '$lib/components/billing';
@@ -98,15 +93,10 @@
         }
     }
 
-    $: if (paymentMethodId === null && !$isStripeInitialized) {
-        initializeStripe();
-    }
-
+    $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
     $: if (paymentMethodId) {
         isStripeInitialized.set(false);
     }
-    $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
-
     $: if (!show) {
         invoice = null;
     }
@@ -128,7 +118,7 @@
 
     <Button
         external
-        href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}>
+        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
         View invoice
     </Button>
 

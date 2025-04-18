@@ -1,15 +1,6 @@
 <script lang="ts">
-    import { CardGrid, CreditCardInfo, DropList, DropListItem, Empty } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { CardGrid, CreditCardInfo, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import {
-        Table,
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow
-    } from '$lib/elements/table';
     import { paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
@@ -18,8 +9,23 @@
     import DeletePaymentModal from './deletePaymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
-    import { IconDotsHorizontal, IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import {
+        IconDotsHorizontal,
+        IconInfo,
+        IconPencil,
+        IconPlus,
+        IconTrash
+    } from '@appwrite.io/pink-icons-svelte';
+    import {
+        ActionMenu,
+        Icon,
+        Layout,
+        Link,
+        Popover,
+        Table,
+        Tag,
+        Typography
+    } from '@appwrite.io/pink-svelte';
 
     export let showPayment = false;
     let showDropdown = [];
@@ -28,7 +34,6 @@
     let showDelete = false;
     let showEdit = false;
     let isLinked = false;
-    let showLinked = [];
 
     $: orgList = $organizationList.teams as unknown as Organization[];
 
@@ -42,97 +47,98 @@
     View or update your payment methods. These can be applied to any organizations you have created.
     <svelte:fragment slot="aside">
         {#if $paymentMethods?.total && filteredMethods?.length > 0}
-            <Table noMargin noStyles transparent>
-                <TableHeader>
-                    <TableCellHead>Payment methods</TableCellHead>
-                </TableHeader>
-                <TableBody>
-                    {#each filteredMethods as paymentMethod, i}
-                        {@const linkedOrgs = orgList?.filter(
-                            (org) =>
-                                paymentMethod.$id === org.paymentMethodId ||
-                                paymentMethod.$id === org.backupPaymentMethodId
-                        )}
+            <Table.Root
+                let:root
+                columns={[
+                    { id: 'cc' },
+                    { id: 'name' },
+                    { id: 'expiry' },
+                    { id: 'status' },
+                    { id: 'links' },
+                    { id: 'actions', width: 40 }
+                ]}>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="cc" {root}>Credit card</Table.Header.Cell>
+                    <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+                    <Table.Header.Cell column="expiration" {root}
+                        >Expiration date</Table.Header.Cell>
+                    <Table.Header.Cell column="actions" {root} />
+                </svelte:fragment>
+                {#each filteredMethods as paymentMethod, i}
+                    {@const linkedOrgs = orgList?.filter(
+                        (org) =>
+                            paymentMethod.$id === org.paymentMethodId ||
+                            paymentMethod.$id === org.backupPaymentMethodId
+                    )}
 
-                        <TableRow>
-                            <TableCell>
-                                <CreditCardInfo {paymentMethod}>
-                                    <div class="u-flex u-gap-16 u-cross-center">
-                                        {#if linkedOrgs?.length > 0}
-                                            <DropList
-                                                bind:show={showLinked[i]}
-                                                width="20"
-                                                scrollable>
-                                                <Pill
-                                                    button
-                                                    on:click={() =>
-                                                        (showLinked[i] = !showLinked[i])}>
-                                                    <span class="icon-info" /> linked to organization
-                                                </Pill>
-                                                <svelte:fragment slot="list">
-                                                    <p class="u-break-word">
-                                                        This payment method is linked to the
-                                                        following organizations:
-                                                    </p>
-                                                    <div class="u-flex u-flex-vertical u-gap-4">
-                                                        {#each linkedOrgs as org}
-                                                            <a
-                                                                class="u-underline u-trim"
-                                                                href={`${base}/organization-${org.$id}/billing`}>
-                                                                {org.name}
-                                                            </a>
-                                                        {/each}
-                                                    </div>
-                                                </svelte:fragment>
-                                            </DropList>
-                                        {/if}
-
-                                        <DropList
-                                            bind:show={showDropdown[i]}
-                                            placement="bottom-start"
-                                            noArrow>
-                                            <Button
-                                                icon
-                                                text
-                                                on:click={() => {
-                                                    showDropdown[i] = !showDropdown[i];
-                                                }}>
-                                                <Icon icon={IconDotsHorizontal} size="s" />
-                                            </Button>
-                                            <svelte:fragment slot="list">
-                                                <DropListItem
-                                                    icon="pencil"
-                                                    on:click={() => {
-                                                        showEdit = true;
-                                                        showDropdown[i] = false;
-                                                        selectedMethod = paymentMethod;
-                                                        isLinked = !!linkedOrgs?.length;
-                                                    }}>
-                                                    Edit
-                                                </DropListItem>
-                                                <DropListItem
-                                                    icon="trash"
-                                                    on:click={() => {
-                                                        selectedMethod = paymentMethod;
-                                                        selectedLinkedOrgs = linkedOrgs;
-                                                        showDelete = true;
-                                                        showDropdown[i] = false;
-                                                    }}>
-                                                    Delete
-                                                </DropListItem>
-                                            </svelte:fragment>
-                                        </DropList>
-                                    </div>
-                                </CreditCardInfo>
-                            </TableCell>
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </Table>
-            <Button text on:click={() => (showPayment = true)}>
-                <Icon icon={IconPlus} slot="start" size="s" />
-                Add a payment method
-            </Button>
+                    <Table.Row.Base {root}>
+                        <CreditCardInfo {root} {paymentMethod} />
+                        <Table.Cell column="links" {root}>
+                            {#if linkedOrgs?.length > 0}
+                                <Popover let:toggle>
+                                    <Tag on:click={toggle} size="s">
+                                        <Icon icon={IconInfo} slot="start" />
+                                        linked to organization
+                                    </Tag>
+                                    <svelte:fragment slot="tooltip">
+                                        <Layout.Stack>
+                                            <Typography.Text>
+                                                This payment method is linked to the following
+                                                organizations:
+                                            </Typography.Text>
+                                            <Layout.Stack gap="xxs">
+                                                {#each linkedOrgs as org}
+                                                    <Link.Anchor
+                                                        href={`${base}/organization-${org.$id}/billing`}>
+                                                        {org.name}
+                                                    </Link.Anchor>
+                                                {/each}
+                                            </Layout.Stack>
+                                        </Layout.Stack>
+                                    </svelte:fragment>
+                                </Popover>
+                            {/if}
+                        </Table.Cell>
+                        <Table.Cell column="actions" {root}>
+                            <Popover let:toggle placement="bottom-start" padding="none">
+                                <Button icon text on:click={toggle}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                                <svelte:fragment slot="tooltip">
+                                    <ActionMenu.Root>
+                                        <ActionMenu.Item.Button
+                                            leadingIcon={IconPencil}
+                                            on:click={() => {
+                                                showEdit = true;
+                                                showDropdown[i] = false;
+                                                selectedMethod = paymentMethod;
+                                                isLinked = !!linkedOrgs?.length;
+                                            }}>
+                                            Edit
+                                        </ActionMenu.Item.Button>
+                                        <ActionMenu.Item.Button
+                                            leadingIcon={IconTrash}
+                                            on:click={() => {
+                                                selectedMethod = paymentMethod;
+                                                selectedLinkedOrgs = linkedOrgs;
+                                                showDelete = true;
+                                                showDropdown[i] = false;
+                                            }}>
+                                            Delete
+                                        </ActionMenu.Item.Button>
+                                    </ActionMenu.Root>
+                                </svelte:fragment>
+                            </Popover>
+                        </Table.Cell>
+                    </Table.Row.Base>
+                {/each}
+            </Table.Root>
+            <div>
+                <Button secondary on:click={() => (showPayment = true)}>
+                    <Icon icon={IconPlus} slot="start" size="s" />
+                    Add a payment method
+                </Button>
+            </div>
         {:else}
             <Empty on:click={() => (showPayment = true)}>
                 <p class="text">Add a payment method</p>

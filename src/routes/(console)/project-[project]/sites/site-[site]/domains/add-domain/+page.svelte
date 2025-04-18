@@ -1,138 +1,79 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { Button, Form, InputSelect } from '$lib/elements/forms';
+    import { page } from '$app/state';
+    import { Button, Form, InputDomain, InputSelect, InputURL } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Fieldset, Layout, Tooltip, Icon, Alert, Input } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Tooltip, Icon, Input, Alert } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sortBranches } from '$lib/stores/vcs';
-    import { organization } from '$lib/stores/organization';
-    import { consoleVariables } from '$routes/(console)/store';
-    import InputDomain from '$lib/elements/forms/inputDomain.svelte';
+    import { protocol } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
+    import {
+        Adapter,
+        BuildRuntime,
+        Framework,
+        StatusCode,
+        type Models
+    } from '@appwrite.io/console';
+    import { statusCodeOptions } from '$lib/stores/domains';
     import { writable } from 'svelte/store';
-    import ConnectRepoModal from '../../../(components)/connectRepoModal.svelte';
-    import { isCloud } from '$lib/system';
     import { onMount } from 'svelte';
+    import { ConnectRepoModal } from '$lib/components/git/index.js';
 
-    const backPage = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
+    const routeBase = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
 
-    export let data;
+    let { data } = $props();
 
     let formComponent: Form;
-    let isSubmitting = writable(false);
-
-    let showConnectRepo = false;
-    let behaviour: 'REDIRECT' | 'CREATE' = 'CREATE';
-    let domain = '';
-    let redirect = null;
-    let statusCode = null;
-    let branch = null;
-
-    const redirectOptions = data.domains.rules
-        .filter((d) => !d.domain.endsWith($consoleVariables._APP_DOMAIN_SITES))
-        .map((domain) => ({
-            label: domain.domain,
-            value: domain.domain
-        }));
-
-    const statusCodeOptions = [
-        {
-            label: '301 Moved permanently',
-            value: 301
-        },
-        {
-            label: '302 Found',
-            value: 302
-        },
-        {
-            label: '303 See other',
-            value: 303
-        },
-        {
-            label: '307 Temporary redirect',
-            value: 307
-        },
-        {
-            label: '308 Permanent redirect',
-            value: 308
-        }
-    ];
+    let isSubmitting = $state(writable(false));
+    let showConnectRepo = $state(false);
+    let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = $state('ACTIVE');
+    let domainName = $state('');
+    let redirect: string = $state(null);
+    let statusCode = $state(307);
+    let branch: string = $state(null);
 
     onMount(() => {
         if (
-            $page.url.searchParams.has('connectRepo') &&
-            $page.url.searchParams.get('connectRepo') === 'true'
+            page.url.searchParams.has('connectRepo') &&
+            page.url.searchParams.get('connectRepo') === 'true'
         ) {
             showConnectRepo = true;
+        }
+        if (page.url.searchParams.has('domain')) {
+            domainName = page.url.searchParams.get('domain');
         }
     });
 
     async function addDomain() {
-        const isAppwriteDomain = domain.endsWith($consoleVariables._APP_DOMAIN_SITES);
-        const isNewDomain = data.domains.rules.findIndex((rule) => rule.domain === domain) === -1;
-        const isSubDomain = domain.split('.').length >= 2;
         try {
-            if (behaviour === 'CREATE') {
-                if (isCloud && !isAppwriteDomain) {
-                    //Redirect if subdomain so user can choose how to proceed
-                    if (isSubDomain) {
-                        goto(
-                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify?domain=${domain}`
-                        );
-                    }
-                    //Create domain if it's a new domain
-                    else if (isNewDomain) {
-                        const domainData = await sdk.forConsole.domains.create(
-                            $organization.$id,
-                            domain
-                        );
-                        await sdk.forProject.proxy.createSiteRule(
-                            domain,
-                            $page.params.site,
-                            branch
-                        );
-                        goto(
-                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify-${domainData.$id}}`
-                        );
-                    }
-                }
-                //if selfhosted or appwrite domain create site rule
-                else {
-                    await sdk.forProject.proxy.createSiteRule(domain, $page.params.site, branch);
-                    addNotification({
-                        type: 'success',
-                        message: 'Domain added successfully'
-                    });
-                    await goto(backPage);
-                    await invalidate(Dependencies.SITES_DOMAINS);
-                }
+            let rule: Models.ProxyRule;
+            if (behaviour === 'BRANCH') {
+                rule = await sdk.forProject.proxy.createSiteRule(
+                    domainName,
+                    page.params.site,
+                    branch
+                );
             } else if (behaviour === 'REDIRECT') {
-                if (isCloud && !isAppwriteDomain) {
-                    //Redirect if subdomain so user can choose how to proceed
-                    if (isSubDomain) {
-                        goto(
-                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify?domain=${domain}?redirect=${redirect}?statusCode=${statusCode}`
-                        );
-                    }
-                    //Create domain if it's a new domain
-                    else if (isNewDomain) {
-                        const domainData = await sdk.forConsole.domains.create(
-                            $organization.$id,
-                            domain
-                        );
-                        //TODO: add status once Matej fixes backend
-                        await sdk.forProject.proxy.createRedirectRule(domain, redirect);
-
-                        goto(
-                            `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain/verify-${domainData.$id}}`
-                        );
-                    }
-                }
+                const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
+                rule = await sdk.forProject.proxy.createRedirectRule(
+                    domainName,
+                    $protocol + redirect,
+                    sc
+                );
+            } else if (behaviour === 'ACTIVE') {
+                rule = await sdk.forProject.proxy.createSiteRule(domainName, page.params.site);
+            }
+            if (rule?.status === 'verified') {
+                await goto(routeBase);
+                await invalidate(Dependencies.SITES_DOMAINS);
+            } else {
+                await goto(`${routeBase}/add-domain/verify-${domainName}?rule=${rule.$id}`);
+                await invalidate(Dependencies.SITES_DOMAINS);
             }
         } catch (error) {
             addNotification({
@@ -141,12 +82,40 @@
             });
         }
     }
+
+    async function connect(selectedInstallationId: string, selectedRepository: string) {
+        try {
+            await sdk.forProject.sites.update(
+                data.site.$id,
+                data.site.name,
+                data.site.framework as Framework,
+                data.site.enabled,
+                data.site.logging || undefined,
+                data.site.timeout,
+                data.site.installCommand,
+                data.site.buildCommand,
+                data.site.outputDirectory,
+                data.site.buildRuntime as BuildRuntime,
+                data.site.adapter as Adapter,
+                data.site.fallbackFile,
+                selectedInstallationId,
+                selectedRepository,
+                'main',
+                undefined,
+                undefined,
+                undefined
+            );
+            invalidate(Dependencies.SITE);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 </script>
 
-<Wizard title="Add custom domain" href={backPage} column columnSize="s">
+<Wizard title="Add domain" href={routeBase} column columnSize="s" confirmExit>
     <Form bind:this={formComponent} onSubmit={addDomain} bind:isSubmitting>
         <Layout.Stack gap="xxl">
-            <Fieldset legend="Details">
+            <Fieldset legend="Domain">
                 <!-- <Input.ComboBox
                     label="Domain"
                     id="domain"
@@ -161,43 +130,47 @@
                 <InputDomain
                     label="Domain"
                     id="domain"
-                    bind:value={domain}
+                    bind:value={domainName}
                     required
                     placeholder="appwrite.example.com" />
             </Fieldset>
 
-            <Layout.Grid columns={2} columnsXS={1}>
-                <LabelCard
-                    value="CREATE"
-                    bind:group={behaviour}
-                    title="Connect to active deployment">
-                    Connect this domain to your active deployment and configure the linked Git
-                    branch as needed.
+            <Layout.Grid columns={3} columnsXS={1}>
+                <LabelCard value="ACTIVE" bind:group={behaviour} title="Active deployment">
+                    Point this domain to the latest deployed version.
                 </LabelCard>
-                <LabelCard
-                    value="REDIRECT"
-                    bind:group={behaviour}
-                    title="Redirect to another domain">
-                    Automatically forward traffic from this domain to another URL of your choice.
+                <LabelCard value="BRANCH" bind:group={behaviour} title="Git branch">
+                    Point this domain to a specific branch in your repository.
+                </LabelCard>
+                <LabelCard value="REDIRECT" bind:group={behaviour} title="Redirect">
+                    Forward all traffic from this domain to another URL.
                 </LabelCard>
             </Layout.Grid>
 
-            {#if behaviour === 'CREATE'}
-                <Fieldset legend="Configuration">
+            {#if behaviour === 'BRANCH'}
+                <Fieldset legend="Settings">
                     <Layout.Stack gap="xl">
-                        {#if data.branches?.total}
+                        {#if data.site?.providerRepositoryId}
                             {@const sortedBranches = sortBranches(data.branches.branches)}
                             {@const options = sortedBranches.map((branch) => ({
                                 label: branch.name,
                                 value: branch.name
                             }))}
-                            <InputSelect
-                                {options}
-                                label="Production branch"
-                                id="branch"
-                                required
-                                bind:value={branch}
-                                placeholder="Select branch" />
+                            <Layout.Stack gap="s">
+                                <InputSelect
+                                    {options}
+                                    label="Production branch"
+                                    id="branch"
+                                    required
+                                    bind:value={branch}
+                                    placeholder="Select branch" />
+                                {#if !data.branches?.total}
+                                    <Input.Helper state="default">
+                                        No branches found in the selected repository. Create a
+                                        branch to see it here.
+                                    </Input.Helper>
+                                {/if}
+                            </Layout.Stack>
                         {:else}
                             <InputSelect
                                 disabled
@@ -207,7 +180,6 @@
                                 required
                                 value="main"
                                 placeholder="Select branch" />
-
                             <Alert.Inline title=" There is no repository connected to your site">
                                 <Layout.Stack>
                                     <p>
@@ -224,42 +196,20 @@
                         {/if}
                     </Layout.Stack>
                 </Fieldset>
-
-                <!-- {:else if data.site.installationId || data.installations?.total}
-                    <PinkCard.Base padding="none" border="dashed">
-                        <Empty
-                            type="secondary"
-                            title="Connect Git repository"
-                            description="Link a repository to associate your domain with an active deployment.">
-                            <svelte:fragment slot="actions">
-                                <Button secondary on:click={() => (showConnectRepo = true)}>
-                                    <Icon icon={IconGithub} size="s" slot="start" />
-                                    Connect Git repository
-                                </Button>
-                            </svelte:fragment>
-                        </Empty>
-                    </PinkCard.Base>
-                {:else}
-                    <ConnectGit callbackState={{ newInstallation: 'true' }} />
-                {/if} -->
             {:else if behaviour === 'REDIRECT'}
-                <Fieldset legend="Configuration">
+                <Fieldset legend="Settings">
                     <Layout.Stack gap="xl">
-                        <InputSelect
+                        <InputURL
                             label="Redirect to"
                             id="redirect"
-                            placeholder="Select domain"
-                            options={redirectOptions}
+                            placeholder="https://appwrite.io/docs"
                             bind:value={redirect}
                             required>
                             <Tooltip slot="info">
                                 <Icon icon={IconInfo} size="s" />
-                                <span slot="tooltip">
-                                    Redirect this domain. Domains added to your project will be
-                                    listed here.
-                                </span>
+                                <span slot="tooltip"> Redirect your domain to this URL.</span>
                             </Tooltip>
-                        </InputSelect>
+                        </InputURL>
                         <InputSelect
                             options={statusCodeOptions}
                             label="Status code"
@@ -272,8 +222,9 @@
             {/if}
         </Layout.Stack>
     </Form>
+
     <svelte:fragment slot="footer">
-        <Button secondary href={backPage}>Cancel</Button>
+        <Button secondary href={routeBase}>Cancel</Button>
         <Button on:click={() => formComponent.triggerSubmit()} bind:disabled={$isSubmitting}>
             Add
         </Button>
@@ -283,6 +234,8 @@
 {#if showConnectRepo}
     <ConnectRepoModal
         bind:show={showConnectRepo}
-        site={data.site}
+        {connect}
+        product="sites"
+        onlyExisting
         callbackState={{ connectRepo: 'true' }} />
 {/if}

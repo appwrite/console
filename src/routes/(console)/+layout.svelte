@@ -1,11 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { BillingPlan, INTERVAL } from '$lib/constants';
-    import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
-    import { log } from '$lib/stores/logs';
     import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
     import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { wizard } from '$lib/stores/wizard';
@@ -76,7 +74,7 @@
     });
 
     $: isOnSettingsLayout = $project?.$id
-        ? $page.url.pathname.includes(`project-${$project.$id}/settings`)
+        ? page.url.pathname.includes(`project-${$project.$id}/settings`)
         : false;
 
     $: $registerCommands([
@@ -88,9 +86,9 @@
             keys: ['g', 'p'],
             group: 'navigation',
             disabled:
-                ($page.url.pathname.includes('/console/organization-') &&
-                    !$page.url.pathname.endsWith('/members') &&
-                    !$page.url.pathname.endsWith('/settings')) ||
+                (page.url.pathname.includes('/console/organization-') &&
+                    !page.url.pathname.endsWith('/members') &&
+                    !page.url.pathname.endsWith('/settings')) ||
                 !$canSeeProjects,
             rank: -1
         },
@@ -190,7 +188,7 @@
                 goto(`${base}/project-${$project.$id}/settings`);
             },
             disabled:
-                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.endsWith('settings')),
+                !$project?.$id || (isOnSettingsLayout && page.url.pathname.endsWith('settings')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 40 : -1
         },
@@ -202,7 +200,7 @@
                 goto(`${base}/project-${$project.$id}/settings/domains`);
             },
             disabled:
-                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('domains')),
+                !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('domains')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 30 : -1
         },
@@ -213,7 +211,7 @@
                 goto(`${base}/project-${$project.$id}/settings/webhooks`);
             },
             disabled:
-                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('webhooks')),
+                !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('webhooks')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 20 : -1
@@ -225,7 +223,7 @@
                 goto(`${base}/project-${$project.$id}/settings/migrations`);
             },
             disabled:
-                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('migrations')),
+                !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('migrations')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 10 : -1
@@ -236,7 +234,7 @@
             callback: () => {
                 goto(`${base}/project-${$project.$id}/settings/smtp`);
             },
-            disabled: !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('smtp')),
+            disabled: !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('smtp')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: -1
         },
@@ -319,11 +317,6 @@
 
     $: checkForUsageLimits($organization);
 
-    $: if (!$log.show) {
-        $log.data = null;
-        $log.func = null;
-    }
-
     $: if ($requestedMigration) {
         openMigrationWizard();
     }
@@ -337,13 +330,13 @@
 
 <CommandCenter />
 <Shell
-    showSideNavigation={$page.url.pathname !== '/console' &&
-        !$page?.params.organization &&
-        !$page.url.pathname.includes('/console/account') &&
-        !$page.url.pathname.includes('/console/card') &&
-        !$page.url.pathname.includes('/console/onboarding')}
-    showHeader={!$page.url.pathname.includes('/console/onboarding')}
-    showFooter={!$page.url.pathname.includes('/console/onboarding')}
+    showSideNavigation={page.url.pathname !== '/console' &&
+        !page?.params.organization &&
+        !page.url.pathname.includes('/console/account') &&
+        !page.url.pathname.includes('/console/card') &&
+        !page.url.pathname.includes('/console/onboarding')}
+    showHeader={!page.url.pathname.includes('/console/onboarding')}
+    showFooter={!page.url.pathname.includes('/console/onboarding')}
     bind:loadedProjects
     bind:projects={data.projects}>
     <!--    <Header slot="header" />-->
@@ -358,10 +351,6 @@
 {/if}
 
 <Create bind:show={$newOrgModal} />
-
-{#if $log.show}
-    <Logs />
-{/if}
 
 {#if $showSupportModal}
     <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>

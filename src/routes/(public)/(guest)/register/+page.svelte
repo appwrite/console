@@ -12,15 +12,14 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
-    import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID, OAuthProvider } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { redirectTo } from '$routes/store';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
-    import { Link, Typography } from '@appwrite.io/pink-svelte';
+    import { Layout, Link, Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -48,15 +47,15 @@
                 await goto(`${base}/apply-credit?campaign=${data.campaign.$id}`);
                 return;
             }
-            if ($page.url.searchParams) {
-                const redirect = $page.url.searchParams.get('redirect');
-                $page.url.searchParams.delete('redirect');
+            if (page.url.searchParams) {
+                const redirect = page.url.searchParams.get('redirect');
+                page.url.searchParams.delete('redirect');
                 if (redirect) {
-                    await goto(`${redirect}${$page.url.search}`);
+                    await goto(`${redirect}${page.url.search}`);
                 } else if (isCloud) {
-                    checkPricingRefAndRedirect($page.url.searchParams);
+                    checkPricingRefAndRedirect(page.url.searchParams);
                 } else {
-                    await goto(`${base}/${$page.url.search ?? ''}`);
+                    await goto(`${base}/${page.url.search ?? ''}`);
                 }
             } else {
                 await goto(base);
@@ -89,7 +88,7 @@
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={register}>
-            <FormList>
+            <Layout.Stack>
                 <InputText
                     id="name"
                     label="Name"
@@ -126,16 +125,16 @@
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
                     <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
-                        <span class="icon-github" aria-hidden="true" />
+                        <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign up with GitHub</span>
                     </Button>
                 {/if}
-            </FormList>
+            </Layout.Stack>
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">
         <Typography.Text variant="m-400">
-            Already got an account? <Link.Anchor href={`${base}/login${$page?.url?.search ?? ''}`}
+            Already got an account? <Link.Anchor href={`${base}/login${page?.url?.search ?? ''}`}
                 >Sign in</Link.Anchor>
         </Typography.Text>
     </svelte:fragment>

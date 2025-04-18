@@ -12,11 +12,10 @@
     } from '@appwrite.io/pink-svelte';
     import { IconDotsHorizontal, IconPencil, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { columns } from './store';
-    import { timeFromNow } from '$lib/helpers/date';
     import DeleteRecordModal from './deleteRecordModal.svelte';
-    import { capitalize } from '$lib/helpers/string';
     import EditRecordModal from './updateRecordModal.svelte';
     import type { DnsRecord } from '$lib/sdk/domains';
+    import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     export let data;
 
@@ -26,66 +25,48 @@
 </script>
 
 <Layout.Stack>
-    <Table.Root>
-        <svelte:fragment slot="header">
-            {#each $columns as column}
-                {#if column.show}
-                    <Table.Header.Cell width={column?.width?.toString() ?? ''}>
-                        {column.title}
-                    </Table.Header.Cell>
-                {/if}
+    <Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
+        <svelte:fragment slot="header" let:root>
+            {#each $columns as { id, title } (id)}
+                <Table.Header.Cell column={id} {root}>
+                    {title}
+                </Table.Header.Cell>
             {/each}
-            <Table.Header.Cell width="40" />
+            <Table.Header.Cell column="actions" {root} />
         </svelte:fragment>
 
         {#each data.recordList.dnsRecords as record}
-            <Table.Row>
+            <Table.Row.Base {root}>
                 {#each $columns as column}
-                    {#if column.show}
+                    <Table.Cell column={column.id} {root}>
                         {#if column.id === 'name'}
-                            <Table.Cell>
-                                <Typography.Code>
-                                    {record.name}
-                                </Typography.Code>
-                            </Table.Cell>
+                            <Typography.Code>
+                                {record.name}
+                            </Typography.Code>
                         {:else if column.id === 'type'}
-                            <Table.Cell>
-                                <Typography.Text>
-                                    {record.type}
-                                </Typography.Text>
-                            </Table.Cell>
+                            <Typography.Text>
+                                {record.type}
+                            </Typography.Text>
                         {:else if column.id === 'value'}
-                            <Table.Cell>
-                                <InteractiveText variant="copy" text={record.value} isVisible />
-                            </Table.Cell>
+                            <InteractiveText variant="copy" text={record.value} isVisible />
                         {:else if column.id === 'ttl'}
-                            <Table.Cell>
-                                <Typography.Text>
-                                    {record.ttl}
-                                </Typography.Text>
-                            </Table.Cell>
+                            <Typography.Text>
+                                {record.ttl}
+                            </Typography.Text>
                         {:else if column.id === 'priority'}
-                            <Table.Cell>
-                                <Typography.Text>
-                                    {record?.priority ?? '-'}
-                                </Typography.Text>
-                            </Table.Cell>
+                            <Typography.Text>
+                                {record?.priority ?? '-'}
+                            </Typography.Text>
                         {:else if column.id === 'comment'}
-                            <Table.Cell>
-                                <Typography.Text>
-                                    {record?.comment ?? '-'}
-                                </Typography.Text>
-                            </Table.Cell>
+                            <Typography.Text>
+                                {record?.comment ?? '-'}
+                            </Typography.Text>
                         {:else if column.id === '$createdAt'}
-                            <Table.Cell>
-                                <Typography.Text>
-                                    {capitalize(timeFromNow(record.$createdAt))}
-                                </Typography.Text>
-                            </Table.Cell>
+                            <DualTimeView time={record.$createdAt} />
                         {/if}
-                    {/if}
+                    </Table.Cell>
                 {/each}
-                <Table.Cell>
+                <Table.Cell column="actions" {root}>
                     <Layout.Stack direction="row" justifyContent="flex-end">
                         <Popover let:toggle placement="bottom-start" padding="none">
                             <Button.Button
@@ -127,7 +108,7 @@
                         </Popover>
                     </Layout.Stack>
                 </Table.Cell>
-            </Table.Row>
+            </Table.Row.Base>
         {/each}
     </Table.Root>
 

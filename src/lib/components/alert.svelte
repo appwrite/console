@@ -31,7 +31,7 @@
                 class="button is-text is-only-icon"
                 aria-label="close alert box"
                 on:click={() => dispatch('dismiss')}>
-                <span class="icon-x" aria-hidden="true" />
+                <span class="icon-x" aria-hidden="true"></span>
             </button>
         {/if}
         <span
@@ -39,7 +39,7 @@
             class:icon-check-circle={type === 'success'}
             class:icon-exclamation={type === 'warning'}
             class:icon-exclamation-circle={type === 'error'}
-            aria-hidden="true" />
+            aria-hidden="true"></span>
         <div class="alert-content" data-private>
             {#if $$slots.title}
                 <h6 class="alert-title">

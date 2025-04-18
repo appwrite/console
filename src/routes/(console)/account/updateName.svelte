@@ -3,7 +3,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
@@ -39,14 +39,7 @@
         <svelte:fragment slot="title">Name</svelte:fragment>
 
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Enter name"
-                    bind:value={name}
-                    required />
-            </FormList>
+            <InputText id="name" label="Name" placeholder="Enter name" bind:value={name} required />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

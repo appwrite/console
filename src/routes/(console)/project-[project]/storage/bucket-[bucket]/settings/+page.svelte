@@ -64,7 +64,6 @@
     import { BoxAvatar, CardGrid } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
-    import { Pill } from '$lib/elements';
     import {
         Button,
         Form,
@@ -271,7 +270,7 @@
     </Form>
 
     <Form onSubmit={updatePermissions}>
-        <CardGrid hideOverflow>
+        <CardGrid>
             <svelte:fragment slot="title">Permissions</svelte:fragment>
             Choose who can access your buckets and files. For more information, visit our
             <Link.Anchor
@@ -368,20 +367,22 @@
         </CardGrid>
     </Form>
 
-    <UpdateMaxFileSize currentPlan={data.currentPlan} />
+    <UpdateMaxFileSize currentPlan={data.currentPlan} bucket={data.bucket} />
 
     <Form onSubmit={updateAllowedExtensions}>
-        <CardGrid hideOverflow>
+        <CardGrid>
             <svelte:fragment slot="title">Allowed file extension</svelte:fragment>
             Allowed file extensions. A maximum of 100 file extensions can be added. Leave blank to allow
             all file types.
             <svelte:fragment slot="aside">
                 <Layout.Stack gap="s">
-                    <InputTags
-                        id="user-labels"
-                        label="Labels"
-                        placeholder="Select or type user labels"
-                        bind:tags={extensions} />
+                    {#key extensions.length}
+                        <InputTags
+                            id="user-labels"
+                            label="Labels"
+                            placeholder="Select or type user labels"
+                            bind:tags={extensions} />
+                    {/key}
                     <Layout.Stack direction="row">
                         {#each suggestedExtensions as ext}
                             <Tag

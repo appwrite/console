@@ -26,6 +26,7 @@ import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
 import { Domains } from '$lib/sdk/domains';
 import { Sources } from '$lib/sdk/sources';
+import { building } from '$app/environment';
 
 export function getApiEndpoint(): string {
     if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
@@ -35,10 +36,12 @@ export function getApiEndpoint(): string {
 const endpoint = getApiEndpoint();
 
 const clientConsole = new Client();
-clientConsole.setEndpoint(endpoint).setProject('console');
-
 const clientProject = new Client();
-clientProject.setEndpoint(endpoint).setMode('admin');
+
+if (!building) {
+    clientConsole.setEndpoint(endpoint).setProject('console');
+    clientProject.setEndpoint(endpoint).setMode('admin');
+}
 
 const sdkForProject = {
     client: clientProject,
@@ -85,6 +88,7 @@ export const sdk = {
         assistant: new Assistant(clientConsole),
         billing: new Billing(clientConsole),
         sources: new Sources(clientConsole),
+        sites: new Sites(clientConsole),
         domains: new Domains(clientConsole)
     },
     get forProject() {
@@ -98,3 +102,17 @@ export enum RuleType {
     API = 'api',
     REDIRECT = 'redirect'
 }
+
+export enum DeploymentResourceType {
+    FUNCTION = 'function',
+    SITE = 'site'
+}
+
+export enum RuleTrigger {
+    DEPLOYMENT = 'deployment',
+    MANUAL = 'manual'
+}
+
+export const createAdminClient = () => {
+    return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());
+};

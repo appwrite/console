@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Modal } from '$lib/components';
-    import { Button, FormList, InputDate, InputTime, Helper } from '$lib/elements/forms';
+    import { Button, InputDate, InputTime, Helper } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -98,6 +98,7 @@
             });
             show = false;
         } catch (error) {
+            show = false;
             addNotification({
                 message: error.message,
                 type: 'error'
@@ -115,14 +116,11 @@
 
 <Modal title="Schedule message" bind:show onSubmit={update}>
     <div>
-        <FormList>
-            <div
-                class="u-grid u-gap-16"
-                style="grid-auto-rows: 1fr; grid-template-columns: 1fr 1fr;">
-                <InputDate id="date" label="Date" required={true} min={minDate} bind:value={date} />
-                <InputTime id="time" label="Time" required={true} min={minTime} bind:value={time} />
-            </div>
-        </FormList>
+        <div class="u-grid u-gap-16" style="grid-auto-rows: 1fr; grid-template-columns: 1fr 1fr;">
+            <InputDate id="date" label="Date" required={true} min={minDate} bind:value={date} />
+            <InputTime id="time" label="Time" required={true} min={minTime} bind:value={time} />
+        </div>
+
         <Helper type="neutral">
             {#if !dateTime || isNaN(dateTime.getTime())}
                 The message will be sent later

@@ -64,5 +64,6 @@
     autocomplete={autocomplete ? 'on' : 'off'}
     bind:value>
     <slot name="start" slot="start" />
+    <slot name="info" slot="info" />
     <slot name="end" slot="end" />
 </Input.Text>

@@ -17,7 +17,7 @@
     } from '@appwrite.io/pink-svelte';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import CertificateInfoModal from './certificateInfoModal.svelte';
     import DeleteCertificateModal from './deleteCertificateModal.svelte';
 
@@ -32,24 +32,31 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search by ID" />
+        <SearchQuery placeholder="Search by ID" />
     </Layout.Stack>
 
     {#if data.certificates.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>ID</Table.Header.Cell>
-                <Table.Header.Cell>Renewal</Table.Header.Cell>
-                <Table.Header.Cell>Expiry date</Table.Header.Cell>
-                <Table.Header.Cell />
+        <Table.Root
+            let:root
+            columns={[
+                { id: 'id' },
+                { id: 'renewal' },
+                { id: 'expiry' },
+                { id: 'actions', width: 40 }
+            ]}>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="id" {root}>ID</Table.Header.Cell>
+                <Table.Header.Cell column="renewal" {root}>Renewal</Table.Header.Cell>
+                <Table.Header.Cell column="expiry" {root}>Expiry date</Table.Header.Cell>
+                <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
             {#each data.certificates.certificates as certificate}
                 {@const isExpired = new Date(certificate.expiresAt) < now}
-                <Table.Row>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="id" {root}>
                         <Id value={certificate.$id}>{certificate.$id}</Id>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="renewal" {root}>
                         {#if certificate?.renewAt && !isExpired}
                             <Layout.Stack direction="row" gap="xs">
                                 {certificate.autoRenewal ? 'Auto' : ''}
@@ -63,7 +70,7 @@
                             -
                         {/if}
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="expiry" {root}>
                         {#if isExpired}
                             <Tooltip>
                                 <Badge
@@ -80,7 +87,7 @@
                         {/if}
                     </Table.Cell>
 
-                    <Table.Cell>
+                    <Table.Cell column="actions" {root}>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-start" padding="none">
                                 <Button
@@ -121,7 +128,7 @@
                             </Popover>
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         </Table.Root>
 
@@ -135,7 +142,7 @@
             <svelte:fragment slot="actions">
                 <Button
                     secondary
-                    href={`${base}/organization-${$page.params.organization}/domains/domain-${$page.params.domain}/certificates`}>
+                    href={`${base}/organization-${page.params.organization}/domains/domain-${page.params.domain}/certificates`}>
                     Clear search
                 </Button>
             </svelte:fragment>

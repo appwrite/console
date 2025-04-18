@@ -40,7 +40,7 @@
      */
     function handleInputChange(field: FormKeys) {
         return (event: Event) => {
-            const checked = event.detail;
+            const checked = (event.target as HTMLInputElement).checked;
             // For each entry in formData, if the root is changed, change all children to the same value
             // otherwise, if a child is changed to true, change the root to true
 

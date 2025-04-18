@@ -1,9 +1,12 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
+    import { Menu } from '$lib/components/menu';
+    import SubMenu from '$lib/components/menu/subMenu.svelte';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
     import {
+        IconChevronRight,
         IconDotsHorizontal,
         IconDownload,
         IconLightningBolt,
@@ -11,7 +14,7 @@
         IconTrash,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Icon, Popover } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon } from '@appwrite.io/pink-svelte';
 
     export let selectedDeployment: Models.Deployment;
     export let deployment: Models.Deployment;
@@ -22,27 +25,31 @@
     export let activeDeployment: string;
     export let inCard = false;
 
-    function getDownload(deploymentId: string) {
+    function getOutputDownload(deploymentId: string) {
         return (
-            sdk.forProject.sites.getDeploymentDownload($page.params.site, deploymentId).toString() +
-            '&mode=admin'
+            sdk.forProject.sites.getDeploymentDownload(
+                page.params.site,
+                deploymentId.toString(),
+                DeploymentDownloadType.Output
+            ) + '&mode=admin'
+        );
+    }
+    function getSourceDownload(deploymentId: string) {
+        return (
+            sdk.forProject.sites.getDeploymentDownload(
+                page.params.site,
+                deploymentId.toString(),
+                DeploymentDownloadType.Source
+            ) + '&mode=admin'
         );
     }
 </script>
 
-<Popover padding="none" placement="bottom-end" let:toggle>
-    <Button
-        text={!inCard}
-        secondary={inCard}
-        icon
-        size="s"
-        on:click={(e) => {
-            e.preventDefault();
-            toggle(e);
-        }}>
+<Menu>
+    <Button text={!inCard} secondary={inCard} icon size="s">
         <Icon size="s" icon={IconDotsHorizontal} />
     </Button>
-    <svelte:fragment slot="tooltip" let:toggle>
+    <svelte:fragment slot="menu" let:toggle>
         <ActionMenu.Root>
             {#if !inCard}
                 <ActionMenu.Item.Button
@@ -51,7 +58,7 @@
                         e.preventDefault();
                         selectedDeployment = deployment;
                         showRedeploy = true;
-                        toggle(e);
+                        toggle();
                     }}>
                     Redeploy
                 </ActionMenu.Item.Button>
@@ -63,21 +70,39 @@
                         e.preventDefault();
                         selectedDeployment = deployment;
                         showActivate = true;
-                        toggle(e);
+                        toggle();
                     }}>
                     Activate
                 </ActionMenu.Item.Button>
             {/if}
-            {#if deployment?.status === 'ready' || deployment?.status === 'failed'}
-                <ActionMenu.Item.Anchor
-                    href={getDownload(deployment.$id)}
-                    external
-                    leadingIcon={IconDownload}
-                    on:click={(e) => {
-                        toggle(e);
-                    }}>
-                    Download
-                </ActionMenu.Item.Anchor>
+            {#if deployment?.status === 'ready' || deployment?.status === 'failed' || deployment?.status === 'building'}
+                <SubMenu>
+                    <ActionMenu.Root noPadding>
+                        <ActionMenu.Item.Button
+                            leadingIcon={IconDownload}
+                            trailingIcon={IconChevronRight}>
+                            Download
+                        </ActionMenu.Item.Button>
+                    </ActionMenu.Root>
+                    <svelte:fragment slot="menu">
+                        <ActionMenu.Root noPadding>
+                            <ActionMenu.Item.Anchor
+                                on:click={toggle}
+                                href={getSourceDownload(deployment.$id)}
+                                external>
+                                Download source
+                            </ActionMenu.Item.Anchor>
+
+                            <ActionMenu.Item.Anchor
+                                disabled={deployment?.status !== 'ready'}
+                                on:click={toggle}
+                                href={getOutputDownload(deployment.$id)}
+                                external>
+                                Download output
+                            </ActionMenu.Item.Anchor>
+                        </ActionMenu.Root>
+                    </svelte:fragment>
+                </SubMenu>
             {/if}
 
             {#if deployment?.status === 'processing' || deployment?.status === 'building' || deployment.status === 'waiting'}
@@ -88,7 +113,6 @@
                         e.preventDefault();
                         selectedDeployment = deployment;
                         showCancel = true;
-                        toggle(e);
                     }}>
                     Cancel
                 </ActionMenu.Item.Button>
@@ -101,11 +125,10 @@
                         e.preventDefault();
                         selectedDeployment = deployment;
                         showDelete = true;
-                        toggle(e);
                     }}>
                     Delete
                 </ActionMenu.Item.Button>
             {/if}
         </ActionMenu.Root>
     </svelte:fragment>
-</Popover>
+</Menu>

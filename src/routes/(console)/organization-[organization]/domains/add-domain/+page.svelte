@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button, Form } from '$lib/elements/forms';
     import { InputDomain } from '$lib/elements/forms/index.js';
     import { Wizard } from '$lib/layout';
@@ -8,18 +8,18 @@
     import { sdk } from '$lib/stores/sdk';
     import { Divider, Fieldset, Layout } from '@appwrite.io/pink-svelte';
     import RecordsCard from '../recordsCard.svelte';
-    import { invalidate } from '$app/navigation';
+    import { afterNavigate, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import type { Domain } from '$lib/sdk/domains';
 
-    const backPage = `${base}/project-${$page.params.organization}/domains`;
+    let backPage = `${base}/organization-${page.params.organization}/domains`;
 
     let domainName = '';
     let domain: Domain;
 
     async function addDomain() {
         try {
-            domain = await sdk.forConsole.domains.create($page.params.organization, domainName);
+            domain = await sdk.forConsole.domains.create(page.params.organization, domainName);
             console.log(domain);
             invalidate(Dependencies.DOMAINS);
         } catch (error) {
@@ -29,9 +29,13 @@
             });
         }
     }
+
+    afterNavigate(({ from }) => {
+        backPage = from.url?.pathname ?? `${base}/`;
+    });
 </script>
 
-<Wizard title="Add domain" href={backPage} column columnSize="s" hideFooter={!domain}>
+<Wizard title="Add domain" href={backPage} column columnSize="s" hideFooter>
     {#if domain}
         <RecordsCard {domain} />
     {:else}
@@ -54,11 +58,4 @@
             </Form>
         </Fieldset>
     {/if}
-
-    <svelte:fragment slot="footer">
-        <Button text href={backPage}>Cancel</Button>
-        {#if domain}
-            <Button secondary href={backPage}>Skip to console</Button>
-        {/if}
-    </svelte:fragment>
 </Wizard>

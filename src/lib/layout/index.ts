@@ -5,7 +5,6 @@ export { default as Footer } from './footer.svelte';
 export { default as Navigation } from './navigation.svelte';
 export { default as Notifications } from './notifications.svelte';
 export { default as Shell } from './shell.svelte';
-export { default as Logs } from './logs.svelte';
 export { default as WizardWithSteps } from './wizardWithSteps.svelte';
 export { default as WizardStep } from './wizardStep.svelte';
 export { default as Breadcrumbs } from './breadcrumbs.svelte';
@@ -22,3 +21,4 @@ export { default as WizardSecondaryContainer } from './wizardSecondaryContainer.
 export { default as WizardSecondaryContent } from './wizardSecondaryContent.svelte';
 export { default as WizardSecondaryFooter } from './wizardSecondaryFooter.svelte';
 export { default as Wizard } from './wizard.svelte';
+export { default as ResponsiveContainerHeader } from './responsiveContainerHeader.svelte';

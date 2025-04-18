@@ -1,46 +1,36 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { page } from '$app/state';
     import { Card } from '$lib/components';
-    import { Button, InputSelect } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
-    import { IconDownload } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Image, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
+    import { Image, Layout, Typography } from '@appwrite.io/pink-svelte';
 
-    let framework: 'react' | 'vue' | 'angular' | 'svelte' | 'web' = 'web';
-
-    let starterKit;
+    export let template: Models.TemplateSite;
 </script>
 
 <Card padding="xs">
     <Layout.Stack gap="xxs">
-        <Typography.Text variant="m-500">Don't have a site yet?</Typography.Text>
+        <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+            Don't have a site yet?
+        </Typography.Text>
         <Typography.Text variant="m-400">
-            Download our starter kit, and deploy in seconds.
+            Deploy the JavaScript starter template in seconds.
         </Typography.Text>
     </Layout.Stack>
 
     <Layout.Stack>
-        <InputSelect
-            id="framework"
-            options={[
-                { label: 'React', value: 'react' },
-                { label: 'Vue', value: 'vue' },
-                { label: 'Angular', value: 'angular' },
-                { label: 'Svelte', value: 'svelte' },
-                { label: 'Web', value: 'web' }
-            ]}
-            bind:value={framework} />
-
         <Image
             ratio="16/9"
-            src={starterKit?.preview ||
-                ($app.themeInUse === 'dark'
-                    ? `${base}/images/sites/screenshot-placeholder-dark.svg`
-                    : `${base}/images/sites/screenshot-placeholder-light.svg`)}
+            src={$app.themeInUse === 'dark' ? template.screenshotDark : template.screenshotLight}
             alt="preview" />
 
-        <Button fullWidth secondary href="#">
-            <Icon icon={IconDownload} slot="start" /> Starter kit
+        <Button
+            fullWidth
+            secondary
+            href={`${base}/project-${page.params.project}/sites/create-site/templates/template-${template.key}`}>
+            Use template
         </Button>
     </Layout.Stack>
 </Card>

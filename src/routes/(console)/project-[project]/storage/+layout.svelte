@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { BucketsPanel } from '$lib/commandCenter/panels';
     import { canWriteBuckets } from '$lib/stores/roles';
@@ -13,12 +13,12 @@
         {
             label: 'Create bucket',
             callback: () => {
-                if (!$page.url.pathname.endsWith('storage')) {
+                if (!page.url.pathname.endsWith('storage')) {
                     goto(`${base}/project-${$project.$id}/storage`);
                 }
                 $showCreateBucket = true;
             },
-            keys: $page.url.pathname.endsWith('storage') ? ['c'] : ['c', 'b'],
+            keys: page.url.pathname.endsWith('storage') ? ['c'] : ['c', 'b'],
             icon: IconPlus,
             group: 'buckets',
             disabled: !$canWriteBuckets
@@ -29,8 +29,7 @@
                 goto(`${base}/project-${$project.$id}/storage/usage`);
             },
             keys: ['g', 'u'],
-            disabled:
-                $page.url.pathname.endsWith('usage') || $page.url.pathname.includes('bucket-'),
+            disabled: page.url.pathname.endsWith('usage') || page.url.pathname.includes('bucket-'),
             group: 'navigation',
             rank: 10
         },

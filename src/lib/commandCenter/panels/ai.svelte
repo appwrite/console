@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Remarkable } from 'remarkable';
     import Template from './template.svelte';
-    import { Keyboard, Layout } from '@appwrite.io/pink-svelte';
+    import { Alert, Keyboard, Layout } from '@appwrite.io/pink-svelte';
 
     const markdownInstance = new Remarkable();
 
-    import { Alert, AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
+    import { AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { useCompletion } from 'ai/svelte';
     import { subPanels } from '../subPanels';
@@ -158,14 +158,13 @@
     </div>
 
     <div slot="option" let:option class="u-flex u-cross-center u-gap-8">
-        <i class="icon-question-mark-circle" />
+        <i class="icon-question-mark-circle"></i>
         <span>{option.label}</span>
     </div>
 
     {#if !$preferences.hideAiDisclaimer}
         <div style="padding: 1rem; padding-block-end: 0;">
-            <Alert
-                type="default"
+            <Alert.Inline
                 dismissible
                 on:dismiss={() => {
                     $preferences.hideAiDisclaimer = true;
@@ -173,7 +172,7 @@
                 <span slot="title">
                     We collect user responses to refine our experimental AI feature.
                 </span>
-            </Alert>
+            </Alert.Inline>
         </div>
     {/if}
 
@@ -218,13 +217,9 @@
 
     {#if $error}
         <div style="padding: 1rem; padding-block-end: 0;">
-            <Alert type="error">
-                <span slot="title">Something went wrong</span>
-                <p>
-                    An unexpected error occurred while handling your request. Please try again
-                    later.
-                </p>
-            </Alert>
+            <Alert.Inline status="error" title="Something went wrong">
+                An unexpected error occurred while handling your request. Please try again later.
+            </Alert.Inline>
         </div>
     {/if}
 
@@ -252,7 +247,7 @@
                             aria-label="ask AI"
                             type="submit"
                             disabled={!$input.trim() || $isLoading}>
-                            <span class="icon-arrow-sm-right" aria-hidden="true" />
+                            <span class="icon-arrow-sm-right" aria-hidden="true"></span>
                         </button>
                     </div>
                 </form>

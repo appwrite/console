@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { Empty, DropList, DropListItem } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Empty } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { collection, indexes } from '../store';
+    import { collection } from '../store';
     import Delete from './deleteIndex.svelte';
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
@@ -26,20 +25,19 @@
     import {
         IconDotsHorizontal,
         IconEye,
-        IconPencil,
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
-    let showDropdown = [];
+    export let data;
+
     let selectedIndex: Models.Index = null;
     let showCreateIndex = false;
     let showOverview = false;
     let showDelete = false;
     let showCreateAttribute = false;
-    let showCreateDropdown = false;
     let selectedAttribute: Option['name'] = null;
     let showFailed = false;
     let error = '';
@@ -72,19 +70,27 @@
         {/if}
     </Layout.Stack>
 
-    {#if $collection?.attributes?.length}
-        {#if $indexes.length}
-            <Table.Root>
-                <svelte:fragment slot="header">
-                    <Table.Header.Cell>Key</Table.Header.Cell>
-                    <Table.Header.Cell>Type</Table.Header.Cell>
-                    <Table.Header.Cell>Attributes</Table.Header.Cell>
-                    <Table.Header.Cell>Asc/Desc</Table.Header.Cell>
-                    <Table.Header.Cell width="40px" />
+    {#if data.collection?.attributes?.length}
+        {#if data.collection.indexes.length}
+            <Table.Root
+                let:root
+                columns={[
+                    { id: 'key' },
+                    { id: 'type' },
+                    { id: 'attributes' },
+                    { id: 'orders' },
+                    { id: 'actions', width: 40 }
+                ]}>
+                <svelte:fragment slot="header" let:root>
+                    <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
+                    <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
+                    <Table.Header.Cell column="attributes" {root}>Attributes</Table.Header.Cell>
+                    <Table.Header.Cell column="orders" {root}>Asc/Desc</Table.Header.Cell>
+                    <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
-                {#each $indexes as index, i}
-                    <Table.Row>
-                        <Table.Cell>
+                {#each data.collection.indexes as index}
+                    <Table.Row.Base {root}>
+                        <Table.Cell column="key" {root}>
                             <Layout.Stack direction="row" alignItems="center">
                                 {index.key}
                                 {#if index.status !== 'available'}
@@ -105,14 +111,14 @@
                                 {/if}
                             </Layout.Stack>
                         </Table.Cell>
-                        <Table.Cell>{index.type}</Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="type" {root}>{index.type}</Table.Cell>
+                        <Table.Cell column="attributes" {root}>
                             {index.attributes}
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="orders" {root}>
                             {index.orders}
                         </Table.Cell>
-                        <Table.Cell>
+                        <Table.Cell column="actions" {root}>
                             <Popover let:toggle padding="none" placement="bottom-end">
                                 <Button text icon ariaLabel="more options" on:click={toggle}>
                                     <Icon icon={IconDotsHorizontal} size="s" />
@@ -134,7 +140,7 @@
                                 </ActionMenu.Root>
                             </Popover>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
         {:else}
@@ -146,18 +152,8 @@
                 on:click={() => (showCreateIndex = true)} />
         {/if}
     {:else}
-        <Empty
-            single
-            target="attribute"
-            allowCreate={$canWriteCollections}
-            on:click={() => (showCreateDropdown = true)}>
-            <div class="u-text-center">
-                <Typography.Title size="s">Create an attribute to get started.</Typography.Title>
-                <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Learn more in our documentation.
-                </p>
-            </div>
-            <div class="u-flex u-gap-16 u-main-center">
+        <Empty single target="attribute">
+            <svelte:fragment slot="actions">
                 <Button
                     external
                     href="https://appwrite.io/docs/products/databases/collections#attributes"
@@ -166,20 +162,15 @@
                     ariaLabel={`create {target}`}>Documentation</Button>
                 {#if $canWriteCollections}
                     <CreateAttributeDropdown
-                        bind:showCreateDropdown
+                        bind:selectedOption={selectedAttribute}
                         bind:showCreate={showCreateAttribute}
-                        bind:selectedOption={selectedAttribute}>
-                        <Button
-                            secondary
-                            event="create_attribute"
-                            on:click={() => {
-                                showCreateDropdown = !showCreateDropdown;
-                            }}>
+                        let:toggle>
+                        <Button secondary event="create_attribute" on:click={toggle}>
                             Create attribute
                         </Button>
                     </CreateAttributeDropdown>
                 {/if}
-            </div>
+            </svelte:fragment>
         </Empty>
     {/if}
 </Container>
@@ -191,6 +182,10 @@
     <Overview bind:showOverview {selectedIndex} />
 {/if}
 
-<CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />
+{#if showCreateAttribute}
+    <CreateAttribute
+        bind:showCreate={showCreateAttribute}
+        bind:selectedOption={selectedAttribute} />
+{/if}
 
 <FailedModal bind:show={showFailed} title="Create index" header="Creation failed" {error} />

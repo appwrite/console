@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { Container } from '$lib/layout';
     import { BarChart, Legend, type LegendData } from '$lib/charts';
     import { accumulateFromEndingTotal } from '$lib/layout/usage.svelte';
     import { Card, SecondaryTabs, SecondaryTabsItem } from '$lib/components';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { type Models } from '@appwrite.io/console';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -14,29 +13,24 @@
     export let count: Models.Metric[][];
     export let legendData: LegendData[];
     export let showHeader: boolean = true;
-    export let overlapContainerCover = false;
 </script>
 
-<Container overlapCover={overlapContainerCover}>
+<div>
     {#if showHeader}
         <div class="u-flex u-main-space-between common-section">
             <Typography.Title>{title}</Typography.Title>
 
             {#if path}
                 <SecondaryTabs>
-                    <SecondaryTabsItem
-                        href={`${path}/24h`}
-                        disabled={$page.params.period === '24h'}>
+                    <SecondaryTabsItem href={`${path}/24h`} disabled={page.params.period === '24h'}>
                         24h
                     </SecondaryTabsItem>
                     <SecondaryTabsItem
                         href={`${path}/30d`}
-                        disabled={!$page.params.period || $page.params.period === '30d'}>
+                        disabled={!page.params.period || page.params.period === '30d'}>
                         30d
                     </SecondaryTabsItem>
-                    <SecondaryTabsItem
-                        href={`${path}/90d`}
-                        disabled={$page.params.period === '90d'}>
+                    <SecondaryTabsItem href={`${path}/90d`} disabled={page.params.period === '90d'}>
                         90d
                     </SecondaryTabsItem>
                 </SecondaryTabs>
@@ -54,7 +48,7 @@
             </Layout.Stack>
             <div class="multiple-chart-container u-flex-vertical u-gap-16">
                 <BarChart
-                    formatted={$page.params.period === '24h' ? 'hours' : 'days'}
+                    formatted={page.params.period === '24h' ? 'hours' : 'days'}
                     series={count.map((c, index) => ({
                         name: legendData[index].name,
                         data: accumulateFromEndingTotal(c, total[index])
@@ -66,7 +60,7 @@
             </div>
         {/if}
     </Card>
-</Container>
+</div>
 
 <style lang="scss">
     .multiple-chart-container {

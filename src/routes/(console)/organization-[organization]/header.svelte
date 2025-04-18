@@ -1,27 +1,24 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { AvatarGroup, Tab, Tabs } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
-    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { daysLeftInTrial, getServiceLimit, plansInfo, readOnly } from '$lib/stores/billing';
-    import { members, newMemberModal, newOrgModal, organization } from '$lib/stores/organization';
+    import { members, newMemberModal, organization } from '$lib/stores/organization';
     import {
         canSeeBilling,
-        canSeeDomains,
         canSeeProjects,
         canSeeTeams,
         isBilling,
         isOwner
     } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Tooltip, Typography, Layout } from '@appwrite.io/pink-svelte';
+    import { IconGithub, IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Icon, Tooltip, Typography, Layout, Badge } from '@appwrite.io/pink-svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -31,17 +28,9 @@
             isCloud &&
             (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && $members?.total >= limit));
     });
-    let showDropdown = false;
-
-    function createOrg() {
-        showDropdown = false;
-        if (isCloud) {
-            goto(`${base}/create-organization`);
-        } else newOrgModal.set(true);
-    }
 
     $: avatars = $members.memberships?.map((m) => m.userName || m.userEmail) ?? [];
-    $: organizationId = $page.params.organization;
+    $: organizationId = page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
     $: tabs = [
         {
@@ -91,27 +80,24 @@
     <Cover>
         <svelte:fragment slot="header">
             <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
-                <span class="u-trim">
-                    <Typography.Title color="--fgcolor-neutral-primary" size="xl"
-                        >{$organization.name}</Typography.Title>
-                </span>
+                <Typography.Title color="--fgcolor-neutral-primary" size="xl" truncate>
+                    {$organization.name}
+                </Typography.Title>
                 {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
-                    <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem">
-                        <span class="icon-github" aria-hidden="true" />EDUCATION
-                    </Pill>
+                    <Badge variant="secondary" content="Education">
+                        <Icon icon={IconGithub} size="s" slot="start" />
+                    </Badge>
                 {:else if isCloud && $organization?.billingPlan === BillingPlan.FREE}
-                    <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem">FREE</Pill>
+                    <Badge variant="secondary" content="Free"></Badge>
                 {/if}
                 {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
                     <Tooltip>
-                        <div class="u-flex u-cross-center">
-                            <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem"
-                                >TRIAL</Pill>
-                        </div>
-                        <span slot="tooltip"
-                            >{`Your trial ends on ${toLocaleDate(
+                        <Badge variant="secondary" content="Trial" />
+                        <svelte:fragment slot="tooltip">
+                            {`Your trial ends on ${toLocaleDate(
                                 $organization.billingStartDate
-                            )}. ${$daysLeftInTrial} days remaining.`}</span>
+                            )}. ${$daysLeftInTrial} days remaining.`}
+                        </svelte:fragment>
                     </Tooltip>
                 {/if}
             </span>
@@ -140,7 +126,7 @@
             {#each tabs as tab}
                 <Tab
                     href={tab.href}
-                    selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
                     event={tab.event}>
                     {tab.title}
                 </Tab>

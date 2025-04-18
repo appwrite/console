@@ -9,11 +9,10 @@
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
-    import { Alert } from '$lib/components';
     import { failedInvoice, paymentMethods, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { confirmPayment } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -21,7 +20,7 @@
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
     import { goto } from '$app/navigation';
-    import { Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
@@ -34,18 +33,18 @@
     );
 
     onMount(async () => {
-        if ($page.url.searchParams.has('type')) {
-            if ($page.url.searchParams.get('type') === 'upgrade') {
+        if (page.url.searchParams.has('type')) {
+            if (page.url.searchParams.get('type') === 'upgrade') {
                 goto($upgradeURL);
             }
 
             if (
-                $page.url.searchParams.has('invoice') &&
-                $page.url.searchParams.get('type') === 'confirmation'
+                page.url.searchParams.has('invoice') &&
+                page.url.searchParams.get('type') === 'confirmation'
             ) {
-                const invoiceId = $page.url.searchParams.get('invoice');
+                const invoiceId = page.url.searchParams.get('invoice');
                 const invoice = await sdk.forConsole.billing.getInvoice(
-                    $page.params.organization,
+                    page.params.organization,
                     invoiceId
                 );
 
@@ -57,20 +56,20 @@
             }
 
             if (
-                $page.url.searchParams.has('invoice') &&
-                $page.url.searchParams.get('type') === 'retry'
+                page.url.searchParams.has('invoice') &&
+                page.url.searchParams.get('type') === 'retry'
             ) {
-                const invoiceId = $page.url.searchParams.get('invoice');
+                const invoiceId = page.url.searchParams.get('invoice');
                 const invoice = await sdk.forConsole.billing.getInvoice(
-                    $page.params.organization,
+                    page.params.organization,
                     invoiceId
                 );
                 selectedInvoice.set(invoice);
                 showRetryModal.set(true);
             }
         }
-        if ($page.url.searchParams.has('clientSecret')) {
-            const clientSecret = $page.url.searchParams.get('clientSecret');
+        if (page.url.searchParams.has('clientSecret')) {
+            const clientSecret = page.url.searchParams.get('clientSecret');
             await confirmPayment($organization.$id, clientSecret, $organization.paymentMethodId);
         }
     });
@@ -79,9 +78,9 @@
 <Container>
     {#if $failedInvoice}
         {#if $failedInvoice?.lastError}
-            <Alert type="error" class="common-section">
+            <Alert.Inline status="error">
                 The scheduled payment for {$organization.name} failed due to following error: {$failedInvoice.lastError}
-                <svelte:fragment slot="buttons">
+                <svelte:fragment slot="actions">
                     <Button
                         text
                         on:click={() => {
@@ -89,37 +88,33 @@
                             $showRetryModal = true;
                         }}>Try again</Button>
                 </svelte:fragment>
-            </Alert>
+            </Alert.Inline>
         {:else}
-            <Alert type="error" class="common-section">
-                <svelte:fragment slot="title">
-                    The scheduled payment for {$organization.name} failed
-                </svelte:fragment>
-                To avoid service disruptions in organization's your projects, please verify your payment
-                details and update them if necessary.
-            </Alert>
+            <Alert.Inline
+                status="error"
+                title={`The scheduled payment for ${$organization.name} failed`}>
+                To avoid service disruptions in organization's your projects, please verify your
+                payment details and update them if necessary.
+            </Alert.Inline>
         {/if}
     {/if}
     {#if defaultPaymentMethod?.failed && !backupPaymentMethod}
-        <Alert type="error" class="common-section">
-            <svelte:fragment slot="title">
-                The default payment method for {$organization.name} has expired
-            </svelte:fragment>
+        <Alert.Inline
+            status="error"
+            title={`The default payment method for ${$organization.name} has expired`}>
             To avoid service disruptions in your organization's projects, please update your payment
             details.
-        </Alert>
+        </Alert.Inline>
     {/if}
     {#if $organization?.billingPlanDowngrade}
-        <Alert type="info" class="common-section">
+        <Alert.Inline status="info">
             Your organization will change to a {tierToPlan($organization?.billingPlanDowngrade)
                 .name} plan once your current billing cycle ends and your invoice is paid on {toLocaleDate(
                 $organization.billingNextInvoiceDate
             )}.
-        </Alert>
+        </Alert.Inline>
     {/if}
-    <div class="common-section">
-        <Typography.Title>Billing</Typography.Title>
-    </div>
+    <Typography.Title>Billing</Typography.Title>
     <PlanSummary
         creditList={data?.creditList}
         members={data?.members}

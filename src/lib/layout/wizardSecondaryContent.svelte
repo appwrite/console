@@ -3,7 +3,7 @@
         <slot />
     </div>
     {#if $$slots.aside}
-        <div class="wizard-secondary-content-sep" />
+        <div class="wizard-secondary-content-sep"></div>
         <div class="wizard-secondary-content-2">
             <slot name="aside" />
         </div>

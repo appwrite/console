@@ -1,8 +1,9 @@
 export const load = async ({ parent }) => {
-    let { installations, runtimesList } = await parent();
+    const { installations, runtimesList, specificationsList } = await parent();
 
     return {
         installations,
-        runtimesList
+        runtimesList,
+        specificationsList
     };
 };

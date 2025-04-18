@@ -1,40 +1,23 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { timer } from '$lib/actions/timer';
-    import { Alert, Card, Id } from '$lib/components';
-
     import { Dependencies } from '$lib/constants';
-    import { Pill } from '$lib/elements';
     import {
         Button,
         Form,
-        FormList,
         Helper,
         InputDate,
         InputSelect,
-        InputSelectSearch,
         InputText,
         InputTextarea,
         InputTime
     } from '$lib/elements/forms';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { calculateTime } from '$lib/helpers/timeConversion';
-    import {
-        WizardSecondaryContainer,
-        WizardSecondaryContent,
-        WizardSecondaryFooter
-    } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ExecutionMethod, type Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
-    import DeploymentSource from '../../deploymentSource.svelte';
-    import DeploymentDomains from '../../deploymentDomains.svelte';
-    import { proxyRuleList } from '../../store';
-    import DeploymentCreatedBy from '../../deploymentCreatedBy.svelte';
     import {
         isSameDay,
         toLocaleDateISO,
@@ -42,11 +25,21 @@
         toLocaleTimeISO
     } from '$lib/helpers/date';
     import { last } from '$lib/helpers/array';
-    import { Icon, Tooltip } from '@appwrite.io/pink-svelte';
-    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Accordion,
+        Alert,
+        Fieldset,
+        Icon,
+        Input,
+        Layout,
+        Tooltip,
+        Typography
+    } from '@appwrite.io/pink-svelte';
+    import { IconInfo, IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import Wizard from '$lib/layout/wizard.svelte';
+    import Aside from './aside.svelte';
 
-    let previousPage: string = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/executions`;
+    let previousPage: string = `${base}/project-${page.params.project}/functions/function-${page.params.function}/executions`;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -110,7 +103,7 @@
                 isScheduled ? dateTime.toISOString() : undefined
             );
             await goto(
-                `${base}/project-${$page.params.project}/functions/function-${func.$id}/executions`
+                `${base}/project-${page.params.project}/functions/function-${func.$id}/executions`
             );
             invalidate(Dependencies.EXECUTIONS);
             addNotification({
@@ -146,258 +139,221 @@
 </script>
 
 <svelte:head>
-    <title>Execute function - Appwrite</title>
+    <title>Create execution - Appwrite</title>
 </svelte:head>
 
-<Wizard title="Execute function" href={previousPage}>
-    <svelte:fragment slot="title">Execute function</svelte:fragment>
-    <WizardSecondaryContent>
-        <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-            <FormList>
-                {#if func?.version === 'v2'}
-                    <Alert type="info">
-                        <svelte:fragment slot="title">
-                            Customizable execution data now available for functions v3.0
-                        </svelte:fragment>
-                        Update your function version to make use of new features including customizable
-                        HTTP data in your executions.
-                        <svelte:fragment slot="buttons">
-                            <Button
-                                href="https://appwrite.io/docs/products/functions/development"
-                                external
-                                text>
-                                Learn more
-                            </Button>
-                        </svelte:fragment>
-                    </Alert>
-                    <InputTextarea
-                        label="Body"
-                        placeholder={`Hello, World!`}
-                        id="body"
-                        bind:value={body} />
-                {:else}
-                    <InputSelect
-                        required
-                        id="method"
-                        label="Method"
-                        options={methodOptions}
-                        bind:value={method} />
-                    <InputText
-                        label="Path"
-                        id="path"
-                        fullWidth
-                        placeholder="/"
-                        bind:value={path}
-                        required />
-                    <div>
-                        <h3>
-                            <span class="body-text-2 u-bold">Headers</span>
-                            <span class="optional">(optional)</span>
-                            <Tooltip placement="top"
-                                ><span class="icon-info"></span>
-                                <div slot="tooltip">
-                                    Headers should contain alphanumeric characters (a-z, A-Z, and
-                                    0-9) and hyphens only (- and _).
-                                </div>
-                            </Tooltip>
-                        </h3>
+<Wizard title="Create execution" href={previousPage}>
+    <svelte:fragment slot="title">Create execution</svelte:fragment>
+    <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
+        <Layout.Stack gap="xl">
+            {#if func?.version === 'v2'}
+                <Alert.Inline
+                    status="info"
+                    title="Customizable execution data now available for functions v3.0">
+                    <svelte:fragment slot="title"></svelte:fragment>
 
-                        <FormList class="u-gap-8 u-margin-block-start-8">
-                            {#if headers}
-                                {#each headers as [name, value], index}
-                                    <InputSelectSearch
-                                        fullWidth
-                                        label="Key"
-                                        placeholder="Select key"
-                                        interactiveOutput
-                                        hideEmpty
-                                        options={filteredKeyList}
-                                        id={`key-${index}`}
-                                        bind:value={name}
-                                        bind:search={name}>
-                                    </InputSelectSearch>
-                                    <InputText
-                                        label="Value"
-                                        placeholder="Enter value"
-                                        id={`value-${index}`}
-                                        bind:value />
-                                    <Button
-                                        text
-                                        disabled={(!name || !value) && index === 0}
-                                        on:click={() => {
-                                            if (index === 0) {
-                                                headers = [['', '']];
-                                            } else {
-                                                headers.splice(index, 1);
-                                                headers = headers;
-                                            }
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                {/each}
-                            {/if}
-                        </FormList>
+                    Update your function version to make use of new features including customizable
+                    HTTP data in your executions.
+                    <svelte:fragment slot="actions">
                         <Button
-                            text
-                            disabled={headers?.length && headers[headers.length - 1][0]
-                                ? false
-                                : true}
-                            on:click={() => {
-                                if (headers[headers.length - 1][0]) {
-                                    headers.push(['', '']);
-                                    headers = headers;
-                                }
-                            }}>
-                            <Icon icon={IconPlus} slot="start" size="s" />
-                            Add Header
+                            href="https://appwrite.io/docs/products/functions/development"
+                            external
+                            compact>
+                            Learn more
                         </Button>
-                    </div>
+                    </svelte:fragment>
+                </Alert.Inline>
+                <Fieldset legend="Request">
+                    <Accordion title="Body" badge="Optional" hideDivider open>
+                        <Layout.Stack gap="xl">
+                            <Typography.Text>
+                                Provide the request body to include the main data you want to send
+                                to the server.
+                            </Typography.Text>
+                            <InputTextarea
+                                placeholder="Enter request body here..."
+                                id="body"
+                                bind:value={body} />
+                        </Layout.Stack>
+                    </Accordion>
+                </Fieldset>
+            {:else}
+                <Fieldset legend="Request">
+                    <Layout.Stack gap="xl">
+                        <Layout.GridFraction start={1} end={3}>
+                            <InputSelect
+                                required
+                                id="method"
+                                label="Method"
+                                options={methodOptions}
+                                bind:value={method} />
+                            <InputText
+                                label="Path"
+                                id="path"
+                                placeholder="/"
+                                bind:value={path}
+                                required />
+                        </Layout.GridFraction>
 
-                    <InputTextarea
-                        label="Body"
-                        placeholder={`Hello, World!`}
-                        id="body"
-                        bind:value={body} />
+                        <Layout.Stack gap="s">
+                            <Accordion title="Headers" badge="Optional">
+                                <Layout.Stack gap="xl">
+                                    <Typography.Text>
+                                        Provide essential metadata to define the content type,
+                                        authentication details, and the expected response format.
+                                    </Typography.Text>
 
-                    <li>
-                        <InputSelect
-                            bind:value={isScheduled}
-                            id="schedule"
-                            label="Schedule"
-                            options={[
-                                {
-                                    label: 'Now',
-                                    value: null
-                                },
-                                {
-                                    label: 'Schedule',
-                                    value: true
-                                }
-                            ]} />
-                        {#if isScheduled}
-                            <InputDate
-                                id="date"
-                                label="Date"
-                                required={true}
-                                min={minDate}
-                                bind:value={date} />
-                            <InputTime
-                                id="time"
-                                label="Time"
-                                required={true}
-                                min={minTime}
-                                bind:value={time} />
-                        {/if}
-                        <Helper type="neutral">
-                            {isScheduled
-                                ? `Your function will be executed on ${toLocaleDateTime(dateTime?.toString())}`
-                                : 'Your function will be executed immediately'}
-                        </Helper>
-                    </li>
-                {/if}
-            </FormList>
-        </Form>
-        <svelte:fragment slot="aside">
-            <Card class="u-flex-vertical u-gap-24" style="--p-card-padding: 1.5rem">
-                <div class="u-flex-vertical u-gap-8">
-                    <p class="u-color-text-offline">Deployment ID</p>
+                                    <Layout.Stack gap="xs">
+                                        {#if headers}
+                                            {#each headers as [name, value], index}
+                                                <Layout.Stack direction="row" alignItems="flex-end">
+                                                    <Input.ComboBox
+                                                        fullWidth
+                                                        label={index === 0 ? 'Key' : ''}
+                                                        placeholder="Select key"
+                                                        interactiveOutput
+                                                        hideEmpty
+                                                        options={filteredKeyList}
+                                                        id={`key-${index}`}
+                                                        bind:value={name}
+                                                        bind:search={name}>
+                                                    </Input.ComboBox>
+                                                    <InputText
+                                                        label={index === 0 ? 'Value' : ''}
+                                                        placeholder="Enter value"
+                                                        id={`value-${index}`}
+                                                        bind:value>
+                                                        <span slot="info">
+                                                            <Tooltip>
+                                                                <Layout.Stack alignItems="center">
+                                                                    <Icon
+                                                                        icon={IconInfo}
+                                                                        size="s" />
+                                                                </Layout.Stack>
+                                                                <span slot="tooltip">
+                                                                    Values should contain
+                                                                    alphanumeric characters (a-z,
+                                                                    A-Z, and 0-9) and hyphens only
+                                                                    (- and _).
+                                                                </span>
+                                                            </Tooltip>
+                                                        </span>
+                                                    </InputText>
+                                                    <Button
+                                                        text
+                                                        icon
+                                                        disabled={(!name || !value) && index === 0}
+                                                        on:click={() => {
+                                                            if (index === 0) {
+                                                                headers = [['', '']];
+                                                            } else {
+                                                                headers.splice(index, 1);
+                                                                headers = headers;
+                                                            }
+                                                        }}>
+                                                        <Icon icon={IconX} />
+                                                    </Button>
+                                                </Layout.Stack>
+                                            {/each}
+                                        {/if}
+                                        <div>
+                                            <Button
+                                                compact
+                                                disabled={headers?.length &&
+                                                headers[headers.length - 1][0]
+                                                    ? false
+                                                    : true}
+                                                on:click={() => {
+                                                    if (headers[headers.length - 1][0]) {
+                                                        headers.push(['', '']);
+                                                        headers = headers;
+                                                    }
+                                                }}>
+                                                <Icon icon={IconPlus} slot="start" size="s" />
+                                                Add header
+                                            </Button>
+                                        </div>
+                                    </Layout.Stack>
+                                </Layout.Stack>
+                            </Accordion>
 
-                    <Id value={func.deployment}>
-                        {func.deployment}
-                    </Id>
-                </div>
-                <ul
-                    class="u-grid u-width-full-line u-gap-16"
-                    style:grid-template-columns="repeat(3, 1fr)">
-                    <li class="u-flex-vertical u-gap-8">
-                        <p class="u-color-text-offline">Status</p>
-                        <p>
-                            <Pill success>
-                                <span class="icon-lightning-bolt"></span><span>active</span>
-                            </Pill>
-                            <!-- {#if deployment?.$id === func.deployment && deployment?.status === 'active'}
-                             {:else}
-                                <Pill
-                                    danger={deployment?.status === 'failed'}
-                                    warning={deployment?.status === 'building'}
-                                    info={deployment?.status === 'ready'}>
-                                    {deployment?.status}
-                                </Pill>
-                            {/if} -->
-                        </p>
-                    </li>
-                    <li class="u-flex-vertical u-gap-8">
-                        <p class="u-color-text-offline">Build time</p>
-                        <p>
-                            {#if ['processing', 'building'].includes(deployment.status)}
-                                <span use:timer={{ start: deployment.$createdAt }} />
-                            {:else}
-                                {calculateTime(deployment.buildTime)}
+                            <Accordion title="Body" badge="Optional" hideDivider>
+                                <Layout.Stack gap="xl">
+                                    <Typography.Text>
+                                        Provide the request body to include the main data you want
+                                        to send to the server.
+                                    </Typography.Text>
+                                    <InputTextarea
+                                        placeholder="Enter request body here..."
+                                        id="body"
+                                        bind:value={body} />
+                                </Layout.Stack>
+                            </Accordion>
+                        </Layout.Stack>
+                    </Layout.Stack>
+                </Fieldset>
+
+                <Fieldset legend="Settings">
+                    <Layout.Stack gap="l">
+                        <Layout.Stack gap="xs">
+                            <InputSelect
+                                bind:value={isScheduled}
+                                id="schedule"
+                                label="Schedule"
+                                required
+                                options={[
+                                    {
+                                        label: 'Now',
+                                        value: null
+                                    },
+                                    {
+                                        label: 'Custom',
+                                        value: true
+                                    }
+                                ]} />
+                            {#if !isScheduled}
+                                <Helper type="neutral">
+                                    Your function will be executed immediately
+                                </Helper>
                             {/if}
-                        </p>
-                    </li>
-                    <li class="u-flex-vertical u-gap-8">
-                        <p class="u-color-text-offline">Total size</p>
-                        <p>
-                            {humanFileSize(deployment.size + deployment.buildSize).value +
-                                humanFileSize(deployment.size + deployment.buildSize).unit}
-                            <Tooltip>
-                                <button
-                                    type="button"
-                                    on:click|preventDefault
-                                    aria-label="input tooltip">
-                                    <span
-                                        class="icon-info"
-                                        aria-hidden="true"
-                                        style="font-size: var(--icon-size-small)" />
-                                </button>
-                                <div slot="tooltip">
-                                    <p>
-                                        <b>Deployment size:</b>
-                                        {humanFileSize(deployment.size).value +
-                                            humanFileSize(deployment.size).unit}
-                                    </p>
-                                    <p>
-                                        <b>Build size:</b>
-                                        {humanFileSize(deployment.buildSize).value +
-                                            humanFileSize(deployment.buildSize).unit}
-                                    </p>
-                                </div>
-                            </Tooltip>
-                        </p>
-                    </li>
-                </ul>
-                <div class="u-flex-vertical u-gap-8">
-                    <p class="u-color-text-offline">Source</p>
-                    <span>
-                        <DeploymentSource {deployment} />
-                    </span>
-                </div>
-                {#if $proxyRuleList?.rules?.length}
-                    <div class="u-flex-vertical u-gap-8">
-                        <p class="u-color-text-offline">Domains</p>
-                        <span>
-                            <DeploymentDomains domain={$proxyRuleList} />
-                        </span>
-                    </div>
-                {/if}
-                <div class="u-flex-vertical u-gap-8">
-                    <p class="u-color-text-offline">Updated</p>
-                    <span>
-                        <DeploymentCreatedBy {deployment} />
-                    </span>
-                </div>
-            </Card>
-        </svelte:fragment>
-    </WizardSecondaryContent>
+                        </Layout.Stack>
+                        {#if isScheduled}
+                            <Layout.Stack gap="xs">
+                                <Layout.GridFraction start={3} end={1}>
+                                    <InputDate
+                                        id="date"
+                                        required={true}
+                                        min={minDate}
+                                        bind:value={date} />
+                                    <InputTime
+                                        id="time"
+                                        required={true}
+                                        min={minTime}
+                                        bind:value={time} />
+                                </Layout.GridFraction>
+                                <Helper type="neutral">
+                                    Your function will be executed on {toLocaleDateTime(
+                                        dateTime?.toString()
+                                    )}
+                                </Helper>
+                            </Layout.Stack>
+                        {/if}
+                    </Layout.Stack>
+                </Fieldset>
+            {/if}
+        </Layout.Stack>
+    </Form>
+    <svelte:fragment slot="aside">
+        <Aside {deployment} proxyRuleList={data.proxyRuleList} />
+    </svelte:fragment>
 
-    <WizardSecondaryFooter>
+    <svelte:fragment slot="footer">
         <Button fullWidthMobile secondary href={previousPage}>Cancel</Button>
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
-            Execute
+            Create
         </Button>
-    </WizardSecondaryFooter>
+    </svelte:fragment>
 </Wizard>

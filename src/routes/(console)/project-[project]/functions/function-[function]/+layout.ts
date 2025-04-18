@@ -1,4 +1,4 @@
-import { sdk } from '$lib/stores/sdk';
+import { DeploymentResourceType, sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
@@ -12,13 +12,15 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.DEPLOYMENTS);
 
     try {
-        const [func, proxyRuleList] = await Promise.all([
-            sdk.forProject.functions.get(params.function),
-            sdk.forProject.proxy.listRules([
-                Query.equal('type', RuleType.DEPLOYMENT),
-                Query.equal('automation', `function=${params.function}`),
-                Query.limit(1)
-            ])
+        const func = await sdk.forProject.functions.get(params.function);
+
+        //TODO remove rule limit of 1 and display extra rules
+        const proxyRuleList = await sdk.forProject.proxy.listRules([
+            Query.equal('type', RuleType.DEPLOYMENT),
+            Query.equal('deploymentResourceType', DeploymentResourceType.FUNCTION),
+            Query.equal('deploymentResourceId', params.function),
+            Query.equal('deploymentId', func.deploymentId),
+            Query.limit(1)
         ]);
 
         return {

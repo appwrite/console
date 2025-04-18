@@ -4,12 +4,13 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, Helper, InputTags } from '$lib/elements/forms';
+    import { Button, Form, InputTags } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
-    import { Tag, Input, Layout } from '@appwrite.io/pink-svelte';
+    import { Tag, Input, Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     const alphaNumericRegExp = /^[a-zA-Z0-9]+$/;
     let suggestedLabels = ['admin', 'premium', 'mvp'];
@@ -39,7 +40,6 @@
             trackError(error, Submit.UserUpdateLabels);
         }
     }
-    $: console.log(labels);
     // TODO: Remove type cast when console SDK is updated
     $: isDisabled =
         !!error ||
@@ -68,11 +68,13 @@
         New label-based roles will be assigned.
         <svelte:fragment slot="aside">
             <Layout.Stack gap="s">
-                <InputTags
-                    id="user-labels"
-                    label="Labels"
-                    placeholder="Select or type user labels"
-                    bind:tags={labels} />
+                {#key labels.length}
+                    <InputTags
+                        id="user-labels"
+                        label="Labels"
+                        placeholder="Select or type user labels"
+                        bind:tags={labels} />
+                {/key}
                 <Layout.Stack direction="row">
                     {#each suggestedLabels as suggestedLabel}
                         <Tag
@@ -85,7 +87,7 @@
                                     labels = labels.filter((e) => e !== suggestedLabel);
                                 }
                             }}>
-                            <span class="icon-plus" aria-hidden="true" />
+                            <Icon icon={IconPlus} size="s" slot="start" />
                             {suggestedLabel}
                         </Tag>
                     {/each}

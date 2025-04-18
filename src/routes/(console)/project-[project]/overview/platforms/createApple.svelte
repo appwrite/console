@@ -3,11 +3,19 @@
     import { invalidate } from '$app/navigation';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import { Code, Layout, Icon, Typography, Fieldset, InlineCode } from '@appwrite.io/pink-svelte';
+    import {
+        Code,
+        Layout,
+        Icon,
+        Typography,
+        Fieldset,
+        InlineCode,
+        Tooltip
+    } from '@appwrite.io/pink-svelte';
     import { Button, Form, InputText } from '$lib/elements/forms';
-    import { IconApple, IconAppwrite } from '@appwrite.io/pink-icons-svelte';
+    import { IconApple, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -24,7 +32,7 @@
     let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';
@@ -132,9 +140,16 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                                 id="hostname"
                                 label="Bundle ID"
                                 placeholder="com.company.appname"
-                                tooltip="You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
                                 required
-                                bind:value={$createPlatform.key} />
+                                bind:value={$createPlatform.key}>
+                                <Tooltip slot="info" maxWidth="15rem">
+                                    <Icon icon={IconInfo} size="s" />
+                                    <Typography.Caption variant="400" slot="tooltip">
+                                        You can find your Bundle Identifier in the General tab for
+                                        your app's primary target in Xcode.
+                                    </Typography.Caption>
+                                </Tooltip>
+                            </InputText>
                         </Layout.Stack>
 
                         <Button
@@ -153,7 +168,7 @@ APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject.client.config.endpoint}"
                 </Fieldset>
             {:else}
                 <Layout.Stack gap="xxl">
-                    <Card isTile padding="s" radius="s">
+                    <Card padding="s" radius="s">
                         <Layout.Stack
                             direction="row"
                             justifyContent="space-between"

@@ -1,14 +1,15 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { Alert, CopyInput, Modal } from '$lib/components';
-    import { Button, FormList, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
+    import { page } from '$app/state';
+    import { CopyInput, Modal } from '$lib/components';
+    import { Button, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
     import type { Models } from '@appwrite.io/console';
+    import { Alert } from '@appwrite.io/pink-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     export let provider: Models.AuthProvider;
     export let show = false;
@@ -38,41 +39,40 @@
     };
 </script>
 
-<Modal {error} size="big" bind:show onSubmit={update} on:close>
+<Modal {error} size="l" bind:show onSubmit={update} on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 settings</svelte:fragment>
-    <FormList>
-        <p>
-            To use {provider.name} authentication in your application, first fill in this form. For more
-            info you can
-            <a class="link" href={oAuthProvider?.docs} target="_blank" rel="noopener noreferrer"
-                >visit the docs.</a>
-        </p>
-        <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
-        <InputText
-            id="appID"
-            label="App ID"
-            autofocus={true}
-            placeholder="Enter ID"
-            bind:value={appId} />
-        <InputPassword
-            id="secret"
-            label="App Secret"
-            placeholder="Enter App Secret"
-            minlength={0}
-            showPasswordButton
-            bind:value={secret} />
-        <Alert type="info">
-            To complete the setup, create an OAuth2 client ID with "Web application" as the
-            application type, then add this redirect URI to your {provider.name} configuration.
-        </Alert>
-        <div>
-            <p>URI</p>
-            <CopyInput
-                value={`${
-                    sdk.forConsole.client.config.endpoint
-                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
-        </div>
-    </FormList>
+
+    <p>
+        To use {provider.name} authentication in your application, first fill in this form. For more
+        info you can
+        <a class="link" href={oAuthProvider?.docs} target="_blank" rel="noopener noreferrer"
+            >visit the docs.</a>
+    </p>
+    <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
+    <InputText
+        id="appID"
+        label="App ID"
+        autofocus={true}
+        placeholder="Enter ID"
+        bind:value={appId} />
+    <InputPassword
+        id="secret"
+        label="App Secret"
+        placeholder="Enter App Secret"
+        minlength={0}
+        bind:value={secret} />
+    <Alert.Inline status="info">
+        To complete the setup, create an OAuth2 client ID with "Web application" as the application
+        type, then add this redirect URI to your {provider.name} configuration.
+    </Alert.Inline>
+    <div>
+        <p>URI</p>
+        <CopyInput
+            value={`${
+                sdk.forConsole.client.config.endpoint
+            }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+    </div>
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button

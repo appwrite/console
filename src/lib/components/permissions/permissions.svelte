@@ -18,6 +18,7 @@
     import Row from './row.svelte';
     import { Icon, Selector, Table } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import type { PinkColumn } from '$lib/helpers/types';
 
     export let withCreate = false;
     export let permissions: string[] = [];
@@ -124,59 +125,65 @@
 
         return a.localeCompare(b);
     }
+
+    const columns: PinkColumn[] = [
+        { id: 'role', width: { min: 100 } },
+        { id: 'create', width: { min: 100 }, hide: !withCreate },
+        { id: 'read', width: { min: 100 } },
+        { id: 'update', width: { min: 100 } },
+        { id: 'delete', width: { min: 100 } },
+        { id: 'action', width: 40 }
+    ];
 </script>
 
 {#if [...$groups]?.length}
     <div class="table-wrapper">
-        <Table.Root>
-            <svelte:fragment slot="header">
-                <Table.Header.Cell>Role</Table.Header.Cell>
+        <Table.Root {columns} let:root>
+            <svelte:fragment slot="header" let:root>
+                <Table.Header.Cell column="role" {root}>Role</Table.Header.Cell>
                 {#if withCreate}
-                    <Table.Header.Cell width="90px">Create</Table.Header.Cell>
+                    <Table.Header.Cell column="create" {root}>Create</Table.Header.Cell>
                 {/if}
-                <Table.Header.Cell width="90px">Read</Table.Header.Cell>
-                <Table.Header.Cell width="90px">Update</Table.Header.Cell>
-                <Table.Header.Cell width="90px">Delete</Table.Header.Cell>
-                <Table.Header.Cell width="40px" />
+                <Table.Header.Cell column="read" {root}>Read</Table.Header.Cell>
+                <Table.Header.Cell column="update" {root}>Update</Table.Header.Cell>
+                <Table.Header.Cell column="delete" {root}>Delete</Table.Header.Cell>
+                <Table.Header.Cell column="action" {root} />
             </svelte:fragment>
             {#each [...$groups].sort(sortRoles) as [role, permission] (role)}
-                <Table.Row>
-                    <Table.Cell>
+                <Table.Row.Base {root}>
+                    <Table.Cell column="role" {root}>
                         <Row {role} />
                     </Table.Cell>
-
-                    {#if withCreate}
-                        <Table.Cell>
-                            <Selector.Checkbox
-                                checked={permission.create}
-                                on:change={() => togglePermission(role, 'create')} />
-                        </Table.Cell>
-                    {/if}
-                    <Table.Cell>
+                    <Table.Cell column="create" {root}>
+                        <Selector.Checkbox
+                            checked={permission.create}
+                            on:change={() => togglePermission(role, 'create')} />
+                    </Table.Cell>
+                    <Table.Cell column="read" {root}>
                         <Selector.Checkbox
                             size="s"
                             checked={permission.read}
                             on:change={() => togglePermission(role, 'read')} />
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="update" {root}>
                         <Selector.Checkbox
                             size="s"
                             checked={permission.update}
                             on:change={() => togglePermission(role, 'update')} />
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="delete" {root}>
                         <Selector.Checkbox
                             size="s"
                             checked={permission.delete}
                             on:change={() => togglePermission(role, 'delete')} />
                     </Table.Cell>
 
-                    <Table.Cell>
+                    <Table.Cell column="action" {root}>
                         <Button compact icon ariaLabel="delete" on:click={() => deleteRole(role)}>
                             <Icon icon={IconX} size="s" />
                         </Button>
                     </Table.Cell>
-                </Table.Row>
+                </Table.Row.Base>
             {/each}
         </Table.Root>
     </div>
@@ -208,7 +215,7 @@
                     {groups}
                     on:create={create}
                     let:toggle>
-                    <Button secondary icon on:click={toggle}>
+                    <Button compact icon on:click={toggle}>
                         <Icon icon={IconPlus} size="s" />
                     </Button>
                 </Actions>

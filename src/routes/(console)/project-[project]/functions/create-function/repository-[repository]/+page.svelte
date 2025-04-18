@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
@@ -10,7 +10,7 @@
     import { installation, repository } from '$lib/stores/vcs';
     import { Layout } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
-    import { ID, Runtime, Type } from '@appwrite.io/console';
+    import { ID, Runtime, VCSDeploymentType } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { consoleVariables } from '$routes/(console)/store';
@@ -19,34 +19,43 @@
     import Configuration from './configuration.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
-    import { getIconFromRuntime } from '../../store';
     import { Dependencies } from '$lib/constants';
     import RepoCard from './repoCard.svelte';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
 
     export let data;
+
+    const specificationOptions = data.specificationsList.specifications.map((size) => ({
+        label:
+            `${size.cpus} CPU, ${size.memory} MB RAM` +
+            (!size.enabled ? ` (Upgrade to use this)` : ''),
+        value: size.slug,
+        disabled: !size.enabled
+    }));
+    const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
+        return {
+            value: runtime.$id,
+            label: `${runtime.name} - ${runtime.version}`,
+            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+        };
+    });
+
     let showExitModal = false;
 
     let formComponent: Form;
     let isSubmitting = writable(false);
 
     let name = '';
-    let id = ID.unique();
+    let id: string;
     let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
-    let scopes: string[] = [];
+    let roles: string[] = [];
     let branch: string;
     let rootDir = './';
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
-
-    const runtimeOptions = data.runtimesList.runtimes.map((runtime) => {
-        return {
-            value: runtime.name,
-            label: `${runtime.name} - ${runtime.version}`,
-            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
-        };
-    });
+    let specification = specificationOptions[0].value;
 
     onMount(async () => {
         installation.set(data.installation);
@@ -57,10 +66,10 @@
     async function create() {
         try {
             const func = await sdk.forProject.functions.create(
-                id,
+                id || ID.unique(),
                 name,
                 runtime,
-                undefined,
+                roles?.length ? roles : undefined,
                 undefined,
                 undefined,
                 undefined,
@@ -68,18 +77,18 @@
                 undefined,
                 entrypoint,
                 buildCommand,
-                scopes,
+                undefined,
                 $installation.$id,
                 $repository.id,
                 branch,
                 silentMode,
                 rootDir,
-                undefined //TODO: specs
+                specification || undefined
             );
 
             // Add domain
             await sdk.forProject.proxy.createFunctionRule(
-                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
                 func.$id
             );
 
@@ -94,14 +103,19 @@
             );
             await Promise.all(promises);
 
-            await sdk.forProject.functions.createVcsDeployment(func.$id, Type.Branch, branch, true);
+            await sdk.forProject.functions.createVcsDeployment(
+                func.$id,
+                VCSDeploymentType.Branch,
+                branch,
+                true
+            );
 
             trackEvent(Submit.FunctionCreate, {
                 source: 'repository',
                 runtime: runtime
             });
 
-            await goto(`${base}/project-${$page.params.project}/functions/function=${func.$id}`);
+            await goto(`${base}/project-${page.params.project}/functions/function-${func.$id}`);
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
@@ -121,7 +135,7 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/functions`}
+    href={`${base}/project-${page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -132,6 +146,8 @@
                 bind:entrypoint
                 bind:id
                 bind:runtime
+                bind:specification
+                {specificationOptions}
                 options={runtimeOptions}
                 showEntrypoint />
 
@@ -139,10 +155,11 @@
                 bind:branch
                 bind:rootDir
                 bind:silentMode
+                product="functions"
                 installationId={data.installation.$id}
                 repositoryId={data.repository.id} />
 
-            <Configuration bind:buildCommand bind:scopes />
+            <Configuration bind:buildCommand bind:roles />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
@@ -161,7 +178,7 @@
             submissionLoader
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
-            Create
+            Deploy
         </Button>
     </svelte:fragment>
 </Wizard>

@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { getContext } from 'svelte';
     import type { Writable } from 'svelte/store';
 
-    export let state: 'closed' | 'open' | 'icons' = 'open';
     export let subNavigation;
 
-    $: subNavigation = $page.data.subNavigation;
+    $: subNavigation = page.data.subNavigation;
     // We need to have this second variable, because we only want narrow
     // to change automatically if we change from having a second side nav to
     // not having one, not when the second side nav changes to a different value.

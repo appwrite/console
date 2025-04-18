@@ -77,19 +77,19 @@
     <Typography.Text>Grant access to any authenticated or anonymous user.</Typography.Text>
     <InputSearch autofocus placeholder="Search by name, email, phone or ID" bind:value={search} />
     {#if results?.users?.length}
-        <Table.Root>
+        <Table.Root columns={[{ id: 'checkbox', width: 40 }, { id: 'user' }]} let:root>
             {#each results.users as user (user.$id)}
                 {@const role = `user:${user.$id}`}
                 {@const exists = $groups.has(role)}
-                <Table.Button on:click={() => onSelection(role)} disabled={exists}>
-                    <Table.Cell width="40px">
+                <Table.Row.Button {root} on:click={() => onSelection(role)} disabled={exists}>
+                    <Table.Cell column="checkbox" {root}>
                         <Selector.Checkbox
                             size="s"
                             id={user.$id}
                             checked={exists || selected.has(role)}
                             disabled={exists} />
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell column="user" {root}>
                         <Layout.Stack direction="row" alignItems="center" gap="s">
                             {#if user.email || user.phone}
                                 {#if user.name}
@@ -135,13 +135,13 @@
                             {/if}
                         </Layout.Stack>
                     </Table.Cell>
-                </Table.Button>
+                </Table.Row.Button>
             {/each}
         </Table.Root>
 
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <p class="text">Total results: {results?.total}</p>
-            <PaginationInline limit={5} bind:offset sum={results?.total} hidePages />
+            <PaginationInline limit={5} bind:offset total={results?.total} hidePages />
         </Layout.Stack>
     {:else if search}
         <EmptySearch bind:search target="users" hidePages>

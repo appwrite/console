@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
@@ -13,32 +13,43 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
     import Configuration from './configuration.svelte';
     import { ID, Runtime, type Models } from '@appwrite.io/console';
-    import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
+    import {
+        ConnectBehaviour,
+        NewRepository,
+        Repositories,
+        RepositoryBehaviour
+    } from '$lib/components/git';
     import { consoleVariables } from '$routes/(console)/store';
     import Details from '../(components)/details.svelte';
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
-    import { getIconFromRuntime } from '../../store';
     import Permissions from './permissions.svelte';
     import { connectGitHub } from '$lib/stores/git';
     import RepoCard from './repoCard.svelte';
     import { Dependencies } from '$lib/constants';
+    import { getIconFromRuntime } from '$lib/stores/runtimes';
 
     export let data;
 
+    const specificationOptions = data.specificationsList.specifications.map((size) => ({
+        label:
+            `${size.cpus} CPU, ${size.memory} MB RAM` +
+            (!size.enabled ? ` (Upgrade to use this)` : ''),
+        value: size.slug,
+        disabled: !size.enabled
+    }));
+
     let showExitModal = false;
     let isCreatingRepository = false;
-    let hasInstallations = !!data?.installations?.total;
 
     let formComponent: Form;
     let isSubmitting = writable(false);
 
     let name = data.template.name;
-    let id = ID.unique();
+    let id: string;
     let runtime: Runtime;
     let branch = 'main';
     let rootDir = './';
@@ -52,8 +63,9 @@
     let silentMode = false;
     let entrypoint = '';
     let selectedScopes: string[] = [];
-    let execute = false;
+    let execute = true;
     let variables: Partial<Models.TemplateVariable>[] = [];
+    let specification = specificationOptions[0].value;
 
     onMount(async () => {
         if (!$installation?.$id) {
@@ -71,7 +83,11 @@
                 const versionB = b.split('-')[1];
                 return versionB.localeCompare(versionA, undefined, { numeric: true });
             });
-            runtime = matchingRuntimes[0];
+            if (page.url.searchParams.has('runtime')) {
+                runtime = page.url.searchParams.get('runtime') as Runtime;
+            } else {
+                runtime = matchingRuntimes[0];
+            }
         }
     });
 
@@ -108,7 +124,7 @@
                 const rt = data.template.runtimes.find((r) => r.name === runtime);
 
                 const func = await sdk.forProject.functions.create(
-                    id,
+                    id || ID.unique(),
                     name,
                     runtime as Runtime,
                     data.template.permissions?.length ? data.template.permissions : undefined,
@@ -117,24 +133,22 @@
                     data.template.timeout ? data.template.timeout : undefined,
                     undefined,
                     undefined,
-                    entrypoint || rt.entrypoint,
-                    undefined,
+                    entrypoint || rt?.entrypoint || undefined,
+                    rt?.commands || undefined,
                     selectedScopes?.length ? selectedScopes : undefined,
                     connectBehaviour === 'later' ? undefined : $installation?.$id || undefined,
                     connectBehaviour === 'later' ? undefined : $repository?.id || undefined,
                     branch,
                     silentMode,
                     rootDir,
-                    undefined //TODO: specs
+                    specification || undefined
                 );
 
                 // Add domain
                 await sdk.forProject.proxy.createFunctionRule(
-                    `${ID.unique()}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                    `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
                     func.$id
                 );
-
-                console.log(variables);
 
                 // Add variables
                 const promises = variables.map((variable) =>
@@ -162,9 +176,7 @@
                     framework: data.template.name
                 });
 
-                await goto(
-                    `${base}/project-${$page.params.project}/functions/function-${func.$id}`
-                );
+                await goto(`${base}/project-${page.params.project}/functions/function-${func.$id}`);
                 invalidate(Dependencies.FUNCTION);
             } catch (e) {
                 addNotification({
@@ -185,11 +197,9 @@
         selectedRepository = null;
     }
 
-    $: console.log(data.template);
     $: availableRuntimes = data.runtimesList.runtimes.filter((runtime) =>
         data.template.runtimes.some((templateRuntime) => templateRuntime.name === runtime.$id)
     );
-    $: console.log(availableRuntimes);
 </script>
 
 <svelte:head>
@@ -199,7 +209,7 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/functions`}
+    href={`${base}/project-${page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -211,6 +221,7 @@
                         bind:branch
                         bind:rootDir
                         bind:silentMode
+                        product="functions"
                         installationId={selectedInstallationId}
                         repositoryId={selectedRepository} />
 
@@ -228,8 +239,14 @@
                 })}
 
                 <Layout.Stack gap="xxl">
-                    <Details bind:name bind:id bind:runtime bind:entrypoint {options} />
-
+                    <Details
+                        bind:name
+                        bind:id
+                        bind:runtime
+                        bind:entrypoint
+                        bind:specification
+                        {specificationOptions}
+                        {options} />
                     <Permissions
                         templateScopes={data.template.scopes}
                         bind:selectedScopes
@@ -238,7 +255,7 @@
                     <ConnectBehaviour bind:connectBehaviour />
                 </Layout.Stack>
                 {#if connectBehaviour === 'now'}
-                    {#if hasInstallations}
+                    {#if !!data?.installations?.total}
                         <Fieldset legend="Git repository">
                             <Layout.Stack gap="xl">
                                 <RepositoryBehaviour bind:repositoryBehaviour />
@@ -265,23 +282,22 @@
                                     </Layout.Stack>
                                 {:else}
                                     <Repositories
-                                        bind:hasInstallations
                                         bind:selectedRepository
                                         action="button"
-                                        on:connect={(e) => {
+                                        connect={(e) => {
                                             trackEvent(Click.ConnectRepositoryClick, {
                                                 from: 'template-wizard'
                                             });
-                                            repository.set(e.detail);
-                                            repositoryName = e.detail.name;
-                                            selectedRepository = e.detail.id;
+                                            repository.set(e);
+                                            repositoryName = e.name;
+                                            selectedRepository = e.id;
                                             showConfig = true;
                                         }} />
                                 {/if}
                             </Layout.Stack>
                         </Fieldset>
                     {:else}
-                        <Card isDashed isTile padding="none">
+                        <Card isDashed padding="none">
                             <Empty
                                 type="secondary"
                                 title="Connect Git repository"
@@ -327,9 +343,19 @@
         <Button
             fullWidthMobile
             size="s"
-            on:click={() => formComponent.triggerSubmit()}
+            on:click={() => {
+                if (variables.filter((v) => v.required && !v.value).length) {
+                    addNotification({
+                        type: 'error',
+                        message:
+                            'Missing required environment variables. Please update and try again.'
+                    });
+                } else {
+                    formComponent.triggerSubmit();
+                }
+            }}
             disabled={$isSubmitting || (connectBehaviour === 'now' && !selectedRepository)}>
-            Create
+            Deploy
         </Button>
     </svelte:fragment>
 </Wizard>

@@ -11,9 +11,10 @@
         Fieldset,
         InlineCode,
         Card,
-        Button
+        Button,
+        Tooltip
     } from '@appwrite.io/pink-svelte';
-    import { Form } from '$lib/elements/forms';
+    import { Form, InputText } from '$lib/elements/forms';
     import {
         IconVue,
         IconAppwrite,
@@ -22,9 +23,10 @@
         IconNuxt,
         IconInfo,
         IconExternalLink,
-        IconAngular
+        IconAngular,
+        IconJs
     } from '@appwrite.io/pink-icons-svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { type ComponentType, onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -33,13 +35,17 @@
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
     import { PlatformType } from '@appwrite.io/console';
-    import ReactFrameworkIcon from './components/ReactFrameworkIcon.svelte';
-    import SvelteFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/SvelteFrameworkIcon.svelte';
-    import NuxtFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/NuxtFrameworkIcon.svelte';
-    import NextjsFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/NextjsFrameworkIcon.svelte';
-    import VueFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/VueFrameworkIcon.svelte';
-    import NoFrameworkIcon from './components/NoFrameworkIcon.svelte';
-    import AngularFrameworkIcon from '$routes/(console)/project-[project]/overview/platforms/components/AngularFrameworkIcon.svelte';
+    import {
+        ReactFrameworkIcon,
+        SvelteFrameworkIcon,
+        NuxtFrameworkIcon,
+        NextjsFrameworkIcon,
+        VueFrameworkIcon,
+        NoFrameworkIcon,
+        AngularFrameworkIcon,
+        JavascriptFrameworkIcon
+    } from './components/index';
+    import { hostnameRegex } from '$lib/helpers/string';
 
     export let key;
 
@@ -49,10 +55,10 @@
     let connectionSuccessful = false;
     let isChangingFramework = false;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
-    const updateConfigCode = `APPWRITE_PROJECT_ID = "${projectId}"
-APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
+    const updateConfigCode = (prefix = '') => `${prefix}APPWRITE_PROJECT_ID = "${projectId}"
+${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
         `;
     type FrameworkType = {
         key: string;
@@ -60,9 +66,13 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
         icon: ComponentType;
         smallIcon: ComponentType;
         portNumber: number;
+        runCommand: string;
+        updateConfigCode: string;
     };
     export let platform: PlatformType = PlatformType.Flutterandroid;
     export let selectedFrameworkKey: string | undefined = key ? key : undefined;
+    let hostname;
+    let hostnameError = false;
 
     let frameworks: Array<FrameworkType> = [
         {
@@ -70,42 +80,63 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
             label: 'Svelte',
             icon: SvelteFrameworkIcon,
             smallIcon: IconSvelte,
-            portNumber: 5173
+            portNumber: 5173,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('PUBLIC_')
         },
         {
             key: 'react',
             label: 'React',
             icon: ReactFrameworkIcon,
             smallIcon: IconReact,
-            portNumber: 3000
+            portNumber: 5173,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('VITE_')
         },
         {
             key: 'nuxt',
             label: 'Nuxt',
             icon: NuxtFrameworkIcon,
             smallIcon: IconNuxt,
-            portNumber: 3000
+            portNumber: 3000,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('NUXT_')
         },
         {
             key: 'nextjs',
             label: 'Next.js',
             icon: NextjsFrameworkIcon,
             smallIcon: NextjsFrameworkIcon,
-            portNumber: 3000
+            portNumber: 3000,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('NEXT_PUBLIC_')
         },
         {
             key: 'vue',
             label: 'Vue',
             icon: VueFrameworkIcon,
             smallIcon: IconVue,
-            portNumber: 5173
+            portNumber: 5173,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('VITE_')
         },
         {
             key: 'angular',
             label: 'Angular',
             icon: AngularFrameworkIcon,
             smallIcon: IconAngular,
-            portNumber: 4200
+            portNumber: 4200,
+            runCommand: 'npm run start',
+            updateConfigCode: `appwriteEndpoint: '${sdk.forProject.client.config.endpoint}',\nappwriteProjectId:'${projectId}'`
+        },
+        {
+            key: 'js',
+            label: 'Javascript',
+            icon: JavascriptFrameworkIcon,
+            smallIcon: IconJs,
+            portNumber: 5173,
+            runCommand: 'npm run dev',
+            updateConfigCode: updateConfigCode('VITE_')
         }
     ];
 
@@ -113,6 +144,12 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     $: selectedFrameworkIcon = selectedFramework ? selectedFramework.icon : NoFrameworkIcon;
 
     async function createWebPlatform() {
+        hostnameError = hostname !== '' ? !new RegExp(hostnameRegex).test(hostname) : null;
+
+        if (hostnameError) {
+            return;
+        }
+
         try {
             isCreatingPlatform = true;
             await sdk.forConsole.projects.createPlatform(
@@ -121,7 +158,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                 `${selectedFramework.label} app`,
                 selectedFrameworkKey,
                 undefined,
-                undefined
+                hostname === '' ? undefined : hostname
             );
 
             isPlatformCreated = true;
@@ -165,7 +202,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
     });
 </script>
 
-<Wizard title="Add web platform" bind:showExitModal confirmExit>
+<Wizard title="Add web platform" bind:showExitModal>
     <Form onSubmit={createWebPlatform}>
         <Layout.Stack gap="xxl">
             <!-- Step One -->
@@ -184,20 +221,38 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                                     imageRadius="s" />
                             {/each}
                         </div>
-
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             {#if isChangingFramework}
                                 <Button.Button
                                     disabled={!selectedFramework}
                                     on:click={() => (isChangingFramework = false)}>
                                     Save</Button.Button>
-                            {:else}
-                                <Button.Button type="submit" disabled={!selectedFramework}
-                                    >Create platform</Button.Button>
                             {/if}
                         </Layout.Stack>
                     </Layout.Stack>
                 </Fieldset>
+                {#if !isChangingFramework}
+                    <Fieldset legend="Details">
+                        <InputText
+                            id="hostname"
+                            label="Hostname"
+                            placeholder="localhost"
+                            error={hostnameError && 'Please enter a valid hostname'}
+                            bind:value={hostname}>
+                            <Tooltip slot="info">
+                                <Icon icon={IconInfo} size="s" />
+                                <span slot="tooltip">
+                                    The hostname that your website will use to interact with the
+                                    Appwrite APIs in production or development environments. No
+                                    protocol or port number required.
+                                </span>
+                            </Tooltip>
+                        </InputText></Fieldset>
+                    <Layout.Stack direction="row" justifyContent="flex-end"
+                        ><Button.Button type="submit" disabled={!selectedFramework}
+                            >Create platform</Button.Button
+                        ></Layout.Stack>
+                {/if}
             {:else}
                 <Card.Base padding="s"
                     ><Layout.Stack
@@ -231,7 +286,7 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                             <Code
                                 lang="bash"
                                 lineNumbers
-                                code={`\ngit clone https://github.com/appwrite/starter-for-${selectedFramework.key}\ncd starter-for--${selectedFramework.key}`} />
+                                code={`\ngit clone https://github.com/appwrite/starter-for-${selectedFramework.key}\ncd starter-for-${selectedFramework.key}`} />
                         </div>
 
                         {#if selectedFramework.key === 'angular'}
@@ -249,7 +304,10 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
 
                         <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
                         <div class="pink2-code-margin-fix">
-                            <Code lang="bash" lineNumbers code={updateConfigCode} />
+                            <Code
+                                lang="bash"
+                                lineNumbers
+                                code={selectedFramework.updateConfigCode} />
                         </div>
 
                         <Typography.Text variant="m-500"
@@ -261,9 +319,13 @@ APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
                         </div>
 
                         <Typography.Text variant="m-500"
-                            >3. Run the app, then click the <InlineCode
+                            >4. Run the app, then click the <InlineCode
                                 size="s"
                                 code="Send a ping" /> button to verify the setup.</Typography.Text>
+                        <!-- Temporary fix: Remove this div once Code splitting issue with stack spacing is resolved -->
+                        <div class="pink2-code-margin-fix">
+                            <Code lang="bash" lineNumbers code={selectedFramework.runCommand} />
+                        </div>
                     </Layout.Stack>
                 </Fieldset>
                 <Card.Base padding="s"

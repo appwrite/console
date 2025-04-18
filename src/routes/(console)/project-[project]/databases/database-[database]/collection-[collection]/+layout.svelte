@@ -27,11 +27,11 @@
     import { CreateAttributePanel } from '$lib/commandCenter/panels';
     import { database } from '../store';
     import { project } from '$routes/(console)/project-[project]/store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import CreateIndex from './indexes/createIndex.svelte';
     import { base } from '$app/paths';
     import { canWriteCollections } from '$lib/stores/roles';
-    import { IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
+    import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
     let unsubscribe: { (): void };
 
@@ -55,7 +55,7 @@
     $: $registerCommands([
         {
             label: 'Create document',
-            keys: $page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
+            keys: page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
             callback() {
                 goto(
                     `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/create`
@@ -66,7 +66,7 @@
         },
         {
             label: 'Create attribute',
-            keys: $page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
+            keys: page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
             callback() {
                 addSubPanel(CreateAttributePanel);
             },
@@ -82,7 +82,7 @@
                     `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}`
                 );
             },
-            disabled: $page.url.pathname.endsWith($collection.$id),
+            disabled: page.url.pathname.endsWith($collection.$id),
             group: 'collections'
         },
         {
@@ -93,7 +93,7 @@
                     `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/attributes`
                 );
             },
-            disabled: $page.url.pathname.endsWith('attributes'),
+            disabled: page.url.pathname.endsWith('attributes'),
             group: 'collections'
         },
         {
@@ -104,7 +104,7 @@
                     `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/indexes`
                 );
             },
-            disabled: $page.url.pathname.endsWith('indexes'),
+            disabled: page.url.pathname.endsWith('indexes'),
             group: 'collections'
         },
         {
@@ -115,7 +115,7 @@
                     `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/activity`
                 );
             },
-            disabled: $page.url.pathname.endsWith('activity'),
+            disabled: page.url.pathname.endsWith('activity'),
             group: 'collections'
         },
         {
@@ -126,7 +126,7 @@
                     `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/usage`
                 );
             },
-            disabled: $page.url.pathname.endsWith('usage'),
+            disabled: page.url.pathname.endsWith('usage'),
             group: 'collections'
         },
         {
@@ -137,7 +137,7 @@
                     `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
                 );
             },
-            disabled: $page.url.pathname.endsWith('settings') || !$canWriteCollections,
+            disabled: page.url.pathname.endsWith('settings') || !$canWriteCollections,
             group: 'collections'
         },
         {
@@ -149,10 +149,10 @@
             },
             group: 'collections',
             disabled:
-                $page.url.pathname.endsWith('display-name') ||
-                $page.url.pathname.endsWith('settings') ||
+                page.url.pathname.endsWith('display-name') ||
+                page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
-            icon: 'eye'
+            icon: IconEye
         },
         {
             label: 'Permissions',
@@ -163,8 +163,8 @@
             },
             group: 'collections',
             disabled:
-                $page.url.pathname.endsWith('permissions') ||
-                $page.url.pathname.endsWith('settings') ||
+                page.url.pathname.endsWith('permissions') ||
+                page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
             icon: IconPuzzle
         },
@@ -177,14 +177,14 @@
             },
             group: 'collections',
             disabled:
-                $page.url.pathname.endsWith('document-security') ||
-                $page.url.pathname.endsWith('settings') ||
+                page.url.pathname.endsWith('document-security') ||
+                page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
             icon: IconLockClosed
         },
         {
             label: 'Create index',
-            keys: $page.url.pathname.endsWith('indexes') ? ['c'] : ['c', 'i'],
+            keys: page.url.pathname.endsWith('indexes') ? ['c'] : ['c', 'i'],
             callback() {
                 initCreateIndex();
             },
@@ -208,5 +208,10 @@
 
 <slot />
 
-<CreateAttribute {...$createAttributeArgs} />
-<CreateIndex bind:showCreateIndex={$showCreateIndex} />
+{#if $createAttributeArgs.showCreate}
+    <CreateAttribute {...$createAttributeArgs} />
+{/if}
+
+{#if $showCreateIndex}
+    <CreateIndex bind:showCreateIndex={$showCreateIndex} />
+{/if}

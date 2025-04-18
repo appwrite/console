@@ -3,11 +3,10 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputChoice } from '$lib/elements/forms';
-    import { FormList } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Selector, Typography } from '@appwrite.io/pink-svelte';
+    import { Selector } from '@appwrite.io/pink-svelte';
     import { project } from '../../store';
 
     let authMembershipsUserName = $project?.authMembershipsUserName ?? true;

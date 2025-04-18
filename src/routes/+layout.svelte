@@ -2,7 +2,7 @@
     import { browser } from '$app/environment';
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app, type AppStore } from '$lib/stores/app';
@@ -21,9 +21,9 @@
     function resolveTheme(theme: AppStore['themeInUse']) {
         switch (theme) {
             case 'dark':
-                return true ? ThemeDarkCloud : ThemeDark; //TODO: remove after cloud instance is live
+                return isCloud ? ThemeDarkCloud : ThemeDark;
             case 'light':
-                return true ? ThemeLightCloud : ThemeLight;
+                return isCloud ? ThemeLightCloud : ThemeLight;
         }
     }
 
@@ -31,7 +31,7 @@
         updateViewport();
         // handle sources
         if (isCloud) {
-            const urlParams = $page.url.searchParams;
+            const urlParams = page.url.searchParams;
             const ref = urlParams.get('ref');
             const utmSource = urlParams.get('utm_source');
             const utmMedium = urlParams.get('utm_medium');
@@ -48,13 +48,13 @@
             }
         }
 
-        if ($page.url.searchParams.has('migrate')) {
-            const migrateData = $page.url.searchParams.get('migrate');
+        if (page.url.searchParams.has('migrate')) {
+            const migrateData = page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
         }
 
-        if ($page.url.searchParams.has('code')) {
-            const code = $page.url.searchParams.get('code');
+        if (page.url.searchParams.has('code')) {
+            const code = page.url.searchParams.get('code');
             const coupon = await sdk.forConsole.billing.getCoupon(code).catch<null>(() => null);
             if (coupon?.campaign) {
                 const campaign = await sdk.forConsole.billing
@@ -67,8 +67,9 @@
                 }
             }
         }
-        if (user && $page.url.searchParams.has('campaign')) {
-            const campaignId = $page.url.searchParams.get('campaign');
+
+        if ($user && page.url.searchParams.has('campaign')) {
+            const campaignId = page.url.searchParams.get('campaign');
             const campaign = await sdk.forConsole.billing
                 .getCampaign(campaignId)
                 .catch<null>(() => null);
@@ -123,15 +124,41 @@
             });
         }
     }
+
+    const preloadFonts = [
+        base + '/fonts/inter/inter-v8-latin-600.woff2',
+        base + '/fonts/inter/inter-v8-latin-regular.woff2',
+        base + '/fonts/poppins/poppins-v19-latin-500.woff2',
+        base + '/fonts/poppins/poppins-v19-latin-600.woff2',
+        base + '/fonts/poppins/poppins-v19-latin-700.woff2',
+        base + '/fonts/source-code-pro/source-code-pro-v20-latin-regular.woff2'
+    ];
+    const preloadFontsCloud = [
+        'https://fonts.appwrite.io/aeonik-pro/AeonikPro-Regular.woff2',
+        'https://fonts.appwrite.io/aeonik-pro/AeonikPro-Medium.woff2',
+        'https://fonts.appwrite.io/aeonik-pro/AeonikPro-Bold.woff2',
+        'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Regular.woff2',
+        'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Medium.woff2',
+        'https://fonts.appwrite.io/aeonik-fono/AeonikFono-Bold.woff2'
+    ];
 </script>
 
 <svelte:window on:resize={updateViewport} on:load={updateViewport} />
 
 <svelte:head>
-    <!-- {#if isCloud} -->
-    <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
-    <!-- {/if} -->
+    {#each preloadFonts as font}
+        <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
+    {/each}
+    <link rel="preload" as="style" type="text/css" href="/console/fonts/main.css" />
     <link rel="stylesheet" href={`${base}/fonts/main.css`} />
+
+    {#if isCloud}
+        {#each preloadFontsCloud as font}
+            <link rel="preload" href={font} as="font" type="font/woff2" crossorigin="anonymous" />
+        {/each}
+        <link rel="preload" as="style" type="text/css" href="/console/fonts/cloud.css" />
+        <link rel="stylesheet" href={`${base}/fonts/cloud.css`} />
+    {/if}
 </svelte:head>
 
 <Root theme={resolveTheme($app.themeInUse)}>
@@ -232,7 +259,7 @@
     }
 
     .is-cloud {
-        --heading-font: 'Aeonik Pro', arial, sans-serif;
+        --heading-font: 'Aeonik Pro', 'Inter', sans-serif;
         .heading-level {
             @media #{devices.$break3open} {
                 &-1,

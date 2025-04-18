@@ -116,10 +116,10 @@
             placeholder="Search for topics"
             bind:value={search} />
         {#if Object.keys(topicResultsById).length > 0 && !emptyTopicsExists}
-            <Table.Root>
+            <Table.Root columns={1} let:root>
                 {#each Object.entries(topicResultsById) as [topicId, topic]}
-                    <Table.Row>
-                        <Table.Cell>
+                    <Table.Row.Base {root}>
+                        <Table.Cell {root}>
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Selector.Checkbox
                                     id={topicId}
@@ -133,12 +133,12 @@
                                 </span>
                             </Layout.Stack>
                         </Table.Cell>
-                    </Table.Row>
+                    </Table.Row.Base>
                 {/each}
             </Table.Root>
             <div class="u-flex u-main-space-between u-cross-center">
                 <p class="text">Total results: {totalResults}</p>
-                <PaginationInline limit={5} bind:offset sum={totalResults} hidePages />
+                <PaginationInline limit={5} bind:offset total={totalResults} hidePages />
             </div>
         {:else if search}
             <EmptySearch hidePagination {search}>

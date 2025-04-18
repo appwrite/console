@@ -14,19 +14,18 @@
     export let data: PageData;
 
     const columns = writable<Column[]>([
-        { id: '$id', title: 'Identity ID', type: 'string', show: true, width: 140 },
-        { id: 'provider', title: 'Provider', type: 'string', show: true, width: 80 },
-        { id: 'providerUid', title: 'Provider UID', type: 'string', show: false, width: 80 },
-        { id: 'providerEmail', title: 'Email', type: 'string', show: true, width: 80 },
+        { id: '$id', title: 'Identity ID', type: 'string', width: 200 },
+        { id: 'provider', title: 'Provider', type: 'string', width: 80 },
+        { id: 'providerUid', title: 'Provider UID', type: 'string', hide: true, width: 80 },
+        { id: 'providerEmail', title: 'Email', type: 'string', width: 80 },
         {
             id: 'providerAccessTokenExpiry',
             title: 'Expiry Date',
             type: 'datetime',
-            show: true,
             width: 60
         },
-        { id: '$createdAt', title: 'Created', type: 'datetime', show: true, width: 80 },
-        { id: '$updatedAt', title: 'Updated', type: 'datetime', show: false, width: 80 }
+        { id: '$createdAt', title: 'Created', type: 'datetime', width: 80 },
+        { id: '$updatedAt', title: 'Updated', type: 'datetime', hide: true, width: 80 }
     ]);
 </script>
 
@@ -49,13 +48,13 @@
             <div class="u-flex u-main-end u-gap-16 is-not-mobile">
                 <Filters query={data.query} {columns} />
                 <div>
-                    <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                    <ViewSelector view={View.Table} {columns} hideView />
                 </div>
             </div>
         </div>
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
             <div class="u-flex-basis-50-percent">
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns fullWidthMobile />
+                <ViewSelector view={View.Table} {columns} hideView />
             </div>
             <div class="u-flex-basis-50-percent">
                 <Filters query={data.query} {columns} fullWidthMobile />

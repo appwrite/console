@@ -3,14 +3,7 @@
     import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import {
-        Button,
-        Form,
-        FormList,
-        InputSwitch,
-        InputText,
-        InputTextarea
-    } from '$lib/elements/forms';
+    import { Button, Form, InputSwitch, InputText, InputTextarea } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
@@ -68,29 +61,27 @@
     <CardGrid hideFooter={!isDraft}>
         <svelte:fragment slot="title">Message</svelte:fragment>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    required
-                    id="subject"
-                    label="Subject"
-                    disabled={!isDraft}
-                    bind:value={subject}></InputText>
-                <InputTextarea
-                    required
-                    id="message"
-                    label="Message"
-                    disabled={!isDraft}
-                    bind:value={content}></InputTextarea>
-                <InputSwitch
-                    label="HTML mode"
-                    id="html"
-                    bind:value={html}
-                    on:change={() => trackEvent(Submit.MessagingUpdateHtmlMode)}>
-                    <svelte:fragment slot="description">
-                        Enable the HTML mode if your message contains HTML tags.
-                    </svelte:fragment>
-                </InputSwitch>
-            </FormList>
+            <InputText
+                required
+                id="subject"
+                label="Subject"
+                disabled={!isDraft}
+                bind:value={subject}></InputText>
+            <InputTextarea
+                required
+                id="message"
+                label="Message"
+                disabled={!isDraft}
+                bind:value={content}></InputTextarea>
+            <InputSwitch
+                label="HTML mode"
+                id="html"
+                bind:value={html}
+                on:change={() => trackEvent(Submit.MessagingUpdateHtmlMode)}>
+                <svelte:fragment slot="description">
+                    Enable the HTML mode if your message contains HTML tags.
+                </svelte:fragment>
+            </InputSwitch>
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button {disabled} submit>Update</Button>

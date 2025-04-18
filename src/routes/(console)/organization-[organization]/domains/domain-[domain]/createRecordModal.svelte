@@ -12,23 +12,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { recordTypes } from './store';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-
-    type RecordType =
-        | 'A'
-        | 'AAAA'
-        | 'CNAME'
-        | 'MX'
-        | 'TXT'
-        | 'NS'
-        | 'SRV'
-        | 'CAA'
-        | 'PTR'
-        | 'HTTPS'
-        | 'ALIAS';
+    import type { RecordType } from '$lib/stores/domains';
+    import { createRecord } from '$lib/helpers/domains';
 
     export let show = false;
 
@@ -41,105 +30,23 @@
     let error = '';
 
     async function handleSubmit() {
+        const record = {
+            name,
+            type,
+            value,
+            ttl,
+            priority,
+            comment
+        };
         try {
-            switch (type) {
-                case 'A':
-                    await sdk.forConsole.domains.createRecordA(
-                        $page.params.domain,
-                        name,
-                        value,
-                        ttl,
-                        comment || undefined
-                    );
-
-                    break;
-                case 'AAAA':
-                    await sdk.forConsole.domains.createRecordAAAA(
-                        $page.params.domain,
-                        name,
-                        value,
-                        ttl,
-                        comment
-                    );
-
-                    break;
-                case 'CNAME':
-                    await sdk.forConsole.domains.createRecordCNAME(
-                        $page.params.domain,
-                        name,
-                        value,
-                        ttl,
-                        comment
-                    );
-
-                    break;
-                case 'MX':
-                    await sdk.forConsole.domains.createRecordMX(
-                        $page.params.domain,
-                        name,
-                        value,
-                        ttl,
-                        priority,
-                        comment
-                    );
-
-                    break;
-                case 'TXT':
-                    await sdk.forConsole.domains.createRecordTXT(
-                        $page.params.domain,
-                        name,
-                        value,
-                        ttl,
-                        comment
-                    );
-
-                    break;
-                case 'NS':
-                    await sdk.forConsole.domains.createRecordNS(
-                        $page.params.domain,
-                        name,
-                        value,
-                        ttl,
-                        comment
-                    );
-
-                    break;
-
-                case 'CAA':
-                    await sdk.forConsole.domains.createRecordCAA(
-                        $page.params.domain,
-                        name,
-                        value,
-                        ttl,
-                        comment
-                    );
-
-                    break;
-                case 'HTTPS':
-                    await sdk.forConsole.domains.createRecordHTTPS(
-                        $page.params.domain,
-                        name,
-                        value,
-                        ttl,
-                        comment
-                    );
-
-                    break;
-                case 'ALIAS':
-                    await sdk.forConsole.domains.createRecordAlias(
-                        $page.params.domain,
-                        name,
-                        value,
-                        ttl,
-                        comment
-                    );
-
-                    break;
-
-                default:
-                    break;
-            }
-
+            await createRecord(record, page.params.domain);
+            name = '';
+            type = 'A';
+            value = '';
+            ttl = 3600;
+            priority = undefined;
+            comment = '';
+            error = '';
             show = false;
             invalidate(Dependencies.DOMAINS);
             addNotification({

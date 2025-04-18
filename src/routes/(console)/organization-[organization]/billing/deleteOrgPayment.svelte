@@ -1,13 +1,12 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import Confirm from '$lib/components/confirm.svelte';
+    import { Typography } from '@appwrite.io/pink-svelte';
 
     export let showDelete = false;
     export let isBackup = false;
@@ -57,10 +56,12 @@
 
 {#if disabled}
     <Confirm title="Unable to delete payment method" bind:open={showDelete} canDelete={false}>
-        The {isBackup ? 'backup' : 'default'} payment method cannot be removed as
-        <b>{$organization?.name}</b>
-        has an upcoming invoice. To proceed, set a {isBackup ? 'default' : 'backup'} or add a new
-        {isBackup ? 'backup' : 'default'} payment method.
+        <Typography.Text>
+            The {isBackup ? 'backup' : 'default'} payment method cannot be removed as
+            <b>{$organization?.name}</b>
+            has an upcoming invoice. To proceed, set a {isBackup ? 'default' : 'backup'} or add a new
+            {isBackup ? 'backup' : 'default'} payment method.
+        </Typography.Text>
     </Confirm>
 {:else}
     <Confirm
@@ -68,6 +69,8 @@
         title="Remove payment method"
         bind:open={showDelete}
         bind:error>
-        Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?
+        <Typography.Text>
+            Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?
+        </Typography.Text>
     </Confirm>
 {/if}

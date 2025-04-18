@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Card, Divider, Empty, Layout } from '@appwrite.io/pink-svelte';
+    import { Card, Divider, Empty, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import SiteCard from '../(components)/siteCard.svelte';
     import DomainsOverview from './domainsOverview.svelte';
     import DeploymentsOverview from './deploymentsOverview.svelte';
@@ -8,23 +8,19 @@
     import { protocol } from '$routes/(console)/store';
     import InstantRollbackDomain from './instantRollbackModal.svelte';
     import { app } from '$lib/stores/app';
-    import EmptyDeploymentDark from './empty-deployment-dark.svg';
-    import EmptyDeploymentLight from './empty-deployment-light.svg';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
+    import { base } from '$app/paths';
 
     export let data;
     let showRollback = false;
 
-    let unsubscribe: { (): void };
-
     onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`sites.${$page.params.site}.deployments.*`)) {
-                console.log('test');
+        return sdk.forConsole.client.subscribe('console', (response) => {
+            if (response.events.includes(`sites.${page.params.site}.deployments.*`)) {
                 invalidate(Dependencies.SITE);
             }
         });
@@ -32,7 +28,7 @@
 
     // $: console.log(data.site);
     $: console.log(data.deployment);
-    // $: console.log(data.deploymentList);
+    $: console.log(data.deploymentList);
     // $: console.log(data.proxyRuleList);
 </script>
 
@@ -48,17 +44,29 @@
                             Visit
                         </Button>
                     {/if}
-                    <!-- TODO: disable when disabled={data.hasProdReadyDeployments} -->
-                    <Button secondary on:click={() => (showRollback = true)}>
-                        Instant rollback
-                    </Button>
+                    <Tooltip disabled={data.hasProdReadyDeployments}>
+                        <div>
+                            <Button
+                                secondary
+                                on:click={() => (showRollback = true)}
+                                disabled={!data.hasProdReadyDeployments}>
+                                Instant rollback
+                            </Button>
+                        </div>
+                        <span slot="tooltip">
+                            Rollback is possible only if there is a deployment that is ready and was
+                            active.
+                        </span>
+                    </Tooltip>
                 </svelte:fragment>
             </SiteCard>
         {:else if data.deployment?.status === 'building'}
             <Card.Base padding="none">
                 <Empty
                     title="Deployment is still building"
-                    src={$app.themeInUse === 'dark' ? EmptyDeploymentDark : EmptyDeploymentLight}>
+                    src={$app.themeInUse === 'dark'
+                        ? `${base}/images/empty-deployment-dark.svg`
+                        : `${base}/images/empty-deployment-light.svg`}>
                     <span slot="description">
                         Your build is running. When it completes, this page will automatically
                         update with the latest deployment.
@@ -69,7 +77,9 @@
             <Card.Base padding="none">
                 <Empty
                     title="There is no active deployment"
-                    src={$app.themeInUse === 'dark' ? EmptyDeploymentDark : EmptyDeploymentLight}>
+                    src={$app.themeInUse === 'dark'
+                        ? `${base}/images/empty-deployment-dark.svg`
+                        : `${base}/images/empty-deployment-light.svg`}>
                     <span slot="description">
                         Deploy your site to get started. Once deployed, you'll see your latest build
                         details here.
@@ -80,7 +90,6 @@
 
         <Divider />
 
-        <!-- TODO: mobile view table doesn't shrink -->
         <Layout.GridFraction gap="xxl" start={1} end={2} breakpoint="m">
             <DomainsOverview proxyRuleList={data.proxyRuleList} />
             <DeploymentsOverview
@@ -95,5 +104,6 @@
     <InstantRollbackDomain
         bind:show={showRollback}
         deployment={data.deployment}
-        proxyRuleList={data.proxyRuleList} />
+        proxyRuleList={data.proxyRuleList}
+        prodReadyDeployments={data.prodReadyDeployments} />
 {/if}

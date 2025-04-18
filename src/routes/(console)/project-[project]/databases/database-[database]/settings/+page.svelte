@@ -1,8 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { BoxAvatar, Card, CardGrid } from '$lib/components';
+    import { BoxAvatar, CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, Helper, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -39,7 +39,7 @@
 
     async function updateName() {
         try {
-            await sdk.forProject.databases.update($page.params.database, databaseName);
+            await sdk.forProject.databases.update(page.params.database, databaseName);
             await invalidate(Dependencies.DATABASE);
             addNotification({
                 message: 'Name has been updated',
@@ -101,7 +101,7 @@
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
                         <span class="u-flex u-gap-8">
                             {#await loadCollectionCount()}
-                                <div class="loader is-small" />
+                                <div class="loader is-small"></div>
                             {:then count}
                                 {count}
                             {/await}

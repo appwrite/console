@@ -5,7 +5,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { Confirm } from '$lib/components';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import type { DnsRecord } from '$lib/sdk/domains';
 
     export let show = false;
@@ -15,7 +15,7 @@
 
     async function deleteDomain() {
         try {
-            await sdk.forConsole.domains.deleteRecord($page.params.domain, selectedRecord.$id);
+            await sdk.forConsole.domains.deleteRecord(page.params.domain, selectedRecord.$id);
             await invalidate(Dependencies.DOMAINS);
             show = false;
             addNotification({

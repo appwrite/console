@@ -76,24 +76,26 @@
         <Typography.Title size="l">Welcome to Appwrite</Typography.Title>
     </div>
     <div class="grid" class:remove-shadow={removeShadow}>
-        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 1; " />
-        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 2; " />
-        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 3; " />
-        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 4; " />
-        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 5; " />
-        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 6; " />
-        <div class="border-right is-not-mobile" style="grid-row: 1 / 6; grid-column-start: 7; " />
-        <div class="border-right is-not-mobile" style="grid-row: 1 / 6; grid-column-start: 8; " />
+        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 1; "></div>
+        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 2; "></div>
+        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 3; "></div>
+        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 4; "></div>
+        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 5; "></div>
+        <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 6; "></div>
+        <div class="border-right is-not-mobile" style="grid-row: 1 / 6; grid-column-start: 7; ">
+        </div>
+        <div class="border-right is-not-mobile" style="grid-row: 1 / 6; grid-column-start: 8; ">
+        </div>
 
-        <div class="border-bottom" style="grid-row-start: 1;" />
-        <div class="border-bottom" style="grid-row-start: 2;" />
-        <div class="border-bottom" style="grid-row-start: 3;" />
-        <div class="border-bottom" style="grid-row-start: 4;" />
+        <div class="border-bottom" style="grid-row-start: 1;"></div>
+        <div class="border-bottom" style="grid-row-start: 2;"></div>
+        <div class="border-bottom" style="grid-row-start: 3;"></div>
+        <div class="border-bottom" style="grid-row-start: 4;"></div>
 
-        <div class="vertical-fade-top" style="grid-row-start: 1; " />
-        <div class="vertical-fade-bottom" style="grid-row-start: 5; " />
-        <div class="horizontal-fade-left" style="grid-row: 1 / 6; grid-column-start: 1;" />
-        <div class="horizontal-fade-right" style="grid-row: 1 / 6; " />
+        <div class="vertical-fade-top" style="grid-row-start: 1; "></div>
+        <div class="vertical-fade-bottom" style="grid-row-start: 5; "></div>
+        <div class="horizontal-fade-left" style="grid-row: 1 / 6; grid-column-start: 1;"></div>
+        <div class="horizontal-fade-right" style="grid-row: 1 / 6; "></div>
 
         <div class="icon icon1" style:--delay={`${initialDelay}s`}>
             <div class="icon-container">
@@ -197,7 +199,7 @@
 <style lang="scss">
     :global(.theme-dark) {
         --icon-content-background-color: var(--bgcolor-neutral-primary, #1d1d21);
-        --icon-content-border-color: var(--color-overlay-skeleton);
+        --icon-content-border-color: var(--overlay-skeleton);
         --icon-container-background-color: #242427;
         --icon-container-border-color: rgba(255, 255, 255, 0.02);
         --box-shadow: none;
@@ -267,6 +269,7 @@
         transition: opacity 0.5s var(--animation-type);
 
         @media (min-width: 768px) {
+            margin-top: 50px;
             margin-bottom: 50px;
         }
     }

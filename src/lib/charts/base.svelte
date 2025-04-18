@@ -88,7 +88,7 @@
 
 <svelte:window on:resize={onResize} />
 
-<div class="echart" bind:this={container} />
+<div class="echart" bind:this={container}></div>
 
 <style>
     .echart {

@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { AvatarInitials, DropList, DropListItem, PaginationWithLimit } from '$lib/components';
+    import { AvatarInitials, PaginationWithLimit } from '$lib/components';
     import { Button as ConsoleButton } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -49,7 +49,7 @@
                 member.userEmail,
                 undefined,
                 undefined,
-                `${$page.url.origin}${base}/invite`,
+                `${page.url.origin}${base}/invite`,
                 member.userName || undefined
             );
             addNotification({
@@ -76,11 +76,19 @@
         </ConsoleButton>
     </Layout.Stack>
 
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Name</Table.Header.Cell>
-            <Table.Header.Cell>Email</Table.Header.Cell>
-            <Table.Header.Cell>
+    <Table.Root
+        let:root
+        columns={[
+            { id: 'name' },
+            { id: 'email' },
+            { id: 'roles' },
+            { id: 'mfa' },
+            { id: 'actions', hide: !$isOwner, width: 40 }
+        ]}>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell column="name" {root}>Name</Table.Header.Cell>
+            <Table.Header.Cell column="email" {root}>Email</Table.Header.Cell>
+            <Table.Header.Cell column="roles" {root}>
                 <Layout.Stack direction="row" gap="xxxs" alignItems="center">
                     Roles
                     <Popover let:toggle>
@@ -91,14 +99,12 @@
                     </Popover>
                 </Layout.Stack>
             </Table.Header.Cell>
-            <Table.Header.Cell>2FA</Table.Header.Cell>
-            {#if $isOwner}
-                <Table.Header.Cell width="40px" />
-            {/if}
+            <Table.Header.Cell column="mfa" {root}>2FA</Table.Header.Cell>
+            <Table.Header.Cell column="actions" {root} />
         </svelte:fragment>
         {#each data.organizationMembers.memberships as member, index}
-            <Table.Row>
-                <Table.Cell width="40%">
+            <Table.Row.Base {root}>
+                <Table.Cell column="name" {root}>
                     <Layout.Stack direction="row" alignItems="center" gap="s">
                         <AvatarInitials size="xs" name={member.userName} />
                         <span class="u-trim">
@@ -109,59 +115,57 @@
                         {/if}
                     </Layout.Stack>
                 </Table.Cell>
-                <Table.Cell width="30%">
+                <Table.Cell column="email" {root}>
                     {member.userEmail}
                 </Table.Cell>
-                <Table.Cell width="20%">
+                <Table.Cell column="roles" {root}>
                     {member.roles.map((role) => getRoleLabel(role)).join(', ')}
                 </Table.Cell>
-                <Table.Cell width="10%">
+                <Table.Cell column="mfa" {root}>
                     <Badge
                         size="xs"
                         type={member.mfa ? 'success' : undefined}
                         variant="secondary"
                         content={member.mfa ? 'Enabled' : 'Disabled'} />
                 </Table.Cell>
-                {#if $isOwner}
-                    <Table.Cell>
-                        <Popover let:toggle padding="none" placement="bottom-end">
-                            <Button.Button icon variant="ghost" size="s" on:click={toggle}>
-                                <Icon size="s" icon={IconDotsHorizontal} />
-                            </Button.Button>
-                            <div style:min-width="232px" slot="tooltip">
-                                <ActionMenu.Root>
+                <Table.Cell column="actions" {root}>
+                    <Popover let:toggle padding="none" placement="bottom-end">
+                        <Button.Button icon variant="ghost" size="s" on:click={toggle}>
+                            <Icon size="s" icon={IconDotsHorizontal} />
+                        </Button.Button>
+                        <div style:min-width="232px" slot="tooltip">
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconPencil}
+                                    on:click={() => {
+                                        selectedMember = member;
+                                        showEdit = true;
+                                        showDropdown[index] = false;
+                                    }}>
+                                    Edit role
+                                </ActionMenu.Item.Button>
+                                {#if member.invited && !member.joined}
                                     <ActionMenu.Item.Button
-                                        trailingIcon={IconPencil}
+                                        trailingIcon={IconRefresh}
                                         on:click={() => {
-                                            selectedMember = member;
-                                            showEdit = true;
-                                            showDropdown[index] = false;
+                                            resend(member);
                                         }}>
-                                        Edit role
+                                        Resend
                                     </ActionMenu.Item.Button>
-                                    {#if member.invited && !member.joined}
-                                        <ActionMenu.Item.Button
-                                            trailingIcon={IconRefresh}
-                                            on:click={() => {
-                                                resend(member);
-                                            }}>
-                                            Resend
-                                        </ActionMenu.Item.Button>
-                                    {/if}
-                                    <ActionMenu.Item.Button
-                                        trailingIcon={IconTrash}
-                                        on:click={() => {
-                                            selectedMember = member;
-                                            showDelete = true;
-                                        }}>
-                                        Remove
-                                    </ActionMenu.Item.Button>
-                                </ActionMenu.Root>
-                            </div>
-                        </Popover>
-                    </Table.Cell>
-                {/if}
-            </Table.Row>
+                                {/if}
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconTrash}
+                                    on:click={() => {
+                                        selectedMember = member;
+                                        showDelete = true;
+                                    }}>
+                                    Remove
+                                </ActionMenu.Item.Button>
+                            </ActionMenu.Root>
+                        </div>
+                    </Popover>
+                </Table.Cell>
+            </Table.Row.Base>
         {/each}
     </Table.Root>
 

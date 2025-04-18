@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     export function badgeTypeDeployment(status: string) {
         switch (status) {
             case 'failed':
@@ -16,63 +16,42 @@
 </script>
 
 <script lang="ts">
-    import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app';
-    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { Badge, Layout, Logs, Typography } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
+    import { Badge, Card, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import LogsTimer from './logsTimer.svelte';
 
-    export let site: Models.Site;
-    export let deployment: Models.Deployment;
-    export let hideTitle = false;
-    export let hideScrollButtons = false;
+    let {
+        deployment = $bindable(),
+        hideTitle = false,
+        hideScrollButtons = false,
+        height = 'auto',
+        fullHeight = false,
+        emptyCopy = 'No logs available'
+    }: {
+        deployment: Models.Deployment;
+        hideTitle?: boolean;
+        hideScrollButtons?: boolean;
+        height?: string;
+        fullHeight?: boolean;
+        emptyCopy?: string;
+    } = $props();
 
-    let { status, buildLogs } = deployment;
-
-    onMount(() => {
-        const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (
-                response.events.includes(
-                    `sites.${deployment.resourceId}.deployments.${deployment.$id}.update`
-                )
-            ) {
-                const res = response.payload as Partial<Models.Deployment> & { logs: string };
-                console.log(res);
-                status = res.status;
-                // Models.Deployment has no `logs`, the payload sends `logs` though
-                buildLogs = res.logs;
-
-                if (status === 'ready') {
-                    goto(
-                        `${base}/project-${$page.params.project}/sites/create-site/finish?site=${site.$id}`
-                    );
-                }
-            }
-        });
-        return () => unsubscribe();
-    });
-
-    // async function cancelDeployment() {
-    //     try {
-    //         await sdk.forProject.sites.updateDeploymentBuild(deployment.resourceId, deployment.$id);
-
-    //         await invalidate(Dependencies.DEPLOYMENTS);
-    //         addNotification({
-    //             type: 'success',
-    //             message: `Deployment has been canceled`
-    //         });
-    //     } catch (error) {
-    //         addNotification({
-    //             type: 'error',
-    //             message: error.message
-    //         });
-    //     }
-    // }
+    function setCopy() {
+        if (deployment.status === 'failed') {
+            return 'Your deployment has failed.';
+        } else if (deployment.status === 'building') {
+            //Do not remove empty space before the string it's an invisible character
+            return '[37mPreparing for build ... [0m\n';
+        } else if (deployment.status === 'waiting') {
+            return '[37mPreparing for build ... [0m\n';
+        } else if (deployment.status === 'processing') {
+            return '[37mPreparing for build ... [0m\n';
+        } else {
+            return emptyCopy;
+        }
+    }
 </script>
 
 <Layout.Stack gap="xl">
@@ -83,23 +62,29 @@
                     Deployment logs
                 </Typography.Text>
                 <Badge
-                    content={capitalize(status)}
+                    content={capitalize(deployment.status)}
                     size="xs"
                     variant="secondary"
-                    type={badgeTypeDeployment(status)} />
+                    type={badgeTypeDeployment(deployment.status)} />
             </Layout.Stack>
-            <LogsTimer {status} {deployment} />
+            <LogsTimer status={deployment.status} {deployment} />
         </Layout.Stack>
     {/if}
-    {#key buildLogs}
-        <Logs
-            showScrollButton={!hideScrollButtons}
-            logs={buildLogs || 'No logs available yet...'}
-            bind:theme={$app.themeInUse} />
-    {/key}
-    <!-- {#if ['processing', 'building'].includes(status)}
-        <Layout.Stack alignItems="flex-end">
-            <Button size="s" text on:click={cancelDeployment}>Cancel deployment</Button>
-        </Layout.Stack>
-    {/if} -->
+
+    {#if ['waiting', 'processing'].includes(deployment.status) || (deployment.status === 'building' && !deployment?.buildLogs?.length)}
+        <Card.Base variant="secondary">
+            <Layout.Stack direction="row" justifyContent="center" gap="s">
+                <Spinner /> Waiting for build to start...
+            </Layout.Stack>
+        </Card.Base>
+    {:else}
+        {#key deployment.buildLogs}
+            <Logs
+                {fullHeight}
+                {height}
+                showScrollButton={!hideScrollButtons}
+                logs={deployment.buildLogs || setCopy()}
+                bind:theme={$app.themeInUse} />
+        {/key}
+    {/if}
 </Layout.Stack>

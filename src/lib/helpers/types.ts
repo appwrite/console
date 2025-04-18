@@ -1,5 +1,19 @@
 import type { Writable } from 'svelte/store';
 
+export type PinkColumn = {
+    id: string;
+    width?:
+        | {
+              min: number;
+              max: number;
+          }
+        | {
+              min: number;
+          }
+        | number;
+    hide?: boolean;
+};
+
 export type WritableValue<T> = T extends Writable<infer U> ? U : never;
 
 export function isHTMLElement(el: unknown): el is HTMLElement {
@@ -10,7 +24,6 @@ export function isHTMLInputElement(el: unknown): el is HTMLInputElement {
     return el instanceof HTMLInputElement;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type Prettify<T> = T & {};
 
 const columnTypes = [
@@ -23,21 +36,13 @@ const columnTypes = [
     'enum'
 ] as const;
 export type ColumnType = (typeof columnTypes)[number];
-export type Column = {
-    id: string;
+export type Column = PinkColumn & {
     title: string;
     type: ColumnType;
-    /**
-     * Set to false to hide by default
-     */
-    show: boolean;
-    width?: number;
-    /**
-     * Set to false to disable filtering for this column
-     */
     filter?: boolean;
     array?: boolean;
     format?: string;
+    exclude?: boolean;
     elements?: string[] | { value: string | number; label: string }[];
 };
 

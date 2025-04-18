@@ -1,8 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import { Confirm } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -13,7 +13,7 @@
     import { Runtime } from '@appwrite.io/console';
 
     export let show = false;
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     let error = '';
 
     const dispatch = createEventDispatcher();
@@ -61,7 +61,7 @@
     }
 </script>
 
-<Modal title="Disconnect Git repository" bind:show bind:error onSubmit={handleSubmit}>
+<Confirm title="Disconnect Git repository" bind:open={show} bind:error onSubmit={handleSubmit}>
     <p data-private>
         Are you sure you want to disconnect <b>{$func.name}</b>? This will affect future deployments
         to this function.
@@ -70,4 +70,4 @@
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button secondary submit>Disconnect</Button>
     </svelte:fragment>
-</Modal>
+</Confirm>

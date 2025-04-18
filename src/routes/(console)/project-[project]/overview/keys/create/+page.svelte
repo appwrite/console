@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { InputText } from '$lib/elements/forms/index.js';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
@@ -27,7 +27,7 @@
     async function create() {
         try {
             const { $id } = await sdk.forConsole.projects.createKey(
-                $page.params.project,
+                page.params.project,
                 name,
                 scopes,
                 expire || undefined
@@ -39,7 +39,7 @@
             trackEvent(Submit.KeyCreate, {
                 scopes: scopes
             });
-            goto(`${base}/project-${$page.params.project}/overview/keys/${$id}`);
+            goto(`${base}/project-${page.params.project}/overview/keys/${$id}`);
             addNotification({
                 message: `API key has been created`,
                 type: 'success'
@@ -56,7 +56,7 @@
 
 <Wizard
     title="Create API key"
-    href={`${base}/project-${$page.params.project}/overview/keys/`}
+    href={`${base}/project-${page.params.project}/overview/keys/`}
     bind:showExitModal
     column
     confirmExit>

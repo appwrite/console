@@ -11,8 +11,7 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Delete function</svelte:fragment>
-    The function will be permanently deleted, including all deployments associated with it. This action
-    is irreversible.
+    The function will be permanently deleted, including all deployments associated with it.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

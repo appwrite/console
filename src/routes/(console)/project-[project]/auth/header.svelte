@@ -1,13 +1,13 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
     import { canWriteProjects } from '$lib/stores/roles';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     const path = `${base}/project-${projectId}/auth`;
     const tabs = [
         {
@@ -59,7 +59,7 @@
             <Tab
                 href={tab.href}
                 event={tab.event}
-                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}>
+                selected={isTabSelected(tab, page.url.pathname, path, tabs)}>
                 {tab.title}
             </Tab>
         {/each}

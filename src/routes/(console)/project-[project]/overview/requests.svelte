@@ -14,7 +14,11 @@
         Popover,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChartSquareBar,
+        IconChevronDown,
+        IconChevronUp
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let period: UsagePeriods;
 
@@ -26,54 +30,53 @@
     }>;
 </script>
 
-<Layout.Stack justifyContent="space-between" direction="row" alignItems="flex-start">
-    <div>
-        <Typography.Title>
-            {formatNum(totalMetrics($usage?.requests))}
-        </Typography.Title>
-        <Typography.Text>Requests</Typography.Text>
-    </div>
-    <Popover let:toggle padding="none" let:showing>
-        <Button.Button on:click={toggle} variant="extra-compact">
-            {period}
-            <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" />
-        </Button.Button>
-        <ActionMenu.Root slot="tooltip">
-            <ActionMenu.Item.Button on:click={() => dispatch('change', '24h')}
-                >24h</ActionMenu.Item.Button>
-            <ActionMenu.Item.Button on:click={() => dispatch('change', '30d')}
-                >30d</ActionMenu.Item.Button>
-            <ActionMenu.Item.Button on:click={() => dispatch('change', '90d')}
-                >90d</ActionMenu.Item.Button>
-        </ActionMenu.Root>
-    </Popover>
-</Layout.Stack>
+<Layout.Stack gap="l">
+    <Layout.Stack justifyContent="space-between" direction="row" alignItems="flex-start">
+        <Layout.Stack gap="xxs">
+            <Typography.Title>
+                {formatNum(totalMetrics($usage?.requests))}
+            </Typography.Title>
+            <Typography.Text>Requests</Typography.Text>
+        </Layout.Stack>
+        <Popover let:toggle padding="none" let:showing>
+            <Button.Button on:click={toggle} variant="extra-compact">
+                {period}
+                <Icon icon={showing ? IconChevronUp : IconChevronDown} slot="end" />
+            </Button.Button>
+            <ActionMenu.Root slot="tooltip">
+                <ActionMenu.Item.Button on:click={() => dispatch('change', '24h')}
+                    >24h</ActionMenu.Item.Button>
+                <ActionMenu.Item.Button on:click={() => dispatch('change', '30d')}
+                    >30d</ActionMenu.Item.Button>
+                <ActionMenu.Item.Button on:click={() => dispatch('change', '90d')}
+                    >90d</ActionMenu.Item.Button>
+            </ActionMenu.Root>
+        </Popover>
+    </Layout.Stack>
 
-{#if totalMetrics($usage?.requests) !== 0}
-    <div style="height: 12rem;">
-        <LineChart
-            options={{
-                yAxis: {
-                    axisLabel: {
-                        formatter: formatNum
+    {#if totalMetrics($usage?.requests) !== 0}
+        <div style="height: 12rem;">
+            <LineChart
+                options={{
+                    yAxis: {
+                        axisLabel: {
+                            formatter: formatNum
+                        }
                     }
-                }
-            }}
-            series={[
-                {
-                    name: 'Requests',
-                    data: [...requests.map((e) => [e.date, e.value])]
-                }
-            ]} />
-    </div>
-{:else}
-    <Card isDashed>
-        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-            <span
-                class="icon-chart-square-bar text-large"
-                aria-hidden="true"
-                style="font-size: 32px;" />
-            <p class="u-bold">No data to show</p>
+                }}
+                series={[
+                    {
+                        name: 'Requests',
+                        data: [...requests.map((e) => [e.date, e.value])]
+                    }
+                ]} />
         </div>
-    </Card>
-{/if}
+    {:else}
+        <Card isDashed>
+            <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
+                <Icon icon={IconChartSquareBar} size="l" />
+                <Typography.Text variant="m-600">No data to show</Typography.Text>
+            </Layout.Stack>
+        </Card>
+    {/if}
+</Layout.Stack>

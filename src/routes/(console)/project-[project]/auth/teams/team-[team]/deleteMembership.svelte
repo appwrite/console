@@ -1,11 +1,9 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
     import Confirm from '$lib/components/confirm.svelte';
-    import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { Typography } from '@appwrite.io/pink-svelte';
@@ -28,7 +26,7 @@
             dispatch('deleted');
             trackEvent(Submit.MemberDelete);
             await goto(
-                `${base}/project-${$page.params.project}/auth/teams/team-${selectedMembership.teamId}/members`
+                `${base}/project-${page.params.project}/auth/teams/team-${selectedMembership.teamId}/members`
             );
         } catch (e) {
             error = e.message;

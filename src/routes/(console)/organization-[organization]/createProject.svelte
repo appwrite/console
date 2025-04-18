@@ -3,8 +3,7 @@
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { InputText, Button, FormList } from '$lib/elements/forms';
+    import { InputText, Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Region } from '@appwrite.io/console';
@@ -18,10 +17,10 @@
     const dispatch = createEventDispatcher();
 
     let id: string;
-    let name: string;
-    let showCustomId = false;
     let error: string;
+    let showCustomId = false;
     let disabled: boolean = false;
+    let name: string = 'Appwrite project';
 
     async function create() {
         try {
@@ -62,13 +61,7 @@
                 </Tag>
             </span>
         {:else}
-            <CustomId
-                autofocus
-                bind:show={showCustomId}
-                name="Project"
-                isProject
-                bind:id
-                fullWidth />
+            <CustomId autofocus bind:show={showCustomId} name="Project" isProject bind:id />
         {/if}
     </Layout.Stack>
 

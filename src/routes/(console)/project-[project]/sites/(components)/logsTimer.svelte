@@ -10,16 +10,23 @@
 </script>
 
 <Layout.Stack direction="row" alignItems="center" inline>
-    {#if ['processing', 'building'].includes(status)}
+    {#if ['processing'].includes(status)}
         <Typography.Code color="--fgcolor-neutral-secondary">
             <Layout.Stack direction="row" alignItems="center" inline>
-                <p use:timer={{ start: deployment.$createdAt }} />
+                0s
+                <Spinner size="s" />
+            </Layout.Stack>
+        </Typography.Code>
+    {:else if ['building'].includes(status)}
+        <Typography.Code color="--fgcolor-neutral-secondary">
+            <Layout.Stack direction="row" alignItems="center" inline>
+                <p use:timer={{ start: deployment.$createdAt }}></p>
                 <Spinner size="s" />
             </Layout.Stack>
         </Typography.Code>
     {:else}
         <Typography.Code color="--fgcolor-neutral-secondary">
-            {formatTimeDetailed(deployment.buildTime)}
+            {formatTimeDetailed(deployment.buildDuration)}
         </Typography.Code>
     {/if}
 </Layout.Stack>

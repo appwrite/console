@@ -18,11 +18,13 @@
     import { IconDownload, IconPlus, IconUpload } from '@appwrite.io/pink-icons-svelte';
     import { ViewSelector } from '$lib/components';
     import { View } from '$lib/helpers/load';
-    import { columns } from './store';
+    import { columns, presets } from './store';
     import CreateRecordModal from './createRecordModal.svelte';
     import Table from './table.svelte';
     import AddPresetModal from './addPresetModal.svelte';
     import ImportRecordModal from './importRecordModal.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let data;
 
@@ -31,7 +33,31 @@
     let showImportModal = false;
     let selectedPreset = '';
 
-    const presets = ['Zoho', 'Mailgun', 'Outlook', 'Proton Mail', 'iCloud', 'Google Workspace'];
+    async function downloadRecords() {
+        try {
+            const zone = await sdk.forConsole.domains.getZone(data.domain.$id);
+
+            if ('message' in zone) {
+                const blob = new Blob([zone.message as string], { type: 'text/plain' });
+
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = `${data.domain.domain}.txt`;
+
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(downloadLink.href);
+            } else {
+                throw new Error('Failed to download records');
+            }
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
 </script>
 
 <Container>
@@ -47,14 +73,14 @@
                             Import zone file
                         </Button>
                         <Tooltip>
-                            <PinkButton.Button variant="secondary" icon>
+                            <PinkButton.Button variant="secondary" icon on:click={downloadRecords}>
                                 <Icon icon={IconDownload} size="s" />
                             </PinkButton.Button>
                             <svelte:fragment slot="tooltip">Export as .txt</svelte:fragment>
                         </Tooltip>
                     </Layout.Stack>
                     <Layout.Stack direction="row" gap="s" inline>
-                        <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                        <ViewSelector view={View.Table} {columns} hideView />
                         <Popover let:toggle padding="none">
                             <Button secondary on:click={toggle}>Add preset</Button>
                             <svelte:fragment slot="tooltip" let:toggle>

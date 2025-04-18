@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Empty, Id } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
@@ -22,7 +22,7 @@
     let showFailed = false;
     let selectedWebhook: Models.Webhook;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     $: $updateCommandGroupRanks({ webhooks: 20, domains: 10 });
 </script>
@@ -45,63 +45,48 @@
     </Layout.Stack>
 
     {#if data.webhooks.total}
-        <Table.Root>
-            <svelte:fragment slot="header">
-                {#each $columns as column}
-                    {#if column.show}
-                        <Table.Header.Cell width={column.width + 'px'}
-                            >{column.title}</Table.Header.Cell>
-                    {/if}
+        <Table.Root columns={$columns} let:root>
+            <svelte:fragment slot="header" let:root>
+                {#each $columns as { id, title }}
+                    <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
                 {/each}
             </svelte:fragment>
             {#each data.webhooks.webhooks as webhook}
-                <Table.Link href={`${base}/project-${projectId}/settings/webhooks/${webhook.$id}`}>
+                <Table.Row.Link
+                    {root}
+                    href={`${base}/project-${projectId}/settings/webhooks/${webhook.$id}`}>
                     {#each $columns as column (column.id)}
-                        {#if column.show}
+                        <Table.Cell column={column.id} {root}>
                             {#if column.id === '$id'}
                                 {#key $columns}
-                                    <Table.Cell>
-                                        <Id value={webhook.$id}>{webhook.$id}</Id>
-                                    </Table.Cell>
+                                    <Id value={webhook.$id}>{webhook.$id}</Id>
                                 {/key}
                             {:else if column.id === 'events'}
-                                <Table.Cell>
-                                    {webhook.events.length}
-                                </Table.Cell>
+                                {webhook.events.length}
                             {:else if column.type === 'datetime'}
-                                <Table.Cell>
-                                    {#if !webhook[column.id]}
-                                        -
-                                    {:else}
-                                        {toLocaleDateTime(webhook[column.id])}
-                                    {/if}
-                                </Table.Cell>
+                                {webhook[column.id] ? toLocaleDateTime(webhook[column.id]) : '-'}
                             {:else if column.id === 'enabled'}
-                                <Table.Cell>
-                                    <Layout.Stack direction="row" gap="s" alignItems="normal">
-                                        <Status
-                                            label={webhook.enabled ? 'Enabled' : 'Disabled'}
-                                            status={webhook.enabled ? 'complete' : 'failed'} />
+                                <Layout.Stack direction="row" gap="s" alignItems="normal">
+                                    <Status
+                                        label={webhook.enabled ? 'Enabled' : 'Disabled'}
+                                        status={webhook.enabled ? 'complete' : 'failed'} />
 
-                                        {#if webhook.enabled === false}
-                                            <Link.Button
-                                                variant="muted"
-                                                on:click={(e) => {
-                                                    e.preventDefault();
-                                                    selectedWebhook = webhook;
-                                                    showFailed = true;
-                                                }}>Details</Link.Button>
-                                        {/if}
-                                    </Layout.Stack>
-                                </Table.Cell>
+                                    {#if webhook.enabled === false}
+                                        <Link.Button
+                                            variant="muted"
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                selectedWebhook = webhook;
+                                                showFailed = true;
+                                            }}>Details</Link.Button>
+                                    {/if}
+                                </Layout.Stack>
                             {:else}
-                                <Table.Cell>
-                                    {webhook[column.id]}
-                                </Table.Cell>
+                                {webhook[column.id]}
                             {/if}
-                        {/if}
+                        </Table.Cell>
                     {/each}
-                </Table.Link>
+                </Table.Row.Link>
             {/each}
         </Table.Root>
     {:else}

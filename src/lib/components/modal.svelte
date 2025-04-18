@@ -3,34 +3,22 @@
     import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
     import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
-    import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     export let error: string = null;
     export let dismissible = true;
+    export let size: 's' | 'm' | 'l' = 'm';
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
     export let title = '';
     export let hideFooter = false;
-    export let submitOnEnter = true;
 
     let alert: HTMLElement;
-    let formComponent: Form;
 
     beforeNavigate(() => {
         show = false;
     });
-
-    function handleKeydown(event: KeyboardEvent) {
-        if (show && event.key === 'Enter' && submitOnEnter) {
-            event.preventDefault();
-            if (show) {
-                formComponent.triggerSubmit();
-                trackEvent(Click.SubmitFormClick, { from: 'enter' });
-            }
-        }
-    }
 
     $: $disableCommands(show);
 
@@ -39,10 +27,8 @@
     }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
-
-<Form isModal {onSubmit} bind:this={formComponent}>
-    <Modal {title} bind:open={show} {hideFooter} {dismissible}>
+<Form isModal {onSubmit}>
+    <Modal {size} {title} bind:open={show} {hideFooter} {dismissible}>
         <slot slot="description" name="description" />
         {#if error}
             <div bind:this={alert}>
@@ -64,3 +50,10 @@
         </svelte:fragment>
     </Modal>
 </Form>
+
+<style>
+    /* temporary fix to modal width */
+    :global(dialog section) {
+        max-width: 100% !important;
+    }
+</style>

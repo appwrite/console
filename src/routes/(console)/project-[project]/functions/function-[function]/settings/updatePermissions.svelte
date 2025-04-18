@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -13,8 +13,9 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
+    import { Link } from '$lib/elements';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
 
     let arePermsDisabled = true;
     let permissions: string[] = [];
@@ -72,14 +73,10 @@
 <Form onSubmit={updatePermissions}>
     <CardGrid>
         <svelte:fragment slot="title">Execute access</svelte:fragment>
-        Choose who can execute this function using the client API. Learn more about
-        <a
-            href="https://appwrite.io/docs/advanced/platform/permissions"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">
-            Permissions
-        </a>.
+        Select who can execute this function using the client API.
+        <Link href="https://appwrite.io/docs/advanced/platform/permissions" external>
+            Learn more</Link
+        >.
         <svelte:fragment slot="aside">
             <Roles bind:roles={permissions} />
         </svelte:fragment>

@@ -6,11 +6,10 @@
     import { Unauthenticated } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import MfaChallengeFormList, { verify } from '$lib/components/mfaChallengeFormList.svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications.js';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconChevronLeft } from '@appwrite.io/pink-icons-svelte';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     export let data;
 
@@ -29,13 +28,13 @@
         disabled = true;
         try {
             await verify(challenge, code);
-            if ($page.url.searchParams) {
-                const redirect = $page.url.searchParams.get('redirect');
-                $page.url.searchParams.delete('redirect');
+            if (page.url.searchParams) {
+                const redirect = page.url.searchParams.get('redirect');
+                page.url.searchParams.delete('redirect');
                 if (redirect) {
-                    await goto(`${redirect}${$page.url.search}`);
+                    await goto(`${redirect}${page.url.search}`);
                 } else {
-                    await goto(`${base}/${$page.url.search ?? ''}`);
+                    await goto(`${base}/${page.url.search ?? ''}`);
                 }
             } else {
                 await goto(base);
