@@ -27,3 +27,21 @@ export const isDev = ENV.DEV;
 export const isProd = ENV.PROD;
 export const hasStripePublicKey = !!VARS.PUBLIC_STRIPE_KEY;
 export const GRACE_PERIOD_OVERRIDE = false;
+
+/**
+ * Determines if the endpoint points to the Appwrite Cloud domain family.
+ *
+ * This includes both the default `cloud.appwrite.io` and any region-specific subdomains
+ * like `fra.cloud.appwrite.io`, `nyc.cloud.appwrite.io`, etc.
+ *
+ * This check is required when using custom domains, which are typically `CNAME`'d
+ * to region-based API endpoints. These custom domains do not include a region subdomain,
+ * so this logic helps infer cloud hosting context reliably.
+ */
+export const isCloudHostname = (() => {
+    try {
+        return new URL(VARS.APPWRITE_ENDPOINT).hostname.endsWith('cloud.appwrite.io');
+    } catch {
+        return false;
+    }
+})();
