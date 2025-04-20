@@ -16,7 +16,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import Create from '../createAttribute.svelte';
-    import { isRelationship } from '../document-[document]/attributes/store';
+    import { isRelationship } from '../row-[row]/attributes/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes } from '../store';

@@ -8,8 +8,8 @@
     import CreateAttribute from '../createAttribute.svelte';
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
-    import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
-    import type { Option } from '../attributes/store';
+    import CreateAttributeDropdown from '../columns/createAttributeDropdown.svelte';
+    import type { Option } from '../columns/store';
     import FailedModal from '../failedModal.svelte';
     import { canWriteCollections } from '$lib/stores/roles';
     import {

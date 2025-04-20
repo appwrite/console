@@ -12,7 +12,7 @@
     import type { Models } from '@appwrite.io/console';
     import { afterUpdate, onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
+    import { isRelationship, isRelationshipToMany } from './row-[row]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
     import type { ColumnType } from '$lib/helpers/types';

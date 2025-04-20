@@ -10,8 +10,8 @@
     import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
     import { Card, Icon, Layout, Empty as PinkEmpty } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
-    import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
-    import type { Option } from './attributes/store';
+    import CreateAttributeDropdown from './columns/createAttributeDropdown.svelte';
+    import type { Option } from './columns/store';
     import CreateAttribute from './createAttribute.svelte';
     import { collection, columns } from './store';
     import Table from './table.svelte';

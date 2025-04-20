@@ -23,7 +23,7 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateAttribute from './createAttribute.svelte';
     import { writable } from 'svelte/store';
-    import type { Option } from './attributes/store';
+    import type { Option } from './columns/store';
     import { CreateAttributePanel } from '$lib/commandCenter/panels';
     import { database } from '../store';
     import { project } from '$routes/(console)/project-[project]/store';

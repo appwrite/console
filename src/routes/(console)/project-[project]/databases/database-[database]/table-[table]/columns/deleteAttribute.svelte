@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { isRelationship } from '../document-[document]/attributes/store';
+    import { isRelationship } from '../row-[row]/attributes/store';
     import Confirm from '$lib/components/confirm.svelte';
 
     export let showDelete = false;

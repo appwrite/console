@@ -10,7 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IndexType } from '@appwrite.io/console';
-    import { isRelationship } from '../document-[document]/attributes/store';
+    import { isRelationship } from '../row-[row]/attributes/store';
     import { type Attributes, collection, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';

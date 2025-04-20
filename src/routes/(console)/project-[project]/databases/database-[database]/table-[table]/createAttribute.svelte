@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { option, attributeOptions, type Option } from './attributes/store';
+    import { option, attributeOptions, type Option } from '$routes/(console)/project-[project]/databases/database-[database]/table-[table]/columns/store';
     import { Button, InputText } from '$lib/elements/forms';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';

@@ -10,7 +10,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
-    import AttributeForm from '../document-[document]/attributeForm.svelte';
+    import AttributeForm from '../row-[row]/attributeForm.svelte';
     import { Permissions } from '$lib/components/permissions';
     import type { PageData } from './$types';
     import type { Attributes } from '../store';
