@@ -13,28 +13,30 @@
             : '';
 </script>
 
-<Copy value={getProjectEndpoint()} appendTo="parent" copyText="Copy endpoint">
-    <div
-        class="flex u-gap-8 u-cross-center interactive-text-output is-buttons-on-top u-text-center"
-        style:min-inline-size="0"
-        style:display="inline-flex">
-        <span
-            style:white-space="nowrap"
-            class="text u-line-height-1-5"
-            style:overflow="hidden"
-            style:word-break="break-all"
-            use:truncateText
-            style:font-family="unset">
-            {$projectRegion?.name}
-        </span>
+{#if $projectRegion}
+    <Copy value={getProjectEndpoint()} appendTo="parent" copyText="Copy endpoint">
+        <div
+            class="flex u-gap-8 u-cross-center interactive-text-output is-buttons-on-top u-text-center"
+            style:min-inline-size="0"
+            style:display="inline-flex">
+            <span
+                style:white-space="nowrap"
+                class="text u-line-height-1-5"
+                style:overflow="hidden"
+                style:word-break="break-all"
+                use:truncateText
+                style:font-family="unset">
+                {$projectRegion?.name}
+            </span>
 
-        {#if flagSrc}
-            <img
-                style="border-radius: 2.5px"
-                src={flagSrc}
-                alt={$projectRegion?.name}
-                width={16}
-                height={12} />
-        {/if}
-    </div>
-</Copy>
+            {#if flagSrc}
+                <img
+                    style="border-radius: 2.5px"
+                    src={flagSrc}
+                    alt={$projectRegion?.name}
+                    width={16}
+                    height={12} />
+            {/if}
+        </div>
+    </Copy>
+{/if}
