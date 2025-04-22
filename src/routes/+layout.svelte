@@ -15,6 +15,13 @@
     import { loading } from '$routes/store';
 
     onMount(async () => {
+        // unregister all service-workers
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then((registrations) => {
+                registrations.forEach((registration) => registration.unregister());
+            });
+        }
+
         // handle sources
         if (isCloud) {
             const urlParams = $page.url.searchParams;
