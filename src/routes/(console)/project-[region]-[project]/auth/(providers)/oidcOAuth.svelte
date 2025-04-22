@@ -3,10 +3,10 @@
     import { Alert, CopyInput, Modal } from '$lib/components';
     import { Button, FormList, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
-    import { sdk } from '$lib/stores/sdk';
+    import { getApiEndpoint } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
-    import type { Models } from '@appwrite.io/console';
 
     const projectId = $page.params.project;
 
@@ -114,7 +114,7 @@
         <div>
             <p>URI</p>
             <CopyInput
-                value={`${sdk.forConsole.client.config.endpoint}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
+                value={`${getApiEndpoint($page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">
