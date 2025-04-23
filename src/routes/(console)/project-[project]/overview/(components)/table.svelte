@@ -5,7 +5,7 @@
     import { Badge, Layout, Table } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
 
     export let keyType: 'api' | 'dev' = 'api';
@@ -31,6 +31,11 @@
             message: isExpired ? 'Expired' : isExpiring ? 'Expires soon' : null
         };
     }
+
+    function getKeys(): Models.Key[] | Models.DevKey[] {
+        if (isApiKey) return keys['keys'] as Models.Key[];
+        else return keys['devKeys'] as Models.DevKey[];
+    }
 </script>
 
 {#if keys.total}
@@ -43,7 +48,7 @@
                 <Table.Header.Cell {root}>Scopes</Table.Header.Cell>
             {/if}
         </svelte:fragment>
-        {#each keys.keys as key}
+        {#each getKeys() as key (key.$id)}
             <Table.Row.Link href={`${slug}/${key.$id}`} {root}>
                 <Table.Cell {root}>
                     {key.name}
@@ -79,5 +84,5 @@
         allowCreate={$canWriteKeys}
         href="https://appwrite.io/docs/advanced/platform/{slug}"
         target="{label} key"
-        on:click={() => goto(`${base}/project-${$page.params.project}/overview/${slug}/create`)} />
+        on:click={() => goto(`${base}/project-${page.params.project}/overview/${slug}/create`)} />
 {/if}
