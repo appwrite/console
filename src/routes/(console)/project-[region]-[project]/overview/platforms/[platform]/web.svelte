@@ -8,7 +8,7 @@
     import { onMount } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
-    import { hostnameRegex } from '$lib/helpers/string';
+    import { extendedHostnameRegex } from '$lib/helpers/string';
 
     let hostname: string = null;
 
@@ -50,7 +50,7 @@
                     id="hostname"
                     label="Hostname"
                     bind:value={hostname}
-                    pattern={hostnameRegex}
+                    pattern={extendedHostnameRegex}
                     patternError="Please enter a valid hostname"
                     placeholder="myapp.com" />
             </FormList>
