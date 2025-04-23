@@ -24,11 +24,11 @@
                 <span>
                     <Tag size="s" on:click={() => (showCustomId = !showCustomId)}>
                         <Icon icon={IconPencil} slot="start" size="s" />
-                        Document ID
+                        Row ID
                     </Tag>
                 </span>
             {:else}
-                <CustomId autofocus bind:show={showCustomId} name="Document" bind:id={customId} />
+                <CustomId autofocus bind:show={showCustomId} name="Row" bind:id={customId} />
             {/if}
         {/if}
     </Layout.Stack>

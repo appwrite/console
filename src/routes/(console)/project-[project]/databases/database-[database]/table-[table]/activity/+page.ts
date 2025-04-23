@@ -12,10 +12,9 @@ export const load: PageLoad = async ({ params, url, route }) => {
     return {
         offset,
         limit,
-        logs: await sdk.forProject.databases.listCollectionLogs(
-            params.database,
-            params.collection,
-            [Query.limit(limit), Query.offset(offset)]
-        )
+        logs: await sdk.forProject.databases.listCollectionLogs(params.database, params.table, [
+            Query.limit(limit),
+            Query.offset(offset)
+        ])
     };
 };

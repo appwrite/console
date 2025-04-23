@@ -12,7 +12,7 @@
     import type { Models } from '@appwrite.io/console';
     import { afterUpdate, onMount } from 'svelte';
     import type { PageData } from './$types';
-    import { isRelationship, isRelationshipToMany } from './row-[row]/attributes/store';
+    import { isRelationship, isRelationshipToMany } from './row-[row]/columns/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
     import type { ColumnType } from '$lib/helpers/types';
@@ -30,7 +30,7 @@
 
     const projectId = page.params.project;
     const databaseId = page.params.database;
-    const collectionId = page.params.collection;
+    const collectionId = page.params.table;
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
     let relationshipData: Partial<Models.Document>[];
@@ -93,7 +93,7 @@
         };
     }
 
-    $: selected = preferences.getCustomCollectionColumns(page.params.collection);
+    $: selected = preferences.getCustomCollectionColumns(page.params.table);
 
     $: {
         columns.set(
@@ -170,7 +170,7 @@
         <Table.Row.Link
             {root}
             id={document.$id}
-            href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
+            href={`${base}/project-${projectId}/databases/database-${databaseId}/table-${$collection.$id}/row-${document.$id}`}>
             <Table.Cell column="$id" {root}>
                 {#key document.$id}
                     <Id value={document.$id}>
@@ -193,7 +193,7 @@
                                         e.preventDefault();
                                         e.stopPropagation();
                                         goto(
-                                            `${base}/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                            `${base}/project-${projectId}/databases/database-${databaseId}/table-${attr.relatedCollection}/row-${related.$id}`
                                         );
                                     }}>
                                     {#each args as arg, i}

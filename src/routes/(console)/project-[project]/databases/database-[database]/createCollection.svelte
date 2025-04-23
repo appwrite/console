@@ -53,11 +53,11 @@
     }
 </script>
 
-<Modal title="Create collection" size="m" bind:show={showCreate} onSubmit={create} bind:error>
+<Modal title="Create table" size="m" bind:show={showCreate} onSubmit={create} bind:error>
     <InputText
         id="name"
         label="Name"
-        placeholder="Enter collection name"
+        placeholder="Enter table name"
         bind:value={name}
         autofocus
         required />
@@ -68,10 +68,10 @@
                 size="s"
                 on:click={() => {
                     showCustomId = true;
-                }}><Icon icon={IconPencil} /> Collection ID</Tag>
+                }}><Icon icon={IconPencil} /> Table ID</Tag>
         </div>
     {/if}
-    <CustomId autofocus bind:show={showCustomId} name="Collection" bind:id />
+    <CustomId autofocus bind:show={showCustomId} name="Table" bind:id />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

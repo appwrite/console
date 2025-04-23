@@ -24,7 +24,7 @@
     let showCreateAttribute = false;
     let selectedAttribute: Option['name'] = null;
 
-    $: selected = preferences.getCustomCollectionColumns(page.params.collection);
+    $: selected = preferences.getCustomCollectionColumns(page.params.table);
     $: columns.set(
         $collection.attributes.map((attribute) => ({
             id: attribute.key,
@@ -40,7 +40,7 @@
     $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
 </script>
 
-{#key page.params.collection}
+{#key page.params.table}
     <Container>
         <Layout.Stack direction="row" justifyContent="space-between">
             <Filters
@@ -52,10 +52,10 @@
                 <ViewSelector view={data.view} {columns} hideView />
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
-                    href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                    href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/create`}
                     event="create_document">
                     <Icon icon={IconPlus} slot="start" size="s" />
-                    Create document
+                    Create row
                 </Button>
             </Layout.Stack>
         </Layout.Stack>
@@ -65,7 +65,7 @@
                 <Table {data} />
 
                 <PaginationWithLimit
-                    name="Documents"
+                    name="Rows"
                     limit={data.limit}
                     offset={data.offset}
                     total={data.documents.total} />
@@ -73,8 +73,8 @@
                 <EmptySearch hidePages>
                     <div class="common-section">
                         <div class="u-text-center common-section">
-                            <b class="body-text-2 u-bold">Sorry, we couldn't find any documents.</b>
-                            <p>There are no documents that match your filters.</p>
+                            <b class="body-text-2 u-bold">Sorry, we couldn't find any rows.</b>
+                            <p>There are no rows that match your filters.</p>
                         </div>
                         <div class="u-flex common-section u-main-center">
                             <Button
@@ -92,11 +92,12 @@
                     </div>
                 </EmptySearch>
             {:else}
+                <!-- TODO: change the docs link later -->
                 <Empty
                     allowCreate={$canWriteDocuments}
                     single
                     href="https://appwrite.io/docs/products/databases/documents"
-                    target="document">
+                    target="row">
                     <svelte:fragment slot="actions">
                         <Button
                             external
@@ -106,11 +107,11 @@
                             size="s"
                             ariaLabel="create document">Documentation</Button>
                         <Button
-                            href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/create`}
                             secondary
                             disabled={!$canWriteDocuments}
                             size="s">
-                            Create document
+                            Create row
                         </Button>
                     </svelte:fragment>
                 </Empty>
@@ -118,9 +119,10 @@
         {:else}
             <Card.Base padding="none">
                 <PinkEmpty
-                    title="Create an attribute to get started."
+                    title="Create a column to get started."
                     description="Need a hand? Learn more in our documentation.">
                     <slot name="actions" slot="actions">
+                        <!-- TODO: change the docs link later -->
                         <Button
                             external
                             href="https://appwrite.io/docs/products/databases/collections#attributes"
@@ -133,7 +135,7 @@
                                 bind:showCreate={showCreateAttribute}
                                 let:toggle>
                                 <Button secondary event="create_attribute" on:click={toggle}>
-                                    Create attribute
+                                    Create column
                                 </Button>
                             </CreateAttributeDropdown>
                         {/if}

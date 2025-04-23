@@ -10,9 +10,8 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Delete collection</svelte:fragment>
-    The collection will be permanently deleted, including all the documents within it. This action is
-    irreversible.
+    <svelte:fragment slot="title">Delete table</svelte:fragment>
+    The table will be permanently deleted, including all the rows within it. This action is irreversible.
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="title">

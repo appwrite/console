@@ -15,7 +15,7 @@
     export let selectedAttribute: Attributes;
 
     const databaseId = page.params.database;
-    const collectionId = page.params.collection;
+    const collectionId = page.params.table;
     let originalKey = '';
 
     let error: string;
@@ -37,7 +37,7 @@
             await invalidate(Dependencies.COLLECTION);
             if (!page.url.pathname.includes('attributes')) {
                 await goto(
-                    `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                    `${base}/project-${page.params.project}/databases/database-${databaseId}/table-${collectionId}/columns`
                 );
             }
             addNotification({

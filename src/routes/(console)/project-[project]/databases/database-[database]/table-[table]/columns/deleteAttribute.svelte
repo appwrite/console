@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { isRelationship } from '../row-[row]/attributes/store';
+    import { isRelationship } from '../row-[row]/columns/store';
     import Confirm from '$lib/components/confirm.svelte';
 
     export let showDelete = false;
@@ -28,11 +28,11 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `Attribute has been deleted`
+                message: `Column has been deleted`
             });
             trackEvent(Submit.AttributeDelete);
             await goto(
-                `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${page.params.collection}/attributes`
+                `${base}/project-${page.params.project}/databases/database-${databaseId}/table-${page.params.table}/columns`
             );
         } catch (e) {
             error = e.message;
@@ -47,7 +47,7 @@
 <Confirm
     bind:open={showDelete}
     onSubmit={handleDelete}
-    title="Delete attribute"
+    title="Delete column"
     bind:error
     disabled={isDeleteBtnDisabled}>
     <p>

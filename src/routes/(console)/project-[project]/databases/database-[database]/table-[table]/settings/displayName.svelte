@@ -13,7 +13,7 @@
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
-    const collectionId = page.params.collection;
+    const collectionId = page.params.table;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
 
     async function updateDisplayName() {
@@ -57,13 +57,13 @@
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
         <svelte:fragment slot="title">Display name</svelte:fragment>
-        Select up to 5 string attributes to display as document names in the Appwrite console. These
-        help identify documents in places like relationships.
+        Select up to 5 string columns to display as row names in the Appwrite console. These help identify
+        rows in places like relationships.
 
         <svelte:fragment slot="aside">
             <Layout.Stack gap="s">
                 <Layout.Stack direction="row" gap="xxs">
-                    <InputText id="id" value="Document ID" readonly />
+                    <InputText id="id" value="Row ID" readonly />
                     <span style:visibility="hidden">
                         <Button icon extraCompact>
                             <Icon icon={IconX} />
@@ -75,7 +75,7 @@
                         <Layout.Stack direction="row" gap="xxs">
                             <InputSelect
                                 id={name}
-                                placeholder="Select attribute"
+                                placeholder="Select column"
                                 bind:value={names[i]}
                                 disabled={!!names[i] && names.length > i + 1}
                                 {options} />
@@ -100,7 +100,7 @@
                             names = names;
                         }}>
                         <Icon icon={IconPlus} slot="start" size="s" />
-                        Add attribute
+                        Add column
                     </Button>
                 </div>
             </Layout.Stack>

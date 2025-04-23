@@ -104,12 +104,12 @@
     label="Required"
     bind:checked={data.required}
     disabled={data.array}
-    description="Indicate whether this attribute is required" />
+    description="Indicate whether this column is required" />
 <Selector.Checkbox
     size="s"
     id="array"
     label="Array"
     bind:checked={data.array}
     disabled={data.required || editing}
-    description="Indicate whether this attribute should act as an array, with the default value set as an empty
+    description="Indicate whether this column should act as an array, with the default value set as an empty
     array." />

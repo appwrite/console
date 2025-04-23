@@ -16,7 +16,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import Create from '../createAttribute.svelte';
-    import { isRelationship } from '../row-[row]/attributes/store';
+    import { isRelationship } from '../row-[row]/columns/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes } from '../store';
@@ -73,7 +73,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <Typography.Title>Attributes</Typography.Title>
+        <Typography.Title>Columns</Typography.Title>
         {#if $canWriteCollections}
             <CreateAttributeDropdown bind:selectedOption bind:showCreate />
         {/if}
@@ -140,7 +140,7 @@
                             {#if isRelationship(attribute)}
                                 <span>
                                     with <a
-                                        href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
+                                        href={`${base}/project-${projectId}/databases/database-${databaseId}/table-${attribute?.relatedCollection}`}
                                         ><b data-private>{attribute?.key}</b></a>
                                 </span>
                             {/if}
@@ -199,8 +199,9 @@
             {/each}
         </Table.Root>
     {:else}
-        <Empty single target="attribute">
+        <Empty single target="column">
             <svelte:fragment slot="actions">
+                <!-- TODO: change the docs link later -->
                 <Button
                     external
                     href="https://appwrite.io/docs/products/databases/collections#attributes"
@@ -210,7 +211,7 @@
                 {#if $canWriteCollections}
                     <CreateAttributeDropdown bind:selectedOption bind:showCreate let:toggle>
                         <Button secondary event="create_attribute" on:click={toggle}>
-                            Create attribute
+                            Create column
                         </Button>
                     </CreateAttributeDropdown>
                 {/if}

@@ -45,21 +45,18 @@
 </script>
 
 <CardGrid>
-    <svelte:fragment slot="title">Document security</svelte:fragment>
+    <svelte:fragment slot="title">Row security</svelte:fragment>
     <svelte:fragment slot="aside">
-        <InputSwitch
-            bind:value={collectionDocumentSecurity}
-            id="security"
-            label="Document security" />
+        <InputSwitch bind:value={collectionDocumentSecurity} id="security" label="Row security" />
 
         <p class="text">
-            When document security is enabled, users will be able to access documents for which they
-            have been granted <b>either document or collection permissions</b>.
+            When row security is enabled, users will be able to access rows for which they have been
+            granted <b>either row or table permissions</b>.
         </p>
         <p class="text">
-            If document security is disabled, users can access documents <b
-                >only if they have collection permissions</b
-            >. Document permissions will be ignored.
+            If row security is disabled, users can access rows <b
+                >only if they have table permissions</b
+            >. Row permissions will be ignored.
         </p>
     </svelte:fragment>
     <svelte:fragment slot="actions">

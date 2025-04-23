@@ -298,7 +298,7 @@
                 {/if}
             </div>
             <div></div>
-            <span>Import all databases, including collections, indexes and attributes</span>
+            <span>Import all databases, including tables, indexes and columns</span>
 
             {#if resources?.includes('document')}
                 <ul>

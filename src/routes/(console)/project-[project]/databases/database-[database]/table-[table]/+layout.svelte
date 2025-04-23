@@ -36,6 +36,7 @@
     let unsubscribe: { (): void };
 
     onMount(() => {
+        // TODO: change the events once terminologies are changed on the backend
         unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
             if (
                 response.events.includes('databases.*.collections.*.attributes.*') ||
@@ -54,100 +55,100 @@
 
     $: $registerCommands([
         {
-            label: 'Create document',
+            label: 'Create row',
             keys: page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/create`
+                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/table-${$collection?.$id}/create`
                 );
             },
             icon: IconPlus,
-            group: 'documents'
+            group: 'rows'
         },
         {
-            label: 'Create attribute',
+            label: 'Create column',
             keys: page.url.pathname.endsWith('attributes') ? ['c'] : ['c', 'a'],
             callback() {
                 addSubPanel(CreateAttributePanel);
             },
             icon: IconPlus,
-            group: 'attributes',
+            group: 'columns',
             disabled: !$canWriteCollections
         },
         {
-            label: 'Go to documents',
+            label: 'Go to rows',
             keys: ['g', 'd'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}`
+                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/table-${$collection?.$id}`
                 );
             },
             disabled: page.url.pathname.endsWith($collection.$id),
-            group: 'collections'
+            group: 'tables'
         },
         {
-            label: 'Go to attributes',
+            label: 'Go to columns',
             keys: ['g', 'a'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/attributes`
+                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/table-${$collection?.$id}/columns`
                 );
             },
             disabled: page.url.pathname.endsWith('attributes'),
-            group: 'collections'
+            group: 'tables'
         },
         {
             label: 'Go to indexes',
             keys: ['g', 'i'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/indexes`
+                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/table-${$collection?.$id}/indexes`
                 );
             },
             disabled: page.url.pathname.endsWith('indexes'),
-            group: 'collections'
+            group: 'tables'
         },
         {
             label: 'Go to activity',
             keys: ['g', 'c'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/activity`
+                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/table-${$collection?.$id}/activity`
                 );
             },
             disabled: page.url.pathname.endsWith('activity'),
-            group: 'collections'
+            group: 'tables'
         },
         {
             label: 'Go to usage',
             keys: ['g', 'u'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/usage`
+                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/table-${$collection?.$id}/usage`
                 );
             },
             disabled: page.url.pathname.endsWith('usage'),
-            group: 'collections'
+            group: 'tables'
         },
         {
             label: 'Go to settings',
             keys: ['g', 's'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
+                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/table-${$collection?.$id}/settings`
                 );
             },
             disabled: page.url.pathname.endsWith('settings') || !$canWriteCollections,
-            group: 'collections'
+            group: 'tables'
         },
         {
             label: 'Display Name',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#display-name`
+                    `${base}/project-${$project.$id}/databases/database-${$database.$id}/table-${$collection.$id}/settings#display-name`
                 );
             },
-            group: 'collections',
+            group: 'tables',
             disabled:
                 page.url.pathname.endsWith('display-name') ||
                 page.url.pathname.endsWith('settings') ||
@@ -158,10 +159,10 @@
             label: 'Permissions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#permissions`
+                    `${base}/project-${$project.$id}/databases/database-${$database.$id}/table-${$collection.$id}/settings#permissions`
                 );
             },
-            group: 'collections',
+            group: 'tables',
             disabled:
                 page.url.pathname.endsWith('permissions') ||
                 page.url.pathname.endsWith('settings') ||
@@ -169,15 +170,15 @@
             icon: IconPuzzle
         },
         {
-            label: 'Document security',
+            label: 'Row security',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#document-security`
+                    `${base}/project-${$project.$id}/databases/database-${$database.$id}/table-${$collection.$id}/settings#row-security`
                 );
             },
-            group: 'collections',
+            group: 'tables',
             disabled:
-                page.url.pathname.endsWith('document-security') ||
+                page.url.pathname.endsWith('row-security') ||
                 page.url.pathname.endsWith('settings') ||
                 !$canWriteCollections,
             icon: IconLockClosed
@@ -203,7 +204,7 @@
 </script>
 
 <svelte:head>
-    <title>{$collection?.name ?? 'Collection'} - Appwrite</title>
+    <title>{$collection?.name ?? 'Table'} - Appwrite</title>
 </svelte:head>
 
 <slot />

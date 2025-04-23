@@ -77,14 +77,14 @@
                 columns={[
                     { id: 'key' },
                     { id: 'type' },
-                    { id: 'attributes' },
+                    { id: 'columns' },
                     { id: 'orders' },
                     { id: 'actions', width: 40 }
                 ]}>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
                     <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
-                    <Table.Header.Cell column="attributes" {root}>Attributes</Table.Header.Cell>
+                    <Table.Header.Cell column="columns" {root}>Columns</Table.Header.Cell>
                     <Table.Header.Cell column="orders" {root}>Asc/Desc</Table.Header.Cell>
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
@@ -112,7 +112,7 @@
                             </Layout.Stack>
                         </Table.Cell>
                         <Table.Cell column="type" {root}>{index.type}</Table.Cell>
-                        <Table.Cell column="attributes" {root}>
+                        <Table.Cell column="columns" {root}>
                             {index.attributes}
                         </Table.Cell>
                         <Table.Cell column="orders" {root}>
@@ -152,21 +152,21 @@
                 on:click={() => (showCreateIndex = true)} />
         {/if}
     {:else}
-        <Empty single target="attribute">
+        <Empty single target="column">
             <svelte:fragment slot="actions">
                 <Button
                     external
                     href="https://appwrite.io/docs/products/databases/collections#attributes"
                     text
                     event="empty_documentation"
-                    ariaLabel={`create {target}`}>Documentation</Button>
+                    ariaLabel={`create column`}>Documentation</Button>
                 {#if $canWriteCollections}
                     <CreateAttributeDropdown
                         bind:selectedOption={selectedAttribute}
                         bind:showCreate={showCreateAttribute}
                         let:toggle>
                         <Button secondary event="create_attribute" on:click={toggle}>
-                            Create attribute
+                            Create column
                         </Button>
                     </CreateAttributeDropdown>
                 {/if}

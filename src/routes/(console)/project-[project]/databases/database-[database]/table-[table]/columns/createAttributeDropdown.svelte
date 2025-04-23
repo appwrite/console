@@ -12,7 +12,7 @@
     <slot {toggle}>
         <Button on:click={toggle} event="create_attribute">
             <Icon icon={IconPlus} slot="start" size="s" />
-            Create attribute
+            Create column
         </Button>
     </slot>
     <ActionMenu.Root slot="tooltip">

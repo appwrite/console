@@ -20,7 +20,7 @@
 
     onMount(async () => {
         if (isCustomCollection) {
-            const prefs = preferences.getCustomCollectionColumns(page.params.collection);
+            const prefs = preferences.getCustomCollectionColumns(page.params.table);
             columns.set(
                 $columns.map((column) => {
                     column.hide = prefs?.includes(column.id) ?? false;

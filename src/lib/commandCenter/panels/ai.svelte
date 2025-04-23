@@ -23,6 +23,7 @@
         credentials: 'include'
     });
 
+    // TODO: change collections to tables after docs are updated!
     const examples = [
         'How to add platform in the console?',
         'How can I manage users, permissions, and access control in Appwrite?',

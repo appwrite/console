@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Selector, Table } from '@appwrite.io/pink-svelte';
     import { attributes, collection } from '../store';
-    import { isRelationship } from './attributes/store';
+    import { isRelationship } from './columns/store';
     import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
@@ -20,8 +20,8 @@
         try {
             await sdk.forProject.databases.deleteDocument(
                 databaseId,
-                page.params.collection,
-                page.params.document
+                page.params.table,
+                page.params.row
             );
             showDelete = false;
             addNotification({
@@ -30,7 +30,7 @@
             });
             trackEvent(Submit.DocumentDelete);
             await goto(
-                `${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}`
+                `${base}/project-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}`
             );
         } catch (error) {
             addNotification({

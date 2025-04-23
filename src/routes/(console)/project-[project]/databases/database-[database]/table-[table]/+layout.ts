@@ -11,7 +11,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.COLLECTION);
     try {
         const [collection, allCollections] = await Promise.all([
-            sdk.forProject.databases.getCollection(params.database, params.collection),
+            sdk.forProject.databases.getCollection(params.database, params.table),
             sdk.forProject.databases.listCollections(params.database, [
                 Query.orderDesc(''),
                 Query.limit(100)

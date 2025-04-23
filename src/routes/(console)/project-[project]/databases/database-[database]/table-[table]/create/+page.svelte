@@ -55,7 +55,7 @@
         try {
             const { $id } = await sdk.forProject.databases.createDocument(
                 page.params.database,
-                page.params.collection,
+                page.params.table,
                 $createDocument.id ?? ID.unique(),
                 $createDocument.document,
                 $createDocument.permissions
@@ -69,7 +69,7 @@
                 customId: !!$createDocument.id
             });
             goto(
-                `${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/document-${$id}`
+                `${base}/project-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/row-${$id}`
             );
         } catch (error) {
             addNotification({
@@ -82,8 +82,8 @@
 </script>
 
 <Wizard
-    title="Create document"
-    href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/`}
+    title="Create row"
+    href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/`}
     bind:showExitModal
     column
     columnSize="s"

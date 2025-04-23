@@ -15,11 +15,11 @@
             title: $database?.name
         },
         {
-            href: `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}`,
+            href: `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/table-${$collection?.$id}`,
             title: $collection?.name
         },
         {
-            href: `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/document-${$doc?.$id}`,
+            href: `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/table-${$collection?.$id}/row-${$doc?.$id}`,
             title: $doc?.$id
         }
     ];

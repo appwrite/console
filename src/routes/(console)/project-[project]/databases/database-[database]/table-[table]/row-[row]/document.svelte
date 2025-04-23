@@ -17,8 +17,8 @@
     let disableUpdate = true;
     let currentDoc: string;
     const databaseId = page.params.database;
-    const collectionId = page.params.collection;
-    const documentId = page.params.document;
+    const collectionId = page.params.table;
+    const documentId = page.params.row;
 
     const work = writable(
         Object.keys($doc)

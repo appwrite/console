@@ -35,7 +35,7 @@
     }
 </script>
 
-<Confirm onSubmit={handleDelete} title="Delete collection" bind:open={showDelete} bind:error>
+<Confirm onSubmit={handleDelete} title="Delete table" bind:open={showDelete} bind:error>
     <Typography.Text>
         Are you sure you want to delete <b>{$collection.name}</b>?
     </Typography.Text>

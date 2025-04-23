@@ -17,14 +17,14 @@
     let data = $derived(page.data) as PageData;
     let project = $derived(page.params.project);
     let databaseId = $derived(page.params.database);
-    let collectionId = $derived(page.params.collection);
+    let collectionId = $derived(page.params.table);
 
     const sortedCollections = $derived.by(() =>
         data?.allCollections?.collections?.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
     const selectedCollection = $derived.by(() =>
-        sortedCollections()?.find((collection) => collection.$id === collectionId)
+        sortedCollections?.find((collection) => collection.$id === collectionId)
     );
 
     let openBottomSheet = $state(false);
@@ -44,13 +44,13 @@
                 href={`${base}/project-${project}/databases/database-${databaseId}`}
                 class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile is-selected">
                 <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
-                {data.database.name}
+                {data.database?.name}
             </a>
             <div class="collection-content">
                 {#if data?.allCollections?.total}
                     <ul class="drop-list u-margin-inline-start-8 u-margin-block-start-8">
                         {#each sortedCollections as collection}
-                            {@const href = `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`}
+                            {@const href = `${base}/project-${project}/databases/database-${databaseId}/table-${collection.$id}`}
                             {@const isSelected = collectionId === collection.$id}
                             <li class:is-selected={isSelected}>
                                 <a
@@ -77,7 +77,7 @@
                         $showSubNavigation = false;
                     }}
                     leadingIcon={IconPlus}>
-                    Create collection
+                    Create table
                 </ActionMenu.Item.Button>
             </ActionMenu.Root>
         </section>
@@ -94,7 +94,7 @@
                 <button
                     type="button"
                     class="trigger"
-                    aria-label="Open collections"
+                    aria-label="Open tables"
                     onclick={() => {
                         openBottomSheet = !openBottomSheet;
                     }}>
@@ -114,7 +114,7 @@
                     return {
                         name: collection.name,
                         leadingIcon: IconTable,
-                        href: `${base}/project-${project}/databases/database-${databaseId}/collection-${collection.$id}`
+                        href: `${base}/project-${project}/databases/database-${databaseId}/table-${collection.$id}`
                     };
                 })
             },

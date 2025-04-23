@@ -1,12 +1,12 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
-    import Boolean from './attributes/boolean.svelte';
-    import Datetime from './attributes/datetime.svelte';
-    import Enum from './attributes/enum.svelte';
-    import Integer from './attributes/integer.svelte';
-    import Relationship from './attributes/relationship.svelte';
-    import String from './attributes/string.svelte';
-    import Url from './attributes/url.svelte';
+    import Boolean from './columns/boolean.svelte';
+    import Datetime from './columns/datetime.svelte';
+    import Enum from './columns/enum.svelte';
+    import Integer from './columns/integer.svelte';
+    import Relationship from './columns/relationship.svelte';
+    import String from './columns/string.svelte';
+    import Url from './columns/url.svelte';
 
     export let id: string;
     export let label: string;

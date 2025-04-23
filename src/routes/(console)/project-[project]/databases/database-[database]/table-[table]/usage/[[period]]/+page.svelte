@@ -12,11 +12,11 @@
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/usage`}
+        path={`${base}/project-${page.params.project}/databases/database-${page.params.database}/table-${page.params.table}/usage`}
         {total}
         {count}
         countMetadata={{
-            legend: 'Documents',
-            title: 'Total documents'
+            legend: 'Rows',
+            title: 'Total rows'
         }} />
 </Container>

@@ -10,7 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { IndexType } from '@appwrite.io/console';
-    import { isRelationship } from '../row-[row]/attributes/store';
+    import { isRelationship } from '../row-[row]/columns/store';
     import { type Attributes, collection, indexes } from '../store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -86,7 +86,7 @@
             ]);
 
             goto(
-                `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
+                `${base}/project-${page.params.project}/databases/database-${databaseId}/table-${$collection.$id}/indexes`
             );
 
             addNotification({

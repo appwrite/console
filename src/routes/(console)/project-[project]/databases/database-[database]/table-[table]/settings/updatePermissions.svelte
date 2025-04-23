@@ -56,7 +56,7 @@
 
 <CardGrid>
     <svelte:fragment slot="title">Permissions</svelte:fragment>
-    Choose who can access your collection and documents. <Link.Anchor
+    Choose who can access your tables and rows. <Link.Anchor
         href="https://appwrite.io/docs/products/databases/permissions"
         target="_blank"
         rel="noopener noreferrer">

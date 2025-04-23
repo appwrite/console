@@ -155,8 +155,8 @@
 <InputSelect
     required
     id="related"
-    label="Related collection"
-    placeholder="Select a collection"
+    label="Related table"
+    placeholder="Select a table"
     bind:value={data.relatedCollection}
     on:change={updateKeyName}
     options={collections?.map((n) => ({ value: n.$id, label: `${n.name} (${n.$id})` })) ?? []} />
@@ -197,7 +197,7 @@
                 {#if data.twoWay}
                     <img src={arrowTwo} alt={'Two way relationship'} />
                 {:else}
-                    <img src={arrowOne} alt={'One way realationship'} />
+                    <img src={arrowOne} alt={'One way relationship'} />
                 {/if}
                 <span>{data.key}</span>
             </div>

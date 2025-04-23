@@ -14,12 +14,12 @@
     import { Container } from '$lib/layout';
     import AttributeItem from '../attributeItem.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { isRelationship, isRelationshipToMany } from '../attributes/store';
+    import { isRelationship, isRelationshipToMany } from '../columns/store';
     import { deepClone } from '$lib/helpers/object';
 
     const databaseId = page.params.database;
-    const collectionId = page.params.collection;
-    const documentId = page.params.document;
+    const collectionId = page.params.table;
+    const documentId = page.params.row;
     const editing = true;
 
     function initWork() {

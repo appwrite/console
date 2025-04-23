@@ -20,7 +20,7 @@ export const collectionsSearcher = (async (query: string) => {
                     label: col.name,
                     callback: () => {
                         goto(
-                            `${base}/project-${projectId}/databases/database-${databaseId}/collection-${col.$id}`
+                            `${base}/project-${projectId}/databases/database-${databaseId}/table-${col.$id}`
                         );
                     }
                 }) as const

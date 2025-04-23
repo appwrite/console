@@ -1,6 +1,10 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { option, attributeOptions, type Option } from '$routes/(console)/project-[project]/databases/database-[database]/table-[table]/columns/store';
+    import {
+        option,
+        attributeOptions,
+        type Option
+    } from '$routes/(console)/project-[project]/databases/database-[database]/table-[table]/columns/store';
     import { Button, InputText } from '$lib/elements/forms';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -14,7 +18,7 @@
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
     const databaseId = page.params.database;
-    $: collectionId = page.params.collection;
+    $: collectionId = page.params.table;
 
     let key: string = null;
     let data: Partial<Attributes> = {
@@ -32,14 +36,14 @@
             selectedColumns.push(key ?? data?.key);
             preferences.setCustomCollectionColumns(selectedColumns);
             await invalidate(Dependencies.COLLECTION);
-            if (!page.url.pathname.includes('attributes')) {
+            if (!page.url.pathname.includes('columns')) {
                 await goto(
-                    `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                    `${base}/project-${page.params.project}/databases/database-${databaseId}/table-${collectionId}/columns`
                 );
             }
             addNotification({
                 type: 'success',
-                message: `Attribute ${key ?? data?.key} has been created`
+                message: `Column ${key ?? data?.key} has been created`
             });
             showCreate = false;
             trackEvent(Submit.AttributeCreate);
@@ -65,14 +69,14 @@
         };
     }
 
-    $: title = `Create ${attributeOptions.find((option) => option.name === selectedOption)?.sentenceName ?? ''} attribute`;
+    $: title = `Create ${attributeOptions.find((option) => option.name === selectedOption)?.sentenceName ?? ''} column`;
 </script>
 
 <Modal {error} bind:show={showCreate} onSubmit={submit} {title}>
     {#if selectedOption !== 'Relationship'}
         <InputText
             id="key"
-            label="Attribute key"
+            label="Column key"
             placeholder="Enter key"
             bind:value={key}
             autofocus

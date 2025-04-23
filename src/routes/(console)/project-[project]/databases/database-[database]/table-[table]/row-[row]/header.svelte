@@ -8,9 +8,9 @@
 
     const projectId = page.params.project;
     const databaseId = page.params.database;
-    const collectionId = page.params.collection;
-    const documentId = page.params.document;
-    const path = `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}/document-${documentId}`;
+    const collectionId = page.params.table;
+    const documentId = page.params.row;
+    const path = `${base}/project-${projectId}/databases/database-${databaseId}/table-${collectionId}/row-${documentId}`;
     const tabs = [
         {
             href: path,
@@ -35,10 +35,10 @@
 <Cover>
     <svelte:fragment slot="header">
         <CoverTitle
-            href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`}>
+            href={`${base}/project-${projectId}/databases/database-${databaseId}/table-${collectionId}`}>
             {$doc?.$id}
         </CoverTitle>
-        <Id value={$doc?.$id} event="document">Document ID</Id>
+        <Id value={$doc?.$id} event="row">Row ID</Id>
     </svelte:fragment>
 
     <Tabs>

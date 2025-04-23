@@ -15,10 +15,10 @@
     disableEmpty={!$canWriteCollections}
     total={data.collections.total}
     on:click={() => (showCreate = true)}
-    event="collection">
+    event="table">
     {#each data.collections.collections as collection}
         <GridItem1
-            href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
+            href={`${base}/project-${projectId}/databases/database-${databaseId}/table-${collection.$id}`}>
             <svelte:fragment slot="title">{collection.name}</svelte:fragment>
             <svelte:fragment slot="status">
                 {#if !collection.enabled}

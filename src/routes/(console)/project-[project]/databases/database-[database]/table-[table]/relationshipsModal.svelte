@@ -43,7 +43,7 @@
                     {#each paginatedItems as doc}
                         <Table.Row.Link
                             {root}
-                            href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${selectedRelationship.relatedCollection}/document-${doc.$id}`}
+                            href={`${base}/project-${projectId}/databases/database-${databaseId}/table-${selectedRelationship.relatedCollection}/row-${doc.$id}`}
                             on:click={() => (show = false)}>
                             <Table.Cell column="$id" {root}>
                                 <Id value={doc.$id}>{doc.$id}</Id>

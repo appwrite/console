@@ -13,8 +13,8 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     try {
         const document = await sdk.forProject.databases.getDocument(
             params.database,
-            params.collection,
-            params.document
+            params.table,
+            params.row
         );
 
         /**
