@@ -2,7 +2,7 @@
     import { CardGrid, BoxAvatar, CopyInput, Empty } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { columns, file } from './store';
+    import { columns, file, tokens } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -35,6 +35,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import ManageFileTokenModal, { cleanFormattedDate } from './manageFileToken.svelte';
     import { copy } from '$lib/helpers/copy';
+    import { type Models, Permission, Role } from '@appwrite.io/console';
 
     let showFileAlert = true;
 
@@ -42,12 +43,9 @@
     let arePermsDisabled = true;
     let filePermissions = $file?.$permissions;
 
-    // TODO: @itznotabug update once backend is set up.
     let showManageToken = false;
     let tokenDeleteMode = false;
-    // mock data
-    $: fileTokens = []; // $file?.$tokens;
-    let selectedFileToken: object | undefined = undefined;
+    let selectedFileToken: Models.ResourceToken | null = null;
 
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 640, 300).toString() +
@@ -91,38 +89,64 @@
         }
     }
 
-    // mock method, change later.
-    async function deleteFileToken(token: object) {
-        fileTokens = fileTokens.filter((tokn) => {
-            return tokn !== token;
-        });
+    async function deleteFileToken(token: Models.ResourceToken) {
+        try {
+            await sdk.forProject.tokens.delete(token.$id);
+            await invalidate(Dependencies.FILE_TOKENS);
+            addNotification({
+                message: 'File token deleted',
+                type: 'success'
+            });
+            trackEvent(Submit.FileTokenDelete);
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.FileTokenDelete);
+        }
     }
 
     async function createFileToken(expiry: string) {
-        const mockToken = {
-            created: new Date().toISOString(),
-            value: Math.random().toString(36).slice(-12),
-            expiry: expiry,
-            lastAccessed: Math.random() < 0.5 ? null : new Date('2024-02-15T15:30:00Z')
-        };
+        try {
+            console.log(JSON.stringify($file, null, 2));
 
-        console.log(JSON.stringify(mockToken, null, 2));
-
-        fileTokens = [...fileTokens, mockToken];
+            await sdk.forProject.tokens.createFileToken($file.bucketId, $file.$id, expiry, [
+                Permission.read(Role.any())
+            ]);
+            await invalidate(Dependencies.FILE_TOKENS);
+            addNotification({
+                message: 'File token created',
+                type: 'success'
+            });
+            trackEvent(Submit.FileTokenCreate);
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.FileTokenCreate);
+        }
     }
 
-    // TODO: update to manage file token expiry too later.
     async function updateFileTokenExpiry(newExpiry: string) {
-        // perf hit but ok when testing!
-        fileTokens = fileTokens.map((token) => {
-            if (token === selectedFileToken) {
-                token.expiry = newExpiry;
-            }
-
-            return token;
-        });
-
-        selectedFileToken = null;
+        try {
+            // TODO: permission missing on object type.
+            await sdk.forProject.tokens.update(selectedFileToken.$id, newExpiry);
+            addNotification({
+                message: 'File token updated',
+                type: 'success'
+            });
+            trackEvent(Submit.FileTokenUpdate);
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.FileTokenUpdate);
+        } finally {
+            selectedFileToken = null;
+        }
     }
 
     async function copyPreviewWithToken(token: string) {
@@ -186,7 +210,7 @@
             <svelte:fragment slot="title">File tokens</svelte:fragment>
             Use tokens to provide public access to the file.
             <svelte:fragment slot="aside">
-                {#if fileTokens.length}
+                {#if $tokens.total}
                     <Layout.Stack justifyContent="flex-end" direction="row">
                         <Button secondary on:click={() => (showManageToken = true)}>
                             <Icon size="s" icon={IconPlus} />
@@ -201,10 +225,10 @@
                             {/each}
                         </svelte:fragment>
 
-                        {#each fileTokens as token}
+                        {#each $tokens.tokens as token}
                             <Table.Row.Base {root}>
                                 <Table.Cell column="created" {root}
-                                    >{toLocaleDate(token.created)}</Table.Cell>
+                                    >{toLocaleDate(token.$createdAt)}</Table.Cell>
                                 <Table.Cell column="value" {root}>
                                     <InteractiveText isVisible={false} text={token.value} />
                                 </Table.Cell>
@@ -212,9 +236,11 @@
                                     >{token.expiry
                                         ? cleanFormattedDate(token.expiry)
                                         : 'Never'}</Table.Cell>
+
+                                <!-- TODO: `lastAccessed` or anything similar doesn't exist! Using `$createdAt` for now -->
                                 <Table.Cell column="last_accessed" {root}
-                                    >{token.lastAccessed
-                                        ? cleanFormattedDate(token.lastAccessed, true)
+                                    >{token.$createdAt
+                                        ? cleanFormattedDate(token.$createdAt, true)
                                         : 'Never'}</Table.Cell>
 
                                 <Table.Cell column="actions" {root}>

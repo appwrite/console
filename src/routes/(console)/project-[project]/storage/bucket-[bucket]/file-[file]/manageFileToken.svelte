@@ -11,12 +11,13 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
-    import { Confirm, ExpirationInput, Modal } from '$lib/components';
     import { Link } from '@appwrite.io/pink-svelte';
+    import { type Models } from '@appwrite.io/console';
+    import { Confirm, ExpirationInput, Modal } from '$lib/components';
 
     export let show = false;
     export let isDelete = false;
-    export let fileToken: object | undefined = undefined;
+    export let fileToken: Models.ResourceToken;
 
     let expire = null;
 
@@ -45,14 +46,15 @@
 
 {#if isDelete}
     <Confirm bind:open={show} title="Delete token" onSubmit={handleFileToken}>
-        {@const formattedDate = cleanFormattedDate(fileToken.created)}
+        {@const formattedDate = cleanFormattedDate(fileToken.$createdAt)}
         <p data-private>
             Are you sure you want to delete the file token created on <b>{formattedDate}</b>?
         </p>
 
         <p data-private>
-            {#if fileToken.lastAccessed}
-                {@const formattedDate = cleanFormattedDate(fileToken.lastAccessed, true)}
+            <!-- TODO: `lastAccessed` or anything similar doesn't exist! Using `$createdAt` for now -->
+            {#if fileToken.$createdAt}
+                {@const formattedDate = cleanFormattedDate(fileToken.$createdAt, true)}
 
                 This token was last accessed on <b>{formattedDate}</b>
             {:else}
@@ -69,7 +71,7 @@
         <!-- TODO: docs link needed-->
         <svelte:fragment slot="description">
             {#if fileToken}
-                {@const formattedDate = cleanFormattedDate(fileToken.created)}
+                {@const formattedDate = cleanFormattedDate(fileToken.$createdAt)}
                 Edit the expiry of the file token created on <b>{formattedDate}</b>
             {:else}
                 Create a file token to grant public access to a file.

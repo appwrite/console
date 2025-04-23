@@ -33,6 +33,7 @@ export enum Dependencies {
     DOCUMENTS = 'dependency:documents',
     BUCKET = 'dependency:bucket',
     FILE = 'dependency:file',
+    FILE_TOKENS = 'dependency:file_tokens',
     FILES = 'dependency:files',
     FUNCTION = 'dependency:function',
     FUNCTION_DOMAINS = 'dependency:function_domains',
