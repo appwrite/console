@@ -1,4 +1,7 @@
 <script lang="ts" context="module">
+    import { total } from '$lib/helpers/array';
+    import type { Metric } from '$lib/sdk/usage';
+
     export function totalMetrics(set: Array<unknown>): number {
         if (!set) return 0;
         return total((set as Metric[]).map((c) => c.value));
@@ -20,16 +23,14 @@
     import Requests from './requests.svelte';
     import { usage } from './store';
     import { formatNum } from '$lib/helpers/string';
-    import { total } from '$lib/helpers/array';
-    import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    $: projectId = page.params.project;
-    $: path = `${base}/project-${projectId}/overview`;
+    const projectId = page.params.project;
+    const path = `${base}/project-${projectId}/overview`;
     let period: UsagePeriods = '30d';
 
     onMount(handle);
@@ -229,7 +230,7 @@
                     <Tab
                         noscroll
                         href={`${path}/dev-keys`}
-                        selected={$page.url.pathname === `${path}/dev-keys`}
+                        selected={page.url.pathname === `${path}/dev-keys`}
                         event="keys">Dev keys</Tab>
                 </Tabs>
                 {#if $action}

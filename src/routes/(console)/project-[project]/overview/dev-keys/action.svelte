@@ -10,14 +10,14 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     let showModal = false;
     let isSubmitting = false;
     let name = '',
         expire = '';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     async function create() {
         try {

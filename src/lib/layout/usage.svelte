@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+    import { ProjectUsageRange, type Models } from '@appwrite.io/console';
     export type UsagePeriods = '24h' | '30d' | '90d';
 
     export function periodToDates(period: UsagePeriods): {
@@ -58,14 +59,14 @@
 </script>
 
 <script lang="ts">
-    import { BarChart } from '$lib/charts';
-    import { formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { Card } from '$lib/components';
-    import { ProjectUsageRange, type Models } from '@appwrite.io/console';
     import { page } from '$app/state';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
+
+    import { BarChart } from '$lib/charts';
+    import { Card } from '$lib/components';
     import { InputSelect } from '$lib/elements/forms';
+    import { formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     type MetricMetadata = {
         title: string;
