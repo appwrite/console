@@ -9,6 +9,7 @@
     export let href: string = null;
     export let allowCreate = true;
     export let description = 'Need a hand? Learn more in our documentation.';
+    export let disabled = false;
     export let src: string = null;
 
     function track() {
@@ -47,7 +48,7 @@
         </Empty>
     </Card.Base>
 {:else}
-    <Card.Button on:click on:click={track} aria-label="create">
+    <Card.Button on:click on:click={track} aria-label="create" {disabled}>
         <Layout.Stack justifyContent="center" alignItems="center" gap="m">
             <Avatar size="s"><Icon icon={IconPlus} size="s" /></Avatar>
             <Typography.Text variation="m-400" align="center"><slot /></Typography.Text>

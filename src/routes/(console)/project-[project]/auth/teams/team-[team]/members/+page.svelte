@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Empty, EmptySearch, AvatarInitials, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -21,7 +21,7 @@
     let showDelete = false;
     let selectedMembership: Models.Membership;
 
-    const project = $page.params.project;
+    const project = page.params.project;
 
     async function memberCreated() {
         invalidate(Dependencies.MEMBERSHIPS);
@@ -77,7 +77,7 @@
                                 showDelete = true;
                                 trackEvent(Click.MembershipDeleteClick);
                             }}>
-                            <span class="icon-trash" aria-hidden="true" />
+                            <span class="icon-trash" aria-hidden="true"></span>
                         </button>
                     </Table.Cell>
                 </Table.Row.Link>
@@ -112,7 +112,7 @@
     {/if}
 </Container>
 
-<CreateMember teamId={$page.params.team} bind:showCreate on:created={memberCreated} />
+<CreateMember teamId={page.params.team} bind:showCreate on:created={memberCreated} />
 <DeleteMembership
     {selectedMembership}
     bind:showDelete

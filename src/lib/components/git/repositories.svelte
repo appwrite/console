@@ -5,7 +5,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
-    import { createEventDispatcher } from 'svelte';
     import {
         Layout,
         Table,
@@ -15,27 +14,33 @@
         Skeleton,
         Button as PinkButton
     } from '@appwrite.io/pink-svelte';
-    import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
+    import { IconLockClosed, IconPlus } from '@appwrite.io/pink-icons-svelte';
     import ConnectGit from './connectGit.svelte';
     import SvgIcon from '../svgIcon.svelte';
-    import { getFrameworkIcon } from '$routes/(console)/project-[project]/sites/store';
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
+    import { getFrameworkIcon } from '$lib/stores/sites';
+    import { connectGitHub } from '$lib/stores/git';
 
-    const dispatch = createEventDispatcher();
+    let {
+        action = $bindable('select'),
+        selectedRepository = $bindable(undefined),
+        installationList = $bindable($installations),
+        hasInstallations = $bindable($installations?.total > 0),
+        product = 'functions',
+        callbackState = null,
+        connect = () => {}
+    }: {
+        action?: 'button' | 'select';
+        selectedRepository?: string;
+        installationList?: Models.InstallationList;
+        hasInstallations?: boolean;
+        product?: 'functions' | 'sites';
+        callbackState?: Record<string, string> | null;
+        connect?: (repository: Models.ProviderRepository) => void;
+    } = $props();
 
-    export let callbackState: Record<string, string> = null;
-    export let selectedRepository: string = null;
-    export let hasInstallations = false;
-    export let action: 'button' | 'select' = 'select';
-    export let installationList = $installations;
-    export let product: 'functions' | 'sites' = 'functions';
-
-    let search = '';
-    let selectedInstallation = null;
-
-    $: {
-        hasInstallations = installationList?.total > 0;
-    }
+    let search = $state('');
+    let selectedInstallation = $state(null);
 
     async function loadInstallations() {
         if (installationList) {
@@ -64,24 +69,7 @@
             $repositories.installationId !== installationId ||
             $repositories.search !== search
         ) {
-            //TODO: remove forced cast after backend fixes
-            if (product === 'functions') {
-                $repositories.repositories = (
-                    (await sdk.forProject.vcs.listRepositories(
-                        installationId,
-                        VCSDetectionType.Runtime,
-                        search || undefined
-                    )) as unknown as Models.ProviderRepositoryRuntimeList
-                ).runtimeProviderRepositories;
-            } else {
-                $repositories.repositories = (
-                    await sdk.forProject.vcs.listRepositories(
-                        installationId,
-                        VCSDetectionType.Framework,
-                        search || undefined
-                    )
-                ).frameworkProviderRepositories;
-            }
+            await fetchRepos(installationId, search);
         }
 
         $repositories.search = search;
@@ -93,6 +81,26 @@
         }
 
         return $repositories.repositories;
+    }
+
+    async function fetchRepos(installationId: string, search: string) {
+        if (product === 'functions') {
+            $repositories.repositories = (
+                (await sdk.forProject.vcs.listRepositories(
+                    installationId,
+                    VCSDetectionType.Runtime,
+                    search || undefined
+                )) as unknown as Models.ProviderRepositoryRuntimeList
+            ).runtimeProviderRepositories; //TODO: remove forced cast after backend fixes
+        } else {
+            $repositories.repositories = (
+                (await sdk.forProject.vcs.listRepositories(
+                    installationId,
+                    VCSDetectionType.Framework,
+                    search || undefined
+                )) as unknown as Models.ProviderRepositoryFrameworkList
+            ).frameworkProviderRepositories;
+        }
     }
 </script>
 
@@ -117,13 +125,23 @@
                 <Layout.Stack direction="row">
                     <InputSelect
                         id="installation"
-                        options={installations.map((entry) => {
-                            return {
-                                label: entry.organization,
-                                value: entry.$id
-                            };
-                        })}
+                        options={[
+                            ...installations.map((entry) => {
+                                return {
+                                    label: entry.organization,
+                                    value: entry.$id
+                                };
+                            }),
+                            {
+                                label: 'Add installation',
+                                leadingIcon: IconPlus,
+                                value: 'new'
+                            }
+                        ]}
                         on:change={() => {
+                            if (selectedInstallation === 'new') {
+                                window.location.href = connectGitHub(callbackState).toString();
+                            }
                             search = '';
                             installation.set(
                                 installations.find((entry) => entry.$id === selectedInstallation)
@@ -154,84 +172,90 @@
                 </Table.Root>
             {:then response}
                 {#if response?.length}
-                    <Paginator
-                        items={response}
-                        let:paginatedItems
-                        hideFooter={response?.length <= 6}
-                        limit={6}>
-                        <Table.Root columns={1} let:root>
-                            {#each paginatedItems as repo}
-                                <Table.Row.Base {root}>
-                                    <Table.Cell {root}>
-                                        <Layout.Stack direction="row" alignItems="center" gap="s">
-                                            {#if action === 'select'}
-                                                <input
-                                                    class="is-small u-margin-inline-end-8"
-                                                    type="radio"
-                                                    name="repositories"
-                                                    bind:group={selectedRepository}
-                                                    on:change={() => repository.set(repo)}
-                                                    value={repo.id} />
-                                            {/if}
-                                            {#if product === 'sites'}
-                                                {#if repo?.framework && repo.framework !== 'other'}
-                                                    <Avatar size="xs" alt={repo.name}>
-                                                        <SvgIcon
-                                                            name={getFrameworkIcon(repo.framework)}
-                                                            iconSize="small" />
-                                                    </Avatar>
-                                                {:else}
-                                                    <Avatar size="xs" alt={repo.name} empty />
-                                                {/if}
-                                            {:else}
-                                                {@const iconName = repo?.runtime
-                                                    ? repo.runtime.split('-')[0]
-                                                    : undefined}
-                                                <Avatar size="xs" alt={repo.name} empty={!iconName}>
-                                                    <SvgIcon name={iconName} iconSize="small" />
-                                                </Avatar>
-                                            {/if}
+                    <Paginator items={response} hideFooter={response?.length <= 6} limit={6}>
+                        {#snippet children(paginatedItems)}
+                            <Table.Root columns={1} let:root>
+                                {#each paginatedItems as repo}
+                                    <Table.Row.Base {root}>
+                                        <Table.Cell {root}>
                                             <Layout.Stack
-                                                gap="s"
                                                 direction="row"
-                                                alignItems="center">
-                                                <Typography.Text
-                                                    truncate
-                                                    color="--fgcolor-neutral-secondary">
-                                                    {repo.name}
-                                                </Typography.Text>
-                                                {#if repo.private}
-                                                    <Icon
-                                                        size="s"
-                                                        icon={IconLockClosed}
-                                                        color="--fgcolor-neutral-tertiary" />
+                                                alignItems="center"
+                                                gap="s">
+                                                {#if action === 'select'}
+                                                    <input
+                                                        class="is-small u-margin-inline-end-8"
+                                                        type="radio"
+                                                        name="repositories"
+                                                        bind:group={selectedRepository}
+                                                        onchange={() => repository.set(repo)}
+                                                        value={repo.id} />
                                                 {/if}
-                                                <time datetime={repo.pushedAt}>
-                                                    <Typography.Caption
-                                                        variant="400"
-                                                        truncate
-                                                        color="--fgcolor-neutral-tertiary">
-                                                        {timeFromNow(repo.pushedAt)}
-                                                    </Typography.Caption>
-                                                </time>
-                                            </Layout.Stack>
-                                            {#if action === 'button'}
-                                                <Layout.Stack
-                                                    direction="row"
-                                                    justifyContent="flex-end">
-                                                    <PinkButton.Button
+                                                {#if product === 'sites'}
+                                                    {#if repo?.framework && repo.framework !== 'other'}
+                                                        <Avatar size="xs" alt={repo.name}>
+                                                            <SvgIcon
+                                                                name={getFrameworkIcon(
+                                                                    repo.framework
+                                                                )}
+                                                                iconSize="small" />
+                                                        </Avatar>
+                                                    {:else}
+                                                        <Avatar size="xs" alt={repo.name} empty />
+                                                    {/if}
+                                                {:else}
+                                                    {@const iconName = repo?.runtime
+                                                        ? repo.runtime.split('-')[0]
+                                                        : undefined}
+                                                    <Avatar
                                                         size="xs"
-                                                        variant="secondary"
-                                                        on:click={() => dispatch('connect', repo)}>
-                                                        Connect
-                                                    </PinkButton.Button>
+                                                        alt={repo.name}
+                                                        empty={!iconName}>
+                                                        <SvgIcon name={iconName} iconSize="small" />
+                                                    </Avatar>
+                                                {/if}
+                                                <Layout.Stack
+                                                    gap="s"
+                                                    direction="row"
+                                                    alignItems="center">
+                                                    <Typography.Text
+                                                        truncate
+                                                        color="--fgcolor-neutral-secondary">
+                                                        {repo.name}
+                                                    </Typography.Text>
+                                                    {#if repo.private}
+                                                        <Icon
+                                                            size="s"
+                                                            icon={IconLockClosed}
+                                                            color="--fgcolor-neutral-tertiary" />
+                                                    {/if}
+                                                    <time datetime={repo.pushedAt}>
+                                                        <Typography.Caption
+                                                            variant="400"
+                                                            truncate
+                                                            color="--fgcolor-neutral-tertiary">
+                                                            {timeFromNow(repo.pushedAt)}
+                                                        </Typography.Caption>
+                                                    </time>
                                                 </Layout.Stack>
-                                            {/if}
-                                        </Layout.Stack>
-                                    </Table.Cell>
-                                </Table.Row.Base>
-                            {/each}
-                        </Table.Root>
+                                                {#if action === 'button'}
+                                                    <Layout.Stack
+                                                        direction="row"
+                                                        justifyContent="flex-end">
+                                                        <PinkButton.Button
+                                                            size="xs"
+                                                            variant="secondary"
+                                                            on:click={() => connect(repo)}>
+                                                            Connect
+                                                        </PinkButton.Button>
+                                                    </Layout.Stack>
+                                                {/if}
+                                            </Layout.Stack>
+                                        </Table.Cell>
+                                    </Table.Row.Base>
+                                {/each}
+                            </Table.Root>
+                        {/snippet}
                     </Paginator>
                 {:else}
                     <EmptySearch hidePages hidePagination bind:search target="repositories">

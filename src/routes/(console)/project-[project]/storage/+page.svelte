@@ -8,7 +8,7 @@
     import Create from './create.svelte';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
@@ -23,7 +23,7 @@
 
     export let data: PageData;
 
-    const project = $page.params.project;
+    const project = page.params.project;
 
     async function bucketCreated(event: CustomEvent<Models.Bucket>) {
         showCreateBucket.set(false);
@@ -34,7 +34,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search buckets" />
+            <SearchQuery placeholder="Search by name or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector

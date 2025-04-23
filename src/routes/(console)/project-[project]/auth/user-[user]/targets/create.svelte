@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -29,7 +29,7 @@
     const create = async () => {
         try {
             await sdk.forProject.users.createTarget(
-                $page.params.user,
+                page.params.user,
                 id ? id : ID.unique(),
                 providerType,
                 identifier,
@@ -115,7 +115,7 @@
     {#if !showCustomId}
         <div>
             <Pill button on:click={() => (showCustomId = !showCustomId)}
-                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                ><span class="icon-pencil" aria-hidden="true"></span><span class="text">
                     Target ID
                 </span></Pill>
         </div>

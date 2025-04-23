@@ -1,19 +1,19 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { timeFromNow } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
     import { Card, Icon, Layout, Popover, Tooltip, Typography } from '@appwrite.io/pink-svelte';
-    import { getFrameworkIcon } from './store';
+    import { generateSiteDeploymentDesc } from './store';
     import { SvgIcon } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
     import SitesActionMenu from './sitesActionMenu.svelte';
     import { capitalize } from '$lib/helpers/string';
-    import { timer } from '$lib/helpers/timeConversion';
     import { IconExclamation } from '@appwrite.io/pink-icons-svelte';
     import { Link } from '$lib/elements';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let siteList: Models.SiteList;
 
@@ -37,24 +37,16 @@
         const endpoint = getApiEndpoint();
         return endpoint + `/storage/buckets/screenshots/files/${fileId}/view?project=console`;
     }
-
-    function generateDesc(site: Models.Site) {
-        if (site.latestDeploymentStatus === 'building') {
-            return `Deployment building ${timer(site.latestDeploymentCreatedAt)}`;
-        } else {
-            return `Deployed ${timeFromNow(site.deploymentCreatedAt)}`;
-        }
-    }
 </script>
 
 <Layout.Grid columns={3} columnsXS={1} columnsXXS={1}>
-    {#each siteList.sites as site}
+    {#each siteList.sites as site (site.$id)}
         <Card.Link
-            href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}
+            href={`${base}/project-${page.params.project}/sites/site-${site.$id}`}
             padding="xxs">
             <Card.Media
                 title={site.name}
-                description={generateDesc(site)}
+                description={generateSiteDeploymentDesc(site)}
                 src={getScreenshot($app.themeInUse, site)}
                 alt={site.name}
                 avatar>
@@ -69,7 +61,7 @@
                 <SitesActionMenu {site} bind:showAddCollaborator bind:selectedSite />
 
                 <svelte:fragment slot="description-end">
-                    {#if site.latestDeploymentStatus === 'failed'}
+                    {#if site?.latestDeploymentStatus === 'failed'}
                         <Popover let:toggle portal>
                             <button on:mouseenter={(e) => toggle(e)}>
                                 <Layout.Stack alignItems="center">
@@ -82,9 +74,9 @@
                             <svelte:fragment slot="tooltip">
                                 <Typography.Text variant="m-400">
                                     Last deployment failed {timeFromNow(
-                                        site.latestDeploymentCreatedAt
+                                        site?.latestDeploymentCreatedAt
                                     )}. <Link
-                                        href={`${base}/project-${$page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
+                                        href={`${base}/project-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${site.latestDeploymentId}`}>
                                         View logs
                                     </Link>
                                 </Typography.Text>

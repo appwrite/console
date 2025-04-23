@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { page as pageStore } from '$app/stores';
+    import { page as pageStore } from '$app/state';
     import { InputSelect } from '$lib/elements/forms';
     import { preferences } from '$lib/stores/preferences';
     import { Layout } from '@appwrite.io/pink-svelte';
@@ -18,7 +18,7 @@
     ];
 
     async function limitChange() {
-        const url = new URL($pageStore.url);
+        const url = new URL(pageStore.url);
         const previousLimit = Number(url.searchParams.get('limit'));
         url.searchParams.set('limit', limit.toString());
         preferences.setLimit(limit);

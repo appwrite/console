@@ -14,8 +14,8 @@
     export let columns: Column[];
     export let logs: Models.ExecutionList;
 
-    let openSheet = false;
     let selectedLogId: string = null;
+    let open = false;
 </script>
 
 <Table.Root {columns} let:root>
@@ -27,8 +27,9 @@
     {#each logs.executions as log}
         <Table.Row.Button
             {root}
-            on:click={() => {
-                openSheet = true;
+            on:click={(e) => {
+                e.stopPropagation();
+                open = true;
                 selectedLogId = log.$id;
             }}>
             {#each columns as column}
@@ -40,24 +41,24 @@
                     {:else if column.id === '$createdAt'}
                         <DualTimeView time={log.$createdAt} />
                     {:else if column.id === 'requestPath'}
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
-                            <Badge
-                                variant="secondary"
-                                type={log.responseStatusCode >= 400
-                                    ? 'error'
-                                    : log.responseStatusCode === 0
-                                      ? undefined
-                                      : 'success'}
-                                content={log.responseStatusCode.toString()} />
-                            <Typography.Code size="m">
-                                {log.requestMethod}
-                            </Typography.Code>
-                            <Typography.Code size="m">
-                                {log.requestPath}
-                            </Typography.Code>
-                        </Layout.Stack>
+                        <Typography.Code size="m">
+                            {log.requestPath}
+                        </Typography.Code>
                     {:else if column.id === 'responseStatusCode'}
-                        {log.responseStatusCode}
+                        <Badge
+                            variant="secondary"
+                            type={log.responseStatusCode >= 400
+                                ? 'error'
+                                : log.responseStatusCode === 0
+                                  ? undefined
+                                  : 'success'}
+                            content={log.responseStatusCode.toString()} />
+                    {:else if column.id === 'requestMethod'}
+                        <Typography.Code size="m">
+                            {log.requestMethod}
+                        </Typography.Code>
+                    {:else if column.id === 'trigger'}
+                        {capitalize(log.trigger)}
                     {:else if column.id === 'status'}
                         {@const status = log.status}
                         <Tooltip
@@ -67,7 +68,6 @@
                                 <Status
                                     status={logStatusConverter(status)}
                                     label={capitalize(status)}>
-                                    {status}
                                 </Status>
                             </div>
                             <span slot="tooltip">
@@ -83,4 +83,4 @@
     {/each}
 </Table.Root>
 
-<Sheet bind:open={openSheet} bind:selectedLogId logs={logs.executions} logging={$func.logging} />
+<Sheet bind:open bind:selectedLogId logs={logs.executions} logging={$func.logging} />

@@ -1,7 +1,6 @@
-import { Client, type Models, Sites, Storage } from '@appwrite.io/console';
+import { type Models, Sites, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
-import { getProjectId } from '$lib/helpers/project';
-import { getApiEndpoint } from '$lib/stores/sdk';
+import { createAdminClient } from '$lib/stores/sdk';
 
 type UploaderFile = {
     $id: string;
@@ -16,10 +15,6 @@ export type Uploader = {
     isOpen: boolean;
     isCollapsed: boolean;
     files: UploaderFile[];
-};
-
-const createAdminClient = () => {
-    return new Client().setEndpoint(getApiEndpoint()).setMode('admin').setProject(getProjectId());
 };
 
 const temporaryStorage = () => {

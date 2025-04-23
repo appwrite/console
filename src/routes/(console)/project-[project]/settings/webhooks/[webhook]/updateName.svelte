@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -10,7 +10,7 @@
     import { onMount } from 'svelte';
     import { webhook } from './store';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     let name: string = null;
 
     onMount(async () => {

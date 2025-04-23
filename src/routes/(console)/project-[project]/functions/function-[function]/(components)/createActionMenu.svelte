@@ -6,7 +6,9 @@
     import CreateGit from '../(modals)/createGit.svelte';
     import CreateManual from '../(modals)/createManual.svelte';
     import { showCreateDeployment } from '../store';
+    import type { Models } from '@appwrite.io/console';
 
+    export let installations: Models.InstallationList;
     let showCreateCli = false;
     let showCreateGit = false;
     let showCreateManual = false;
@@ -21,6 +23,7 @@
     <svelte:fragment slot="tooltip" let:toggle>
         <ActionMenu.Root>
             <ActionMenu.Item.Button
+                badge="Recommended"
                 on:click={(e) => {
                     showCreateGit = true;
                     toggle(e);
@@ -45,5 +48,5 @@
     </svelte:fragment>
 </Popover>
 <CreateCli bind:show={showCreateCli} />
-<CreateGit bind:show={showCreateGit} />
+<CreateGit bind:show={showCreateGit} {installations} />
 <CreateManual bind:show={showCreateManual} />

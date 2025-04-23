@@ -1,13 +1,13 @@
 import { trackEvent } from '$lib/actions/analytics';
 import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
-import type { SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type WizardStore = {
     show: boolean;
     media?: string;
-    component?: typeof SvelteComponent<unknown>;
-    cover?: typeof SvelteComponent<unknown>;
+    component?: Component;
+    cover?: Component;
     interceptor?: () => Promise<void>;
     finalAction?: () => Promise<void>;
     nextDisabled: boolean;
@@ -34,7 +34,7 @@ function createWizardStore() {
         subscribe,
         set,
         start: (
-            component: typeof SvelteComponent<unknown>,
+            component: Component,
             media: string = null,
             step: number = 1,
             props: Record<string, unknown> = {}
@@ -79,7 +79,7 @@ function createWizardStore() {
 
                 return n;
             }),
-        showCover: (component: typeof SvelteComponent<unknown>) =>
+        showCover: (component: Component) =>
             update((n) => {
                 n.cover = component;
                 return n;

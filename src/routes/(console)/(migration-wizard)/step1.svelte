@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { InputSelect } from '$lib/elements/forms';
     import InputText from '$lib/elements/forms/inputText.svelte';
     import { WizardStep } from '$lib/layout';
@@ -7,7 +7,7 @@
     import { selectedProject } from '.';
     import { sdk } from '$lib/stores/sdk';
 
-    const organizations = $page.data.organizations
+    const organizations = page.data.organizations
         .teams as Models.TeamList<Models.Preferences>['teams'];
     let selectedOrg = organizations.length ? organizations[0].$id : null;
 

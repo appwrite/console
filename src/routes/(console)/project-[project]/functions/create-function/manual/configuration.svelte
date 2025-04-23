@@ -5,14 +5,13 @@
     import { Accordion, Fieldset, Layout } from '@appwrite.io/pink-svelte';
 
     export let buildCommand = '';
-    export let scopes: string[] = [];
+    export let roles: string[] = [];
 </script>
 
 <Fieldset legend="Settings">
     <Layout.Stack>
         <Accordion title="Build settings" badge="Optional">
             <Layout.Stack gap="xl">
-                Set up how your project is built.
                 <InputText
                     id="installCommand"
                     label="Install command"
@@ -29,7 +28,7 @@
                         >Learn more</Link>
                 </span>
 
-                <Roles bind:roles={scopes} />
+                <Roles bind:roles />
             </Layout.Stack>
         </Accordion>
     </Layout.Stack>

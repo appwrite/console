@@ -15,7 +15,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { IconApple, IconAppwrite, IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '$lib/components';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -32,7 +32,7 @@
     let isPlatformCreated = false;
     let isCreatingPlatform = false;
     let connectionSuccessful = false;
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     const gitCloneCode =
         '\ngit clone https://github.com/appwrite/starter-for-ios\ncd starter-for-ios\n';

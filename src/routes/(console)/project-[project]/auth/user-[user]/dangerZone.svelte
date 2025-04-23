@@ -34,12 +34,12 @@
                         <AvatarInitials size="l" name={$user.name} />
                     {:else}
                         <div class="avatar">
-                            <span class="icon-minus-sm" aria-hidden="true" />
+                            <span class="icon-minus-sm" aria-hidden="true"></span>
                         </div>
                     {/if}
                 {:else}
                     <div class="avatar">
-                        <span class="icon-anonymous" aria-hidden="true" />
+                        <span class="icon-anonymous" aria-hidden="true"></span>
                     </div>
                 {/if}
             </svelte:fragment>

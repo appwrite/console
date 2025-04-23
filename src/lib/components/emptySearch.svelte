@@ -26,7 +26,7 @@
             alignItems="center"
             wrap="wrap">
             <p class="text">Total results: 0</p>
-            <PaginationInline limit={1} offset={0} sum={0} {hidePages} />
+            <PaginationInline limit={1} offset={0} total={0} {hidePages} />
         </Layout.Stack>
     {/if}
 </Layout.Stack>

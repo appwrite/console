@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
     import { organization } from '$lib/stores/organization';
     import { project } from '../../../../store';
@@ -19,16 +19,16 @@
             title: 'Sites'
         },
         {
-            href: `${base}/project-${$project?.$id}/sites/site-${$page.params.site}`,
-            title: $page.params.site
+            href: `${base}/project-${$project?.$id}/sites/site-${page.params.site}`,
+            title: page.params.site
         },
         {
-            href: `${base}/project-${$project?.$id}/sites/site-${$page.params.site}/deployments`,
+            href: `${base}/project-${$project?.$id}/sites/site-${page.params.site}/deployments`,
             title: 'Deployments'
         },
         {
-            href: `${base}/project-${$project?.$id}/sites/site-${$page.params.site}/deployments/deployment-${$page.params.deployment}`,
-            title: $page.params.deployment
+            href: `${base}/project-${$project?.$id}/sites/site-${page.params.site}/deployments/deployment-${page.params.deployment}`,
+            title: page.params.deployment
         }
     ];
 </script>

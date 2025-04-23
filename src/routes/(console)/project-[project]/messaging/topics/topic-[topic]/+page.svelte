@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -26,7 +26,7 @@
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { base } from '$app/paths';
-    import { Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
@@ -34,16 +34,16 @@
     let subscribersByTargetId: Record<string, Models.Subscriber> = {};
     const columns = writable<Column[]>([
         { id: '$id', title: 'Subscriber ID', type: 'string', width: 200 },
-        { id: 'userName', title: 'Name', type: 'string', filter: false, width: 100 },
-        { id: 'targetId', title: 'Target ID', type: 'string', width: 140 },
-        { id: 'target', title: 'Target', type: 'string', filter: false, width: 140 },
-        { id: 'type', title: 'Type', type: 'string', width: 80 },
-        { id: '$createdAt', title: 'Created', type: 'datetime', width: 100 }
+        { id: 'userName', title: 'Name', type: 'string', filter: false, width: { min: 80 } },
+        { id: 'targetId', title: 'Target ID', type: 'string', width: { min: 200 } },
+        { id: 'target', title: 'Target', type: 'string', filter: false, width: { min: 140 } },
+        { id: 'type', title: 'Type', type: 'string', width: { min: 80 } },
+        { id: '$createdAt', title: 'Created', type: 'datetime', width: { min: 100 } }
     ]);
 
     onMount(() => {
         $targetsById = {};
-        for (const subscriber of $page.data.subscribers.subscribers) {
+        for (const subscriber of page.data.subscribers.subscribers) {
             const { target } = subscriber;
             $targetsById[target.$id] = target;
             subscribersByTargetId[target.$id] = subscriber;
@@ -59,7 +59,7 @@
         );
         const promises = targetIds.map(async (targetId) => {
             const subscriber = await sdk.forProject.messaging.createSubscriber(
-                $page.params.topic,
+                page.params.topic,
                 ID.unique(),
                 targetId
             );
@@ -87,45 +87,23 @@
 </script>
 
 <Container>
-    <div class="u-flex u-flex-vertical">
-        <div class="u-flex u-main-space-between">
-            <Typography.Title>Subscribers</Typography.Title>
-            <div class="is-only-mobile">
-                <Button
-                    on:click={() => {
-                        showAdd = true;
-                        trackEvent(Click.MessagingTargetCreateClick);
-                    }}
-                    event="create_subscriber">
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Add subscriber
-                </Button>
-            </div>
-        </div>
-        <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery
-            search={data.search}
-            placeholder="Search by subscriber ID, target ID, user ID, or type">
-            <div class="u-flex u-gap-16 is-not-mobile">
-                <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
-                <Button on:click={() => (showAdd = true)} event="create_subscriber">
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Add subscriber
-                </Button>
-            </div>
-        </SearchQuery>
-        <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
-            <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
-            </div>
-            <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
-            </div>
-        </div>
-    </div>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <SearchQuery placeholder="Search by type or IDs"></SearchQuery>
+        <Layout.Stack direction="row" inline>
+            <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
+            <ViewSelector view={View.Table} {columns} hideView />
+            <Button
+                on:click={() => {
+                    showAdd = true;
+                    trackEvent(Click.MessagingTargetCreateClick);
+                }}
+                event="create_subscriber">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add subscriber
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
+
     {#if data.subscribers.total}
         <Table columns={$columns} {data} />
 
@@ -144,7 +122,7 @@
             </div>
             <Button
                 secondary
-                href={`${base}/project-${$page.params.project}/messaging/topics/topic-${$page.params.topic}/subscribers`}>
+                href={`${base}/project-${page.params.project}/messaging/topics/topic-${page.params.topic}/subscribers`}>
                 Clear Search
             </Button>
         </EmptySearch>

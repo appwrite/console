@@ -52,37 +52,38 @@
                     </Button>
                 </Layout.Stack>
             </div>
-            <Paginator
-                items={members.memberships}
-                let:paginatedItems
-                hideFooter={members?.total <= 5}>
-                <Table.Root columns={2} let:root>
-                    <svelte:fragment slot="header" let:root>
-                        <Table.Header.Cell {root}>Members</Table.Header.Cell>
-                        <Table.Header.Cell {root}>Joined</Table.Header.Cell>
-                    </svelte:fragment>
-                    {#each paginatedItems as member}
-                        <Table.Row.Base {root}>
-                            <Table.Cell {root}>
-                                <Layout.Stack direction="row" alignItems="center" gap="s">
-                                    <AvatarInitials
-                                        size="xs"
-                                        name={member.userName
-                                            ? member.userName
-                                            : member.userEmail} />
-                                    <Layout.Stack gap="none">
-                                        <Typography.Text>
-                                            {member.userName ? member.userName : member.userEmail}
-                                        </Typography.Text>
+            <Paginator items={members.memberships} hideFooter={members?.total <= 5}>
+                {#snippet children(paginatedItems: typeof members.memberships)}
+                    <Table.Root columns={2} let:root>
+                        <svelte:fragment slot="header" let:root>
+                            <Table.Header.Cell {root}>Members</Table.Header.Cell>
+                            <Table.Header.Cell {root}>Joined</Table.Header.Cell>
+                        </svelte:fragment>
+                        {#each paginatedItems as member}
+                            <Table.Row.Base {root}>
+                                <Table.Cell {root}>
+                                    <Layout.Stack direction="row" alignItems="center" gap="s">
+                                        <AvatarInitials
+                                            size="xs"
+                                            name={member.userName
+                                                ? member.userName
+                                                : member.userEmail} />
+                                        <Layout.Stack gap="none">
+                                            <Typography.Text>
+                                                {member.userName
+                                                    ? member.userName
+                                                    : member.userEmail}
+                                            </Typography.Text>
+                                        </Layout.Stack>
                                     </Layout.Stack>
-                                </Layout.Stack>
-                            </Table.Cell>
-                            <Table.Cell {root}>
-                                <DualTimeView time={member.joined ?? member.$createdAt} />
-                            </Table.Cell>
-                        </Table.Row.Base>
-                    {/each}
-                </Table.Root>
+                                </Table.Cell>
+                                <Table.Cell {root}>
+                                    <DualTimeView time={member.joined ?? member.$createdAt} />
+                                </Table.Cell>
+                            </Table.Row.Base>
+                        {/each}
+                    </Table.Root>
+                {/snippet}
             </Paginator>
         {:else}
             <EmptyCardCloud service="members" eventSource="organization_usage" />

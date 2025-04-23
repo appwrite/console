@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button, Form, InputDomain, InputSelect, InputURL } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -12,36 +12,40 @@
     import { protocol } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { LabelCard } from '$lib/components';
-    import { StatusCode, type Models } from '@appwrite.io/console';
+    import {
+        Adapter,
+        BuildRuntime,
+        Framework,
+        StatusCode,
+        type Models
+    } from '@appwrite.io/console';
     import { statusCodeOptions } from '$lib/stores/domains';
-    import ConnectRepoModal from '../../../(components)/connectRepoModal.svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
+    import { ConnectRepoModal } from '$lib/components/git/index.js';
 
-    const routeBase = `${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`;
+    const routeBase = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
 
-    export let data;
+    let { data } = $props();
 
     let formComponent: Form;
-    let isSubmitting = writable(false);
-
-    let showConnectRepo = false;
-
-    let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = 'ACTIVE';
-    let domainName = '';
-    let redirect: string = null;
-    let statusCode = 307;
-    let branch = null;
+    let isSubmitting = $state(writable(false));
+    let showConnectRepo = $state(false);
+    let behaviour: 'REDIRECT' | 'BRANCH' | 'ACTIVE' = $state('ACTIVE');
+    let domainName = $state('');
+    let redirect: string = $state(null);
+    let statusCode = $state(307);
+    let branch: string = $state(null);
 
     onMount(() => {
         if (
-            $page.url.searchParams.has('connectRepo') &&
-            $page.url.searchParams.get('connectRepo') === 'true'
+            page.url.searchParams.has('connectRepo') &&
+            page.url.searchParams.get('connectRepo') === 'true'
         ) {
             showConnectRepo = true;
         }
-        if ($page.url.searchParams.has('domain')) {
-            domainName = $page.url.searchParams.get('domain');
+        if (page.url.searchParams.has('domain')) {
+            domainName = page.url.searchParams.get('domain');
         }
     });
 
@@ -51,7 +55,7 @@
             if (behaviour === 'BRANCH') {
                 rule = await sdk.forProject.proxy.createSiteRule(
                     domainName,
-                    $page.params.site,
+                    page.params.site,
                     branch
                 );
             } else if (behaviour === 'REDIRECT') {
@@ -62,7 +66,7 @@
                     sc
                 );
             } else if (behaviour === 'ACTIVE') {
-                rule = await sdk.forProject.proxy.createSiteRule(domainName, $page.params.site);
+                rule = await sdk.forProject.proxy.createSiteRule(domainName, page.params.site);
             }
             if (rule?.status === 'verified') {
                 await goto(routeBase);
@@ -76,6 +80,34 @@
                 type: 'error',
                 message: error.message
             });
+        }
+    }
+
+    async function connect(selectedInstallationId: string, selectedRepository: string) {
+        try {
+            await sdk.forProject.sites.update(
+                data.site.$id,
+                data.site.name,
+                data.site.framework as Framework,
+                data.site.enabled,
+                data.site.logging || undefined,
+                data.site.timeout,
+                data.site.installCommand,
+                data.site.buildCommand,
+                data.site.outputDirectory,
+                data.site.buildRuntime as BuildRuntime,
+                data.site.adapter as Adapter,
+                data.site.fallbackFile,
+                selectedInstallationId,
+                selectedRepository,
+                'main',
+                undefined,
+                undefined,
+                undefined
+            );
+            invalidate(Dependencies.SITE);
+        } catch (error) {
+            console.log(error);
         }
     }
 </script>
@@ -202,7 +234,8 @@
 {#if showConnectRepo}
     <ConnectRepoModal
         bind:show={showConnectRepo}
-        site={data.site}
+        {connect}
+        product="sites"
         onlyExisting
         callbackState={{ connectRepo: 'true' }} />
 {/if}

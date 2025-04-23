@@ -243,8 +243,11 @@
                                                 class:keepTransformTransition={shouldAnimateThemeToggle}>
                                                 <ToggleButton
                                                     bind:active={activeTheme}
-                                                    on:change={() =>
-                                                        (shouldAnimateThemeToggle = true)}
+                                                    on:change={() => {
+                                                        setTimeout(() => {
+                                                            shouldAnimateThemeToggle = true;
+                                                        }, 150);
+                                                    }}
                                                     buttons={[
                                                         {
                                                             id: 'light',
@@ -272,9 +275,10 @@
                 </div>
                 <button
                     class="account-backdrop"
+                    aria-label="Account menu"
                     on:click={() => {
                         showAccountMenu = false;
-                    }} />
+                    }}></button>
             {/if}
         </div>
     </div>

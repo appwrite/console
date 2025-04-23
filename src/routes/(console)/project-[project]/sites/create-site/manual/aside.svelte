@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Card } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
@@ -29,7 +29,7 @@
         <Button
             fullWidth
             secondary
-            href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}>
+            href={`${base}/project-${page.params.project}/sites/create-site/templates/template-${template.key}`}>
             Use template
         </Button>
     </Layout.Stack>

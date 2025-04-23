@@ -6,11 +6,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ url, route, depends, parent }) => {
     depends(Dependencies.FUNCTIONS);
 
-    const limit = getLimit(url, route, PAGE_LIMIT);
-    const page = getPage(url);
     const search = getSearch(url);
-    const view = getView(url, route, View.Grid);
-    const offset = pageToOffset(page, limit);
     const filter = {
         useCases: url.searchParams.getAll('useCase'),
         runtimes: url.searchParams.getAll('runtime')
@@ -51,14 +47,11 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
     });
 
     return {
-        offset,
-        limit,
-        view,
         filter,
         runtimes,
         useCases,
-        sum: templates.length,
-        templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit),
+        search,
+        templates,
         functions: await sdk.forProject.functions.list()
     };
 };

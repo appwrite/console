@@ -1,7 +1,7 @@
 <script lang="ts">
     import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
         EstimatedTotalBox,
@@ -23,7 +23,15 @@
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Alert, Fieldset, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Alert,
+        Divider,
+        Fieldset,
+        Icon,
+        Layout,
+        Link,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
 
     export let data;
@@ -143,7 +151,7 @@
                         collaborator,
                         undefined,
                         undefined,
-                        `${$page.url.origin}${base}/invite`
+                        `${page.url.origin}${base}/invite`
                     );
                 });
             }
@@ -185,7 +193,7 @@
 
 <Wizard
     title="Change plan"
-    href={`${base}/organization-${$page.params.organization}`}
+    href={`${base}/organization-${page.params.organization}`}
     bind:showExitModal
     confirmExit>
     <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
@@ -240,10 +248,22 @@
 
             <!-- Show email input if upgrading from free plan -->
             {#if selectedPlan !== BillingPlan.FREE && data.organization.billingPlan === BillingPlan.FREE}
-                <SelectPaymentMethod
-                    methods={data.paymentMethods}
-                    bind:value={paymentMethodId}
-                    bind:taxId />
+                <Fieldset legend="Payment">
+                    <SelectPaymentMethod
+                        methods={data.paymentMethods}
+                        bind:value={paymentMethodId}
+                        bind:taxId>
+                        <svelte:fragment slot="actions">
+                            {#if !selectedCoupon?.code}
+                                <Divider vertical style="height: 2rem" />
+                                <Button compact on:click={() => (showCreditModal = true)}>
+                                    <Icon icon={IconPlus} slot="start" size="s" />
+                                    Add credits
+                                </Button>
+                            {/if}
+                        </svelte:fragment>
+                    </SelectPaymentMethod>
+                </Fieldset>
                 <Fieldset legend="Invite members">
                     <InputTags
                         bind:tags={collaborators}
@@ -251,12 +271,6 @@
                         placeholder="Enter email address(es)"
                         id="members" />
                 </Fieldset>
-                {#if !selectedCoupon?.code}
-                    <Button text on:click={() => (showCreditModal = true)}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Add credits
-                    </Button>
-                {/if}
             {/if}
             {#if isDowngrade && selectedPlan === BillingPlan.FREE}
                 <Fieldset legend="Feedback">

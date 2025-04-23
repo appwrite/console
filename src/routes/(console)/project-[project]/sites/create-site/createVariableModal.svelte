@@ -6,7 +6,7 @@
     import { base } from '$app/paths';
     import { Icon, Layout, Selector, Button as PinkButton } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
     export let show = false;
@@ -66,9 +66,8 @@
 <Modal bind:show onSubmit={handleVariable} title="Create variables" bind:error>
     <span slot="description">
         Set the environment variables or secret that will be passed to your site. Global variables
-        can be set in <Link
-            variant="muted"
-            href={`${base}/project-${$page.params.project}/settings`}>project settings</Link
+        can be set in <Link variant="muted" href={`${base}/project-${page.params.project}/settings`}
+            >project settings</Link
         >.
     </span>
     <Layout.Stack gap="xxl">

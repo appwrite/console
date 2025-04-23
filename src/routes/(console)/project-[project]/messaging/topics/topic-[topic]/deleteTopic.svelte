@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { topic } from './store';
@@ -21,7 +21,7 @@
                 message: `${$topic.name} has been deleted`
             });
             trackEvent(Submit.MessagingTopicDelete);
-            await goto(`${base}/project-${$page.params.project}/messaging/topics`);
+            await goto(`${base}/project-${page.params.project}/messaging/topics`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.MessagingTopicDelete);

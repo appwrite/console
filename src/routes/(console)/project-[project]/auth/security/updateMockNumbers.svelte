@@ -185,7 +185,7 @@
                                 on:click={() => {
                                     deletePhoneNumber(index);
                                 }}>
-                                <span class="icon-x" aria-hidden="true" />
+                                <span class="icon-x" aria-hidden="true"></span>
                             </Button>
                         </Layout.Stack>
                     </Layout.Stack>

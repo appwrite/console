@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { CardGrid } from '$lib/components';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
@@ -17,9 +17,9 @@
     import { isRelationship, isRelationshipToMany } from '../attributes/store';
     import { deepClone } from '$lib/helpers/object';
 
-    const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
-    const documentId = $page.params.document;
+    const databaseId = page.params.database;
+    const collectionId = page.params.collection;
+    const documentId = page.params.document;
     const editing = true;
 
     function initWork() {

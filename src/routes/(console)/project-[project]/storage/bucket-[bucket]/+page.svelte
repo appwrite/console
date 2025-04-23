@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Avatar, Empty, EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -29,8 +29,8 @@
     let showDelete = false;
     let selectedFile: Models.File = null;
 
-    const projectId = $page.params.project;
-    const bucketId = $page.params.bucket;
+    const projectId = page.params.project;
+    const bucketId = page.params.bucket;
 
     function getPreview(fileId: string) {
         return (
@@ -88,11 +88,11 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search files" />
+            <SearchQuery placeholder="Search files" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button
-                href={`${base}/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/create`}
+                href={`${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}/create`}
                 event="create_file"
                 size="s">
                 <Icon icon={IconPlus} slot="start" size="s" />
@@ -123,7 +123,7 @@
                     <Table.Row.Base {root}>
                         <Table.Cell column="filename" {root}>
                             <Layout.Stack direction="row" alignItems="center">
-                                <span class="avatar is-size-small is-color-empty" />
+                                <span class="avatar is-size-small is-color-empty"></span>
                                 <span class="text u-trim">{file.name}</span>
                                 <div>
                                     <Pill warning>Pending</Pill>
@@ -143,7 +143,7 @@
                                     class="button is-only-icon is-text"
                                     aria-label="Delete item"
                                     on:click|preventDefault={() => deleteFile(file)}>
-                                    <span class="icon-trash" aria-hidden="true" />
+                                    <span class="icon-trash" aria-hidden="true"></span>
                                 </button>
                             </div>
                         </Table.Cell>
@@ -209,7 +209,7 @@
                 </Button>
                 <Button
                     secondary
-                    href={`${base}/project-${$page.params.project}/storage/bucket-${$page.params.bucket}`}>
+                    href={`${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}`}>
                     Clear Search
                 </Button>
             </div>

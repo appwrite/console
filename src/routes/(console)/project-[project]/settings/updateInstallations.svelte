@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Avatar, CardGrid, PaginationInline } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -56,10 +56,10 @@
     }
 
     function configureGitHub() {
-        const redirect = new URL($page.url);
+        const redirect = new URL(page.url);
         redirect.searchParams.append('alert', 'installation-updated');
         const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('project', $page.params.project);
+        target.searchParams.set('project', page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
         target.searchParams.set('mode', 'admin');
@@ -67,7 +67,7 @@
     }
 
     async function navigateInstallations() {
-        const next = new URL($page.url);
+        const next = new URL(page.url);
         next.searchParams.set('offset', offset.toString());
         await goto(next, {
             noScroll: true
@@ -97,18 +97,18 @@
                 <Table.Root
                     let:root
                     columns={[
-                        { id: 'repo', width: { min: 150, max: 500 } },
+                        { id: 'owner', width: { min: 150, max: 500 } },
                         { id: 'updated', width: { min: 150, max: 500 } },
                         { id: 'actions', width: 60 }
                     ]}>
                     <svelte:fragment slot="header" let:root>
-                        <Table.Header.Cell column="repo" {root}>Repository</Table.Header.Cell>
+                        <Table.Header.Cell column="owner" {root}>Owner</Table.Header.Cell>
                         <Table.Header.Cell column="updated" {root}>Updated</Table.Header.Cell>
                         <Table.Header.Cell column="actions" {root} />
                     </svelte:fragment>
                     {#each installations as installation, i}
                         <Table.Row.Base {root}>
-                            <Table.Cell column="repo" {root}>
+                            <Table.Cell column="owner" {root}>
                                 <Layout.Stack direction="row" gap="s" alignItems="center">
                                     <Avatar alt={installation.provider} size="xs">
                                         <Icon
@@ -130,7 +130,8 @@
                                         class="button is-text is-only-icon"
                                         aria-label="more options"
                                         on:click={toggle}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                                        <span class="icon-dots-horizontal" aria-hidden="true"
+                                        ></span>
                                     </button>
                                     <ActionMenu.Root slot="tooltip">
                                         <ActionMenu.Item.Anchor
@@ -159,7 +160,7 @@
                         <p class="text">Total installations: {total}</p>
                         <PaginationInline
                             {limit}
-                            sum={total}
+                            {total}
                             on:change={navigateInstallations}
                             bind:offset />
                     </Layout.Stack>

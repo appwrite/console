@@ -4,7 +4,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID, Region as ConsoleRegion } from '@appwrite.io/console';
     import { createProject } from './wizard/store';
@@ -14,7 +14,7 @@
     import { Modal } from '$lib/components';
     import type { Region } from '$lib/sdk/billing';
 
-    const teamId = $page.params.organization;
+    const teamId = page.params.organization;
     export let regions: Array<Region> = [];
     export let showCreateProjectCloud: boolean;
 
@@ -60,16 +60,15 @@
     });
 </script>
 
-<Modal bind:show={showCreateProjectCloud} title={'Create project'}
-    ><CreateProject
+<Modal bind:show={showCreateProjectCloud} title={'Create project'} onSubmit={create}>
+    <CreateProject
         showTitle={false}
         bind:id={$createProject.id}
         bind:projectName={$createProject.name}
         bind:region={$createProject.region}
         {regions}>
-        <svelte:fragment slot="footer"
-            ><Button.Button type="button" variant="primary" size="s" on:click={create}>
-                Create</Button.Button
-            ></svelte:fragment>
     </CreateProject>
+    <svelte:fragment slot="footer">
+        <Button.Button type="submit" variant="primary" size="s">Create</Button.Button>
+    </svelte:fragment>
 </Modal>

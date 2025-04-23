@@ -19,6 +19,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         offset,
         limit,
         query,
+        installations: data.installations,
         activeDeployment: data.function.deploymentId
             ? await sdk.forProject.functions.getDeployment(
                   params.function,

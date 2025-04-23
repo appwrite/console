@@ -2,7 +2,7 @@
     import { Card, Modal } from '$lib/components';
     import { Image, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import RepoDark from './(images)/repositoryDark.svg';
     import RepoLight from './(images)/repositoryLight.svg';
     import TemplateDark from './(images)/templateDark.svg';
@@ -20,7 +20,7 @@
                 variant="secondary"
                 padding="xs"
                 radius="s"
-                href={`${base}/project-${$page.params.project}/sites/create-site/templates?framework=React&framework=Vue.js&framework=Next.js&framework=SvelteKit&framework=Nuxt`}>
+                href={`${base}/project-${page.params.project}/sites/create-site/templates`}>
                 <Image
                     alt="repositories"
                     radius="xxs"
@@ -39,7 +39,7 @@
                 variant="secondary"
                 padding="xs"
                 radius="s"
-                href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
+                href={`${base}/project-${page.params.project}/sites/create-site/repositories`}>
                 <Image
                     alt="repositories"
                     radius="xxs"
@@ -58,7 +58,7 @@
     <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
         Or simply drag and drop your files to create a site <Link
             variant="muted"
-            href={`${base}/project-${$page.params.project}/sites/create-site/manual`}>
+            href={`${base}/project-${page.params.project}/sites/create-site/manual`}>
             manually</Link
         >.
     </Typography.Text>

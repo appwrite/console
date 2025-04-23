@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -22,7 +22,7 @@
 
     let showCreate = false;
     let isCreationDisabled = false;
-    const project = $page.params.project;
+    const project = page.params.project;
 
     async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;
@@ -47,7 +47,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search databases" />
+            <SearchQuery placeholder="Search by name or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector
@@ -81,7 +81,7 @@
             total={data.databases.total} />
     {:else if data.search}
         <EmptySearch target="databases" hidePagination>
-            <Button href={`${base}/project-${$page.params.project}/databases`} size="s" secondary
+            <Button href={`${base}/project-${page.params.project}/databases`} size="s" secondary
                 >Clear Search</Button>
         </EmptySearch>
     {:else}

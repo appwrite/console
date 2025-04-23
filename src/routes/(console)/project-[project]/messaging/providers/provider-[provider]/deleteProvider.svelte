@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { provider } from './store';
@@ -20,7 +20,7 @@
                 message: `${$provider.name} has been deleted`
             });
             trackEvent(Submit.MessagingProviderDelete);
-            await goto(`${base}/project-${$page.params.project}/messaging/providers`);
+            await goto(`${base}/project-${page.params.project}/messaging/providers`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.MessagingProviderDelete);

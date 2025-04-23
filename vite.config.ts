@@ -1,8 +1,9 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { sentrySvelteKit } from '@sentry/sveltekit';
+import { svelteTesting } from '@testing-library/svelte/vite';
 
-const config = defineConfig({
+export default defineConfig({
     plugins: [
         sentrySvelteKit({
             adapter: 'auto',
@@ -35,31 +36,30 @@ const config = defineConfig({
     },
     server: {
         port: 3000
-    }
-});
-
-const testConfig = defineConfig({
-    resolve: {
-        // hotfix for https://github.com/vitest-dev/vitest/issues/2834
-        conditions: ['browser']
     },
     test: {
-        include: ['tests/unit/**/*.test.ts'],
-        environment: 'jsdom',
-        globals: true,
-        pool: 'threads',
-        setupFiles: ['./tests/unit/setup.ts'],
-        server: {
-            deps: {
-                inline: ['@analytics/type-utils']
+        workspace: [
+            {
+                extends: './vite.config.ts',
+                plugins: [svelteTesting()],
+                test: {
+                    name: 'client',
+                    environment: 'jsdom',
+                    clearMocks: true,
+                    include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+                    exclude: ['src/lib/server/**'],
+                    setupFiles: ['./vitest-setup-client.ts']
+                }
+            },
+            {
+                extends: './vite.config.ts',
+                test: {
+                    name: 'server',
+                    environment: 'node',
+                    include: ['src/**/*.{test,spec}.{js,ts}'],
+                    exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
+                }
             }
-        }
+        ]
     }
 });
-
-export default process.env.VITEST
-    ? {
-          ...config,
-          ...testConfig
-      }
-    : config;

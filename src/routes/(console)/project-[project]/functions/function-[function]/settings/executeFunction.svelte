@@ -16,7 +16,7 @@
         <Layout.Stack gap="xxxl" direction="row" wrap="wrap">
             <Layout.Stack gap="xxxs" inline>
                 <Typography.Caption variant="400">Runtime</Typography.Caption>
-                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                     <Layout.Stack direction="row" gap="xxs" alignItems="center">
                         <SvgIcon size={16} iconSize="small" name={$func.runtime.split('-')[0]} />
                         {capitalize($func.runtime)}
@@ -25,18 +25,13 @@
             </Layout.Stack>
             <Layout.Stack gap="xxxs" inline>
                 <Typography.Caption variant="400">Updated</Typography.Caption>
-                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
-                    <Tooltip>
-                        {capitalize(timeFromNow($func.$updatedAt))}
-                        <span slot="tooltip">
-                            {toLocaleDateTime($func.$updatedAt)}
-                        </span>
-                    </Tooltip>
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
+                    {toLocaleDateTime($func.$updatedAt)}
                 </Typography.Text>
             </Layout.Stack>
             <Layout.Stack gap="xxxs" inline>
                 <Typography.Caption variant="400">Created</Typography.Caption>
-                <Typography.Text variant="m-500" color="--fgcolor-neutral-primary">
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                     {toLocaleDateTime($func.$createdAt)}
                 </Typography.Text>
             </Layout.Stack>

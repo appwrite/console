@@ -25,7 +25,7 @@
 </script>
 
 <div>
-    <Card.Base padding="s">
+    <Card.Base padding="xs">
         <div class="u-flex u-gap-24 u-flex-vertical-mobile u-cross-center">
             <div
                 style:--p-file-preview-border-color="transparent"

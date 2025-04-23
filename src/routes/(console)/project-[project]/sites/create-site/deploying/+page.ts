@@ -4,7 +4,7 @@ import type { PageLoad } from './$types';
 import { Query } from '@appwrite.io/console';
 import { Dependencies } from '$lib/constants';
 
-export const load: PageLoad = async ({ url, depends }) => {
+export const load: PageLoad = async ({ url, depends, params }) => {
     depends(Dependencies.DEPLOYMENT);
     depends(Dependencies.SITE);
     if (!url.searchParams.has('site')) error(404, 'Site is not optional');

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
@@ -100,7 +100,7 @@
             });
 
             await goto(
-                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                `${base}/project-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
             );
         } catch (e) {
             addNotification({
@@ -129,13 +129,13 @@
 <Wizard
     title="Create site"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/sites/`}
+    href={`${base}/project-${page.params.project}/sites/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
             <Layout.Stack gap="s">
                 <Typography.Text color="--fgcolor-neutral-primary">
-                    Upload a tar.gz containing your function source code
+                    Upload a tar.gz containing your site source code
                 </Typography.Text>
                 <Upload.Dropzone extensions={['gz', 'tar']} bind:files maxSize={10000000} required>
                     <Layout.Stack alignItems="center" gap="s">

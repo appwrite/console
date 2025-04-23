@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Confirm } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -13,7 +13,7 @@
     import { Runtime } from '@appwrite.io/console';
 
     export let show = false;
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     let error = '';
 
     const dispatch = createEventDispatcher();

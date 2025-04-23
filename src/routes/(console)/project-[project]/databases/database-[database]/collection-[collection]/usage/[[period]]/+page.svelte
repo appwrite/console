@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Usage } from '$lib/layout';
     import Container from '$lib/layout/container.svelte';
     import type { PageData } from './$types';
@@ -12,7 +12,7 @@
 
 <Container>
     <Usage
-        path={`${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}/usage`}
+        path={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/usage`}
         {total}
         {count}
         countMetadata={{

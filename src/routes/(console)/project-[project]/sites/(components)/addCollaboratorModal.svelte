@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Modal } from '$lib/components';
     import { InputEmail, Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -19,7 +19,7 @@
 
     const dispatch = createEventDispatcher();
 
-    const url = `${$page.url.origin}${base}/invite`;
+    const url = `${page.url.origin}${base}/invite`;
 
     let email: string,
         name: string,

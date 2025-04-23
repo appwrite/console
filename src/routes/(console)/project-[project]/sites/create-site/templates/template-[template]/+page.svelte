@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
@@ -32,11 +32,11 @@
         Repositories,
         RepositoryBehaviour
     } from '$lib/components/git';
-    import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
     import { consoleVariables } from '$routes/(console)/store';
     import { connectGitHub } from '$lib/stores/git';
     import Domain from '../../domain.svelte';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let data;
 
@@ -164,7 +164,7 @@
                 });
 
                 await goto(
-                    `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                    `${base}/project-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
                 );
             } catch (e) {
                 console.log(e);
@@ -194,7 +194,7 @@
 <Wizard
     title="Create site"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/sites/`}
+    href={`${base}/project-${page.params.project}/sites/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -282,13 +282,13 @@
                                         bind:selectedRepository
                                         product="sites"
                                         action="button"
-                                        on:connect={(e) => {
+                                        connect={(e) => {
                                             trackEvent(Click.ConnectRepositoryClick, {
                                                 from: 'template-wizard'
                                             });
-                                            repository.set(e.detail);
-                                            repositoryName = e.detail.name;
-                                            selectedRepository = e.detail.id;
+                                            repository.set(e);
+                                            repositoryName = e.name;
+                                            selectedRepository = e.id;
                                             showSiteConfig = true;
                                         }} />
                                 {/if}

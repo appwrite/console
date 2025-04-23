@@ -45,7 +45,7 @@
         }
     }
 
-    $: if (backdrop) {
+    $: if (backdrop && show && !document.body.contains(backdrop)) {
         document.body.appendChild(backdrop);
     }
 
@@ -82,7 +82,7 @@
                                     class:is-warning={state === 'warning'}
                                     class:is-danger={state === 'error'}
                                     class:is-info={state === 'info'}>
-                                    <span class={`icon-${icon}`} aria-hidden="true" />
+                                    <span class={`icon-${icon}`} aria-hidden="true"></span>
                                 </div>
                             {/if}
 
@@ -104,7 +104,7 @@
                                         from: 'button'
                                     })}
                                 on:click={closeModal}>
-                                <span class="icon-x" aria-hidden="true" />
+                                <span class="icon-x" aria-hidden="true"></span>
                             </button>
                         {/if}
                     </div>
@@ -149,9 +149,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        :global() {
-            background-color: hsl(240 5% 8% / 0.6);
-        }
+        background-color: hsl(240 5% 8% / 0.6);
 
         & :global(.modal-form) {
             position: unset;

@@ -1,5 +1,18 @@
-import type { Column as PinkColumn } from '@appwrite.io/pink-svelte/dist/table';
 import type { Writable } from 'svelte/store';
+
+export type PinkColumn = {
+    id: string;
+    width?:
+        | {
+              min: number;
+              max: number;
+          }
+        | {
+              min: number;
+          }
+        | number;
+    hide?: boolean;
+};
 
 export type WritableValue<T> = T extends Writable<infer U> ? U : never;
 
@@ -11,7 +24,6 @@ export function isHTMLInputElement(el: unknown): el is HTMLInputElement {
     return el instanceof HTMLInputElement;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type Prettify<T> = T & {};
 
 const columnTypes = [

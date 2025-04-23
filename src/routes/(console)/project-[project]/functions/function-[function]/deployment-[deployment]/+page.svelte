@@ -3,52 +3,45 @@
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { type Models } from '@appwrite.io/console';
+    import { page } from '$app/state';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Activate from '../(modals)/activateModal.svelte';
-    import Cancel from '../(modals)/cancel.svelte';
+    import Cancel from '../(modals)/cancelDeploymentModal.svelte';
     import DeploymentCard from '../(components)/deploymentCard.svelte';
     import Delete from '../(modals)/deleteModal.svelte';
-    import { Accordion, Card, Layout, Logs, Spinner, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Accordion,
+        ActionMenu,
+        Card,
+        Layout,
+        Logs,
+        Popover,
+        Spinner,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
     import { app } from '$lib/stores/app';
+    import { getOutputDownload, getSourceDownload } from '../store';
 
     export let data;
 
-    let logs = '';
     let showDelete = false;
     let showCancel = false;
     let showActivate = false;
 
-    function handleActivate() {
-        invalidate(Dependencies.DEPLOYMENTS);
-    }
-
-    //TODO: implement output download
-    function getDownload(deploymentId: string) {
-        return (
-            sdk.forProject.functions.getDeploymentDownload(data.func.$id, deploymentId).toString() +
-                '&mode=admin',
-            DeploymentDownloadType.Source
-        );
-    }
-
     onMount(() => {
-        logs = data.deployment.buildLogs;
-
         const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
             'console',
             (message) => {
                 if (
                     message.events.includes(
-                        `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
+                        `functions.${page.params.function}.deployments.${page.params.deployment}.update`
                     )
                 ) {
-                    logs = message.payload['logs'];
                     if (message.payload.status === 'ready') {
                         invalidate(Dependencies.DEPLOYMENT);
                     }
@@ -75,14 +68,11 @@
                 return undefined;
         }
     }
-
-    $: console.log(logs);
-    $: console.log(data.deployment);
 </script>
 
 <Container>
     <DeploymentCard proxyRuleList={data.proxyRuleList} deployment={data.deployment}>
-        <svelte:fragment slot="footer">
+        {#snippet footer()}
             <Layout.Stack direction="row" inline>
                 {#if data.deployment.status === 'processing' || data.deployment.status === 'building' || data.deployment.status === 'waiting'}
                     <Button
@@ -92,8 +82,34 @@
                         }}>Cancel</Button>
                 {/if}
 
-                {#if data.deployment.sourceSize > 0}
-                    <Button secondary href={getDownload(data.deployment.$id)}>Download</Button>
+                {#if !!data.deployment?.sourceSize || !!data.deployment?.sourceSize}
+                    <Popover let:toggle placement="bottom-end">
+                        <Button secondary on:click={toggle}>Download</Button>
+                        <svelte:fragment slot="tooltip" let:toggle>
+                            <ActionMenu.Root noPadding>
+                                <ActionMenu.Item.Anchor
+                                    on:click={toggle}
+                                    href={getSourceDownload(
+                                        page.params.function,
+                                        data.deployment.$id
+                                    )}
+                                    external>
+                                    Download source
+                                </ActionMenu.Item.Anchor>
+
+                                <ActionMenu.Item.Anchor
+                                    disabled={data.deployment?.status !== 'ready'}
+                                    on:click={toggle}
+                                    href={getOutputDownload(
+                                        page.params.function,
+                                        data.deployment.$id
+                                    )}
+                                    external>
+                                    Download output
+                                </ActionMenu.Item.Anchor>
+                            </ActionMenu.Root>
+                        </svelte:fragment>
+                    </Popover>
                 {/if}
 
                 {#if data.func.deploymentId !== data.deployment.$id && data.deployment.status === 'ready'}
@@ -104,14 +120,14 @@
                         }}>Activate</Button>
                 {/if}
             </Layout.Stack>
-        </svelte:fragment>
+        {/snippet}
     </DeploymentCard>
 
     <Card.Base padding="s">
         <Accordion
             title="Deployment logs"
             badge={capitalize(data.deployment.status)}
-            open={data.deployment.status !== 'ready'}
+            open
             badgeType={badgeTypeDeployment(data.deployment.status)}
             hideDivider>
             <Layout.Stack gap="xl">
@@ -128,7 +144,7 @@
                     {#if ['processing', 'building'].includes(data.deployment.status)}
                         <Typography.Code color="--fgcolor-neutral-secondary">
                             <Layout.Stack direction="row" alignItems="center" inline>
-                                <p use:timer={{ start: data.deployment.$createdAt }} />
+                                <p use:timer={{ start: data.deployment.$createdAt }}></p>
                                 <Spinner size="s" />
                             </Layout.Stack>
                         </Typography.Code>
@@ -145,4 +161,7 @@
 
 <Delete selectedDeployment={data.deployment} bind:showDelete />
 <Cancel selectedDeployment={data.deployment} bind:showCancel />
-<Activate selectedDeployment={data.deployment} bind:showActivate on:activated={handleActivate} />
+<Activate
+    selectedDeployment={data.deployment}
+    bind:showActivate
+    on:activated={() => invalidate(Dependencies.DEPLOYMENTS)} />

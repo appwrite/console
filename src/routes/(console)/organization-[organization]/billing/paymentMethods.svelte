@@ -230,7 +230,7 @@
                                 </Typography.Text>
                             </Tooltip>
                         </Layout.Stack>
-                        <ActionMenu.Root slot="tooltip">
+                        <ActionMenu.Root slot="tooltip" let:toggle>
                             {#if $paymentMethods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
@@ -245,7 +245,10 @@
                             <Divider />
                             <ActionMenu.Item.Button
                                 leadingIcon={IconPlus}
-                                on:click={() => (showPayment = true)}>
+                                on:click={(e) => {
+                                    toggle(e);
+                                    showPayment = true;
+                                }}>
                                 Add new payment method
                             </ActionMenu.Item.Button>
                         </ActionMenu.Root>
@@ -262,7 +265,7 @@
                         <Button secondary icon on:click={toggle}>
                             <Icon icon={IconPlus} size="s" />
                         </Button>
-                        <ActionMenu.Root slot="tooltip">
+                        <ActionMenu.Root slot="tooltip" let:toggle>
                             {#if $paymentMethods.total}
                                 {#each filteredPaymentMethods as paymentMethod}
                                     <ActionMenu.Item.Button
@@ -277,7 +280,10 @@
                             <Divider />
                             <ActionMenu.Item.Button
                                 leadingIcon={IconPlus}
-                                on:click={() => (showPayment = true)}>
+                                on:click={(e) => {
+                                    toggle(e);
+                                    showPayment = true;
+                                }}>
                                 Add new payment method
                             </ActionMenu.Item.Button>
                         </ActionMenu.Root>

@@ -158,7 +158,7 @@
                 {#if creditList?.total > limit}
                     <div class="u-flex u-main-space-between">
                         <p class="text">Total credits: {creditList?.total}</p>
-                        <PaginationInline {limit} bind:offset sum={creditList?.total} hidePages />
+                        <PaginationInline {limit} bind:offset total={creditList?.total} hidePages />
                     </div>
                 {/if}
             {:else}

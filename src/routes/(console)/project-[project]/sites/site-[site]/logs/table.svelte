@@ -11,46 +11,47 @@
 
     let openSheet = false;
     let selectedLogId: string = null;
+
+    $: filteredColumns = columns.filter((c) => !c.exclude);
 </script>
 
-<Table.Root {columns} let:root>
+<Table.Root columns={filteredColumns} let:root>
     <svelte:fragment slot="header" let:root>
-        {#each columns.filter((c) => !c.exclude) as { id, title }}
+        {#each filteredColumns as { id, title }}
             <Table.Header.Cell column={id} {root}>{title}</Table.Header.Cell>
         {/each}
     </svelte:fragment>
     {#each logs.executions as log}
         <Table.Row.Button
             {root}
-            on:click={() => {
+            on:click={(e) => {
+                e.stopPropagation();
                 openSheet = true;
                 selectedLogId = log.$id;
             }}>
-            {#each columns.filter((c) => !c.exclude) as column}
+            {#each filteredColumns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
                         {#key column.id}
                             <Id value={log.$id}>{log.$id}</Id>
                         {/key}
+                    {:else if column.id === 'requestMethod'}
+                        <Typography.Code size="m">
+                            {log.requestMethod}
+                        </Typography.Code>
+                    {:else if column.id === 'responseStatusCode'}
+                        <div>
+                            <Badge
+                                variant="secondary"
+                                type={log.responseStatusCode >= 400 ? 'error' : 'success'}
+                                content={log.responseStatusCode.toString()} />
+                        </div>
+                    {:else if column.id === 'requestPath'}
+                        <Typography.Code size="m">
+                            {log.requestPath}
+                        </Typography.Code>
                     {:else if column.id === '$createdAt'}
                         <DualTimeView time={log.$createdAt} />
-                    {:else if column.id === 'responseStatusCode'}
-                        {log.responseStatusCode}
-                    {:else if column.id === 'requestPath'}
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
-                            <div>
-                                <Badge
-                                    variant="secondary"
-                                    type={log.responseStatusCode >= 400 ? 'error' : 'success'}
-                                    content={log.responseStatusCode.toString()} />
-                            </div>
-                            <Typography.Code size="m">
-                                {log.requestMethod}
-                            </Typography.Code>
-                            <Typography.Code size="m">
-                                {log.requestPath}
-                            </Typography.Code>
-                        </Layout.Stack>
                     {/if}
                 </Table.Cell>
             {/each}

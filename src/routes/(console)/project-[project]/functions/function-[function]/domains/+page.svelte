@@ -1,150 +1,42 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { EmptySearch, PaginationWithLimit } from '$lib/components/index.js';
     import { Button } from '$lib/elements/forms';
-    import Link from '$lib/elements/link.svelte';
     import Container from '$lib/layout/container.svelte';
-    import { protocol } from '$routes/(console)/store.js';
     import type { Models } from '@appwrite.io/console';
-    import {
-        IconDotsHorizontal,
-        IconExternalLink,
-        IconPlus,
-        IconRefresh,
-        IconTrash
-    } from '@appwrite.io/pink-icons-svelte';
-    import {
-        ActionMenu,
-        Card,
-        Empty,
-        Icon,
-        Layout,
-        Popover,
-        Table
-    } from '@appwrite.io/pink-svelte';
+    import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
     import SearchQuery from '$lib/components/searchQuery.svelte';
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import CreatePreviewDomainModal from './createPreviewDomainModal.svelte';
+    import Table from './table.svelte';
 
-    export let data;
+    let { data } = $props();
 
-    let showDelete = false;
-    let showRetry = false;
+    let showDelete = $state(false);
+    let showRetry = $state(false);
     let selectedDomain: Models.ProxyRule = null;
-    let showPreviewDomainModal = false;
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search domain" />
-        <Popover padding="none" let:toggle placement="bottom-end">
-            <Button
-                on:click={(event) => {
-                    toggle(event);
-                    trackEvent(Click.DomainCreateClick, {
-                        source: 'functions_domain_overview'
-                    });
-                }}>
-                <Icon icon={IconPlus} size="s" />
-                Add domain
-            </Button>
-            <svelte:fragment slot="tooltip">
-                <ActionMenu.Root>
-                    <ActionMenu.Item.Anchor
-                        href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/domains/add-domain`}>
-                        Custom domain
-                    </ActionMenu.Item.Anchor>
-                    <ActionMenu.Item.Button on:click={() => (showPreviewDomainModal = true)}>
-                        Preview domain
-                    </ActionMenu.Item.Button>
-                </ActionMenu.Root>
-            </svelte:fragment>
-        </Popover>
+        <SearchQuery placeholder="Search domain" />
+        <Button
+            href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/domains/add-domain`}
+            on:click={() => {
+                trackEvent(Click.DomainCreateClick, {
+                    source: 'functions_domain_overview'
+                });
+            }}>
+            <Icon icon={IconPlus} size="s" />
+            Add domain
+        </Button>
     </Layout.Stack>
-
     {#if data.domains.total}
-        <Table.Root
-            let:root
-            columns={[
-                { id: 'domain', width: { min: 200 } },
-                { id: 'redirect' },
-                { id: 'branch' },
-                { id: 'actions', width: 40 }
-            ]}>
-            <svelte:fragment slot="header" let:root>
-                <Table.Header.Cell column="domain" {root}>Domain</Table.Header.Cell>
-                <Table.Header.Cell column="redirect" {root}>Redirect to</Table.Header.Cell>
-                <Table.Header.Cell column="branch" {root}>Production branch</Table.Header.Cell>
-                <Table.Header.Cell column="actions" {root} />
-            </svelte:fragment>
-            {#each data.domains.rules as domain}
-                <Table.Row.Base {root}>
-                    <Table.Cell column="domain" {root}>
-                        <Link external href={`${$protocol}${domain.domain}`} variant="quiet">
-                            <Layout.Stack direction="row" alignItems="center" gap="xs">
-                                {domain.domain}
-                                <Icon icon={IconExternalLink} size="s" />
-                            </Layout.Stack>
-                        </Link>
-                    </Table.Cell>
-                    <Table.Cell column="redirect" {root}>
-                        {domain?.redirectUrl || 'No redirect'}
-                        {domain?.redirectStatusCode ? `(${domain.redirectStatusCode})` : ''}
-                    </Table.Cell>
-                    <Table.Cell column="branch" {root}>
-                        {domain.deploymentVcsProviderBranch || '-'}
-                    </Table.Cell>
-                    <Table.Cell column="actions" {root}>
-                        <Popover let:toggle placement="bottom-start" padding="none">
-                            <Button
-                                text
-                                icon
-                                on:click={(e) => {
-                                    e.preventDefault();
-                                    toggle(e);
-                                }}>
-                                <Icon icon={IconDotsHorizontal} size="s" />
-                            </Button>
-
-                            <svelte:fragment slot="tooltip" let:toggle>
-                                <ActionMenu.Root>
-                                    {#if domain.status !== 'verified'}
-                                        <ActionMenu.Item.Button
-                                            leadingIcon={IconRefresh}
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                selectedDomain = domain;
-                                                showRetry = true;
-                                                toggle(e);
-                                            }}>
-                                            Retry
-                                        </ActionMenu.Item.Button>
-                                    {/if}
-                                    <ActionMenu.Item.Button
-                                        status="danger"
-                                        leadingIcon={IconTrash}
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            selectedDomain = domain;
-                                            showDelete = true;
-                                            toggle(e);
-                                            trackEvent(Click.DomainDeleteClick, {
-                                                source: 'functions_domain_overview'
-                                            });
-                                        }}>
-                                        Delete
-                                    </ActionMenu.Item.Button>
-                                </ActionMenu.Root>
-                            </svelte:fragment>
-                        </Popover>
-                    </Table.Cell>
-                </Table.Row.Base>
-            {/each}
-        </Table.Root>
+        <Table domains={data.domains} />
 
         <PaginationWithLimit
             name="Domains"
@@ -180,7 +72,7 @@
 
                     <Button
                         secondary
-                        href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/domains/add-domain`}
+                        href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/domains/add-domain`}
                         size="s">
                         Add domain
                     </Button>
@@ -196,8 +88,4 @@
 
 {#if showRetry}
     <RetryDomainModal bind:show={showRetry} {selectedDomain} />
-{/if}
-
-{#if showPreviewDomainModal}
-    <CreatePreviewDomainModal bind:show={showPreviewDomainModal} />
 {/if}

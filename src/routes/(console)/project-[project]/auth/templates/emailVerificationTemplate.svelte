@@ -3,13 +3,13 @@
     import LocaleOptions from './localeOptions.svelte';
     import { loadEmailTemplate } from './+page.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Layout } from '@appwrite.io/pink-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     let locale = 'en';
     let loading = false;

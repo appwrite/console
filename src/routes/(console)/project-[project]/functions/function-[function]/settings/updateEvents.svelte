@@ -2,7 +2,7 @@
     import CardGrid from '$lib/components/cardGrid.svelte';
     import Empty from '$lib/components/empty.svelte';
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import Form from '$lib/elements/forms/form.svelte';
@@ -18,7 +18,7 @@
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     const eventSet: Writable<Set<string>> = writable(new Set($func.events));
     let showEvents = false;
     let eventValue: string;

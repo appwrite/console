@@ -3,16 +3,16 @@
     import PaymentMethods from './paymentMethods.svelte';
     import BillingAddress from './billingAddress.svelte';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { confirmPayment } from '$lib/stores/stripe';
     import { Typography } from '@appwrite.io/pink-svelte';
 
     let showPayment = false;
 
     onMount(async () => {
-        if ($page.url.searchParams.has('clientSecret')) {
-            const clientSecret = $page.url.searchParams.get('clientSecret');
-            const paymentMethodId = $page.url.searchParams.get('paymentMethodId');
+        if (page.url.searchParams.has('clientSecret')) {
+            const clientSecret = page.url.searchParams.get('clientSecret');
+            const paymentMethodId = page.url.searchParams.get('paymentMethodId');
             await confirmPayment('', clientSecret, paymentMethodId);
         }
     });

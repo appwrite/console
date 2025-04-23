@@ -17,10 +17,10 @@
     const dispatch = createEventDispatcher();
 
     let id: string;
-    let name: string;
-    let showCustomId = false;
     let error: string;
+    let showCustomId = false;
     let disabled: boolean = false;
+    let name: string = 'Appwrite project';
 
     async function create() {
         try {

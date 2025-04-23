@@ -47,7 +47,6 @@
     helper={error || helper}
     state={error ? 'error' : 'default'}
     {spellcheck}
-    autocorrect={spellcheck ? undefined : 'off'}
     on:invalid={handleInvalid}
     on:input
     bind:value>

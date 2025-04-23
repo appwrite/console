@@ -13,6 +13,12 @@
                         title={notification.title}
                         status={notification.type}
                         description={notification.message}
+                        actions={notification.buttons?.map((button) => {
+                            return {
+                                label: button.name,
+                                onClick: button.method
+                            };
+                        })}
                         on:dismiss={() => dismissNotification(notification.id)} />
                 </span>
             {/each}

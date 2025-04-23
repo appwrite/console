@@ -6,7 +6,7 @@
     import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
     import { timer } from '$lib/actions/timer';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Delete from './deleteDeploymentModal.svelte';
     import RedeployModal from '../../redeployModal.svelte';
     import Cancel from './cancelDeploymentModal.svelte';
@@ -40,7 +40,7 @@
     {#each data.deploymentList.deployments as deployment}
         <Table.Row.Link
             {root}
-            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}>
+            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
@@ -64,12 +64,12 @@
                         {#if ['waiting'].includes(deployment.status)}
                             -
                         {:else if ['processing', 'building'].includes(deployment.status)}
-                            <span use:timer={{ start: deployment.$createdAt }} />
+                            <span use:timer={{ start: deployment.$createdAt }}></span>
                         {:else}
                             {formatTimeDetailed(deployment.buildDuration)}
                         {/if}
                     {:else if column.id === 'totalSize'}
-                        {calculateSize(deployment.totalSize)}
+                        {calculateSize(deployment?.totalSize ?? 0)}
                     {:else if column.id === 'sourceSize'}
                         {calculateSize(deployment.sourceSize)}
                     {:else if column.id === 'buildSize'}

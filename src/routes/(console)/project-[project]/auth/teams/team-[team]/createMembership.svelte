@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button, InputEmail, InputText, InputTags } from '$lib/elements/forms';
@@ -25,7 +25,7 @@
                 email || undefined,
                 undefined,
                 undefined,
-                `${$page.url.origin}${base}/invite`,
+                `${page.url.origin}${base}/invite`,
                 name || undefined
             );
             addNotification({

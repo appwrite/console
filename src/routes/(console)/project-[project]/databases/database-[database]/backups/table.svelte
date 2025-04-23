@@ -219,9 +219,8 @@
                     <Button extraCompact on:click={toggle}>
                         <Icon icon={IconDotsHorizontal} />
                     </Button>
-
                     <svelte:fragment slot="tooltip" let:toggle>
-                        <ActionMenu.Root width="180px">
+                        <ActionMenu.Root width="180px" noPadding>
                             {#if backup.status === 'completed'}
                                 <ActionMenu.Item.Button
                                     trailingIcon={IconRefresh}
@@ -236,6 +235,16 @@
                                 </ActionMenu.Item.Button>
                             {/if}
                             <ActionMenu.Item.Button
+                                trailingIcon={IconDuplicate}
+                                on:click={(e) => {
+                                    toggle(e);
+                                    copy(backup.$id);
+                                    showDropdown[index] = false;
+                                    trackEvent(Click.BackupCopyIdClick);
+                                }}>
+                                Copy ID
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
                                 status="danger"
                                 trailingIcon={IconTrash}
                                 on:click={(e) => {
@@ -243,18 +252,9 @@
                                     showDelete = true;
                                     selectedBackup = backup;
                                     showDropdown[index] = false;
-                                    trackEvent('click_backup_delete');
+                                    trackEvent(Click.BackupDeleteClick);
                                 }}>
                                 Delete
-                            </ActionMenu.Item.Button>
-                            <ActionMenu.Item.Button
-                                trailingIcon={IconDuplicate}
-                                on:click={(e) => {
-                                    toggle(e);
-                                    copy(backup.$id);
-                                    showDropdown[index] = false;
-                                }}>
-                                Copy ID
                             </ActionMenu.Item.Button>
                         </ActionMenu.Root>
                     </svelte:fragment>

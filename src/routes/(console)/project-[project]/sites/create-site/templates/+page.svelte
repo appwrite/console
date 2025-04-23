@@ -1,20 +1,20 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { EmptySearch, PaginationWithLimit, SvgIcon } from '$lib/components';
+    import { EmptySearch, Paginator, SvgIcon } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Wizard from '$lib/layout/wizard.svelte';
     import { goto } from '$app/navigation';
     import { debounce } from '$lib/helpers/debounce.js';
     import { Card, Layout, Accordion, Selector, Tooltip } from '@appwrite.io/pink-svelte';
     import { capitalize } from '$lib/helpers/string';
     import { app } from '$lib/stores/app.js';
-    import { getFrameworkIcon } from '../../store.js';
+    import { getFrameworkIcon } from '$lib/stores/sites.js';
 
     export let data;
 
     function applyFilter(filter: string, value: string, event: CustomEvent) {
-        const target = new URL($page.url);
+        const target = new URL(page.url);
         if (event?.detail) {
             if (
                 !target.searchParams
@@ -34,29 +34,36 @@
         goto(target.toString());
     }
 
-    function applySearch(event: CustomEvent<string>) {
-        debounce(() => {
-            const value = event.detail;
-            const target = new URL($page.url);
+    let searchText = page.url.searchParams.get('search') ?? '';
 
-            if (value.length > 0) {
-                target.searchParams.set('search', value);
-            } else {
-                target.searchParams.delete('search');
-            }
-            target.searchParams.delete('page');
-            goto(target.toString(), { keepFocus: true });
-        }, 250)();
+    const debouncedApplySearch = debounce((value: string) => {
+        const trimmed = value.trim();
+        const url = new URL(page.url);
+
+        if (trimmed.length > 0) {
+            url.searchParams.set('search', trimmed);
+        } else {
+            url.searchParams.delete('search');
+        }
+
+        url.searchParams.delete('page');
+        goto(url.toString(), { keepFocus: true });
+    }, 250);
+
+    function applySearch(event: CustomEvent<string>) {
+        searchText = event.detail;
+        debouncedApplySearch(event.detail);
     }
 
     function clearSearch() {
-        const target = new URL($page.url);
+        searchText = '';
+        const target = new URL(page.url);
         target.search = '';
         goto(target.toString());
     }
 
     $: isChecked = (useCase: string) => {
-        return $page.url.searchParams
+        return page.url.searchParams
             .getAll('useCase')
             .some((param) => param.toLowerCase() === useCase.toLowerCase());
     };
@@ -67,7 +74,7 @@
 </svelte:head>
 
 <Wizard
-    href={`${base}/project-${$page.params.project}/sites/`}
+    href={`${base}/project-${page.params.project}/sites/`}
     title="Create site"
     invertColumns
     stickySide
@@ -76,7 +83,7 @@
         <Layout.Stack gap="xl">
             <InputSearch
                 placeholder="Search templates"
-                value={$page.url.searchParams.get('search')}
+                value={searchText}
                 on:clear={clearSearch}
                 on:change={applySearch} />
 
@@ -105,7 +112,7 @@
                                     id={framework}
                                     size="s"
                                     label={framework?.split('-')?.join(' ')}
-                                    checked={$page.url.searchParams
+                                    checked={page.url.searchParams
                                         .getAll('framework')
                                         .includes(framework)}
                                     on:change={(e) => applyFilter('framework', framework, e)} />
@@ -118,50 +125,51 @@
     </svelte:fragment>
     <Layout.Stack gap="l">
         {#if data.templates?.length > 0}
-            <Layout.Grid columns={3} columnsXS={2} columnsXXS={1}>
-                {#each data.templates as template}
-                    {@const templateFrameworks = template.frameworks.map((t) => t.name)}
+            <Paginator items={data.templates} limit={12} hidePages={false} hasLimit>
+                {#snippet children(paginatedItems: typeof data.templates)}
+                    <Layout.Grid columns={3} columnsXS={2} columnsXXS={1}>
+                        {#each paginatedItems as template (template.name)}
+                            {@const templateFrameworks = template.frameworks.map((t) => t.name)}
 
-                    <Card.Link
-                        variant="secondary"
-                        href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}
-                        padding="xxs">
-                        <Card.Media
-                            title={template.name}
-                            src={$app.themeInUse === 'dark'
-                                ? template?.screenshotDark ||
-                                  `${base}/images/sites/screenshot-placeholder-dark.svg`
-                                : template?.screenshotLight ||
-                                  `${base}/images/sites/screenshot-placeholder-light.svg`}
-                            alt={template.name}
-                            avatar>
-                            <svelte:fragment slot="avatar">
-                                <Tooltip>
-                                    <SvgIcon
-                                        name={getFrameworkIcon(templateFrameworks[0])}
-                                        iconSize="small" />
-                                    <svelte:fragment slot="tooltip">
-                                        {capitalize(templateFrameworks[0])}
+                            <Card.Link
+                                variant="secondary"
+                                href={`${base}/project-${page.params.project}/sites/create-site/templates/template-${template.key}`}
+                                padding="xxs">
+                                <Card.Media
+                                    title={template.name}
+                                    src={$app.themeInUse === 'dark'
+                                        ? template?.screenshotDark ||
+                                          `${base}/images/sites/screenshot-placeholder-dark.svg`
+                                        : template?.screenshotLight ||
+                                          `${base}/images/sites/screenshot-placeholder-light.svg`}
+                                    alt={template.name}
+                                    avatar>
+                                    <svelte:fragment slot="avatar">
+                                        <Tooltip>
+                                            <SvgIcon
+                                                name={getFrameworkIcon(templateFrameworks[0])}
+                                                iconSize="small" />
+                                            <svelte:fragment slot="tooltip">
+                                                {capitalize(templateFrameworks[0])}
+                                            </svelte:fragment>
+                                        </Tooltip>
                                     </svelte:fragment>
-                                </Tooltip>
-                            </svelte:fragment>
-                        </Card.Media>
-                    </Card.Link>
-                {/each}
-            </Layout.Grid>
+                                </Card.Media>
+                            </Card.Link>
+                        {/each}
+                    </Layout.Grid>
+                {/snippet}
+            </Paginator>
         {:else}
             <EmptySearch
                 hidePagination
                 target="templates"
-                search={$page.url.searchParams.get('search')}>
-                <Button secondary on:click={clearSearch}>Clear search</Button>
+                search={page.url.searchParams.get('search')}>
+                <Button
+                    secondary
+                    href={`${base}/project-${page.params.project}/sites/create-site/templates`}
+                    >Clear search</Button>
             </EmptySearch>
         {/if}
-
-        <PaginationWithLimit
-            name="Templates"
-            limit={data.limit}
-            offset={data.offset}
-            total={data.sum} />
     </Layout.Stack>
 </Wizard>

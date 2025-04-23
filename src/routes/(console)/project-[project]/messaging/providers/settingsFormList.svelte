@@ -34,7 +34,7 @@
     {#if Array.isArray(input)}
         {#each input as i}
             <div class="u-flex u-flex-basis-50-percent">
-                <SettingsFormInput input={i} bind:params bind:files fullWidth />
+                <SettingsFormInput input={i} bind:params bind:files />
             </div>
         {/each}
     {:else}

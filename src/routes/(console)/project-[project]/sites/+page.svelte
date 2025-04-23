@@ -53,12 +53,14 @@
             }
         });
     });
+
+    $: console.log(data.siteList);
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search by name" />
+            <SearchQuery placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector {columns} view={data.view} hideColumns hideView={!data.siteList.total} />
@@ -88,7 +90,7 @@
             single
             allowCreate={$canWriteSites}
             href="https://appwrite.io/docs/products/sites"
-            description="Deploy, manage, and scale your web applications effortlessly with Sites. "
+            description="Deploy and manage your web your web applications with Sites. "
             target="site"
             src={$app.themeInUse === 'dark' ? EmptyDark : EmptyLight}
             on:click={() => (show = true)}>

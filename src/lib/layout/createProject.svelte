@@ -39,7 +39,7 @@
         <link rel="preload" as="image" href={getFlagUrl(region.flag)} />
     {/each}
 </svelte:head>
-<form>
+<form on:submit|preventDefault>
     <Layout.Stack direction="column" gap="xxl">
         {#if showTitle}
             <Typography.Title size="l">Create your project</Typography.Title>
@@ -58,14 +58,14 @@
                                 size="s"
                                 on:click={() => {
                                     showCustomId = true;
-                                }}><Icon icon={IconPencil} /> Project ID</Tag>
+                                }}><Icon slot="start" icon={IconPencil} size="s" /> Project ID</Tag>
                         </div>
                     {/if}
                     <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
                 </Layout.Stack>
                 {#if isCloud && regions.length > 0}
-                    <Layout.Stack gap="xs"
-                        ><Input.Select
+                    <Layout.Stack gap="xs">
+                        <Input.Select
                             bind:value={region}
                             placeholder="Select a region"
                             options={getRegions()}

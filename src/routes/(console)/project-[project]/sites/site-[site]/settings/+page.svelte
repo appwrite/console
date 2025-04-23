@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import UpdateBuildSettings from './updateBuildSettings.svelte';
     import UpdateTimeout from './updateTimeout.svelte';
     import UpdateRuntimeSettings from './updateRuntimeSettings.svelte';
@@ -20,7 +20,7 @@
     export let data;
 
     const sdkCreateVariable = async (key: string, value: string, secret: boolean) => {
-        await sdk.forProject.sites.createVariable($page.params.site, key, value, secret);
+        await sdk.forProject.sites.createVariable(page.params.site, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
@@ -30,25 +30,19 @@
         value: string,
         secret: boolean
     ) => {
-        await sdk.forProject.sites.updateVariable(
-            $page.params.site,
-            variableId,
-            key,
-            value,
-            secret
-        );
+        await sdk.forProject.sites.updateVariable(page.params.site, variableId, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
     const sdkDeleteVariable = async (variableId: string) => {
-        await sdk.forProject.sites.deleteVariable($page.params.site, variableId);
+        await sdk.forProject.sites.deleteVariable(page.params.site, variableId);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
     onMount(async () => {
         if (
-            $page.url.searchParams.has('newInstallation') &&
-            $page.url.searchParams.get('newInstallation') === 'true'
+            page.url.searchParams.has('newInstallation') &&
+            page.url.searchParams.get('newInstallation') === 'true'
         ) {
             showConnectRepo.set(true);
         }
