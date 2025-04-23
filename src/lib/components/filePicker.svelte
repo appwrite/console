@@ -21,7 +21,8 @@
         ToggleButton,
         Selector,
         Empty,
-        Card
+        Card,
+        Divider
     } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { IconCheck, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
@@ -146,21 +147,22 @@
 <Form {onSubmit}>
     <Modal bind:open={show} title="Select file" size="l">
         <Layout.Stack direction="row" height="50vh">
-            <aside>
+            <!-- min-width to avoid a layout-shift -->
+            <aside style="min-width: 200px">
                 <Typography.Caption variant="500">Buckets</Typography.Caption>
                 {#await buckets}
                     <div class="u-flex u-main-center">
                         <div class="loader"></div>
                     </div>
                 {:then response}
-                    <ActionMenu.Root>
+                    <ActionMenu.Root width="200px">
                         {#each response.buckets as bucket}
                             {@const isSelected = bucket.$id === selectedBucket}
-                            <ActionMenu.Item.Button
-                                on:click={() => selectBucket(bucket)}
-                                leadingIcon={isSelected ? IconCheck : undefined}>
-                                {bucket.name}
-                            </ActionMenu.Item.Button>
+                            <div class="action-button" class:active-item={isSelected}>
+                                <ActionMenu.Item.Button on:click={() => selectBucket(bucket)}>
+                                    {bucket.name}
+                                </ActionMenu.Item.Button>
+                            </div>
                         {:else}
                             <ActionMenu.Item.Button>No buckets found</ActionMenu.Item.Button>
                         {/each}
@@ -168,17 +170,21 @@
                 {/await}
             </aside>
 
+            <Divider vertical />
+
             <Layout.Stack>
                 {#await buckets then response}
                     {#if response?.total}
                         {#if currentBucket}
                             <Layout.Stack>
-                                <Layout.Stack direction="row" alignItems="center">
-                                    <Typography.Title>{currentBucket?.name}</Typography.Title>
-                                    <Id value={currentBucket?.$id} event="bucket">
-                                        {currentBucket?.$id}
-                                    </Id>
-                                </Layout.Stack>
+                                {#key currentBucket?.$id}
+                                    <Layout.Stack direction="row" alignItems="center">
+                                        <Typography.Title>{currentBucket?.name}</Typography.Title>
+                                        <Id value={currentBucket?.$id} event="bucket">
+                                            {currentBucket?.$id}
+                                        </Id>
+                                    </Layout.Stack>
+                                {/key}
                                 <Layout.Stack direction="row" alignItems="center">
                                     <InputSearch
                                         placeholder="Search files"
@@ -244,7 +250,8 @@
                                                     <Card.Selector
                                                         group="files"
                                                         name="files"
-                                                        title="files"
+                                                        padding="xxs"
+                                                        title={file.name}
                                                         value={file.$id}
                                                         src={getPreview(
                                                             currentBucket.$id,
@@ -290,6 +297,7 @@
                                                             <div
                                                                 class="u-inline-flex u-cross-center u-gap-12">
                                                                 <Selector.Radio
+                                                                    size="s"
                                                                     name="file"
                                                                     value={file.$id}
                                                                     bind:group={selectedFile} />
@@ -332,7 +340,8 @@
                                                 secondary
                                                 slot="actions"
                                                 on:click={() => ($search = '')}
-                                                >Clear search</Button>
+                                                >Clear search
+                                            </Button>
                                         </Empty>
                                     {:else}
                                         <Empty title="No files found within this bucket.">
@@ -341,7 +350,8 @@
                                                 slot="actions"
                                                 disabled={uploading}
                                                 on:click={() => fileSelector.click()}
-                                                >Upload file</Button>
+                                                >Upload file
+                                            </Button>
                                         </Empty>
                                     {/if}
                                 {/await}
@@ -365,8 +375,25 @@
             <Layout.Stack direction="row" justifyContent="flex-end">
                 <Button text on:click={closeModal}>Cancel</Button>
                 <Button submit disabled={selectedBucket === null || selectedFile === null}
-                    >Select</Button>
+                    >Select
+                </Button>
             </Layout.Stack>
         </svelte:fragment>
     </Modal>
 </Form>
+
+<style>
+    .action-button {
+        width: 100%;
+        margin-block: 0.125rem;
+
+        & :global(button) {
+            width: 100%;
+        }
+
+        &.active-item {
+            border-radius: var(--border-radius-s);
+            background-color: var(--bgcolor-neutral-secondary, #f4f4f7);
+        }
+    }
+</style>

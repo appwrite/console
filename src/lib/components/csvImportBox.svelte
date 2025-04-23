@@ -26,17 +26,25 @@
      */
     const importItems: Writable<ImportItemsMap> = writable(new Map());
 
-    async function showCompletionNotification(databaseId: string, collectionId: string) {
+    async function showCompletionNotification(
+        databaseId: string,
+        collectionId: string,
+        status: string,
+        errors: string = ''
+    ) {
         const projectId = page.params.project;
         await invalidate(Dependencies.DOCUMENTS);
         const url = `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
 
+        const type = status === 'completed' ? 'success' : 'error';
+        const message = status === 'completed' ? 'CSV import finished successfully.' : `${errors}`;
+
         addNotification({
-            type: 'success',
+            type,
+            message,
             isHtml: true,
-            message: `CSV import finished successfully.`,
             buttons:
-                collectionId === page.params.collection
+                collectionId === page.params.collection || type === 'error'
                     ? undefined
                     : [
                           {
@@ -86,8 +94,11 @@
             return next;
         });
 
-        if (status === 'completed') {
-            await showCompletionNotification(databaseId, collectionId);
+        if (status === 'completed' || status === 'failed') {
+            // extract clean message from nested backend error.
+            const match = importData.errors.join('').match(/message: '(.*)' Message:/i);
+            const actualMessage = match?.[1];
+            await showCompletionNotification(databaseId, collectionId, status, actualMessage);
         }
     }
 
@@ -114,11 +125,13 @@
         }
     }
 
-    function text(status: string) {
+    function text(status: string, collectionName: string = '') {
         if (status === 'completed') {
             return 'CSV import complete';
         } else if (status === 'failed') {
             return 'CSV import failed';
+        } else if (status === 'processing') {
+            return `Importing CSV file${collectionName ? ` to ${collectionName}` : ''}`;
         } else {
             return 'Preparing CSV for import...';
         }
@@ -177,14 +190,8 @@
                                 <div
                                     class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                     <Typography.Text>
-                                        {text(value.status)}
+                                        {text(value.status, value.collection)}
                                     </Typography.Text>
-
-                                    {#if value.collection}
-                                        <Typography.Caption variant="400">
-                                            {value.collection}
-                                        </Typography.Caption>
-                                    {/if}
                                 </div>
                                 <div
                                     class="progress-bar-container"
