@@ -14,7 +14,7 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[project]/store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     let currentIndex = 0;
@@ -46,7 +46,7 @@
             });
     }
 
-    $: filteredModalAlerts = filterModalAlerts($bottomModalAlerts, $page.route.id);
+    $: filteredModalAlerts = filterModalAlerts($bottomModalAlerts, page.route.id);
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 
@@ -93,7 +93,10 @@
         <div class="alert-container">
             <article class="card">
                 {#key currentModalAlert.id}
-                    <button class="icon-inline-tag" on:click={() => handleClose()}>
+                    <button
+                        aria-label="Close modal"
+                        class="icon-inline-tag"
+                        on:click={() => handleClose()}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -129,17 +132,19 @@
 
                                 <div class="u-flex u-gap-10">
                                     <button
+                                        aria-label="Previous"
                                         class="icon-cheveron-left"
                                         on:click={showPrevious}
                                         disabled={currentIndex === 0}
-                                        class:active={currentIndex > 0} />
+                                        class:active={currentIndex > 0}></button>
 
                                     <button
+                                        aria-label="Next"
                                         class="icon-cheveron-right"
                                         on:click={showNext}
                                         disabled={currentIndex === filteredModalAlerts.length - 1}
                                         class:active={currentIndex !==
-                                            filteredModalAlerts.length - 1} />
+                                            filteredModalAlerts.length - 1}></button>
                                 </div>
                             </div>
                         {/if}
@@ -203,7 +208,10 @@
             <div class="alert-container">
                 <article class="card">
                     {#key currentModalAlert.id}
-                        <button class="icon-inline-tag" on:click={() => handleClose()}>
+                        <button
+                            aria-label="Close modal"
+                            class="icon-inline-tag"
+                            on:click={() => handleClose()}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="20"
@@ -239,18 +247,20 @@
 
                                     <div class="u-flex u-gap-10">
                                         <button
+                                            aria-label="Previous"
                                             class="icon-cheveron-left"
                                             on:click={showPrevious}
                                             disabled={currentIndex === 0}
-                                            class:active={currentIndex > 0} />
+                                            class:active={currentIndex > 0}></button>
 
                                         <button
+                                            aria-label="Next"
                                             class="icon-cheveron-right"
                                             on:click={showNext}
                                             disabled={currentIndex ===
                                                 filteredModalAlerts.length - 1}
                                             class:active={currentIndex !==
-                                                filteredModalAlerts.length - 1} />
+                                                filteredModalAlerts.length - 1}></button>
                                     </div>
                                 </div>
                             {/if}
@@ -319,9 +329,6 @@
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
                         <h3 class="body-text-2 u-bold">New features available</h3>
-                        <button on:click={hideAllModalAlerts}>
-                            <span class="icon-x" />
-                        </button>
                     </div>
 
                     <span class="u-width-fit-content">

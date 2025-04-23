@@ -1,6 +1,6 @@
-<script lang="ts">
-    import { page } from '$app/stores';
-    import { Button, Form, FormList, InputTextarea } from '$lib/elements/forms';
+<!-- <script lang="ts">
+    import { page } from '$app/state';
+    import { Button, Form, InputTextarea } from '$lib/elements/forms';
     import ResetSms from './resetSms.svelte';
     import { baseSmsTemplate, smsTemplate } from './store';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,7 +11,7 @@
     import type { SmsTemplateLocale, SmsTemplateType } from '@appwrite.io/console';
 
     export let loading = false;
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     let openResetModal = false;
 
     let eventType = Submit.SmsUpdateInviteTemplate;
@@ -66,26 +66,24 @@
     $: isButtonDisabled = deepEqual($smsTemplate, $baseSmsTemplate);
 </script>
 
-<Box class="u-position-relative">
+<Box>
     {#if loading}
         <div
             class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
             style="inset-inline-start: 0;">
-            <div class="loader" />
+            <div class="loader"></div>
             <p class="text">Loading template...</p>
         </div>
     {/if}
     <div class:u-opacity-0={loading} style={loading ? 'pointer-events: none' : ''}>
         <Form onSubmit={saveSmsTemplate}>
-            <FormList gap={8}>
-                <InputTextarea
-                    bind:value={$smsTemplate.message}
-                    id="message"
-                    label="Message"
-                    placeholder="Enter your message" />
-            </FormList>
+            <InputTextarea
+                bind:value={$smsTemplate.message}
+                id="message"
+                label="Message"
+                placeholder="Enter your message" />
 
-            <div class="u-sep-block-start u-margin-block-start-24" />
+            <div class="u-sep-block-start u-margin-block-start-24"></div>
 
             <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
                 <Button on:click={() => (openResetModal = true)} text>Reset changes</Button>
@@ -95,4 +93,4 @@
     </div>
 </Box>
 
-<ResetSms bind:show={openResetModal} />
+<ResetSms bind:show={openResetModal} /> -->

@@ -14,7 +14,7 @@
         teamSearcher,
         userSearcher
     } from '$lib/commandCenter/searchers';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { base } from '$app/paths';
     import {
         canSeeBuckets,
@@ -68,7 +68,7 @@
                 goto(`${base}/project-${$project.$id}/messaging`);
             },
             keys: ['g', 'm'],
-            disabled: $page.url.pathname.endsWith('messaging') || !$canSeeMessages,
+            disabled: page.url.pathname.endsWith('messaging') || !$canSeeMessages,
             group: 'navigation'
         },
         {
@@ -122,6 +122,7 @@
 <style>
     .layout-level-progress-bars {
         gap: 1rem;
+        z-index: 1;
         display: flex;
         flex-direction: column;
 

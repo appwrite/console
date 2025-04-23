@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Container, Usage } from '$lib/layout';
 
     export let data;
@@ -12,8 +12,7 @@
 
 <Container>
     <Usage
-        title="Sites"
-        path={`${base}/project-${$page.params.project}/sites/usage`}
+        path={`${base}/project-${page.params.project}/sites/usage`}
         countMetadata={{
             legend: 'Sites',
             title: 'Total sites'

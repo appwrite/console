@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { ComponentType } from 'svelte';
+    import type { Component } from 'svelte';
 
-    export let icon: ComponentType;
+    export let icon: Component;
     export let iconSize: number | undefined = undefined;
     export let iconColor: string | undefined = undefined;
 </script>

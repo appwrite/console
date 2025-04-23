@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { CopyInput, Modal } from '$lib/components';
     import { Button, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
@@ -9,7 +9,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Alert } from '@appwrite.io/pink-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     export let provider: Models.AuthProvider;
     export let show = false;
@@ -47,7 +47,7 @@
             : provider.secret;
 </script>
 
-<Modal {error} onSubmit={update} size="big" bind:show on:close>
+<Modal {error} onSubmit={update} size="l" bind:show on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 settings</svelte:fragment>
     <p>
         To use {provider.name} authentication in your application, first fill in this form. For more

@@ -12,18 +12,15 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { base } from '$app/paths';
 
     export let data;
     let showRollback = false;
 
-    let unsubscribe: { (): void };
-
     onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes(`sites.${$page.params.site}.deployments.*`)) {
-                console.log('test');
+        return sdk.forConsole.client.subscribe('console', (response) => {
+            if (response.events.includes(`sites.${page.params.site}.deployments.*`)) {
                 invalidate(Dependencies.SITE);
             }
         });
@@ -93,7 +90,6 @@
 
         <Divider />
 
-        <!-- TODO: mobile view table doesn't shrink -->
         <Layout.GridFraction gap="xxl" start={1} end={2} breakpoint="m">
             <DomainsOverview proxyRuleList={data.proxyRuleList} />
             <DeploymentsOverview

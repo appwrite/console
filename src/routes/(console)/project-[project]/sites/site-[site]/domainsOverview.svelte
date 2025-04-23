@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Badge, Divider, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import OpenOnMobileModal from '../(components)/openOnMobileModal.svelte';
     import { timeFromNow } from '$lib/helpers/date';
@@ -11,13 +11,14 @@
     import { Button } from '$lib/elements/forms';
     import { Card, Trim } from '$lib/components';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { RuleTrigger } from '$lib/stores/sdk';
 
     export let proxyRuleList: Models.ProxyRuleList;
 
     let showDomainQR = false;
     let selectedDomainURL: string;
 
-    $: rules = proxyRuleList?.rules?.filter((rule) => rule.trigger === 'manual') ?? [];
+    $: rules = proxyRuleList?.rules?.filter((rule) => rule.trigger === RuleTrigger.MANUAL) ?? [];
 </script>
 
 <Layout.Stack>
@@ -26,15 +27,15 @@
             <Typography.Text variant="l-500" color="--fgcolor-neutral-primary">
                 Domains
             </Typography.Text>
-            <Badge variant="secondary" content={proxyRuleList?.total.toString()} size="s" />
+            <Badge variant="secondary" content={(rules?.length ?? 0).toString()} size="s" />
         </Layout.Stack>
         <Button
             secondary
-            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains`}>
+            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`}>
             View all
         </Button>
     </Layout.Stack>
-    <Card padding="xs" radius="s" isTile>
+    <Card padding="xs" radius="s">
         <Layout.Stack>
             {#if rules.length <= 1}
                 <Layout.Stack gap="l">
@@ -56,7 +57,7 @@
                                     source: 'sites_domain_overview'
                                 });
                             }}
-                            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/domains/add-domain`}>
+                            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}>
                             Add domain
                         </Button>
                     </div>
@@ -95,7 +96,6 @@
                         on:click={() => {
                             showDomainQR = true;
                             selectedDomainURL = rule.domain;
-                            console.log(rule.domain);
                         }}>
                         <Icon icon={IconQrcode} />
                     </Button>
@@ -109,5 +109,5 @@
 </Layout.Stack>
 
 {#if showDomainQR && selectedDomainURL}
-    <OpenOnMobileModal bind:show={showDomainQR} siteURL={selectedDomainURL} />
+    <OpenOnMobileModal bind:show={showDomainQR} {proxyRuleList} selectedUrl={selectedDomainURL} />
 {/if}

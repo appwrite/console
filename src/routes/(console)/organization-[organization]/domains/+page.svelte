@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
-    import { EmptySearch, PaginationWithLimit } from '$lib/components/index.js';
+    import { page } from '$app/state';
+    import { EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components/index.js';
     import { Button } from '$lib/elements/forms';
     import Link from '$lib/elements/link.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -9,7 +9,6 @@
     import { protocol } from '$routes/(console)/store.js';
     import {
         IconDotsHorizontal,
-        IconExternalLink,
         IconPlus,
         IconRefresh,
         IconTrash
@@ -30,6 +29,8 @@
     import { app } from '$lib/stores/app';
     import type { Domain } from '$lib/sdk/domains';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { columns } from './store';
+    import { View } from '$lib/helpers/load';
 
     export let data;
 
@@ -40,60 +41,60 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search domains" />
-        <Button
-            on:click={() => {
-                trackEvent(Click.DomainCreateClick, {
-                    source: 'organization_domain_overview'
-                });
-            }}
-            href={`${base}/organization-${$page.params.organization}/domains/add-domain`}>
-            <Icon icon={IconPlus} size="s" />
-            Add domain
-        </Button>
+        <SearchQuery placeholder="Search domains" />
+        <Layout.Stack direction="row" gap="m" inline>
+            <ViewSelector view={View.Table} {columns} hideView />
+            <Button
+                on:click={() => {
+                    trackEvent(Click.DomainCreateClick, {
+                        source: 'organization_domain_overview'
+                    });
+                }}
+                href={`${base}/organization-${page.params.organization}/domains/add-domain`}>
+                <Icon icon={IconPlus} size="s" />
+                Add domain
+            </Button>
+        </Layout.Stack>
     </Layout.Stack>
 
     {#if data.domains.total}
-        <Table.Root
-            let:root
-            columns={[
-                { id: 'domain' },
-                { id: 'registrar' },
-                { id: 'nameservers' },
-                { id: 'expiry_date' },
-                { id: 'renewal' },
-                { id: 'auto_renewal' },
-                { id: 'actions', width: 40 }
-            ]}>
+        <Table.Root let:root columns={[...$columns, { id: 'actions', width: 40 }]}>
             <svelte:fragment slot="header" let:root>
-                <Table.Header.Cell column="domain" {root}>Domain</Table.Header.Cell>
-                <Table.Header.Cell column="registrar" {root}>Registrar</Table.Header.Cell>
-                <Table.Header.Cell column="nameservers" {root}>Nameservers</Table.Header.Cell>
-                <Table.Header.Cell column="expiry_date" {root}>Expiry date</Table.Header.Cell>
-                <Table.Header.Cell column="renewal" {root}>Renewal</Table.Header.Cell>
-                <Table.Header.Cell column="auto_renewal" {root}>Auto renewal</Table.Header.Cell>
-                <Table.Header.Cell column="actions" {root} />
+                {#each $columns as { id, title }}
+                    <Table.Header.Cell column={id} {root}>
+                        {title}
+                    </Table.Header.Cell>
+                {/each}
+                <Table.Header.Cell {root} column="actions"></Table.Header.Cell>
             </svelte:fragment>
             {#each data.domains.domains as domain}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/organization-${$page.params.organization}/domains/domain-${domain.$id}`}>
-                    <Table.Cell column="domain" {root}>
-                        <Link external icon href={`${$protocol}${domain.domain}`} variant="quiet">
-                            {domain.domain}
-                        </Link>
-                    </Table.Cell>
-                    <Table.Cell column="registrar" {root}>{domain?.registrar || '-'}</Table.Cell>
-                    <Table.Cell column="nameservers" {root}
-                        >{domain?.nameservers || '-'}</Table.Cell>
-                    <Table.Cell column="expiry_date" {root}>
-                        {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
-                    </Table.Cell>
-                    <Table.Cell column="renewal" {root}>
-                        {domain.renewal ? toLocaleDateTime(domain.renewal) : '-'}
-                    </Table.Cell>
-                    <Table.Cell column="auto_renewal" {root}
-                        >{domain.autoRenewal ? 'On' : 'Off'}</Table.Cell>
+                    href={`${base}/organization-${page.params.organization}/domains/domain-${domain.$id}`}>
+                    {#each $columns as column}
+                        <Table.Cell column={column.id} {root}>
+                            {#if column.id === 'domain'}
+                                <Link
+                                    external
+                                    icon
+                                    href={`${$protocol}${domain.domain}`}
+                                    variant="quiet">
+                                    {domain.domain}
+                                </Link>
+                            {:else if column.id === 'registrar'}
+                                {domain.registrar || '-'}
+                            {:else if column.id === 'nameservers'}
+                                {domain.nameservers || '-'}
+                            {:else if column.id === 'expiry_date'}
+                                {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
+                            {:else if column.id === 'renewal'}
+                                {domain?.renewal ? toLocaleDateTime(domain.renewal) : '-'}
+                            {:else if column.id === 'auto_renewal'}
+                                {domain?.autoRenewal ? 'On' : 'Off'}
+                            {/if}
+                        </Table.Cell>
+                    {/each}
+
                     <Table.Cell column="actions" {root}>
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Popover let:toggle placement="bottom-end" padding="none">
@@ -190,7 +191,7 @@
                                 source: 'organization_domain_overview'
                             });
                         }}
-                        href={`${base}/organization-${$page.params.organization}/domains/add-domain`}
+                        href={`${base}/organization-${page.params.organization}/domains/add-domain`}
                         size="s">
                         Add domain
                     </Button>

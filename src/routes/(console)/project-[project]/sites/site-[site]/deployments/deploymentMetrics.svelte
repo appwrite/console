@@ -3,19 +3,19 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { SiteUsageRange, type Models } from '@appwrite.io/console';
+    import { SiteUsageRange } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { UsageCard } from '$lib/components';
 
-    export let deploymentList: Models.DeploymentList;
-    let range = SiteUsageRange.ThirtyDays;
+    const now = new Date();
     const rangeOptions = [
         { value: SiteUsageRange.TwentyFourHours, label: 'Last 24 hours' },
         { value: SiteUsageRange.ThirtyDays, label: 'Last 30 days' },
         { value: SiteUsageRange.NinetyDays, label: 'Last 90 days' }
     ];
-    const now = new Date();
+
+    let range = SiteUsageRange.ThirtyDays;
     let metrics = [
         {
             id: 'buildsTotal',
@@ -61,7 +61,7 @@
             metrics = metrics;
 
             try {
-                const usage = await sdk.forProject.sites.getUsage($page.params.site, range);
+                const usage = await sdk.forProject.sites.getUsage(page.params.site, range);
                 metrics = metrics.map((metric) => {
                     metric.value = usage[metric.id] ?? '-';
                     return metric;

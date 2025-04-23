@@ -97,15 +97,15 @@
                     <div class="u-flex u-cross-center u-gap-16">
                         <div class="icon-wrapper">
                             {#if hasError(entityCounter)}
-                                <i class="icon-exclamation" />
+                                <i class="icon-exclamation"></i>
                             {:else if isLoading(entityCounter)}
                                 <div class="u-flex">
-                                    <span class="loader" />
+                                    <span class="loader"></span>
                                 </div>
                             {:else if hasSucceeded(entityCounter)}
-                                <i class="icon-check" />
+                                <i class="icon-check"></i>
                             {:else}
-                                <i class="icon-clock" />
+                                <i class="icon-clock"></i>
                             {/if}
                         </div>
 

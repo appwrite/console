@@ -3,7 +3,7 @@
     import type { RegionList } from '$lib/sdk/billing';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { Flag, ID, Region } from '@appwrite.io/console';
+    import { ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -16,7 +16,7 @@
     let isLoading = false;
     let id: string;
     let startAnimation = false;
-    let projectName = '';
+    let projectName = 'Appwrite project';
     let region = Region.Default;
     export let data: { regions: RegionList | null };
 
@@ -111,16 +111,15 @@
                 regions={isCloud ? data.regions.regions : []}
                 bind:projectName
                 bind:id
-                bind:region>
-                <svelte:fragment slot="submit"
-                    ><Layout.Stack direction="row" justifyContent="flex-end"
-                        ><Button.Button
-                            type="button"
-                            variant="primary"
-                            size="s"
-                            on:click={createProject}>
-                            Create</Button.Button>
-                    </Layout.Stack></svelte:fragment>
+                bind:region
+                on:submit={createProject}>
+                <svelte:fragment slot="submit">
+                    <Layout.Stack direction="row" justifyContent="flex-end">
+                        <Button.Button autofocus type="submit" variant="primary" size="s">
+                            Create
+                        </Button.Button>
+                    </Layout.Stack>
+                </svelte:fragment>
             </CreateProject>
         </Card.Base>
     {/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { base } from '$app/paths';
-    import { AvatarInitials, EmptySearch } from '$lib/components';
+    import { AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import DeleteMembership from '../deleteMembership.svelte';
@@ -16,7 +16,7 @@
     let selectedMembership: Models.Membership;
     let showDelete = false;
 
-    const project = $page.params.project;
+    const project = page.params.project;
 </script>
 
 <Container>
@@ -60,7 +60,7 @@
                                 showDelete = true;
                                 trackEvent('click_delete_membership');
                             }}>
-                            <span class="icon-trash" aria-hidden="true" />
+                            <span class="icon-trash" aria-hidden="true"></span>
                         </button>
                     </Table.Cell>
                 </Table.Row.Link>

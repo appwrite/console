@@ -36,7 +36,7 @@
                     class="button is-text is-only-icon"
                     style:--button-size="1.5rem"
                     aria-label="close popup">
-                    <span class="icon-x" aria-hidden="true" />
+                    <span class="icon-x" aria-hidden="true"></span>
                 </button>
             </div>
         </slot>

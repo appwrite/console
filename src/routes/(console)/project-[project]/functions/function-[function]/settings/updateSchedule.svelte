@@ -1,10 +1,10 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputCron } from '$lib/elements/forms';
+    import { Button, Form, InputCron } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -13,7 +13,7 @@
     import { Runtime } from '@appwrite.io/console';
     import { Link } from '$lib/elements';
 
-    const functionId = $page.params.function;
+    const functionId = page.params.function;
     let functionSchedule: string = null;
 
     onMount(async () => {
@@ -68,12 +68,7 @@
             Learn more</Link
         >.
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputCron
-                    bind:value={functionSchedule}
-                    label="Schedule (Cron syntax)"
-                    id="schedule" />
-            </FormList>
+            <InputCron bind:value={functionSchedule} label="Schedule (Cron syntax)" id="schedule" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

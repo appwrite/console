@@ -1,6 +1,6 @@
 <script lang="ts">
     import { CardGrid } from '$lib/components';
-    import { Button, Form, FormList, InputTextarea } from '$lib/elements/forms';
+    import { Button, Form, InputTextarea } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
     import SMSPhone from '../smsPhone.svelte';
     import { onMount } from 'svelte';
@@ -54,13 +54,11 @@
             <SMSPhone {content} />
         </div>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputTextarea
-                    id="message"
-                    label="Message"
-                    disabled={message.status != 'draft'}
-                    bind:value={content}></InputTextarea>
-            </FormList>
+            <InputTextarea
+                id="message"
+                label="Message"
+                disabled={message.status != 'draft'}
+                bind:value={content}></InputTextarea>
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button {disabled} submit>Update</Button>

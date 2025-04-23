@@ -3,19 +3,18 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputSelect, InputSelectSearch, InputText } from '$lib/elements/forms';
+    import { Button, Form, InputSelect, InputText } from '$lib/elements/forms';
     import { last, symmetricDifference } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
     import { attributes } from '../store';
     import { preferences } from '$lib/stores/preferences';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
 
-    const collectionId = $page.params.collection;
+    const collectionId = page.params.collection;
     let names: string[] = [...(preferences.getDisplayNames()?.[collectionId] ?? [])];
-    let search: string;
 
     async function updateDisplayName() {
         try {
@@ -58,9 +57,8 @@
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
         <svelte:fragment slot="title">Display name</svelte:fragment>
-        Select string attributes as display names for your documents. The selected names will be used
-        as short forms to identify documents in the Appwrite console, like when creating database relationships.
-        You can specify up to 5 names.
+        Select up to 5 string attributes to display as document names in the Appwrite console. These
+        help identify documents in places like relationships.
 
         <svelte:fragment slot="aside">
             <Layout.Stack gap="s">
@@ -95,11 +93,10 @@
                 {/if}
                 <div>
                     <Button
-                        secondary
+                        compact
                         disabled={addAttributeDisabled}
                         on:click={() => {
                             names[names.length] = null;
-                            search = null;
                             names = names;
                         }}>
                         <Icon icon={IconPlus} slot="start" size="s" />

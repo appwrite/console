@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
@@ -26,8 +26,7 @@
     import { onMount } from 'svelte';
     import Configuration from '../../configuration.svelte';
     import { consoleVariables } from '$routes/(console)/store';
-    import { buildVerboseDomain } from '../../store';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import Domain from '../../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -46,17 +45,18 @@
     let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
-    let domain = id;
+    let domain = data.domain;
+    let domainIsValid = true;
 
     onMount(async () => {
         installation.set(data.installation);
         repository.set(data.repository);
         name = data.repository.name;
 
-        await detectFramwork();
+        await detectFramework();
     });
 
-    async function detectFramwork() {
+    async function detectFramework() {
         try {
             const response = await sdk.forProject.vcs.createRepositoryDetection(
                 $installation.$id,
@@ -76,18 +76,18 @@
         } catch (error) {
             framework = data.frameworks.frameworks.find((f) => f.key === 'other');
             trackError(error, Submit.FrameworkDetect);
-            console.log(error);
         }
     }
 
     async function create() {
+        if (!domainIsValid) {
+            addNotification({
+                type: 'error',
+                message: 'Domain is not valid'
+            });
+            return;
+        }
         try {
-            domain = await buildVerboseDomain(
-                data.repository.name,
-                data.repository.organization,
-                $project.name,
-                id
-            );
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
@@ -97,6 +97,7 @@
                 name,
                 fr,
                 buildRuntime,
+                undefined,
                 undefined,
                 undefined,
                 installCommand,
@@ -141,7 +142,7 @@
             });
 
             await goto(
-                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                `${base}/project-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
             );
         } catch (e) {
             addNotification({
@@ -151,8 +152,6 @@
             trackError(e, Submit.SiteCreate);
         }
     }
-
-    $: console.log(framework);
 </script>
 
 <svelte:head>
@@ -162,7 +161,7 @@
 <Wizard
     title="Create site"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/sites/`}
+    href={`${base}/project-${page.params.project}/sites/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -180,7 +179,7 @@
                     </Layout.Stack>
                     <Button
                         secondary
-                        href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
+                        href={`${base}/project-${page.params.project}/sites/create-site/repositories`}>
                         Change
                     </Button>
                 </Layout.Stack>
@@ -191,6 +190,7 @@
                 bind:branch
                 bind:rootDir
                 bind:silentMode
+                product="sites"
                 installationId={data.installation.$id}
                 repositoryId={data.repository.id} />
 
@@ -203,6 +203,8 @@
                     bind:variables
                     frameworks={data.frameworks.frameworks} />
             {/key}
+
+            <Domain bind:domain bind:domainIsValid />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

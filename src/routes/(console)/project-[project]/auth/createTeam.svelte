@@ -1,13 +1,12 @@
 <script lang="ts">
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { InputText, Button, FormList } from '$lib/elements/forms';
+    import { InputText, Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Icon, Tag } from '@appwrite.io/pink-svelte';
+    import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -43,7 +42,7 @@
     }
 </script>
 
-<Modal title="Create team" {error} size="big" bind:show={showCreate} onSubmit={create}>
+<Modal title="Create team" {error} size="l" bind:show={showCreate} onSubmit={create}>
     <InputText
         id="name"
         label="Name"

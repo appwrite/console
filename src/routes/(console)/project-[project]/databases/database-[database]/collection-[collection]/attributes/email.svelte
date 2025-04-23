@@ -37,7 +37,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputEmail } from '$lib/elements/forms';
+    import { InputEmail } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeEmail>;

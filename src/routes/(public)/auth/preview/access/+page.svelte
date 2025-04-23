@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import Modal from '$lib/components/modal.svelte';
@@ -78,13 +78,13 @@
     function onGithubAuth() {
         let url = window.location.origin;
 
-        if ($page.url.searchParams) {
-            const redirect = $page.url.searchParams.get('redirect');
-            $page.url.searchParams.delete('redirect');
+        if (page.url.searchParams) {
+            const redirect = page.url.searchParams.get('redirect');
+            page.url.searchParams.delete('redirect');
             if (redirect) {
-                url = `${redirect}${$page.url.search}`;
+                url = `${redirect}${page.url.search}`;
             } else {
-                url = `${base}${$page.url.search ?? ''}`;
+                url = `${base}${page.url.search ?? ''}`;
             }
         }
         sdk.forConsole.account.createOAuth2Session(
@@ -155,7 +155,7 @@
                     <span class="with-separators eyebrow-heading-3">or</span>
                     {#if isCloud}
                         <Button size="m" secondary fullWidth on:click={onGithubAuth}>
-                            <span class="icon-github" aria-hidden="true" />
+                            <span class="icon-github" aria-hidden="true"></span>
                             <span class="text">Sign in with GitHub</span>
                         </Button>
                     {/if}
@@ -207,7 +207,7 @@
                     <span class="with-separators eyebrow-heading-3">or</span>
                     {#if isCloud}
                         <Button size="m" secondary fullWidth on:click={onGithubAuth}>
-                            <span class="icon-github" aria-hidden="true" />
+                            <span class="icon-github" aria-hidden="true"></span>
                             <span class="text">Continue with GitHub</span>
                         </Button>
                     {/if}
@@ -216,7 +216,7 @@
                     </Button>
                 </Layout.Stack>
             {:else if state === 'authenticated'}
-                <Card isTile variant="secondary" radius="s" padding="s">
+                <Card variant="secondary" radius="s" padding="s">
                     <Layout.Stack gap="xxs">
                         <Layout.Stack direction="row" gap="xxs">
                             <Typography.Text variant="m-400">You're signed in as</Typography.Text>

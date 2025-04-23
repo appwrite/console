@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, Id, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -28,12 +28,12 @@
 
     export let data: PageData;
 
-    const projectId = $page.params.project;
-    const databaseId = $page.params.database;
-    const collectionId = $page.params.collection;
+    const projectId = page.params.project;
+    const databaseId = page.params.database;
+    const collectionId = page.params.collection;
     let showRelationships = false;
     let selectedRelationship: Models.AttributeRelationship = null;
-    let relationshipData: [];
+    let relationshipData: Partial<Models.Document>[];
     let displayNames = {};
 
     onMount(async () => {
@@ -46,7 +46,7 @@
     function updateMaxWidth() {
         const tableCells = Array.from(document.querySelectorAll('.less-width-truncated'));
 
-        const visibleColumnsCount = $columns.filter((col) => col.show).length;
+        const visibleColumnsCount = $columns.filter((col) => !col.hide).length;
         const newMaxWidth = Math.max(50 - (visibleColumnsCount - 1) * 5, 25);
 
         tableCells.forEach((cell) => {
@@ -93,7 +93,7 @@
         };
     }
 
-    $: selected = preferences.getCustomCollectionColumns($page.params.collection);
+    $: selected = preferences.getCustomCollectionColumns(page.params.collection);
 
     $: {
         columns.set(
@@ -157,7 +157,7 @@
     let:root
     allowSelection
     bind:selectedRows
-    columns={[{ id: '$id', width: 150 }, ...$columns, { id: '$created' }, { id: '$updated' }]}>
+    columns={[{ id: '$id', width: 200 }, ...$columns, { id: '$created' }, { id: '$updated' }]}>
     <svelte:fragment slot="header" let:root>
         <Table.Header.Cell column="$id" {root}>Document ID</Table.Header.Cell>
         {#each $columns as column}
@@ -294,9 +294,9 @@
                         <Table.Cell column="relation" {root}>
                             <span class="u-flex u-cross-center u-gap-8">
                                 {#if attr.twoWay}
-                                    <span class="icon-switch-horizontal" />
+                                    <span class="icon-switch-horizontal"></span>
                                 {:else}
-                                    <span class="icon-arrow-sm-right" />
+                                    <span class="icon-arrow-sm-right"></span>
                                 {/if}
                                 <span data-private>{attr.key}</span>
                             </span>

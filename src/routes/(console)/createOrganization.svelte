@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { InputText, Button, FormList } from '$lib/elements/forms';
+    import { InputText, Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -51,15 +51,15 @@
             </svelte:fragment>
         </Alert.Inline>
     {/if}
-    <FormList>
-        <InputText
-            id="organization-name"
-            label="Name"
-            placeholder="Enter name"
-            bind:value={name}
-            autofocus={true}
-            required />
-    </FormList>
+
+    <InputText
+        id="organization-name"
+        label="Name"
+        placeholder="Enter name"
+        bind:value={name}
+        autofocus={true}
+        required />
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit>Create</Button>

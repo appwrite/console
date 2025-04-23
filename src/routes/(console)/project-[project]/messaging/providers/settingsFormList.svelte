@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { FormList } from '$lib/elements/forms';
     import SettingsFormInput from './settingsFormInput.svelte';
     import type {
         ProviderInput,
@@ -31,16 +30,14 @@
     >;
 </script>
 
-<FormList>
-    {#each inputs as input}
-        {#if Array.isArray(input)}
-            {#each input as i}
-                <div class="u-flex u-flex-basis-50-percent">
-                    <SettingsFormInput input={i} bind:params bind:files fullWidth />
-                </div>
-            {/each}
-        {:else}
-            <SettingsFormInput {input} bind:params bind:files />
-        {/if}
-    {/each}
-</FormList>
+{#each inputs as input}
+    {#if Array.isArray(input)}
+        {#each input as i}
+            <div class="u-flex u-flex-basis-50-percent">
+                <SettingsFormInput input={i} bind:params bind:files />
+            </div>
+        {/each}
+    {:else}
+        <SettingsFormInput {input} bind:params bind:files />
+    {/if}
+{/each}

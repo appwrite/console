@@ -108,7 +108,7 @@
     <UpdateEvents />
     <UpdateSchedule />
     <UpdateTimeout />
-    <UpdateLogging />
+    <UpdateLogging func={data.function} />
     <UpdateScopes />
     <DangerZone />
 </Container>

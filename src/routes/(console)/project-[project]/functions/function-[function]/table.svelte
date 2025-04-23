@@ -7,14 +7,14 @@
     import { timer } from '$lib/actions/timer';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { func } from './store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import Activate from './(modals)/activateModal.svelte';
     import RedeployModal from './(modals)/redeployModal.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import Cancel from './(modals)/cancel.svelte';
+    import Cancel from './(modals)/cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
-    import { ActionMenu, Icon, Layout, Status, Table } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Icon, Status, Table } from '@appwrite.io/pink-svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import {
         IconDotsHorizontal,
@@ -46,7 +46,7 @@
     }
 </script>
 
-<Table.Root columns={[...columns, { id: 'actions', width: 40 }]} let:root>
+<Table.Root columns={[...columns, { id: 'actions', width: 60 }]} let:root>
     <svelte:fragment slot="header" let:root>
         {#each columns as { id, title }}
             <Table.Header.Cell column={id} {root}>
@@ -58,7 +58,7 @@
     {#each data.deploymentList.deployments as deployment (deployment.$id)}
         <Table.Row.Link
             {root}
-            href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
+            href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/deployment-${deployment.$id}`}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}
@@ -83,10 +83,12 @@
                         {#if ['waiting'].includes(deployment.status)}
                             -
                         {:else if ['processing', 'building'].includes(deployment.status)}
-                            <span use:timer={{ start: deployment.$createdAt }} />
+                            <span use:timer={{ start: deployment.$createdAt }}></span>
                         {:else}
                             {formatTimeDetailed(deployment.buildDuration)}
                         {/if}
+                    {:else if column.id === 'totalSize'}
+                        {calculateSize(deployment.totalSize)}
                     {:else if column.id === 'sourceSize'}
                         {calculateSize(deployment.sourceSize)}
                     {:else if column.id === 'buildSize'}

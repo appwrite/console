@@ -1,10 +1,10 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal, Trim } from '$lib/components';
-    import { Button, InputChoice } from '$lib/elements/forms';
+    import { Confirm, Trim } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Selector, Table } from '@appwrite.io/pink-svelte';
@@ -13,15 +13,15 @@
     import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
     let checked = false;
 
     const handleDelete = async () => {
         try {
             await sdk.forProject.databases.deleteDocument(
                 databaseId,
-                $page.params.collection,
-                $page.params.document
+                page.params.collection,
+                page.params.document
             );
             showDelete = false;
             addNotification({
@@ -30,7 +30,7 @@
             });
             trackEvent(Submit.DocumentDelete);
             await goto(
-                `${base}/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}`
+                `${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}`
             );
         } catch (error) {
             addNotification({
@@ -52,7 +52,7 @@
     ) as Models.AttributeRelationship[];
 </script>
 
-<Modal title="Delete document" onSubmit={handleDelete} bind:show={showDelete}>
+<Confirm title="Delete document" onSubmit={handleDelete} bind:open={showDelete}>
     <p data-private>
         Are you sure you want to delete <b
             >the document from <span data-private>{$collection.name}</span></b
@@ -78,9 +78,9 @@
                     <Table.Cell column="relations" {root}>
                         <span class="u-flex u-cross-center u-gap-8">
                             {#if attr.twoWay}
-                                <span class="icon-switch-horizontal" />
+                                <span class="icon-switch-horizontal"></span>
                             {:else}
-                                <span class="icon-arrow-sm-right" />
+                                <span class="icon-arrow-sm-right"></span>
                             {/if}
                             <Trim>{attr.key}</Trim>
                         </span>
@@ -108,4 +108,4 @@
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button danger submit disabled={relAttributes?.length && !checked}>Delete</Button>
     </svelte:fragment>
-</Modal>
+</Confirm>

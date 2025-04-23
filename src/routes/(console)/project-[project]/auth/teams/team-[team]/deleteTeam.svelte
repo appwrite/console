@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -18,7 +18,7 @@
             await sdk.forProject.teams.delete(team.$id);
             showDelete = false;
             trackEvent(Submit.TeamDelete);
-            await goto(`${base}/project-${$page.params.project}/auth/teams`);
+            await goto(`${base}/project-${page.params.project}/auth/teams`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.TeamDelete);

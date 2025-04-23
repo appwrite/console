@@ -4,12 +4,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
+    import type { Domain } from '$lib/sdk/domains';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { Input, InteractiveText, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
     import { consoleVariables } from '$routes/(console)/store';
-    import type { Domain } from '$lib/sdk/domains';
 
     export let show = false;
     export let selectedDomain: Domain;
@@ -52,7 +52,6 @@
         <Layout.Stack gap="s" direction="row" alignItems="center">
             <Typography.Text variant="l-500" color="--fgcolor-neutral-primary"
                 >{selectedDomain.domain}</Typography.Text>
-            \
         </Layout.Stack>
         <Typography.Text variant="m-400">
             Add the following nameservers on your DNS provider. Note that DNS changes may take time
@@ -60,20 +59,18 @@
         </Typography.Text>
     </Layout.Stack>
 
-    <Table.Root>
-        <svelte:fragment slot="header">
-            <Table.Header.Cell>Type</Table.Header.Cell>
-            <Table.Header.Cell>Value</Table.Header.Cell>
-            <Table.Header.Cell />
+    <Table.Root let:root columns={2}>
+        <svelte:fragment slot="header" let:root>
+            <Table.Header.Cell {root}>Type</Table.Header.Cell>
+            <Table.Header.Cell {root}>Value</Table.Header.Cell>
         </svelte:fragment>
         {#each nameservers as nameserver}
-            <Table.Row>
-                <Table.Cell>NS</Table.Cell>
-                <Table.Cell>
-                    <InteractiveText variant="copy" isVisible text={nameserver}>
-                        {nameserver}</InteractiveText>
+            <Table.Row.Base {root}>
+                <Table.Cell {root} column="ns">NS</Table.Cell>
+                <Table.Cell {root} column="action">
+                    <InteractiveText variant="copy" isVisible text={nameserver} />
                 </Table.Cell>
-            </Table.Row>
+            </Table.Row.Base>
         {/each}
     </Table.Root>
     <Input.Helper state="default">

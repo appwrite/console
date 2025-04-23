@@ -9,7 +9,6 @@
     export let name: string;
     export let id: string;
     export let autofocus = true;
-    export let fullWidth = false;
     export let isProject = false;
     $: if (!show) {
         id = null;

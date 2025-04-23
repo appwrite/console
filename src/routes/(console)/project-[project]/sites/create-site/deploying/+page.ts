@@ -2,8 +2,11 @@ import { DeploymentResourceType, RuleTrigger, RuleType, sdk } from '$lib/stores/
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { Query } from '@appwrite.io/console';
+import { Dependencies } from '$lib/constants';
 
-export const load: PageLoad = async ({ url }) => {
+export const load: PageLoad = async ({ url, depends, params }) => {
+    depends(Dependencies.DEPLOYMENT);
+    depends(Dependencies.SITE);
     if (!url.searchParams.has('site')) error(404, 'Site is not optional');
     if (!url.searchParams.has('deployment')) error(404, 'Deployment is not optional');
     const siteId = url.searchParams.get('site');

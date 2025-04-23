@@ -22,6 +22,10 @@
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
     import Table from './table.svelte';
+    import { onMount } from 'svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { sdk } from '$lib/stores/sdk';
     export let data;
     let show = false;
 
@@ -41,12 +45,22 @@
     ]);
 
     $updateCommandGroupRanks({ sites: 1000 });
+
+    onMount(() => {
+        return sdk.forConsole.client.subscribe('console', (response) => {
+            if (response.events.includes(`sites.*`)) {
+                invalidate(Dependencies.SITES);
+            }
+        });
+    });
+
+    $: console.log(data.siteList);
 </script>
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search by name" />
+            <SearchQuery placeholder="Search by name" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector {columns} view={data.view} hideColumns hideView={!data.siteList.total} />
@@ -60,7 +74,7 @@
     </Layout.Stack>
     {#if data.siteList.total}
         {#if data.view === View.Grid}
-            <Grid deployments={data.deployments} siteList={data.siteList} />
+            <Grid siteList={data.siteList} />
         {:else}
             <Table siteList={data.siteList} />
         {/if}
@@ -76,7 +90,7 @@
             single
             allowCreate={$canWriteSites}
             href="https://appwrite.io/docs/products/sites"
-            description="Deploy, manage, and scale your web applications effortlessly with Sites. "
+            description="Deploy and manage your web your web applications with Sites. "
             target="site"
             src={$app.themeInUse === 'dark' ? EmptyDark : EmptyLight}
             on:click={() => (show = true)}>

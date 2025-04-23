@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { WizardStep } from '$lib/layout';
 
-    $: isFirstProject = $page.data.platforms.total === 0;
+    $: isFirstProject = page.data.platforms.total === 0;
 </script>
 
 <WizardStep>

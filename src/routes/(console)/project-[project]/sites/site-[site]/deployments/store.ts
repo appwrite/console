@@ -4,12 +4,12 @@ import type { Column } from '$lib/helpers/types';
 export const showCreateDeployment: Writable<boolean> = writable(false);
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Deployment ID', type: 'string', width: 200 },
+    { id: '$id', title: 'Deployment ID', type: 'string', width: { min: 200, max: 250 } },
     {
         id: 'status',
         title: 'Status',
         type: 'enum',
-        width: 110,
+        width: { min: 90, max: 130 },
         array: true,
         format: 'enum',
         elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed']
@@ -19,7 +19,8 @@ export const columns = writable<Column[]>([
         id: 'buildDuration',
         title: 'Build duration',
         type: 'integer',
-        width: 90,
+        width: { min: 110, max: 190 },
+
         elements: [
             {
                 value: 15,
@@ -37,11 +38,31 @@ export const columns = writable<Column[]>([
         filter: false
     },
     {
+        id: 'totalSize',
+        title: 'Total size',
+        type: 'integer',
+        width: { min: 110, max: 190 },
+        elements: [
+            {
+                value: 2 * 1000 * 1000,
+                label: 'more than 2MB'
+            },
+            {
+                value: 10 * 1000 * 1000,
+                label: 'more than 10MB'
+            },
+            {
+                value: 50 * 1000 * 1000,
+                label: 'more than 50MB'
+            }
+        ]
+    },
+    {
         id: 'sourceSize',
         title: 'Source size',
         type: 'integer',
         hide: true,
-        width: 140,
+        width: { min: 110, max: 190 },
         elements: [
             {
                 value: 2 * 1000 * 1000,
@@ -61,14 +82,15 @@ export const columns = writable<Column[]>([
         id: 'buildSize',
         title: 'Build size',
         type: 'integer',
+        hide: true,
         filter: false,
-        width: 80
+        width: { min: 90, max: 190 }
     },
     {
         id: 'type',
         title: 'Source',
         type: 'string',
-        width: 90,
+        width: { min: 90, max: 160 },
         array: true,
         format: 'enum',
         elements: [
@@ -81,7 +103,8 @@ export const columns = writable<Column[]>([
         id: '$updatedAt',
         title: 'Updated',
         type: 'datetime',
-        width: 150,
+        width: { min: 150, max: 180 },
+
         format: 'datetime'
     }
 ]);

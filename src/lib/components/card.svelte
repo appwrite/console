@@ -4,7 +4,6 @@
     import type { ComponentProps } from 'svelte';
 
     type BaseProps = {
-        isTile?: boolean;
         isDashed?: boolean;
         danger?: boolean;
         style?: string;
@@ -23,7 +22,6 @@
 
     type $$Props = BaseProps & (ButtonProps | AnchorProps | BaseProps) & ComponentProps<Base>;
 
-    export let isTile = false;
     export let isDashed = false;
     export let isButton = false;
     export let href: string = null;

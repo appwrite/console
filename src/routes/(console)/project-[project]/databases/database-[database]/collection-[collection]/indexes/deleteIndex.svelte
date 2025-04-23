@@ -3,7 +3,7 @@
     import { collection } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -13,7 +13,7 @@
     export let showDelete = false;
     export let selectedIndex: Models.Index;
 
-    const databaseId = $page.params.database;
+    const databaseId = page.params.database;
     let error: string;
 
     async function handleDelete() {

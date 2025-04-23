@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container, Usage } from '$lib/layout';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import type { PageData } from './$types';
     import { base } from '$app/paths';
     import { Layout } from '@appwrite.io/pink-svelte';
@@ -16,8 +16,7 @@
     <Layout.Stack gap="l">
         {#if count}
             <Usage
-                title="Executions"
-                path={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/usage`}
+                path={`${base}/project-${page.params.project}/functions/function-${page.params.function}/usage`}
                 countMetadata={{
                     legend: 'Executions',
                     title: 'Total executions'
@@ -29,8 +28,7 @@
         {#if mbSecondsCount}
             <Usage
                 hidePeriodSelect
-                title="GB hours"
-                path={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/usage`}
+                path={`${base}/project-${page.params.project}/functions/function-${page.params.function}/usage`}
                 countMetadata={{
                     legend: 'GB hours',
                     title: 'Total GB hours'

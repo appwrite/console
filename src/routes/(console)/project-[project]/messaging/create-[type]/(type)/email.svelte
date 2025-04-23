@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -23,21 +23,6 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
     let showCustomId = false;
-
-    let docsUrl = 'https://appwrite.io/docs/products/messaging';
-
-    switch ($page.params.type) {
-        case MessagingProviderType.Email:
-            docsUrl += '/send-email-messages';
-            break;
-        case MessagingProviderType.Sms:
-            docsUrl += '/send-sms-messages';
-            break;
-        case MessagingProviderType.Push:
-            docsUrl += '/send-push-notifications';
-            break;
-    }
-
     let id: string;
     let subject: string;
     let content: string;
@@ -86,7 +71,7 @@
                 providerType: 'email',
                 status: response.status
             });
-            await goto(`${base}/project-${$page.params.project}/messaging/message-${response.$id}`);
+            await goto(`${base}/project-${page.params.project}/messaging/message-${response.$id}`);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -104,7 +89,8 @@
 
 <Wizard
     title="Create email message"
-    href={`${base}/project-${$page.params.project}/messaging/`}
+    columnSize="s"
+    href={`${base}/project-${page.params.project}/messaging/`}
     bind:showExitModal
     column
     confirmExit>
@@ -146,7 +132,7 @@
                 <Targets type={MessagingProviderType.Email} bind:topics bind:targets />
             </Fieldset>
             <Fieldset legend="Schedule">
-                <Schedule type={MessagingProviderType.Email} bind:scheduledAt {topics} {targets} />
+                <Schedule bind:scheduledAt {targets} />
             </Fieldset>
         </Layout.Stack>
     </Form>

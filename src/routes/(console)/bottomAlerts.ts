@@ -25,7 +25,7 @@ if (isCloud) {
         },
         learnMore: {
             text: 'Learn more',
-            link: () => 'http://appwrite.io/docs/products/databases/backups'
+            link: () => 'https://appwrite.io/docs/products/databases/backups'
         }
     });
 }

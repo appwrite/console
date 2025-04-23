@@ -12,16 +12,16 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Unauthenticated } from '$lib/layout';
-    import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import LoginLight from '$lib/images/login/login-light-mode.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.svg';
     import { isCloud } from '$lib/system';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
-    let slug = $page.params.slug;
+    let slug = page.params.slug;
     let imgLight = LoginLight;
     let imgDark = LoginDark;
 
@@ -96,7 +96,7 @@
     <svelte:fragment slot="title">{title}</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={invite}>
-            <FormList>
+            <Layout.Stack>
                 <InputText
                     id="name"
                     label="Name"
@@ -136,7 +136,7 @@
                         rel="noopener noreferrer">General Terms of Use</a
                     >.</InputChoice>
                 <Button fullWidth submit>Sign up</Button>
-            </FormList>
+            </Layout.Stack>
         </Form>
     </svelte:fragment>
     <svelte:fragment slot="links">

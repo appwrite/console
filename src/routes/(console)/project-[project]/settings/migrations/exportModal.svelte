@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Alert, Box, Modal } from '$lib/components';
-    import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
+    import { Button, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
     import { feedback } from '$lib/stores/feedback';
     import { sdk } from '$lib/stores/sdk';
@@ -53,7 +53,7 @@
         const { endpoint, feedback: message } = formData;
 
         try {
-            await feedback.submitFeedback(`feedback-${$feedback.type}`, message, $page.url.href);
+            await feedback.submitFeedback(`feedback-${$feedback.type}`, message, page.url.href);
         } catch (error) {
             console.error(
                 'Feedback could not be submitted, but we continue to redirect to do export.'
@@ -103,6 +103,18 @@
         )}`;
         window.location.href = dest;
     };
+
+    function handleInvalid(event: Event) {
+        const input = event.target as HTMLInputElement;
+        const value = input.value;
+
+        if (!isValidEndpoint(value)) {
+            input.setCustomValidity('Please enter a valid endpoint');
+        } else {
+            input.setCustomValidity('');
+        }
+        input.reportValidity();
+    }
 </script>
 
 <Modal title="Export to self-hosted instance" bind:show {onSubmit}>
@@ -120,15 +132,7 @@
         autofocus
         on:input={(e) => {
             if (!submitted) return;
-            const input = e.target;
-            const value = input.value;
-
-            if (!isValidEndpoint(value)) {
-                input.setCustomValidity('Please enter a valid endpoint');
-            } else {
-                input.setCustomValidity('');
-            }
-            input.reportValidity();
+            handleInvalid(e);
         }} />
 
     <Box>

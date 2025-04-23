@@ -1,21 +1,14 @@
 import { sdk } from '$lib/stores/sdk';
-import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
-import { getLimit } from '$lib/helpers/load';
+import { getSearch, getView, View } from '$lib/helpers/load';
 
 export const load = async ({ url, route }) => {
-    const limit = getLimit(url, route, 12);
-    const page = getPage(url);
     const search = getSearch(url);
-    const view = getView(url, route, View.Grid);
-    const offset = pageToOffset(page, limit);
     const filter = {
         useCases: url.searchParams.getAll('useCase'),
         frameworks: url.searchParams.getAll('framework')
     };
 
     const siteTemplatesList = await sdk.forProject.sites.listTemplates(undefined, undefined, 100);
-
-    console.log(siteTemplatesList);
 
     const [frameworksSet, useCasesSet] = siteTemplatesList.templates.reduce(
         ([fr, uc], next) => {
@@ -26,7 +19,37 @@ export const load = async ({ url, route }) => {
         [new Set<string>(), new Set<string>()]
     );
 
-    const frameworks = Array.from(frameworksSet).sort((a, b) => a.localeCompare(b));
+    const frameworkOrder = [
+        'Next.js',
+        'Nuxt',
+        'SvelteKit',
+        'Astro',
+        'Remix',
+        'Flutter',
+        'React',
+        'Vue.js',
+        'Svelte',
+        'Lynx',
+        'Angular',
+        'Analog',
+        'Vite',
+        'Other'
+    ];
+    const frameworks = Array.from(frameworksSet)
+        .sort((a, b) => a.localeCompare(b))
+        .sort((a, b) => {
+            const aIndex = frameworkOrder.indexOf(a);
+            const bIndex = frameworkOrder.indexOf(b);
+            if (aIndex === -1 && bIndex === -1) {
+                return a.localeCompare(b);
+            } else if (aIndex === -1) {
+                return 1;
+            } else if (bIndex === -1) {
+                return -1;
+            }
+            return aIndex - bIndex;
+        });
+
     const useCases = Array.from(useCasesSet).sort((a, b) => a.localeCompare(b));
 
     const templates = siteTemplatesList.templates.filter((template) => {
@@ -53,13 +76,9 @@ export const load = async ({ url, route }) => {
     });
 
     return {
-        offset,
-        limit,
-        view,
         filter,
         frameworks,
         useCases,
-        sum: templates.length,
-        templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit)
+        templates
     };
 };

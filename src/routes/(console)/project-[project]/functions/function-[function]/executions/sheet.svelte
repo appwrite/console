@@ -19,12 +19,12 @@
     import { capitalize } from '$lib/helpers/string';
     import { Copy } from '$lib/components';
     import { logStatusConverter } from './store';
-    import LogsResponse from './(components)/LogsResponse.svelte';
-    import LogsRequest from './(components)/LogsRequest.svelte';
+    import { LogsRequest, LogsResponse } from '$lib/components/logs';
 
-    export let open = false;
     export let selectedLogId: string;
     export let logs: Models.Execution[];
+    export let logging: boolean;
+    export let open = false;
 
     function nextLog() {
         const currentIndex = logs.findIndex((log) => log.$id === selectedLogId);
@@ -38,6 +38,7 @@
             selectedLogId = logs[currentIndex - 1].$id;
         }
     }
+
     $: if (!open) {
         selectedLogId = null;
     }
@@ -47,7 +48,9 @@
     $: isLastLog = logs.findIndex((log) => log.$id === selectedLogId) === logs.length - 1;
 </script>
 
-<Sheet bind:open>
+<svelte:window onclick={() => (open = false)} />
+
+<Sheet bind:open closeOnBlur={false}>
     <div slot="header" style:width="100%">
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Layout.Stack direction="row" gap="m" alignItems="center">
@@ -107,7 +110,6 @@
                                     <Status
                                         status={logStatusConverter(selectedLog.status)}
                                         label={capitalize(selectedLog.status)}>
-                                        {capitalize(selectedLog.status)}
                                     </Status>
                                 </div>
                                 <span slot="tooltip">
@@ -160,7 +162,7 @@
                 <LogsRequest {selectedLog} />
             </Accordion>
             <Accordion title="Response" open hideDivider>
-                <LogsResponse {selectedLog} />
+                <LogsResponse {selectedLog} product="function" {logging} />
             </Accordion>
         </Layout.Stack>
     {/if}

@@ -1,10 +1,10 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { option, attributeOptions, type Option } from './attributes/store';
-    import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { Button, InputText } from '$lib/elements/forms';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import type { Attributes } from './store';
@@ -13,8 +13,8 @@
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
-    const databaseId = $page.params.database;
-    $: collectionId = $page.params.collection;
+    const databaseId = page.params.database;
+    $: collectionId = page.params.collection;
 
     let key: string = null;
     let data: Partial<Attributes> = {
@@ -32,9 +32,9 @@
             selectedColumns.push(key ?? data?.key);
             preferences.setCustomCollectionColumns(selectedColumns);
             await invalidate(Dependencies.COLLECTION);
-            if (!$page.url.pathname.includes('attributes')) {
+            if (!page.url.pathname.includes('attributes')) {
                 await goto(
-                    `${base}/project-${$page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                    `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
                 );
             }
             addNotification({

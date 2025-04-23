@@ -4,6 +4,7 @@ import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 import { base } from '$app/paths';
+import { IconDatabase } from '@appwrite.io/pink-icons-svelte';
 
 export const dbSearcher = (async (query: string) => {
     const { databases } = await sdk.forProject.databases.list();
@@ -18,7 +19,7 @@ export const dbSearcher = (async (query: string) => {
                     callback: () => {
                         goto(`${base}/project-${get(project).$id}/databases/database-${db.$id}`);
                     },
-                    icon: 'database'
+                    icon: IconDatabase
                 }) as const
         );
 }) satisfies Searcher;

@@ -17,7 +17,7 @@
             description: 'Registrar'
         },
         {
-            value: domain?.nameservers || '-',
+            value: domain?.nameservers ? domain?.nameservers : '-',
             description: 'Nameservers'
         },
         {

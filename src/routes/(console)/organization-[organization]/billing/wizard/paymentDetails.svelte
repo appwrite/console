@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import type { PaymentList } from '$lib/sdk/billing';

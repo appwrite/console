@@ -138,45 +138,48 @@
             {/if}
         </Button>
         <svelte:fragment slot="tooltip">
-            <Layout.Stack gap="s">
-                {#if displayQuickFilters}
-                    <slot name="quick" />
-                {:else}
-                    <p>Apply filter rules to refine the table view</p>
-                    <Content
-                        bind:columnId={selectedColumn}
-                        bind:operatorKey
-                        bind:value
-                        bind:arrayValues
-                        {columns}
-                        {singleCondition}
-                        on:apply={afterApply}
-                        on:clear={() => (applied = 0)} />
-                {/if}
-                <div
-                    class="u-flex u-cross-center u-margin-block-start-16"
-                    class:u-main-end={!quickFilters}
-                    class:u-main-space-between={quickFilters}>
-                    {#if quickFilters}
-                        <Button
-                            text
-                            on:click={() => (displayQuickFilters = !displayQuickFilters)}
-                            class="u-margin-block-end-auto">
-                            {displayQuickFilters ? 'Advanced filters' : 'Quick filters'}
-                        </Button>
+            <div style:width="420px">
+                <Layout.Stack gap="s">
+                    {#if displayQuickFilters}
+                        <slot name="quick" />
+                    {:else}
+                        <p>Apply filter rules to refine the table view</p>
+                        <Content
+                            bind:columnId={selectedColumn}
+                            bind:operatorKey
+                            bind:value
+                            bind:arrayValues
+                            {columns}
+                            {singleCondition}
+                            on:apply={afterApply}
+                            on:clear={() => (applied = 0)} />
                     {/if}
-                    <div class="u-flex u-gap-8">
-                        {#if singleCondition}
-                            <Button size="s" text on:click={toggleDropdown}>Cancel</Button>
-                        {:else}
-                            <Button size="s" disabled={applied === 0} text on:click={clearAll}>
-                                Clear all
+                    <div
+                        class="u-flex u-cross-center u-margin-block-start-16"
+                        class:u-main-end={!quickFilters}
+                        class:u-main-space-between={quickFilters}>
+                        {#if quickFilters}
+                            <Button
+                                text
+                                on:click={() => (displayQuickFilters = !displayQuickFilters)}
+                                class="u-margin-block-end-auto">
+                                {displayQuickFilters ? 'Advanced filters' : 'Quick filters'}
                             </Button>
                         {/if}
-                        <Button size="s" on:click={apply} disabled={isButtonDisabled}>Apply</Button>
+                        <div class="u-flex u-gap-8">
+                            {#if singleCondition}
+                                <Button size="s" text on:click={toggleDropdown}>Cancel</Button>
+                            {:else}
+                                <Button size="s" disabled={applied === 0} text on:click={clearAll}>
+                                    Clear all
+                                </Button>
+                            {/if}
+                            <Button size="s" on:click={apply} disabled={isButtonDisabled}
+                                >Apply</Button>
+                        </div>
                     </div>
-                </div>
-            </Layout.Stack>
+                </Layout.Stack>
+            </div>
         </svelte:fragment>
     </Popover>
 </div>

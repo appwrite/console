@@ -15,12 +15,10 @@
     import { deepClone } from '$lib/helpers/object';
     import type { DnsRecord } from '$lib/sdk/domains';
     import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { recordTypes } from './store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-
-    // type RecordType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'TXT' | 'NS' | 'SRV' | 'CAA' | 'PTR';
 
     export let show = false;
     export let selectedRecord: DnsRecord;
@@ -30,11 +28,10 @@
 
     async function handleSubmit() {
         try {
-            //TODO: update DNS record
             switch (record.type) {
                 case 'A':
                     await sdk.forConsole.domains.updateRecordA(
-                        $page.params.domain,
+                        page.params.domain,
                         record.$id,
                         record.name,
                         record.value,
@@ -45,7 +42,7 @@
                     break;
                 case 'AAAA':
                     await sdk.forConsole.domains.updateRecordAAAA(
-                        $page.params.domain,
+                        page.params.domain,
                         record.$id,
                         record.name,
                         record.value,
@@ -56,7 +53,7 @@
                     break;
                 case 'CNAME':
                     await sdk.forConsole.domains.updateRecordCNAME(
-                        $page.params.domain,
+                        page.params.domain,
                         record.$id,
                         record.name,
                         record.value,
@@ -67,7 +64,7 @@
                     break;
                 case 'MX':
                     await sdk.forConsole.domains.updateRecordMX(
-                        $page.params.domain,
+                        page.params.domain,
                         record.$id,
                         record.name,
                         record.value,
@@ -79,7 +76,7 @@
                     break;
                 case 'TXT':
                     await sdk.forConsole.domains.updateRecordTXT(
-                        $page.params.domain,
+                        page.params.domain,
                         record.$id,
                         record.name,
                         record.value,
@@ -90,7 +87,7 @@
                     break;
                 case 'NS':
                     await sdk.forConsole.domains.updateRecordNS(
-                        $page.params.domain,
+                        page.params.domain,
                         record.$id,
                         record.name,
                         record.value,
@@ -102,7 +99,7 @@
 
                 case 'CAA':
                     await sdk.forConsole.domains.updateRecordCAA(
-                        $page.params.domain,
+                        page.params.domain,
                         record.$id,
                         record.name,
                         record.value,
@@ -113,7 +110,7 @@
                     break;
                 case 'HTTPS':
                     await sdk.forConsole.domains.updateRecordHTTPS(
-                        $page.params.domain,
+                        page.params.domain,
                         record.$id,
                         record.name,
                         record.value,
@@ -124,7 +121,7 @@
                     break;
                 case 'ALIAS':
                     await sdk.forConsole.domains.updateRecordAlias(
-                        $page.params.domain,
+                        page.params.domain,
                         record.$id,
                         record.name,
                         record.value,

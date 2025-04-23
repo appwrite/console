@@ -92,6 +92,29 @@ export const toLocaleTimeISO = (datetime: string | number) => {
     return date.toLocaleTimeString('sv');
 };
 
+/**
+ * Returns a local datetime string in ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sss),
+ * matching local time, without the 'Z' suffix.
+ *
+ * @returns Local ISO string (with ms) or 'n/a' if invalid
+ */
+export const toLocalDateTimeISO = (datetime: string | number): string => {
+    const date = new Date(datetime);
+
+    if (isNaN(date.getTime())) {
+        return 'n/a';
+    }
+
+    // Get timezone offset in minutes, convert to ms
+    const tzOffsetMs = date.getTimezoneOffset() * 60 * 1000;
+
+    // Shift date to local time
+    const local = new Date(date.getTime() - tzOffsetMs);
+
+    // Drop the trailing 'Z' to keep it as local
+    return local.toISOString().replace('Z', '');
+};
+
 export const utcHourToLocaleHour = (utcTimeString: string) => {
     const now = new Date();
     const [hours, minutes] = utcTimeString.split(':').map(Number);
@@ -173,6 +196,13 @@ export const diffDays = (date1: Date, date2: Date) => {
 };
 
 export function timeFromNow(datetime: string): string {
+    if (!datetime) {
+        return 'unknown time';
+    }
+    if (!isValidDate(datetime)) {
+        return 'invalid date';
+    }
+
     return dayjs().to(dayjs(datetime));
 }
 
@@ -198,4 +228,13 @@ export function getUTCOffset(): string {
     const minutes = Math.abs(offsetMinutes % 60);
 
     return `${hours >= 0 ? '+' : ''}${hours}${minutes ? `:${minutes.toString().padStart(2, '0')}` : ''}`;
+}
+
+export function toISOString(date: string): string {
+    const d = new Date(date);
+
+    if (isNaN(d.getTime())) {
+        return 'n/a';
+    }
+    return d.toISOString();
 }

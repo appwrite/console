@@ -14,7 +14,7 @@
         Typography,
         Upload
     } from '@appwrite.io/pink-svelte';
-    import { parse } from 'envfile';
+    import { parse } from '$lib/helpers/envfile';
 
     export let show = false;
     export let variableList: Models.VariableList;

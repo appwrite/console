@@ -11,7 +11,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlan } from '$lib/constants';
     import { Alert, Icon, Table, Tooltip } from '@appwrite.io/pink-svelte';
-    import Cell from '$lib/elements/table/cell.svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
     export let tier: Tier;
@@ -65,7 +64,7 @@
             <Table.Header.Cell {root}>Resource</Table.Header.Cell>
             <Table.Header.Cell {root}>Free limit</Table.Header.Cell>
             <Table.Header.Cell {root}>
-                Excess usage <Tooltip
+                Excess usage <Tooltip maxWidth="fit-content"
                     ><Icon icon={IconInfo} />
                     <span slot="tooltip">Metrics are estimates updated every 24 hours</span>
                 </Tooltip>
@@ -77,7 +76,7 @@
                 <Table.Cell {root}>{plan.members} members</Table.Cell>
                 <Table.Cell {root}>
                     <p class="u-color-text-danger u-flex u-cross-center u-gap-4">
-                        <span class="icon-arrow-up" />
+                        <span class="icon-arrow-up"></span>
                         {excess?.members} members
                     </p>
                 </Table.Cell>
@@ -89,7 +88,7 @@
                 <Table.Cell {root}>{plan.storage} GB</Table.Cell>
                 <Table.Cell {root}>
                     <p class="u-color-text-danger">
-                        <span class="icon-arrow-up" />
+                        <span class="icon-arrow-up"></span>
                         {humanFileSize(excess?.storage).value}
                         {humanFileSize(excess?.storage).unit}
                     </p>
@@ -104,7 +103,7 @@
                 </Table.Cell>
                 <Table.Cell {root}>
                     <p class="u-color-text-danger">
-                        <span class="icon-arrow-up" />
+                        <span class="icon-arrow-up"></span>
                         <span
                             title={excess?.executions
                                 ? excess.executions.toString()
@@ -123,7 +122,7 @@
                 </Table.Cell>
                 <Table.Cell column="usage" {root}>
                     <p class="u-color-text-danger">
-                        <span class="icon-arrow-up" />
+                        <span class="icon-arrow-up"></span>
                         <span title={excess?.users ? excess.users.toString() : 'users'}>
                             {formatNum(excess?.users)} users
                         </span>

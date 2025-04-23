@@ -220,10 +220,8 @@
     <CardGrid>
         <svelte:fragment slot="title">Settings</svelte:fragment>
         Configure the settings to <Button
-            link
             href={`https://appwrite.io/docs/products/messaging/${provider}`}
             external>enable {displayName}</Button> to send {message}, or <Button
-            link
             on:click={() => (newMemberModal = true)}>invite a team member</Button> to complete the provider
         settings.
         <svelte:fragment slot="aside">

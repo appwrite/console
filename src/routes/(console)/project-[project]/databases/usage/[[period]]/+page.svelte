@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Container, Usage, UsageMultiple } from '$lib/layout';
     import { Layout } from '@appwrite.io/pink-svelte';
     import type { PageData } from './$types';
@@ -19,8 +19,7 @@
 <Container>
     <Layout.Stack gap="l">
         <Usage
-            title="Usage"
-            path={`${base}/project-${$page.params.project}/databases/usage`}
+            path={`${base}/project-${page.params.project}/databases/usage`}
             {total}
             {count}
             countMetadata={{

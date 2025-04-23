@@ -1,6 +1,5 @@
 import { PAGE_LIMIT, Dependencies } from '$lib/constants';
 import { getSearch, pageToOffset, getLimit, getPage } from '$lib/helpers/load';
-import { sdk } from '$lib/stores/sdk.js';
 
 export const load = async ({ parent, depends, url, route }) => {
     depends(Dependencies.DOMAIN);

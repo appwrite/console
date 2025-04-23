@@ -136,12 +136,12 @@
     $: wizard.setNextDisabled(!report);
 </script>
 
-<Box radius="small">
+<Box radius="s">
     <div class="u-flex u-flex-vertical u-gap-16">
         <EyebrowHeading class="eyebrow" tag="h3" size={3}>Good to know</EyebrowHeading>
         <div class="u-flex u-gap-16">
             <div class="circled">
-                <i class="icon-cog" />
+                <i class="icon-cog"></i>
             </div>
             <div>
                 <p class="u-bold">Project settings are not imported</p>
@@ -150,7 +150,7 @@
         </div>
         <div class="u-flex u-gap-16">
             <div class="circled">
-                <i class="icon-trending-up" />
+                <i class="icon-trending-up"></i>
             </div>
             <div>
                 <p class="u-bold">Keep your organization plan's limits in mind</p>
@@ -162,7 +162,7 @@
         {#if $provider.provider === 'firebase'}
             <div class="u-flex u-gap-16">
                 <div class="circled">
-                    <i class="icon-exclamation u-color-text-warning" />
+                    <i class="icon-exclamation u-color-text-warning"></i>
                 </div>
                 <div>
                     <p class="u-bold">Possible charges by Firebase</p>
@@ -175,7 +175,7 @@
         {:else}
             <div class="u-flex u-gap-16">
                 <div class="circled">
-                    <i class="icon-currency-dollar" />
+                    <i class="icon-currency-dollar"></i>
                 </div>
                 <div>
                     <p class="u-bold">Transfer is free of charge</p>
@@ -249,11 +249,11 @@
                     {#if report?.user !== undefined}
                         <span class="inline-tag">{report.user}</span>
                     {:else if !error}
-                        <span class="loader is-small u-margin-inline-start-4" />
+                        <span class="loader is-small u-margin-inline-start-4"></span>
                     {/if}
                 {/if}
             </div>
-            <div />
+            <div></div>
             <span>Import all users</span>
 
             {#if resources?.includes('team')}
@@ -269,11 +269,11 @@
                                 {#if report?.team !== undefined}
                                     <span class="inline-tag">{report.team}</span>
                                 {:else if !error}
-                                    <span class="loader is-small u-margin-inline-start-4" />
+                                    <span class="loader is-small u-margin-inline-start-4"></span>
                                 {/if}
                             {/if}
                         </div>
-                        <div />
+                        <div></div>
                         <span>Import all teams and the team memberships of your users</span>
                     </li>
                 </ul>
@@ -293,11 +293,11 @@
                     {#if report?.database !== undefined}
                         <span class="inline-tag">{report.database}</span>
                     {:else if !error}
-                        <span class="loader is-small u-margin-inline-start-4" />
+                        <span class="loader is-small u-margin-inline-start-4"></span>
                     {/if}
                 {/if}
             </div>
-            <div />
+            <div></div>
             <span>Import all databases, including collections, indexes and attributes</span>
 
             {#if resources?.includes('document')}
@@ -313,11 +313,11 @@
                                 {#if report?.document !== undefined}
                                     <span class="inline-tag">{report.document}</span>
                                 {:else if !error}
-                                    <span class="loader is-small u-margin-inline-start-4" />
+                                    <span class="loader is-small u-margin-inline-start-4"></span>
                                 {/if}
                             {/if}
                         </div>
-                        <div />
+                        <div></div>
                         <span>Import all of your documents</span>
                     </li>
                 </ul>
@@ -337,11 +337,11 @@
                     {#if report?.function !== undefined}
                         <span class="inline-tag">{report.function}</span>
                     {:else if !error}
-                        <span class="loader is-small u-margin-inline-start-4" />
+                        <span class="loader is-small u-margin-inline-start-4"></span>
                     {/if}
                 {/if}
             </div>
-            <div />
+            <div></div>
             <span>Import all functions and their active deployment</span>
             <ul>
                 {#if resources?.includes('environment-variable')}
@@ -353,7 +353,7 @@
                         <div class="u-flex u-gap-4">
                             <span class="u-bold">Include environment variables</span>
                         </div>
-                        <div />
+                        <div></div>
                         <span>Import all environment variables</span>
                     </li>
                 {/if}
@@ -366,7 +366,7 @@
                         <div class="u-flex u-gap-4">
                             <span class="u-bold">Include inactive deployments</span>
                         </div>
-                        <div />
+                        <div></div>
                         <span>Import all deployments that are not currently active</span>
                     </li>
                 {/if}
@@ -386,11 +386,11 @@
                     {#if report?.size !== undefined}
                         <span class="inline-tag">{`${report.size.toFixed(2)}MB`}</span>
                     {:else if !error}
-                        <span class="loader is-small u-margin-inline-start-4" />
+                        <span class="loader is-small u-margin-inline-start-4"></span>
                     {/if}
                 {/if}
             </div>
-            <div />
+            <div></div>
 
             <p>
                 Import all buckets

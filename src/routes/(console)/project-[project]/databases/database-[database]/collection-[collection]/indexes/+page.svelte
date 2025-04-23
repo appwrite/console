@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { Empty, DropList, DropListItem } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Empty } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { collection, indexes } from '../store';
+    import { collection } from '../store';
     import Delete from './deleteIndex.svelte';
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
@@ -26,7 +25,6 @@
     import {
         IconDotsHorizontal,
         IconEye,
-        IconPencil,
         IconPlus,
         IconTrash
     } from '@appwrite.io/pink-icons-svelte';
@@ -35,13 +33,11 @@
 
     export let data;
 
-    let showDropdown = [];
     let selectedIndex: Models.Index = null;
     let showCreateIndex = false;
     let showOverview = false;
     let showDelete = false;
     let showCreateAttribute = false;
-    let showCreateDropdown = false;
     let selectedAttribute: Option['name'] = null;
     let showFailed = false;
     let error = '';
@@ -156,18 +152,8 @@
                 on:click={() => (showCreateIndex = true)} />
         {/if}
     {:else}
-        <Empty
-            single
-            target="attribute"
-            allowCreate={$canWriteCollections}
-            on:click={() => (showCreateDropdown = true)}>
-            <div class="u-text-center">
-                <Typography.Title size="s">Create an attribute to get started.</Typography.Title>
-                <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Learn more in our documentation.
-                </p>
-            </div>
-            <div class="u-flex u-gap-16 u-main-center">
+        <Empty single target="attribute">
+            <svelte:fragment slot="actions">
                 <Button
                     external
                     href="https://appwrite.io/docs/products/databases/collections#attributes"
@@ -176,20 +162,15 @@
                     ariaLabel={`create {target}`}>Documentation</Button>
                 {#if $canWriteCollections}
                     <CreateAttributeDropdown
-                        bind:showCreateDropdown
+                        bind:selectedOption={selectedAttribute}
                         bind:showCreate={showCreateAttribute}
-                        bind:selectedOption={selectedAttribute}>
-                        <Button
-                            secondary
-                            event="create_attribute"
-                            on:click={() => {
-                                showCreateDropdown = !showCreateDropdown;
-                            }}>
+                        let:toggle>
+                        <Button secondary event="create_attribute" on:click={toggle}>
                             Create attribute
                         </Button>
                     </CreateAttributeDropdown>
                 {/if}
-            </div>
+            </svelte:fragment>
         </Empty>
     {/if}
 </Container>
@@ -201,6 +182,10 @@
     <Overview bind:showOverview {selectedIndex} />
 {/if}
 
-<CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />
+{#if showCreateAttribute}
+    <CreateAttribute
+        bind:showCreate={showCreateAttribute}
+        bind:selectedOption={selectedAttribute} />
+{/if}
 
 <FailedModal bind:show={showFailed} title="Create index" header="Creation failed" {error} />

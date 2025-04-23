@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
@@ -44,32 +44,30 @@
     let isSubmitting = writable(false);
 
     let name = '';
-    let id = ID.unique();
+    let id: string;
     let runtime: Runtime;
     let entrypoint = '';
     let buildCommand = '';
-    let scopes: string[] = [];
+    let roles: string[] = [];
     let variables: Partial<Models.Variable>[] = [];
     let files: FileList;
     let specification = specificationOptions[0].value;
 
     async function create() {
         try {
-            console.log(runtime);
-
             const func = await sdk.forProject.functions.create(
-                id,
+                id || ID.unique(),
                 name,
                 runtime,
-                undefined,
+                roles?.length ? roles : undefined,
                 undefined,
                 undefined,
                 undefined,
                 true,
                 undefined,
                 entrypoint,
+                buildCommand,
                 undefined,
-                scopes,
                 undefined,
                 undefined,
                 undefined,
@@ -80,7 +78,7 @@
 
             // Add domain
             await sdk.forProject.proxy.createFunctionRule(
-                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_TARGET}`,
+                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
                 func.$id
             );
 
@@ -99,8 +97,8 @@
                 func.$id,
                 files[0],
                 true,
-                entrypoint,
-                buildCommand
+                undefined,
+                undefined
             );
 
             trackEvent(Submit.FunctionCreate, {
@@ -108,7 +106,7 @@
                 runtime: runtime
             });
 
-            await goto(`${base}/project-${$page.params.project}/functions/function-${func.$id}`);
+            await goto(`${base}/project-${page.params.project}/functions/function-${func.$id}`);
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
@@ -128,7 +126,7 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/functions`}
+    href={`${base}/project-${page.params.project}/functions`}
     column
     columnSize="s"
     confirmExit>
@@ -171,6 +169,7 @@
                     </Layout.Stack>
                 </Upload.Dropzone>
                 {#if files?.length}
+                    <!-- TODO: torsten, the types issue with FileList-->
                     <Upload.List
                         bind:files
                         on:remove={(e) => (files = removeFile(e.detail, files))} />
@@ -187,7 +186,7 @@
                 options={runtimeOptions}
                 showEntrypoint />
 
-            <Configuration bind:buildCommand bind:scopes />
+            <Configuration bind:buildCommand bind:roles />
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">

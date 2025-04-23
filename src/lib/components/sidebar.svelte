@@ -1,6 +1,7 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
+    import { app } from '$lib/stores/app';
     import {
         Icon,
         Sidebar,
@@ -36,7 +37,9 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
-    type $$Props = HTMLElement & {
+    import type { HTMLAttributes } from 'svelte/elements';
+
+    type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
         project: { $id: string } | undefined;
         avatar: string;
@@ -67,8 +70,7 @@
     }
 
     $: state = $isTabletViewport ? 'closed' : getSidebarState();
-    $: pathname = $page.url.pathname;
-    $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(pathname);
+    $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(page.url.pathname);
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
@@ -80,7 +82,11 @@
     ];
 </script>
 
-<div class:only-mobile-tablet={project === undefined}>
+<div
+    class:only-mobile-tablet={project === undefined}
+    style:--overlay-on-neutral={$app.themeInUse === 'dark'
+        ? 'var(--neutral-750)'
+        : 'var(--neutral-100)'}>
     <Sidebar.Base
         {...$$props}
         bind:state
@@ -138,7 +144,7 @@
                         <a
                             href={`/console/project-${project.$id}/overview`}
                             class="link"
-                            class:active={pathname.includes('overview')}
+                            class:active={page.url.pathname.includes('overview')}
                             on:click={() => {
                                 trackEvent(Click.MenuOverviewClick);
                                 sideBarIsOpen = false;
@@ -168,7 +174,7 @@
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={pathname.includes(projectOption.slug)}
+                                class:active={page.url.pathname.includes(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
@@ -199,7 +205,7 @@
                             <a
                                 href={`/console/project-${project.$id}/${projectOption.slug}`}
                                 class="link"
-                                class:active={pathname.includes(projectOption.slug)}
+                                class:active={page.url.pathname.includes(projectOption.slug)}
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;

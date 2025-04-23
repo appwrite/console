@@ -7,6 +7,13 @@ import type { Command, Searcher } from '../commands';
 import { addSubPanel } from '../subPanels';
 import { FilesPanel } from '../panels';
 import { base } from '$app/paths';
+import {
+    IconFolder,
+    IconKey,
+    IconLockClosed,
+    IconPuzzle,
+    IconSearch
+} from '@appwrite.io/pink-icons-svelte';
 
 const getBucketCommand = (bucket: Models.Bucket, projectId: string) => {
     return {
@@ -15,7 +22,7 @@ const getBucketCommand = (bucket: Models.Bucket, projectId: string) => {
             goto(`${base}/project-${projectId}/storage/bucket-${bucket.$id}`);
         },
         group: 'buckets',
-        icon: 'folder'
+        icon: IconFolder
     } satisfies Command;
 };
 
@@ -37,7 +44,7 @@ export const bucketSearcher = (async (query: string) => {
                 },
                 group: 'buckets',
                 nested: true,
-                icon: 'search',
+                icon: IconSearch,
                 keepOpen: true
             },
             {
@@ -50,7 +57,7 @@ export const bucketSearcher = (async (query: string) => {
                 },
                 group: 'buckets',
                 nested: true,
-                icon: 'key'
+                icon: IconKey
             },
             {
                 label: 'Extensions',
@@ -61,7 +68,7 @@ export const bucketSearcher = (async (query: string) => {
                 },
                 group: 'buckets',
                 nested: true,
-                icon: 'puzzle'
+                icon: IconPuzzle
             },
             {
                 label: 'File Security',
@@ -73,7 +80,7 @@ export const bucketSearcher = (async (query: string) => {
                 },
                 group: 'buckets',
                 nested: true,
-                icon: 'lock-closed'
+                icon: IconLockClosed
             }
         ];
     }

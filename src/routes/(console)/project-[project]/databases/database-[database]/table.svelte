@@ -1,9 +1,9 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Id, Modal } from '$lib/components';
+    import { Id } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -16,8 +16,8 @@
     import Confirm from '$lib/components/confirm.svelte';
 
     export let data: PageData;
-    const projectId = $page.params.project;
-    const databaseId = $page.params.database;
+    const projectId = page.params.project;
+    const databaseId = page.params.database;
 
     let selectedRows: string[] = [];
     let showDelete = false;

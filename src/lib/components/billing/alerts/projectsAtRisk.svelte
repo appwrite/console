@@ -1,13 +1,13 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { diffDays, toLocaleDate } from '$lib/helpers/date';
     import { HeaderAlert } from '$lib/layout';
     import { failedInvoice, hideBillingHeaderRoutes } from '$lib/stores/billing';
 </script>
 
-{#if $failedInvoice && !hideBillingHeaderRoutes.includes($page.url.pathname)}
+{#if $failedInvoice && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     {@const daysPassed = diffDays(new Date($failedInvoice.dueAt), new Date())}
     <HeaderAlert title="Your projects are at risk">
         <svelte:fragment>

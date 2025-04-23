@@ -1,12 +1,11 @@
 <script lang="ts">
     import { beforeNavigate } from '$app/navigation';
     import { Navbar, Sidebar } from '$lib/components';
-    import { type NavbarProject } from '$lib/components/navbar.svelte';
+    import type { NavbarProject } from '$lib/components/navbar.svelte';
     import { page } from '$app/stores';
-    import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
     import { activeHeaderAlert } from '$routes/(console)/store';
-    import { type ComponentType, setContext } from 'svelte';
+    import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
     import { showSubNavigation } from '$lib/stores/layout';
     import { organization, organizationList } from '$lib/stores/organization';
@@ -29,7 +28,7 @@
     $: selectedProject = loadedProjects.find((project) => project.isSelected);
     let yOnMenuOpen: number;
     let showContentTransition = false;
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     page.subscribe(({ url }) => {
         $showSubNavigation = url.searchParams.get('openNavbar') === 'true';
@@ -97,11 +96,12 @@
         avatar: sdk.forConsole.avatars.getInitials($user?.name, 80, 80).toString(),
 
         organizations: $organizationList.teams.map((org) => {
+            const billingPlan = org['billingPlan'];
             return {
                 name: org.name,
                 $id: org.$id,
-                showUpgrade: org.billingPlan === BillingPlan.FREE,
-                tierName: isCloud ? tierToPlan(org.billingPlan).name : null,
+                showUpgrade: billingPlan === BillingPlan.FREE,
+                tierName: isCloud ? tierToPlan(billingPlan).name : null,
                 isSelected: $organization?.$id === org.$id,
                 projects: loadedProjects
             };
@@ -140,8 +140,9 @@
 <main
     class:has-alert={$activeHeaderAlert?.show}
     class:is-open={$showSubNavigation}
-    class:u-hide={$wizard.show || $log.show || $wizard.cover}
+    class:u-hide={$wizard.show || $wizard.cover}
     class:is-fixed-layout={$activeHeaderAlert?.show}
+    class:no-header={!showHeader}
     style:--p-side-size={sideSize}>
     {#if showHeader}
         <Navbar {...navbarProps} bind:sideBarIsOpen={$isSidebarOpen} bind:showAccountMenu />
@@ -154,7 +155,7 @@
         bind:sideBarIsOpen={$isSidebarOpen}
         bind:showAccountMenu
         bind:state />
-    <SideNavigation bind:state bind:subNavigation />
+    <SideNavigation bind:subNavigation />
     <div
         class="content"
         class:has-transition={showContentTransition}
@@ -173,6 +174,8 @@
 
     <button
         type="button"
+        class="overlay-button"
+        aria-label="Close sidebar"
         class:overlay={$isSidebarOpen}
         on:click={() => {
             $isSidebarOpen = false;
@@ -209,6 +212,14 @@
         min-height: calc(100vh - 48px);
     }
 
+    .no-header {
+        min-height: 100vh;
+
+        .content {
+            margin-block-start: 0;
+        }
+    }
+
     :global(main:has(.sub-navigation)) {
         .main-content {
             @media (min-width: 1024px) {
@@ -229,33 +240,13 @@
         transition:
             backdrop-filter 0.5s ease-in-out,
             background-color 0.35s ease-in-out;
-
+    }
+    .overlay-button {
         @media (min-width: 1024px) {
             display: none;
         }
     }
     main {
-        min-height: 100vh;
-
-        &:not(.grid-with-side) {
-            display: flex;
-            flex-direction: column;
-        }
+        min-height: calc(100vh - 48px);
     }
-
-    @media (min-width: 1199px) {
-        .grid-with-side {
-            grid-template-columns: auto 1fr !important;
-        }
-    }
-    //
-    //:global(main.has-alert > header) {
-    //    top: 70px;
-    //}
-    //:global(main.has-alert > div nav) {
-    //    @media (min-width: 1024px) {
-    //        top: calc(48px + 70px) !important;
-    //        height: calc(100vh - (48px + 70px)) !important;
-    //    }
-    //}
 </style>

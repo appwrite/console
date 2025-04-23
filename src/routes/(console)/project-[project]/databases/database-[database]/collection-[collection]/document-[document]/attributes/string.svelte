@@ -6,16 +6,16 @@
     export let label: string;
     export let value: string;
     export let attribute: Models.AttributeString;
-    export let optionalText: string | undefined = undefined;
+
+    $: nullable = attribute.required ? false : !value;
 </script>
 
 {#if attribute.size >= 50}
     <InputTextarea
         {id}
         {label}
-        nullable={!attribute.required}
+        {nullable}
         placeholder="Enter string"
-        showLabel={!!label?.length}
         required={attribute.required}
         maxlength={attribute.size}
         bind:value />
@@ -23,10 +23,8 @@
     <InputText
         {id}
         {label}
-        {optionalText}
-        nullable={!attribute.required}
+        {nullable}
         placeholder="Enter string"
-        showLabel={!!label?.length}
         required={attribute.required}
         maxlength={attribute.size}
         bind:value />

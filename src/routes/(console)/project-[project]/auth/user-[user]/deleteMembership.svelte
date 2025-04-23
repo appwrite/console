@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
     import { Dependencies } from '$lib/constants';
@@ -29,7 +29,7 @@
             });
             trackEvent(Submit.MemberDelete);
             await goto(
-                `${base}/project-${$page.params.project}/auth/user-${selectedMembership.userId}/memberships`
+                `${base}/project-${page.params.project}/auth/user-${selectedMembership.userId}/memberships`
             );
         } catch (e) {
             error = e.message;

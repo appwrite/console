@@ -96,7 +96,7 @@
                         {/if}
                     </svelte:fragment>
                     {#await avatarList}
-                        <span class="avatar is-color-empty" />
+                        <span class="avatar is-color-empty"></span>
                     {:then avatars}
                         <AvatarGroup {avatars} />
                     {/await}
@@ -107,7 +107,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty single on:click={createOrg}>
+        <Empty single on:click={createOrg} target="organization">
             <p>Create a new organization</p>
         </Empty>
     {/if}

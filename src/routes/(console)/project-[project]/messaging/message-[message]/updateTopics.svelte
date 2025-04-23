@@ -114,9 +114,8 @@
                                             ariaLabel="delete"
                                             disabled={message.status != 'draft'}
                                             on:click={() => removeTopic(topic.$id)}>
-                                            <span
-                                                class="icon-x u-font-size-20"
-                                                aria-hidden="true" />
+                                            <span class="icon-x u-font-size-20" aria-hidden="true"
+                                            ></span>
                                         </Button>
                                     </div>
                                 {/if}
@@ -127,7 +126,7 @@
                 {#if sum > limit}
                     <div class="u-flex u-main-space-between">
                         <p class="text">Total topics: {sum}</p>
-                        <PaginationInline {sum} {limit} bind:offset />
+                        <PaginationInline total={sum} {limit} bind:offset />
                     </div>
                 {/if}
             {:else if message.status == 'draft'}
@@ -138,10 +137,7 @@
                         No topics have been selected.
                         <p>
                             Need a hand? Check out our <Button
-                                link
-                                external
-                                href="https://appwrite.io/docs/products/messaging/topics"
-                                text>
+                                href="https://appwrite.io/docs/products/messaging/topics">
                                 documentation</Button
                             >.
                         </p>

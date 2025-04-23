@@ -49,7 +49,7 @@
     let showSupport = false;
 
     type $$Props = BaseNavbarProps & {
-        links: Array<{ label: string; href: string }>;
+        links?: Array<{ label: string; href: string }>;
         organizations: Array<{
             name: string;
             $id: string;
@@ -230,7 +230,7 @@
                                     <ActionMenu.Item.Button
                                         trailingIcon={IconLogoutRight}
                                         size="l"
-                                        on:click={logout}>Sign out</ActionMenu.Item.Button>
+                                        on:click={() => logout()}>Sign out</ActionMenu.Item.Button>
                                     <div
                                         style:padding-inline-start="10px"
                                         style:padding-inline-end="8px">
@@ -243,8 +243,10 @@
                                                 class:keepTransformTransition={shouldAnimateThemeToggle}>
                                                 <ToggleButton
                                                     bind:active={activeTheme}
-                                                    on:change={(event) => {
-                                                        shouldAnimateThemeToggle = true;
+                                                    on:change={() => {
+                                                        setTimeout(() => {
+                                                            shouldAnimateThemeToggle = true;
+                                                        }, 150);
                                                     }}
                                                     buttons={[
                                                         {
@@ -273,9 +275,10 @@
                 </div>
                 <button
                     class="account-backdrop"
+                    aria-label="Account menu"
                     on:click={() => {
                         showAccountMenu = false;
-                    }} />
+                    }}></button>
             {/if}
         </div>
     </div>
@@ -355,11 +358,6 @@
     .right {
         display: flex;
         gap: var(--space-9, 24px);
-
-        .icons {
-            display: flex;
-            gap: var(--space-5, 10px);
-        }
     }
 
     :global(.right button) {
@@ -384,11 +382,6 @@
         display: none;
     }
 
-    @media (min-width: 768px) {
-        .only-mobile {
-            display: none;
-        }
-    }
     @media (min-width: 1024px) {
         .only-mobile-tablet {
             display: none;

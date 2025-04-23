@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { Button, Form, FormList, InputPassword } from '$lib/elements/forms';
+    import { Button, Form, InputPassword } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Link } from '@appwrite.io/pink-svelte';
@@ -36,20 +36,18 @@
             >Recover your password</Link.Anchor>
 
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputPassword
-                    id="oldPassword"
-                    label="Old password"
-                    placeholder="Enter password"
-                    required
-                    bind:value={oldPassword} />
-                <InputPassword
-                    id="newPassword"
-                    label="New password"
-                    placeholder="Enter password"
-                    required
-                    bind:value={newPassword} />
-            </FormList>
+            <InputPassword
+                id="oldPassword"
+                label="Old password"
+                placeholder="Enter password"
+                required
+                bind:value={oldPassword} />
+            <InputPassword
+                id="newPassword"
+                label="New password"
+                placeholder="Enter password"
+                required
+                bind:value={newPassword} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

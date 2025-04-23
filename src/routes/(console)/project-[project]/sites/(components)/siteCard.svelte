@@ -14,9 +14,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
-
-    import { Button } from '$lib/elements/forms';
-    import { IconInfo, IconQrcode } from '@appwrite.io/pink-icons-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from './openOnMobileModal.svelte';
     import DeploymentDomains from '$lib/components/git/deploymentDomains.svelte';
     import { app } from '$lib/stores/app';
@@ -33,7 +31,7 @@
     let show = false;
     const siteUrl = proxyRuleList.total > 0 ? proxyRuleList.rules[0].domain : undefined;
 
-    $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.sourceSize ?? 0));
+    $: totalSize = humanFileSize(deployment?.totalSize ?? 0);
 
     function getScreenshot(theme: string, deployment: Models.Deployment) {
         if (theme === 'dark') {
@@ -71,13 +69,11 @@
                         <Typography.Text variant="m-400" color="--fgcolor-neutral-tertiary">
                             Domains
                         </Typography.Text>
-                        <DeploymentDomains domains={proxyRuleList} />
+                        <DeploymentDomains
+                            domains={proxyRuleList}
+                            {hideQRCode}
+                            showQR={() => (show = !show)} />
                     </Layout.Stack>
-                    {#if siteUrl && !hideQRCode}
-                        <Button icon secondary on:click={() => (show = true)}>
-                            <Icon icon={IconQrcode} size="l" />
-                        </Button>
-                    {/if}
                 </Layout.Stack>
 
                 <Layout.Stack direction="row" gap="xl">
@@ -190,8 +186,8 @@
     </Layout.Stack>
 </Card>
 
-{#if show && siteUrl}
-    <OpenOnMobileModal bind:show siteURL={siteUrl} />
+{#if show && proxyRuleList.total}
+    <OpenOnMobileModal bind:show {proxyRuleList} />
 {/if}
 
 <style lang="scss">

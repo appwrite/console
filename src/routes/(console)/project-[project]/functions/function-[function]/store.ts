@@ -1,7 +1,8 @@
 import { page } from '$app/stores';
 import { derived, writable, type Writable } from 'svelte/store';
-import type { Models } from '@appwrite.io/console';
+import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
 import type { Column } from '$lib/helpers/types';
+import { sdk } from '$lib/stores/sdk';
 
 export const func = derived(page, ($page) => $page.data.function as Models.Function);
 export const deploymentList = derived(
@@ -26,12 +27,12 @@ export const repositories: Writable<{
 export const showCreateDeployment: Writable<boolean> = writable(false);
 
 export const columns = writable<Column[]>([
-    { id: '$id', title: 'Deployment ID', type: 'string', width: 200 },
+    { id: '$id', title: 'Deployment ID', type: 'string', width: { min: 210, max: 250 } },
     {
         id: 'status',
         title: 'Status',
         type: 'enum',
-        width: 110,
+        width: { min: 110, max: 140 },
         array: true,
         format: 'enum',
         elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed'],
@@ -41,7 +42,7 @@ export const columns = writable<Column[]>([
         id: 'buildDuration',
         title: 'Build duration',
         type: 'integer',
-        width: 90,
+        width: { min: 110, max: 140 },
         elements: [
             {
                 value: 15,
@@ -59,10 +60,31 @@ export const columns = writable<Column[]>([
         filter: false
     },
     {
+        id: 'totalSize',
+        title: 'Total size',
+        type: 'integer',
+        width: { min: 140, max: 160 },
+        elements: [
+            {
+                value: 2 * 1000 * 1000,
+                label: 'more than 2MB'
+            },
+            {
+                value: 10 * 1000 * 1000,
+                label: 'more than 10MB'
+            },
+            {
+                value: 50 * 1000 * 1000,
+                label: 'more than 50MB'
+            }
+        ]
+    },
+    {
         id: 'sourceSize',
         title: 'Source size',
         type: 'integer',
-        width: 140,
+        hide: true,
+        width: { min: 140, max: 160 },
         elements: [
             {
                 value: 2 * 1000 * 1000,
@@ -83,14 +105,27 @@ export const columns = writable<Column[]>([
         title: 'Build size',
         type: 'integer',
         hide: true,
-        filter: false,
-        width: 80
+        width: { min: 110, max: 130 },
+        elements: [
+            {
+                value: 2 * 1000 * 1000,
+                label: 'more than 2MB'
+            },
+            {
+                value: 10 * 1000 * 1000,
+                label: 'more than 10MB'
+            },
+            {
+                value: 50 * 1000 * 1000,
+                label: 'more than 50MB'
+            }
+        ]
     },
     {
         id: 'type',
         title: 'Source',
         type: 'string',
-        width: 90,
+        width: { min: 140, max: 160 },
         array: true,
         format: 'enum',
         elements: [
@@ -103,7 +138,26 @@ export const columns = writable<Column[]>([
         id: '$updatedAt',
         title: 'Updated',
         type: 'datetime',
-        width: 150,
+        width: { min: 150, max: 180 },
         format: 'datetime'
     }
 ]);
+
+export function getOutputDownload(funcId: string, deploymentId: string) {
+    return (
+        sdk.forProject.functions.getDeploymentDownload(
+            funcId,
+            deploymentId.toString(),
+            DeploymentDownloadType.Output
+        ) + '&mode=admin'
+    );
+}
+export function getSourceDownload(funcId: string, deploymentId: string) {
+    return (
+        sdk.forProject.functions.getDeploymentDownload(
+            funcId,
+            deploymentId.toString(),
+            DeploymentDownloadType.Source
+        ) + '&mode=admin'
+    );
+}

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Id, Modal } from '$lib/components';
+    import { Id } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { canWriteTopics } from '$lib/stores/roles';
     import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import Confirm from '$lib/components/confirm.svelte';
@@ -60,7 +60,7 @@
         <Table.Row.Link
             {root}
             id={topic.$id}
-            href={`${base}/project-${$page.params.project}/messaging/topics/topic-${topic.$id}`}>
+            href={`${base}/project-${page.params.project}/messaging/topics/topic-${topic.$id}`}>
             {#each columns as column (column.id)}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

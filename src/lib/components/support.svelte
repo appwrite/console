@@ -68,7 +68,6 @@
     {#each supportOptions as option, index}
         {#if showCloudSupport(index)}
             <Card
-                isTile
                 class="support-option-card "
                 style="border-radius: var(--border-radius-small, 8px); --gap-xl: 16px">
                 <div class="u-flex u-flex-vertical u-gap-4">
@@ -107,7 +106,7 @@
                                 aria-hidden="true"
                                 class="{isSupportOnline()
                                     ? 'icon-check-circle u-color-text-success'
-                                    : 'icon-x-circle'} u-padding-block-end-1" />
+                                    : 'icon-x-circle'} u-padding-block-end-1"></span>
 
                             {supportTimings}
                         </div>
@@ -124,7 +123,7 @@
                                 source: 'support_menu'
                             });
                         }}>
-                        <span class={`icon-${option.icon}`} />
+                        <span class={`icon-${option.icon}`}></span>
                         <span>{option.cta}</span>
                     </Button>
                 {/if}

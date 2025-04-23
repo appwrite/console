@@ -6,6 +6,7 @@ import type { Command, Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
 import { promptDeleteUser } from '$routes/(console)/project-[project]/auth/user-[user]/dangerZone.svelte';
 import { base } from '$app/paths';
+import { IconTrash, IconUserCircle } from '@appwrite.io/pink-icons-svelte';
 
 const getUserCommand = (user: Models.User<Models.Preferences>, projectId: string) =>
     ({
@@ -14,7 +15,7 @@ const getUserCommand = (user: Models.User<Models.Preferences>, projectId: string
             goto(`${base}/project-${projectId}/auth/user-${user.$id}`);
         },
         group: 'users',
-        icon: 'user-circle'
+        icon: IconUserCircle
     }) satisfies Command;
 
 export const userSearcher = (async (query: string) => {
@@ -31,7 +32,7 @@ export const userSearcher = (async (query: string) => {
                 },
                 group: 'users',
                 nested: true,
-                icon: 'trash'
+                icon: IconTrash
             },
             {
                 label: 'Go to activity',

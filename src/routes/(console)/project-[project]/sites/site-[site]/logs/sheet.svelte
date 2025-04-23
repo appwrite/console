@@ -14,10 +14,10 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { timeFromNow } from '$lib/helpers/date';
-    import LogsRequest from './(components)/LogsRequest.svelte';
-    import LogsResponse from './(components)/LogsResponse.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { Copy } from '$lib/components';
+    import { LogsRequest, LogsResponse } from '$lib/components/logs';
+    import { site } from '../store';
 
     export let open = false;
     export let selectedLogId: string;
@@ -42,10 +42,11 @@
     $: selectedLog = logs?.find((log) => log.$id === selectedLogId);
     $: isFirstLog = logs.findIndex((log) => log.$id === selectedLogId) === 0;
     $: isLastLog = logs.findIndex((log) => log.$id === selectedLogId) === logs.length - 1;
-    $: console.log(selectedLog);
 </script>
 
-<Sheet bind:open>
+<svelte:window onclick={() => (open = false)} />
+
+<Sheet bind:open closeOnBlur={false}>
     <div slot="header" style:width="100%">
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Layout.Stack direction="row" gap="m" alignItems="center">
@@ -127,7 +128,7 @@
                 <LogsRequest {selectedLog} />
             </Accordion>
             <Accordion title="Response" open hideDivider>
-                <LogsResponse {selectedLog} />
+                <LogsResponse {selectedLog} logging={$site?.logging} product="site" />
             </Accordion>
         </Layout.Stack>
     {/if}

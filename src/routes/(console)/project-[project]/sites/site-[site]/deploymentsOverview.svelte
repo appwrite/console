@@ -2,7 +2,7 @@
     import { Badge, Empty, Layout, Status, Table, Typography } from '@appwrite.io/pink-svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { type Models } from '@appwrite.io/console';
     import { DeploymentSource, DeploymentCreatedBy } from '$lib/components/git';
     import Id from '$lib/components/id.svelte';
@@ -38,12 +38,20 @@
         </Layout.Stack>
         <Button
             secondary
-            href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments`}>
+            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/deployments`}>
             View all
         </Button>
     </Layout.Stack>
     {#if deploymentList?.total}
-        <Table.Root columns={5} let:root>
+        <Table.Root
+            columns={[
+                { id: '$id', width: 200 },
+                { id: 'status', width: { min: 120 } },
+                { id: 'source', width: { min: 120 } },
+                { id: '$updatedAt', width: { min: 120 } },
+                { id: 'actions', width: 50 }
+            ]}
+            let:root>
             <svelte:fragment slot="header" let:root>
                 <Table.Header.Cell {root}>Deployment ID</Table.Header.Cell>
                 <Table.Header.Cell {root}>Status</Table.Header.Cell>
@@ -54,7 +62,7 @@
             {#each deploymentList?.deployments as deployment}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}>
+                    href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
                     <Table.Cell {root}>
                         <Id value={deployment.$id}>{deployment.$id}</Id>
                     </Table.Cell>
@@ -91,7 +99,7 @@
             {/each}
         </Table.Root>
     {:else}
-        <Card isTile padding="l" radius="s">
+        <Card padding="l" radius="s">
             <Empty title="No deployments exist" type="secondary">
                 <span slot="description">
                     Deployments are created when you deploy your site. You can deploy your site

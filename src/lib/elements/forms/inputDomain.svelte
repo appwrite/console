@@ -12,6 +12,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let maxlength: number | undefined = undefined;
 
     // https://www.geeksforgeeks.org/how-to-validate-a-domain-name-using-regular-expression/
     const pattern = String.raw`(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}`;
@@ -48,6 +49,7 @@
     {label}
     {nullable}
     {pattern}
+    {maxlength}
     on:input
     on:invalid={handleInvalid}
     type="text"
@@ -55,4 +57,8 @@
     state={error ? 'error' : 'default'}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
-    bind:value />
+    bind:value>
+    <slot name="start" slot="start" />
+    <slot name="info" slot="info" />
+    <slot name="end" slot="end" />
+</Input.Text>

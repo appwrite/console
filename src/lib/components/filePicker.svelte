@@ -9,7 +9,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import DualTimeView from './dualTimeView.svelte';
     import {
         Layout,
@@ -150,7 +150,7 @@
                 <Typography.Caption variant="500">Buckets</Typography.Caption>
                 {#await buckets}
                     <div class="u-flex u-main-center">
-                        <div class="loader" />
+                        <div class="loader"></div>
                     </div>
                 {:then response}
                     <ActionMenu.Root>
@@ -244,6 +244,7 @@
                                                     <Card.Selector
                                                         group="files"
                                                         name="files"
+                                                        title="files"
                                                         value={file.$id}
                                                         src={getPreview(
                                                             currentBucket.$id,
@@ -354,7 +355,7 @@
                                 slot="actions"
                                 secondary
                                 external
-                                href={`${base}/project-${$page.params.project}/storage`}>
+                                href={`${base}/project-${page.params.project}/storage`}>
                                 Create bucket
                             </Button>
                         </Empty>

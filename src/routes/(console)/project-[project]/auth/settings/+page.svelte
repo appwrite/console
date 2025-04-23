@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
-    import { Pill } from '$lib/elements';
     import { InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
@@ -15,7 +14,7 @@
     import { base } from '$app/paths';
     import { Avatar, Badge, Card, Layout, Typography } from '@appwrite.io/pink-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
     let showProvider = false;
 
     let selectedProvider: Models.AuthProvider | null = null;

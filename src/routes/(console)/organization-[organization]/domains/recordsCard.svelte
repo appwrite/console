@@ -76,23 +76,16 @@
             </Typography.Text>
         </Layout.Stack>
 
-        <Table.Root
-            columns={[{ id: 'type' }, { id: 'value' }, { id: 'actions', width: 40 }]}
-            let:root>
+        <Table.Root columns={[{ id: 'type' }, { id: 'value' }]} let:root>
             <svelte:fragment slot="header" let:root>
                 <Table.Header.Cell column="type" {root}>Type</Table.Header.Cell>
                 <Table.Header.Cell column="value" {root}>Value</Table.Header.Cell>
-                <Table.Header.Cell column="actions" {root} />
             </svelte:fragment>
             {#each nameservers as nameserver}
                 <Table.Row.Base {root}>
                     <Table.Cell column="type" {root}>NS</Table.Cell>
-                    <Table.Cell column="value" {root}>{nameserver}</Table.Cell>
-                    <Table.Cell column="actions" {root}>
-                        <Layout.Stack alignItems="flex-end">
-                            <InteractiveText variant="copy" isVisible text={nameserver}>
-                                {nameserver}</InteractiveText>
-                        </Layout.Stack>
+                    <Table.Cell column="value" {root}>
+                        <InteractiveText variant="copy-code" isVisible text={nameserver} />
                     </Table.Cell>
                 </Table.Row.Base>
             {/each}

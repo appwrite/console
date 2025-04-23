@@ -141,7 +141,7 @@
 
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <p class="text">Total results: {results?.total}</p>
-            <PaginationInline limit={5} bind:offset sum={results?.total} hidePages />
+            <PaginationInline limit={5} bind:offset total={results?.total} hidePages />
         </Layout.Stack>
     {:else if search}
         <EmptySearch bind:search target="users" hidePages>

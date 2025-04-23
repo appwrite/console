@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { CopyInput, Modal } from '$lib/components';
     import { Button, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -9,7 +9,7 @@
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
     import { Link, Alert } from '@appwrite.io/pink-svelte';
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     export let provider: Models.AuthProvider;
     export let show = false;

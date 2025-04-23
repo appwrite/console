@@ -1,12 +1,11 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import {
         Empty,
         EmptyFilter,
         EmptySearch,
         Id,
-        Modal,
         PaginationWithLimit,
         SearchQuery,
         ViewSelector
@@ -30,7 +29,7 @@
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
     import { Badge, FloatingActionBar, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
-    import Confirm from '$lib/components/confirm.svelte';
+    import { Confirm } from '$lib/components';
 
     export let data;
 
@@ -56,7 +55,7 @@
         { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', width: { min: 120 } }
     ]);
 
-    const project = $page.params.project;
+    const project = page.params.project;
 
     async function handleDelete() {
         showDelete = false;
@@ -89,13 +88,11 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery
-                search={data.search}
-                placeholder="Search by ID, description, type, or status" />
+            <SearchQuery placeholder="Search by description, type, status, or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Filters query={data.query} {columns} analyticsSource="messaging_messages" />
-            <ViewSelector view={data.view} {columns} hideView allowNoColumns />
+            <ViewSelector view={data.view} {columns} hideView />
             {#if $canWriteMessages}
                 <CreateMessageDropdown />
             {/if}
@@ -194,7 +191,7 @@
                 <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
                     Documentation
                 </Button>
-                <Button secondary href={`${base}/project-${$page.params.project}/messaging`}>
+                <Button secondary href={`${base}/project-${page.params.project}/messaging`}>
                     Clear search
                 </Button>
             </div>

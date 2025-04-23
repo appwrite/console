@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    const project = $page.url.searchParams.get('project');
-    const link = `appwrite-callback-${project}://${$page.url.search}`;
+    const project = page.url.searchParams.get('project');
+    const link = `appwrite-callback-${project}://${page.url.search}`;
 
     const redirect = new Promise((_resolve, reject) => {
         if (!project) {
@@ -20,8 +20,7 @@
             <p class="text">You will be automatically redirected back to your app shortly.</p>
             <p class="text">
                 If you are not redirected, please click on the following
-                <a class="link" href={`appwrite-callback-${project}://${$page.url.search}`}>link</a
-                >.
+                <a class="link" href={`appwrite-callback-${project}://${page.url.search}`}>link</a>.
             </p>
         </div>
     </article>

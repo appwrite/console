@@ -1,12 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import {
-        PaginationWithLimit,
-        ViewSelector,
-        EmptyFilter,
-        EmptySearch,
-        DropList
-    } from '$lib/components';
+    import { PaginationWithLimit, ViewSelector, EmptyFilter } from '$lib/components';
     import { Container } from '$lib/layout';
     import type { PageData } from './$types';
     import Table from './table.svelte';
@@ -40,7 +34,7 @@
 
             <div class="u-flex u-main-end u-gap-16 is-not-mobile">
                 <Filters query={data.query} {columns} />
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                <ViewSelector view={View.Table} {columns} hideView />
             </div>
         </div>
     </div>

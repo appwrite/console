@@ -18,7 +18,7 @@
     import Row from './row.svelte';
     import { Icon, Selector, Table } from '@appwrite.io/pink-svelte';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
-    import type { Column } from '@appwrite.io/pink-svelte/dist/table';
+    import type { PinkColumn } from '$lib/helpers/types';
 
     export let withCreate = false;
     export let permissions: string[] = [];
@@ -126,7 +126,7 @@
         return a.localeCompare(b);
     }
 
-    const columns: Column[] = [
+    const columns: PinkColumn[] = [
         { id: 'role', width: { min: 100 } },
         { id: 'create', width: { min: 100 }, hide: !withCreate },
         { id: 'read', width: { min: 100 } },
@@ -215,7 +215,7 @@
                     {groups}
                     on:create={create}
                     let:toggle>
-                    <Button secondary icon on:click={toggle}>
+                    <Button compact icon on:click={toggle}>
                         <Icon icon={IconPlus} size="s" />
                     </Button>
                 </Actions>

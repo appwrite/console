@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Container, Usage } from '$lib/layout';
 
     export let data;
@@ -10,8 +10,7 @@
 
 <Container>
     <Usage
-        title="Buckets"
-        path={`${base}/project-${$page.params.project}/storage/usage`}
+        path={`${base}/project-${page.params.project}/storage/usage`}
         {total}
         {count}
         countMetadata={{

@@ -35,7 +35,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import Link from '$lib/elements/link.svelte';
     import Copy from '$lib/components/copy.svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import UpdateVariablesModal from './updateVariablesModal.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
 
@@ -210,7 +210,7 @@
                 message: `Variable has been ${isConflicting ? 'overwritten' : 'promoted'}. You can find it in the project settings.`,
                 buttons: [
                     {
-                        method: () => goto(`${base}/project-${$page.params.project}/settings`),
+                        method: () => goto(`${base}/project-${page.params.project}/settings`),
                         name: 'Go to settings'
                     }
                 ]
@@ -269,7 +269,7 @@
                     <Button
                         secondary
                         on:mousedown={() => {
-                            showEditorModal = true;
+                            showVariablesUpload = true;
                             trackEvent(Click.VariablesUpdateClick, { source: analyticsSource });
                         }}>
                         <Icon slot="start" icon={IconUpload} /> Import .env
@@ -309,7 +309,11 @@
                     </Alert.Inline>
                 {/if}
                 <Table.Root
-                    columns={[{ id: 'key' }, { id: 'value' }, { id: 'actions', width: 30 }]}
+                    columns={[
+                        { id: 'key', width: { min: 200, max: 400 } },
+                        { id: 'value', width: { min: 200, max: 400 } },
+                        { id: 'actions', width: 50 }
+                    ]}
                     let:root>
                     <svelte:fragment slot="header" let:root>
                         <Table.Header.Cell column="key" {root}>Key</Table.Header.Cell>
@@ -329,7 +333,7 @@
                                     {#if isConflicting && hasConflictOnPage}
                                         <span
                                             class="icon-exclamation u-color-text-warning"
-                                            aria-hidden="true" />
+                                            aria-hidden="true"></span>
                                     {/if}
                                     <Copy value={variable.key} />
                                     <Output value={variable.key} hideCopyIcon>
@@ -411,7 +415,7 @@
                 {#if sum > limit}
                     <Layout.Stack direction="row" justifyContent="space-between">
                         <p class="text">Total variables: {sum}</p>
-                        <PaginationInline {sum} {limit} bind:offset hidePages />
+                        <PaginationInline total={sum} {limit} bind:offset hidePages />
                     </Layout.Stack>
                 {/if}
             </Layout.Stack>

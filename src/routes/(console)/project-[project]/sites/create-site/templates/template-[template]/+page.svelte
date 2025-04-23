@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Button, Form } from '$lib/elements/forms';
@@ -32,13 +32,11 @@
         Repositories,
         RepositoryBehaviour
     } from '$lib/components/git';
-    import { getFrameworkIcon } from '../../../store';
     import { app, iconPath } from '$lib/stores/app';
     import { consoleVariables } from '$routes/(console)/store';
-    import { project } from '$routes/(console)/project-[project]/store';
-    import { buildVerboseDomain } from '../../store';
-    import { organization } from '$lib/stores/organization';
     import { connectGitHub } from '$lib/stores/git';
+    import Domain from '../../domain.svelte';
+    import { getFrameworkIcon } from '$lib/stores/sites';
 
     export let data;
 
@@ -51,7 +49,8 @@
 
     let name = data.template.name;
     let id = ID.unique();
-    let domain = id;
+    let domain = data.domain;
+    let domainIsValid = true;
     let framework = data?.template?.frameworks[0];
     let branch = 'main';
     let rootDir = './';
@@ -100,15 +99,14 @@
                 message: 'Please select a repository'
             });
             return;
+        } else if (!domainIsValid) {
+            addNotification({
+                type: 'error',
+                message: 'Domain is not valid'
+            });
+            return;
         } else {
             try {
-                domain = await buildVerboseDomain(
-                    data.template.name,
-                    $project.name,
-                    $organization.name,
-                    id
-                );
-
                 const fr = Object.values(Framework).find((f) => f === framework.key);
                 const buildRuntime = Object.values(BuildRuntime).find(
                     (f) => f === framework.buildRuntime
@@ -118,6 +116,7 @@
                     name,
                     fr,
                     buildRuntime,
+                    undefined,
                     undefined,
                     undefined,
                     framework.installCommand,
@@ -165,7 +164,7 @@
                 });
 
                 await goto(
-                    `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                    `${base}/project-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
                 );
             } catch (e) {
                 console.log(e);
@@ -186,11 +185,6 @@
     $: if (connectBehaviour === 'later') {
         selectedRepository = null;
     }
-
-    $: console.log(repositoryName);
-
-    $: console.log(data.template);
-    $: console.log(variables);
 </script>
 
 <svelte:head>
@@ -200,13 +194,13 @@
 <Wizard
     title="Create site"
     bind:showExitModal
-    href={`${base}/project-${$page.params.project}/sites/`}
+    href={`${base}/project-${page.params.project}/sites/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
             {#if selectedRepository && showSiteConfig}
                 <Layout.Stack gap="xxl">
-                    <Card isTile padding="s" radius="s">
+                    <Card padding="s" radius="s">
                         <Layout.Stack
                             direction="row"
                             justifyContent="space-between"
@@ -232,6 +226,7 @@
                         bind:branch
                         bind:rootDir
                         bind:silentMode
+                        product="sites"
                         installationId={selectedInstallationId}
                         repositoryId={selectedRepository} />
                     {#if data.template.variables?.length}
@@ -287,20 +282,20 @@
                                         bind:selectedRepository
                                         product="sites"
                                         action="button"
-                                        on:connect={(e) => {
+                                        connect={(e) => {
                                             trackEvent(Click.ConnectRepositoryClick, {
                                                 from: 'template-wizard'
                                             });
-                                            repository.set(e.detail);
-                                            repositoryName = e.detail.name;
-                                            selectedRepository = e.detail.id;
+                                            repository.set(e);
+                                            repositoryName = e.name;
+                                            selectedRepository = e.id;
                                             showSiteConfig = true;
                                         }} />
                                 {/if}
                             </Layout.Stack>
                         </Fieldset>
                     {:else}
-                        <Card isDashed isTile padding="none">
+                        <Card isDashed padding="none">
                             <Empty
                                 type="secondary"
                                 title="Connect Git repository"
@@ -317,6 +312,9 @@
                 {:else if data.template.variables?.length}
                     <Configuration bind:variables templateVariables={data.template.variables} />
                 {/if}
+            {/if}
+            {#if connectBehaviour === 'later' || selectedRepository}
+                <Domain bind:domain bind:domainIsValid />
             {/if}
         </Layout.Stack>
     </Form>

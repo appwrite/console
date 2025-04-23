@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { Button, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
+    import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
@@ -73,22 +73,22 @@
             Updates to this payment method will be applied to any linked organizations.
         {/if}
     </svelte:fragment>
-    <FormList>
-        <InputSelect
-            id="month"
-            label="Month"
-            bind:value={month}
-            {options}
-            required
-            placeholder="Enter expiry month" />
-        <InputNumber
-            id="year"
-            label="Year"
-            bind:value={year}
-            min={currentYear}
-            required
-            placeholder="Enter expiry year" />
-    </FormList>
+
+    <InputSelect
+        id="month"
+        label="Month"
+        bind:value={month}
+        {options}
+        required
+        placeholder="Enter expiry month" />
+    <InputNumber
+        id="year"
+        label="Year"
+        bind:value={year}
+        min={currentYear}
+        required
+        placeholder="Enter expiry year" />
+
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button submit disabled={!month || !year}>Update</Button>

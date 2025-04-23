@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import {
         EmptySearch,
@@ -16,7 +16,7 @@
     import Table from './table.svelte';
     import { base } from '$app/paths';
     import { canWriteProviders } from '$lib/stores/roles';
-    import { Card, Layout, Typography, Empty, Icon } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
@@ -26,11 +26,11 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search providers" />
+            <SearchQuery placeholder="Search providers" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Filters query={data.query} {columns} analyticsSource="messaging_providers" />
-            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+            <ViewSelector view={View.Table} {columns} hideView />
             {#if $canWriteProviders}
                 <CreateProviderDropdown let:toggle>
                     <Button on:click={toggle} event="create_provider">
@@ -58,7 +58,7 @@
                 <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no providers that match your search.</p>
             </div>
-            <Button secondary href={`${base}/project-${$page.params.project}/messaging/providers`}>
+            <Button secondary href={`${base}/project-${page.params.project}/messaging/providers`}>
                 Clear search
             </Button>
         </EmptySearch>

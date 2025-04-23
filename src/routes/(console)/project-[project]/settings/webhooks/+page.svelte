@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Empty, Id } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
@@ -22,7 +22,7 @@
     let showFailed = false;
     let selectedWebhook: Models.Webhook;
 
-    const projectId = $page.params.project;
+    const projectId = page.params.project;
 
     $: $updateCommandGroupRanks({ webhooks: 20, domains: 10 });
 </script>

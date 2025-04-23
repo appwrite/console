@@ -35,8 +35,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice, InputSelect } from '$lib/elements/forms';
-    import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
+    import { InputSelect } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeBoolean> = {

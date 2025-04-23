@@ -20,7 +20,6 @@
     export let show = false;
     export let columns: Writable<Column[]>;
     export let analyticsSource = '';
-    export let clearOnClick = false;
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     let value: any = null;
     let selectedColumn: string | null = null;

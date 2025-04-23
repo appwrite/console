@@ -156,7 +156,7 @@
                     </div>
                     <div class="file-preview-content">
                         <div class="avatar">
-                            <span class="icon-external-link" aria-hidden="true" />
+                            <span class="icon-external-link" aria-hidden="true"></span>
                         </div>
                     </div>
                 </a>
@@ -177,7 +177,7 @@
 
             <svelte:fragment slot="actions">
                 <Button secondary href={downloadFile()} event="download_file" external>
-                    <span class="icon-download" aria-hidden="true" />
+                    <span class="icon-download" aria-hidden="true"></span>
                     <span class="text"> Download</span></Button>
             </svelte:fragment>
         </CardGrid>

@@ -15,32 +15,39 @@
 
     let confirm = false;
     let checkboxId = `delete_${title.replaceAll(' ', '_').toLowerCase()}`;
+
+    // reset checkbox status
+    $: if (open && confirmDeletion) {
+        confirm = false;
+    }
 </script>
 
 <Form isModal {onSubmit}>
     <Dialog {title} bind:open>
-        {#if error}
-            <Alert.Inline
-                dismissible
-                status="error"
-                on:dismiss={() => {
-                    error = null;
-                }}>
-                {error}
-            </Alert.Inline>
-        {/if}
-
-        <Layout.Stack gap="l">
-            <slot />
-
-            {#if confirmDeletion}
-                <InputCheckbox
-                    size="s"
-                    required
-                    id={checkboxId}
-                    bind:checked={confirm}
-                    label="I understand and confirm" />
+        <Layout.Stack gap="xl">
+            {#if error}
+                <Alert.Inline
+                    dismissible
+                    status="error"
+                    on:dismiss={() => {
+                        error = null;
+                    }}>
+                    {error}
+                </Alert.Inline>
             {/if}
+
+            <Layout.Stack gap="l">
+                <slot />
+
+                {#if confirmDeletion}
+                    <InputCheckbox
+                        size="s"
+                        required
+                        id={checkboxId}
+                        bind:checked={confirm}
+                        label="I understand and confirm" />
+                {/if}
+            </Layout.Stack>
         </Layout.Stack>
 
         <svelte:fragment slot="footer">

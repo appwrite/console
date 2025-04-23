@@ -8,7 +8,7 @@
 
 {#if $parsedTags?.length}
     <Layout.Stack direction="row" gap="s" wrap="wrap" alignItems="center" inline>
-        {#each $parsedTags as tag}
+        {#each $parsedTags as tag (tag.tag)}
             <span>
                 <Tooltip
                     disabled={Array.isArray(tag.value) ? tag.value?.length < 3 : true}

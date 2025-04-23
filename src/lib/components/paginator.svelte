@@ -1,28 +1,43 @@
 <script lang="ts">
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import PaginationInline from './paginationInline.svelte';
+    import Limit from './limit.svelte';
 
-    export let items = [];
-    export let limit = 5;
-    export let hideFooter = false;
+    let {
+        items = [],
+        limit = $bindable(5),
+        hideFooter = false,
+        hidePages = true,
+        hasLimit = false,
+        name = 'items',
+        children
+    } = $props();
 
-    let offset = 0;
+    let total = $derived(items.length);
 
-    $: total = items?.length;
-    $: paginatedItems = items.slice(offset, offset + limit);
+    let offset = $state(0);
+
+    let paginatedItems = $derived(items.slice(offset, offset + limit));
 </script>
 
 <Layout.Stack gap="s">
-    <slot {paginatedItems} {limit} />
+    {@render children(paginatedItems, limit)}
 
     {#if !hideFooter}
-        <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
-                Total results: {total}
-            </Typography.Text>
-            <div>
-                <PaginationInline {limit} bind:offset sum={total} hidePages />
-            </div>
+        <Layout.Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            wrap="wrap">
+            {#if hasLimit}
+                <Limit bind:limit sum={total} {name} />
+            {:else}
+                <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
+                    Total results: {total}
+                </Typography.Text>
+            {/if}
+
+            <PaginationInline {limit} bind:offset {total} {hidePages} />
         </Layout.Stack>
     {/if}
 </Layout.Stack>

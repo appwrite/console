@@ -70,7 +70,7 @@
                         label={index === 0 ? label : ''}
                         bind:value={formValues[attribute.key][index]} />
                     <Button text icon on:click={() => removeArrayItem(attribute.key, index)}>
-                        <span class="icon-x" aria-hidden="true" />
+                        <span class="icon-x" aria-hidden="true"></span>
                     </Button>
                 </Layout.Stack>
             {/each}

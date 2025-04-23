@@ -62,7 +62,7 @@
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Card } from '$lib/components';
     import { ProjectUsageRange, type Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import { InputSelect } from '$lib/elements/forms';
@@ -72,7 +72,6 @@
         legend: string;
     };
 
-    export let title: string;
     export let total: number;
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;
@@ -102,7 +101,7 @@
                         value: '90d'
                     }
                 ]}
-                value={$page.params.period ?? '30d'} />
+                value={page.params.period ?? '30d'} />
         </div>
     {/if}
     <Card>
@@ -113,7 +112,7 @@
             </Layout.Stack>
             <div class="chart-container">
                 <BarChart
-                    formatted={$page.params.period === '24h' ? 'hours' : 'days'}
+                    formatted={page.params.period === '24h' ? 'hours' : 'days'}
                     series={[
                         {
                             name: countMetadata.legend,
