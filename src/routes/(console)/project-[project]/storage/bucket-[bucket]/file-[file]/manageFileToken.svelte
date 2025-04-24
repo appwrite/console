@@ -17,7 +17,9 @@
 
     export let show = false;
     export let isDelete = false;
-    export let fileToken: Models.ResourceToken;
+    export let fileToken: Models.ResourceToken & {
+        accessedAt: string;
+    };
 
     let expire = null;
 
@@ -52,9 +54,8 @@
         </p>
 
         <p data-private>
-            <!-- TODO: `lastAccessed` or anything similar doesn't exist! Using `$createdAt` for now -->
-            {#if fileToken.$createdAt}
-                {@const formattedDate = cleanFormattedDate(fileToken.$createdAt, true)}
+            {#if fileToken.accessedAt}
+                {@const formattedDate = cleanFormattedDate(fileToken.accessedAt, true)}
 
                 This token was last accessed on <b>{formattedDate}</b>
             {:else}

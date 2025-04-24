@@ -109,11 +109,13 @@
 
     async function createFileToken(expiry: string) {
         try {
-            console.log(JSON.stringify($file, null, 2));
+            await sdk.forProject.tokens.createFileToken(
+                $file.bucketId,
+                $file.$id,
+                expiry,
+                [Permission.read(Role.any())]
+            );
 
-            await sdk.forProject.tokens.createFileToken($file.bucketId, $file.$id, expiry, [
-                Permission.read(Role.any())
-            ]);
             await invalidate(Dependencies.FILE_TOKENS);
             addNotification({
                 message: 'File token created',
@@ -131,8 +133,8 @@
 
     async function updateFileTokenExpiry(newExpiry: string) {
         try {
-            // TODO: permission missing on object type.
             await sdk.forProject.tokens.update(selectedFileToken.$id, newExpiry);
+            await invalidate(Dependencies.FILE_TOKENS);
             addNotification({
                 message: 'File token updated',
                 type: 'success'
@@ -149,10 +151,22 @@
         }
     }
 
-    async function copyPreviewWithToken(token: string) {
-        await copy(
-            `${sdk.forProject.storage.getFilePreview($file.bucketId, $file.$id)}&token=${token}`
-        );
+    async function copyPreviewWithToken(token: Models.ResourceToken) {
+        try {
+            const jwt = await sdk.forProject.tokens.getJWT(token.$id);
+            await copy(
+                `${sdk.forProject.storage.getFilePreview($file.bucketId, $file.$id)}&token=${jwt.jwt}`
+            );
+            addNotification({
+                message: 'File url copied',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
     }
 
     onMount(async () => {
@@ -229,22 +243,20 @@
                             <Table.Row.Base {root}>
                                 <Table.Cell column="created" {root}
                                     >{toLocaleDate(token.$createdAt)}</Table.Cell>
-                                <Table.Cell column="value" {root}>
-                                    <InteractiveText isVisible={false} text={token.value} />
-                                </Table.Cell>
-                                <Table.Cell column="expiry" {root}
-                                    >{token.expiry
-                                        ? cleanFormattedDate(token.expiry)
-                                        : 'Never'}</Table.Cell>
 
-                                <!-- TODO: `lastAccessed` or anything similar doesn't exist! Using `$createdAt` for now -->
+                                <Table.Cell column="expiry" {root}
+                                    >{token.expire
+                                        ? cleanFormattedDate(token.expire)
+                                        : 'never'}</Table.Cell>
+
                                 <Table.Cell column="last_accessed" {root}
-                                    >{token.$createdAt
-                                        ? cleanFormattedDate(token.$createdAt, true)
-                                        : 'Never'}</Table.Cell>
+                                    >{token.accessedAt
+                                        ? cleanFormattedDate(token.accessedAt, true)
+                                        : 'never'}</Table.Cell>
 
                                 <Table.Cell column="actions" {root}>
-                                    <Popover placement="bottom-end" padding="none" let:toggle>
+                                    <Layout.Stack alignItems="flex-end">
+                                        <Popover placement="bottom-end" padding="none" let:toggle>
                                         <PinkButton.Button
                                             icon
                                             variant="ghost"
@@ -260,7 +272,7 @@
                                                     leadingIcon={IconDuplicate}
                                                     on:click={(e) => {
                                                         toggle(e);
-                                                        copyPreviewWithToken(token.value);
+                                                        copyPreviewWithToken(token);
                                                     }}>
                                                     Copy URL
                                                 </ActionMenu.Item.Button>
@@ -287,6 +299,7 @@
                                             </ActionMenu.Root>
                                         </svelte:fragment>
                                     </Popover>
+                                    </Layout.Stack>
                                 </Table.Cell>
                             </Table.Row.Base>
                         {/each}

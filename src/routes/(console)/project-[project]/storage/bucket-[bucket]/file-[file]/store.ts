@@ -5,12 +5,13 @@ import type { Column } from '$lib/helpers/types';
 
 export const file = derived(page, ($page) => $page.data.file as Models.File);
 
-export const tokens = derived(page, ($page) => $page.data.tokens as Models.ResourceTokenList);
+export const tokens = derived(page, ($page) => $page.data.tokens as Models.ResourceTokenList & {
+    accessedAt: string,
+});
 
 export const columns = writable<Column[]>([
-    { id: 'created', title: 'Created', type: 'datetime', width: 170 },
-    { id: 'value', title: 'Value', type: 'string', width: 170 },
-    { id: 'expiry', title: 'Expiry', type: 'datetime', width: 170 },
-    { id: 'last_accessed', title: 'Last accessed', type: 'datetime', width: 170 },
-    { id: 'actions', title: '', type: 'string', width: 80 }
+    { id: 'created', title: 'Created', type: 'datetime', width: 200 },
+    { id: 'expiry', title: 'Expiration date', type: 'datetime', width: 200 },
+    { id: 'last_accessed', title: 'Last accessed', type: 'datetime', width: 200 },
+    { id: 'actions', title: '', type: 'string'}
 ]);
