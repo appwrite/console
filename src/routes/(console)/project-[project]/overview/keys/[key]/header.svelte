@@ -13,6 +13,5 @@
         <CoverTitle href={`${base}/project-${projectId}/overview/keys`}>
             {$key?.name}
         </CoverTitle>
-        <Id value={$key?.secret}>API key secret</Id>
     </svelte:fragment>
 </Cover>

@@ -11,8 +11,8 @@
     import { base } from '$app/paths';
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
+    import { showDevKeysCreateModal } from '$routes/(console)/project-[project]/overview/store';
 
-    let showModal = false;
     let isSubmitting = false;
     let name = '',
         expire = '';
@@ -28,7 +28,7 @@
                 expire || undefined
             );
 
-            showModal = false;
+            $showDevKeysCreateModal = false;
             trackEvent(Submit.DevKeyCreate);
             await goto(`${base}/project-${projectId}/overview/dev-keys/${$id}`);
             addNotification({
@@ -48,13 +48,13 @@
 </script>
 
 {#if $canWriteKeys}
-    <Button on:click={() => (showModal = true)}>
+    <Button on:click={() => ($showDevKeysCreateModal = true)}>
         <Icon icon={IconPlus} slot="start" size="s" />
-        Create Dev key
+        Create dev key
     </Button>
 
     <Form onSubmit={create} isModal>
-        <Modal title="Create Dev key" bind:open={showModal}>
+        <Modal title="Create dev key" bind:open={$showDevKeysCreateModal}>
             <span slot="description">
                 Test your app without rate limits and more detailed error messages.
             </span>
@@ -63,7 +63,7 @@
                 <InputText
                     id="name"
                     label="Name"
-                    placeholder="Dev key name"
+                    placeholder="Enter key name"
                     required
                     bind:value={name} />
 
@@ -71,7 +71,7 @@
             </Layout.Stack>
 
             <Layout.Stack direction="row" justifyContent="flex-end" slot="footer">
-                <Button fullWidthMobile secondary on:click={() => (showModal = false)}
+                <Button fullWidthMobile secondary on:click={() => ($showDevKeysCreateModal = false)}
                     >Cancel</Button>
                 <Button fullWidthMobile submit disabled={isSubmitting}>Create</Button>
             </Layout.Stack>

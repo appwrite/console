@@ -1,18 +1,19 @@
 <script lang="ts">
-    import { Empty } from '$lib/components';
-    import { diffDays, toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { canWriteKeys } from '$lib/stores/roles';
-    import { Badge, Layout, Table } from '@appwrite.io/pink-svelte';
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
+    import { goto } from '$app/navigation';
+    import { Empty } from '$lib/components';
+    import { canWriteKeys } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
+    import { showDevKeysCreateModal } from '../store';
+    import { Badge, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { diffDays, toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
 
     export let keyType: 'api' | 'dev' = 'api';
     export let keys: Models.KeyList | Models.DevKeyList;
 
     const isApiKey = keyType === 'api';
-    const label = isApiKey ? 'API' : 'Dev';
+    const label = isApiKey ? 'API' : 'dev';
     const slug = isApiKey ? 'keys' : 'dev-keys';
 
     function asApiKey(key: Models.Key | Models.DevKey) {
@@ -35,6 +36,13 @@
     function getKeys(): Models.Key[] | Models.DevKey[] {
         if (isApiKey) return keys['keys'] as Models.Key[];
         else return keys['devKeys'] as Models.DevKey[];
+    }
+
+    function getDescription(): string {
+        if (isApiKey)
+            return 'Use API keys to authenticate your app’s requests in production, granting secure access to live data and services.';
+        else
+            return 'Dev keys allow bypassing rate limits and accessing more detailed error messages while in development.';
     }
 </script>
 
@@ -84,5 +92,12 @@
         allowCreate={$canWriteKeys}
         href="https://appwrite.io/docs/advanced/platform/{slug}"
         target="{label} key"
-        on:click={() => goto(`${base}/project-${page.params.project}/overview/${slug}/create`)} />
+        description={getDescription()}
+        on:click={() => {
+            if (isApiKey) {
+                goto(`${base}/project-${page.params.project}/overview/${slug}/create`);
+            } else {
+                $showDevKeysCreateModal = true;
+            }
+        }} />
 {/if}

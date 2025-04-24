@@ -69,7 +69,7 @@
                     <InputText
                         id="name"
                         label="Name"
-                        placeholder="API key name"
+                        placeholder="Enter key name"
                         required
                         bind:value={name} />
 
