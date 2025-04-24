@@ -79,10 +79,10 @@
     <Table.Root
         let:root
         columns={[
-            { id: 'name' },
-            { id: 'email' },
-            { id: 'roles' },
-            { id: 'mfa' },
+            { id: 'name', width: { min: 200 } },
+            { id: 'email', width: { min: 200 } },
+            { id: 'roles', width: { min: 200 } },
+            { id: 'mfa', width: { min: 80 } },
             { id: 'actions', hide: !$isOwner, width: 40 }
         ]}>
         <svelte:fragment slot="header" let:root>
@@ -107,16 +107,18 @@
                 <Table.Cell column="name" {root}>
                     <Layout.Stack direction="row" alignItems="center" gap="s">
                         <AvatarInitials size="xs" name={member.userName} />
-                        <span class="u-trim">
+                        <Typography.Text truncate>
                             {member.userName ? member.userName : 'n/a'}
-                        </span>
+                        </Typography.Text>
                         {#if member.invited && !member.joined}
                             <Badge type="warning" variant="secondary" content="Pending" size="xs" />
                         {/if}
                     </Layout.Stack>
                 </Table.Cell>
                 <Table.Cell column="email" {root}>
-                    {member.userEmail}
+                    <Typography.Text truncate>
+                        {member.userEmail}
+                    </Typography.Text>
                 </Table.Cell>
                 <Table.Cell column="roles" {root}>
                     {member.roles.map((role) => getRoleLabel(role)).join(', ')}
