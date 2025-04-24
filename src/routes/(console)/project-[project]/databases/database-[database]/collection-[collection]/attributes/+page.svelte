@@ -32,7 +32,8 @@
         IconPencil,
         IconPlus,
         IconSwitchHorizontal,
-        IconTrash
+        IconTrash,
+        IconViewList
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
@@ -55,7 +56,7 @@
         ip: IconLocationMarker,
         url: IconLink,
         email: IconLink,
-        enum: IconSwitchHorizontal
+        enum: IconViewList
     };
 
     function getAttributeStatusBadge(status: string): ComponentProps<Badge>['type'] {

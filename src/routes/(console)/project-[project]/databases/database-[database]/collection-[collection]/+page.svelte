@@ -191,5 +191,5 @@
 
 {#if showImportCSV}
     <!-- CSVs can be text/plain or text/csv sometimes! -->
-    <FilePicker {onSelect} mimeTypeQuery="text/" bind:show={showImportCSV} />
+    <FilePicker {onSelect} mimeTypeQuery="text/" allowedExtension="csv" bind:show={showImportCSV} />
 {/if}

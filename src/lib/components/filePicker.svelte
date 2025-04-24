@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Id } from '.';
+    import { EmptySearch, Id } from '.';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Query, Permission, Role } from '@appwrite.io/console';
@@ -26,9 +26,12 @@
     } from '@appwrite.io/pink-svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { IconCheck, IconViewGrid, IconViewList } from '@appwrite.io/pink-icons-svelte';
+    import { goto } from '$app/navigation';
+    import { showCreateBucket } from '$routes/(console)/project-[project]/storage/+page.svelte';
 
     export let show: boolean;
     export let mimeTypeQuery: string = 'image/';
+    export let allowedExtension: string = '*';
     export let selectedBucket: string = null;
     export let selectedFile: string = null;
     export let onSelect: (e: Models.File) => void;
@@ -126,7 +129,11 @@
         sdk.forProject.storage
             .listFiles(
                 currentBucket.$id,
-                [Query.startsWith('mimeType', mimeTypeQuery), Query.orderDesc('$createdAt')],
+                [
+                    Query.startsWith('mimeType', mimeTypeQuery),
+                    Query.endsWith('name', `.${allowedExtension}`),
+                    Query.orderDesc('$createdAt')
+                ],
                 $search || undefined
             )
             .then((response) => {
@@ -134,12 +141,16 @@
                     searchEnabled = response.total > 0;
                 }
 
+                console.log(JSON.stringify(response, null, 2));
+
                 return response;
             });
 
     $: if ($search) {
         resetFile();
     }
+
+    $: extension = allowedExtension === '*' ? mimeTypeQuery : `.${allowedExtension}`;
 </script>
 
 <svelte:document on:visibilitychange={handleVisibilityChange} />
@@ -214,7 +225,7 @@
                                             type="file"
                                             tabindex="-1"
                                             class="u-hide"
-                                            accept={mimeTypeQuery}
+                                            accept={extension}
                                             on:change={uploadFile}
                                             bind:this={fileSelector} />
                                         {#if uploading}
@@ -248,7 +259,7 @@
                                                 columns={4}>
                                                 {#each response?.files as file}
                                                     <Card.Selector
-                                                        group="files"
+                                                        bind:group={selectedFile}
                                                         name="files"
                                                         padding="xxs"
                                                         title={file.name}
@@ -332,17 +343,15 @@
                                             </Table.Root>
                                         {/if}
                                     {:else if $search}
-                                        <Empty
-                                            type="secondary"
-                                            title={`Sorry we couldn't find "${$search}"`}
-                                            description="There are no files that match your search.">
-                                            <Button
-                                                secondary
-                                                slot="actions"
-                                                on:click={() => ($search = '')}
-                                                >Clear search
+                                        <EmptySearch
+                                            hidePages
+                                            hidePagination
+                                            bind:search={$search}
+                                            target="files">
+                                            <Button secondary on:click={() => ($search = '')}>
+                                                Clear search
                                             </Button>
-                                        </Empty>
+                                        </EmptySearch>
                                     {:else}
                                         <Empty title="No files found within this bucket.">
                                             <Button
@@ -362,8 +371,10 @@
                             <Button
                                 slot="actions"
                                 secondary
-                                external
-                                href={`${base}/project-${page.params.project}/storage`}>
+                                on:click={async () => {
+                                    await goto(`${base}/project-${page.params.project}/storage`);
+                                    $showCreateBucket = true;
+                                }}>
                                 Create bucket
                             </Button>
                         </Empty>

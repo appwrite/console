@@ -125,15 +125,16 @@
         }
     }
 
-    function text(status: string, collectionName: string = '') {
-        if (status === 'completed') {
-            return 'CSV import complete';
-        } else if (status === 'failed') {
-            return 'CSV import failed';
-        } else if (status === 'processing') {
-            return `Importing CSV file${collectionName ? ` to ${collectionName}` : ''}`;
-        } else {
-            return 'Preparing CSV for import...';
+    function text(status: string, collectionName = '') {
+        const name = collectionName ? `<b>${collectionName}</b>` : '';
+        switch (status) {
+            case 'completed':
+            case 'failed':
+                return `Import to ${name} ${status}`;
+            case 'processing':
+                return `Importing CSV file${name ? ` to ${name}` : ''}`;
+            default:
+                return 'Preparing CSV for import...';
         }
     }
 
@@ -169,9 +170,7 @@
                     class="upload-box-button"
                     class:is-open={isOpen}
                     aria-label="toggle upload box"
-                    on:click={() => {
-                        isOpen = !isOpen;
-                    }}>
+                    on:click={() => (isOpen = !isOpen)}>
                     <span class="icon-cheveron-up" aria-hidden="true"></span>
                 </button>
                 <button
@@ -190,7 +189,7 @@
                                 <div
                                     class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                     <Typography.Text>
-                                        {text(value.status, value.collection)}
+                                        {@html text(value.status, value.collection)}
                                     </Typography.Text>
                                 </div>
                                 <div
