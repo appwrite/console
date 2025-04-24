@@ -8,46 +8,52 @@
     import { collection } from './store';
     import { isTabletViewport } from '$lib/stores/viewport';
 
-    $: projectId = page.params.project;
-    $: databaseId = page.params.database;
-    $: collectionId = page.params.collection;
-    $: path = `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
-    $: tabs = [
-        {
-            href: path,
-            title: 'Documents',
-            event: 'documents',
-            hasChildren: true
-        },
-        {
-            href: `${path}/attributes`,
-            title: 'Attributes',
-            event: 'attributes'
-        },
-        {
-            href: `${path}/indexes`,
-            title: 'Indexes',
-            event: 'indexes'
-        },
-        {
-            href: `${path}/activity`,
-            title: 'Activity',
-            event: 'activity',
-            hasChildren: true
-        },
-        {
-            href: `${path}/usage`,
-            title: 'Usage',
-            event: 'usage',
-            hasChildren: true
-        },
-        {
-            href: `${path}/settings`,
-            title: 'Settings',
-            event: 'settings',
-            disabled: !$canWriteCollections
-        }
-    ].filter((tab) => !tab.disabled);
+    const projectId = $derived(page.params.project);
+    const databaseId = $derived(page.params.database);
+    const collectionId = $derived(page.params.collection);
+
+    const path = $derived(
+        `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`
+    );
+
+    const tabs = $derived.by(() =>
+        [
+            {
+                href: path,
+                title: 'Documents',
+                event: 'documents',
+                hasChildren: true
+            },
+            {
+                href: `${path}/attributes`,
+                title: 'Attributes',
+                event: 'attributes'
+            },
+            {
+                href: `${path}/indexes`,
+                title: 'Indexes',
+                event: 'indexes'
+            },
+            {
+                href: `${path}/activity`,
+                title: 'Activity',
+                event: 'activity',
+                hasChildren: true
+            },
+            {
+                href: `${path}/usage`,
+                title: 'Usage',
+                event: 'usage',
+                hasChildren: true
+            },
+            {
+                href: `${path}/settings`,
+                title: 'Settings',
+                event: 'settings',
+                disabled: !$canWriteCollections
+            }
+        ].filter((tab) => !tab.disabled)
+    );
 </script>
 
 <div style:margin-top={$isTabletViewport ? '48px' : 0}>
