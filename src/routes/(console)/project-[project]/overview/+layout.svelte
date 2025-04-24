@@ -23,7 +23,7 @@
     import { total } from '$lib/helpers/array';
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
-    import { canWriteProjects } from '$lib/stores/roles';
+    import { canReadKeys, canWriteProjects } from '$lib/stores/roles';
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -211,11 +211,13 @@
                         href={`${path}/platforms`}
                         selected={page.url.pathname === `${path}/platforms`}
                         event="platforms">Platforms</Tab>
+                    {#if $canReadKeys}
                     <Tab
                         noscroll
                         href={`${path}/keys`}
                         selected={page.url.pathname === `${path}/keys`}
                         event="keys">API keys</Tab>
+                    {/if}
                 </Tabs>
                 {#if $action}
                     <svelte:component this={$action} />

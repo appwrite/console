@@ -85,7 +85,7 @@
                 analyticsSource="site_deployments"
                 hideView>
                 <Popover padding="none" let:toggle>
-                    <Button size="s" on:click={toggle}>
+                    <Button size="s" on:click={toggle} disabled={!$canWriteSites}>
                         <Icon size="s" icon={IconPlus} />
                         Create deployment
                     </Button>

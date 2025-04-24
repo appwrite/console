@@ -33,6 +33,7 @@ export const canWriteSubscribers = derived(scopes, ($scopes) =>
     $scopes.includes('subscribers.write')
 );
 export const canWriteKeys = derived(scopes, ($scopes) => $scopes.includes('keys.write'));
+export const canReadKeys = derived(scopes, ($scopes) => $scopes.includes('keys.read'));
 export const canWriteRules = derived(scopes, ($scopes) => $scopes.includes('rules.write'));
 export const canWriteMigrations = derived(scopes, ($scopes) =>
     $scopes.includes('migrations.write')
