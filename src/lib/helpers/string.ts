@@ -59,4 +59,4 @@ export const hostnameRegex = String.raw`(\*)|(\*\.)?(?!-)[A-Za-z0-9\-]+([\-\.]{1
  *
  * Supports domains, localhost, wildcards, ip-addresses and Chrome extension IDs!
  */
-export const extendedHostnameRegex = String.raw`(\*)|(\*\.)?((?!-)[A-Za-z0-9-]+([-.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}|localhost|(\d{1,3}\.){3}\d{1,3}|[a-z0-9]{32})`;
+export const extendedHostnameRegex = String.raw`(\*)|(\*\.)?((?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}|localhost|(\d{1,3}\.){3}\d{1,3}|[a-z0-9]{32})`;
