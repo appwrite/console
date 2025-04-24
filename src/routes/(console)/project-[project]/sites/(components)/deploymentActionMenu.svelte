@@ -3,6 +3,7 @@
     import { Menu } from '$lib/components/menu';
     import SubMenu from '$lib/components/menu/subMenu.svelte';
     import { Button } from '$lib/elements/forms';
+    import { canWriteSites } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
     import {
@@ -54,6 +55,7 @@
             {#if !inCard}
                 <ActionMenu.Item.Button
                     leadingIcon={IconRefresh}
+                    disabled={!$canWriteSites}
                     on:click={(e) => {
                         e.preventDefault();
                         selectedDeployment = deployment;
@@ -120,6 +122,7 @@
             {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment?.status !== 'waiting'}
                 <ActionMenu.Item.Button
                     status="danger"
+                    disabled={!$canWriteSites}
                     leadingIcon={IconTrash}
                     on:click={(e) => {
                         e.preventDefault();

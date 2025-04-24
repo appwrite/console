@@ -19,6 +19,7 @@
     import CreateCliModal from './createCliModal.svelte';
     import { page } from '$app/state';
     import { ConnectRepoModal } from '$lib/components/git';
+    import { canWriteSites } from '$lib/stores/roles.js';
 
     export let data;
 
@@ -84,7 +85,7 @@
                 analyticsSource="site_deployments"
                 hideView>
                 <Popover padding="none" let:toggle>
-                    <Button size="s" on:click={toggle}>
+                    <Button size="s" on:click={toggle} disabled={!$canWriteSites}>
                         <Icon size="s" icon={IconPlus} />
                         Create deployment
                     </Button>
@@ -133,7 +134,7 @@
                             <ViewSelector view={View.Table} {columns} hideView />
                         {/if}
                         <Popover padding="none" let:toggle>
-                            <Button size="s" on:click={toggle}>
+                            <Button size="s" disabled={!$canWriteSites} on:click={toggle}>
                                 <Icon size="s" icon={IconPlus} />
                                 Create deployment
                             </Button>

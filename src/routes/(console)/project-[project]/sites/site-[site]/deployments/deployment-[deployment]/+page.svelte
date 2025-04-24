@@ -19,6 +19,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
+    import { canWriteSites } from '$lib/stores/roles';
 
     let { data } = $props();
 
@@ -54,7 +55,7 @@
                 </Button>
             {/if}
 
-            <Button secondary on:click={() => (showRedeploy = true)}>Redeploy</Button>
+            <Button secondary disabled={!$canWriteSites} on:click={() => (showRedeploy = true)}>Redeploy</Button>
             <DeploymentActionMenu
                 inCard
                 {deployment}

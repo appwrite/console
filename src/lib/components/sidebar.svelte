@@ -38,6 +38,12 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     import type { HTMLAttributes } from 'svelte/elements';
+    import {
+        canSeeBuckets,
+        canSeeDatabases,
+        canSeeFunctions,
+        canSeeMessages,
+    } from '$lib/stores/roles';
 
     type $$Props = HTMLAttributes<HTMLElement> & {
         state?: 'closed' | 'open' | 'icons';
@@ -161,34 +167,36 @@
                     <div class="only-mobile divider">
                         <Divider />
                     </div>
-                    <div class="products-label-container">
-                        <span class="products-label" class:hidden={state === 'icons'}>Build</span>
-                        <span class="products-label-indicator" class:hidden={state !== 'icons'}
-                        ></span>
-                    </div>
-                    {@const buildProjectOptions = projectOptions.filter(
-                        (projectOption) => projectOption.category === 'build'
-                    )}
-                    {#each buildProjectOptions as projectOption}
-                        <Tooltip placement="right" disabled={state !== 'icons'}>
-                            <a
-                                href={`/console/project-${project.$id}/${projectOption.slug}`}
-                                class="link"
-                                class:active={page.url.pathname.includes(projectOption.slug)}
-                                on:click={() => {
-                                    trackEvent(`click_menu_${projectOption.slug}`);
-                                    sideBarIsOpen = false;
-                                }}
-                                ><span class="link-icon"
-                                    ><Icon icon={projectOption.icon} size="s" />
-                                </span><span
-                                    class:no-text={state === 'icons'}
-                                    class:has-text={state === 'open'}
-                                    class="link-text">{projectOption.name}</span
-                                ></a>
-                            <span slot="tooltip">{projectOption.name}</span>
-                        </Tooltip>
-                    {/each}
+                    {#if $canSeeDatabases && $canSeeFunctions && $canSeeBuckets && $canSeeMessages}
+                        <div class="products-label-container">
+                            <span class="products-label" class:hidden={state === 'icons'}>Build</span>
+                            <span class="products-label-indicator" class:hidden={state !== 'icons'}
+                            ></span>
+                        </div>
+                        {@const buildProjectOptions = projectOptions.filter(
+                            (projectOption) => projectOption.category === 'build'
+                        )}
+                        {#each buildProjectOptions as projectOption}
+                            <Tooltip placement="right" disabled={state !== 'icons'}>
+                                <a
+                                    href={`/console/project-${project.$id}/${projectOption.slug}`}
+                                    class="link"
+                                    class:active={page.url.pathname.includes(projectOption.slug)}
+                                    on:click={() => {
+                                        trackEvent(`click_menu_${projectOption.slug}`);
+                                        sideBarIsOpen = false;
+                                    }}
+                                    ><span class="link-icon"
+                                        ><Icon icon={projectOption.icon} size="s" />
+                                    </span><span
+                                        class:no-text={state === 'icons'}
+                                        class:has-text={state === 'open'}
+                                        class="link-text">{projectOption.name}</span
+                                    ></a>
+                                <span slot="tooltip">{projectOption.name}</span>
+                            </Tooltip>
+                        {/each}
+                    {/if}
                     <div class="only-mobile divider">
                         <Divider />
                     </div>

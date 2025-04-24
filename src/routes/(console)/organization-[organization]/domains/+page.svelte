@@ -31,6 +31,7 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
+    import { canWriteRules } from '$lib/stores/roles';
 
     export let data;
 
@@ -50,6 +51,7 @@
                         source: 'organization_domain_overview'
                     });
                 }}
+                disabled={!$canWriteRules}
                 href={`${base}/organization-${page.params.organization}/domains/add-domain`}>
                 <Icon icon={IconPlus} size="s" />
                 Add domain

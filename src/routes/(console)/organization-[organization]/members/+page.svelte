@@ -33,6 +33,7 @@
         ActionMenu
     } from '@appwrite.io/pink-svelte';
     import Upgrade from '$lib/components/roles/upgrade.svelte';
+    import { canWriteTeams } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -70,7 +71,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Typography.Title>Members</Typography.Title>
-        <ConsoleButton on:mousedown={() => newMemberModal.set(true)} event="create_user" size="s">
+        <ConsoleButton on:mousedown={() => newMemberModal.set(true)} event="create_user" size="s" disabled={!$canWriteTeams}>
             <Icon size="s" icon={IconPlus} slot="start" />
             <span class="text">Invite</span>
         </ConsoleButton>
