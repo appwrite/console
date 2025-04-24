@@ -7,38 +7,23 @@ export const columns = writable<Column[]>([
         id: 'requestPath',
         title: 'Path',
         type: 'string',
-        width: { min: 500 },
+        width: { min: 480 },
         format: 'string'
     },
 
     {
-        id: 'trigger',
-        title: 'Trigger',
-        type: 'string',
-        exclude: true,
-        array: true,
-        format: 'enum',
-        elements: [
-            { value: 'http', label: 'HTTP' },
-            { value: 'schedule', label: 'Schedule' },
-            { value: 'event', label: 'Event' }
-        ],
-        filter: false
-    },
-    {
         id: 'requestMethod',
         title: 'Method',
         type: 'string',
-        exclude: true,
         array: true,
         format: 'enum',
-        elements: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+        elements: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        width: { min: 70, max: 150 }
     },
     {
         id: 'responseStatusCode',
         title: 'Status code',
         type: 'integer',
-        exclude: true,
         format: 'integer',
         elements: [
             {
@@ -58,7 +43,23 @@ export const columns = writable<Column[]>([
                 label: 'Server error (500-599)'
             }
         ],
+        width: { min: 90, max: 150 },
         filter: false //TODO: re-enable
+    },
+
+    {
+        id: 'trigger',
+        title: 'Trigger',
+        type: 'string',
+        exclude: true,
+        array: true,
+        format: 'enum',
+        elements: [
+            { value: 'http', label: 'HTTP' },
+            { value: 'schedule', label: 'Schedule' },
+            { value: 'event', label: 'Event' }
+        ],
+        filter: false
     },
 
     {
@@ -86,7 +87,7 @@ export const columns = writable<Column[]>([
     {
         id: '$createdAt',
         title: 'Created',
-        width: { min: 150, max: 180 },
+        width: { min: 120, max: 180 },
         type: 'datetime',
         format: 'datetime',
         elements: [

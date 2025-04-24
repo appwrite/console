@@ -57,12 +57,13 @@
                     data: [method.brand]
                 };
             })} />
-        <div>
+        <Layout.Stack direction="row" alignItems="center">
             <Button on:click={() => (showPaymentModal = true)} compact size="s">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Add payment method
             </Button>
-        </div>
+            <slot name="actions" />
+        </Layout.Stack>
     {:else}
         <Card.Base variant="secondary" radius="s" padding="xs">
             <Layout.Stack direction="row">
@@ -79,6 +80,7 @@
                     Add
                 </Button>
             </Layout.Stack>
+            <slot name="actions" />
         </Card.Base>
     {/if}
 </Layout.Stack>

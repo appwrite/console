@@ -23,6 +23,7 @@
     <svelte:fragment slot="tooltip" let:toggle>
         <ActionMenu.Root>
             <ActionMenu.Item.Button
+                badge="Recommended"
                 on:click={(e) => {
                     showCreateGit = true;
                     toggle(e);

@@ -25,7 +25,7 @@ export function buildFilterCol(col: Column, customOperator = null): FilterData {
             return {
                 value: (element?.value ?? element) as string,
                 label: (element?.label ?? element) as string,
-                checked: false
+                checked: undefined
             };
         })
     };

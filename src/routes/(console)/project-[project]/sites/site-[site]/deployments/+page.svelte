@@ -1,7 +1,7 @@
 <script lang="ts">
     import { PaginationWithLimit, ViewSelector, EmptyFilter, Empty } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { View } from '$lib/helpers/load';
     import { ActionMenu, Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
@@ -10,14 +10,13 @@
     import CreateGitDeploymentModal from './createGitDeploymentModal.svelte';
     import { columns } from './store';
     import CreateManualDeploymentModal from './createManualDeploymentModal.svelte';
-    // import DeploymentMetrics from './deploymentMetrics.svelte';
+    import DeploymentMetrics from './deploymentMetrics.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import CreateCliModal from './createCliModal.svelte';
-    import { ParsedTagList, QuickFilters } from '$lib/components/filters';
     import { page } from '$app/state';
     import { ConnectRepoModal } from '$lib/components/git';
     import { canWriteSites } from '$lib/stores/roles.js';
@@ -75,10 +74,54 @@
 
 <Container>
     <Layout.Stack gap="xxxl">
-        <!-- TODO: re-enable metrics after backend changes -->
-        <!-- <DeploymentMetrics deploymentList={data.deploymentList} /> -->
+        <DeploymentMetrics />
+
+        <!-- TODO: re-enable once component is complete -->
         <Layout.Stack gap="l">
-            <Layout.Stack>
+            <ResponsiveContainerHeader
+                view={View.Table}
+                {columns}
+                hasFilters
+                analyticsSource="site_deployments"
+                hideView>
+                <Popover padding="none" let:toggle>
+                    <Button size="s" on:click={toggle}>
+                        <Icon size="s" icon={IconPlus} />
+                        Create deployment
+                    </Button>
+                    <svelte:fragment slot="tooltip" let:toggle>
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Button
+                                badge="Recommended"
+                                on:click={(e) => {
+                                    toggle(e);
+                                    if (!hasInstallation) {
+                                        showConnectRepo = true;
+                                    } else {
+                                        showCreateDeployment = true;
+                                    }
+                                }}>
+                                Git
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={(e) => {
+                                    toggle(e);
+                                    showConnectCLI = true;
+                                }}>
+                                CLI
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={(e) => {
+                                    toggle(e);
+                                    showConnectManual = true;
+                                }}>
+                                Manual
+                            </ActionMenu.Item.Button>
+                        </ActionMenu.Root>
+                    </svelte:fragment>
+                </Popover>
+            </ResponsiveContainerHeader>
+            <!-- <Layout.Stack>
                 <Layout.Stack justifyContent="space-between" direction="row">
                     <Layout.Stack alignItems="center" direction="row">
                         {#if data.deploymentList.total || data?.query}
@@ -129,7 +172,7 @@
                     </Layout.Stack>
                 </Layout.Stack>
                 <ParsedTagList />
-            </Layout.Stack>
+            </Layout.Stack> -->
 
             {#if data.deploymentList.total}
                 <Table {data} />

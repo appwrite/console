@@ -18,6 +18,7 @@
         }
         if (sidebar) {
             sidebar.style.top = `${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px`;
+            sidebar.style.height = `calc(100vh - (${alertHeight + ($isTabletViewport ? 0 : header.getBoundingClientRect().height)}px))`;
         }
         if (contentSection) {
             contentSection.style.paddingBlockStart = `${alertHeight}px`;

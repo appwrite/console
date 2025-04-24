@@ -1,7 +1,7 @@
 <script lang="ts">
     import { DropList } from '$lib/components';
     import { SelectSearchCheckbox } from '..';
-    import { Icon } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import { IconChevronDown, IconChevronUp } from '@appwrite.io/pink-icons-svelte';
 
     type Option = {
@@ -50,20 +50,18 @@
         class="tags-input u-position-relative u-cursor-pointer"
         type="button"
         on:click={() => (show = !show)}>
-        <div class="tags">
-            <ul class="tags-list">
-                {#each tags as tag}
-                    <li class="tags-item">
-                        <div class="input-tag">
-                            <span class="tag-text">{tag}</span>
-                        </div>
-                    </li>
-                {/each}
-            </ul>
-        </div>
-
         <div class="input">
-            <input {placeholder} bind:value={search} bind:this={input} />
+            <div class="tags-container">
+                {#each tags as tag}
+                    <Tag size="xs">
+                        {tag}
+                    </Tag>
+                {/each}
+            </div>
+
+            {#if !tags.length}
+                <input {placeholder} bind:value={search} bind:this={input} />
+            {/if}
 
             <Icon size="m" icon={show ? IconChevronUp : IconChevronDown} />
         </div>
@@ -84,13 +82,11 @@
     </svelte:fragment>
 </DropList>
 
-<style>
+<style lang="scss">
     .tags-input {
         width: 100%;
-    }
 
-    @media (max-width: 768px) {
-        .tags-input {
+        @media (max-width: 768px) {
             padding-right: 2rem;
         }
     }
@@ -100,26 +96,40 @@
         display: flex;
         align-items: center;
         transition: all 0.15s ease-in-out;
-        border: var(--border-width-s) solid var(--border-neutral);
+        padding-inline: var(--space-6);
         border-radius: var(--border-radius-s);
         background-color: var(--p-input-background-color);
-        padding-inline: var(--space-6);
         outline-offset: calc(var(--border-width-s) * -1);
+        border: var(--border-width-s) solid var(--border-neutral);
         --p-input-background-color: var(--input-background-color, var(--bgcolor-neutral-default));
+
+        & input {
+            inline-size: 100%;
+            padding-block: var(--space-3);
+            padding-inline: 0;
+            border: none;
+            display: block;
+            line-height: 140%;
+            background: none;
+        }
+
+        & input::placeholder {
+            color: var(--fgcolor-neutral-tertiary);
+        }
+
+        &:focus-within {
+            outline: var(--border-width-l) solid var(--border-focus);
+        }
     }
-    .input input {
-        inline-size: 100%;
-        padding-block: var(--space-3);
-        padding-inline: 0;
-        border: none;
-        display: block;
-        line-height: 140%;
-        background: none;
-    }
-    .input input::placeholder {
-        color: var(--fgcolor-neutral-tertiary);
-    }
-    .input:focus-within {
-        outline: var(--border-width-l) solid var(--border-focus);
+    .tags-container {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        overflow-y: auto;
+        max-height: 14rem;
+        gap: var(--space-2);
+        align-items: center;
+        align-content: space-between;
+        padding-block: var(--space-2);
     }
 </style>
