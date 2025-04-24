@@ -3,14 +3,20 @@
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { Empty } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import { canWriteKeys } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
-    import { showDevKeysCreateModal } from '../store';
-    import { Badge, Layout, Table } from '@appwrite.io/pink-svelte';
     import { diffDays, toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import { devKeyColumns, keyColumns, showDevKeysCreateModal } from '../store';
+    import { Badge, FloatingActionBar, Layout, Table } from '@appwrite.io/pink-svelte';
+    import DeleteBatch from './deleteBatch.svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let keyType: 'api' | 'dev' = 'api';
     export let keys: Models.KeyList | Models.DevKeyList;
+
+    let showDeleteModal = false;
+    let selectedRows: string[] = [];
 
     const isApiKey = keyType === 'api';
     const label = isApiKey ? 'API' : 'dev';
@@ -44,20 +50,19 @@
         else
             return 'Dev keys allow bypassing rate limits and accessing more detailed error messages while in development.';
     }
+
+    const columns = isApiKey ? $keyColumns : $devKeyColumns;
 </script>
 
 {#if keys.total}
-    <Table.Root columns={isApiKey ? 4 : 3} let:root>
+    <Table.Root let:root {columns} bind:selectedRows allowSelection={$canWriteKeys}>
         <svelte:fragment slot="header" let:root>
-            <Table.Header.Cell {root}>Name</Table.Header.Cell>
-            <Table.Header.Cell {root}>Last accessed</Table.Header.Cell>
-            <Table.Header.Cell {root}>Expiration date</Table.Header.Cell>
-            {#if isApiKey}
-                <Table.Header.Cell {root}>Scopes</Table.Header.Cell>
-            {/if}
+            {#each columns as column}
+                <Table.Header.Cell column={column.id} {root}>{column.title}</Table.Header.Cell>
+            {/each}
         </svelte:fragment>
         {#each getKeys() as key (key.$id)}
-            <Table.Row.Link href={`${slug}/${key.$id}`} {root}>
+            <Table.Row.Link id={key.$id} href={`${slug}/${key.$id}`} {root}>
                 <Table.Cell {root}>
                     {key.name}
                 </Table.Cell>
@@ -101,3 +106,22 @@
             }
         }} />
 {/if}
+
+{#if selectedRows.length > 0}
+    <FloatingActionBar>
+        <svelte:fragment slot="start">
+            <Badge content={selectedRows.length.toString()} />
+            <span>
+                {capitalize(label)}
+                {selectedRows.length > 1 ? 'keys' : 'key'}
+                selected
+            </span>
+        </svelte:fragment>
+        <svelte:fragment slot="end">
+            <Button text on:click={() => (selectedRows = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showDeleteModal = true)}>Delete</Button>
+        </svelte:fragment>
+    </FloatingActionBar>
+{/if}
+
+<DeleteBatch {keyType} bind:keyIds={selectedRows} bind:showDelete={showDeleteModal} />
