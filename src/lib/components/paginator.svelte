@@ -24,7 +24,11 @@
     {@render children(paginatedItems, limit)}
 
     {#if !hideFooter}
-        <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Layout.Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            wrap="wrap">
             {#if hasLimit}
                 <Limit bind:limit sum={total} {name} />
             {:else}

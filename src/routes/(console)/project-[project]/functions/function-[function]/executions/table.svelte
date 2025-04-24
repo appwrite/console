@@ -41,24 +41,24 @@
                     {:else if column.id === '$createdAt'}
                         <DualTimeView time={log.$createdAt} />
                     {:else if column.id === 'requestPath'}
-                        <Layout.Stack direction="row" alignItems="center" gap="s">
-                            <Badge
-                                variant="secondary"
-                                type={log.responseStatusCode >= 400
-                                    ? 'error'
-                                    : log.responseStatusCode === 0
-                                      ? undefined
-                                      : 'success'}
-                                content={log.responseStatusCode.toString()} />
-                            <Typography.Code size="m">
-                                {log.requestMethod}
-                            </Typography.Code>
-                            <Typography.Code size="m">
-                                {log.requestPath}
-                            </Typography.Code>
-                        </Layout.Stack>
+                        <Typography.Code size="m">
+                            {log.requestPath}
+                        </Typography.Code>
                     {:else if column.id === 'responseStatusCode'}
-                        {log.responseStatusCode}
+                        <Badge
+                            variant="secondary"
+                            type={log.responseStatusCode >= 400
+                                ? 'error'
+                                : log.responseStatusCode === 0
+                                  ? undefined
+                                  : 'success'}
+                            content={log.responseStatusCode.toString()} />
+                    {:else if column.id === 'requestMethod'}
+                        <Typography.Code size="m">
+                            {log.requestMethod}
+                        </Typography.Code>
+                    {:else if column.id === 'trigger'}
+                        {capitalize(log.trigger)}
                     {:else if column.id === 'status'}
                         {@const status = log.status}
                         <Tooltip

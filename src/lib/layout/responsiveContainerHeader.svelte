@@ -1,6 +1,6 @@
 <script lang="ts">
     import { SearchQuery, ViewSelector } from '$lib/components';
-    import { ParsedTagList } from '$lib/components/filters';
+    import { FiltersBottomSheet, ParsedTagList, queryParamToMap } from '$lib/components/filters';
     import QuickFilters from '$lib/components/filters/quickFilters.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { View } from '$lib/helpers/load';
@@ -11,6 +11,9 @@
     import type { Snippet } from 'svelte';
     import type { Writable } from 'svelte/store';
     import DisplaySettingsModal from './displaySettingsModal.svelte';
+    import { buildFilterCol } from '$lib/components/filters/quickFilters';
+    import { afterNavigate } from '$app/navigation';
+    import { setFilters } from '$lib/components/filters/setFilters';
 
     let {
         columns,
@@ -41,6 +44,21 @@
     let showSearch = $state(false);
     let showDisplaySettingsModal = $state(false);
     let showFilters = $state(false);
+
+    let filterCols = $derived(
+        $columns
+            .map((col) => (col.filter !== false ? buildFilterCol(col) : null))
+            .filter((f) => f?.options)
+    );
+
+    afterNavigate((p) => {
+        if (!hasFilters) return;
+        const paramQueries = p.to.url.searchParams.get('query');
+        const localQueries = queryParamToMap(paramQueries || '[]');
+        const localTags = Array.from(localQueries.keys());
+        setFilters(localTags, filterCols, $columns);
+        filterCols = filterCols;
+    });
 </script>
 
 <header>
@@ -48,9 +66,11 @@
         {#if $isSmallViewport}
             <Layout.Stack gap="xl">
                 <Layout.Stack direction="row">
-                    <div style={`--button-width: 100%; width: 100%`}>
-                        {@render children()}
-                    </div>
+                    {#if children}
+                        <div style={`--button-width: 100%; width: 100%`}>
+                            {@render children()}
+                        </div>
+                    {/if}
                     {#if numberOfOptions === 1}
                         {#if hasSearch}
                             {@render searchButton(true)}
@@ -104,6 +124,25 @@
     </Layout.Stack>
 </header>
 
+{#if showDisplaySettingsModal}
+    <DisplaySettingsModal
+        bind:show={showDisplaySettingsModal}
+        {columns}
+        {hideColumns}
+        {hideView}
+        bind:view />
+{/if}
+
+{#if $isSmallViewport && showFilters}
+    <FiltersBottomSheet
+        bind:openBottomSheet={showFilters}
+        {columns}
+        {analyticsSource}
+        bind:filterCols />
+{/if}
+
+<!-- SNIPPETS -->
+
 {#snippet searchButton(icon = false)}
     <Button ariaLabel="Search" on:click={() => (showSearch = !showSearch)} secondary {icon}>
         <Icon icon={IconSearch} />
@@ -125,12 +164,3 @@
         <Icon icon={IconFilterLine} />
     </Button>
 {/snippet}
-
-{#if showDisplaySettingsModal}
-    <DisplaySettingsModal
-        bind:show={showDisplaySettingsModal}
-        {columns}
-        {hideColumns}
-        {hideView}
-        bind:view />
-{/if}
