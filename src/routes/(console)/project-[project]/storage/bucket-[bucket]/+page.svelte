@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -217,9 +217,12 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/products/storage/upload-download"
             target="file"
-            on:click={() => void 0} />
+            href="https://appwrite.io/docs/products/storage/upload-download"
+            on:click={() =>
+                goto(
+                    `${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}/create`
+                )} />
     {/if}
 </Container>
 

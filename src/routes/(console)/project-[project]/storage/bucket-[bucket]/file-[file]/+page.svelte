@@ -109,12 +109,10 @@
 
     async function createFileToken(expiry: string) {
         try {
-            await sdk.forProject.tokens.createFileToken(
-                $file.bucketId,
-                $file.$id,
-                expiry,
-                [Permission.read(Role.any())]
-            );
+            // TODO: figure out the permissions systems.
+            await sdk.forProject.tokens.createFileToken($file.bucketId, $file.$id, expiry, [
+                Permission.read(Role.any())
+            ]);
 
             await invalidate(Dependencies.FILE_TOKENS);
             addNotification({
@@ -257,48 +255,48 @@
                                 <Table.Cell column="actions" {root}>
                                     <Layout.Stack alignItems="flex-end">
                                         <Popover placement="bottom-end" padding="none" let:toggle>
-                                        <PinkButton.Button
-                                            icon
-                                            variant="ghost"
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                toggle(e);
-                                            }}>
-                                            <Icon size="s" icon={IconDotsHorizontal} />
-                                        </PinkButton.Button>
-                                        <svelte:fragment slot="tooltip" let:toggle>
-                                            <ActionMenu.Root>
-                                                <ActionMenu.Item.Button
-                                                    leadingIcon={IconDuplicate}
-                                                    on:click={(e) => {
-                                                        toggle(e);
-                                                        copyPreviewWithToken(token);
-                                                    }}>
-                                                    Copy URL
-                                                </ActionMenu.Item.Button>
-                                                <ActionMenu.Item.Button
-                                                    leadingIcon={IconPencil}
-                                                    on:click={(e) => {
-                                                        toggle(e);
-                                                        showManageToken = true;
-                                                        selectedFileToken = token;
-                                                    }}>
-                                                    Edit expiry
-                                                </ActionMenu.Item.Button>
-                                                <ActionMenu.Item.Button
-                                                    status="danger"
-                                                    leadingIcon={IconTrash}
-                                                    on:click={async (e) => {
-                                                        toggle(e);
-                                                        tokenDeleteMode = true;
-                                                        showManageToken = true;
-                                                        selectedFileToken = token;
-                                                    }}>
-                                                    Delete
-                                                </ActionMenu.Item.Button>
-                                            </ActionMenu.Root>
-                                        </svelte:fragment>
-                                    </Popover>
+                                            <PinkButton.Button
+                                                icon
+                                                variant="ghost"
+                                                on:click={(e) => {
+                                                    e.preventDefault();
+                                                    toggle(e);
+                                                }}>
+                                                <Icon size="s" icon={IconDotsHorizontal} />
+                                            </PinkButton.Button>
+                                            <svelte:fragment slot="tooltip" let:toggle>
+                                                <ActionMenu.Root>
+                                                    <ActionMenu.Item.Button
+                                                        leadingIcon={IconDuplicate}
+                                                        on:click={(e) => {
+                                                            toggle(e);
+                                                            copyPreviewWithToken(token);
+                                                        }}>
+                                                        Copy URL
+                                                    </ActionMenu.Item.Button>
+                                                    <ActionMenu.Item.Button
+                                                        leadingIcon={IconPencil}
+                                                        on:click={(e) => {
+                                                            toggle(e);
+                                                            showManageToken = true;
+                                                            selectedFileToken = token;
+                                                        }}>
+                                                        Edit expiry
+                                                    </ActionMenu.Item.Button>
+                                                    <ActionMenu.Item.Button
+                                                        status="danger"
+                                                        leadingIcon={IconTrash}
+                                                        on:click={async (e) => {
+                                                            toggle(e);
+                                                            tokenDeleteMode = true;
+                                                            showManageToken = true;
+                                                            selectedFileToken = token;
+                                                        }}>
+                                                        Delete
+                                                    </ActionMenu.Item.Button>
+                                                </ActionMenu.Root>
+                                            </svelte:fragment>
+                                        </Popover>
                                     </Layout.Stack>
                                 </Table.Cell>
                             </Table.Row.Base>
@@ -329,8 +327,8 @@
                 {:else}
                     <Alert.Inline status="info" title="File security is disabled">
                         <Typography.Text>
-                            If you want to assign document permissions. Go to Bucket settings and
-                            enable file security. Otherwise, only Bucket permissions will be used.
+                            If you want to assign file permissions. Go to Bucket settings and enable
+                            file security. Otherwise, only Bucket permissions will be used.
                         </Typography.Text>
                     </Alert.Inline>
                 {/if}
