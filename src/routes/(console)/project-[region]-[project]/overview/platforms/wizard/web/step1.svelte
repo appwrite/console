@@ -8,7 +8,7 @@
     import { createPlatform } from '../store';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { PlatformType } from '@appwrite.io/console';
-    import { hostnameRegex } from '$lib/helpers/string';
+    import { extendedHostnameRegex } from '$lib/helpers/string';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -60,7 +60,7 @@
                 placeholder="localhost"
                 tooltip="The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required."
                 required
-                pattern={hostnameRegex}
+                pattern={extendedHostnameRegex}
                 patternError="Please enter a valid hostname"
                 bind:value={$createPlatform.hostname} />
 

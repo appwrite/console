@@ -53,3 +53,10 @@ export function formatNum(number: number): string {
  * Returns a regex to check hostname validity. Supports wildcards too!
  */
 export const hostnameRegex = String.raw`(\*)|(\*\.)?(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}|localhost`;
+
+/**
+ * Returns a regex to check hostname validity.
+ *
+ * Supports domains, localhost, wildcards, ip-addresses and Chrome extension IDs!
+ */
+export const extendedHostnameRegex = String.raw`(\*)|(\*\.)?((?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}|localhost|(\d{1,3}\.){3}\d{1,3}|[a-z0-9]{32})`;

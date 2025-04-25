@@ -8,7 +8,7 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { PlatformType } from '@appwrite.io/console';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { hostnameRegex } from '$lib/helpers/string';
+    import { extendedHostnameRegex } from '$lib/helpers/string';
 
     // enum Platform {
     //     Android = 'flutter-android',
@@ -174,7 +174,7 @@
                     placeholder={placeholder[platform].hostname}
                     tooltip={placeholder[platform].tooltip}
                     required
-                    pattern={hostnameRegex}
+                    pattern={extendedHostnameRegex}
                     patternError="Please enter a valid hostname"
                     bind:value={$createPlatform.hostname} />
 
