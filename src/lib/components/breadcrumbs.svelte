@@ -15,7 +15,7 @@
     import { newOrgModal } from '$lib/stores/organization';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/stores';
-    import { artifacts } from '$routes/(console)/project-[project]/store';
+    import type { Artifact } from '$lib/sdk/imagine';
 
     type Project = {
         name: string;
@@ -73,13 +73,14 @@
 
     export let organizations: Organization[] = [];
 
-    $: displayArtifacts = $page.url.pathname.includes('artifact') && isStudio ? $artifacts : [];
-
+    $: displayArtifacts = (
+        $page.url.pathname.includes('artifact') && isStudio ? $page.data.artifacts.artifacts : []
+    ) as Artifact[];
     $: selectedOrg = organizations.find((organization) => organization.isSelected);
     $: selectedProject = selectedOrg?.projects.find((project) => project.isSelected);
-    $: selectedArtifact = displayArtifacts.find((artifact) =>
-        $page.url.pathname.endsWith(artifact.$id)
-    );
+    $: selectedArtifact = displayArtifacts.find(
+        (artifact) => $page.params.artifact === artifact.$id
+    ) as Artifact;
 
     let organisationBottomSheetOpen = false;
     let projectsBottomSheetOpen = false;
@@ -203,7 +204,7 @@
                                 .map((artifact, index) => {
                                     if (index < 4) {
                                         return {
-                                            name: artifact.title,
+                                            name: artifact.name,
                                             href: `${base}/project-${selectedProject.$id}/studio/artifact-${artifact.$id}`
                                         };
                                     } else if (index === 4) {
@@ -417,7 +418,7 @@
                 class="trigger"
                 use:melt={$triggerArtifacts}
                 aria-label="Open artifacts tab">
-                <span class="projectName">{selectedArtifact.title}</span>
+                <span class="projectName">{selectedArtifact?.name}</span>
                 <Icon icon={IconChevronDown} size="s" />
             </button>
         {:else}
@@ -426,7 +427,7 @@
                 class="trigger"
                 on:click={() => (artifactsBottomSheetOpen = true)}
                 aria-label="Open artifacts tab">
-                <span class="projectName">{selectedArtifact.title}</span>
+                <span class="projectName">{selectedArtifact.name}</span>
                 <Icon icon={IconChevronDown} size="s" />
             </button>
         {/if}
@@ -440,7 +441,7 @@
                                 <ActionMenu.Root>
                                     <ActionMenu.Item.Anchor
                                         href={`${base}/project-${selectedProject.$id}/studio/artifact-${artifact.$id}`}
-                                        >{artifact.title}</ActionMenu.Item.Anchor
+                                        >{artifact.name}</ActionMenu.Item.Anchor
                                     ></ActionMenu.Root>
                             </div>
                         {:else if index === 4}

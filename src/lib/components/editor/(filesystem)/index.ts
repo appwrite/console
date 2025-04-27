@@ -1,23 +1,27 @@
-import type { FileSystem } from '../filesystem';
+import type { ComponentType } from 'svelte';
 import {
     IconArrowLeft,
     IconFolder,
     IconFolderOpen,
     IconJs,
     IconSvelte,
-    IconCss3
+    IconCss3,
+    IconDocument,
+    IconHtml5
 } from '@appwrite.io/pink-icons-svelte';
 
-export const icons = {
+export const icons: Record<Icon, ComponentType> = {
     svelte: IconSvelte,
+    file: IconDocument,
     folder: IconFolder,
+    html: IconHtml5,
     folderOpen: IconFolderOpen,
     js: IconJs,
     highlight: IconArrowLeft,
     css: IconCss3
 };
 
-type Icon = 'svelte' | 'folder' | 'js' | 'css';
+type Icon = 'svelte' | 'folder' | 'folderOpen' | 'html' | 'js' | 'css' | 'file' | 'highlight';
 
 export type TreeItem = {
     path: string;
@@ -29,15 +33,17 @@ export type TreeItem = {
 function getIcon(filename: string): Icon {
     if (filename.endsWith('.js')) return 'js';
     if (filename.endsWith('.ts')) return 'js';
-    if (filename.endsWith('.html')) return 'svelte';
+    if (filename.endsWith('.html')) return 'html';
     if (filename.endsWith('.css')) return 'css';
-    return 'folder';
+    if (filename.endsWith('.svelte')) return 'svelte';
+
+    return 'file';
 }
 
-export function treeFromFilesystem(fs: FileSystem): TreeItem[] {
+export function treeFromFilesystem(files: string[]): TreeItem[] {
     const tree: TreeItem[] = [];
 
-    for (const path of fs) {
+    for (const path of files) {
         const parts = path.split('/');
         let currentLevel = tree;
 

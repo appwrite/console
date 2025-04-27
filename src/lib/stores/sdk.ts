@@ -27,6 +27,7 @@ import { Backups } from '../sdk/backups';
 import { Domains } from '$lib/sdk/domains';
 import { Sources } from '$lib/sdk/sources';
 import { building } from '$app/environment';
+import { Imagine } from '$lib/sdk/imagine';
 
 export function getApiEndpoint(): string {
     if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
@@ -61,7 +62,8 @@ const sdkForProject = {
     vcs: new Vcs(clientProject),
     proxy: new Proxy(clientProject),
     migrations: new Migrations(clientProject),
-    sites: new Sites(clientProject)
+    sites: new Sites(clientProject),
+    imagine: new Imagine(clientProject)
 };
 
 export const getSdkForProject = (projectId: string) => {

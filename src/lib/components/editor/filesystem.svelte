@@ -2,14 +2,13 @@
     import { createTreeView } from '@melt-ui/svelte';
     import { setContext } from 'svelte';
     import { treeFromFilesystem } from './(filesystem)';
-    import type { FileSystem } from './filesystem';
     import Tree from './(filesystem)/tree.svelte';
 
     type Props = {
-        filesystem: FileSystem;
+        files: string[];
         onopenfile?: (path: string) => void;
     };
-    let { filesystem, onopenfile = null }: Props = $props();
+    let { files, onopenfile = null }: Props = $props();
 
     const ctx = createTreeView();
     setContext('tree', ctx);
@@ -19,7 +18,7 @@
         states: { selectedItem }
     } = ctx;
 
-    const items = $derived(treeFromFilesystem(filesystem));
+    const items = $derived(treeFromFilesystem(files));
     $effect(() => {
         if ($selectedItem && onopenfile) {
             if ($selectedItem.dataset['file'] === 'true') {

@@ -1,22 +1,87 @@
 <script lang="ts">
-    import { Divider, Typography, Layout, Button, Icon } from '@appwrite.io/pink-svelte';
+    import { Divider, Typography, Layout, Button, Icon, Spinner } from '@appwrite.io/pink-svelte';
     import {
         IconArrowUp,
         IconChevronDown,
         IconChevronLeft,
-        IconPaperClip
+        IconPaperClip,
+        IconSpin
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import Conversation from './conversation.svelte';
-    import { showChat } from '$lib/stores/chat';
+    import { conversation, showChat } from '$lib/stores/chat';
+    import type { StreamParser } from './parser';
+    import type { EventHandler } from 'svelte/elements';
+    import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/state';
 
     type Props = {
         width: number;
         hasSubNavigation: boolean;
+        parser: StreamParser;
     };
-    let { width, hasSubNavigation }: Props = $props();
+    let { width, hasSubNavigation, parser }: Props = $props();
 
     let minimizeChat = $state($isSmallViewport ? true : false);
+    let message = $state('');
+    let sending = $state(false);
+
+    const onkeydown: EventHandler<KeyboardEvent, HTMLTextAreaElement> = (event) => {
+        if (event.key === 'Enter') {
+            if (!event.metaKey && !event.ctrlKey) return;
+            event.preventDefault();
+            createMessage();
+        }
+    };
+    const onsubmit: EventHandler<SubmitEvent, HTMLFormElement> = (event) => {
+        event.preventDefault();
+        createMessage();
+    };
+
+    async function createMessage() {
+        try {
+            sending = true;
+            const response = await fetch(
+                `${sdk.forProject.client.config.endpoint}/imagine/artifacts/${$conversation.artifactId}/conversations/${$conversation.$id}/messages`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Appwrite-Project': page.params.project,
+                        'X-Appwrite-Mode': 'admin'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        content: message,
+                        type: 'text'
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`${response.status} Error: ${await response.text()}`);
+            }
+
+            parser.chunk(`\n\n${message}\n\n`);
+            message = '';
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            let chunk = await reader.read();
+            while (!chunk.done) {
+                parser.chunk(decoder.decode(chunk.value));
+                chunk = await reader.read();
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                parser.chunk(error.message);
+            }
+            console.log(error);
+        } finally {
+            sending = false;
+        }
+    }
 </script>
 
 <section
@@ -49,31 +114,42 @@
             </header>
             <Divider />
 
-            <Conversation />
+            <Conversation {parser} />
         {/if}
-        <div class="input" class:minimize-chat={minimizeChat}>
+        <form {onsubmit} class="input" class:minimize-chat={minimizeChat}>
             <Layout.Stack
                 direction={minimizeChat ? 'row' : 'column'}
                 alignItems={minimizeChat ? 'center' : 'flex-end'}>
                 <textarea
+                    {onkeydown}
+                    disabled={sending}
+                    bind:value={message}
+                    name="conversation"
                     placeholder="Chat with Imagine..."
-                    on:focus={() => {
+                    onfocus={() => {
                         minimizeChat = false;
                     }}></textarea>
                 <div class="options">
                     <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Button.Button icon variant="secondary" size="s"
-                            ><Icon
-                                icon={IconPaperClip}
-                                color="--fgcolor-neutral-tertiary" /></Button.Button>
-                        <Button.Button icon variant="secondary" size="s"
-                            ><Icon
-                                icon={IconArrowUp}
-                                color="--fgcolor-neutral-tertiary" /></Button.Button>
+                        <Button.Button icon variant="secondary" size="s">
+                            <Icon icon={IconPaperClip} color="--fgcolor-neutral-tertiary" />
+                        </Button.Button>
+                        <Button.Button
+                            icon
+                            variant="secondary"
+                            size="s"
+                            type="submit"
+                            disabled={sending}>
+                            {#if sending}
+                                <Spinner size="s" />
+                            {:else}
+                                <Icon icon={IconArrowUp} color="--fgcolor-neutral-tertiary" />
+                            {/if}
+                        </Button.Button>
                     </Layout.Stack>
                 </div>
             </Layout.Stack>
-        </div>
+        </form>
     </div>
 </section>
 <div
@@ -161,9 +237,6 @@
             width: 100%;
             min-height: 100px;
             resize: none;
-        }
-
-        .options {
         }
     }
 

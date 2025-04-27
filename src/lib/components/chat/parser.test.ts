@@ -253,12 +253,12 @@ const client = new Client();
         parser.chunk('<action type="file" src="test.js">console.log("test");</ac');
         parser.chunk('tion>');
         parser.end();
-        
+
         let items: ParsedItem[] = [];
         parser.parsed.subscribe((value) => {
             items = value;
         })();
-        
+
         expect(items.length).toBe(1);
         const [item] = items;
         expectAction(item);
@@ -267,14 +267,16 @@ const client = new Client();
     });
 
     it('should handle multiple adjacent actions without text between', () => {
-        parser.chunk('<action type="file" src="file1.js">code1</action><action type="file" src="file2.js">code2</action>');
+        parser.chunk(
+            '<action type="file" src="file1.js">code1</action><action type="file" src="file2.js">code2</action>'
+        );
         parser.end();
-        
+
         let items: ParsedItem[] = [];
         parser.parsed.subscribe((value) => {
             items = value;
         })();
-        
+
         expect(items.length).toBe(2);
         const [action1, action2] = items;
         expectAction(action1);
@@ -288,12 +290,12 @@ const client = new Client();
     it('should handle empty action content correctly', () => {
         parser.chunk('<action type="shell"></action>');
         parser.end();
-        
+
         let items: ParsedItem[] = [];
         parser.parsed.subscribe((value) => {
             items = value;
         })();
-        
+
         expect(items.length).toBe(1);
         const [item] = items;
         expectAction(item);
@@ -304,12 +306,12 @@ const client = new Client();
     it('should filter out empty text chunks', () => {
         parser.chunk('  \n  <action type="shell">command</action>  \n  ');
         parser.end();
-        
+
         let items: ParsedItem[] = [];
         parser.parsed.subscribe((value) => {
             items = value;
         })();
-        
+
         // Only the action should remain, empty text chunks should be filtered
         expect(items.length).toBe(1);
         const [item] = items;
@@ -321,12 +323,12 @@ const client = new Client();
         parser.chunk('<action type="file" src="test.js" unclosed');
         parser.chunk('>content</action>');
         parser.end();
-        
+
         let items: ParsedItem[] = [];
         parser.parsed.subscribe((value) => {
             items = value;
         })();
-        
+
         expect(items.length).toBe(1);
         const [item] = items;
         expectAction(item);
@@ -340,12 +342,12 @@ const client = new Client();
         parser.chunk(largeText);
         parser.chunk('</action>');
         parser.end();
-        
+
         let items: ParsedItem[] = [];
         parser.parsed.subscribe((value) => {
             items = value;
         })();
-        
+
         expect(items.length).toBe(2);
         const [text, action] = items;
         expectText(text);
@@ -357,12 +359,12 @@ const client = new Client();
         parser.chunk('<action type="file" src="test.js">content');
         // No closing tag, but end() is called
         parser.end();
-        
+
         let items: ParsedItem[] = [];
         parser.parsed.subscribe((value) => {
             items = value;
         })();
-        
+
         expect(items.length).toBe(1);
         const [item] = items;
         expectAction(item);

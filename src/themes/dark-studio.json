@@ -1,6 +1,6 @@
 {
-  "bgcolor-accent": "var(--neutral-50)",
-  "bgcolor-accent-secondary": "var(--neutral-100)",
-  "bgcolor-accent-tertiary": "var(--neutral-150)",
-  "fgcolor-on-accent": "var(--neutral-950)"
+    "bgcolor-accent": "var(--neutral-50)",
+    "bgcolor-accent-secondary": "var(--neutral-100)",
+    "bgcolor-accent-tertiary": "var(--neutral-150)",
+    "fgcolor-on-accent": "var(--neutral-950)"
 }

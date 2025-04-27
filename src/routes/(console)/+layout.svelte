@@ -331,7 +331,7 @@
 
 <CommandCenter />
 {#if consoleProfile.hasChatLayout}
-    <ShellStudio bind:loadedProjects><slot /></ShellStudio>
+    <ShellStudio {loadedProjects}><slot /></ShellStudio>
 {:else}
     <Shell
         showSideNavigation={page.url.pathname !== '/console' &&

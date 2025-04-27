@@ -30,9 +30,29 @@ export class StreamParser {
     private isFirstActionContent = false;
     private skipCurrentAction = false;
     private pendingText = '';
+    private callbacksEnabled = true;
+    private callbacks: Record<'complete', Array<(action: Action) => void | Promise<void>>> = {
+        complete: []
+    };
     public parsed: Readable<ParsedItem[]> = this.store;
 
     constructor() {}
+
+    private triggerCallbacks(event: keyof typeof this.callbacks, action: Action) {
+        if (!this.callbacksEnabled) return;
+        this.callbacks.complete.forEach((callback) => callback(action));
+    }
+
+    public on(event: 'complete', callback: (action: Action) => void | Promise<void>): void {
+        this.callbacks[event].push(callback);
+    }
+
+    public init(text: string): void {
+        this.reset();
+        this.callbacksEnabled = false;
+        this.chunk(text);
+        this.callbacksEnabled = true;
+    }
 
     public chunk(text: string): void {
         this.buffer += text;
@@ -100,6 +120,7 @@ export class StreamParser {
                         }
 
                         this.currentAction.complete = true;
+                        this.triggerCallbacks('complete', this.currentAction);
                         this.updateStore();
                     }
 
@@ -187,7 +208,7 @@ export class StreamParser {
     private parseAttributes(attributeString: string): Record<string, string> {
         const attributes: Record<string, string> = {};
         const regex = /(\w+)=["']([^"']*)["']/g;
-        let match;
+        let match: RegExpExecArray;
 
         while ((match = regex.exec(attributeString)) !== null) {
             attributes[match[1]] = match[2];
@@ -206,6 +227,7 @@ export class StreamParser {
     // Reset the parser state
     public reset(): void {
         this.items = [];
+        this.callbacksEnabled = true;
         this.currentAction = null;
         this.currentTextChunk = null;
         this.isFirstActionContent = false;
@@ -269,6 +291,7 @@ export class StreamParser {
                         );
                     }
                     this.currentAction.complete = true;
+                    this.triggerCallbacks('complete', this.currentAction);
                 } else {
                     this.addToTextChunk(this.buffer);
                 }
@@ -286,6 +309,7 @@ export class StreamParser {
                 );
             }
             this.currentAction.complete = true;
+            this.triggerCallbacks('complete', this.currentAction);
             this.updateStore();
         }
 

@@ -1,17 +1,7 @@
 <script lang="ts">
     import 'highlight.js/styles/atom-one-light.css';
-    import { createStreamParser } from './parser';
-    import data from './text.txt?raw';
-    import {
-        Badge,
-        Button,
-        Card,
-        Fieldset,
-        Icon,
-        Layout,
-        Tag,
-        Input
-    } from '@appwrite.io/pink-svelte';
+    import { StreamParser } from './parser';
+    import { Badge, Card, Icon, Layout, Tag } from '@appwrite.io/pink-svelte';
     import Markdown, { type Plugin } from 'svelte-exmarkdown';
     import Li from './(markdown)/Li.svelte';
     import H1 from './(markdown)/H1.svelte';
@@ -23,10 +13,17 @@
     import Ol from './(markdown)/Ol.svelte';
     import rehypeHighlight from 'rehype-highlight';
     import { IconArrowDown, IconCheck, IconClock } from '@appwrite.io/pink-icons-svelte';
-    import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';
     import { slide } from 'svelte/transition';
-    import { showPrompt } from '$lib/stores/chat';
+    import type { UIEventHandler, WheelEventHandler } from 'svelte/elements';
 
+    type Props = {
+        parser: StreamParser;
+        autoscroll?: boolean;
+        streaming?: boolean;
+    };
+    let { parser, autoscroll = $bindable(true), streaming = $bindable(false) }: Props = $props();
+
+    const chunks = parser.parsed;
     const plugins: Plugin[] = [
         {
             rehypePlugin: rehypeHighlight,
@@ -43,38 +40,10 @@
         }
     ];
 
-    const parser = createStreamParser();
-    const chunks = parser.parsed;
-    let autoscroll = true;
-    let streaming = false;
-
-    $: if ($showPrompt) {
-        exampleStream();
-    }
-
-    let chunkSize = 40;
-    let delayMs = 25;
     function scrollToBottom(smooth: boolean = true) {
         document
             .getElementById('bottom')
             .scrollIntoView({ behavior: smooth ? 'smooth' : 'instant' });
-    }
-
-    function exampleStream(): void {
-        let position = 0;
-        const processNextChunk = () => {
-            if (position < data.length) {
-                streaming = true;
-                const chunk = data.substring(position, position + chunkSize);
-                parser.chunk(chunk);
-                position += chunkSize;
-                if (autoscroll) scrollToBottom();
-                setTimeout(processNextChunk, delayMs);
-            } else {
-                streaming = false;
-            }
-        };
-        processNextChunk();
     }
 
     const onwheel: WheelEventHandler<HTMLDivElement> = (event) => {
@@ -131,7 +100,7 @@
             {/if}
         {/each}
         {#if !streaming}
-            <Layout.Stack>
+            <!-- <Layout.Stack>
                 <Fieldset legend="Demo">
                     <Layout.Stack>
                         <Input.Number required label="chunk size" bind:value={chunkSize} />
@@ -141,7 +110,7 @@
                             >reset</Button.Button>
                     </Layout.Stack>
                 </Fieldset>
-            </Layout.Stack>
+            </Layout.Stack> -->
         {/if}
         <div id="bottom"></div>
     </section>

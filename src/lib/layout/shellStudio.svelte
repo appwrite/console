@@ -1,8 +1,6 @@
 <script lang="ts">
     import { AvatarInitials, Breadcrumbs, BottomSheet } from '$lib/components/index.js';
     import {
-        Avatar,
-        Divider,
         Layout,
         Card,
         Typography,
@@ -34,11 +32,13 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { base } from '$app/paths';
     import { isTabletViewport, isSmallViewport } from '$lib/stores/viewport';
-    import { derived, writable } from 'svelte/store';
     import { logout } from '$lib/helpers/logout';
     import { Click, trackEvent } from '$lib/actions/analytics';
-    import { showChat } from '$lib/stores/chat';
-    import { artifacts } from '$routes/(console)/project-[project]/store';
+    import { conversation, showChat } from '$lib/stores/chat';
+    import { createStreamParser } from '$lib/components/chat/parser';
+    import { setContext, type Snippet } from 'svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { filesystem } from '$lib/components/editor/filesystem';
 
     let hasProjectSidebar = $state(false);
 
@@ -46,11 +46,12 @@
         hasProjectSidebar = page.url.pathname.startsWith(base + '/project');
     });
 
-    type Props = {
+    interface Props {
         loadedProjects: Array<NavbarProject>;
-    };
+        children?: Snippet;
+    }
 
-    let { loadedProjects = [] }: Props = $props();
+    let { loadedProjects = [], children }: Props = $props();
 
     let showSideNavigation = $state(false);
     let shouldAnimateThemeToggle = $state(false);
@@ -101,7 +102,7 @@
     });
 
     $effect(() => {
-        if ($isSmallViewport || page.url.pathname.includes('artifact-')) {
+        if ($isSmallViewport || page.params.artifact) {
             showChat.set(true);
         }
     });
@@ -109,7 +110,7 @@
     let resizer = $state(null);
     let resizerLeftPosition = $state(page.data?.subNavigation ? 524 : 500);
     let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 52);
-    let chatWidth = $state(resizerLeftPosition - resizerLeftOffset);
+    let chatWidth = $derived(resizerLeftPosition - resizerLeftOffset);
 
     $effect(() => {
         chatWidth = resizerLeftPosition - resizerLeftOffset;
@@ -117,20 +118,20 @@
 
     let isResizing = false;
 
-    function startResize(event) {
+    function startResize() {
         isResizing = true;
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
         window.addEventListener('touchmove', resize);
         window.addEventListener('touchend', stopResize);
         document.body.style.userSelect = 'none';
-        document.getElementById('preview-iframe').style.pointerEvents = 'none';
     }
 
-    function resize(event) {
+    function resize(event: TouchEvent | MouseEvent) {
         if (!isResizing) return;
         if (resizer) {
-            resizerLeftPosition = (event.touches ? event.touches[0].clientX : event.clientX) - 10;
+            resizerLeftPosition =
+                ('touches' in event ? event.touches[0].clientX : event.clientX) - 10;
             const maxSize = page.data?.subNavigation
                 ? window.innerWidth - 660
                 : window.innerWidth - 460;
@@ -152,8 +153,46 @@
         window.removeEventListener('touchmove', resize);
         window.removeEventListener('touchend', stopResize);
         document.body.style.userSelect = '';
-        document.getElementById('preview-iframe').style.pointerEvents = '';
     }
+
+    const parser = createStreamParser();
+
+    async function getConversation(artifactId: string) {
+        const { conversations } = await sdk.forProject.imagine.listConversations(artifactId);
+        if (conversations.length === 0) {
+            const convo = await sdk.forProject.imagine.createConversation(
+                artifactId,
+                `Conversation ${new Date().getTime()}`
+            );
+            conversation.set(convo);
+        } else {
+            conversation.set(conversations[0]);
+        }
+    }
+
+    $effect(() => {
+        if (page.params.artifact && !$conversation) {
+            getConversation(page.params.artifact);
+        }
+    });
+
+    conversation.subscribe(async (convo) => {
+        if (!convo) return;
+        const { messages } = await sdk.forProject.imagine.listMessages(convo.artifactId, convo.$id);
+        const text = messages.reduce((curr, next) => {
+            return curr + next.content;
+        }, '');
+        parser.init(text);
+    });
+
+    parser.on('complete', (action) => {
+        if (action.type === 'file') {
+            $filesystem = {
+                ...$filesystem,
+                [action.src]: action.content
+            };
+        }
+    });
 </script>
 
 <main>
@@ -271,22 +310,24 @@
             class:sub-navigation={page.data.subNavigation}>
             {#if $isSmallViewport}
                 {#if hasProjectSidebar}
-                    <Chat width={chatWidth} hasSubNavigation={page.data?.subNavigation} />
+                    <Chat {parser} width={chatWidth} hasSubNavigation={page.data?.subNavigation} />
                 {/if}
                 <Card.Base>
                     <Layout.Stack>
                         {#if page.data?.subNavigation}
-                            <svelte:component this={page.data.subNavigation} />
+                            {@const Component = page.data.subNavigation}
+                            <Component />
                         {/if}
-                        <slot />
+                        {@render children()}
                     </Layout.Stack>
                 </Card.Base>
             {:else}
                 <Layout.Stack direction="row" gap="l">
                     {#if hasProjectSidebar}
-                        <Chat width={chatWidth} hasSubNavigation={false} />
+                        <Chat {parser} width={chatWidth} hasSubNavigation={false} />
                         {#if $showChat}
                             <div
+                                role="presentation"
                                 class="resizer"
                                 style:left={`${resizerLeftPosition}px`}
                                 bind:this={resizer}
@@ -297,22 +338,24 @@
                     {/if}
 
                     <Card.Base>
+                        {@const Header = page.data.header}
                         {#if page.data.subNavigation}
-                            <svelte:component this={page.data.subNavigation} />
+                            {@const SubNavigation = page.data.subNavigation}
+                            <SubNavigation />
                             <div style:padding-left="200px" style:min-height="calc(100vh - 98px)">
                                 <Layout.Stack>
                                     {#if page.data?.header}
-                                        <svelte:component this={page.data.header} />
+                                        <Header />
                                     {/if}
-                                    <slot />
+                                    {@render children()}
                                 </Layout.Stack>
                             </div>
                         {:else}
                             <Layout.Stack>
                                 {#if page.data?.header}
-                                    <svelte:component this={page.data.header} />
+                                    <Header />
                                 {/if}
-                                <slot />
+                                {@render children()}
                             </Layout.Stack>
                         {/if}
                     </Card.Base>

@@ -8,7 +8,6 @@ import { isCloud } from '$lib/system';
 import type { Organization } from '$lib/stores/organization';
 import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
-import { artifacts } from '$routes/(console)/project-[project]/store';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
@@ -38,28 +37,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                 await failedInvoice.load(project.teamId);
             }
         }
-
-        // todo replace with actual artifacts from API
-        artifacts.set([
-            {
-                $id: 'RE1xJXnaCX',
-                title: 'Dashboard',
-                url: null,
-                previewUrl: 'https://getbootstrap.com/docs/5.3/examples/blog/'
-            },
-            {
-                $id: 'jABosmZQhY',
-                title: 'Sign in screen',
-                url: 's-130328439.imagine.dev',
-                previewUrl: 'https://getbootstrap.com/'
-            },
-            {
-                $id: 'U1aolAia1m',
-                title: 'Mobile app',
-                url: null,
-                previewUrl: 'https://www.posthog.com/'
-            }
-        ]);
 
         return {
             project,

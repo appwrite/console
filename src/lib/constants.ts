@@ -64,7 +64,8 @@ export enum Dependencies {
     MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers',
     SITE = 'dependency:site',
     SITES = 'dependency:sites',
-    SITES_DOMAINS = 'dependency:sites_domains'
+    SITES_DOMAINS = 'dependency:sites_domains',
+    ARTIFACTS = 'dependency:artifacts'
 }
 
 export const defaultScopes: string[] = [
