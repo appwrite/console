@@ -1,7 +1,8 @@
 <script lang="ts">
-    import type { Component } from 'svelte';
+    import type { Component, ComponentType } from 'svelte';
 
-    export let icon: Component;
+    // export let icon: Component;
+    export let icon: ComponentType; //TODO: switch to Component after pink 2 uses svelte 5
     export let iconSize: number | undefined = undefined;
     export let iconColor: string | undefined = undefined;
 </script>
