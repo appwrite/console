@@ -32,21 +32,9 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
 
     export let data;
-    let migration: Models.Migration = null;
     let showExport = false;
     let showMigration = false;
-
-    const getStatus = (status: string) => {
-        if (status === 'failed') {
-            return 'failed';
-        } else if (status === 'completed') {
-            return 'complete';
-        } else if (status === 'processing') {
-            return 'processing';
-        }
-
-        return 'pending';
-    };
+    let migration: Models.Migration = null;
 
     onMount(async () => {
         sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -134,6 +122,23 @@
         showMigration = true;
         migration = m;
     }
+
+    function getTypedStatus(entry: Models.Migration) {
+        // migration > pending, processing, failed, completed
+        // status component = waiting, ready, processing, pending, failed, complete
+        switch (entry.status) {
+            case 'completed':
+                return 'complete';
+            case 'processing':
+                return 'processing';
+            case 'failed':
+                return 'failed';
+            case 'pending':
+                return 'pending';
+            default:
+                return 'waiting';
+        }
+    }
 </script>
 
 <Container>
@@ -162,7 +167,7 @@
                     </svelte:fragment>
                     {#each data.migrations as entry}
                         <Table.Row.Base {root}>
-                            {@const status = getStatus(entry.status)}
+                            {@const status = getTypedStatus(entry.status)}
                             <Table.Cell {root}>
                                 {#if isSameDay(new Date(), new Date(entry.$createdAt))}
                                     Today
