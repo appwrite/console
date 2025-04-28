@@ -165,7 +165,7 @@
 
     :global(main:has(.sub-navigation)) footer {
         @media (min-width: 1024px) {
-            margin-inline-start: 0;
+            margin-inline-start: -1.5rem;
             margin-inline-end: 2rem;
         }
     }
