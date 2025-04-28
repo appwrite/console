@@ -217,7 +217,6 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/products/storage/upload-download"
             target="file"
             on:click={() => {
                 goto(
