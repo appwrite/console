@@ -114,7 +114,7 @@
         this={oAuthProvider.component}
         bind:provider={selectedProvider}
         bind:show={showProvider}
-        on:close={() => {
+        onclose={() => {
             selectedProvider = null;
             showProvider = false;
         }} />

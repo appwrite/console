@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="T">
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import PaginationInline from './paginationInline.svelte';
     import Limit from './limit.svelte';
@@ -14,8 +14,8 @@
         gap = 's',
         children
     }: {
-        items: unknown[];
-        limit: number;
+        items: T[];
+        limit?: number;
         hideFooter?: boolean;
         hidePages?: boolean;
         hasLimit?: boolean;
@@ -23,7 +23,7 @@
         gap?:
             | ('none' | 'xxxs' | 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl' | 'xxxl')
             | undefined;
-        children: Snippet<[unknown[], number]>;
+        children: Snippet<[T[], number]>;
     } = $props();
 
     let total = $derived(items.length);
