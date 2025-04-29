@@ -28,13 +28,13 @@
         WizardSecondaryFooter
     } from '$lib/layout';
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { isOrganization, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { isOrganization, plansInfo, type Tier, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import {
         currentPlan,
         organization,
-        organizationList,
-        type Organization
+        type Organization,
+        organizationList
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { confirmPayment } from '$lib/stores/stripe';
@@ -83,8 +83,7 @@
         if ($page.url.searchParams.has('code')) {
             const coupon = $page.url.searchParams.get('code');
             try {
-                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
-                couponData = response;
+                couponData = await sdk.forConsole.billing.getCouponAccount(coupon);
             } catch (e) {
                 couponData = {
                     code: null,
@@ -137,7 +136,7 @@
     async function downgrade() {
         try {
             await sdk.forConsole.billing.updatePlan(
-                $organization.$id,
+                selectedOrg.$id,
                 billingPlan,
                 paymentMethodId,
                 null
@@ -155,7 +154,7 @@
                     reason: feedbackDowngradeOptions.find(
                         (option) => option.value === feedbackDowngradeReason
                     )?.label,
-                    orgId: $organization.$id,
+                    orgId: selectedOrg.$id,
                     userId: $user.$id,
                     message: feedbackMessage ?? ''
                 })
@@ -168,7 +167,7 @@
                 type: 'success',
                 isHtml: true,
                 message: `
-                        <b>${$organization.name}</b> plan has been successfully updated.`
+                        <b>${selectedOrg.name}</b> plan has been successfully updated.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
@@ -211,7 +210,7 @@
 
     async function upgrade() {
         try {
-            //Add collaborators
+            // Add collaborators
             let newCollaborators = [];
             if (collaborators?.length) {
                 newCollaborators = collaborators.filter(
@@ -220,7 +219,7 @@
                 );
             }
             const org = await sdk.forConsole.billing.updatePlan(
-                $organization.$id,
+                selectedOrg.$id,
                 billingPlan,
                 paymentMethodId,
                 null,
@@ -274,9 +273,15 @@
         }
     }
 
-    $: isSamePlan = billingPlan === $currentPlan.$id;
-    $: isUpgrade = isSamePlan ? false : $plansInfo.get(billingPlan)?.order > $currentPlan.order;
-    $: isDowngrade = isSamePlan ? false : $plansInfo.get(billingPlan)?.order < $currentPlan.order;
+    $: selectedOrg =
+        $organization ??
+        ($organizationList.teams.find(
+            (team) => team.$id === $page.params.organization
+        ) as Organization);
+    $: currentOrgPlan = $currentPlan ?? $plansInfo.get(selectedOrg?.billingPlan);
+    $: isSamePlan = billingPlan === currentOrgPlan.$id;
+    $: isUpgrade = isSamePlan ? false : $plansInfo.get(billingPlan)?.order > currentOrgPlan.order;
+    $: isDowngrade = isSamePlan ? false : $plansInfo.get(billingPlan)?.order < currentOrgPlan.order;
     $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
@@ -313,10 +318,10 @@
                     <Alert type="warning" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
                             Your organization will switch to {tierToPlan(billingPlan).name} plan on {toLocaleDate(
-                                $organization.billingNextInvoiceDate
+                                selectedOrg.billingNextInvoiceDate
                             )}.
                         </svelte:fragment>
-                        You will retain access to {tierToPlan($organization.billingPlan).name} plan features
+                        You will retain access to {tierToPlan(selectedOrg.billingPlan).name} plan features
                         until your billing period ends. {#if extraMembers > 0}After that,
                             <b
                                 >you will be charged {formatCurrency(
@@ -328,7 +333,7 @@
                 {/if}
             {/if}
             <!-- Show email input if upgrading from free plan -->
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
+            {#if billingPlan !== BillingPlan.FREE && selectedOrg.billingPlan !== billingPlan && selectedOrg.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
                         bind:tags={collaborators}
@@ -369,14 +374,14 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
+            {#if billingPlan !== BillingPlan.FREE && selectedOrg.billingPlan !== billingPlan && selectedOrg.billingPlan !== BillingPlan.CUSTOM && isUpgrade}
                 <EstimatedTotal
                     bind:billingBudget
                     bind:couponData
-                    organizationId={$organization.$id}
+                    organizationId={selectedOrg.$id}
                     {billingPlan}
                     {collaborators} />
-            {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
+            {:else if selectedOrg.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
         </svelte:fragment>
