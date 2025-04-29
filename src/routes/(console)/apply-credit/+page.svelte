@@ -14,7 +14,7 @@
     } from '$lib/layout';
     import { type PaymentList, type Plan } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
-    import { isOrganization } from '$lib/stores/billing.js';
+    import { plansInfo, isOrganization, type Tier } from '$lib/stores/billing.js';
     import { addNotification } from '$lib/stores/notifications';
     import {
         organizationList,
@@ -71,7 +71,7 @@
     let coupon: string;
     let couponData = data?.couponData;
     let campaign = data?.campaign;
-    let billingPlan = BillingPlan.PRO;
+    let billingPlan: Tier = BillingPlan.PRO;
     let currentPlan: Plan;
 
     function isUpgrade() {
@@ -219,10 +219,21 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: billingPlan =
-        selectedOrg?.billingPlan === BillingPlan.SCALE
-            ? BillingPlan.SCALE
-            : (campaign?.plan ?? BillingPlan.PRO);
+    function getBillingPlan(): Tier | undefined {
+        const campaignPlan =
+            campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
+        const orgPlan =
+            selectedOrg?.billingPlan && $plansInfo.get(selectedOrg.billingPlan)
+                ? $plansInfo.get(selectedOrg.billingPlan)
+                : null;
+        if (!campaignPlan || !orgPlan) {
+            return;
+        }
+        return campaignPlan.order > orgPlan.order ? campaign.plan : selectedOrg?.billingPlan;
+    }
+    $: if (selectedOrg) {
+        billingPlan = getBillingPlan();
+    }
 
     $: {
         if (selectedOrgId) {
@@ -310,7 +321,7 @@
                     </div>
                 </div>
             {/if}
-            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+            {#if selectedOrg?.$id && selectedOrg?.billingPlan === billingPlan}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
