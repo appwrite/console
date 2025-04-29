@@ -11,6 +11,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { project } from '$routes/(console)/project-[project]/store';
 
     $: $selectedFeedback = feedbackOptions.find((option) => option.type === $feedback.type);
 
@@ -24,8 +25,11 @@
                 page.url.href,
                 $user.name,
                 $user.email,
-                $organization.billingPlan,
-                $feedbackData.value
+                $organization?.billingPlan,
+                $feedbackData.value,
+                $organization?.$id,
+                $project?.$id,
+                $user.$id
             );
             addNotification({
                 type: 'success',

@@ -13,6 +13,8 @@
     import { project } from '../../store';
     import { base } from '$app/paths';
     import { Avatar, Badge, Card, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const projectId = page.params.project;
     let showProvider = false;
@@ -30,6 +32,7 @@
                 method: box.method,
                 value: box.value
             });
+            invalidate(Dependencies.PROJECT);
         } catch (error) {
             box.value = !box.value;
             addNotification({

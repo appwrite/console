@@ -6,6 +6,8 @@
     export let name: string = id;
     export let helper: string = undefined;
     export let value = '';
+    export let pattern: string = null;
+    export let patternError: string = '';
     export let placeholder = '';
     export let required = false;
     export let nullable = false;

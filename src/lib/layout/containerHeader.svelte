@@ -24,6 +24,9 @@
     export let total: number = null;
     export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
     export let showAlert = true;
+    export let level: 'organization' | 'project' = 'project';
+    export let customPillText: string | undefined = undefined;
+    export let showPillMessage: boolean = true;
 
     export let buttonText: string = null;
     export let buttonMethod: () => void = null;
@@ -60,13 +63,15 @@
     const dispatch = createEventDispatcher();
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
+    // these can be organization level limitations as well.
+    // we need to migrate this sometime later, but soon!
     $: hasProjectLimitation =
         checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.FREE;
     $: hasUsageFees = hasProjectLimitation
         ? checkForUsageFees($organization?.billingPlan, serviceId)
         : false;
     $: isLimited = limit !== 0 && limit < Infinity;
-    $: overflowingServices = limitedServices.filter((service) => service.value >= 0);
+    $: overflowingServices = limitedServices.filter((service) => service.value > 0);
     $: isButtonDisabled =
         buttonDisabled ||
         ($readOnly && !GRACE_PERIOD_OVERRIDE) ||
@@ -83,12 +88,14 @@
 
 <!-- Show only if on Cloud, alerts are enabled, and it isn't a project limited service -->
 {#if isCloud && showAlert}
-    {#if $readOnly}
-        {@const services = overflowingServices
-            .map((s) => {
-                return s.name.toLocaleLowerCase();
-            })
-            .join(', ')}
+    <!-- some services are above limit -->
+    {@const services = overflowingServices
+        .map((s) => {
+            return s.name.toLocaleLowerCase();
+        })
+        .join(', ')}
+
+    {#if services.length}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
             {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
                 <Alert type="info" isStandalone>
@@ -131,6 +138,7 @@
                 <svelte:fragment slot="list">
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
                         {#if hasProjectLimitation}
+                            {@const count = limit > 1 ? serviceId : serviceId.replace('s', '')}
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.

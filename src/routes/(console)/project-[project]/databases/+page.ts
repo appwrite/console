@@ -6,8 +6,10 @@ import { timeFromNow } from '$lib/helpers/date';
 import type { PageLoad } from './$types';
 import type { BackupPolicy } from '$lib/sdk/backups';
 import { isSelfHosted } from '$lib/system';
+import { isCloud } from '$lib/system';
+import type { Plan } from '$lib/sdk/billing';
 
-export const load: PageLoad = async ({ url, route, depends }) => {
+export const load: PageLoad = async ({ url, route, depends, parent }) => {
     depends(Dependencies.DATABASES);
 
     const page = getPage(url);
@@ -16,10 +18,13 @@ export const load: PageLoad = async ({ url, route, depends }) => {
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
+    // already loaded by parent.
+    const { currentPlan } = await parent();
+
     const { databases, policies, lastBackups } = await fetchDatabasesAndBackups(
         limit,
         offset,
-        search
+        currentPlan
     );
 
     return {
@@ -34,16 +39,23 @@ export const load: PageLoad = async ({ url, route, depends }) => {
 };
 
 // TODO: @itznotabug we should improve this!
-async function fetchDatabasesAndBackups(limit: number, offset: number, search: string) {
-    const databases = await sdk.forProject.databases.list(
-        [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
-        search || undefined
-    );
+async function fetchDatabasesAndBackups(limit: number, offset: number, currentPlan?: Plan) {
+    const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 
-    const [policies, lastBackups] = await Promise.all([
-        await fetchPolicies(databases),
-        await fetchLastBackups(databases)
+    const databases = await sdk.forProject.databases.list([
+        Query.limit(limit),
+        Query.offset(offset),
+        Query.orderDesc('$createdAt')
     ]);
+
+    let lastBackups: Record<string, string>, policies: Record<string, BackupPolicy[]>;
+
+    if (isCloud && backupsEnabled) {
+        [policies, lastBackups] = await Promise.all([
+            fetchPolicies(databases),
+            fetchLastBackups(databases)
+        ]);
+    }
 
     return { databases, policies, lastBackups };
 }

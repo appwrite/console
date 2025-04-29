@@ -24,7 +24,6 @@
     import { ID, Region } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
-    import type { RegionList } from '$lib/sdk/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -40,12 +39,13 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
+    import { regions as regionsStore } from '$routes/(console)/organization-[organization]/store';
 
     export let data;
 
-    let addOrganization = false;
     let showCreate = false;
     let showCreateProjectCloud = false;
+    let addOrganization = false;
 
     async function allServiceDisabled(project: Models.Project) {
         let disabled = true;
@@ -130,21 +130,18 @@
         }
     };
 
-    let regions: RegionList;
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
+            const regions = await sdk.forConsole.billing.listRegions();
+            regionsStore.set(regions);
             checkPricingRefAndRedirect(page.url.searchParams);
-        }
-
-        const searchParams = page.url.searchParams;
-        if (searchParams.has('create-project')) {
-            handleCreateProject();
         }
     });
 
-    function findRegion(project: Models.Project & { region?: string }) {
-        return regions.regions.find((region) => region.$id === project?.region);
+    function findRegion(project: Models.Project) {
+        return $regionsStore?.regions?.find(
+            (region) => region.$id === (project as Models.Project & { region: string }).region
+        );
     }
 </script>
 
@@ -211,7 +208,7 @@
                         <Badge variant="secondary" content={`+${project.platforms.length - 3}`} />
                     {/if}
                     <svelte:fragment slot="icons">
-                        {#if isCloud && regions}
+                        {#if isCloud && $regionsStore?.regions}
                             {@const region = findRegion(project)}
                             <span class="u-color-text-gray u-medium u-line-height-2">
                                 {region?.name}
@@ -243,5 +240,5 @@
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
 {#if showCreateProjectCloud}
-    <CreateProjectCloud bind:showCreateProjectCloud regions={regions.regions} />
+    <CreateProjectCloud bind:showCreateProjectCloud regions={$regionsStore.regions} />
 {/if}

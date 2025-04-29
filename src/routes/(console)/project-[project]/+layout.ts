@@ -8,6 +8,9 @@ import { isCloud } from '$lib/system';
 import type { Organization } from '$lib/stores/organization';
 import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
+import { get } from 'svelte/store';
+import { headerAlert } from '$lib/stores/headerAlert';
+import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
@@ -29,12 +32,20 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         let roles = isCloud ? [] : defaultRoles;
         let scopes = isCloud ? [] : defaultScopes;
         if (isCloud) {
-            currentPlan = await sdk.forConsole.billing.getPlan(project.teamId);
+            currentPlan = await sdk.forConsole.billing.getOrganizationPlan(project.teamId);
             const res = await sdk.forConsole.billing.getRoles(project.teamId);
             roles = res.roles;
             scopes = res.scopes;
             if (scopes.includes('billing.read')) {
                 await failedInvoice.load(project.teamId);
+                if (get(failedInvoice)) {
+                    headerAlert.add({
+                        show: true,
+                        component: PaymentFailed,
+                        id: 'paymentFailed',
+                        importance: 1
+                    });
+                }
             }
         }
 

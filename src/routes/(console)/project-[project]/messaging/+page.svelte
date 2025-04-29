@@ -30,9 +30,10 @@
     import { canWriteMessages } from '$lib/stores/roles';
     import { Badge, FloatingActionBar, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
     import { Confirm } from '$lib/components';
+    import { onDestroy, onMount } from 'svelte';
+    import { stopPolling, pollMessagesStatus } from './helper';
 
     export let data;
-
     let selected: string[] = [];
     let showDelete = false;
     let deleting = false;
@@ -83,6 +84,16 @@
             showDelete = false;
         }
     }
+
+    onMount(() => {
+        const processingMessages = data.messages.messages.filter(
+            (message) => message.status === 'processing'
+        );
+
+        pollMessagesStatus(processingMessages);
+    });
+
+    onDestroy(stopPolling);
 </script>
 
 <Container>

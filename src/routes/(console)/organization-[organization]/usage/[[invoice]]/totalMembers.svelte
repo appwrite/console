@@ -40,7 +40,7 @@
                                     You can add unlimited organization members on the {tierToPlan(
                                         $organization.billingPlan
                                     ).name} plan {$organization.billingPlan === BillingPlan.PRO
-                                        ? `for ${formatCurrency(plan?.addons?.member?.price)} each per billing period.`
+                                        ? `for ${formatCurrency(plan.addons.seats.price)} each per billing period.`
                                         : '.'}
                                 </svelte:fragment>
                             </Tooltip>
