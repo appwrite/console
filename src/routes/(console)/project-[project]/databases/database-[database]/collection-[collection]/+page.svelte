@@ -22,6 +22,7 @@
     import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
     export let data: PageData;
 
@@ -74,21 +75,34 @@
 
 {#key page.params.collection}
     <Container>
-        <Layout.Stack direction="row" justifyContent="space-between">
-            <Filters
-                query={data.query}
-                {columns}
-                disabled={!(hasAttributes && hasValidAttributes)}
-                analyticsSource="database_documents" />
-            <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-                <ViewSelector view={data.view} {columns} hideView />
-                <Button
-                    secondary
-                    event={Click.DatabaseImportCsv}
+        <Layout.Stack direction="column" gap="xl">
+            <Layout.Stack direction="row" justifyContent="space-between">
+                <Filters
+                    query={data.query}
+                    {columns}
                     disabled={!(hasAttributes && hasValidAttributes)}
-                    on:click={() => (showImportCSV = true)}>
-                    Import CSV
-                </Button>
+                    analyticsSource="database_documents" />
+                <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+                    <ViewSelector view={data.view} {columns} hideView />
+                    <Button
+                        secondary
+                        event={Click.DatabaseImportCsv}
+                        disabled={!(hasAttributes && hasValidAttributes)}
+                        on:click={() => (showImportCSV = true)}>
+                        Import CSV
+                    </Button>
+                    {#if !$isSmallViewport}
+                        <Button
+                            disabled={!(hasAttributes && hasValidAttributes)}
+                            href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            event="create_document">
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create document
+                        </Button>
+                    {/if}
+                </Layout.Stack>
+            </Layout.Stack>
+            {#if $isSmallViewport}
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
                     href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
@@ -96,7 +110,7 @@
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
                 </Button>
-            </Layout.Stack>
+            {/if}
         </Layout.Stack>
 
         {#if hasAttributes && hasValidAttributes}
@@ -191,5 +205,13 @@
 
 {#if showImportCSV}
     <!-- CSVs can be text/plain or text/csv sometimes! -->
-    <FilePicker {onSelect} mimeTypeQuery="text/" allowedExtension="csv" bind:show={showImportCSV} />
+    <FilePicker
+        {onSelect}
+        mimeTypeQuery="text/"
+        allowedExtension="csv"
+        bind:show={showImportCSV}
+        gridImageDimensions={{
+            imageHeight: 32,
+            imageWidth: 32
+        }} />
 {/if}

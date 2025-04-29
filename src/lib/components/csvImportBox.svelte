@@ -29,15 +29,21 @@
     async function showCompletionNotification(
         databaseId: string,
         collectionId: string,
-        status: string,
-        errors: string = ''
+        importData: Payload
     ) {
         const projectId = page.params.project;
         await invalidate(Dependencies.DOCUMENTS);
         const url = `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
 
-        const type = status === 'completed' ? 'success' : 'error';
-        const message = status === 'completed' ? 'CSV import finished successfully.' : `${errors}`;
+        // extract clean message from nested backend error.
+        const match = importData.errors.join('').match(/message: '(.*)' Message:/i);
+        const actualMessage = match?.[1];
+
+        const type = importData.status === 'completed' ? 'success' : 'error';
+        const message =
+            importData.status === 'completed'
+                ? 'CSV import finished successfully.'
+                : `${actualMessage}`;
 
         addNotification({
             type,
@@ -95,10 +101,7 @@
         });
 
         if (status === 'completed' || status === 'failed') {
-            // extract clean message from nested backend error.
-            const match = importData.errors.join('').match(/message: '(.*)' Message:/i);
-            const actualMessage = match?.[1];
-            await showCompletionNotification(databaseId, collectionId, status, actualMessage);
+            await showCompletionNotification(databaseId, collectionId, importData);
         }
     }
 
