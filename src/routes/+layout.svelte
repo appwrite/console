@@ -74,7 +74,7 @@
                     .getCampaign(coupon.campaign)
                     .catch<null>(() => null);
                 if (campaign && $user) {
-                    goto(`${base}/apply-credit?${$page.url.searchParams}`);
+                    goto(`${base}/apply-credit?${page.url.searchParams}`);
                     loading.set(false);
                     return;
                 }
@@ -87,7 +87,7 @@
                 .getCampaign(campaignId)
                 .catch<null>(() => null);
             if (campaign) {
-                goto(`${base}/apply-credit?${$page.url.searchParams}`);
+                goto(`${base}/apply-credit?${page.url.searchParams}`);
 
                 loading.set(false);
                 return;

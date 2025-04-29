@@ -24,7 +24,8 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
     const { databases, policies, lastBackups } = await fetchDatabasesAndBackups(
         limit,
         offset,
-        currentPlan
+        currentPlan,
+        search
     );
 
     return {
@@ -39,14 +40,18 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
 };
 
 // TODO: @itznotabug we should improve this!
-async function fetchDatabasesAndBackups(limit: number, offset: number, currentPlan?: Plan) {
+async function fetchDatabasesAndBackups(
+    limit: number,
+    offset: number,
+    currentPlan?: Plan,
+    search?: string
+) {
     const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 
-    const databases = await sdk.forProject.databases.list([
-        Query.limit(limit),
-        Query.offset(offset),
-        Query.orderDesc('$createdAt')
-    ]);
+    const databases = await sdk.forProject.databases.list(
+        [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
+        search || undefined
+    );
 
     let lastBackups: Record<string, string>, policies: Record<string, BackupPolicy[]>;
 

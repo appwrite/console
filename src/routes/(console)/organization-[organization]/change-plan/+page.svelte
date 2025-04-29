@@ -3,12 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        EstimatedTotalBox,
-        PlanComparisonBox,
-        PlanSelection,
-        SelectPaymentMethod
-    } from '$lib/components/billing';
+    import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
@@ -35,6 +30,7 @@
     } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
+    import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
 
     export let data;
 

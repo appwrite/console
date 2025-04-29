@@ -24,9 +24,6 @@
     export let total: number = null;
     export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
     export let showAlert = true;
-    export let level: 'organization' | 'project' = 'project';
-    export let customPillText: string | undefined = undefined;
-    export let showPillMessage: boolean = true;
 
     export let buttonText: string = null;
     export let buttonMethod: () => void = null;

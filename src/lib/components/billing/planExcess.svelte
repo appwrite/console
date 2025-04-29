@@ -64,7 +64,7 @@
         {#if excess?.members}
             <Table.Row.Base {root}>
                 <Table.Cell {root}>Organization members</Table.Cell>
-                <Table.Cell {root}>{plan.members} members</Table.Cell>
+                <Table.Cell {root}>{plan.addons.seats.limit} members</Table.Cell>
                 <Table.Cell {root}>
                     <p class="u-color-text-danger u-flex u-cross-center u-gap-4">
                         <span class="icon-arrow-up"></span>

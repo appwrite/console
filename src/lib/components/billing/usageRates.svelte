@@ -85,7 +85,7 @@
                         {getCorrectSeatsCountValue(plan.addons.seats.limit)}
                     </Table.Cell>
                     <Table.Cell column="rate" {root}>
-                        {formatCurrency(plan.addons?.member?.price)}/{usage?.unit}
+                        {formatCurrency(plan.addons?.seats?.price)}/{usage?.unit}
                     </Table.Cell>
                 </Table.Row.Base>
             {:else}

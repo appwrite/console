@@ -6,7 +6,7 @@
     export let name: string = id;
     export let helper: string = undefined;
     export let value = '';
-    export let pattern: string = null;
+    export let pattern: string = null; //TODO: implement pattern check
     export let patternError: string = '';
     export let placeholder = '';
     export let required = false;
@@ -26,6 +26,12 @@
 
         if (inputNode.validity.valueMissing) {
             error = 'This field is required';
+            return;
+        }
+
+        error = inputNode.validationMessage;
+        if (patternError && inputNode.validity.patternMismatch) {
+            error = patternError;
             return;
         }
 
