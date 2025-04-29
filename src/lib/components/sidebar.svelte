@@ -70,7 +70,6 @@
     }
 
     $: state = $isTabletViewport ? 'closed' : getSidebarState();
-    $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(page.url.pathname);
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
@@ -289,7 +288,8 @@
                             on:click={() => {
                                 trackEvent('click_menu_settings');
                             }}
-                            class:active={isOnProjectSettings}
+                            class:active={page.url.pathname.includes('/settings') &&
+                                !page.url.pathname.includes('sites')}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
