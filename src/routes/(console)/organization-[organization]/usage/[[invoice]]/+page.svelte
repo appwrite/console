@@ -1,6 +1,9 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { Card, CardGrid, ProgressBarBig } from '$lib/components';
+    import { BarChart, Legend } from '$lib/charts';
+    import { Button } from '$lib/elements/forms';
+    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import {
         getServiceLimit,
         showUsageRatesModal,
@@ -8,9 +11,6 @@
         upgradeURL
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { Button } from '$lib/elements/forms';
-    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
-    import { BarChart, Legend } from '$lib/charts';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
@@ -158,8 +158,9 @@
                             {
                                 name: 'Users',
                                 data: accumulateFromEndingTotal(
-                                    data.usersUsageToDate,
-                                    data.organizationUsage.usersTotal
+                                    data.organizationUsage.users,
+                                    data.organizationUsage.usersTotal,
+                                    new Date()
                                 )
                             }
                         ]} />
@@ -213,7 +214,7 @@
                             }
                         ]} />
 
-                    <Legend {legendData} />
+                    <Legend {legendData} numberFormat="abbreviate" decimalsForAbbreviate={2} />
 
                     {#if projects?.length > 0}
                         <ProjectBreakdown
@@ -234,9 +235,62 @@
     </CardGrid>
 
     <CardGrid gap="none">
+        <svelte:fragment slot="title">Image transformations</svelte:fragment>
+        Calculated for all functions that are executed in all projects in your organization.
+        <p class="text">
+            The total number of unique image transformations across all projects in your
+            organization. <a
+                href="https://appwrite.io/docs/advanced/platform/image-transformations"
+                class="link">Learn more</a
+            >.
+        </p>
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.imageTransformationsTotal}
+                {@const current = data.organizationUsage.imageTransformationsTotal}
+                <ProgressBarBig
+                    currentUnit="Transformations"
+                    currentValue={formatNum(current)}
+                    progressValue={current}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Image transformations',
+                            data: [
+                                ...(data.organizationUsage.imageTransformations ?? []).map((e) => [
+                                    e.date,
+                                    e.value
+                                ])
+                            ]
+                        }
+                    ]} />
+                {#if projects?.length > 0}
+                    <ProjectBreakdown {projects} metric="imageTransformations" {data} />
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;"></span>
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+
+    <CardGrid gap="none">
         <svelte:fragment slot="title">Executions</svelte:fragment>
         Calculated for all functions that are executed in all projects in your organization.
-
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.executions}
                 {@const current = data.organizationUsage.executionsTotal}

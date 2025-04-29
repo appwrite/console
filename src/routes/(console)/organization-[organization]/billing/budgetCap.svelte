@@ -10,13 +10,14 @@
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Link } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
+    import BudgetAlert from './budgetAlert.svelte';
 
     let capActive = false;
     let budget: number;
 
     onMount(() => {
         budget = $organization?.billingBudget;
-        capActive = !!$organization?.billingBudget;
+        capActive = $organization?.billingBudget !== null;
     });
 
     async function updateBudget() {
@@ -26,7 +27,7 @@
                 budget,
                 $organization.budgetAlerts
             );
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
                 isHtml: true,
@@ -45,7 +46,7 @@
     }
 
     $: if (!capActive) {
-        budget = 0;
+        budget = null;
     }
 </script>
 
@@ -63,6 +64,11 @@
                         href="https://appwrite.io/pricing"
                         target="_blank"
                         rel="noopener noreferrer">view our pricing guide.</Link.Anchor>
+                </Alert.Inline>
+            {:else if !$currentPlan.budgetCapEnabled}
+                <Alert.Inline status="info" title="Budget cap disabled">
+                    Budget caps are not supported on your current plan. For more information, please
+                    reach out to your customer success manager.
                 </Alert.Inline>
             {:else}
                 <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
@@ -105,3 +111,5 @@
         </svelte:fragment>
     </CardGrid>
 </Form>
+
+<BudgetAlert alertsEnabled={capActive && budget > 0} />

@@ -3,23 +3,19 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        EstimatedTotalBox,
-        PlanComparisonBox,
-        SelectPaymentMethod
-    } from '$lib/components/billing';
+    import { PlanComparisonBox, PlanSelection, SelectPaymentMethod } from '$lib/components/billing';
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
-    import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import { Button, Form, InputSelect, InputTags, InputTextarea } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers.js';
     import { Wizard } from '$lib/layout';
-    import { type Coupon } from '$lib/sdk/billing';
-    import { plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
+    import { isOrganization, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { currentPlan, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -33,6 +29,8 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { writable } from 'svelte/store';
+    import { onMount } from 'svelte';
+    import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
 
     export let data;
 
@@ -56,9 +54,45 @@
     let showCreditModal = false;
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+    let couponData: Partial<Coupon> = data.coupon;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
+    });
+    onMount(async () => {
+        if (page.url.searchParams.has('code')) {
+            const coupon = page.url.searchParams.get('code');
+            try {
+                const response = await sdk.forConsole.billing.getCouponAccount(coupon);
+                couponData = response;
+            } catch (e) {
+                couponData = {
+                    code: null,
+                    status: null,
+                    credits: null
+                };
+            }
+        }
+        if (page.url.searchParams.has('plan')) {
+            const plan = page.url.searchParams.get('plan');
+            if (plan && plan in BillingPlan) {
+                selectedPlan = plan as BillingPlan;
+            }
+        }
+
+        if (page.url.searchParams.has('type')) {
+            const type = page.url.searchParams.get('type');
+            if (type === 'payment_confirmed') {
+                const organizationId = page.url.searchParams.get('id');
+                const invites = page.url.searchParams.get('invites').split(',');
+                await validate(organizationId, invites);
+            }
+        }
+        if ($currentPlan?.$id === BillingPlan.SCALE) {
+            selectedPlan = BillingPlan.SCALE;
+        } else {
+            selectedPlan = BillingPlan.PRO;
+        }
     });
 
     async function handleSubmit() {
@@ -96,14 +130,13 @@
                 })
             });
 
+            await invalidate(Dependencies.ORGANIZATION);
+
             await goto(previousPage);
             addNotification({
                 type: 'success',
                 isHtml: true,
-                message: `
-                        <b>${$organization.name}</b> will change to ${
-                            tierToPlan(selectedPlan).name
-                        } plan at the end of the current billing cycle.`
+                message: `<b>${$organization.name}</b> plan has been successfully updated.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
@@ -118,61 +151,88 @@
         }
     }
 
+    async function validate(organizationId: string, invites: string[]) {
+        try {
+            let org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
+                await goto(previousPage);
+                addNotification({
+                    type: 'success',
+                    message: 'Your organization has been upgraded'
+                });
+
+                trackEvent(Submit.OrganizationUpgrade, {
+                    plan: tierToPlan(selectedPlan)?.name
+                });
+            }
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+            trackError(e, Submit.OrganizationCreate);
+        }
+    }
+
     async function upgrade() {
         try {
+            //Add collaborators
+            let newCollaborators = [];
+            if (collaborators?.length) {
+                newCollaborators = collaborators.filter(
+                    (collaborator) =>
+                        !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
+                );
+            }
             const org = await sdk.forConsole.billing.updatePlan(
                 data.organization.$id,
                 selectedPlan,
                 paymentMethodId,
-                null
+                null,
+                couponData?.code,
+                newCollaborators,
+                billingBudget,
+                taxId ? taxId : null
             );
 
-            //Add coupon
-            if (selectedCoupon?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, selectedCoupon.code);
-                trackEvent(Submit.CreditRedeem);
-            }
-
-            //Add budget
-            if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-            }
-
-            //Add collaborators
-            if (collaborators?.length) {
-                const newCollaborators = collaborators.filter(
-                    (collaborator) =>
-                        !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
+            if (!isOrganization(org) && org.status == 402) {
+                let clientSecret = org.clientSecret;
+                let params = new URLSearchParams();
+                for (const [key, value] of page.url.searchParams.entries()) {
+                    if (key !== 'type' && key !== 'id') {
+                        params.append(key, value);
+                    }
+                }
+                params.append('type', 'payment_confirmed');
+                params.append('id', org.teamId);
+                params.append('invites', collaborators.join(','));
+                params.append('plan', selectedPlan);
+                await confirmPayment(
+                    '',
+                    clientSecret,
+                    paymentMethodId,
+                    '/console/change-plan?' + params.toString()
                 );
-                newCollaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${page.url.origin}${base}/invite`
-                    );
+                await validate(org.teamId, collaborators);
+            }
+
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
+                await goto(previousPage);
+                addNotification({
+                    type: 'success',
+                    message: 'Your organization has been upgraded'
+                });
+
+                trackEvent(Submit.OrganizationUpgrade, {
+                    plan: tierToPlan(selectedPlan)?.name
                 });
             }
-
-            //Add tax ID
-            if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-            }
-
-            await invalidate(Dependencies.ACCOUNT);
-            await invalidate(Dependencies.ORGANIZATION);
-
-            await goto(previousPage);
-            addNotification({
-                type: 'success',
-                message: 'Your organization has been upgraded'
-            });
-
-            trackEvent(Submit.OrganizationUpgrade, {
-                plan: tierToPlan(selectedPlan)?.name
-            });
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -223,14 +283,12 @@
 
                     {#if isDowngrade}
                         {#if selectedPlan === BillingPlan.FREE}
-                            <PlanExcess
-                                tier={BillingPlan.FREE}
-                                members={data?.members?.total ?? 0} />
+                            <PlanExcess tier={BillingPlan.FREE} />
                         {:else if selectedPlan === BillingPlan.PRO && data.organization.billingPlan === BillingPlan.SCALE && collaborators?.length > 0}
                             {@const extraMembers = collaborators?.length ?? 0}
                             {@const price = formatCurrency(
                                 extraMembers *
-                                    ($plansInfo?.get(selectedPlan)?.addons?.member?.price ?? 0)
+                                    ($plansInfo?.get(selectedPlan)?.addons?.seats?.price ?? 0)
                             )}
                             <Alert.Inline status="error">
                                 <svelte:fragment slot="title">

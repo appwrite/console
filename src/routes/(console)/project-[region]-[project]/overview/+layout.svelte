@@ -19,7 +19,6 @@
     import { Container, type UsagePeriods } from '$lib/layout';
     import { onMount, setContext, type Component } from 'svelte';
     import Bandwidth from './bandwidth.svelte';
-    import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
     import { formatNum } from '$lib/helpers/string';
@@ -30,9 +29,9 @@
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
 
+    let period: UsagePeriods = '30d';
     $: projectId = page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
-    let period: UsagePeriods = '30d';
 
     onMount(handle);
     afterNavigate(handle);

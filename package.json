@@ -21,7 +21,8 @@
         "e2e:ui": "playwright test --ui"
     },
     "dependencies": {
-        "@appwrite.io/console": "https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@e2f082e",
+        "@appwrite.io/console": "1.6.0",
+        "@appwrite.io/pink": "0.25.0",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bd21ff7f",
         "@appwrite.io/pink-legacy": "^1.0.3",
@@ -31,6 +32,7 @@
         "@stripe/stripe-js": "^3.5.0",
         "ai": "^2.2.37",
         "analytics": "^0.8.16",
+        "@ai-sdk/svelte": "^1.1.22",
         "cron-parser": "^4.9.0",
         "dayjs": "^1.11.13",
         "deep-equal": "^2.2.3",

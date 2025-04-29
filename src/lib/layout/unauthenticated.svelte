@@ -10,6 +10,7 @@
     import type { Campaign } from '$lib/stores/campaigns';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import { Typography, Layout, Avatar } from '@appwrite.io/pink-svelte';
+    import { getCampaignImageUrl } from '$routes/(public)/card/helpers';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
@@ -39,12 +40,6 @@
         } else {
             return campaign.description;
         }
-    }
-
-    function getImage(image: string) {
-        const endpoint = getApiEndpoint();
-        const url = new URL(image, endpoint);
-        return url.toString();
     }
 </script>
 
@@ -88,7 +83,7 @@
             <div style:max-inline-size="30rem" style:height="100%">
                 <Layout.Stack justifyContent="center" alignItems="center" height="100%" gap="xxxl">
                     <img
-                        src={getImage(campaign?.image[$app.themeInUse])}
+                        src={getCampaignImageUrl(campaign?.image[$app.themeInUse])}
                         class="u-block u-image-object-fit-cover side-bg-img"
                         alt="promo" />
 
@@ -114,7 +109,7 @@
                             <Layout.Stack gap="s" direction="row">
                                 {#if currentReview?.image}
                                     <Avatar
-                                        src={getImage(currentReview?.image)}
+                                        src={getCampaignImageUrl(currentReview?.image)}
                                         alt={currentReview.name}
                                         size="m" />
                                 {:else}
@@ -147,7 +142,7 @@
                             </p>
                             <img
                                 style:max-block-size="2.5rem"
-                                src={getImage(campaign?.image[$app.themeInUse])}
+                                src={getCampaignImageUrl(campaign?.image[$app.themeInUse])}
                                 alt={coupon?.campaign ?? campaign.$id} />
                         </div>
                     {/if}

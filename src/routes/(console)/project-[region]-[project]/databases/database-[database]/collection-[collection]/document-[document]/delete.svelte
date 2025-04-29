@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Alert, Selector, Table } from '@appwrite.io/pink-svelte';
     import { attributes, collection } from '../store';
-    import { isRelationship } from './attributes/store';
+    import { isRelationship, isRelationshipToMany } from './attributes/store';
     import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
@@ -44,11 +44,20 @@
     enum Deletion {
         'setNull' = 'Set document ID as NULL in all related documents',
         'cascade' = 'All related documents will be deleted',
-        'restrict' = 'Document can not be deleted'
+        'restrict' = 'Document cannot be deleted'
     }
 
-    $: relAttributes = $attributes?.filter((attribute) =>
-        isRelationship(attribute)
+    $: relAttributes = $attributes?.filter(
+        (attribute) =>
+            isRelationship(attribute) &&
+            // One-to-One are always included
+            (attribute.relationType === 'oneToOne' ||
+                // One-to-Many: Only if parent is deleted
+                (attribute.relationType === 'oneToMany' && attribute.side === 'parent') ||
+                // Many-to-One: Only include if child is deleted
+                (attribute.relationType === 'manyToOne' && attribute.side === 'child') ||
+                // Many-to-Many: Only include if the parent is being deleted
+                (isRelationshipToMany(attribute) && attribute.side === 'parent'))
     ) as Models.AttributeRelationship[];
 </script>
 

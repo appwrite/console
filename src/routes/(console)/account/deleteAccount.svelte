@@ -14,10 +14,10 @@
     <svelte:fragment slot="aside">
         <BoxAvatar>
             <svelte:fragment slot="image">
-                <AvatarInitials size="l" name={$user.name} />
+                <AvatarInitials size="l" name={$user.name || $user.email} />
             </svelte:fragment>
             <svelte:fragment slot="title">
-                <span class="u-bold u-trim-1" data-private>{$user.name}</span>
+                <span class="u-bold u-trim-1" data-private>{$user.name || 'User'}</span>
             </svelte:fragment>
         </BoxAvatar>
     </svelte:fragment>

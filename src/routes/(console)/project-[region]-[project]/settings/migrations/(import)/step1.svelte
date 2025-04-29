@@ -5,7 +5,7 @@
     import { provider } from '.';
 
     const providers: Record<Provider, string> = {
-        appwrite: 'Appwrite Self-hosted',
+        appwrite: 'Appwrite',
         firebase: 'Firebase',
         supabase: 'Supabase',
         nhost: 'NHost'
