@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation';
 import { sdk } from '$lib/stores/sdk';
-import { project } from '$routes/(console)/project-[project]/store';
+import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { Query, type Models } from '@appwrite.io/console';
 import { get } from 'svelte/store';
 import type { Command, Searcher } from '../commands';

@@ -1,11 +1,11 @@
 import { goto } from '$app/navigation';
 import { sdk } from '$lib/stores/sdk';
-import { project } from '$routes/(console)/project-[project]/store';
+import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
 import { page } from '$app/stores';
-import { showCreateDeployment } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+import { showCreateDeployment } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/store';
 import { base } from '$app/paths';
 import { IconLightningBolt, IconPlus } from '@appwrite.io/pink-icons-svelte';
 

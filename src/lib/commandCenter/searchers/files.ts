@@ -1,10 +1,10 @@
 import { sdk } from '$lib/stores/sdk';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
-import { bucket } from '$routes/(console)/project-[project]/storage/bucket-[bucket]/store';
+import { bucket } from '$routes/(console)/project-[region]-[project]/storage/bucket-[bucket]/store';
 import { Query } from '@appwrite.io/console';
 import { goto } from '$app/navigation';
-import { project } from '$routes/(console)/project-[project]/store';
+import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { base } from '$app/paths';
 import { IconDocument } from '@appwrite.io/pink-icons-svelte';
 

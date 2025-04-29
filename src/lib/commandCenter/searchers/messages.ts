@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation';
-import { project } from '$routes/(console)/project-[project]/store';
+import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { get } from 'svelte/store';
 import { type Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
