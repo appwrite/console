@@ -15,8 +15,15 @@
         domain.set({ $id: '', domain: '' });
 
         return realtime
-            .forProject($page.params.region, $page.params.region)
-            .subscribe<Models.ProxyRule>('console', (data) => domain.set(data.payload));
+            .forProject($page.params.region, $page.params.project)
+            .subscribe<Models.ProxyRule>('console', (message) => {
+                if (
+                    message.channels.includes(`projects.${$page.params.project}`) &&
+                    message.events.includes('rules.*')
+                ) {
+                    domain.set(message.payload);
+                }
+            });
     });
 
     async function onFinish() {
