@@ -32,8 +32,20 @@
     $: projects = (data.organizationUsage as OrganizationUsage).projects;
 
     $: legendData = [
-        { name: 'Reads', value: data.organizationUsage.databasesReadsTotal },
-        { name: 'Writes', value: data.organizationUsage.databasesWritesTotal }
+        {
+            name: 'Reads',
+            value: data.organizationUsage.databasesReads.reduce(
+                (sum, singleDay) => sum + singleDay.value,
+                0
+            )
+        },
+        {
+            name: 'Writes',
+            value: data.organizationUsage.databasesWrites.reduce(
+                (sum, singleDay) => sum + singleDay.value,
+                0
+            )
+        }
     ];
 </script>
 
