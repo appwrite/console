@@ -223,5 +223,5 @@
     <CreateManualDeploymentModal bind:show={showConnectManual} site={data.site} />
 {/if}
 {#if showConnectCLI}
-    <CreateCliModal bind:show={showConnectCLI} />
+    <CreateCliModal bind:show={showConnectCLI} site={data.site} />
 {/if}

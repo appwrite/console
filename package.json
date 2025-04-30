@@ -21,7 +21,7 @@
         "e2e:ui": "playwright test --ui"
     },
     "dependencies": {
-        "@appwrite.io/console": "1.6.0",
+        "@appwrite.io/console": "https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@e2f082e",
         "@appwrite.io/pink": "0.25.0",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bd21ff7f",

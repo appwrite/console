@@ -1,24 +1,24 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
-    import { Modal } from '$lib/components';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
-    import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
+    import { Modal } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
+    import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
 
     export let show = false;
+    export let site: Models.Site;
 
-    let lang = 'js';
     let codeSnippets = {};
     let os = 'unknown';
     let category = 'Unix';
 
     const siteId = page.params.site;
-    codeSnippets = setCodeSnippets(lang);
+    codeSnippets = getCodeSnippets();
 
     onMount(() => {
-        // lang = setLanguage($func.runtime);
-        codeSnippets = setCodeSnippets(lang);
+        codeSnippets = getCodeSnippets();
         os = navigator['userAgentData']?.platform || navigator?.platform || 'unknown';
 
         if (os.includes('Win')) {
@@ -30,31 +30,45 @@
         }
     });
 
-    function setCodeSnippets(lang: string) {
+    function getCodeSnippets() {
+        const projectId = page.params.project;
+        const codePath = `./sites/${framework}`;
+        const { framework, buildCommand, installCommand, outputDirectory } = site;
+
         return {
             Unix: {
-                code: `appwrite client --projectId="${page.params.project}" && \\
+                code: `appwrite client --projectId="${projectId}" && \\
 appwrite sites create-deployment \\
     --site-id="${siteId}" \\
-    --code="." \\
-    --activate`,
+    --code="${codePath}" \\
+    --activate \\
+    --build-command="${buildCommand}" \\
+    --install-command="${installCommand}" \\
+    --output-directory="${outputDirectory}"`,
                 language: 'bash'
             },
 
             CMD: {
-                code: `appwrite client --projectId="${page.params.project}" && ^
+                code: `appwrite client --projectId="${projectId}" && ^
 appwrite sites createDeployment ^
     --siteId=${siteId} ^
-    --code="." ^
-    --activate`,
+    --code="${codePath}" ^
+    --activate ^
+    --build-command="${buildCommand}" ^
+    --install-command="${installCommand}" ^
+    --output-directory="${outputDirectory}"`,
                 language: 'CMD'
             },
+
             PowerShell: {
-                code: `appwrite client --projectId="${page.params.project}" && ,
+                code: `appwrite client --projectId="${projectId}" ;
 appwrite sites createDeployment ,
     --siteId=${siteId} ,
-    --code="." ,
-    --activate`,
+    --code="${codePath}" ,
+    --activate ,
+    --build-command="${buildCommand}" ,
+    --install-command="${installCommand}" ,
+    --output-directory="${outputDirectory}"`,
                 language: 'PowerShell'
             }
         };
