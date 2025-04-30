@@ -140,7 +140,7 @@
         if (allowedExtension === '*') {
             query.push(Query.startsWith('mimeType', mimeTypeQuery));
         } else {
-            Query.endsWith('name', `.${allowedExtension}`);
+            query.push(Query.endsWith('name', `.${allowedExtension}`));
         }
 
         return query;
