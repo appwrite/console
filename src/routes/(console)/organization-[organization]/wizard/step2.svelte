@@ -62,6 +62,13 @@
     }
 
     $: notifications = prefs?.notifications ?? [];
+
+    const sortedRegions = $regions.regions.sort((regionA, regionB) => {
+        if (regionA.disabled >= regionB.disabled) {
+            return 1;
+        }
+        return -1;
+    });
 </script>
 
 <WizardStep>
@@ -73,18 +80,13 @@
         <ul
             class="grid-box u-margin-block-start-16"
             style="--p-grid-item-size:12em; --p-grid-item-size-small-screens:12rem; --grid-gap: 1rem;">
-            {#each $regions.regions.sort((regionA, regionB) => {
-                if (regionA.disabled >= regionB.disabled) {
-                    return 1;
-                }
-                return -1;
-            }) as region, index (region.$id)}
+            {#each sortedRegions as region, index (region.$id)}
                 <li>
                     <RegionCard
                         name="region"
                         bind:group={$createProject.region}
                         value={region.$id}
-                        disabled={!region.available}
+                        disabled={!region.available || region.disabled}
                         autofocus={index === 0}>
                         <div
                             class="u-flex u-flex-vertical u-gap-8 u-justify-main-center u-cross-center u-margin-inline-auto">
