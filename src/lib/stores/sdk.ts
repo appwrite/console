@@ -1,4 +1,4 @@
-import { isCloudHostname, VARS } from '$lib/system';
+import { VARS } from '$lib/system';
 import {
     Account,
     Assistant,
@@ -41,8 +41,8 @@ export function getApiEndpoint(region?: string): string {
     const protocol = url.protocol;
     const hostname = url.hostname;
 
-    // If on Appwrite cloud, add the region-based subdomain.
-    const subdomain = isCloudHostname ? getSubdomain(region) : '';
+    // If instance supports multi-region, add the region subdomain.
+    const subdomain = VARS.APPWRITE_MULTI_REGION ? getSubdomain(region) : '';
 
     return `${protocol}//${subdomain}${hostname}/v1`;
 }
