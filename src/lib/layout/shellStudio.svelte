@@ -466,7 +466,7 @@
     }
 
     .studio-content {
-        min-height: calc(100vh - 48px);
+        min-height: calc(100vh - 54px);
         margin-top: 54px;
         width: 100vw;
 

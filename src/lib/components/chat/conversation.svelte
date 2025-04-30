@@ -130,10 +130,13 @@
     </div>
 </div>
 
-<style>
+<style lang="scss">
     .overflow {
-        overflow: scroll;
+        overflow: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-neutral, #ededf0) transparent;
     }
+
     section {
         display: flex;
         flex-direction: column;
