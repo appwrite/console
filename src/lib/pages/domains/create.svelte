@@ -15,7 +15,7 @@
         domain.set({ $id: '', domain: '' });
 
         return realtime
-            .forProject($page.params.region, $page.params.region)
+            .forProject($page.params.region, $page.params.project)
             .subscribe<Models.ProxyRule>('console', (data) => domain.set(data.payload));
     });
 
