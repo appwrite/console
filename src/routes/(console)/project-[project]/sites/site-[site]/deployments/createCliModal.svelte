@@ -32,8 +32,8 @@
 
     function getCodeSnippets() {
         const projectId = page.params.project;
-        const codePath = `./sites/${framework}`;
-        const { framework, buildCommand, installCommand, outputDirectory } = site;
+        const codePath = `./sites/${site.framework}`;
+        const { buildCommand, installCommand, outputDirectory } = site;
 
         return {
             Unix: {
