@@ -485,33 +485,59 @@
                                                 </Button>
                                             </EmptySearch>
                                         {:else}
-                                            <Empty title="No files found within this bucket.">
-                                                <Button
-                                                    secondary
-                                                    slot="actions"
-                                                    disabled={uploading}
-                                                    on:click={() => fileSelector.click()}
-                                                    >Upload file
-                                                </Button>
-                                            </Empty>
+                                            <Card.Base padding="none">
+                                                <Empty
+                                                    title="No files found within this bucket."
+                                                    description="Need a hand? Learn more in our documentation.">
+                                                    <slot name="actions" slot="actions">
+                                                        <Button
+                                                            text
+                                                            external
+                                                            size="s"
+                                                            event="empty_documentation"
+                                                            href="https://appwrite.io/docs/products/storage/upload-download"
+                                                            ariaLabel="create document"
+                                                            >Documentation</Button>
+                                                        <Button
+                                                            secondary
+                                                            disabled={uploading}
+                                                            on:click={() => fileSelector.click()}
+                                                            >Upload file
+                                                        </Button>
+                                                    </slot>
+                                                </Empty>
+                                            </Card.Base>
                                         {/if}
                                     {/await}
                                 {/if}
                             {/if}
                         {:else}
-                            <Empty title="No buckets found">
-                                <Button
-                                    slot="actions"
-                                    secondary
-                                    on:click={async () => {
-                                        await goto(
-                                            `${base}/project-${page.params.project}/storage`
-                                        );
-                                        $showCreateBucket = true;
-                                    }}>
-                                    Create bucket
-                                </Button>
-                            </Empty>
+                            <Card.Base padding="none">
+                                <Empty
+                                    title="No buckets found"
+                                    description="Need a hand? Learn more in our documentation.">
+                                    <slot name="actions" slot="actions">
+                                        <Button
+                                            text
+                                            external
+                                            size="s"
+                                            event="empty_documentation"
+                                            href="https://appwrite.io/docs/products/storage/buckets"
+                                            ariaLabel="create document">Documentation</Button>
+
+                                        <Button
+                                            secondary
+                                            on:click={async () => {
+                                                await goto(
+                                                    `${base}/project-${page.params.project}/storage`
+                                                );
+                                                $showCreateBucket = true;
+                                            }}>
+                                            Create bucket
+                                        </Button>
+                                    </slot>
+                                </Empty>
+                            </Card.Base>
                         {/if}
                     {/await}
                 </Layout.Stack>
@@ -530,7 +556,12 @@
 
 <style>
     :global(.file-picker-modal-form dialog .content) {
+        overflow: hidden;
         padding: unset !important;
+
+        /* multiple scroll bars from `.content` and `.files-section` look very odd */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
     aside {
@@ -546,20 +577,12 @@
     .files-section {
         width: 100%;
         height: 100%;
+        overflow: auto;
         padding: var(--space-8);
         background: var(--bgcolor-neutral-default);
 
-        /*div.root is a table */
-        :global(&:has(div.root)) {
-            overflow: hidden !important;
-
-            @media (max-width: 768px) {
-                overflow: auto !important;
-            }
-        }
-
-        @media (max-width: 768px) {
-            overflow: auto !important;
+        &::-webkit-scrollbar {
+            display: none;
         }
     }
 
