@@ -18,8 +18,8 @@
             .forProject($page.params.region, $page.params.project)
             .subscribe<Models.ProxyRule>('console', (message) => {
                 if (
-                    message.channels.includes(`projects.${$page.params.project}`)
-                    && message.events.includes('rules.*')
+                    message.channels.includes(`projects.${$page.params.project}`) &&
+                    message.events.includes('rules.*')
                 ) {
                     domain.set(message.payload);
                 }
