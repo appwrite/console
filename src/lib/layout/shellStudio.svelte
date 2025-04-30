@@ -488,14 +488,14 @@
     }
 
     .resizer {
-        width: 8px;
+        width: 16px;
         cursor: col-resize;
         margin-inline: 10px;
         position: absolute;
         height: calc(100vh - 82px);
         margin-block-start: 6px;
 
-        margin-inline-start: 8px;
+        margin-inline-start: 0px;
 
         &::after {
             content: '';
@@ -504,6 +504,7 @@
             height: 100%;
             width: 2px;
             margin-left: -1px;
+            left: 8px;
             background-color: var(--border-neutral-strong);
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
