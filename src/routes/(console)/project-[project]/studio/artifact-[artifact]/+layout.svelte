@@ -6,6 +6,7 @@
     import { base } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IconChevronDoubleUp, IconTerminal } from '@appwrite.io/pink-icons-svelte';
+    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
 
     const { children } = $props();
 
@@ -40,6 +41,9 @@
         window.addEventListener('touchmove', resize);
         window.addEventListener('touchend', stopResize);
         document.body.style.userSelect = 'none';
+        if ($previewFrameRef) {
+            $previewFrameRef.style.pointerEvents = 'none';
+        }
     }
 
     function resize(event: MouseEvent | TouchEvent) {
@@ -64,6 +68,9 @@
         window.removeEventListener('touchmove', resize);
         window.removeEventListener('touchend', stopResize);
         document.body.style.userSelect = '';
+        if ($previewFrameRef) {
+            $previewFrameRef.style.pointerEvents = '';
+        }
     }
 </script>
 

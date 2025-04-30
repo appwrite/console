@@ -6,8 +6,12 @@
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
     import { Layout, Icon } from '@appwrite.io/pink-svelte';
+    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
 
     const previewUrl = 'https://getbootstrap.com/docs/5.3/examples/blog';
+
+    let iframeRef: HTMLIFrameElement | null = null;
+    $: previewFrameRef.set(iframeRef);
 </script>
 
 <Layout.Stack direction="column">
@@ -19,7 +23,7 @@
     </Layout.Stack>
 </Layout.Stack>
 <div class="iframe-container">
-    <iframe src={previewUrl} id="preview-iframe" title="preview"></iframe>
+    <iframe src={previewUrl} bind:this={iframeRef} id="preview-iframe" title="preview"></iframe>
 </div>
 
 <style lang="scss">

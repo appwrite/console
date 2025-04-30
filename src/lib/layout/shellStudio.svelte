@@ -39,6 +39,7 @@
     import { setContext, type Snippet } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { filesystem } from '$lib/components/editor/filesystem';
+    import { previewFrameRef } from '$routes/(console)/project-[project]/store';
 
     let hasProjectSidebar = $state(false);
 
@@ -125,6 +126,10 @@
         window.addEventListener('touchmove', resize);
         window.addEventListener('touchend', stopResize);
         document.body.style.userSelect = 'none';
+
+        if ($previewFrameRef) {
+            $previewFrameRef.style.pointerEvents = 'none';
+        }
     }
 
     function resize(event: TouchEvent | MouseEvent) {
@@ -153,6 +158,10 @@
         window.removeEventListener('touchmove', resize);
         window.removeEventListener('touchend', stopResize);
         document.body.style.userSelect = '';
+
+        if ($previewFrameRef) {
+            $previewFrameRef.style.pointerEvents = '';
+        }
     }
 
     const parser = createStreamParser();
