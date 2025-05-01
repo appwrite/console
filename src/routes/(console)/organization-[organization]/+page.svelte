@@ -183,7 +183,7 @@
             </svelte:fragment>
 
             {#each data.projects.projects as project}
-                <Table.Row.Link href={`${base}/project-${project.$id}`} {root}>
+                <Table.Row.Link href={`${base}/project-${project.$id}/studio`} {root}>
                     <Table.Cell column="name" {root}>{project.name}</Table.Cell>
                     <Table.Cell column="updated" {root}
                         >{timeFromNow(project.$updatedAt)}</Table.Cell>
