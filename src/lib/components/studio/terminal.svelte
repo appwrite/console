@@ -56,54 +56,17 @@
             term.open(node);
 
             const socket = connect(term);
-            let buffer = '';
-            term.onKey(({ domEvent }) => {
-                if (domEvent.key === 'Enter') {
-                    if (socket.readyState === WebSocket.OPEN) {
-                        const terminalOperation = {
-                            type: 'terminal',
-                            operation: 'createCommand',
-                            params: {
-                                command: buffer + '\n'
-                            },
-                            requestId: Date.now().toString()
-                        };
+            term.onKey(({ domEvent, key }) => {
+                const terminalOperation = {
+                    type: 'terminal',
+                    operation: 'createCommand',
+                    params: {
+                        command: key
+                    },
+                    requestId: Date.now().toString()
+                };
 
-                        socket.send(JSON.stringify(terminalOperation));
-                        buffer = '';
-                        term.write('\r\n');
-                    }
-                }
-
-                if (domEvent.key === 'Backspace') {
-                    if (domEvent.metaKey) {
-                        buffer = '';
-                        term.write('\x1b[2K\r');
-                    } else {
-                        buffer = buffer.slice(0, -1);
-                        term.write('\b \b');
-                    }
-                    return;
-                }
-
-                if (domEvent.metaKey) {
-                    return;
-                }
-
-                if (
-                    domEvent.key.length === 1 &&
-                    !domEvent.ctrlKey &&
-                    !domEvent.altKey &&
-                    !domEvent.metaKey
-                ) {
-                    buffer += domEvent.key;
-                    term.write(domEvent.key);
-                    return;
-                }
-
-                if (domEvent.key === 'ArrowUp') {
-                    return;
-                }
+                socket.send(JSON.stringify(terminalOperation));
             });
         };
         init();
