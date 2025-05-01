@@ -7,7 +7,7 @@ const userPreferences = () => get(user)?.prefs;
 
 export function getChatWidthFromPrefs() {
     const currentPrefs = userPreferences();
-    if ('studioChatWidth' in currentPrefs) {
+    if (currentPrefs?.studioChatWidth) {
         if (window) {
             const maxSize = page.data?.subNavigation
                 ? window.innerWidth - 660
