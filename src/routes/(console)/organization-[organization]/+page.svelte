@@ -240,39 +240,41 @@
                             {/if}
                         {/await}
 
-                    {#each platforms as platform, i}
-                        {#if i < 3}
-                            {@const icon = getIconForPlatform(platform.icon)}
-                            <Badge variant="secondary" content={platform.name}>
-                                <Icon {icon} size="s" slot="start" />
-                            </Badge>
+                        {#each platforms as platform, i}
+                            {#if i < 3}
+                                {@const icon = getIconForPlatform(platform.icon)}
+                                <Badge variant="secondary" content={platform.name}>
+                                    <Icon {icon} size="s" slot="start" />
+                                </Badge>
+                            {/if}
+                        {/each}
+                        {#if platforms?.length > 3}
+                            <Badge
+                                variant="secondary"
+                                content={`+${project.platforms.length - 3}`} />
                         {/if}
-                    {/each}
-                    {#if platforms?.length > 3}
-                        <Badge variant="secondary" content={`+${project.platforms.length - 3}`} />
-                    {/if}
-                    <svelte:fragment slot="icons">
-                        {#if isCloud && $regionsStore?.regions}
-                            {@const region = findRegion(project)}
-                            <span class="u-color-text-gray u-medium u-line-height-2">
-                                {region?.name}
-                            </span>
-                        {/if}
-                    </svelte:fragment>
-                </GridItem1>
-            {/each}
-            <svelte:fragment slot="empty">
-                <p>Create a new project</p>
-            </svelte:fragment>
-        </CardContainer>
-    {:else}
-        <Empty
-            single
-            allowCreate={$canWriteProjects}
-            on:click={handleCreateProject}
-            target="project"
-            href="https://appwrite.io/docs/quick-starts"></Empty>
-    {/if}
+                        <svelte:fragment slot="icons">
+                            {#if isCloud && $regionsStore?.regions}
+                                {@const region = findRegion(project)}
+                                <span class="u-color-text-gray u-medium u-line-height-2">
+                                    {region?.name}
+                                </span>
+                            {/if}
+                        </svelte:fragment>
+                    </GridItem1>
+                {/each}
+                <svelte:fragment slot="empty">
+                    <p>Create a new project</p>
+                </svelte:fragment>
+            </CardContainer>
+        {:else}
+            <Empty
+                single
+                allowCreate={$canWriteProjects}
+                on:click={handleCreateProject}
+                target="project"
+                href="https://appwrite.io/docs/quick-starts"></Empty>
+        {/if}
 
         <PaginationWithLimit
             name="Projects"

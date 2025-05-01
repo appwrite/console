@@ -64,7 +64,7 @@
                             type: 'terminal',
                             operation: 'createCommand',
                             params: {
-                                command: buffer
+                                command: buffer + '\n'
                             },
                             requestId: Date.now().toString()
                         };

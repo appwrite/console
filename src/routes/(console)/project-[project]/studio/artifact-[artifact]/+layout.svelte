@@ -7,6 +7,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import { IconChevronDoubleUp, IconTerminal } from '@appwrite.io/pink-icons-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import type { Terminal as XTerm } from '@xterm/xterm';
 
     const { children } = $props();
 
@@ -72,6 +73,14 @@
             $previewFrameRef.style.pointerEvents = '';
         }
     }
+
+    function onmessage(message: MessageEvent, terminal: XTerm) {
+        const response = JSON.parse(message.data);
+
+        if (response?.type !== 'terminalResponse') return;
+
+        terminal.write(response.data);
+    }
 </script>
 
 <Layout.Stack
@@ -106,7 +115,7 @@
                     <Icon icon={IconChevronDoubleUp} color="--fgcolor-neutral-tertiary" />
                 </Layout.Stack>
             </summary>
-            <Terminal height={terminalHeight} onmessage={(msg) => console.log(msg.data)}></Terminal>
+            <Terminal height={terminalHeight} {onmessage}></Terminal>
         </details>
     </aside>
 </Layout.Stack>

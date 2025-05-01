@@ -28,11 +28,6 @@ const config = {
         paths: {
             base: `/console`
         }
-    },
-    vitePlugin: {
-        inspector: {
-            toggleKeyCombo: 'meta-shift-i'
-        }
     }
 };
 
