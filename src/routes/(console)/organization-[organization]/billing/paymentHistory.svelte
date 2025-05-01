@@ -5,7 +5,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Invoice, InvoiceList } from '$lib/sdk/billing';
-    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
@@ -28,8 +28,7 @@
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
-
-    // let isLoadingInvoices = true;
+    import { base } from '$app/paths';
 
     let offset = 0;
     let invoiceList: InvoiceList = {
@@ -38,7 +37,6 @@
     };
 
     const limit = 5;
-    const endpoint = getApiEndpoint();
 
     onMount(request);
 
@@ -47,11 +45,13 @@
         invoiceList = await sdk.forConsole.billing.listInvoices(page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
-            Query.notEqual('from', $organization.billingCurrentInvoiceDate),
-            Query.notEqual('status', 'pending'),
             Query.orderDesc('$createdAt')
         ]);
-        // isLoadingInvoices = false;
+    }
+
+    $: if (page.url.searchParams.get('type') === 'validate-invoice') {
+        window.history.replaceState({}, '', page.url.pathname);
+        request();
     }
 
     function retryPayment(invoice: Invoice) {
@@ -135,12 +135,12 @@
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconExternalLink}
                                         external
-                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
+                                        href={`${base}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
                                         View invoice
                                     </ActionMenu.Item.Anchor>
                                     <ActionMenu.Item.Anchor
                                         leadingIcon={IconDownload}
-                                        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
+                                        href={`${base}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
                                         Download PDF
                                     </ActionMenu.Item.Anchor>
                                     {#if status === 'overdue' || status === 'failed'}
@@ -165,7 +165,7 @@
             {#if invoiceList.total > limit}
                 <div class="u-flex u-main-space-between">
                     <p class="text">Total results: {invoiceList.total}</p>
-                    <PaginationInline {limit} bind:offset sum={invoiceList.total} hidePages />
+                    <PaginationInline {limit} bind:offset total={invoiceList.total} hidePages />
                 </div>
             {/if}
         {:else}

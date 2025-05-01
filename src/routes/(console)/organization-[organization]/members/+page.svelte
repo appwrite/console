@@ -1,19 +1,19 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { AvatarInitials, PaginationWithLimit } from '$lib/components';
     import { Button as ConsoleButton } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
+    import { base } from '$app/paths';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import Upgrade from '$lib/components/roles/upgrade.svelte';
+    import { getRoleLabel } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { newMemberModal, organization } from '$lib/stores/organization';
+    import { isOwner } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import Delete from '../deleteMember.svelte';
-    import { base } from '$app/paths';
-    import { isOwner } from '$lib/stores/roles';
     import Edit from './edit.svelte';
-    import { getRoleLabel } from '$lib/stores/billing';
     import {
         IconDotsHorizontal,
         IconInfo,
@@ -32,9 +32,8 @@
         Popover,
         ActionMenu
     } from '@appwrite.io/pink-svelte';
-    import Upgrade from '$lib/components/roles/upgrade.svelte';
 
-    export let data: PageData;
+    export let data;
 
     let selectedMember: Models.Membership;
     let showDelete = false;
@@ -79,10 +78,10 @@
     <Table.Root
         let:root
         columns={[
-            { id: 'name' },
-            { id: 'email' },
-            { id: 'roles' },
-            { id: 'mfa' },
+            { id: 'name', width: { min: 200 } },
+            { id: 'email', width: { min: 200 } },
+            { id: 'roles', width: { min: 200 } },
+            { id: 'mfa', width: { min: 80 } },
             { id: 'actions', hide: !$isOwner, width: 40 }
         ]}>
         <svelte:fragment slot="header" let:root>
@@ -107,16 +106,18 @@
                 <Table.Cell column="name" {root}>
                     <Layout.Stack direction="row" alignItems="center" gap="s">
                         <AvatarInitials size="xs" name={member.userName} />
-                        <span class="u-trim">
+                        <Typography.Text truncate>
                             {member.userName ? member.userName : 'n/a'}
-                        </span>
+                        </Typography.Text>
                         {#if member.invited && !member.joined}
                             <Badge type="warning" variant="secondary" content="Pending" size="xs" />
                         {/if}
                     </Layout.Stack>
                 </Table.Cell>
                 <Table.Cell column="email" {root}>
-                    {member.userEmail}
+                    <Typography.Text truncate>
+                        {member.userEmail}
+                    </Typography.Text>
                 </Table.Cell>
                 <Table.Cell column="roles" {root}>
                     {member.roles.map((role) => getRoleLabel(role)).join(', ')}

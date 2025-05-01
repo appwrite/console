@@ -160,7 +160,7 @@
                         <p class="text">Total installations: {total}</p>
                         <PaginationInline
                             {limit}
-                            sum={total}
+                            {total}
                             on:change={navigateInstallations}
                             bind:offset />
                     </Layout.Stack>

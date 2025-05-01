@@ -1,12 +1,11 @@
 <script lang="ts">
-    import type { PageData } from './$types';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { OrganizationUsage } from '$lib/sdk/billing';
-    import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
     import { onMount } from 'svelte';
     import { Accordion, Table } from '@appwrite.io/pink-svelte';
+    import { base } from '$app/paths';
 
     type Metric =
         | 'users'
@@ -15,13 +14,14 @@
         | 'executions'
         | 'authPhoneTotal'
         | 'databasesReads'
-        | 'databasesWrites';
+        | 'databasesWrites'
+        | 'imageTransformations';
 
     type Estimate = 'authPhoneEstimate';
 
     type DatabaseOperationMetric = Extract<Metric, 'databasesReads' | 'databasesWrites'>;
 
-    export let data: PageData;
+    export let data;
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric | undefined = undefined;
     export let estimate: Estimate | undefined = undefined;
@@ -84,6 +84,7 @@
         }
 
         switch (metric) {
+            case 'imageTransformations':
             case 'authPhoneTotal':
                 return formatNumberWithCommas(value);
             case 'executions':

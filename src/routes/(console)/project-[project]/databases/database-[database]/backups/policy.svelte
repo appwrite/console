@@ -177,7 +177,7 @@
                         </Layout.Stack>
 
                         <Typography.Caption variant="400">
-                            <Layout.Stack gap="xs" direction="row" alignItems="baseline">
+                            <Layout.Stack gap="xs" direction="row" alignItems="center">
                                 {#if shouldUseTooltip}
                                     <Tooltip>
                                         {policyDescriptionShort}
@@ -197,21 +197,26 @@
                     <!-- Prev / Next section -->
                     <div class="policy-cycles u-flex u-gap-24 u-padding-block-2">
                         <div style="width: 128px" class="u-flex-vertical policy-item-caption">
-                            <span style="color: #97979B">Previous</span>
-                            <div class="u-flex u-gap-4 u-cross-center darker-neutral-color">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary"
+                                >Previous
+                            </Typography.Caption>
+
+                            <Layout.Stack direction="row" gap="s" alignItems="center">
                                 <Ellipse
                                     color={lastBackupDates[policy.$id]
                                         ? 'var(--bgcolor-success)'
                                         : undefined} />
 
-                                <Typography.Caption variant="400">
+                                <Typography.Caption
+                                    variant="400"
+                                    color="--fgcolor-neutral-secondary">
                                     {#if lastBackupDates[policy.$id]}
                                         {toLocaleDateTime(lastBackupDates[policy.$id])}
                                     {:else}
                                         No backups yet
                                     {/if}
                                 </Typography.Caption>
-                            </div>
+                            </Layout.Stack>
                         </div>
 
                         <div>
@@ -219,9 +224,11 @@
                         </div>
 
                         <div style="width: 128px" class="u-flex-vertical policy-item-caption">
-                            <span style="color: #97979B">Next</span>
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary"
+                                >Next
+                            </Typography.Caption>
 
-                            <Typography.Caption variant="400">
+                            <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
                                 {toLocaleDateTime(
                                     parseExpression(policy.schedule, {
                                         utc: true

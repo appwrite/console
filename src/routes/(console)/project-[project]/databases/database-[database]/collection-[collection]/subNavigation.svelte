@@ -24,10 +24,10 @@
     );
 
     const selectedCollection = $derived.by(() =>
-        sortedCollections()?.find((collection) => collection.$id === collectionId)
+        sortedCollections?.find((collection) => collection.$id === collectionId)
     );
 
-    let openBottomSheet = false;
+    let openBottomSheet = $state(false);
 
     function onResize() {
         if (openBottomSheet && !$isTabletViewport) {
@@ -95,7 +95,7 @@
                     type="button"
                     class="trigger"
                     aria-label="Open collections"
-                    on:click={() => {
+                    onclick={() => {
                         openBottomSheet = !openBottomSheet;
                     }}>
                     <span class="orgName">{selectedCollection.name}</span>
@@ -143,8 +143,9 @@
 
     .database-name {
         font-size: var(--font-size-sm);
-        font-weight: 500;
         color: var(--fgcolor-neutral-secondary);
+
+        margin-block-end: 2px;
     }
 
     .collection-content {
@@ -182,7 +183,6 @@
         flex: 1;
         padding-left: 4px;
         font-size: var(--font-size-sm);
-        font-weight: 500;
         color: var(--fgcolor-neutral-secondary);
 
         .is-selected,

@@ -63,8 +63,7 @@
             <Table.Cell {root}>{variant.toUpperCase()}</Table.Cell>
             <Table.Cell {root}>{subdomain || '@'}</Table.Cell>
             <Table.Cell {root}>
-                <InteractiveText variant="copy" isVisible text={setTarget()}>
-                    {setTarget()}</InteractiveText>
+                <InteractiveText variant="copy" isVisible text={setTarget()} />
             </Table.Cell>
         </Table.Row.Base>
     </Table.Root>

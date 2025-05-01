@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import { page } from '$app/state';
     import { Button, Form, InputTextarea } from '$lib/elements/forms';
     import ResetSms from './resetSms.svelte';
@@ -93,4 +93,4 @@
     </div>
 </Box>
 
-<ResetSms bind:show={openResetModal} />
+<ResetSms bind:show={openResetModal} /> -->

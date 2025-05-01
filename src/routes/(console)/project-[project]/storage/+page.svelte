@@ -35,7 +35,7 @@
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row" alignItems="center">
-            <SearchQuery search={data.search} placeholder="Search by name or ID" />
+            <SearchQuery placeholder="Search by name or ID" />
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <ViewSelector

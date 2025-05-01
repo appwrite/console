@@ -3,6 +3,7 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
+    import { Layout } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
 
     const dispatch = createEventDispatcher();
@@ -17,7 +18,7 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.billing.getCouponAccount(coupon);
             couponData = response;
             dispatch('validation', couponData);
             coupon = null;
@@ -36,17 +37,19 @@
     }
 </script>
 
-<InputText
-    placeholder="Coupon code"
-    id="code"
-    label="Add credits"
-    {required}
-    disabled={couponData?.status === 'active'}
-    bind:value={coupon}>
+<Layout.Stack direction="row" gap="s" wrap="wrap" alignItems="center">
+    <InputText
+        placeholder="Coupon code"
+        id="code"
+        label="Add credits"
+        {required}
+        disabled={couponData?.status === 'active'}
+        bind:value={coupon}>
+    </InputText>
     <Button secondary disabled={couponData?.status === 'active' || !coupon} on:click={addCoupon}>
         Apply
     </Button>
-</InputText>
+</Layout.Stack>
 {#if couponData?.status === 'error'}
     <div>
         <span class="icon-exclamation-circle u-color-text-danger"></span>

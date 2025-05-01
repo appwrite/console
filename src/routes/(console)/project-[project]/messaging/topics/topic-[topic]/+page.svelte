@@ -26,7 +26,7 @@
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { base } from '$app/paths';
-    import { Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
@@ -87,42 +87,23 @@
 </script>
 
 <Container>
-    <div class="u-flex u-flex-vertical">
-        <div class="u-flex u-main-space-between">
-            <div class="is-only-mobile">
-                <Button
-                    on:click={() => {
-                        showAdd = true;
-                        trackEvent(Click.MessagingTargetCreateClick);
-                    }}
-                    event="create_subscriber">
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Add subscriber
-                </Button>
-            </div>
-        </div>
-        <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery search={data.search} placeholder="Search by type or IDs">
-            <div class="u-flex u-gap-16 is-not-mobile">
-                <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
-                <ViewSelector view={View.Table} {columns} hideView />
-                <Button on:click={() => (showAdd = true)} event="create_subscriber">
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Add subscriber
-                </Button>
-            </div>
-        </SearchQuery>
-        <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
-            <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <ViewSelector view={View.Table} {columns} hideView />
-            </div>
-            <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
-            </div>
-        </div>
-    </div>
+    <Layout.Stack direction="row" justifyContent="space-between">
+        <SearchQuery placeholder="Search by type or IDs"></SearchQuery>
+        <Layout.Stack direction="row" inline>
+            <Filters query={data.query} {columns} analyticsSource="messaging_topics" />
+            <ViewSelector view={View.Table} {columns} hideView />
+            <Button
+                on:click={() => {
+                    showAdd = true;
+                    trackEvent(Click.MessagingTargetCreateClick);
+                }}
+                event="create_subscriber">
+                <Icon icon={IconPlus} slot="start" size="s" />
+                Add subscriber
+            </Button>
+        </Layout.Stack>
+    </Layout.Stack>
+
     {#if data.subscribers.total}
         <Table columns={$columns} {data} />
 

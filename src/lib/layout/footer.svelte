@@ -156,11 +156,18 @@
     }
     footer {
         margin-block-start: auto;
-        margin-inline: 2rem;
         padding-block: 1rem;
         display: flex;
         flex-direction: column;
         gap: var(--gap-l);
+        margin-inline: 2rem;
+    }
+
+    :global(main:has(.sub-navigation)) footer {
+        @media (min-width: 1024px) {
+            margin-inline-start: -1.5rem;
+            margin-inline-end: 2rem;
+        }
     }
     .extra-margin {
         margin-block-start: var(--space-2, 4px);

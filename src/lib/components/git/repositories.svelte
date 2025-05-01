@@ -79,7 +79,6 @@
             selectedRepository = $repositories.repositories[0].id;
             $repository = $repositories.repositories[0];
         }
-
         return $repositories.repositories;
     }
 
@@ -173,7 +172,10 @@
             {:then response}
                 {#if response?.length}
                     <Paginator items={response} hideFooter={response?.length <= 6} limit={6}>
-                        {#snippet children(paginatedItems)}
+                        {#snippet children(
+                            paginatedItems: Models.ProviderRepositoryRuntime[] &
+                                Models.ProviderRepositoryFramework[]
+                        )}
                             <Table.Root columns={1} let:root>
                                 {#each paginatedItems as repo}
                                     <Table.Row.Base {root}>

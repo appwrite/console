@@ -117,6 +117,16 @@
             trackError(e, Submit.FunctionCreate);
         }
     }
+
+    $: filesList = files?.length
+        ? Array.from(files).map((f) => {
+              return {
+                  ...f,
+                  extension: f.type,
+                  removable: true
+              };
+          })
+        : [];
 </script>
 
 <svelte:head>
@@ -171,7 +181,7 @@
                 {#if files?.length}
                     <!-- TODO: torsten, the types issue with FileList-->
                     <Upload.List
-                        bind:files
+                        bind:files={filesList}
                         on:remove={(e) => (files = removeFile(e.detail, files))} />
                 {/if}
             </Layout.Stack>

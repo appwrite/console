@@ -168,7 +168,7 @@
         {#if editing}
             <div class="u-flex u-margin-block-start-32 u-main-space-between">
                 <p class="text">Total results: {total}</p>
-                <PaginationInline {limit} bind:offset sum={total} hidePages />
+                <PaginationInline {limit} bind:offset {total} hidePages />
             </div>
         {/if}
 

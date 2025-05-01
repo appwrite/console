@@ -3,25 +3,27 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        CreditsApplied,
-        EstimatedTotalBox,
-        SelectPaymentMethod
-    } from '$lib/components/billing';
+    import { CreditsApplied, EstimatedTotal, SelectPaymentMethod } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { Wizard } from '$lib/layout';
-    import { type PaymentList } from '$lib/sdk/billing';
+    import { type PaymentList, type Plan } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organizationList, type Organization } from '$lib/stores/organization';
+    import {
+        organizationList,
+        type Organization,
+        type OrganizationError
+    } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe.js';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import { plansInfo } from '$lib/stores/billing';
+    import { isOrganization, plansInfo, type Tier } from '$lib/stores/billing';
     import { Fieldset, Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import EstimatedTotalBox from '$lib/components/billing/estimatedTotalBox.svelte';
 
     export let data;
 
@@ -66,12 +68,18 @@
     let coupon: string;
     let couponData = data?.couponData;
     let campaign = data?.campaign;
-    let billingPlan = BillingPlan.PRO;
+    let billingPlan: Tier = BillingPlan.PRO;
     let tempOrgId = null;
+    let currentPlan: Plan;
 
     $: onlyNewOrgs = (campaign && campaign.onlyNewOrgs) || (couponData && couponData.onlyNewOrgs);
 
     $: selectedOrgId = tempOrgId;
+
+    function isUpgrade() {
+        const newPlan = page.data.plansInfo.get(billingPlan);
+        return currentPlan && newPlan && currentPlan.order < newPlan.order;
+    }
 
     onMount(async () => {
         await loadPaymentMethods();
@@ -89,6 +97,19 @@
         if ($organizationList.total > 0 && tempOrgId === null) {
             tempOrgId = $organizationList.teams[0].$id;
         }
+        if (page.url.searchParams.has('type')) {
+            const type = page.url.searchParams.get('type');
+            if (type === 'payment_confirmed') {
+                const organizationId = page.url.searchParams.get('id');
+                collaborators = page.url.searchParams.get('invites').split(',');
+
+                await sdk.forConsole.billing.validateOrganization(organizationId, collaborators);
+            }
+        }
+
+        if (!selectedOrgId && $organizationList?.total) {
+            selectedOrgId = $organizationList.teams[0].$id;
+        }
     });
 
     async function loadPaymentMethods() {
@@ -103,76 +124,82 @@
 
     async function handleSubmit() {
         if (!couponForm.checkValidity()) return;
+        isSubmitting.set(true);
         try {
-            let org: Organization;
+            let org: Organization | OrganizationError;
             // Create new org
             if (selectedOrgId === newOrgId) {
                 org = await sdk.forConsole.billing.createOrganization(
                     newOrgId,
                     name,
                     billingPlan,
-                    paymentMethodId
+                    paymentMethodId,
+                    null,
+                    couponData.code ? couponData.code : null,
+                    collaborators,
+                    billingBudget,
+                    taxId
                 );
             }
+
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan !== billingPlan) {
+            else if (selectedOrg?.billingPlan !== billingPlan && isUpgrade()) {
                 org = await sdk.forConsole.billing.updatePlan(
                     selectedOrg.$id,
                     billingPlan,
                     paymentMethodId,
-                    null
+                    null,
+                    couponData.code ? couponData.code : null,
+                    collaborators
                 );
             }
-            // Existing pro org
+            // Existing pro org, apply credits
             else {
                 org = selectedOrg;
-            }
-
-            // Add coupon
-            if (couponData?.code) {
                 await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
             }
 
-            // Add budget
-            if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+            if (!isOrganization(org) && org.status === 402) {
+                let clientSecret = org.clientSecret;
+                let params = new URLSearchParams();
+                params.append('type', 'payment_confirmed');
+                params.append('org', org.teamId);
+                for (const [key, value] of page.url.searchParams.entries()) {
+                    if (key !== 'type' && key !== 'id') {
+                        params.append(key, value);
+                    }
+                }
+                params.append('invites', collaborators.join(','));
+                await confirmPayment(
+                    '',
+                    clientSecret,
+                    paymentMethodId,
+                    '/console/apply-credit?' + params.toString()
+                );
+                org = await sdk.forConsole.billing.validateOrganization(org.teamId, collaborators);
             }
 
-            // Add collaborators
-            if (collaborators?.length) {
-                collaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${page.url.origin}${base}/invite`
-                    );
+            if (isOrganization(org)) {
+                trackEvent(Submit.CreditRedeem, {
+                    coupon: couponData.code,
+                    campaign: couponData?.campaign
                 });
+                await invalidate(Dependencies.ORGANIZATION);
+                await goto(`${base}/organization-${org.$id}`);
+                addNotification({
+                    type: 'success',
+                    message: 'Credits applied successfully'
+                });
+                await invalidate(Dependencies.ACCOUNT);
             }
-
-            // Add tax ID
-            if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-            }
-            trackEvent(Submit.CreditRedeem, {
-                coupon: couponData.code,
-                campaign: couponData?.campaign
-            });
-            await invalidate(Dependencies.ORGANIZATION);
-            await goto(`${base}/organization-${org.$id}`);
-            addNotification({
-                type: 'success',
-                message: 'Credits applied successfully'
-            });
-            await invalidate(Dependencies.ACCOUNT);
         } catch (e) {
             trackError(e, Submit.CreditRedeem);
             addNotification({
                 type: 'error',
                 message: e.message
             });
+        } finally {
+            isSubmitting.set(false);
         }
     }
 
@@ -197,10 +224,32 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: billingPlan =
-        selectedOrg?.billingPlan === BillingPlan.SCALE
-            ? BillingPlan.SCALE
-            : (campaign?.plan ?? BillingPlan.PRO);
+    function getBillingPlan(): Tier | undefined {
+        const campaignPlan =
+            campaign?.plan && $plansInfo.get(campaign.plan) ? $plansInfo.get(campaign.plan) : null;
+        const orgPlan =
+            selectedOrg?.billingPlan && $plansInfo.get(selectedOrg.billingPlan)
+                ? $plansInfo.get(selectedOrg.billingPlan)
+                : null;
+
+        if (!campaignPlan || !orgPlan) {
+            return;
+        }
+
+        return campaignPlan.order > orgPlan.order ? campaign.plan : selectedOrg?.billingPlan;
+    }
+
+    $: if (selectedOrg) {
+        billingPlan = getBillingPlan();
+    }
+
+    $: {
+        if (selectedOrgId) {
+            (async () => {
+                currentPlan = await sdk.forConsole.billing.getOrganizationPlan(selectedOrgId);
+            })();
+        }
+    }
 </script>
 
 <svelte:head>
@@ -249,7 +298,7 @@
                     </Layout.Stack>
                 </Fieldset>
                 {#if (selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)) || (!data?.couponData?.code && selectedOrgId)}
-                    <Fieldset legend="Billing">
+                    <Fieldset legend="Payment">
                         <Layout.Stack gap="xl">
                             {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
                                 <SelectPaymentMethod
@@ -286,7 +335,7 @@
         </Form>
     </Layout.Stack>
     <svelte:fragment slot="aside">
-        {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE && selectedOrg?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
+        {#if selectedOrg?.$id && selectedOrg?.billingPlan === billingPlan}
             <section
                 class="card"
                 style:--p-card-padding="1.5rem"

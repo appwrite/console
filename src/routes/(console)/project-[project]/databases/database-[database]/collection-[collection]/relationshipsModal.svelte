@@ -8,7 +8,7 @@
     import { Table } from '@appwrite.io/pink-svelte';
 
     export let show = false;
-    export let data: [];
+    export let data: Partial<Models.Document>[];
     export let selectedRelationship: Models.AttributeRelationship = null;
     const projectId = page.params.project;
     const databaseId = page.params.database;

@@ -1,23 +1,24 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
-    import { Modal, Alert } from '$lib/components';
     import { onMount } from 'svelte';
     import { page } from '$app/state';
-    import { Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
+    import { Link } from '$lib/elements';
+    import { Modal } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
+    import { Alert, Code, Layout, Tabs } from '@appwrite.io/pink-svelte';
 
     export let show = false;
+    export let site: Models.Site;
 
-    let lang = 'js';
     let codeSnippets = {};
     let os = 'unknown';
     let category = 'Unix';
 
     const siteId = page.params.site;
-    codeSnippets = setCodeSnippets(lang);
+    codeSnippets = getCodeSnippets();
 
     onMount(() => {
-        // lang = setLanguage($func.runtime);
-        codeSnippets = setCodeSnippets(lang);
+        codeSnippets = getCodeSnippets();
         os = navigator['userAgentData']?.platform || navigator?.platform || 'unknown';
 
         if (os.includes('Win')) {
@@ -29,31 +30,45 @@
         }
     });
 
-    function setCodeSnippets(lang: string) {
+    function getCodeSnippets() {
+        const projectId = page.params.project;
+        const codePath = `./sites/${site.framework}`;
+        const { buildCommand, installCommand, outputDirectory } = site;
+
         return {
             Unix: {
-                code: `appwrite functions createDeployment \\
-    --siteId=${siteId} \\
-    --entrypoint='index.${lang}' \\
-    --code="." \\
-    --activate=true`,
+                code: `appwrite client --projectId="${projectId}" && \\
+appwrite sites create-deployment \\
+    --site-id="${siteId}" \\
+    --code="${codePath}" \\
+    --activate \\
+    --build-command="${buildCommand}" \\
+    --install-command="${installCommand}" \\
+    --output-directory="${outputDirectory}"`,
                 language: 'bash'
             },
 
             CMD: {
-                code: `appwrite functions createDeployment ^
+                code: `appwrite client --projectId="${projectId}" && ^
+appwrite sites createDeployment ^
     --siteId=${siteId} ^
-    --entrypoint='index.${lang}' ^
-    --code="." ^
-    --activate=true`,
+    --code="${codePath}" ^
+    --activate ^
+    --build-command="${buildCommand}" ^
+    --install-command="${installCommand}" ^
+    --output-directory="${outputDirectory}"`,
                 language: 'CMD'
             },
+
             PowerShell: {
-                code: `appwrite functions createDeployment ,
+                code: `appwrite client --projectId="${projectId}" ;
+appwrite sites createDeployment ,
     --siteId=${siteId} ,
-    --entrypoint='index.${lang}' ,
-    --code="." ,
-    --activate=true`,
+    --code="${codePath}" ,
+    --activate ,
+    --build-command="${buildCommand}" ,
+    --install-command="${installCommand}" ,
+    --output-directory="${outputDirectory}"`,
                 language: 'PowerShell'
             }
         };
@@ -62,8 +77,8 @@
 
 <Modal title="Create CLI deployment" bind:show hideFooter>
     <span slot="description">
-        Deploy your site using the Appwrite CLI by running the following command inside your
-        function's folder.
+        Deploy your site using the Appwrite CLI by running the following command inside your sites's
+        folder.
     </span>
 
     <Layout.Stack gap="l">
@@ -79,21 +94,16 @@
                 {/each}
             </Tabs.Root>
 
-            {#each ['Unix', 'CMD', 'PowerShell'] as cat}
-                {#if category === cat}
-                    <Code hideHeader lang="sh" code={codeSnippets[cat].code} />
-                {/if}
-            {/each}
+            <Code hideHeader lang="sh" code={codeSnippets[category].code} />
         </Layout.Stack>
 
-        <Alert dismissible={false} type="warning">
-            If you did not create your site using the CLI, initialize your site by following our <a
-                href="https://appwrite.io/docs/tooling/command-line/installation"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">documentation</a
-            >.
-        </Alert>
+        <Alert.Inline status="info">
+            If it's your first time using CLI, remember to <Link
+                href="https://appwrite.io/docs/tooling/command-line/installation#install-with-npm"
+                external>install CLI</Link> and <Link
+                href="https://appwrite.io/docs/tooling/command-line/installation#login"
+                external>login to your account</Link> before running deployment command.
+        </Alert.Inline>
     </Layout.Stack>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>

@@ -107,7 +107,7 @@
         </Table.Root>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {results?.total}</p>
-            <PaginationInline limit={5} bind:offset sum={results?.total} hidePages />
+            <PaginationInline limit={5} bind:offset total={results?.total} hidePages />
         </div>
     {:else if search}
         <EmptySearch bind:search target="teams" hidePages>

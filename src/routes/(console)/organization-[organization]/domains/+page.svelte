@@ -20,7 +20,8 @@
         Icon,
         Layout,
         Popover,
-        Table
+        Table,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
@@ -41,7 +42,7 @@
 
 <Container>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery search={data.search} placeholder="Search domains" />
+        <SearchQuery placeholder="Search domains" />
         <Layout.Stack direction="row" gap="m" inline>
             <ViewSelector view={View.Table} {columns} hideView />
             <Button
@@ -73,25 +74,27 @@
                     href={`${base}/organization-${page.params.organization}/domains/domain-${domain.$id}`}>
                     {#each $columns as column}
                         <Table.Cell column={column.id} {root}>
-                            {#if column.id === 'domain'}
-                                <Link
-                                    external
-                                    icon
-                                    href={`${$protocol}${domain.domain}`}
-                                    variant="quiet">
-                                    {domain.domain}
-                                </Link>
-                            {:else if column.id === 'registrar'}
-                                {domain.registrar || '-'}
-                            {:else if column.id === 'nameservers'}
-                                {domain.nameservers || '-'}
-                            {:else if column.id === 'expiry_date'}
-                                {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
-                            {:else if column.id === 'renewal'}
-                                {domain?.renewal ? toLocaleDateTime(domain.renewal) : '-'}
-                            {:else if column.id === 'auto_renewal'}
-                                {domain?.autoRenewal ? 'On' : 'Off'}
-                            {/if}
+                            <Typography.Text truncate>
+                                {#if column.id === 'domain'}
+                                    <Link
+                                        external
+                                        icon
+                                        href={`${$protocol}${domain.domain}`}
+                                        variant="quiet">
+                                        {domain.domain}
+                                    </Link>
+                                {:else if column.id === 'registrar'}
+                                    {domain.registrar || '-'}
+                                {:else if column.id === 'nameservers'}
+                                    {domain.nameservers || '-'}
+                                {:else if column.id === 'expiry_date'}
+                                    {domain?.expiry ? toLocaleDateTime(domain.expiry) : '-'}
+                                {:else if column.id === 'renewal'}
+                                    {domain?.renewal ? toLocaleDateTime(domain.renewal) : '-'}
+                                {:else if column.id === 'auto_renewal'}
+                                    {domain?.autoRenewal ? 'On' : 'Off'}
+                                {/if}
+                            </Typography.Text>
                         </Table.Cell>
                     {/each}
 

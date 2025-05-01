@@ -22,3 +22,4 @@ export { default as WizardSecondaryContainer } from './wizardSecondaryContainer.
 export { default as WizardSecondaryContent } from './wizardSecondaryContent.svelte';
 export { default as WizardSecondaryFooter } from './wizardSecondaryFooter.svelte';
 export { default as Wizard } from './wizard.svelte';
+export { default as ResponsiveContainerHeader } from './responsiveContainerHeader.svelte';

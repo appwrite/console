@@ -24,7 +24,6 @@
     import { ID, Region } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
-    import type { RegionList } from '$lib/sdk/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
     import { checkPricingRefAndRedirect } from '$lib/helpers/pricingRedirect';
@@ -48,14 +47,15 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
+    import { regions as regionsStore } from '$routes/(console)/organization-[organization]/store';
     import type { Column } from '@appwrite.io/pink-svelte/dist/table';
     import { timeFromNow } from '$lib/helpers/date';
 
     export let data;
 
-    let addOrganization = false;
     let showCreate = false;
     let showCreateProjectCloud = false;
+    let addOrganization = false;
 
     async function allServiceDisabled(project: Models.Project) {
         let disabled = true;
@@ -140,21 +140,18 @@
         }
     };
 
-    let regions: RegionList;
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
+            const regions = await sdk.forConsole.billing.listRegions();
+            regionsStore.set(regions);
             checkPricingRefAndRedirect(page.url.searchParams);
-        }
-
-        const searchParams = page.url.searchParams;
-        if (searchParams.has('create-project')) {
-            handleCreateProject();
         }
     });
 
     function findRegion(project: Models.Project) {
-        return regions.regions.find((region) => region.$id === project.region);
+        return $regionsStore?.regions?.find(
+            (region) => region.$id === (project as Models.Project & { region: string }).region
+        );
     }
 
     const columns: Column[] = [{ id: 'name' }, { id: 'updated' }];
@@ -243,41 +240,39 @@
                             {/if}
                         {/await}
 
-                        {#each platforms as platform, i}
-                            {#if i < 3}
-                                {@const icon = getIconForPlatform(platform.icon)}
-                                <Badge variant="secondary" content={platform.name}>
-                                    <Icon {icon} size="s" slot="start" />
-                                </Badge>
-                            {/if}
-                        {/each}
-                        {#if platforms?.length > 3}
-                            <Badge
-                                variant="secondary"
-                                content={`+${project.platforms.length - 3}`} />
+                    {#each platforms as platform, i}
+                        {#if i < 3}
+                            {@const icon = getIconForPlatform(platform.icon)}
+                            <Badge variant="secondary" content={platform.name}>
+                                <Icon {icon} size="s" slot="start" />
+                            </Badge>
                         {/if}
-                        <svelte:fragment slot="icons">
-                            {#if isCloud && regions}
-                                {@const region = findRegion(project)}
-                                <span class="u-color-text-gray u-medium u-line-height-2">
-                                    {region?.name}
-                                </span>
-                            {/if}
-                        </svelte:fragment>
-                    </GridItem1>
-                {/each}
-                <svelte:fragment slot="empty">
-                    <p>Create a new project</p>
-                </svelte:fragment>
-            </CardContainer>
-        {:else}
-            <Empty
-                single
-                allowCreate={$canWriteProjects}
-                on:click={handleCreateProject}
-                target="project"
-                href="https://appwrite.io/docs/quick-starts"></Empty>
-        {/if}
+                    {/each}
+                    {#if platforms?.length > 3}
+                        <Badge variant="secondary" content={`+${project.platforms.length - 3}`} />
+                    {/if}
+                    <svelte:fragment slot="icons">
+                        {#if isCloud && $regionsStore?.regions}
+                            {@const region = findRegion(project)}
+                            <span class="u-color-text-gray u-medium u-line-height-2">
+                                {region?.name}
+                            </span>
+                        {/if}
+                    </svelte:fragment>
+                </GridItem1>
+            {/each}
+            <svelte:fragment slot="empty">
+                <p>Create a new project</p>
+            </svelte:fragment>
+        </CardContainer>
+    {:else}
+        <Empty
+            single
+            allowCreate={$canWriteProjects}
+            on:click={handleCreateProject}
+            target="project"
+            href="https://appwrite.io/docs/quick-starts"></Empty>
+    {/if}
 
         <PaginationWithLimit
             name="Projects"
@@ -290,5 +285,5 @@
 <CreateOrganization bind:show={addOrganization} />
 <CreateProject bind:show={showCreate} teamId={page.params.organization} />
 {#if showCreateProjectCloud}
-    <CreateProjectCloud bind:showCreateProjectCloud regions={regions.regions} />
+    <CreateProjectCloud bind:showCreateProjectCloud regions={$regionsStore.regions} />
 {/if}

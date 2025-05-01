@@ -115,10 +115,26 @@ function createFeedbackStore() {
             email?: string,
             // eslint-disable-next-line
             billingPlan?: string,
-            value?: number
+            value?: number,
+            orgId?: string,
+            projectId?: string,
+            userId?: string
         ) => {
             if (!VARS.GROWTH_ENDPOINT) return;
             trackEvent(Submit.FeedbackSubmit);
+
+            const customFields: Array<{ id: string; value: string | number }> = [
+                { id: '47364', value: currentPage }
+            ];
+
+            if (value) {
+                customFields.push({ id: '40655', value });
+            }
+
+            if (billingPlan) {
+                customFields.push({ id: '56109', value: billingPlan });
+            }
+
             const response = await fetch(`${VARS.GROWTH_ENDPOINT}/feedback`, {
                 method: 'POST',
                 headers: {
@@ -128,14 +144,13 @@ function createFeedbackStore() {
                     subject,
                     message,
                     email,
-                    // billingPlan,
+                    customFields,
                     firstname: name || 'Unknown',
-                    customFields: [
-                        { id: '47364', value: currentPage },
-                        ...(value ? [{ id: '40655', value }] : [])
-                    ],
                     metaFields: {
-                        source: get(feedback).source
+                        source: get(feedback).source,
+                        orgId,
+                        projectId,
+                        userId
                     }
                 })
             });

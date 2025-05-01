@@ -46,10 +46,10 @@
         <Table.Root
             columns={[
                 { id: '$id', width: 200 },
-                { id: 'status' },
-                { id: 'source' },
-                { id: '$updatedAt', width: { min: 140 } },
-                { id: 'actions' }
+                { id: 'status', width: { min: 120 } },
+                { id: 'source', width: { min: 120 } },
+                { id: '$updatedAt', width: { min: 120 } },
+                { id: 'actions', width: 50 }
             ]}
             let:root>
             <svelte:fragment slot="header" let:root>

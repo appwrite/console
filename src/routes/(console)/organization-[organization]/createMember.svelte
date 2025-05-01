@@ -71,7 +71,7 @@
         autofocus={true}
         bind:value={email} />
     <InputText id="member-name" label="Name" placeholder="Enter name" bind:value={name} />
-    {#if !isCloud}
+    {#if isCloud}
         <InputSelect required id="role" label="Role" options={roles} bind:value={role}>
             <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
                 <Popover let:toggle>

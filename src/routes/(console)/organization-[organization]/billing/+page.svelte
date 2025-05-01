@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { currentPlan, organization } from '$lib/stores/organization';
-    import BudgetAlert from './budgetAlert.svelte';
+    import { organization } from '$lib/stores/organization';
     import BudgetCap from './budgetCap.svelte';
     import PlanSummary from './planSummary.svelte';
     import BillingAddress from './billingAddress.svelte';
@@ -19,8 +18,10 @@
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
-    import { goto } from '$app/navigation';
     import { Alert, Typography } from '@appwrite.io/pink-svelte';
+    import { goto, invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { base } from '$app/paths';
 
     export let data;
 
@@ -51,8 +52,19 @@
                 await confirmPayment(
                     $organization.$id,
                     invoice.clientSecret,
-                    $organization.paymentMethodId
+                    $organization.paymentMethodId,
+                    `${base}/organization-${$organization.$id}/billing?type=validate-invoice&invoice=${invoice.$id}`
                 );
+            }
+
+            if (
+                page.url.searchParams.has('type') &&
+                page.url.searchParams.get('type') === 'validate-invoice'
+            ) {
+                const invoiceId = page.url.searchParams.get('invoice');
+                await sdk.forConsole.billing.updateInvoiceStatus($organization.$id, invoiceId);
+                invalidate(Dependencies.INVOICES);
+                invalidate(Dependencies.ORGANIZATION);
             }
 
             if (
@@ -108,24 +120,22 @@
     {/if}
     {#if $organization?.billingPlanDowngrade}
         <Alert.Inline status="info">
-            Your organization will change to a {tierToPlan($organization?.billingPlanDowngrade)
-                .name} plan once your current billing cycle ends and your invoice is paid on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}.
+            Your organization has changed to {tierToPlan($organization?.billingPlanDowngrade).name} plan.
+            You will continue to have access to {tierToPlan($organization?.billingPlan).name} plan features
+            until your billing period ends on {toLocaleDate($organization.billingNextInvoiceDate)}.
         </Alert.Inline>
     {/if}
     <Typography.Title>Billing</Typography.Title>
     <PlanSummary
         creditList={data?.creditList}
-        members={data?.members}
-        currentPlan={$currentPlan}
-        invoices={data?.invoices.invoices} />
+        currentPlan={data?.aggregationBillingPlan}
+        currentAggregation={data?.billingAggregation}
+        currentInvoice={data?.billingInvoice} />
     <PaymentHistory />
     <PaymentMethods />
     <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
-    <BudgetAlert />
     <AvailableCredit />
 </Container>
 

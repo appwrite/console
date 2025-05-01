@@ -125,7 +125,7 @@
     </svelte:fragment>
     <Layout.Stack gap="l">
         {#if data.templates?.length > 0}
-            <Paginator items={data.templates} limit={12} hidePages={false} hasLimit>
+            <Paginator items={data.templates} limit={12} hidePages={false} hasLimit gap="m">
                 {#snippet children(paginatedItems: typeof data.templates)}
                     <Layout.Grid columns={3} columnsXS={2} columnsXXS={1}>
                         {#each paginatedItems as template (template.name)}
