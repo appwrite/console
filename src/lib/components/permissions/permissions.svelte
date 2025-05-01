@@ -21,6 +21,7 @@
     import type { PinkColumn } from '$lib/helpers/types';
 
     export let withCreate = false;
+    export let hideOnClick = false;
     export let permissions: string[] = [];
 
     let showUser = false;
@@ -127,11 +128,11 @@
     }
 
     const columns: PinkColumn[] = [
-        { id: 'role', width: { min: 100 } },
-        { id: 'create', width: { min: 100 }, hide: !withCreate },
-        { id: 'read', width: { min: 100 } },
-        { id: 'update', width: { min: 100 } },
-        { id: 'delete', width: { min: 100 } },
+        { id: 'role', width: { min: 80 } },
+        { id: 'create', width: { min: 80 }, hide: !withCreate },
+        { id: 'read', width: { min: 80 } },
+        { id: 'update', width: { min: 80 } },
+        { id: 'delete', width: { min: 80 } },
         { id: 'action', width: 40 }
     ];
 </script>
@@ -195,6 +196,7 @@
             bind:showTeam
             bind:showUser
             {groups}
+            {hideOnClick}
             on:create={create}
             let:toggle>
             <Button secondary on:click={toggle}>
@@ -213,6 +215,7 @@
                     bind:showTeam
                     bind:showUser
                     {groups}
+                    {hideOnClick}
                     on:create={create}
                     let:toggle>
                     <Button compact icon on:click={toggle}>

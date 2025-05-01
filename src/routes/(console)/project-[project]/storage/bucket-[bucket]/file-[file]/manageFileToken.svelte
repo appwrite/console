@@ -13,13 +13,13 @@
     import { createEventDispatcher } from 'svelte';
     import { Link } from '@appwrite.io/pink-svelte';
     import { type Models } from '@appwrite.io/console';
+    import { Permissions } from '$lib/components/permissions';
     import { Confirm, ExpirationInput, Modal } from '$lib/components';
 
     export let show = false;
     export let isDelete = false;
-    export let fileToken: Models.ResourceToken & {
-        accessedAt: string;
-    };
+    export let isUpdatePermissions = false;
+    export let fileToken: Models.ResourceToken;
 
     let expire = null;
 
@@ -36,7 +36,7 @@
         if (isDelete) {
             dispatch('deleted');
         } else {
-            dispatch(fileToken ? 'updated' : 'created', expire);
+            dispatch(fileToken ? 'updated' : 'created', fileToken ? fileToken : expire);
         }
         close();
     }
@@ -75,16 +75,20 @@
                 {@const formattedDate = cleanFormattedDate(fileToken.$createdAt)}
                 Edit the expiry of the file token created on <b>{formattedDate}</b>
             {:else}
-                Create a file token to grant public access to a file.
+                Create a file token to grant access to a file.
                 <Link.Anchor href="https://appwrite.com/docs/">Learn more</Link.Anchor>.
             {/if}
         </svelte:fragment>
 
-        <ExpirationInput
-            bind:value={expire}
-            resourceType="token"
-            selectorLabel="Expiry"
-            dateSelectorLabel="Expiry date" />
+        {#if isUpdatePermissions}
+            <Permissions bind:permissions={fileToken.$permissions} hideOnClick />
+        {:else}
+            <ExpirationInput
+                bind:value={expire}
+                resourceType="token"
+                selectorLabel="Expiry"
+                dateSelectorLabel="Expiry date" />
+        {/if}
 
         <svelte:fragment slot="footer">
             <Button secondary on:click={close}>Cancel</Button>
