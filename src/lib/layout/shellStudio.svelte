@@ -40,6 +40,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { filesystem } from '$lib/components/editor/filesystem';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import { getChatWidthFromPrefs, saveChatWidthToPrefs } from '$lib/helpers/studioLayout';
 
     let hasProjectSidebar = $state(false);
 
@@ -109,7 +110,9 @@
     });
 
     let resizer = $state(null);
-    let resizerLeftPosition = $state(page.data?.subNavigation ? 524 : 500);
+    let resizerLeftPosition = $state(
+        page.data?.subNavigation ? getChatWidthFromPrefs() + 24 : getChatWidthFromPrefs()
+    );
     let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 52);
     let chatWidth = $derived(resizerLeftPosition - resizerLeftOffset);
 
@@ -152,6 +155,8 @@
     }
 
     function stopResize() {
+        const saveWidth = page.data?.subNavigation ? resizerLeftPosition - 24 : resizerLeftPosition;
+        saveChatWidthToPrefs(saveWidth);
         isResizing = false;
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
