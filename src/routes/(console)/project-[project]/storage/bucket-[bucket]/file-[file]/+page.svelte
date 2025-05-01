@@ -41,7 +41,6 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import SubMenu from '../../../../../../lib/components/menu/subMenu.svelte';
     import { Menu } from '$lib/components/menu';
-    import { capitalize } from '$lib/helpers/string';
 
     let showFileAlert = true;
 
