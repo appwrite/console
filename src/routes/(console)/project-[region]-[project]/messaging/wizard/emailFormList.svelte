@@ -25,7 +25,7 @@
     async function sendTestEmail() {
         const email = selected === 'self' ? $user.email : otherEmail;
         console.log(email);
-
+        // TODO: replace with test method
         sdk.forProject(page.params.region, page.params.project).messaging.createEmail(
             ID.unique(),
             $messageParams[MessagingProviderType.Email]?.subject || undefined,

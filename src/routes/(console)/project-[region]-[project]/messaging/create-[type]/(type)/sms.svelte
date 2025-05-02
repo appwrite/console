@@ -34,15 +34,17 @@
         try {
             const messageId = id || ID.unique();
 
-            const response = await sdk.forProject.messaging.createSms(
-                messageId,
-                content,
-                topics,
-                users,
-                targets,
-                draft,
-                scheduledAt
-            );
+            const response = await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.createSms(
+                    messageId,
+                    content,
+                    topics,
+                    users,
+                    targets,
+                    draft,
+                    scheduledAt
+                );
             let message = '';
             switch (response.status) {
                 case 'draft':
@@ -63,7 +65,9 @@
                 providerType: 'email',
                 status: response.status
             });
-            await goto(`${base}/project-${page.params.project}/messaging/message-${response.$id}`);
+            await goto(
+                `${base}/project-${page.params.region}-${page.params.project}/messaging/message-${response.$id}`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -81,7 +85,7 @@
 
 <Wizard
     title="Create SMS message"
-    href={`${base}/project-${page.params.project}/messaging/`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/messaging/`}
     bind:showExitModal
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>

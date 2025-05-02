@@ -31,7 +31,7 @@
         </Layout.Stack>
         <Button
             secondary
-            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`}>
             View all
         </Button>
     </Layout.Stack>
@@ -57,7 +57,7 @@
                                     source: 'sites_domain_overview'
                                 });
                             }}
-                            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}>
+                            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}>
                             Add domain
                         </Button>
                     </div>

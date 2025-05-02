@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Confirm } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -17,25 +18,27 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forProject.sites.update(
-                site.$id,
-                site.name,
-                site.framework as Framework,
-                site.enabled || undefined,
-                site.logging || undefined,
-                site.timeout || undefined,
-                site.installCommand || undefined,
-                site.buildCommand || undefined,
-                site.outputDirectory || undefined,
-                (site?.buildRuntime as BuildRuntime) || undefined,
-                (site?.adapter as Adapter) || undefined,
-                site.fallbackFile || undefined,
-                '',
-                '',
-                '',
-                undefined,
-                ''
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.update(
+                    site.$id,
+                    site.name,
+                    site.framework as Framework,
+                    site.enabled || undefined,
+                    site.logging || undefined,
+                    site.timeout || undefined,
+                    site.installCommand || undefined,
+                    site.buildCommand || undefined,
+                    site.outputDirectory || undefined,
+                    (site?.buildRuntime as BuildRuntime) || undefined,
+                    (site?.adapter as Adapter) || undefined,
+                    site.fallbackFile || undefined,
+                    '',
+                    '',
+                    '',
+                    undefined,
+                    ''
+                );
             await invalidate(Dependencies.SITE);
             dispatch('success');
             addNotification({

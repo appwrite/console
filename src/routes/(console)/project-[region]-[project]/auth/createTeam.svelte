@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { InputText, Button } from '$lib/elements/forms';
@@ -20,7 +20,7 @@
     const create = async () => {
         try {
             const team = await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .teams.create(id ?? ID.unique(), name);
             name = '';
             showCreate = false;

@@ -17,7 +17,7 @@
     let { data } = $props();
 
     const ruleId = page.url.searchParams.get('rule');
-    const routeBase = `${base}/project-${page.params.project}/settings/domains`;
+    const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
     let selectedTab: 'cname' | 'nameserver' = $state();
     let verified = $state(false);
 
@@ -28,7 +28,9 @@
             data.domainsList.domains.findIndex((rule) => rule.domain === page.params.domain) === -1;
         try {
             if (selectedTab === 'cname') {
-                const ruleData = await sdk.forProject.proxy.updateRuleVerification(ruleId);
+                const ruleData = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.updateRuleVerification(ruleId);
                 verified = ruleData.status === 'verified';
             } else if (isNewDomain && isCloud) {
                 const domainData = await sdk.forConsole.domains.create(
@@ -56,7 +58,7 @@
 
     async function back() {
         if (ruleId) {
-            await sdk.forProject.proxy.deleteRule(ruleId);
+            await sdk.forProject(page.params.region, page.params.project).proxy.deleteRule(ruleId);
         }
         await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
     }

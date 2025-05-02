@@ -4,7 +4,9 @@ export const load = async ({ parent, params, url }) => {
     const { installations, runtimesList, specificationsList } = await parent();
 
     const [repository] = await Promise.all([
-        sdk.forProject.vcs.getRepository(url.searchParams.get('installation'), params.repository)
+        sdk
+            .forProject(params.region, params.project)
+            .vcs.getRepository(url.searchParams.get('installation'), params.repository)
     ]);
 
     return {

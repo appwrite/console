@@ -7,7 +7,9 @@ import { error } from '@sveltejs/kit';
 export const load = async ({ depends, params }) => {
     depends(Dependencies.SITE);
     try {
-        const [site] = await Promise.all([sdk.forProject.sites.get(params.site)]);
+        const [site] = await Promise.all([
+            sdk.forProject(page.params.region, page.params.project).sites.get(params.site)
+        ]);
 
         return {
             site,

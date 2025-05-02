@@ -27,7 +27,7 @@
 
     onMount(() => {
         return realtime
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .subscribe(['project', 'console'], (response) => {
                 if (response.events.includes('stats.connections')) {
                     for (const [projectId, value] of Object.entries(response.payload)) {
@@ -94,7 +94,7 @@
         {
             label: 'Go to Sites',
             callback: () => {
-                goto(`${base}/project-${$project.$id}/sites`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/sites`);
             },
             keys: ['g', 'i'],
             group: 'navigation',

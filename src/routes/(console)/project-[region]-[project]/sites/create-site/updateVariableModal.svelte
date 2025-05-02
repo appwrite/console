@@ -42,7 +42,8 @@
     <span slot="description">
         Update the environment variable for your site. Global variables can be set in <Link
             variant="muted"
-            href={`${base}/project-${page.params.project}/settings`}>project settings</Link
+            href={`${base}/project-${page.params.region}-${page.params.project}/settings`}
+            >project settings</Link
         >.
     </span>
     <Layout.Stack gap="xxl">

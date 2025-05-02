@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { AvatarInitials, CardGrid, DropList, DropListItem } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -19,7 +19,7 @@
         showVerificationDropdown = false;
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
             addNotification({
@@ -41,7 +41,7 @@
         showVerificationDropdown = false;
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             await invalidate(Dependencies.USER);
             addNotification({
@@ -62,7 +62,7 @@
     async function updateStatus() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.updateStatus($user.$id, !$user.status);
             await invalidate(Dependencies.USER);
             addNotification({

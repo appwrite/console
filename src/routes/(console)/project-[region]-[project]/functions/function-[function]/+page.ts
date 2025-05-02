@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     const data = await parent();
     depends(Dependencies.DEPLOYMENTS);
     const page = getPage(url);
-    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
+    const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
 

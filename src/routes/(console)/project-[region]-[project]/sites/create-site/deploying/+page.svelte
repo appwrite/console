@@ -29,7 +29,7 @@
                     deployment = response.payload;
                     if (response.payload.status === 'ready') {
                         goto(
-                            `${base}/project-${page.params.project}/sites/create-site/finish?site=${data.site.$id}`
+                            `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/finish?site=${data.site.$id}`
                         );
                     }
                 }
@@ -40,7 +40,7 @@
 
 <Wizard
     title="Create site"
-    href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}`}>
+    href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
     <Layout.Stack gap="xl">
         <Card.Base padding="s" radius="s">
             <Layout.Stack direction="row">
@@ -84,7 +84,7 @@
                 size="s"
                 fullWidthMobile
                 secondary
-                href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}`}>
+                href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
                 Go to dashboard
             </Button>
         </Layout.Stack>

@@ -29,7 +29,7 @@
         <Button
             fullWidth
             secondary
-            href={`${base}/project-${page.params.project}/sites/create-site/templates/template-${template.key}`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/templates/template-${template.key}`}>
             Use template
         </Button>
     </Layout.Stack>

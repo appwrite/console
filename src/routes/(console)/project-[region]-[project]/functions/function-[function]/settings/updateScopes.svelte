@@ -28,7 +28,7 @@
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .functions.update(
                     functionId,
                     $func.name,

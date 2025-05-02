@@ -14,10 +14,12 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forProject.sites.updateDeploymentStatus(
-                selectedDeployment.resourceId,
-                selectedDeployment.$id
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.updateDeploymentStatus(
+                    selectedDeployment.resourceId,
+                    selectedDeployment.$id
+                );
             await invalidate(Dependencies.SITE);
             showCancel = false;
             addNotification({

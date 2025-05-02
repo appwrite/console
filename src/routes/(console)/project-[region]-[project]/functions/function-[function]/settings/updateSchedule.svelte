@@ -30,7 +30,7 @@
             // an error is shown if invalid.
             parseExpression(functionSchedule);
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .functions.update(
                     functionId,
                     $func.name,

@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
-    import { get } from 'svelte/store';
+    import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
 
     export async function submitBoolean(
@@ -10,9 +9,8 @@
         key: string,
         data: Partial<Models.AttributeBoolean>
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.createBooleanAttribute(
                 databaseId,
                 collectionId,
@@ -28,9 +26,8 @@
         data: Partial<Models.AttributeBoolean>,
         originalKey?: string
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.updateBooleanAttribute(
                 databaseId,
                 collectionId,

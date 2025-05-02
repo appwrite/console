@@ -12,7 +12,9 @@
             icon: IconPlus,
             keys: page.url.pathname.includes('webhooks') ? ['c'] : ['c', 'w'],
             callback: () => {
-                goto(`${base}/project-${page.params.project}/settings/webhooks/create`);
+                goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`
+                );
             },
             group: 'webhooks',
             disabled: !$canWriteProjects

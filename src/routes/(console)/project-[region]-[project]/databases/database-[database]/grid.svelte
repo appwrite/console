@@ -18,7 +18,7 @@
     event="collection">
     {#each data.collections.collections as collection}
         <GridItem1
-            href={`${base}/project-${$page.params.region}-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
+            href={`${base}/project-${page.params.region}-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
             <svelte:fragment slot="title">{collection.name}</svelte:fragment>
             <svelte:fragment slot="status">
                 {#if !collection.enabled}

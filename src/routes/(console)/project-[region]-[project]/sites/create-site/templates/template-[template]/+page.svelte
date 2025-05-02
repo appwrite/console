@@ -74,11 +74,9 @@
     async function createRepository() {
         try {
             isCreatingRepository = true;
-            const repo = await sdk.forProject.vcs.createRepository(
-                $installation.$id,
-                repositoryName,
-                repositoryPrivate
-            );
+            const repo = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.createRepository($installation.$id, repositoryName, repositoryPrivate);
             repository.set(repo);
             selectedRepository = repo.id;
             showSiteConfig = true;
@@ -111,51 +109,61 @@
                 const buildRuntime = Object.values(BuildRuntime).find(
                     (f) => f === framework.buildRuntime
                 );
-                let site = await sdk.forProject.sites.create(
-                    id || ID.unique(),
-                    name,
-                    fr,
-                    buildRuntime,
-                    undefined,
-                    undefined,
-                    undefined,
-                    framework.installCommand,
-                    framework.buildCommand,
-                    framework.outputDirectory,
-                    framework.adapter as unknown as Adapter,
-                    connectBehaviour === 'later' ? undefined : selectedInstallationId || undefined,
-                    framework?.fallbackFile || undefined,
-                    selectedRepository || undefined,
-                    branch || undefined,
-                    selectedRepository ? silentMode : undefined,
-                    rootDir || undefined
-                );
+                let site = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .sites.create(
+                        id || ID.unique(),
+                        name,
+                        fr,
+                        buildRuntime,
+                        undefined,
+                        undefined,
+                        undefined,
+                        framework.installCommand,
+                        framework.buildCommand,
+                        framework.outputDirectory,
+                        framework.adapter as unknown as Adapter,
+                        connectBehaviour === 'later'
+                            ? undefined
+                            : selectedInstallationId || undefined,
+                        framework?.fallbackFile || undefined,
+                        selectedRepository || undefined,
+                        branch || undefined,
+                        selectedRepository ? silentMode : undefined,
+                        rootDir || undefined
+                    );
 
                 // Add domain
-                await sdk.forProject.proxy.createSiteRule(
-                    `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                    site.$id
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.createSiteRule(
+                        `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                        site.$id
+                    );
 
                 //Add variables
                 const promises = variables.map((variable) =>
-                    sdk.forProject.sites.createVariable(
-                        site.$id,
-                        variable.name,
-                        variable.value,
-                        variable?.secret ?? false
-                    )
+                    sdk
+                        .forProject(page.params.region, page.params.project)
+                        .sites.createVariable(
+                            site.$id,
+                            variable.name,
+                            variable.value,
+                            variable?.secret ?? false
+                        )
                 );
                 await Promise.all(promises);
 
-                const deployment = await sdk.forProject.sites.createTemplateDeployment(
-                    site.$id,
-                    data.template.providerRepositoryId || undefined,
-                    data.template.providerOwner || undefined,
-                    framework.providerRootDirectory || undefined,
-                    data.template.providerVersion || undefined,
-                    true
-                );
+                const deployment = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .sites.createTemplateDeployment(
+                        site.$id,
+                        data.template.providerRepositoryId || undefined,
+                        data.template.providerOwner || undefined,
+                        framework.providerRootDirectory || undefined,
+                        data.template.providerVersion || undefined,
+                        true
+                    );
 
                 trackEvent(Submit.SiteCreate, {
                     source: 'template',
@@ -164,7 +172,7 @@
                 });
 
                 await goto(
-                    `${base}/project-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                    `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
                 );
             } catch (e) {
                 console.log(e);
@@ -194,7 +202,7 @@
 <Wizard
     title="Create site"
     bind:showExitModal
-    href={`${base}/project-${page.params.project}/sites/`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">

@@ -4,7 +4,9 @@ import { ID } from '@appwrite.io/console';
 
 export const load = async ({ parent, params }) => {
     const { installations, frameworks, project, organization, consoleVariables } = await parent();
-    const template = await sdk.forProject.sites.getTemplate(params.template);
+    const template = await sdk
+        .forProject(page.params.region, page.params.project)
+        .sites.getTemplate(params.template);
     const domain = await buildVerboseDomain(
         consoleVariables._APP_DOMAIN_SITES,
         template.name,

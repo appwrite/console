@@ -10,10 +10,13 @@ importers:
     dependencies:
       '@ai-sdk/svelte':
         specifier: ^1.1.24
-        version: 1.1.24(svelte@4.2.19)(zod@3.24.2)
+        version: 1.1.24(svelte@5.25.3)(zod@3.24.3)
       '@appwrite.io/console':
-        specifier: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@e2f082e
-        version: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@e2f082e
+        specifier: 1.6.0
+        version: 1.6.0
+      '@appwrite.io/pink':
+        specifier: 0.25.0
+        version: 0.25.0
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -251,9 +254,8 @@ packages:
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@e2f082e':
-    resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@e2f082e}
-    version: 1.2.1
+  '@appwrite.io/console@1.6.0':
+    resolution: {integrity: sha512-o8dvCeJcnMORozB2NdLCiN042HyyLLQzteiTelU83dTgp7q2E1DTKu69hFwyMgoEXqcxMmKeJKmMI/1qt002IQ==}
 
   '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bd21ff7f':
     resolution: {tarball: https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bd21ff7f}
@@ -282,6 +284,9 @@ packages:
     peerDependencies:
       react-dom: ^18.0.0
       svelte: ^4.0.0
+
+  '@appwrite.io/pink@0.25.0':
+    resolution: {integrity: sha512-9z4G/iAhjvVpM7tkNqzGqrokst4hvNt3Fkf2jD4W6n8j//EJbQ3mJ0I+5dye5Sry0a33wUanq5DSztqFNYq5zw==}
 
   '@asamuzakjp/css-color@3.1.1':
     resolution: {integrity: sha512-hpRD68SV2OMcZCsrbdkccTw5FXjNDLo5OuqSHyHZfwweGsDWZwDJ2+gONyNAbazZclobMirACLw0lk8WVxIqxA==}
@@ -2091,12 +2096,19 @@ packages:
     resolution: {integrity: sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==}
     engines: {node: '>=4.0'}
 
+  estree-walker@2.0.2:
+    resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
+
   estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
 
   esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
+
+  eventsource-parser@1.0.0:
+    resolution: {integrity: sha512-9jgfSCa3dmEme2ES3mPByGXfgZ87VbP97tng1G2nWwWx6bV2nYxm2AWCrbQjXToSe+yYlqaZNtxffR9IeQr95g==}
+    engines: {node: '>=14.18'}
 
   eventsource-parser@3.0.0:
     resolution: {integrity: sha512-T1C0XCUimhxVQzW4zFipdx0SficT651NnkR0ZSH3yQwh+mFMdLfgjABVi4YtMTtaL4s168593DaoaRLMqryavA==}
@@ -2650,6 +2662,9 @@ packages:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
 
+  normalize.css@8.0.1:
+    resolution: {integrity: sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==}
+
   nwsapi@2.2.20:
     resolution: {integrity: sha512-/ieB+mDe4MrrKMT8z+mQL8klXydZWGR5Dowt4RAGKbJ3kIGEx3X4ljUo+6V73IXtUPWgfOlU5B9MlGxFO5T+cA==}
 
@@ -2956,6 +2971,9 @@ packages:
 
   scheduler@0.23.2:
     resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
+
+  secure-json-parse@2.7.0:
+    resolution: {integrity: sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -3519,6 +3537,14 @@ packages:
   zimmerframe@1.1.2:
     resolution: {integrity: sha512-rAbqEGa8ovJy4pyBxZM70hg4pE6gDgaQ0Sl9M3enG3I0d6H4XSAM3GeNGLKnsBpuijUow064sf7ww1nutC5/3w==}
 
+  zod-to-json-schema@3.24.5:
+    resolution: {integrity: sha512-/AuWwMP+YqiPbsJx5D6TfgRTc4kTLjsh5SOcd4bLsfUg2RcEXrFMJl1DGgdHy2aCfsIA/cr/1JM0xcB2GZji8g==}
+    peerDependencies:
+      zod: ^3.24.1
+
+  zod@3.24.3:
+    resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
+
   zrender@5.6.1:
     resolution: {integrity: sha512-OFXkDJKcrlx5su2XbzJvj/34Q3m6PvyCZkVPHGYpcCJ52ek4U/ymZyfuV1nKE23AyBJ51E/6Yr0mhZ7xGTO4ag==}
 
@@ -3529,35 +3555,35 @@ snapshots:
 
   '@adobe/css-tools@4.4.2': {}
 
-  '@ai-sdk/provider-utils@2.1.13(zod@3.24.2)':
+  '@ai-sdk/provider-utils@2.1.13(zod@3.24.3)':
     dependencies:
       '@ai-sdk/provider': 1.0.11
       eventsource-parser: 3.0.0
-      nanoid: 3.3.9
+      nanoid: 3.3.11
       secure-json-parse: 2.7.0
     optionalDependencies:
-      zod: 3.24.2
+      zod: 3.24.3
 
   '@ai-sdk/provider@1.0.11':
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/svelte@1.1.24(svelte@4.2.19)(zod@3.24.2)':
+  '@ai-sdk/svelte@1.1.24(svelte@5.25.3)(zod@3.24.3)':
     dependencies:
-      '@ai-sdk/provider-utils': 2.1.13(zod@3.24.2)
-      '@ai-sdk/ui-utils': 1.1.19(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.1.13(zod@3.24.3)
+      '@ai-sdk/ui-utils': 1.1.19(zod@3.24.3)
     optionalDependencies:
-      svelte: 4.2.19
+      svelte: 5.25.3
     transitivePeerDependencies:
       - zod
 
-  '@ai-sdk/ui-utils@1.1.19(zod@3.24.2)':
+  '@ai-sdk/ui-utils@1.1.19(zod@3.24.3)':
     dependencies:
       '@ai-sdk/provider': 1.0.11
-      '@ai-sdk/provider-utils': 2.1.13(zod@3.24.2)
-      zod-to-json-schema: 3.24.3(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.1.13(zod@3.24.3)
+      zod-to-json-schema: 3.24.5(zod@3.24.3)
     optionalDependencies:
-      zod: 3.24.2
+      zod: 3.24.3
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -3598,7 +3624,7 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@e2f082e': {}
+  '@appwrite.io/console@1.6.0': {}
 
   '@appwrite.io/pink-icons-svelte@https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bd21ff7f(svelte@5.25.3)':
     dependencies:
@@ -3632,6 +3658,12 @@ snapshots:
       svelte: 5.25.3
       svelte-motion: 0.12.2(svelte@5.25.3)
       svelte-sonner: 0.3.28(svelte@5.25.3)
+
+  '@appwrite.io/pink@0.25.0':
+    dependencies:
+      '@appwrite.io/pink-icons': 0.25.0
+      normalize.css: 8.0.1
+      the-new-css-reset: 1.11.3
 
   '@asamuzakjp/css-color@3.1.1':
     dependencies:
@@ -5688,11 +5720,15 @@ snapshots:
 
   estraverse@5.3.0: {}
 
+  estree-walker@2.0.2: {}
+
   estree-walker@3.0.3:
     dependencies:
       '@types/estree': 1.0.7
 
   esutils@2.0.3: {}
+
+  eventsource-parser@1.0.0: {}
 
   eventsource-parser@3.0.0: {}
 
@@ -6218,6 +6254,8 @@ snapshots:
 
   normalize-path@3.0.0: {}
 
+  normalize.css@8.0.1: {}
+
   nwsapi@2.2.20: {}
 
   object-inspect@1.13.4: {}
@@ -6400,6 +6438,10 @@ snapshots:
 
   react-is@17.0.2: {}
 
+  react@18.3.1:
+    dependencies:
+      loose-envify: 1.4.0
+
   readdirp@3.6.0:
     dependencies:
       picomatch: 2.3.1
@@ -6527,6 +6569,8 @@ snapshots:
   scheduler@0.23.2:
     dependencies:
       loose-envify: 1.4.0
+
+  secure-json-parse@2.7.0: {}
 
   semver@6.3.1: {}
 
@@ -7082,6 +7126,12 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zimmerframe@1.1.2: {}
+
+  zod-to-json-schema@3.24.5(zod@3.24.3):
+    dependencies:
+      zod: 3.24.3
+
+  zod@3.24.3: {}
 
   zrender@5.6.1:
     dependencies:

@@ -19,7 +19,7 @@
     import { ConnectRepoModal } from '$lib/components/git/index.js';
     import { isValueOfStringEnum } from '$lib/helpers/types.js';
 
-    const routeBase = `${base}/project-${page.params.project}/functions/function-${page.params.function}/domains`;
+    const routeBase = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/domains`;
 
     let { data } = $props();
 
@@ -48,23 +48,18 @@
         try {
             let rule: Models.ProxyRule;
             if (behaviour === 'BRANCH') {
-                rule = await sdk.forProject.proxy.createFunctionRule(
-                    domainName,
-                    page.params.function,
-                    branch
-                );
+                rule = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.createFunctionRule(domainName, page.params.function, branch);
             } else if (behaviour === 'REDIRECT') {
                 const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
-                rule = await sdk.forProject.proxy.createRedirectRule(
-                    domainName,
-                    $protocol + redirect,
-                    sc
-                );
+                rule = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.createRedirectRule(domainName, $protocol + redirect, sc);
             } else if (behaviour === 'ACTIVE') {
-                rule = await sdk.forProject.proxy.createFunctionRule(
-                    domainName,
-                    page.params.function
-                );
+                rule = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.createFunctionRule(domainName, page.params.function);
             }
             if (rule?.status === 'verified') {
                 await goto(routeBase);
@@ -86,26 +81,28 @@
             if (!isValueOfStringEnum(Runtime, data.func.runtime)) {
                 throw new Error(`Invalid runtime: ${data.func.runtime}`);
             }
-            await sdk.forProject.functions.update(
-                data.func.$id,
-                data.func.name,
-                data.func.runtime as Runtime,
-                data.func.execute || undefined,
-                data.func.events || undefined,
-                data.func.schedule || undefined,
-                data.func.timeout || undefined,
-                data.func.enabled || undefined,
-                data.func.logging || undefined,
-                data.func.entrypoint,
-                data.func.commands || undefined,
-                data.func.scopes || undefined,
-                selectedInstallationId,
-                selectedRepository,
-                'main',
-                undefined,
-                undefined,
-                undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.update(
+                    data.func.$id,
+                    data.func.name,
+                    data.func.runtime as Runtime,
+                    data.func.execute || undefined,
+                    data.func.events || undefined,
+                    data.func.schedule || undefined,
+                    data.func.timeout || undefined,
+                    data.func.enabled || undefined,
+                    data.func.logging || undefined,
+                    data.func.entrypoint,
+                    data.func.commands || undefined,
+                    data.func.scopes || undefined,
+                    selectedInstallationId,
+                    selectedRepository,
+                    'main',
+                    undefined,
+                    undefined,
+                    undefined
+                );
             await invalidate(Dependencies.FUNCTION);
         } catch (error) {
             console.log(error);

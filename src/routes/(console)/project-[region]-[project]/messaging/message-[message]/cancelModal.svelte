@@ -7,7 +7,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     export let show = false;
     export let message: Models.Message & { data: Record<string, unknown> };
@@ -16,7 +16,7 @@
         try {
             if (message.providerType == MessagingProviderType.Email) {
                 await sdk
-                    .forProject($page.params.region, $page.params.project)
+                    .forProject(page.params.region, page.params.project)
                     .messaging.updateEmail(
                         message.$id,
                         undefined,
@@ -28,7 +28,7 @@
                     );
             } else if (message.providerType == MessagingProviderType.Sms) {
                 await sdk
-                    .forProject($page.params.region, $page.params.project)
+                    .forProject(page.params.region, page.params.project)
                     .messaging.updateSms(
                         message.$id,
                         undefined,
@@ -39,7 +39,7 @@
                     );
             } else if (message.providerType == MessagingProviderType.Push) {
                 await sdk
-                    .forProject($page.params.region, $page.params.project)
+                    .forProject(page.params.region, page.params.project)
                     .messaging.updatePush(
                         message.$id,
                         undefined,

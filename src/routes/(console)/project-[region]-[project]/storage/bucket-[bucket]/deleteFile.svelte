@@ -4,7 +4,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
 
     export let file: Models.File;
@@ -15,7 +15,7 @@
     const onSubmit = async () => {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .storage.deleteFile(file.bucketId, file.$id);
             showDelete = false;
             dispatch('deleted', file);

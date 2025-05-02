@@ -8,7 +8,9 @@ export const load = async ({ url, route }) => {
         frameworks: url.searchParams.getAll('framework')
     };
 
-    const siteTemplatesList = await sdk.forProject.sites.listTemplates(undefined, undefined, 100);
+    const siteTemplatesList = await sdk
+        .forProject(page.params.region, page.params.project)
+        .sites.listTemplates(undefined, undefined, 100);
 
     const [frameworksSet, useCasesSet] = siteTemplatesList.templates.reduce(
         ([fr, uc], next) => {

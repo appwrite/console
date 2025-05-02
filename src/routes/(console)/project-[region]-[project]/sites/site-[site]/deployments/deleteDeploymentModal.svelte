@@ -18,14 +18,13 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forProject.sites.deleteDeployment(
-                selectedDeployment.resourceId,
-                selectedDeployment.$id
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.deleteDeployment(selectedDeployment.resourceId, selectedDeployment.$id);
             await invalidate(Dependencies.SITE);
             if (page.url.href.includes(`deployment-${selectedDeployment.$id}`)) {
                 await goto(
-                    `${base}/project-${page.params.project}/sites/site-${page.params.site}/deployments`
+                    `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments`
                 );
             }
             showDelete = false;

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Button, InputPassword, InputEmail, InputText, InputPhone } from '$lib/elements/forms';
@@ -21,7 +21,7 @@
     const create = async () => {
         try {
             const user = await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.create(
                     id ?? ID.unique(),
                     mail || undefined,

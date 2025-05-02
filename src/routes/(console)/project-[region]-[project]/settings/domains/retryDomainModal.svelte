@@ -20,7 +20,9 @@
 
     async function retryDomain() {
         try {
-            await sdk.forProject.proxy.updateRuleVerification(selectedDomain.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.updateRuleVerification(selectedDomain.$id);
             await invalidate(Dependencies.SITES_DOMAINS);
             show = false;
             addNotification({

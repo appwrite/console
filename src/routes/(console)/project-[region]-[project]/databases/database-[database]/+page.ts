@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     depends(Dependencies.COLLECTIONS);
     const page = getPage(url);
     const search = getSearch(url);
-    const limit = getLimit(params.project, url, route, CARD_LIMIT);
+    const limit = getLimit(url, route, CARD_LIMIT);
     const view = getView(params.project, url, route, View.Grid);
     const offset = pageToOffset(page, limit);
     const collections = await sdk

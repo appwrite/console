@@ -90,6 +90,7 @@
     import { Icon, Layout, Link, Selector, Tag, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Click } from '$lib/actions/analytics';
+    import { page } from '$app/state';
 
     export let data: PageData;
 

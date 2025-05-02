@@ -24,6 +24,7 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { ConnectGit, ConnectRepoModal, RepositoryCard } from '$lib/components/git';
     import { showConnectRepo } from './store';
+    import { page } from '$app/state';
 
     export let site: Models.Site;
     export let installations: Models.InstallationList;
@@ -46,10 +47,9 @@
     async function loadRepository() {
         try {
             if (site.installationId && site.providerRepositoryId) {
-                repository = await sdk.forProject.vcs.getRepository(
-                    site.installationId,
-                    site.providerRepositoryId
-                );
+                repository = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.getRepository(site.installationId, site.providerRepositoryId);
             }
         } catch (err) {
             console.warn(err);
@@ -62,25 +62,27 @@
 
     async function updateConfiguration() {
         try {
-            await sdk.forProject.sites.update(
-                site.$id,
-                site.name,
-                site?.framework as Framework,
-                site.enabled || undefined,
-                site.logging || undefined,
-                site.timeout || undefined,
-                site.installCommand || undefined,
-                site.buildCommand || undefined,
-                site.outputDirectory || undefined,
-                (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter as Adapter,
-                site.fallbackFile || undefined,
-                site.installationId || undefined,
-                site.providerRepositoryId || undefined,
-                selectedBranch || undefined,
-                silentMode || undefined,
-                selectedDir || undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.update(
+                    site.$id,
+                    site.name,
+                    site?.framework as Framework,
+                    site.enabled || undefined,
+                    site.logging || undefined,
+                    site.timeout || undefined,
+                    site.installCommand || undefined,
+                    site.buildCommand || undefined,
+                    site.outputDirectory || undefined,
+                    (site?.buildRuntime as BuildRuntime) || undefined,
+                    site.adapter as Adapter,
+                    site.fallbackFile || undefined,
+                    site.installationId || undefined,
+                    site.providerRepositoryId || undefined,
+                    selectedBranch || undefined,
+                    silentMode || undefined,
+                    selectedDir || undefined
+                );
             await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',
@@ -97,7 +99,9 @@
     }
 
     async function getBranches(installation: string, repo: string) {
-        branchesList = await sdk.forProject.vcs.listRepositoryBranches(installation, repo);
+        branchesList = await sdk
+            .forProject(page.params.region, page.params.project)
+            .vcs.listRepositoryBranches(installation, repo);
         branchesList.branches = sortBranches(branchesList.branches);
 
         selectedBranch = site?.providerBranch ?? branchesList.branches[0].name;
@@ -105,26 +109,28 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
-            await sdk.forProject.sites.update(
-                site.$id,
-                site.name,
-                site.framework as Framework,
-                site.enabled,
-                site.logging || undefined,
-                site.timeout,
-                site.installCommand,
-                site.buildCommand,
-                site.outputDirectory,
-                site.buildRuntime as BuildRuntime,
-                site.adapter as Adapter,
-                site.fallbackFile,
-                selectedInstallationId,
-                selectedRepository,
-                'main',
-                undefined,
-                undefined,
-                undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.update(
+                    site.$id,
+                    site.name,
+                    site.framework as Framework,
+                    site.enabled,
+                    site.logging || undefined,
+                    site.timeout,
+                    site.installCommand,
+                    site.buildCommand,
+                    site.outputDirectory,
+                    site.buildRuntime as BuildRuntime,
+                    site.adapter as Adapter,
+                    site.fallbackFile,
+                    selectedInstallationId,
+                    selectedRepository,
+                    'main',
+                    undefined,
+                    undefined,
+                    undefined
+                );
             invalidate(Dependencies.SITE);
         } catch (error) {
             console.log(error);

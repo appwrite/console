@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
     import { getProjectEndpoint } from '$lib/helpers/project';
 
-    const project = $page.params.project;
+    const project = page.params.project;
 
     const code = `const client = new Client();
 client

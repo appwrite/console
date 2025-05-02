@@ -27,7 +27,7 @@
     export let data;
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
-    const wizardBase = `${base}/project-${page.params.project}/functions`;
+    const wizardBase = `${base}/project-${page.params.region}-${page.params.project}/functions`;
     let previousPage: string = wizardBase;
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;

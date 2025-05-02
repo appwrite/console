@@ -15,7 +15,7 @@
     import type { Models } from '@appwrite.io/console';
     import Configuration from '../configuration.svelte';
     import { buildVerboseDomain } from '../store';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { organization } from '$lib/stores/organization';
     import { consoleVariables } from '$routes/(console)/store';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -48,51 +48,56 @@
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
             );
-            let site = await sdk.forProject.sites.create(
-                id || ID.unique(),
-                name,
-                fr,
-                buildRuntime,
-                undefined,
-                undefined,
-                undefined,
-                installCommand || undefined,
-                buildCommand || undefined,
-                outputDirectory || undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined
-            );
+            let site = await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.create(
+                    id || ID.unique(),
+                    name,
+                    fr,
+                    buildRuntime,
+                    undefined,
+                    undefined,
+                    undefined,
+                    installCommand || undefined,
+                    buildCommand || undefined,
+                    outputDirectory || undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined
+                );
 
             // Add domain
-            await sdk.forProject.proxy.createSiteRule(
-                `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                site.$id
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.createSiteRule(`${domain}.${$consoleVariables._APP_DOMAIN_SITES}`, site.$id);
 
             //Add variables
             const promises = variables.map((variable) =>
-                sdk.forProject.sites.createVariable(
-                    site.$id,
-                    variable.key,
-                    variable.value,
-                    variable?.secret ?? false
-                )
+                sdk
+                    .forProject(page.params.region, page.params.project)
+                    .sites.createVariable(
+                        site.$id,
+                        variable.key,
+                        variable.value,
+                        variable?.secret ?? false
+                    )
             );
             await Promise.all(promises);
 
-            const deployment = await sdk.forProject.sites.createDeployment(
-                site.$id,
-                files[0],
-                true,
-                installCommand || undefined,
-                buildCommand || undefined,
-                outputDirectory || undefined
-            );
+            const deployment = await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.createDeployment(
+                    site.$id,
+                    files[0],
+                    true,
+                    installCommand || undefined,
+                    buildCommand || undefined,
+                    outputDirectory || undefined
+                );
 
             trackEvent(Submit.SiteCreate, {
                 source: 'manual',
@@ -100,7 +105,7 @@
             });
 
             await goto(
-                `${base}/project-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
             );
         } catch (e) {
             addNotification({
@@ -131,7 +136,7 @@
 <Wizard
     title="Create site"
     bind:showExitModal
-    href={`${base}/project-${page.params.project}/sites/`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">

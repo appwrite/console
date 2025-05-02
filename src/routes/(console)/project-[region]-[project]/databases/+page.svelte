@@ -27,7 +27,7 @@
     async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;
         await goto(
-            `${base}/project-${$page.params.region}-${project}/databases/database-${event.detail.$id}`
+            `${base}/project-${page.params.region}-${project}/databases/database-${event.detail.$id}`
         );
     }
 
@@ -83,8 +83,10 @@
             total={data.databases.total} />
     {:else if data.search}
         <EmptySearch target="databases" hidePagination>
-            <Button href={`${base}/project-${page.params.project}/databases`} size="s" secondary
-                >Clear Search</Button>
+            <Button
+                href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
+                size="s"
+                secondary>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

@@ -37,20 +37,22 @@
         try {
             const messageId = id || ID.unique();
 
-            const response = await sdk.forProject.messaging.createEmail(
-                messageId,
-                subject,
-                content,
-                topics,
-                users,
-                targets,
-                undefined,
-                undefined,
-                undefined,
-                draft,
-                html,
-                scheduledAt
-            );
+            const response = await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.createEmail(
+                    messageId,
+                    subject,
+                    content,
+                    topics,
+                    users,
+                    targets,
+                    undefined,
+                    undefined,
+                    undefined,
+                    draft,
+                    html,
+                    scheduledAt
+                );
             let message = '';
             switch (response.status) {
                 case 'draft':
@@ -71,7 +73,9 @@
                 providerType: 'email',
                 status: response.status
             });
-            await goto(`${base}/project-${page.params.project}/messaging/message-${response.$id}`);
+            await goto(
+                `${base}/project-${page.params.region}-${page.params.project}/messaging/message-${response.$id}`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -90,7 +94,7 @@
 <Wizard
     title="Create email message"
     columnSize="s"
-    href={`${base}/project-${page.params.project}/messaging/`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/messaging/`}
     bind:showExitModal
     column
     confirmExit>

@@ -3,7 +3,7 @@
     import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
-    import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+    import { repositories } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
     import {
         Layout,
@@ -20,6 +20,7 @@
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { connectGitHub } from '$lib/stores/git';
+    import { page } from '$app/state';
 
     let {
         action = $bindable('select'),
@@ -54,7 +55,9 @@
             }
             return installationList.installations;
         } else {
-            const { installations } = await sdk.forProject.vcs.listInstallations();
+            const { installations } = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.listInstallations();
             if (installations.length) {
                 selectedInstallation = installations[0].$id;
                 installation.set(installations.find((entry) => entry.$id === selectedInstallation));
@@ -85,19 +88,23 @@
     async function fetchRepos(installationId: string, search: string) {
         if (product === 'functions') {
             $repositories.repositories = (
-                (await sdk.forProject.vcs.listRepositories(
-                    installationId,
-                    VCSDetectionType.Runtime,
-                    search || undefined
-                )) as unknown as Models.ProviderRepositoryRuntimeList
+                (await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositories(
+                        installationId,
+                        VCSDetectionType.Runtime,
+                        search || undefined
+                    )) as unknown as Models.ProviderRepositoryRuntimeList
             ).runtimeProviderRepositories; //TODO: remove forced cast after backend fixes
         } else {
             $repositories.repositories = (
-                (await sdk.forProject.vcs.listRepositories(
-                    installationId,
-                    VCSDetectionType.Framework,
-                    search || undefined
-                )) as unknown as Models.ProviderRepositoryFrameworkList
+                (await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositories(
+                        installationId,
+                        VCSDetectionType.Framework,
+                        search || undefined
+                    )) as unknown as Models.ProviderRepositoryFrameworkList
             ).frameworkProviderRepositories;
         }
     }

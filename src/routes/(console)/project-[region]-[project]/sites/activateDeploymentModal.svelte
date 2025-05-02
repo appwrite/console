@@ -14,7 +14,9 @@
 
     async function activate() {
         try {
-            await sdk.forProject.sites.updateSiteDeployment(siteId, selectedDeploymentId);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.updateSiteDeployment(siteId, selectedDeploymentId);
             addNotification({
                 type: 'success',
                 message: `Deployment has been activated`

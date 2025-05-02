@@ -12,6 +12,7 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
+    import { page } from '$app/state';
 
     export let site: Models.Site;
     export let specs: Models.SpecificationList;
@@ -19,26 +20,28 @@
 
     async function updateLogging() {
         try {
-            await sdk.forProject.sites.update(
-                site.$id,
-                site.name,
-                site.framework as Framework,
-                site.enabled || undefined,
-                site.logging || undefined,
-                site.timeout || undefined,
-                site.installCommand || undefined,
-                site.buildCommand || undefined,
-                site.outputDirectory || undefined,
-                (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter as Adapter,
-                site.fallbackFile || undefined,
-                site.installationId || undefined,
-                site.providerRepositoryId || undefined,
-                site.providerBranch || undefined,
-                site.providerSilentMode || undefined,
-                site.providerRootDirectory || undefined,
-                specification || undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.update(
+                    site.$id,
+                    site.name,
+                    site.framework as Framework,
+                    site.enabled || undefined,
+                    site.logging || undefined,
+                    site.timeout || undefined,
+                    site.installCommand || undefined,
+                    site.buildCommand || undefined,
+                    site.outputDirectory || undefined,
+                    (site?.buildRuntime as BuildRuntime) || undefined,
+                    site.adapter as Adapter,
+                    site.fallbackFile || undefined,
+                    site.installationId || undefined,
+                    site.providerRepositoryId || undefined,
+                    site.providerBranch || undefined,
+                    site.providerSilentMode || undefined,
+                    site.providerRootDirectory || undefined,
+                    specification || undefined
+                );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',

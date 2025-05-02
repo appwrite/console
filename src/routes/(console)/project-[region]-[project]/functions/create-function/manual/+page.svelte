@@ -55,58 +55,62 @@
 
     async function create() {
         try {
-            const func = await sdk.forProject.functions.create(
-                id || ID.unique(),
-                name,
-                runtime,
-                roles?.length ? roles : undefined,
-                undefined,
-                undefined,
-                undefined,
-                true,
-                undefined,
-                entrypoint,
-                buildCommand,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                specification || undefined
-            );
+            const func = await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.create(
+                    id || ID.unique(),
+                    name,
+                    runtime,
+                    roles?.length ? roles : undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    true,
+                    undefined,
+                    entrypoint,
+                    buildCommand,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    specification || undefined
+                );
 
             // Add domain
-            await sdk.forProject.proxy.createFunctionRule(
-                `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
-                func.$id
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.createFunctionRule(
+                    `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                    func.$id
+                );
 
             //Add variables
             const promises = variables.map((variable) =>
-                sdk.forProject.functions.createVariable(
-                    func.$id,
-                    variable.key,
-                    variable.value,
-                    variable?.secret ?? false
-                )
+                sdk
+                    .forProject(page.params.region, page.params.project)
+                    .functions.createVariable(
+                        func.$id,
+                        variable.key,
+                        variable.value,
+                        variable?.secret ?? false
+                    )
             );
             await Promise.all(promises);
 
-            await sdk.forProject.functions.createDeployment(
-                func.$id,
-                files[0],
-                true,
-                undefined,
-                undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.createDeployment(func.$id, files[0], true, undefined, undefined);
 
             trackEvent(Submit.FunctionCreate, {
                 source: 'repository',
                 runtime: runtime
             });
 
-            await goto(`${base}/project-${page.params.project}/functions/function-${func.$id}`);
+            await goto(
+                `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}`
+            );
 
             invalidate(Dependencies.FUNCTION);
         } catch (e) {
@@ -136,7 +140,7 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${page.params.project}/functions`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
     column
     columnSize="s"
     confirmExit>

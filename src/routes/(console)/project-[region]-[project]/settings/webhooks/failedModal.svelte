@@ -14,7 +14,7 @@
     const projectId = page.params.project;
 
     $: webhookPath = webhook
-        ? `${base}/project-${$page.params.region}-${projectId}/settings/webhooks/` +
+        ? `${base}/project-${page.params.region}-${projectId}/settings/webhooks/` +
           (webhook['$id'] ?? '')
         : '';
 

@@ -13,7 +13,7 @@
     import { started } from '../stores';
     import { showMigrationBox } from '$lib/components/migrationBox.svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     const onExit = () => {
         resetImportStores();
@@ -26,7 +26,7 @@
             switch ($provider.provider) {
                 case 'appwrite': {
                     await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .migrations.createAppwriteMigration(
                             resources,
                             $provider.endpoint,
@@ -39,7 +39,7 @@
                 }
                 case 'supabase': {
                     await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .migrations.createSupabaseMigration(
                             resources,
                             $provider.endpoint,
@@ -55,14 +55,14 @@
                 }
                 case 'firebase': {
                     await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .migrations.createFirebaseMigration(resources, $provider.serviceAccount);
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'nhost': {
                     await sdk
-                        .forProject($page.params.region, $page.params.project)
+                        .forProject(page.params.region, page.params.project)
                         .migrations.createNHostMigration(
                             resources,
                             $provider.subdomain,

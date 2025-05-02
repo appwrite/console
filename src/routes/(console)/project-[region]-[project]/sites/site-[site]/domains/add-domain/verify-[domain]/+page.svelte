@@ -40,7 +40,7 @@
     );
     let verified = $state(false);
 
-    let routeBase = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
+    let routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
     let isSubmitting = $state(writable(false));
 
     async function verify() {
@@ -48,7 +48,9 @@
             data.domainsList.domains.findIndex((rule) => rule.domain === page.params.domain) === -1;
         try {
             if (selectedTab !== 'nameserver') {
-                const ruleData = await sdk.forProject.proxy.updateRuleVerification(ruleId);
+                const ruleData = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.updateRuleVerification(ruleId);
                 verified = ruleData.status === 'verified';
             } else if (isNewDomain && isCloud) {
                 const domainData = await sdk.forConsole.domains.create(
@@ -77,7 +79,7 @@
 
     async function back() {
         if (ruleId) {
-            await sdk.forProject.proxy.deleteRule(ruleId);
+            await sdk.forProject(page.params.region, page.params.project).proxy.deleteRule(ruleId);
         }
         await goto(`${routeBase}/add-domain?domain=${page.params.domain}`);
     }

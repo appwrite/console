@@ -5,14 +5,14 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     let newPassword: string = null;
 
     async function updatePassword() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.updatePassword($user.$id, newPassword);
             newPassword = null;
             addNotification({

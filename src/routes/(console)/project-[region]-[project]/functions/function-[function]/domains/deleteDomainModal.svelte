@@ -8,6 +8,7 @@
     import { Dependencies } from '$lib/constants';
     import { Confirm } from '$lib/components';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     export let show = false;
     export let selectedDomain: Models.ProxyRule;
@@ -16,7 +17,9 @@
 
     async function deleteDomain() {
         try {
-            await sdk.forProject.proxy.deleteRule(selectedDomain.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.deleteRule(selectedDomain.$id);
             await invalidate(Dependencies.FUNCTION_DOMAINS);
             show = false;
             addNotification({

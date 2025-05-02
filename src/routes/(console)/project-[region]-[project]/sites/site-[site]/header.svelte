@@ -7,7 +7,7 @@
     import { site } from './store';
 
     $: projectId = page.params.project;
-    $: path = `${base}/project-${projectId}/sites/site-${page.params.site}`;
+    $: path = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}`;
     $: tabs = [
         {
             href: path,
@@ -44,7 +44,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/sites`}>{$site.name}</CoverTitle>
+        <CoverTitle href={`${base}/project-${page.params.region}-${page.params.project}/sites`}
+            >{$site.name}</CoverTitle>
         <Id value={$site?.$id} event="team">{$site?.$id}</Id>
     </svelte:fragment>
 

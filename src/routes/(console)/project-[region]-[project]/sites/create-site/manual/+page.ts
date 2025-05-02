@@ -5,6 +5,8 @@ export const load = async ({ parent }) => {
 
     return {
         frameworks,
-        template: await sdk.forProject.sites.getTemplate('starter-for-js')
+        template: await sdk
+            .forProject(page.params.region, page.params.project)
+            .sites.getTemplate('starter-for-js')
     };
 };

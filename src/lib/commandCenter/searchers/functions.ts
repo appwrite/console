@@ -4,7 +4,7 @@ import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import { showCreateDeployment } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/store';
 import { base } from '$app/paths';
 import { IconLightningBolt, IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -21,10 +21,9 @@ const getFunctionCommand = (fn: Models.Function, region: string, projectId: stri
 };
 
 export const functionsSearcher = (async (query: string) => {
-    const $page = get(page);
     const projectId = get(project).$id;
     const { functions } = await sdk
-        .forProject($page.params.region, $page.params.project)
+        .forProject(page.params.region, page.params.project)
         .functions.list();
 
     const filtered = functions.filter((fn) => fn.name.toLowerCase().includes(query.toLowerCase()));
@@ -32,15 +31,14 @@ export const functionsSearcher = (async (query: string) => {
     if (filtered.length === 1) {
         const func = filtered[0];
         return [
-            getFunctionCommand(func, $page.params.region, projectId),
+            getFunctionCommand(func, page.params.region, projectId),
             {
                 label: 'Create deployment',
                 nested: true,
                 async callback() {
-                    const $page = get(page);
-                    if (!$page.url.pathname.endsWith(func.$id)) {
+                    if (!page.url.pathname.endsWith(func.$id)) {
                         await goto(
-                            `${base}/project-${$page.params.region}-${projectId}/functions/function-${func.$id}`
+                            `${base}/project-${page.params.region}-${projectId}/functions/function-${func.$id}`
                         );
                     }
                     showCreateDeployment.set(true);
@@ -53,7 +51,7 @@ export const functionsSearcher = (async (query: string) => {
                 nested: true,
                 callback() {
                     goto(
-                        `${base}/project-${$page.params.region}-${projectId}/functions/function-${func.$id}`
+                        `${base}/project-${page.params.region}-${projectId}/functions/function-${func.$id}`
                     );
                 },
                 group: 'functions'
@@ -63,7 +61,7 @@ export const functionsSearcher = (async (query: string) => {
                 nested: true,
                 callback() {
                     goto(
-                        `${base}/project-${$page.params.region}-${projectId}/functions/function-${func.$id}/usage`
+                        `${base}/project-${page.params.region}-${projectId}/functions/function-${func.$id}/usage`
                     );
                 },
                 group: 'functions'
@@ -73,7 +71,7 @@ export const functionsSearcher = (async (query: string) => {
                 nested: true,
                 callback() {
                     goto(
-                        `${base}/project-${$page.params.region}-${projectId}/functions/function-${func.$id}/executions`
+                        `${base}/project-${page.params.region}-${projectId}/functions/function-${func.$id}/executions`
                     );
                 },
                 group: 'functions'
@@ -83,7 +81,7 @@ export const functionsSearcher = (async (query: string) => {
                 nested: true,
                 callback() {
                     goto(
-                        `${base}/project-${$page.params.region}-${projectId}/functions/function-${func.$id}/settings`
+                        `${base}/project-${page.params.region}-${projectId}/functions/function-${func.$id}/settings`
                     );
                 },
                 group: 'functions'
@@ -91,5 +89,5 @@ export const functionsSearcher = (async (query: string) => {
         ];
     }
 
-    return filtered.map((fn) => getFunctionCommand(fn, $page.params.region, projectId));
+    return filtered.map((fn) => getFunctionCommand(fn, page.params.region, projectId));
 }) satisfies Searcher;

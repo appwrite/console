@@ -40,7 +40,9 @@
     let error = $state(null);
     async function retryDomain() {
         try {
-            const domain = await sdk.forProject.proxy.updateRuleVerification(selectedDomain.$id);
+            const domain = await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.updateRuleVerification(selectedDomain.$id);
             await invalidate(Dependencies.SITES_DOMAINS);
             verified = domain.status === 'verified';
             show = false;

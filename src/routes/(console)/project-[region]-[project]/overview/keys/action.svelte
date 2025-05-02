@@ -8,7 +8,8 @@
 </script>
 
 {#if $canWriteKeys}
-    <Button href={`${base}/project-${page.params.project}/overview/keys/create`}>
+    <Button
+        href={`${base}/project-${page.params.region}-${page.params.project}/overview/keys/create`}>
         <Icon icon={IconPlus} slot="start" size="s" />
         Create API key
     </Button>

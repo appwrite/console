@@ -37,26 +37,28 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
-            await sdk.forProject.sites.update(
-                data.site.$id,
-                data.site.name,
-                data.site.framework as Framework,
-                data.site.enabled,
-                data.site.logging || undefined,
-                data.site.timeout,
-                data.site.installCommand,
-                data.site.buildCommand,
-                data.site.outputDirectory,
-                data.site.buildRuntime as BuildRuntime,
-                data.site.adapter as Adapter,
-                data.site.fallbackFile,
-                selectedInstallationId,
-                selectedRepository,
-                'main',
-                undefined,
-                undefined,
-                undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.update(
+                    data.site.$id,
+                    data.site.name,
+                    data.site.framework as Framework,
+                    data.site.enabled,
+                    data.site.logging || undefined,
+                    data.site.timeout,
+                    data.site.installCommand,
+                    data.site.buildCommand,
+                    data.site.outputDirectory,
+                    data.site.buildRuntime as BuildRuntime,
+                    data.site.adapter as Adapter,
+                    data.site.fallbackFile,
+                    selectedInstallationId,
+                    selectedRepository,
+                    'main',
+                    undefined,
+                    undefined,
+                    undefined
+                );
             invalidate(Dependencies.SITE);
         } catch (error) {
             console.log(error);
@@ -64,7 +66,9 @@
     }
 </script>
 
-<Wizard column href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}`}>
+<Wizard
+    column
+    href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
     <!-- Creating a new stack -->
     <Layout.Stack gap="xxxl">
         <div style:position="relative" style="z-index: 6;">
@@ -128,7 +132,7 @@
                                     source: 'sites_create_finish'
                                 });
                             }}
-                            href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}/domains`}>
+                            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}/domains`}>
                             <Layout.Stack gap="s" style="height: 100%">
                                 <Layout.Stack
                                     direction="row"
@@ -196,7 +200,7 @@
             size="s"
             fullWidthMobile
             secondary
-            href={`${base}/project-${page.params.project}/sites/site-${data.site.$id}`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${data.site.$id}`}>
             Go to dashboard
         </Button>
     </svelte:fragment>

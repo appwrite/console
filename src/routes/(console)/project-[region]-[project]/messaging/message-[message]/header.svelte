@@ -10,7 +10,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${$page.params.region}-${projectId}/messaging`}>
+        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/messaging`}>
             {$message.data.title ?? $message.data.subject ?? $message.data.content ?? 'Message'}
         </CoverTitle>
         <Id value={$message.$id} event="message">{$message.$id}</Id>

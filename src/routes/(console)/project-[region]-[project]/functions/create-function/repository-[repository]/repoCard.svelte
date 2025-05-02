@@ -17,7 +17,9 @@
                 {repository?.organization}/{repository?.name}
             </Typography.Text>
         </Layout.Stack>
-        <Button secondary href={`${base}/project-${page.params.project}/functions/create-function`}>
+        <Button
+            secondary
+            href={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function`}>
             Change
         </Button>
     </Layout.Stack>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Id } from '$lib/components';
+    import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
@@ -31,7 +32,7 @@
     import { Menu } from '$lib/components/menu';
 
     export let columns: Column[];
-    export let data;
+    export let data: PageData;
 
     let showDelete = false;
     let showActivate = false;

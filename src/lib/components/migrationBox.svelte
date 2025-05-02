@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { parseIfString } from '$lib/helpers/object';
     import { getProjectId } from '$lib/helpers/project';
     import { realtime } from '$lib/stores/sdk';
@@ -51,7 +51,7 @@
 
     onMount(() => {
         return realtime
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .subscribe<Models.Migration>(['console'], async (response) => {
                 if (!response.channels.includes(`projects.${getProjectId()}`)) return;
                 if (response.events.includes('migrations.*')) {

@@ -4,6 +4,7 @@
     import SelectRootModal from './selectRootModal.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { sortBranches } from '$lib/stores/vcs';
+    import { page } from '$app/state';
 
     export let branch = 'main';
     export let rootDir: string;
@@ -15,10 +16,9 @@
     let show = false;
 
     async function loadBranches() {
-        const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            installationId,
-            repositoryId
-        );
+        const { branches } = await sdk
+            .forProject(page.params.region, page.params.project)
+            .vcs.listRepositoryBranches(installationId, repositoryId);
         const sorted = sortBranches(branches);
         branch = sorted[0]?.name ?? null;
 

@@ -40,12 +40,12 @@
                 Add collaborator
             </ActionMenu.Item.Button>
             <ActionMenu.Item.Anchor
-                href={`${base}/project-${page.params.project}/sites/site-${site.$id}/domains`}
+                href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}/domains`}
                 leadingIcon={IconGlobeAlt}>
                 Domains
             </ActionMenu.Item.Anchor>
             <ActionMenu.Item.Anchor
-                href={`${base}/project-${page.params.project}/sites/site-${site.$id}/settings`}
+                href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}/settings`}
                 leadingIcon={IconCog}>
                 Settings
             </ActionMenu.Item.Anchor>

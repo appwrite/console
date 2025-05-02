@@ -74,7 +74,7 @@
     });
 
     $: isOnSettingsLayout = $project?.$id
-        ? page.url.pathname.includes(`project-${$project.$id}/settings`)
+        ? page.url.pathname.includes(`project-${$project.region}-${$project.$id}/settings`)
         : false;
 
     $: $registerCommands([
@@ -289,9 +289,9 @@
     }
 
     database.subscribe(async (database) => {
-        if (!database || !$page.params.region || !$page.params.project) return;
+        if (!database || !page.params.region || !page.params.project) return;
         // the component checks `isCloud` internally.
-        await checkForDatabaseBackupPolicies($page.params.region, $page.params.project, database);
+        await checkForDatabaseBackupPolicies(page.params.region, page.params.project, database);
     });
 
     let currentOrganizationId = null;

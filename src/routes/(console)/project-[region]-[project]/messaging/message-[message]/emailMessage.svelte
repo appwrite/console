@@ -8,7 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     export let message: Models.Message & { data: Record<string, string> };
 
@@ -26,7 +26,7 @@
     async function update() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .messaging.updateEmail(
                     message.$id,
                     undefined,

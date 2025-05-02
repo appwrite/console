@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -14,25 +15,27 @@
 
     async function update() {
         try {
-            await sdk.forProject.sites.update(
-                site.$id,
-                site.name,
-                site.framework as Framework,
-                site.enabled || undefined,
-                logging,
-                site.timeout || undefined,
-                site.installCommand || undefined,
-                site.buildCommand || undefined,
-                site.outputDirectory || undefined,
-                (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter as Adapter,
-                site.fallbackFile || undefined,
-                site.installationId || undefined,
-                site.providerRepositoryId || undefined,
-                site.providerBranch || undefined,
-                site.providerSilentMode || undefined,
-                site.providerRootDirectory || undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.update(
+                    site.$id,
+                    site.name,
+                    site.framework as Framework,
+                    site.enabled || undefined,
+                    logging,
+                    site.timeout || undefined,
+                    site.installCommand || undefined,
+                    site.buildCommand || undefined,
+                    site.outputDirectory || undefined,
+                    (site?.buildRuntime as BuildRuntime) || undefined,
+                    site.adapter as Adapter,
+                    site.fallbackFile || undefined,
+                    site.installationId || undefined,
+                    site.providerRepositoryId || undefined,
+                    site.providerBranch || undefined,
+                    site.providerSilentMode || undefined,
+                    site.providerRootDirectory || undefined
+                );
             await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',

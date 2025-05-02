@@ -20,7 +20,7 @@
                 variant="secondary"
                 padding="xs"
                 radius="s"
-                href={`${base}/project-${page.params.project}/sites/create-site/templates`}>
+                href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/templates`}>
                 <Image
                     alt="repositories"
                     radius="xxs"
@@ -39,7 +39,7 @@
                 variant="secondary"
                 padding="xs"
                 radius="s"
-                href={`${base}/project-${page.params.project}/sites/create-site/repositories`}>
+                href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/repositories`}>
                 <Image
                     alt="repositories"
                     radius="xxs"
@@ -58,7 +58,7 @@
     <Typography.Text variant="m-400" color="--fgcolor-neutral-secondary">
         Or simply drag and drop your files to create a site <Link
             variant="muted"
-            href={`${base}/project-${page.params.project}/sites/create-site/manual`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/manual`}>
             manually</Link
         >.
     </Typography.Text>

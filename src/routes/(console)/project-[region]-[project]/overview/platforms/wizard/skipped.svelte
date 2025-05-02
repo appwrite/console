@@ -36,12 +36,12 @@
 </script>
 
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { CopyInput, Modal } from '$lib/components';
     import { Button, FormList } from '$lib/elements/forms';
     import { getProjectEndpoint } from '$lib/helpers/project';
 
-    const project = $page.params.project;
+    const project = page.params.project;
 </script>
 
 <Modal

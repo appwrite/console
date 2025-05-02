@@ -9,6 +9,7 @@
     import RecordsCard from './recordsCard.svelte';
     import type { Domain } from '$lib/sdk/domains';
     import type { Models } from '@appwrite.io/console';
+    import { page } from '$app/state';
 
     export let show = false;
     export let selectedDomain: Domain | Models.ProxyRule;
@@ -16,7 +17,9 @@
     let error = null;
     async function retryDomain() {
         try {
-            await sdk.forProject.proxy.updateRuleVerification(selectedDomain.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.updateRuleVerification(selectedDomain.$id);
             await invalidate(Dependencies.SITES_DOMAINS);
             show = false;
             addNotification({

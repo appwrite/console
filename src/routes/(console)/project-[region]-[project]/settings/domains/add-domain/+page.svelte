@@ -10,7 +10,7 @@
     import { Dependencies } from '$lib/constants';
     import { writable } from 'svelte/store';
 
-    const routeBase = `${base}/project-${page.params.project}/settings/domains`;
+    const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
 
     //TODO: enable once combo box is fixed
     // let { data } = $props();
@@ -22,7 +22,9 @@
 
     async function addDomain() {
         try {
-            const rule = await sdk.forProject.proxy.createAPIRule(domainName);
+            const rule = await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.createAPIRule(domainName);
             if (rule?.status === 'verified') {
                 await goto(routeBase);
                 await invalidate(Dependencies.DOMAINS);

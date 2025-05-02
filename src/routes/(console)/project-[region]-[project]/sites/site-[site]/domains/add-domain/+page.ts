@@ -8,11 +8,13 @@ export const load = async ({ parent, depends }) => {
     depends(Dependencies.DOMAINS, Dependencies.SITES_DOMAINS);
 
     const [rules, installations] = await Promise.all([
-        sdk.forProject.proxy.listRules([
-            Query.equal('type', RuleType.DEPLOYMENT),
-            Query.equal('trigger', RuleTrigger.MANUAL)
-        ]),
-        sdk.forProject.vcs.listInstallations()
+        sdk
+            .forProject(page.params.region, page.params.project)
+            .proxy.listRules([
+                Query.equal('type', RuleType.DEPLOYMENT),
+                Query.equal('trigger', RuleTrigger.MANUAL)
+            ]),
+        sdk.forProject(page.params.region, page.params.project).vcs.listInstallations()
     ]);
 
     return {
@@ -21,10 +23,9 @@ export const load = async ({ parent, depends }) => {
         installations,
         branches:
             site?.installationId && site?.providerRepositoryId
-                ? await sdk.forProject.vcs.listRepositoryBranches(
-                      site.installationId,
-                      site.providerRepositoryId
-                  )
+                ? await sdk
+                      .forProject(page.params.region, page.params.project)
+                      .vcs.listRepositoryBranches(site.installationId, site.providerRepositoryId)
                 : undefined
     };
 };

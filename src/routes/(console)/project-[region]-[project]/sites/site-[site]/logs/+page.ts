@@ -20,11 +20,13 @@ export const load = async ({ params, depends, url, route, parent }) => {
         limit,
         query,
         site,
-        logs: await sdk.forProject.sites.listLogs(params.site, [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc(''),
-            ...parsedQueries.values()
-        ])
+        logs: await sdk
+            .forProject(page.params.region, page.params.project)
+            .sites.listLogs(params.site, [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ])
     };
 };

@@ -14,7 +14,7 @@
     import { type Component } from 'svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
 
     export let variables: Partial<Models.TemplateVariable>[] = [];
     export let templateVariables: Models.TemplateVariable[] = [];

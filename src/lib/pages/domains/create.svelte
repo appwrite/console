@@ -8,14 +8,14 @@
     import Step2 from './wizard/step2.svelte';
     import { onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { realtime } from '$lib/stores/sdk';
 
     onMount(() => {
         domain.set({ $id: '', domain: '' });
 
         return realtime
-            .forProject($page.params.region, $page.params.region)
+            .forProject(page.params.region, page.params.region)
             .subscribe<Models.ProxyRule>('console', (data) => domain.set(data.payload));
     });
 

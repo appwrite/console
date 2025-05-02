@@ -45,24 +45,26 @@
                 customData[item[0]] = item[1];
             }
 
-            const response = await sdk.forProject.messaging.createPush(
-                messageId,
-                title,
-                body,
-                topics,
-                users,
-                targets,
-                customData,
-                undefined,
-                fileCompoundId,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                draft,
-                scheduledAt
-            );
+            const response = await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.createPush(
+                    messageId,
+                    title,
+                    body,
+                    topics,
+                    users,
+                    targets,
+                    customData,
+                    undefined,
+                    fileCompoundId,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    draft,
+                    scheduledAt
+                );
             let message = '';
             switch (response.status) {
                 case 'draft':
@@ -83,7 +85,9 @@
                 providerType: 'push',
                 status: response.status
             });
-            await goto(`${base}/project-${page.params.project}/messaging/message-${response.$id}`);
+            await goto(
+                `${base}/project-${page.params.region}-${page.params.project}/messaging/message-${response.$id}`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -101,7 +105,7 @@
 
 <Wizard
     title="Create push message"
-    href={`${base}/project-${page.params.project}/messaging/`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/messaging/`}
     bind:showExitModal
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>

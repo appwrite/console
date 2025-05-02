@@ -38,7 +38,7 @@
         </Layout.Stack>
         <Button
             secondary
-            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/deployments`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments`}>
             View all
         </Button>
     </Layout.Stack>
@@ -62,7 +62,7 @@
             {#each deploymentList?.deployments as deployment}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
+                    href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
                     <Table.Cell {root}>
                         <Id value={deployment.$id}>{deployment.$id}</Id>
                     </Table.Cell>

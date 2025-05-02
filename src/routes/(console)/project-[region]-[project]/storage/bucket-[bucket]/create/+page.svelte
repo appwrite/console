@@ -47,7 +47,7 @@
         try {
             const promise = uploader.uploadFile(page.params.bucket, fileId, files[0], permissions);
             await goto(
-                `${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}`
+                `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}`
             );
             addNotification({
                 type: 'success',
@@ -71,7 +71,7 @@
 
 <Wizard
     title="Create file"
-    href={`${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}/`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/`}
     bind:showExitModal
     column
     confirmExit>
@@ -88,7 +88,7 @@
                                 size.value
                             )}{size.unit}. You can adjust it in your
                             <a
-                                href={`${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}/settings`}
+                                href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/settings`}
                                 style:text-decoration="underline">bucket settings</a
                             >.
                         </Alert.Inline>

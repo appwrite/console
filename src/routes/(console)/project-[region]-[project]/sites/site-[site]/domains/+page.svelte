@@ -18,7 +18,7 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <SearchQuery placeholder="Search domain" />
         <Button
-            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}
+            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}
             on:click={() => {
                 trackEvent(Click.DomainCreateClick, {
                     source: 'sites_domain_overview'
@@ -66,7 +66,7 @@
 
                     <Button
                         secondary
-                        href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}
+                        href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains/add-domain`}
                         size="s">
                         Add domain
                     </Button>

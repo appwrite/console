@@ -9,7 +9,7 @@
     import Button from '$lib/elements/forms/button.svelte';
     import Form from '$lib/elements/forms/form.svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { onboarding } from '$routes/(console)/project-[project]/store';
+    import { onboarding } from '$routes/(console)/project-[region]-[project]/store';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -39,7 +39,9 @@
             trackEvent(Submit.KeyCreate, {
                 scopes: scopes
             });
-            goto(`${base}/project-${page.params.project}/overview/keys/${$id}`);
+            goto(
+                `${base}/project-${page.params.region}-${page.params.project}/overview/keys/${$id}`
+            );
             addNotification({
                 message: `API key has been created`,
                 type: 'success'
@@ -56,7 +58,7 @@
 
 <Wizard
     title="Create API key"
-    href={`${base}/project-${page.params.project}/overview/keys/`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/overview/keys/`}
     bind:showExitModal
     column
     confirmExit>

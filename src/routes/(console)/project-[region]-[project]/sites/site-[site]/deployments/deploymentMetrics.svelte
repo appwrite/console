@@ -61,7 +61,9 @@
             metrics = metrics;
 
             try {
-                const usage = await sdk.forProject.sites.getUsage(page.params.site, range);
+                const usage = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .sites.getUsage(page.params.site, range);
                 metrics = metrics.map((metric) => {
                     metric.value = usage[metric.id] ?? '-';
                     return metric;

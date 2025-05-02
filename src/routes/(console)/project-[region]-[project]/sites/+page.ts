@@ -12,10 +12,12 @@ export const load = async ({ url, depends, route }) => {
     const offset = pageToOffset(page, limit);
     const view = getView(url, route, View.Grid, View.Grid);
 
-    const siteList = await sdk.forProject.sites.list(
-        [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-        search || undefined
-    );
+    const siteList = await sdk
+        .forProject(page.params.region, page.params.project)
+        .sites.list(
+            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+            search || undefined
+        );
 
     return {
         offset,

@@ -17,7 +17,7 @@
     service="databases">
     {#each data.databases.databases as database}
         <GridItem1
-            href={`${base}/project-${$page.params.region}-${project}/databases/database-${database.$id}`}>
+            href={`${base}/project-${page.params.region}-${project}/databases/database-${database.$id}`}>
             <svelte:fragment slot="title">{database.name}</svelte:fragment>
             <svelte:fragment slot="subtitle">
                 {#if data.lastBackups && data.lastBackups[database.$id]}

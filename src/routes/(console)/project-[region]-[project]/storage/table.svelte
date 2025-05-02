@@ -18,7 +18,9 @@
         {/each}
     </svelte:fragment>
     {#each data.buckets.buckets as bucket (bucket.$id)}
-        <Table.Row.Link {root} href={`${base}/project-${projectId}/storage/bucket-${bucket.$id}`}>
+        <Table.Row.Link
+            {root}
+            href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucket.$id}`}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

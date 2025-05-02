@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
     import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { get } from 'svelte/store';
 
     export async function submitDatetime(
@@ -10,9 +10,8 @@
         key: string,
         data: Partial<Models.AttributeDatetime>
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.createDatetimeAttribute(
                 databaseId,
                 collectionId,
@@ -29,9 +28,8 @@
         data: Partial<Models.AttributeDatetime>,
         originalKey?: string
     ) {
-        const $page = get(page);
         await sdk
-            .forProject($page.params.region, $page.params.project)
+            .forProject(page.params.region, page.params.project)
             .databases.updateDatetimeAttribute(
                 databaseId,
                 collectionId,

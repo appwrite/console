@@ -40,7 +40,7 @@
     {#each data.deploymentList.deployments as deployment}
         <Table.Row.Link
             {root}
-            href={`${base}/project-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/deployments/deployment-${deployment.$id}`}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

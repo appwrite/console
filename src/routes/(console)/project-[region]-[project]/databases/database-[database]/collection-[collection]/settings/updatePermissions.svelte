@@ -26,7 +26,7 @@
     async function updatePermissions() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.updateCollection(
                     databaseId,
                     $collection.$id,

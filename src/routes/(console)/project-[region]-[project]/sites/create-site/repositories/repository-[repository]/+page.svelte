@@ -58,12 +58,14 @@
 
     async function detectFramework() {
         try {
-            const response = await sdk.forProject.vcs.createRepositoryDetection(
-                $installation.$id,
-                data.repository.id,
-                VCSDetectionType.Framework,
-                rootDir
-            );
+            const response = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.createRepositoryDetection(
+                    $installation.$id,
+                    data.repository.id,
+                    VCSDetectionType.Framework,
+                    rootDir
+                );
             framework = data.frameworks.frameworks.find((f) => f.key === response.framework);
             adapter = framework?.adapters[0];
             installCommand = adapter?.installCommand;
@@ -92,49 +94,49 @@
             const buildRuntime = Object.values(BuildRuntime).find(
                 (f) => f === framework.buildRuntime
             );
-            let site = await sdk.forProject.sites.create(
-                id || ID.unique(),
-                name,
-                fr,
-                buildRuntime,
-                undefined,
-                undefined,
-                undefined,
-                installCommand,
-                buildCommand,
-                outputDirectory,
-                undefined,
-                data.installation.$id,
-                undefined,
-                data.repository.id,
-                branch,
-                silentMode,
-                rootDir
-            );
+            let site = await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.create(
+                    id || ID.unique(),
+                    name,
+                    fr,
+                    buildRuntime,
+                    undefined,
+                    undefined,
+                    undefined,
+                    installCommand,
+                    buildCommand,
+                    outputDirectory,
+                    undefined,
+                    data.installation.$id,
+                    undefined,
+                    data.repository.id,
+                    branch,
+                    silentMode,
+                    rootDir
+                );
 
             // Add domain
-            await sdk.forProject.proxy.createSiteRule(
-                `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                site.$id
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.createSiteRule(`${domain}.${$consoleVariables._APP_DOMAIN_SITES}`, site.$id);
 
             //Add variables
             const promises = variables.map((variable) =>
-                sdk.forProject.sites.createVariable(
-                    site.$id,
-                    variable.key,
-                    variable.value,
-                    variable?.secret ?? false
-                )
+                sdk
+                    .forProject(page.params.region, page.params.project)
+                    .sites.createVariable(
+                        site.$id,
+                        variable.key,
+                        variable.value,
+                        variable?.secret ?? false
+                    )
             );
             await Promise.all(promises);
 
-            const deployment = await sdk.forProject.sites.createVcsDeployment(
-                site.$id,
-                VCSDeploymentType.Branch,
-                branch,
-                true
-            );
+            const deployment = await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.createVcsDeployment(site.$id, VCSDeploymentType.Branch, branch, true);
 
             trackEvent(Submit.SiteCreate, {
                 source: 'repository',
@@ -142,7 +144,7 @@
             });
 
             await goto(
-                `${base}/project-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+                `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
             );
         } catch (e) {
             addNotification({
@@ -161,7 +163,7 @@
 <Wizard
     title="Create site"
     bind:showExitModal
-    href={`${base}/project-${page.params.project}/sites/`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
@@ -179,7 +181,7 @@
                     </Layout.Stack>
                     <Button
                         secondary
-                        href={`${base}/project-${page.params.project}/sites/create-site/repositories`}>
+                        href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/repositories`}>
                         Change
                     </Button>
                 </Layout.Stack>

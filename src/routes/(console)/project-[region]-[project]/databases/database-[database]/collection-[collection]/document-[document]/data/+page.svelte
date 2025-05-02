@@ -49,7 +49,7 @@
     async function updateData() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.updateDocument(
                     databaseId,
                     collectionId,

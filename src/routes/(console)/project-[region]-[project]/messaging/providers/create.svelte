@@ -21,118 +21,138 @@
             const providerId = $providerParams[$provider].providerId || ID.unique();
             switch ($provider) {
                 case Providers.Twilio:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createTwilioProvider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        $providerParams[$provider].from,
-                        $providerParams[$provider].accountSid,
-                        $providerParams[$provider].authToken,
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createTwilioProvider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            $providerParams[$provider].from,
+                            $providerParams[$provider].accountSid,
+                            $providerParams[$provider].authToken,
+                            $providerParams[$provider].enabled
+                        );
                     break;
                 case Providers.Msg91:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createMsg91Provider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        $providerParams[$provider].templateId,
-                        $providerParams[$provider].senderId,
-                        $providerParams[$provider].authKey,
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createMsg91Provider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            $providerParams[$provider].templateId,
+                            $providerParams[$provider].senderId,
+                            $providerParams[$provider].authKey,
+                            $providerParams[$provider].enabled
+                        );
                     break;
                 case Providers.Telesign:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createTelesignProvider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        $providerParams[$provider].from,
-                        $providerParams[$provider].customerId,
-                        $providerParams[$provider].apiKey,
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createTelesignProvider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            $providerParams[$provider].from,
+                            $providerParams[$provider].customerId,
+                            $providerParams[$provider].apiKey,
+                            $providerParams[$provider].enabled
+                        );
                     break;
                 case Providers.Textmagic:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createTextmagicProvider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        $providerParams[$provider].from,
-                        $providerParams[$provider].username,
-                        $providerParams[$provider].apiKey,
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createTextmagicProvider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            $providerParams[$provider].from,
+                            $providerParams[$provider].username,
+                            $providerParams[$provider].apiKey,
+                            $providerParams[$provider].enabled
+                        );
                     break;
                 case Providers.Vonage:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createVonageProvider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        $providerParams[$provider].from,
-                        $providerParams[$provider].apiKey,
-                        $providerParams[$provider].apiSecret,
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createVonageProvider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            $providerParams[$provider].from,
+                            $providerParams[$provider].apiKey,
+                            $providerParams[$provider].apiSecret,
+                            $providerParams[$provider].enabled
+                        );
                     break;
                 case Providers.Mailgun:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createMailgunProvider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        $providerParams[$provider].apiKey,
-                        $providerParams[$provider].domain,
-                        $providerParams[$provider].isEuRegion,
-                        $providerParams[$provider].fromName || undefined,
-                        $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName || undefined,
-                        $providerParams[$provider].replyToEmail || undefined,
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createMailgunProvider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            $providerParams[$provider].apiKey,
+                            $providerParams[$provider].domain,
+                            $providerParams[$provider].isEuRegion,
+                            $providerParams[$provider].fromName || undefined,
+                            $providerParams[$provider].fromEmail,
+                            $providerParams[$provider].replyToName || undefined,
+                            $providerParams[$provider].replyToEmail || undefined,
+                            $providerParams[$provider].enabled
+                        );
                     break;
                 case Providers.Sendgrid:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createSendgridProvider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        $providerParams[$provider].apiKey,
-                        $providerParams[$provider].fromName || undefined,
-                        $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName || undefined,
-                        $providerParams[$provider].replyToEmail || undefined,
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createSendgridProvider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            $providerParams[$provider].apiKey,
+                            $providerParams[$provider].fromName || undefined,
+                            $providerParams[$provider].fromEmail,
+                            $providerParams[$provider].replyToName || undefined,
+                            $providerParams[$provider].replyToEmail || undefined,
+                            $providerParams[$provider].enabled
+                        );
                     break;
                 case Providers.SMTP:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createSmtpProvider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        $providerParams[$provider].host,
-                        $providerParams[$provider].port || undefined,
-                        $providerParams[$provider].username || undefined,
-                        $providerParams[$provider].password || undefined,
-                        $providerParams[$provider].encryption,
-                        $providerParams[$provider].autoTLS,
-                        $providerParams[$provider].mailer || undefined,
-                        $providerParams[$provider].fromName || undefined,
-                        $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName || undefined,
-                        $providerParams[$provider].replyToEmail || undefined,
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createSmtpProvider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            $providerParams[$provider].host,
+                            $providerParams[$provider].port || undefined,
+                            $providerParams[$provider].username || undefined,
+                            $providerParams[$provider].password || undefined,
+                            $providerParams[$provider].encryption,
+                            $providerParams[$provider].autoTLS,
+                            $providerParams[$provider].mailer || undefined,
+                            $providerParams[$provider].fromName || undefined,
+                            $providerParams[$provider].fromEmail,
+                            $providerParams[$provider].replyToName || undefined,
+                            $providerParams[$provider].replyToEmail || undefined,
+                            $providerParams[$provider].enabled
+                        );
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createFcmProvider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        JSON.parse($providerParams[$provider].serviceAccountJSON),
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createFcmProvider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            JSON.parse($providerParams[$provider].serviceAccountJSON),
+                            $providerParams[$provider].enabled
+                        );
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createApnsProvider(
-                        providerId,
-                        $providerParams[$provider].name,
-                        $providerParams[$provider].authKey,
-                        $providerParams[$provider].authKeyId,
-                        $providerParams[$provider].teamId,
-                        $providerParams[$provider].bundleId,
-                        $providerParams[$provider].sandbox,
-                        $providerParams[$provider].enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.createApnsProvider(
+                            providerId,
+                            $providerParams[$provider].name,
+                            $providerParams[$provider].authKey,
+                            $providerParams[$provider].authKeyId,
+                            $providerParams[$provider].teamId,
+                            $providerParams[$provider].bundleId,
+                            $providerParams[$provider].sandbox,
+                            $providerParams[$provider].enabled
+                        );
                     break;
             }
             wizard.hide();
@@ -144,7 +164,7 @@
                 provider: $provider
             });
             await goto(
-                `${base}/project-${$project.region)-${$project.$id}/messaging/providers/provider-${response.$id}`
+                `${base}/project-${$project.region}-${$project.$id}/messaging/providers/provider-${response.$id}`
             );
         } catch (error) {
             addNotification({

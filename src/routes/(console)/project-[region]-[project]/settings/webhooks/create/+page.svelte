@@ -42,7 +42,9 @@
             trackEvent(Submit.WebhookCreate, {
                 events: events
             });
-            goto(`${base}/project-${page.params.project}/settings/webhooks/${webhook.$id}`);
+            goto(
+                `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/${webhook.$id}`
+            );
         } catch (error) {
             trackError(error.message, Submit.DomainCreate);
             throw new Error(error.message);
@@ -53,7 +55,7 @@
 <Form onSubmit={create}>
     <Wizard
         title="Create webhook"
-        href={`${base}/project-${page.params.project}/settings/webhooks`}
+        href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks`}
         bind:showExitModal
         column
         confirmExit>

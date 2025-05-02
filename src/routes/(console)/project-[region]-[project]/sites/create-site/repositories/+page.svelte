@@ -20,12 +20,15 @@
             from: 'cover'
         });
         repository.set(e);
-        const target = `${base}/project-${page.params.project}/sites/create-site/repositories/repository-${e.id}?installation=${$installation.$id}`;
+        const target = `${base}/project-${page.params.region}-${page.params.project}/sites/create-site/repositories/repository-${e.id}?installation=${$installation.$id}`;
         goto(target);
     }
 </script>
 
-<Wizard title="Create site" href={`${base}/project-${page.params.project}/sites/`} hideFooter>
+<Wizard
+    title="Create site"
+    href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
+    hideFooter>
     {#if !!data?.installations?.total}
         <Fieldset legend="Git repository">
             <Repositories
@@ -49,7 +52,7 @@
                         </Typography.Text>
                     </Layout.Stack>
                     <Button
-                        href={`${base}/project-${page.params.project}/sites/create-site/templates`}
+                        href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/templates`}
                         secondary>View templates</Button>
                 {:else}
                     <Layout.Stack gap="s">

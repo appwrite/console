@@ -24,7 +24,7 @@
     import { onMount } from 'svelte';
     import { ConnectRepoModal } from '$lib/components/git/index.js';
 
-    const routeBase = `${base}/project-${page.params.project}/sites/site-${page.params.site}/domains`;
+    const routeBase = `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/domains`;
 
     let { data } = $props();
 
@@ -53,20 +53,18 @@
         try {
             let rule: Models.ProxyRule;
             if (behaviour === 'BRANCH') {
-                rule = await sdk.forProject.proxy.createSiteRule(
-                    domainName,
-                    page.params.site,
-                    branch
-                );
+                rule = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.createSiteRule(domainName, page.params.site, branch);
             } else if (behaviour === 'REDIRECT') {
                 const sc = Object.values(StatusCode).find((code) => parseInt(code) === statusCode);
-                rule = await sdk.forProject.proxy.createRedirectRule(
-                    domainName,
-                    $protocol + redirect,
-                    sc
-                );
+                rule = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.createRedirectRule(domainName, $protocol + redirect, sc);
             } else if (behaviour === 'ACTIVE') {
-                rule = await sdk.forProject.proxy.createSiteRule(domainName, page.params.site);
+                rule = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.createSiteRule(domainName, page.params.site);
             }
             if (rule?.status === 'verified') {
                 await goto(routeBase);
@@ -85,26 +83,28 @@
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         try {
-            await sdk.forProject.sites.update(
-                data.site.$id,
-                data.site.name,
-                data.site.framework as Framework,
-                data.site.enabled,
-                data.site.logging || undefined,
-                data.site.timeout,
-                data.site.installCommand,
-                data.site.buildCommand,
-                data.site.outputDirectory,
-                data.site.buildRuntime as BuildRuntime,
-                data.site.adapter as Adapter,
-                data.site.fallbackFile,
-                selectedInstallationId,
-                selectedRepository,
-                'main',
-                undefined,
-                undefined,
-                undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.update(
+                    data.site.$id,
+                    data.site.name,
+                    data.site.framework as Framework,
+                    data.site.enabled,
+                    data.site.logging || undefined,
+                    data.site.timeout,
+                    data.site.installCommand,
+                    data.site.buildCommand,
+                    data.site.outputDirectory,
+                    data.site.buildRuntime as BuildRuntime,
+                    data.site.adapter as Adapter,
+                    data.site.fallbackFile,
+                    selectedInstallationId,
+                    selectedRepository,
+                    'main',
+                    undefined,
+                    undefined,
+                    undefined
+                );
             invalidate(Dependencies.SITE);
         } catch (error) {
             console.log(error);

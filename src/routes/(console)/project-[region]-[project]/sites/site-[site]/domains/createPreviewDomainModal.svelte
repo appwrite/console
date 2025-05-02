@@ -21,10 +21,12 @@
     let error = null;
     async function onSubmit() {
         try {
-            await sdk.forProject.proxy.createSiteRule(
-                `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
-                page.params.site
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.createSiteRule(
+                    `${domain}.${$consoleVariables._APP_DOMAIN_SITES}`,
+                    page.params.site
+                );
 
             await invalidate(Dependencies.SITES_DOMAINS);
             show = false;

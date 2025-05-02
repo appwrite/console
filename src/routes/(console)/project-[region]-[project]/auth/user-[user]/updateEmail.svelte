@@ -8,7 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
 
     let userEmail: string = null;
 
@@ -19,7 +19,7 @@
     async function updateEmail() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .users.updateEmail($user.$id, userEmail);
             await invalidate(Dependencies.USER);
             addNotification({

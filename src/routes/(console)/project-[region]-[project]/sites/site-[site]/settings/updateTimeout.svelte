@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { page } from '$app/state';
 
     export let site: Models.Site;
 
@@ -17,25 +18,27 @@
 
     async function updateTimeout() {
         try {
-            await sdk.forProject.sites.update(
-                site.$id,
-                site.name,
-                site?.framework as Framework,
-                site.enabled || undefined,
-                site.logging || undefined,
-                timeout || undefined,
-                site.installCommand || undefined,
-                site.buildCommand || undefined,
-                site.outputDirectory || undefined,
-                (site?.buildRuntime as BuildRuntime) || undefined,
-                site.adapter as Adapter,
-                site.fallbackFile || undefined,
-                site.installationId || undefined,
-                site.providerRepositoryId || undefined,
-                site.providerBranch || undefined,
-                site.providerSilentMode || undefined,
-                site.providerRootDirectory || undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.update(
+                    site.$id,
+                    site.name,
+                    site?.framework as Framework,
+                    site.enabled || undefined,
+                    site.logging || undefined,
+                    timeout || undefined,
+                    site.installCommand || undefined,
+                    site.buildCommand || undefined,
+                    site.outputDirectory || undefined,
+                    (site?.buildRuntime as BuildRuntime) || undefined,
+                    site.adapter as Adapter,
+                    site.fallbackFile || undefined,
+                    site.installationId || undefined,
+                    site.providerRepositoryId || undefined,
+                    site.providerBranch || undefined,
+                    site.providerSilentMode || undefined,
+                    site.providerRootDirectory || undefined
+                );
             await invalidate(Dependencies.SITE);
             addNotification({
                 type: 'success',

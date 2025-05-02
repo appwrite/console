@@ -14,13 +14,13 @@
     let error: string;
     const handleSubmit = async () => {
         try {
-            await sdk.forProject.sites.delete(site.$id);
+            await sdk.forProject(page.params.region, page.params.project).sites.delete(site.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `Site has been deleted`
             });
-            await goto(`${base}/project-${page.params.project}/sites`);
+            await goto(`${base}/project-${page.params.region}-${page.params.project}/sites`);
             trackEvent(Submit.SiteDelete);
         } catch (e) {
             error = e.message;

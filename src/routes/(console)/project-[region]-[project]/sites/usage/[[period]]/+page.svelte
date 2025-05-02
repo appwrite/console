@@ -12,7 +12,7 @@
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.project}/sites/usage`}
+        path={`${base}/project-${page.params.region}-${page.params.project}/sites/usage`}
         countMetadata={{
             legend: 'Sites',
             title: 'Total sites'

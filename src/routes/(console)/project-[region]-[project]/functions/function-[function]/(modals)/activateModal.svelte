@@ -15,16 +15,13 @@
 
     const handleSubmit = async () => {
         try {
-<<<<<<<< HEAD:src/routes/(console)/project-[region]-[project]/functions/function-[function]/(modals)/activateModal.svelte
-            await sdk.forProject(page.params.region, page.params.project).functions.updateFunctionDeployment(
-                selectedDeployment.resourceId,
-                selectedDeployment.$id
-            );
-========
             await sdk
                 .forProject(page.params.region, page.params.project)
-                .functions.updateDeployment(selectedDeployment.resourceId, selectedDeployment.$id);
->>>>>>>> 93754b342accbdb6db066c33b2addea7b9e92d67:src/routes/(console)/project-[region]-[project]/functions/function-[function]/activate.svelte
+                .functions.updateFunctionDeployment(
+                    selectedDeployment.resourceId,
+                    selectedDeployment.$id
+                );
+
             showActivate = false;
             addNotification({
                 type: 'success',

@@ -15,7 +15,7 @@
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.project}/sites/site-${page.params.site}/usage`}
+        path={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/usage`}
         countMetadata={{
             legend: 'Deployments',
             title: 'Total deployments'
@@ -25,7 +25,7 @@
 
     <!-- <Usage
     title="Builds"
-    path={`${base}/project-${page.params.project}/sites/site-${page.params.site}/usage`}
+    path={`${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}/usage`}
     countMetadata={{
         legend: 'Builds',
         title: 'Total builds'

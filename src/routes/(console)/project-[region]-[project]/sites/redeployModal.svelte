@@ -18,10 +18,9 @@
 
     async function redeploy() {
         try {
-            const deployment = await sdk.forProject.sites.createDuplicateDeployment(
-                site.$id,
-                selectedDeploymentId
-            );
+            const deployment = await sdk
+                .forProject(page.params.region, page.params.project)
+                .sites.createDuplicateDeployment(site.$id, selectedDeploymentId);
             addNotification({
                 type: 'success',
                 message: `Redeploying ${site.name}`
@@ -33,7 +32,7 @@
             show = false;
             if (redirect) {
                 await goto(
-                    `${base}/project-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${deployment.$id}`
+                    `${base}/project-${page.params.region}-${page.params.project}/sites/site-${site.$id}/deployments/deployment-${deployment.$id}`
                 );
             }
         } catch (e) {

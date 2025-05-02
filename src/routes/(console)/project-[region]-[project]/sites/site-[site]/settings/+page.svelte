@@ -14,13 +14,15 @@
     import { showConnectRepo } from './store';
     import { isCloud } from '$lib/system';
     import UpdateResourceLimits from './updateResourceLimits.svelte';
-    import UpdateVariables from '$routes/(console)/project-[project]/updateVariables.svelte';
+    import UpdateVariables from '$routes/(console)/project-[region]-[project]/updateVariables.svelte';
     import UpdateLogging from './updateLogging.svelte';
 
     export let data;
 
     const sdkCreateVariable = async (key: string, value: string, secret: boolean) => {
-        await sdk.forProject.sites.createVariable(page.params.site, key, value, secret);
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .sites.createVariable(page.params.site, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
@@ -30,12 +32,16 @@
         value: string,
         secret: boolean
     ) => {
-        await sdk.forProject.sites.updateVariable(page.params.site, variableId, key, value, secret);
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .sites.updateVariable(page.params.site, variableId, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
     const sdkDeleteVariable = async (variableId: string) => {
-        await sdk.forProject.sites.deleteVariable(page.params.site, variableId);
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .sites.deleteVariable(page.params.site, variableId);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 

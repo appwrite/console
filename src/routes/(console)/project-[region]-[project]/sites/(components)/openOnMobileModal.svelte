@@ -32,7 +32,7 @@
     let tooltipMessage = $state('Copy');
 
     function getImage(url: string) {
-        return sdk.forProject.avatars.getQR(url, 352);
+        return sdk.forProject(page.params.region, page.params.project).avatars.getQR(url, 352);
     }
 </script>
 

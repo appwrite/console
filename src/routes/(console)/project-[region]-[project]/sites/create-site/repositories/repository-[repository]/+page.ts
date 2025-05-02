@@ -5,7 +5,9 @@ import { buildVerboseDomain } from '../../store';
 export const load = async ({ parent, params, url }) => {
     const { installations, frameworks, project, organization, consoleVariables } = await parent();
     const [repository] = await Promise.all([
-        sdk.forProject.vcs.getRepository(url.searchParams.get('installation'), params.repository)
+        sdk
+            .forProject(page.params.region, page.params.project)
+            .vcs.getRepository(url.searchParams.get('installation'), params.repository)
     ]);
 
     const domain = await buildVerboseDomain(

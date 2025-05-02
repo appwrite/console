@@ -74,7 +74,7 @@
 </svelte:head>
 
 <Wizard
-    href={`${base}/project-${page.params.project}/sites/`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/sites/`}
     title="Create site"
     invertColumns
     stickySide
@@ -133,7 +133,7 @@
 
                             <Card.Link
                                 variant="secondary"
-                                href={`${base}/project-${page.params.project}/sites/create-site/templates/template-${template.key}`}
+                                href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/templates/template-${template.key}`}
                                 padding="xxs">
                                 <Card.Media
                                     title={template.name}
@@ -167,7 +167,7 @@
                 search={page.url.searchParams.get('search')}>
                 <Button
                     secondary
-                    href={`${base}/project-${page.params.project}/sites/create-site/templates`}
+                    href={`${base}/project-${page.params.region}-${page.params.project}/sites/create-site/templates`}
                     >Clear search</Button>
             </EmptySearch>
         {/if}

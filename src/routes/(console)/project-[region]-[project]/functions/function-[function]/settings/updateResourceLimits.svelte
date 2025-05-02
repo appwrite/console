@@ -23,25 +23,27 @@
             if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
-            await sdk.forProject.functions.update(
-                func.$id,
-                func.name,
-                func.runtime,
-                func.execute || undefined,
-                func.events || undefined,
-                func.schedule || undefined,
-                func.timeout || undefined,
-                func.enabled || undefined,
-                func.logging || undefined,
-                func.entrypoint || undefined,
-                func.commands || undefined,
-                func.scopes || undefined,
-                func.installationId || undefined,
-                func.providerRepositoryId || undefined,
-                func.providerBranch || undefined,
-                func.providerSilentMode || undefined,
-                func.providerRootDirectory || undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.update(
+                    func.$id,
+                    func.name,
+                    func.runtime,
+                    func.execute || undefined,
+                    func.events || undefined,
+                    func.schedule || undefined,
+                    func.timeout || undefined,
+                    func.enabled || undefined,
+                    func.logging || undefined,
+                    func.entrypoint || undefined,
+                    func.commands || undefined,
+                    func.scopes || undefined,
+                    func.installationId || undefined,
+                    func.providerRepositoryId || undefined,
+                    func.providerBranch || undefined,
+                    func.providerSilentMode || undefined,
+                    func.providerRootDirectory || undefined
+                );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',

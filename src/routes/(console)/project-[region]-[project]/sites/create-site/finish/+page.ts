@@ -8,16 +8,20 @@ export const load = async ({ url, depends }) => {
     depends(Dependencies.SITE);
     if (!url.searchParams.has('site')) error(404, 'Deployment is not optional');
     const siteId = url.searchParams.get('site');
-    const site = await sdk.forProject.sites.get(siteId);
-    const proxyRuleList = await sdk.forProject.proxy.listRules([
-        Query.equal('type', RuleType.DEPLOYMENT),
-        Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
-        Query.equal('deploymentResourceId', siteId),
-        Query.equal('deploymentId', site.deploymentId)
-    ]);
+    const site = await sdk.forProject(page.params.region, page.params.project).sites.get(siteId);
+    const proxyRuleList = await sdk
+        .forProject(page.params.region, page.params.project)
+        .proxy.listRules([
+            Query.equal('type', RuleType.DEPLOYMENT),
+            Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+            Query.equal('deploymentResourceId', siteId),
+            Query.equal('deploymentId', site.deploymentId)
+        ]);
     return {
         site,
-        deployment: await sdk.forProject.sites.getDeployment(siteId, site.deploymentId),
+        deployment: await sdk
+            .forProject(page.params.region, page.params.project)
+            .sites.getDeployment(siteId, site.deploymentId),
         proxyRuleList
     };
 };

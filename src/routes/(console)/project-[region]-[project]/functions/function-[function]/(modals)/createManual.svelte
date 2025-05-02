@@ -10,6 +10,7 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
+    import { page } from '$app/state';
 
     export let show = false;
 
@@ -18,13 +19,9 @@
 
     async function create() {
         try {
-            await sdk.forProject.functions.createDeployment(
-                $func.$id,
-                files[0],
-                true,
-                undefined,
-                undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.createDeployment($func.$id, files[0], true, undefined, undefined);
             await invalidate(Dependencies.DEPLOYMENTS);
             files = undefined;
             show = false;

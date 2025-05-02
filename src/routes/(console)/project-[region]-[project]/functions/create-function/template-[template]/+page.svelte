@@ -94,11 +94,9 @@
     async function createRepository() {
         try {
             isCreatingRepository = true;
-            const repo = await sdk.forProject.vcs.createRepository(
-                $installation.$id,
-                repositoryName,
-                repositoryPrivate
-            );
+            const repo = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.createRepository($installation.$id, repositoryName, repositoryPrivate);
             repository.set(repo);
             selectedRepository = repo.id;
             showConfig = true;
@@ -123,52 +121,60 @@
             try {
                 const rt = data.template.runtimes.find((r) => r.name === runtime);
 
-                const func = await sdk.forProject.functions.create(
-                    id || ID.unique(),
-                    name,
-                    runtime as Runtime,
-                    data.template.permissions?.length ? data.template.permissions : undefined,
-                    data.template.events?.length ? data.template.events : undefined,
-                    data.template.cron || undefined,
-                    data.template.timeout ? data.template.timeout : undefined,
-                    undefined,
-                    undefined,
-                    entrypoint || rt?.entrypoint || undefined,
-                    rt?.commands || undefined,
-                    selectedScopes?.length ? selectedScopes : undefined,
-                    connectBehaviour === 'later' ? undefined : $installation?.$id || undefined,
-                    connectBehaviour === 'later' ? undefined : $repository?.id || undefined,
-                    branch,
-                    silentMode,
-                    rootDir,
-                    specification || undefined
-                );
+                const func = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .functions.create(
+                        id || ID.unique(),
+                        name,
+                        runtime as Runtime,
+                        data.template.permissions?.length ? data.template.permissions : undefined,
+                        data.template.events?.length ? data.template.events : undefined,
+                        data.template.cron || undefined,
+                        data.template.timeout ? data.template.timeout : undefined,
+                        undefined,
+                        undefined,
+                        entrypoint || rt?.entrypoint || undefined,
+                        rt?.commands || undefined,
+                        selectedScopes?.length ? selectedScopes : undefined,
+                        connectBehaviour === 'later' ? undefined : $installation?.$id || undefined,
+                        connectBehaviour === 'later' ? undefined : $repository?.id || undefined,
+                        branch,
+                        silentMode,
+                        rootDir,
+                        specification || undefined
+                    );
 
                 // Add domain
-                await sdk.forProject.proxy.createFunctionRule(
-                    `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
-                    func.$id
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.createFunctionRule(
+                        `${ID.unique()}.${$consoleVariables._APP_DOMAIN_FUNCTIONS}`,
+                        func.$id
+                    );
 
                 // Add variables
                 const promises = variables.map((variable) =>
-                    sdk.forProject.functions.createVariable(
-                        func.$id,
-                        variable.name,
-                        variable.value,
-                        variable?.secret ?? false
-                    )
+                    sdk
+                        .forProject(page.params.region, page.params.project)
+                        .functions.createVariable(
+                            func.$id,
+                            variable.name,
+                            variable.value,
+                            variable?.secret ?? false
+                        )
                 );
                 await Promise.all(promises);
 
-                await sdk.forProject.functions.createTemplateDeployment(
-                    func.$id,
-                    data.template.providerRepositoryId || undefined,
-                    data.template.providerOwner || undefined,
-                    rt?.providerRootDirectory || undefined,
-                    data.template.providerVersion || undefined,
-                    true
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .functions.createTemplateDeployment(
+                        func.$id,
+                        data.template.providerRepositoryId || undefined,
+                        data.template.providerOwner || undefined,
+                        rt?.providerRootDirectory || undefined,
+                        data.template.providerVersion || undefined,
+                        true
+                    );
 
                 trackEvent(Submit.FunctionCreate, {
                     runtime: runtime,
@@ -176,7 +182,9 @@
                     framework: data.template.name
                 });
 
-                await goto(`${base}/project-${page.params.project}/functions/function-${func.$id}`);
+                await goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}`
+                );
                 invalidate(Dependencies.FUNCTION);
             } catch (e) {
                 addNotification({
@@ -209,7 +217,7 @@
 <Wizard
     title="Create function"
     bind:showExitModal
-    href={`${base}/project-${page.params.project}/functions`}
+    href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
     confirmExit>
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">

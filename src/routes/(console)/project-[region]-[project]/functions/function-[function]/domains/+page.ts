@@ -13,7 +13,7 @@ import { PAGE_LIMIT } from '$lib/constants';
 export const load: PageLoad = async ({ depends, params, url, route }) => {
     depends(Dependencies.FUNCTION_DOMAINS);
     const page = getPage(url);
-    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
+    const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
     const search = getSearch(url);

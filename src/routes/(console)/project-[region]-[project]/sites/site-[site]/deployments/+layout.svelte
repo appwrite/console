@@ -42,7 +42,9 @@
             label: 'Create deployment',
             async callback() {
                 if (!page.url.pathname.endsWith(page.params.site)) {
-                    await goto(`${base}/project-${$project.$id}/sites/site-${page.params.site}`);
+                    await goto(
+                        `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}`
+                    );
                 }
             },
             keys: page.url.pathname.endsWith(page.params.site) ? ['c'] : ['c', 'd'],
@@ -54,7 +56,7 @@
             label: 'Permissions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/sites/site-${page.params.site}/settings#permissions`
+                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/settings#permissions`
                 );
                 scrollBy({ top: -100 });
             },
@@ -67,7 +69,7 @@
             label: 'Variables',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/sites/site-${page.params.site}/settings#variables`
+                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/settings#variables`
                 );
             },
             icon: IconList,
@@ -77,7 +79,9 @@
         {
             label: 'Go to deployments',
             callback() {
-                goto(`${base}/project-${$project.$id}/sites/site-${page.params.site}/deployments`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/deployments`
+                );
             },
             keys: ['g', 'd'],
             group: 'navigation',
@@ -87,7 +91,9 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(`${base}/project-${$project.$id}/sites/site-${page.params.site}/usage`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/usage`
+                );
             },
             keys: ['g', 'u'],
             group: 'navigation',
@@ -97,7 +103,9 @@
         {
             label: 'Go to logs',
             callback() {
-                goto(`${base}/project-${$project.$id}/sites/site-${page.params.site}/logs`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/logs`
+                );
             },
             keys: ['g', 'e'],
             group: 'navigation',
@@ -107,7 +115,9 @@
         {
             label: 'Go to settings',
             callback() {
-                goto(`${base}/project-${$project.$id}/sites/site-${page.params.site}/settings`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/settings`
+                );
             },
             keys: ['g', 's'],
             group: 'navigation',

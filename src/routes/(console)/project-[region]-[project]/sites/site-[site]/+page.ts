@@ -10,23 +10,31 @@ export const load = async ({ params, depends, parent }) => {
     const { site } = await parent();
 
     const [deploymentList, prodReadyDeployments, proxyRuleList] = await Promise.all([
-        sdk.forProject.sites.listDeployments(params.site, [Query.limit(4), Query.orderDesc('')]),
-        sdk.forProject.sites.listDeployments(params.site, [
-            Query.equal('status', 'ready'),
-            Query.equal('activate', true),
-            Query.orderDesc('')
-        ]),
-        sdk.forProject.proxy.listRules([
-            Query.equal('type', RuleType.DEPLOYMENT),
-            Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
-            Query.equal('deploymentResourceId', site.$id),
-            Query.equal('deploymentId', site.deploymentId),
-            Query.orderDesc('')
-        ])
+        sdk
+            .forProject(page.params.region, page.params.project)
+            .sites.listDeployments(params.site, [Query.limit(4), Query.orderDesc('')]),
+        sdk
+            .forProject(page.params.region, page.params.project)
+            .sites.listDeployments(params.site, [
+                Query.equal('status', 'ready'),
+                Query.equal('activate', true),
+                Query.orderDesc('')
+            ]),
+        sdk
+            .forProject(page.params.region, page.params.project)
+            .proxy.listRules([
+                Query.equal('type', RuleType.DEPLOYMENT),
+                Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
+                Query.equal('deploymentResourceId', site.$id),
+                Query.equal('deploymentId', site.deploymentId),
+                Query.orderDesc('')
+            ])
     ]);
 
     const deployment = deploymentList?.total
-        ? await sdk.forProject.sites.getDeployment(params.site, site.deploymentId)
+        ? await sdk
+              .forProject(page.params.region, page.params.project)
+              .sites.getDeployment(params.site, site.deploymentId)
         : null;
     return {
         site,

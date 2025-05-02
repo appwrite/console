@@ -114,7 +114,7 @@
                         {:else}
                             <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                                 Only the <Link
-                                    href={`${base}/project-${page.params.project}/functions/function-${$func.$id}/deployment-${$func.deploymentId}`}
+                                    href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${$func.$id}/deployment-${$func.deploymentId}`}
                                     variant="default">active deployment</Link> has a domain.
                             </Typography.Text>
                         {/if}

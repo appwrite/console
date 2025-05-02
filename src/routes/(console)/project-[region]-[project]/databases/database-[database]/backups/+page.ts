@@ -9,7 +9,7 @@ export const load = async ({ params, url, route, depends, parent }) => {
     depends(Dependencies.BACKUPS);
 
     const page = getPage(url);
-    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
+    const limit = getLimit(url, route, PAGE_LIMIT);
     const view = getView(params.project, url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 

@@ -19,7 +19,7 @@
     async function handleDelete() {
         try {
             await sdk
-                .forProject($page.params.region, $page.params.project)
+                .forProject(page.params.region, page.params.project)
                 .databases.deleteIndex(databaseId, $collection.$id, selectedIndex.key);
             await invalidate(Dependencies.COLLECTION);
             showDelete = false;
