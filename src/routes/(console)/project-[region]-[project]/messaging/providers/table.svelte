@@ -16,6 +16,7 @@
     import { Badge, FloatingActionBar, Icon, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconCheckCircle } from '@appwrite.io/pink-icons-svelte';
     import Confirm from '$lib/components/confirm.svelte';
+    import { page } from '$app/state';
 
     export let data: PageData;
 

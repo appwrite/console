@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { Confirm } from '$lib/components';
-    import { func } from '../store';
+    import { func } from './store';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';

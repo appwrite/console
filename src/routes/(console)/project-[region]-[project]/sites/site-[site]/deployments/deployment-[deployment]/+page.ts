@@ -12,10 +12,10 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
 
     const [deployment, proxyRuleList] = await Promise.all([
         sdk
-            .forProject(page.params.region, page.params.project)
+            .forProject(params.region, params.project)
             .sites.getDeployment(params.site, params.deployment),
         sdk
-            .forProject(page.params.region, page.params.project)
+            .forProject(params.region, params.project)
             .proxy.listRules([
                 Query.equal('type', RuleType.DEPLOYMENT),
                 Query.equal('deploymentId', params.deployment),

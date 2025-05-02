@@ -13,6 +13,7 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
+    import { page } from '$app/state';
 
     export let func: Models.Function;
     export let specs: Models.SpecificationList;

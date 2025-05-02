@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ url, route, depends, params, parent }) =>
     const page = getPage(url);
     const search = getSearch(url);
     const limit = getLimit(url, route, CARD_LIMIT);
-    const view = getView(params.project, url, route, View.Grid);
+    const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
     // already loaded by parent.
@@ -24,8 +24,8 @@ export const load: PageLoad = async ({ url, route, depends, params, parent }) =>
     const { databases, policies, lastBackups } = await fetchDatabasesAndBackups(
         limit,
         offset,
-        search,
         params,
+        search,
         currentPlan
     );
 

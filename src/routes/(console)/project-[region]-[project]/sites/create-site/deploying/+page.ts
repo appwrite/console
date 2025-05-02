@@ -12,12 +12,10 @@ export const load: PageLoad = async ({ url, depends, params }) => {
     const siteId = url.searchParams.get('site');
     const deploymentId = url.searchParams.get('deployment');
     const [site, deployment, proxyRuleList] = await Promise.all([
-        sdk.forProject(page.params.region, page.params.project).sites.get(siteId),
+        sdk.forProject(params.region, params.project).sites.get(siteId),
+        sdk.forProject(params.region, params.project).sites.getDeployment(siteId, deploymentId),
         sdk
-            .forProject(page.params.region, page.params.project)
-            .sites.getDeployment(siteId, deploymentId),
-        sdk
-            .forProject(page.params.region, page.params.project)
+            .forProject(params.region, params.project)
             .proxy.listRules([
                 Query.equal('type', RuleType.DEPLOYMENT),
                 Query.equal('deploymentResourceType', DeploymentResourceType.SITE),
@@ -33,7 +31,7 @@ export const load: PageLoad = async ({ url, depends, params }) => {
         proxyRuleList,
         repository: site?.installationId
             ? await sdk
-                  .forProject(page.params.region, page.params.project)
+                  .forProject(params.region, params.project)
                   .vcs.getRepository(site.installationId, site.providerRepositoryId)
             : undefined
     };

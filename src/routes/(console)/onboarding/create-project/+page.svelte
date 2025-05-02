@@ -1,9 +1,8 @@
 <script lang="ts">
     import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
-    import type { RegionList } from '$lib/sdk/billing';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { ID, Region } from '@appwrite.io/console';
+    import { ID, Region, type Models } from '@appwrite.io/console';
     import Loading from './loading.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -18,7 +17,7 @@
     let startAnimation = false;
     let projectName = 'Appwrite project';
     let region = Region.Default;
-    export let data: { regions: RegionList | null };
+    export let data: { regions: Models.ConsoleRegionList | null };
 
     async function createProject() {
         isLoading = true;

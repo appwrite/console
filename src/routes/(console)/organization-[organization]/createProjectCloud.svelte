@@ -6,16 +6,15 @@
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID, Region as ConsoleRegion } from '@appwrite.io/console';
+    import { ID, Region as ConsoleRegion, type Models } from '@appwrite.io/console';
     import { createProject } from './wizard/store';
     import { Button } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import CreateProject from '$lib/layout/createProject.svelte';
     import { Modal } from '$lib/components';
-    import type { Region } from '$lib/sdk/billing';
 
     const teamId = page.params.organization;
-    export let regions: Array<Region> = [];
+    export let regions: Array<Models.ConsoleRegion> = [];
     export let showCreateProjectCloud: boolean;
 
     async function onFinish() {

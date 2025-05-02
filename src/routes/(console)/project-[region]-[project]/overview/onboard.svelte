@@ -48,7 +48,6 @@
         });
     }
 
-    export let projectId: string;
     export let platforms: Models.Platform[] = [];
     export let pingCount = 0;
 

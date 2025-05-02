@@ -18,7 +18,7 @@ export const load: PageLoad = async ({ depends, url, route, params }) => {
 
     const page = getPage(url);
     const search = getSearch(url);
-    const view = getView(params.project, url, route, View.Grid);
+    const view = getView(url, route, View.Grid);
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);

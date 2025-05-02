@@ -1,38 +1,40 @@
-import { Query } from '@appwrite.io/console';
-import { sdk } from '$lib/stores/sdk';
-import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
+import { queries, queryParamToMap } from '$lib/components/filters';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
+import { sdk } from '$lib/stores/sdk';
+import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import { queryParamToMap, queries } from '$lib/components/filters';
 
 export const load: PageLoad = async ({ params, url, route, depends }) => {
-    depends(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
+    depends(Dependencies.USER_IDENTITIES);
 
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
-    const search = getSearch(url);
     const query = getQuery(url);
+    const search = getSearch(url);
 
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
 
+    const identities = await sdk
+        .forProject(params.region, params.project)
+        .users.listIdentities(
+            [
+                Query.equal('userId', params.user),
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ],
+            search
+        );
+
     return {
         offset,
         limit,
-        search,
         query,
-        subscribers: await sdk
-            .forProject(params.region, params.project)
-            .messaging.listSubscribers(
-                params.topic,
-                [
-                    Query.limit(limit),
-                    Query.offset(offset),
-                    Query.orderDesc(''),
-                    ...parsedQueries.values()
-                ],
-                search || undefined
-            )
+        search,
+        identities
     };
 };

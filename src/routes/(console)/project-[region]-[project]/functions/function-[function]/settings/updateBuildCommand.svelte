@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime, type Models } from '@appwrite.io/console';
+    import { page } from '$app/state';
 
     export let func: Models.Function;
     let buildCommand = func.commands;

@@ -10,7 +10,7 @@ export const load = async ({ params, url, route, depends, parent }) => {
 
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
-    const view = getView(params.project, url, route, View.Grid);
+    const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
     let backups: BackupArchiveList = { total: 0, archives: [] };

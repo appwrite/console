@@ -13,6 +13,7 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
+    import { page } from '$app/state';
 
     export let show = false;
 

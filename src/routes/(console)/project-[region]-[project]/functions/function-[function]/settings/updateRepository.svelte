@@ -24,6 +24,7 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { ConnectGit, ConnectRepoModal, RepositoryCard } from '$lib/components/git';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { page } from '$app/state';
 
     export let func: Models.Function;
     export let installations: Models.InstallationList;

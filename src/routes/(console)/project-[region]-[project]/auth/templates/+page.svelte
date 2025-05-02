@@ -58,7 +58,8 @@
         EmailTemplateType,
         EmailTemplateLocale
     } from '@appwrite.io/console';
-    import { Accordion, Alert, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { Accordion, Alert, Badge, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     export let data;
 
@@ -75,7 +76,7 @@
 
     async function openEmail(type: string) {
         type === emailOpen ? (emailOpen = null) : (emailOpen = type);
-        $emailTemplate = await loadEmailTemplate(data.project.$id, type, 'en');
+        $emailTemplate = await loadEmailTemplate(page.params.project, type, 'en');
         $baseEmailTemplate = { ...$emailTemplate };
     }
 </script>
@@ -91,7 +92,7 @@
             <Button
                 compact
                 slot="actions"
-                href={`${base}/project-${data.project.region}-${data.project.$id}/settings/smtp`}>
+                href={`${base}/project-${page.params.region}-${page.params.project}/settings/smtp`}>
                 SMTP settings
             </Button>
         </Alert.Inline>
@@ -183,7 +184,7 @@
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button
-                href={`${base}/project-${data.project.region}-${data.project.$id}/settings/smtp`}
+                href={`${base}/project-${page.params.region}-${page.params.project}/settings/smtp`}
                 secondary>
                 SMTP settings
             </Button>
