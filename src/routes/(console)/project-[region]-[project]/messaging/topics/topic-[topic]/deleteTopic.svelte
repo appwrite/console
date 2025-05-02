@@ -34,5 +34,5 @@
 </script>
 
 <Confirm onSubmit={deleteTopic} title="Delete topic" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{$topic.name}</b> from '{$project.name}'?
+    <span>Are you sure you want to delete <b>{$topic.name}</b> from '{$project.name}'?</span>
 </Confirm>

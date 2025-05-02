@@ -45,7 +45,7 @@
     }
 </script>
 
-<Modal title="Create team" {error} size="l" bind:show={showCreate} onSubmit={create}>
+<Modal title="Create team" {error} size="m" bind:show={showCreate} onSubmit={create}>
     <InputText
         id="name"
         label="Name"

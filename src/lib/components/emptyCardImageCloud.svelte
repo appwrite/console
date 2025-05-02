@@ -7,13 +7,10 @@
     export let noAspectRatio = false;
 </script>
 
-<Card.Base variant="secondary" padding="s">
-    <Layout.Stack direction="row">
+<Card.Base variant="secondary" padding="s" radius="s">
+    <Layout.Stack direction="row" gap="l">
         {#if $$slots?.image}
-            <div
-                style:--p-file-preview-border-color="transparent"
-                class="file-preview is-full-cover-image u-width-full-line u-height-100-percent"
-                style={noAspectRatio ? 'aspect-ratio: auto' : ''}>
+            <div style="flex-shrink:0">
                 <slot name="image" />
             </div>
         {/if}

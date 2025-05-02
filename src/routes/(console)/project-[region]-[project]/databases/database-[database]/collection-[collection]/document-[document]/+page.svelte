@@ -100,9 +100,9 @@
                 <Alert.Inline status="info">
                     <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
                     <p class="text">
-                        If you want to assign document permissions. Go to Collection settings and
-                        enable document security. Otherwise, only collection permissions will be
-                        used.
+                        If you want to assign document permissions. Go to <Link.Anchor
+                            href={`./settings`}>Collection settings</Link.Anchor> and enable document
+                        security. Otherwise, only collection permissions will be used.
                     </p>
                 </Alert.Inline>
             {/if}

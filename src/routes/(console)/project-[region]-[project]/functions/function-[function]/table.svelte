@@ -46,7 +46,7 @@
     }
 </script>
 
-<Table.Root columns={[...columns, { id: 'actions', width: 60 }]} let:root>
+<Table.Root columns={[...columns, { id: 'actions', width: 40 }]} let:root>
     <svelte:fragment slot="header" let:root>
         {#each columns as { id, title }}
             <Table.Header.Cell column={id} {root}>

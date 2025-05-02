@@ -30,7 +30,7 @@
     };
 </script>
 
-<Confirm {onSubmit} title="Delete execution" bind:open={showDelete} bind:error>
+<Confirm {onSubmit} title="Delete bucket" bind:open={showDelete} bind:error>
     <Typography.Text>
         Are you sure you want to delete <b>{$bucket.name}</b>?
     </Typography.Text>
