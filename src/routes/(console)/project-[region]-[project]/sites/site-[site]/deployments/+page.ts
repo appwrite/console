@@ -17,14 +17,14 @@ export const load = async ({ params, depends, url, route, parent }) => {
 
     const [deploymentList, installations] = await Promise.all([
         sdk
-            .forProject(page.params.region, page.params.project)
+            .forProject(params.region, params.project)
             .sites.listDeployments(params.site, [
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),
                 ...parsedQueries.values()
             ]),
-        sdk.forProject(page.params.region, page.params.project).vcs.listInstallations()
+        sdk.forProject(params.region, params.project).vcs.listInstallations()
     ]);
 
     return {
@@ -35,7 +35,7 @@ export const load = async ({ params, depends, url, route, parent }) => {
         activeDeployment:
             site.deploymentId && deploymentList?.total
                 ? await sdk
-                      .forProject(page.params.region, page.params.project)
+                      .forProject(params.region, params.project)
                       .sites.getDeployment(params.site, site.deploymentId)
                 : null,
         installations

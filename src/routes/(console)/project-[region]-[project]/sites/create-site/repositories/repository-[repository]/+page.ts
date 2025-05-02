@@ -6,7 +6,7 @@ export const load = async ({ parent, params, url }) => {
     const { installations, frameworks, project, organization, consoleVariables } = await parent();
     const [repository] = await Promise.all([
         sdk
-            .forProject(page.params.region, page.params.project)
+            .forProject(params.region, params.project)
             .vcs.getRepository(url.searchParams.get('installation'), params.repository)
     ]);
 

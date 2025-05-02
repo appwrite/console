@@ -23,7 +23,7 @@ export const load = async ({ params, depends, url, route }) => {
         query,
         search,
         domains: await sdk
-            .forProject(page.params.region, page.params.project)
+            .forProject(params.region, params.project)
             .proxy.listRules(
                 [
                     Query.or([

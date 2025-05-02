@@ -1,7 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
-import { getSearch, getView, View } from '$lib/helpers/load';
+import { getSearch } from '$lib/helpers/load';
 
-export const load = async ({ url, route }) => {
+export const load = async ({ url, params }) => {
     const search = getSearch(url);
     const filter = {
         useCases: url.searchParams.getAll('useCase'),
@@ -9,7 +9,7 @@ export const load = async ({ url, route }) => {
     };
 
     const siteTemplatesList = await sdk
-        .forProject(page.params.region, page.params.project)
+        .forProject(params.region, params.project)
         .sites.listTemplates(undefined, undefined, 100);
 
     const [frameworksSet, useCasesSet] = siteTemplatesList.templates.reduce(

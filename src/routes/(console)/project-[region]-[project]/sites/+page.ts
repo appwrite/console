@@ -3,7 +3,7 @@ import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 
-export const load = async ({ url, depends, route }) => {
+export const load = async ({ url, depends, route, params }) => {
     depends(Dependencies.SITES);
 
     const page = getPage(url);
@@ -13,7 +13,7 @@ export const load = async ({ url, depends, route }) => {
     const view = getView(url, route, View.Grid, View.Grid);
 
     const siteList = await sdk
-        .forProject(page.params.region, page.params.project)
+        .forProject(params.region, params.project)
         .sites.list(
             [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
             search || undefined
