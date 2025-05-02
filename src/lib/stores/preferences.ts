@@ -73,7 +73,7 @@ function createPreferences() {
 
                 return n;
             }),
-        setView: (projectId: string, route: Page['route'], view: Preferences['view']) =>
+        setView: (view: Preferences['view']) =>
             update((n) => {
                 const path = page.route.id;
 
@@ -86,7 +86,7 @@ function createPreferences() {
 
                 return n;
             }),
-        setColumns: (projectId: string, route: Page['route'], columns: Preferences['columns']) =>
+        setColumns: (columns: Preferences['columns']) =>
             update((n) => {
                 const path = page.route.id;
 
@@ -99,11 +99,7 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomCollectionColumns: (
-            projectId: string,
-            route: Page['route'],
-            columns: Preferences['columns']
-        ) =>
+        setCustomCollectionColumns: (columns: Preferences['columns']) =>
             update((n) => {
                 const current = page;
 

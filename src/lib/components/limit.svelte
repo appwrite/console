@@ -21,7 +21,7 @@
         const url = new URL(pageStore.url);
         const previousLimit = Number(url.searchParams.get('limit'));
         url.searchParams.set('limit', limit.toString());
-        preferences.setLimit(pageStore.params.project, pageStore.route, limit);
+        preferences.setLimit(limit);
 
         if (url.searchParams.has('page')) {
             const page = Number(url.searchParams.get('page'));

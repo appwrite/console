@@ -92,7 +92,7 @@
             Learn more</Link.Anchor>
         <svelte:fragment slot="aside">
             {#if isComponentDisabled}
-                <EmptyCardImageCloud source="email_signature_card" noAspectRatio>
+                <EmptyCardImageCloud source="email_signature_card">
                     <svelte:fragment slot="image">
                         <div class=" is-only-mobile u-width-full-line u-height-100-percent">
                             {#if $app.themeInUse === 'dark'}
