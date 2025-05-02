@@ -39,7 +39,7 @@
     } from '@appwrite.io/pink-icons-svelte';
     import { getPlatformInfo } from '$lib/helpers/platform';
     import CreateProjectCloud from './createProjectCloud.svelte';
-    import { regions as regionsStore } from '$routes/(console)/organization-[organization]/store';
+    import { organization, regions as regionsStore } from '$lib/stores/organization';
 
     export let data;
 
@@ -117,7 +117,7 @@
                 ID.unique(),
                 `Imported project ${new Date().toISOString()}`,
                 page.params.organization,
-                Region.Default
+                Region.Fra // default
             );
             trackEvent(Submit.ProjectCreate, {
                 teamId: page.params.organization

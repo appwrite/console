@@ -5,13 +5,13 @@ import type { LayoutLoad } from './$types';
 import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
-import type { Organization } from '$lib/stores/organization';
 import { defaultRoles, defaultScopes } from '$lib/constants';
 import type { Plan } from '$lib/sdk/billing';
 import { get } from 'svelte/store';
 import { headerAlert } from '$lib/stores/headerAlert';
 import PaymentFailed from '$lib/components/billing/alerts/paymentFailed.svelte';
 import { loadAvailableRegions } from '$routes/(console)/regions';
+import type { Organization } from '$lib/stores/organization';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
@@ -30,7 +30,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                 organization: project.teamId
             });
         }
-        preferences.loadTeamPrefs(project.teamId);
+        await preferences.loadTeamPrefs(project.teamId);
         let roles = isCloud ? [] : defaultRoles;
         let scopes = isCloud ? [] : defaultScopes;
         if (isCloud) {

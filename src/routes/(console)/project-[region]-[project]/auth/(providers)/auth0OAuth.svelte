@@ -3,7 +3,7 @@
     import { CopyInput, Modal } from '$lib/components';
     import { Button, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
-    import { sdk } from '$lib/stores/sdk';
+    import { getApiEndpoint } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
     import type { Models } from '@appwrite.io/console';
@@ -11,6 +11,8 @@
 
     const projectId = page.params.project;
     export let provider: Models.AuthProvider;
+    export let show = false;
+
     let clientSecret: string = null;
     let auth0Domain: string = null;
     let error: string;
@@ -70,7 +72,7 @@
     <div>
         <p>URI</p>
         <CopyInput
-            value={`${sdk.forConsole.client.config.endpoint}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
+            value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
     </div>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>

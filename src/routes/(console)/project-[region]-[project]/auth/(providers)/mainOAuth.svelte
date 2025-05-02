@@ -2,12 +2,12 @@
     import { page } from '$app/state';
     import { CopyInput, Modal } from '$lib/components';
     import { Button, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
-    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
     import type { Models } from '@appwrite.io/console';
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
     import { Link, Alert } from '@appwrite.io/pink-svelte';
+    import { getApiEndpoint } from '$lib/stores/sdk';
 
     const projectId = page.params.project;
 
@@ -68,7 +68,7 @@
     <div>
         <p>URI</p>
         <CopyInput
-            value={`${sdk.forConsole.client.config.endpoint}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
+            value={`${getApiEndpoint(page.params.region)}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
     </div>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>

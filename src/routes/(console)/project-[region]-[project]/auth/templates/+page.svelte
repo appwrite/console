@@ -91,7 +91,7 @@
             <Button
                 compact
                 slot="actions"
-                href={`${base}/project-${data.project.$id}/settings/smtp`}>
+                href={`${base}/project-${data.project.region}-${data.project.$id}/settings/smtp`}>
                 SMTP settings
             </Button>
         </Alert.Inline>
@@ -182,7 +182,9 @@
             </Layout.Stack>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button href={`${base}/project-${data.project.$id}/settings/smtp`} secondary>
+            <Button
+                href={`${base}/project-${data.project.region}-${data.project.$id}/settings/smtp`}
+                secondary>
                 SMTP settings
             </Button>
         </svelte:fragment>

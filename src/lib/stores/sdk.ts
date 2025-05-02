@@ -43,7 +43,9 @@ export function getApiEndpoint(region?: string): string {
     );
     const protocol = url.protocol;
     const hostname = url.hostname;
-    const subdomain = getSubdomain(region);
+
+    // If instance supports multi-region, add the region subdomain.
+    const subdomain = VARS.APPWRITE_MULTI_REGION ? getSubdomain(region) : '';
 
     return `${protocol}//${subdomain}${hostname}/v1`;
 }
@@ -69,6 +71,7 @@ const clientRealtime = new Client();
 
 if (!building) {
     clientConsole.setEndpoint(endpoint).setProject('console');
+    clientRealtime.setEndpoint(endpoint).setProject('console');
     clientProject.setEndpoint(endpoint).setMode('admin');
     clientRealtime.setEndpoint(endpoint).setProject('console');
 }
@@ -99,14 +102,6 @@ export const realtime = {
         const endpoint = getApiEndpoint(region);
         if (endpoint !== clientRealtime.config.endpoint) {
             clientRealtime.setEndpoint(endpoint);
-
-            /**
-             * Workaround: the SDK doesn't update the realtime in `setEndpoint`.
-             * Until that's fixed, we manually set the realtime endpoint like this:
-             */
-            clientRealtime.setEndpointRealtime(
-                endpoint.replace('https://', 'wss://').replace('http://', 'ws://')
-            );
         }
         return clientRealtime;
     }

@@ -25,10 +25,6 @@
         const countryList = await sdk
             .forProject(page.params.region, page.params.project)
             .locale.listCountries();
-        const locale = await sdk.forProject(page.params.region, page.params.project).locale.get();
-        if (locale.countryCode) {
-            selectedAddress.country = locale.countryCode;
-        }
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,
