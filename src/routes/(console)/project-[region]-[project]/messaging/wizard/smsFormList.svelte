@@ -8,6 +8,7 @@
     import { ID, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import SMSPhone from '../smsPhone.svelte';
+    import { page } from '$app/state';
 
     let showCustomId = false;
     let showTest = false;
@@ -16,9 +17,7 @@
 
     async function sendTestSMS() {
         // const email = selected === 'self' ? $user.email : otherEmail;
-
-        // TODO: replace with test method
-        sdk.forProject.messaging.createSms(
+        sdk.forProject(page.params.region, page.params.project).messaging.createSms(
             ID.unique(),
             $messageParams[MessagingProviderType.Sms]?.content || undefined,
             $messageParams[MessagingProviderType.Sms]?.topics || [],

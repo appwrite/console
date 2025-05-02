@@ -52,7 +52,7 @@
                 <ViewSelector view={data.view} {columns} hideView />
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
-                    href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                    href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
                     event="create_document">
                     <Icon icon={IconPlus} slot="start" size="s" />
                     Create document
@@ -106,7 +106,7 @@
                             size="s"
                             ariaLabel="create document">Documentation</Button>
                         <Button
-                            href={`${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
+                            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}/create`}
                             secondary
                             disabled={!$canWriteDocuments}
                             size="s">

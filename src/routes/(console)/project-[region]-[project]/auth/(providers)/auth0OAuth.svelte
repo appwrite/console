@@ -10,12 +10,7 @@
     import { Link, Alert } from '@appwrite.io/pink-svelte';
 
     const projectId = page.params.project;
-
     export let provider: Models.AuthProvider;
-    export let show = false;
-
-    let appId: string = null;
-    let enabled: boolean = null;
     let clientSecret: string = null;
     let auth0Domain: string = null;
     let error: string;

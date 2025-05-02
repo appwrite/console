@@ -17,13 +17,15 @@
 
     const handleSubmit = async () => {
         try {
-            await sdk.forProject.functions.delete(projectFunction.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.delete(projectFunction.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `Function has been deleted`
             });
-            await goto(`${base}/project-${page.params.project}/functions`);
+            await goto(`${base}/project-${page.params.region}-${page.params.project}/functions`);
             trackEvent(Submit.FunctionDelete);
         } catch (e) {
             error = e.message;

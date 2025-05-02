@@ -1,11 +1,11 @@
 import { browser } from '$app/environment';
-import { page } from '$app/stores';
 import type { View } from '$lib/helpers/load';
 import type { Page } from '@sveltejs/kit';
 import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import type { Models } from '@appwrite.io/console';
 import { organization } from './organization';
+import { page } from '$app/state';
 
 type Preferences = {
     limit?: number;
@@ -47,7 +47,7 @@ function createPreferences() {
         set,
         update,
         get: (route?: Page['route']): Preferences => {
-            const parsedRoute = route ?? get(page).route;
+            const parsedRoute = route ?? page.route;
             return (
                 preferences?.[parsedRoute.id] ?? {
                     limit: null,
@@ -62,7 +62,7 @@ function createPreferences() {
         },
         setLimit: (limit: Preferences['limit']) =>
             update((n) => {
-                const path = get(page).route.id;
+                const path = page.route.id;
 
                 if (!n?.[path]) {
                     n ??= {};
@@ -73,9 +73,9 @@ function createPreferences() {
 
                 return n;
             }),
-        setView: (view: Preferences['view']) =>
+        setView: (projectId: string, route: Page['route'], view: Preferences['view']) =>
             update((n) => {
-                const path = get(page).route.id;
+                const path = page.route.id;
 
                 if (!n?.[path]) {
                     n ??= {};
@@ -86,9 +86,9 @@ function createPreferences() {
 
                 return n;
             }),
-        setColumns: (columns: Preferences['columns']) =>
+        setColumns: (projectId: string, route: Page['route'], columns: Preferences['columns']) =>
             update((n) => {
-                const path = get(page).route.id;
+                const path = page.route.id;
 
                 if (!n?.[path]) {
                     n ??= {};
@@ -99,9 +99,13 @@ function createPreferences() {
 
                 return n;
             }),
-        setCustomCollectionColumns: (columns: Preferences['columns']) =>
+        setCustomCollectionColumns: (
+            projectId: string,
+            route: Page['route'],
+            columns: Preferences['columns']
+        ) =>
             update((n) => {
-                const current = get(page);
+                const current = page;
 
                 const collection = current.params.collection;
                 if (!n?.collections?.[collection]) {

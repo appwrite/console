@@ -10,7 +10,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/messaging/providers`}>
+        <CoverTitle
+            href={`${base}/project-${$page.params.region}-${projectId}/messaging/providers`}>
             {$provider?.name ? $provider?.name : '-'}
         </CoverTitle>
         <Id value={$provider?.$id} event="provider">{$provider?.$id}</Id>

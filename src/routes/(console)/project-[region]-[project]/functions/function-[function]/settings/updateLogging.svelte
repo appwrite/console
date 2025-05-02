@@ -9,6 +9,7 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime, type Models } from '@appwrite.io/console';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     export let func: Models.Function;
     let logging = func.logging;
@@ -18,26 +19,28 @@
             if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
-            await sdk.forProject.functions.update(
-                func.$id,
-                func.name,
-                func.runtime,
-                func.execute || undefined,
-                func.events || undefined,
-                func.schedule || undefined,
-                func.timeout || undefined,
-                func.enabled || undefined,
-                logging,
-                func.entrypoint || undefined,
-                func.commands || undefined,
-                func.scopes || undefined,
-                func.installationId || undefined,
-                func.providerRepositoryId || undefined,
-                func.providerBranch || undefined,
-                func.providerSilentMode || undefined,
-                func.providerRootDirectory || undefined,
-                func.specification || undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.update(
+                    func.$id,
+                    func.name,
+                    func.runtime,
+                    func.execute || undefined,
+                    func.events || undefined,
+                    func.schedule || undefined,
+                    func.timeout || undefined,
+                    func.enabled || undefined,
+                    logging,
+                    func.entrypoint || undefined,
+                    func.commands || undefined,
+                    func.scopes || undefined,
+                    func.installationId || undefined,
+                    func.providerRepositoryId || undefined,
+                    func.providerBranch || undefined,
+                    func.providerSilentMode || undefined,
+                    func.providerRootDirectory || undefined,
+                    func.specification || undefined
+                );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',

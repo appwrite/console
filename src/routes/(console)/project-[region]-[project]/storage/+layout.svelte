@@ -14,7 +14,7 @@
             label: 'Create bucket',
             callback: () => {
                 if (!page.url.pathname.endsWith('storage')) {
-                    goto(`${base}/project-${$project.$id}/storage`);
+                    goto(`${base}/project-${$project.region}-${$project.$id}/storage`);
                 }
                 $showCreateBucket = true;
             },
@@ -26,7 +26,7 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(`${base}/project-${$project.$id}/storage/usage`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/storage/usage`);
             },
             keys: ['g', 'u'],
             disabled: page.url.pathname.endsWith('usage') || page.url.pathname.includes('bucket-'),

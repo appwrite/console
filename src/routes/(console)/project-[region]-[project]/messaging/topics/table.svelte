@@ -25,7 +25,9 @@
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selectedIds.map((id) => sdk.forProject.messaging.deleteTopic(id));
+        const promises = selectedIds.map((id) =>
+            sdk.forProject(page.params.region, page.params.project).messaging.deleteTopic(id)
+        );
 
         try {
             await Promise.all(promises);
@@ -60,7 +62,7 @@
         <Table.Row.Link
             {root}
             id={topic.$id}
-            href={`${base}/project-${page.params.project}/messaging/topics/topic-${topic.$id}`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${topic.$id}`}>
             {#each columns as column (column.id)}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

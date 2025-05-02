@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
+    import { page } from '$app/stores';
 
     let userPhone: string = null;
     onMount(async () => {
@@ -16,7 +17,9 @@
 
     async function updatePhone() {
         try {
-            await sdk.forProject.users.updatePhone($user.$id, userPhone);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .users.updatePhone($user.$id, userPhone);
             await invalidate(Dependencies.USER);
             addNotification({
                 message: 'Phone has been updated',

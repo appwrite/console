@@ -26,7 +26,9 @@
 
     async function handleCreate(event: CustomEvent<Models.Database>) {
         showCreate = false;
-        await goto(`${base}/project-${project}/databases/database-${event.detail.$id}`);
+        await goto(
+            `${base}/project-${$page.params.region}-${project}/databases/database-${event.detail.$id}`
+        );
     }
 
     $: $registerCommands([

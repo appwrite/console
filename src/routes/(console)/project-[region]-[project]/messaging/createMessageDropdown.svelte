@@ -18,7 +18,7 @@
         {#each Object.entries(providers) as [type, option]}
             <ActionMenu.Item.Anchor
                 leadingIcon={option.icon}
-                href={`${base}/project-${page.params.project}/messaging/create-${type}`}>
+                href={`${base}/project-${page.params.region}-${page.params.project}/messaging/create-${type}`}>
                 {option.name}
             </ActionMenu.Item.Anchor>
         {/each}

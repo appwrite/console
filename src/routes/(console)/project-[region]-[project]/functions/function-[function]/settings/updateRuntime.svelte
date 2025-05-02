@@ -45,26 +45,28 @@
             if (!isValueOfStringEnum(Runtime, runtime)) {
                 throw new Error(`Invalid runtime: ${runtime}`);
             }
-            await sdk.forProject.functions.update(
-                functionId,
-                $func.name,
-                runtime,
-                $func.execute || undefined,
-                $func.events || undefined,
-                $func.schedule || undefined,
-                $func.timeout || undefined,
-                $func.enabled || undefined,
-                $func.logging || undefined,
-                entrypoint || undefined,
-                $func.commands || undefined,
-                $func.scopes || undefined,
-                $func.installationId || undefined,
-                $func.providerRepositoryId || undefined,
-                $func.providerBranch || undefined,
-                $func.providerSilentMode || undefined,
-                $func.providerRootDirectory || undefined,
-                $func.specification || undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.update(
+                    functionId,
+                    $func.name,
+                    runtime,
+                    $func.execute || undefined,
+                    $func.events || undefined,
+                    $func.schedule || undefined,
+                    $func.timeout || undefined,
+                    $func.enabled || undefined,
+                    $func.logging || undefined,
+                    entrypoint || undefined,
+                    $func.commands || undefined,
+                    $func.scopes || undefined,
+                    $func.installationId || undefined,
+                    $func.providerRepositoryId || undefined,
+                    $func.providerBranch || undefined,
+                    $func.providerSilentMode || undefined,
+                    $func.providerRootDirectory || undefined,
+                    $func.specification || undefined
+                );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 message: 'Runtime settings have been updated',

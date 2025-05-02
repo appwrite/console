@@ -62,7 +62,6 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
-    import type { PageData } from './$types';
     import { canWritePlatforms } from '$lib/stores/roles';
     import { setOverviewAction } from '../context';
     import {
@@ -85,7 +84,7 @@
     import type { ComponentType } from 'svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
-    export let data: PageData;
+    export let data;
 
     enum PlatformTypes {
         'apple-ios' = 'iOS',
@@ -103,7 +102,7 @@
         'react-native-ios' = 'iOS',
         'web' = 'Web'
     }
-    const path = `${base}/project-${page.params.project}/overview/platforms`;
+    const path = `${base}/project-${page.params.region}-${page.params.project}/overview/platforms`;
 
     function getPlatformInfo(platform: string): ComponentType {
         if (platform.includes('flutter')) {

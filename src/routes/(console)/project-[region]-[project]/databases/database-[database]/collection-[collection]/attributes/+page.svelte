@@ -37,7 +37,6 @@
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
-    const projectId = page.params.project;
     const databaseId = page.params.database;
 
     let showDropdown = [];
@@ -140,7 +139,7 @@
                             {#if isRelationship(attribute)}
                                 <span>
                                     with <a
-                                        href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
+                                        href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attribute?.relatedCollection}`}
                                         ><b data-private>{attribute?.key}</b></a>
                                 </span>
                             {/if}

@@ -9,7 +9,7 @@
     import type { PageData } from './$types';
     import ProviderType from '../../providerType.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { targetsById } from '../../store';
@@ -31,7 +31,9 @@
         showDelete = false;
 
         async function deleteSubscriber(subscriberId: string) {
-            await sdk.forProject.messaging.deleteSubscriber(page.params.topic, subscriberId);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.deleteSubscriber(page.params.topic, subscriberId);
             const { target } = subscribers[subscriberId];
             const { [target.$id]: _, ...rest } = $targetsById;
             $targetsById = rest;
@@ -82,7 +84,7 @@
         <Table.Row.Link
             {root}
             id={subscriber.$id}
-            href={`${base}/project-${$project.$id}/auth/user-${subscriber.target.userId}`}>
+            href={`${base}/project-${$project.region}-${$project.$id}/auth/user-${subscriber.target.userId}`}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

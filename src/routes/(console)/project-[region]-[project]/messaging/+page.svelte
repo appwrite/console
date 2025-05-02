@@ -61,7 +61,9 @@
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selected.map((id) => sdk.forProject.messaging.delete(id));
+        const promises = selected.map((id) =>
+            sdk.forProject(page.params.region, page.params.project).messaging.delete(id)
+        );
 
         try {
             await Promise.all(promises);
@@ -202,7 +204,9 @@
                 <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
                     Documentation
                 </Button>
-                <Button secondary href={`${base}/project-${page.params.project}/messaging`}>
+                <Button
+                    secondary
+                    href={`${base}/project-${page.params.region}-${page.params.project}/messaging`}>
                     Clear search
                 </Button>
             </div>

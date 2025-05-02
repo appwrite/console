@@ -9,8 +9,15 @@ export function getPage(url: URL): number {
     return Number(url.searchParams.get('page'));
 }
 
-export function getLimit(url: URL, route: Page['route'], fallback: number): number {
-    return Number(url.searchParams.get('limit') ?? preferences.get(route).limit ?? fallback);
+export function getLimit(
+    projectId: string,
+    url: URL,
+    route: Page['route'],
+    fallback: number
+): number {
+    return Number(
+        url.searchParams.get('limit') ?? preferences.get(projectId, route).limit ?? fallback
+    );
 }
 
 export enum View {
@@ -28,8 +35,8 @@ export function getView(url: URL, route: Page['route'], fallback: View, overwrit
           : (overwrite ?? View.Table ?? fallback);
 }
 
-export function getColumns(route: Page['route'], fallback: string[]): string[] {
-    return preferences.get(route).columns ?? fallback;
+export function getColumns(projectId: string, route: Page['route'], fallback: string[]): string[] {
+    return preferences.get(projectId, route).columns ?? fallback;
 }
 
 export function getSearch(url: URL): string | undefined {

@@ -11,7 +11,6 @@
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
-    import type { PageData } from './$types';
     import { canWriteBuckets } from '$lib/stores/roles';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
@@ -21,13 +20,15 @@
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    export let data: PageData;
+    export let data;
 
     const project = page.params.project;
 
     async function bucketCreated(event: CustomEvent<Models.Bucket>) {
         showCreateBucket.set(false);
-        await goto(`${base}/project-${project}/storage/bucket-${event.detail.$id}`);
+        await goto(
+            `${base}/project-${page.params.region}-${project}/storage/bucket-${event.detail.$id}`
+        );
     }
 </script>
 

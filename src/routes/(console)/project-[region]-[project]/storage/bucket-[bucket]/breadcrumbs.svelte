@@ -1,5 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { page } from '$app/stores';
     import { Breadcrumbs } from '$lib/layout';
     import { organization } from '$lib/stores/organization';
     import { project } from '../../store';
@@ -11,15 +12,15 @@
             title: $organization.name
         },
         {
-            href: `${base}/project-${$project?.$id}`,
+            href: `${base}/project-${$page.params.region}-${$page.params.project}`,
             title: $project.name
         },
         {
-            href: `${base}/project-${$project?.$id}/storage`,
+            href: `${base}/project-${$page.params.region}-${$page.params.project}/storage`,
             title: 'Storage'
         },
         {
-            href: `${base}/project-${$project?.$id}/storage/bucket-${$bucket?.$id}`,
+            href: `${base}/project-${$page.params.region}-${$page.params.project}/storage/bucket-${$bucket?.$id}`,
             title: $bucket?.name
         }
     ];

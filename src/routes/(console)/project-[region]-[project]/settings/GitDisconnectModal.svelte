@@ -10,13 +10,16 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconGlobeAlt, IconLightningBolt } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     export let showGitDisconnect: boolean;
     export let selectedInstallation: Models.Installation;
 
     async function handleSubmit() {
         try {
-            await sdk.forProject.vcs.deleteInstallation(selectedInstallation.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.deleteInstallation(selectedInstallation.$id);
             await invalidate(Dependencies.PROJECT_INSTALLATIONS);
             addNotification({
                 message: `${selectedInstallation.organization} has been disconnected from this project`,
@@ -37,17 +40,21 @@
     }
 
     async function loadFunctions() {
-        return await sdk.forProject.functions.list([
-            Query.limit(100),
-            Query.equal('installationId', selectedInstallation.$id)
-        ]);
+        return await sdk
+            .forProject(page.params.region, page.params.project)
+            .functions.list([
+                Query.limit(100),
+                Query.equal('installationId', selectedInstallation.$id)
+            ]);
     }
 
     async function loadSites() {
-        return await sdk.forProject.sites.list([
-            Query.limit(100),
-            Query.equal('installationId', selectedInstallation.$id)
-        ]);
+        return await sdk
+            .forProject(page.params.region, page.params.project)
+            .sites.list([
+                Query.limit(100),
+                Query.equal('installationId', selectedInstallation.$id)
+            ]);
     }
 </script>
 

@@ -17,7 +17,7 @@
             label: 'Create user',
             callback: async () => {
                 if (!page.url.pathname.endsWith('auth')) {
-                    await goto(`${base}/project-${$project.$id}/auth`);
+                    await goto(`${base}/project-${$project.region}-${$project.$id}/auth`);
                 }
                 showCreateUser.set(true);
             },
@@ -31,7 +31,7 @@
             label: 'Create team',
             callback: async () => {
                 if (!page.url.pathname.endsWith('teams')) {
-                    await goto(`${base}/project-${$project.$id}/auth/teams`);
+                    await goto(`${base}/project-${$project.region}-${$project.$id}/auth/teams`);
                 }
                 showCreateTeam.set(true);
             },
@@ -46,7 +46,7 @@
             label: 'Go to teams',
             keys: ['g', 't'],
             callback() {
-                goto(`${base}/project-${$project.$id}/auth/teams`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/auth/teams`);
             },
             group: 'navigation',
             rank: 1,
@@ -56,7 +56,7 @@
             label: 'Go to usage',
             keys: ['g', 'u'],
             callback() {
-                goto(`${base}/project-${$project.$id}/auth/usage`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/auth/usage`);
             },
             group: 'navigation',
             rank: 1,
@@ -66,7 +66,7 @@
             label: 'Go to security',
             keys: ['g', 'e'],
             callback() {
-                goto(`${base}/project-${$project.$id}/auth/security`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/auth/security`);
             },
             group: 'navigation',
             rank: 1,
@@ -76,7 +76,7 @@
             label: 'Go to settings',
             keys: ['g', 's'],
             callback() {
-                goto(`${base}/project-${$project.$id}/auth/settings`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/auth/settings`);
             },
             group: 'navigation',
             rank: 1,

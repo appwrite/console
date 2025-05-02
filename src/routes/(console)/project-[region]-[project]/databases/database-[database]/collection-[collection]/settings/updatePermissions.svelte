@@ -25,14 +25,16 @@
 
     async function updatePermissions() {
         try {
-            await sdk.forProject.databases.updateCollection(
-                databaseId,
-                $collection.$id,
-                $collection.name,
-                collectionPermissions,
-                $collection.documentSecurity,
-                $collection.enabled
-            );
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .databases.updateCollection(
+                    databaseId,
+                    $collection.$id,
+                    $collection.name,
+                    collectionPermissions,
+                    $collection.documentSecurity,
+                    $collection.enabled
+                );
             await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Permissions have been updated',

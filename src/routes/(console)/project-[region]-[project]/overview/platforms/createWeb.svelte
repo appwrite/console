@@ -58,7 +58,7 @@
     const projectId = page.params.project;
 
     const updateConfigCode = (prefix = '') => `${prefix}APPWRITE_PROJECT_ID = "${projectId}"
-${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
+${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
     type FrameworkType = {
         key: string;
@@ -127,7 +127,7 @@ ${prefix}APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
             smallIcon: IconAngular,
             portNumber: 4200,
             runCommand: 'npm run start',
-            updateConfigCode: `appwriteEndpoint: '${sdk.forProject.client.config.endpoint}',\nappwriteProjectId:'${projectId}'`
+            updateConfigCode: `appwriteEndpoint: '${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}',\nappwriteProjectId:'${projectId}'`
         },
         {
             key: 'js',

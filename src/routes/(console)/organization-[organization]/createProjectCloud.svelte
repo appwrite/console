@@ -41,7 +41,7 @@
                 message: `${$createProject.name} has been created`
             });
             await onFinish();
-            await goto(`${base}/project-${project.$id}`);
+            await goto(`${base}/project-${project.region}-${project.$id}`);
         } catch (e) {
             addNotification({
                 type: 'error',

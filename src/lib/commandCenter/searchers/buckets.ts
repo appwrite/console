@@ -14,12 +14,13 @@ import {
     IconPuzzle,
     IconSearch
 } from '@appwrite.io/pink-icons-svelte';
+import { page } from '$app/state';
 
-const getBucketCommand = (bucket: Models.Bucket, projectId: string) => {
+const getBucketCommand = (bucket: Models.Bucket, region: string, projectId: string) => {
     return {
         label: `${bucket.name}`,
         callback() {
-            goto(`${base}/project-${projectId}/storage/bucket-${bucket.$id}`);
+            goto(`${base}/project-${region}-${projectId}/storage/bucket-${bucket.$id}`);
         },
         group: 'buckets',
         icon: IconFolder
@@ -27,19 +28,24 @@ const getBucketCommand = (bucket: Models.Bucket, projectId: string) => {
 };
 
 export const bucketSearcher = (async (query: string) => {
-    const { buckets } = await sdk.forProject.storage.listBuckets([Query.orderDesc('$createdAt')]);
-
     const $project = get(project);
+    const region = page.params.region;
+    const { buckets } = await sdk
+        .forProject(page.params.region, page.params.project)
+        .storage.listBuckets([Query.orderDesc('$createdAt')]);
+
     const filtered = buckets.filter((bucket) => bucket.name.includes(query));
 
     if (filtered.length === 1) {
         const bucket = filtered[0];
         return [
-            getBucketCommand(bucket, $project.$id),
+            getBucketCommand(bucket, region, $project.$id),
             {
                 label: 'Find files',
                 async callback() {
-                    await goto(`${base}/project-${$project.$id}/storage/bucket-${bucket.$id}`);
+                    await goto(
+                        `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${bucket.$id}`
+                    );
                     addSubPanel(FilesPanel);
                 },
                 group: 'buckets',
@@ -51,7 +57,7 @@ export const bucketSearcher = (async (query: string) => {
                 label: 'Permissions',
                 async callback() {
                     await goto(
-                        `${base}/project-${$project.$id}/storage/bucket-${bucket.$id}/settings#permissions`
+                        `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${bucket.$id}/settings#permissions`
                     );
                     scrollBy({ top: -100 });
                 },
@@ -63,7 +69,7 @@ export const bucketSearcher = (async (query: string) => {
                 label: 'Extensions',
                 async callback() {
                     await goto(
-                        `${base}/project-${$project.$id}/storage/bucket-${bucket.$id}/settings#extensions`
+                        `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${bucket.$id}/settings#extensions`
                     );
                 },
                 group: 'buckets',
@@ -74,7 +80,7 @@ export const bucketSearcher = (async (query: string) => {
                 label: 'File Security',
                 async callback() {
                     await goto(
-                        `${base}/project-${$project.$id}/storage/bucket-${bucket.$id}/settings#file-security`
+                        `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${bucket.$id}/settings#file-security`
                     );
                     scrollBy({ top: -100 });
                 },
@@ -85,5 +91,5 @@ export const bucketSearcher = (async (query: string) => {
         ];
     }
 
-    return filtered.map((bucket) => getBucketCommand(bucket, $project.$id));
+    return filtered.map((bucket) => getBucketCommand(bucket, $project.region, $project.$id));
 }) satisfies Searcher;

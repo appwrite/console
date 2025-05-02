@@ -120,7 +120,8 @@
         <CardGrid>
             <svelte:fragment slot="title">SMTP server</svelte:fragment>
             You can customize the email service by providing your own SMTP server. View your email templates
-            <Link.Anchor href={`${base}/project-${$project.$id}/auth/templates`}>here</Link.Anchor>
+            <Link.Anchor href={`${base}/project-${$project.region}-${$project.$id}/auth/templates`}
+                >here</Link.Anchor>
             <svelte:fragment slot="aside">
                 {#if $organization.billingPlan === BillingPlan.FREE}
                     <Alert.Inline

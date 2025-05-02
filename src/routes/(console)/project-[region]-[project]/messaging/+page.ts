@@ -13,13 +13,13 @@ import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ depends, url, route }) => {
+export const load: PageLoad = async ({ depends, url, route, params }) => {
     depends(Dependencies.MESSAGING_MESSAGES);
 
     const page = getPage(url);
     const search = getSearch(url);
-    const view = getView(url, route, View.Grid);
-    const limit = getLimit(url, route, CARD_LIMIT);
+    const view = getView(params.project, url, route, View.Grid);
+    const limit = getLimit(params.project, url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
 
@@ -33,15 +33,17 @@ export const load: PageLoad = async ({ depends, url, route }) => {
         query,
         page,
         view,
-        messages: (await sdk.forProject.messaging.listMessages(
-            [
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc(''),
-                ...parsedQueries.values()
-            ],
-            search || undefined
-        )) as {
+        messages: (await sdk
+            .forProject(params.region, params.project)
+            .messaging.listMessages(
+                [
+                    Query.limit(limit),
+                    Query.offset(offset),
+                    Query.orderDesc(''),
+                    ...parsedQueries.values()
+                ],
+                search || undefined
+            )) as {
             total: number;
             messages: (Models.Message & { data: Record<string, string> })[]; // Add typing for message.data
         }

@@ -22,7 +22,7 @@
                 message: `${$key.name} has been deleted`
             });
             trackEvent(Submit.KeyDelete);
-            await goto(`${base}/project-${$project.$id}/overview/keys`);
+            await goto(`${base}/project-${$project.region}-${$project.$id}/overview/keys`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.KeyDelete);

@@ -34,8 +34,10 @@
 
     function getPreview(fileId: string) {
         return (
-            sdk.forProject.storage.getFilePreview(bucketId, fileId, 128, 128).toString() +
-            '&mode=admin'
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFilePreview(bucketId, fileId, 128, 128)
+                .toString() + '&mode=admin'
         );
     }
 
@@ -47,7 +49,9 @@
 
     async function deleteFile(file: Models.File) {
         try {
-            await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.deleteFile(file.bucketId, file.$id);
             await invalidate(Dependencies.FILES);
             uploader.removeFile(file);
             trackEvent(Submit.FileDelete);
@@ -92,7 +96,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button
-                href={`${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}/create`}
+                href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`}
                 event="create_file"
                 size="s">
                 <Icon icon={IconPlus} slot="start" size="s" />
@@ -149,7 +153,7 @@
                         </Table.Cell>
                     </Table.Row.Base>
                 {:else}
-                    {@const href = `${base}/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}
+                    {@const href = `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${bucketId}/file-${file.$id}`}
                     <Table.Row.Link {href} {root}>
                         <Table.Cell column="filename" {root}>
                             <div class="u-flex u-gap-12 u-cross-center">
@@ -209,7 +213,7 @@
                 </Button>
                 <Button
                     secondary
-                    href={`${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}`}>
+                    href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}`}>
                     Clear Search
                 </Button>
             </div>
@@ -221,7 +225,7 @@
             href="https://appwrite.io/docs/products/storage/upload-download"
             on:click={() =>
                 goto(
-                    `${base}/project-${page.params.project}/storage/bucket-${page.params.bucket}/create`
+                    `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`
                 )} />
     {/if}
 </Container>

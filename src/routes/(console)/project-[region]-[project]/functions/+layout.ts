@@ -5,14 +5,16 @@ import { Query } from '@appwrite.io/console';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ depends }) => {
+export const load: LayoutLoad = async ({ depends, params }) => {
     depends(Dependencies.FUNCTION_INSTALLATIONS);
 
     const [runtimesList, installations, templatesList, specificationsList] = await Promise.all([
-        sdk.forProject.functions.listRuntimes(),
-        sdk.forProject.vcs.listInstallations([Query.limit(100)]),
-        sdk.forProject.functions.listTemplates(undefined, undefined, 100),
-        sdk.forProject.functions.listSpecifications()
+        sdk.forProject(params.region, params.project).functions.listRuntimes(),
+        sdk.forProject(params.region, params.project).vcs.listInstallations([Query.limit(100)]),
+        sdk
+            .forProject(params.region, params.project)
+            .functions.listTemplates(undefined, undefined, 100),
+        sdk.forProject(params.region, params.project).functions.listSpecifications()
     ]);
 
     return {

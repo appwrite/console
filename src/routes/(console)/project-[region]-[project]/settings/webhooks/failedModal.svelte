@@ -14,7 +14,8 @@
     const projectId = page.params.project;
 
     $: webhookPath = webhook
-        ? `${base}/project-${projectId}/settings/webhooks/` + (webhook['$id'] ?? '')
+        ? `${base}/project-${$page.params.region}-${projectId}/settings/webhooks/` +
+          (webhook['$id'] ?? '')
         : '';
 
     let enabled = webhook ? webhook.enabled : false;

@@ -18,15 +18,14 @@
 
     async function deleteMembership() {
         try {
-            await sdk.forProject.teams.deleteMembership(
-                selectedMembership.teamId,
-                selectedMembership.$id
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .teams.deleteMembership(selectedMembership.teamId, selectedMembership.$id);
             showDelete = false;
             dispatch('deleted');
             trackEvent(Submit.MemberDelete);
             await goto(
-                `${base}/project-${page.params.project}/auth/teams/team-${selectedMembership.teamId}/members`
+                `${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${selectedMembership.teamId}/members`
             );
         } catch (e) {
             error = e.message;

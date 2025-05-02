@@ -9,7 +9,7 @@
 
     const projectId = page.params.project;
     const topicId = page.params.topic;
-    const path = `${base}/project-${projectId}/messaging/topics/topic-${topicId}`;
+    const path = `${base}/project-${page.params.region}-${projectId}/messaging/topics/topic-${topicId}`;
     const tabs = [
         {
             href: path,
@@ -32,7 +32,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/messaging/topics`}>
+        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/messaging/topics`}>
             {$topic.name}
         </CoverTitle>
         <Id value={$topic.$id} event="topic">{$topic.$id}</Id>

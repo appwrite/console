@@ -14,14 +14,14 @@
     let error: string;
     const deleteUser = async () => {
         try {
-            await sdk.forProject.users.delete($user.$id);
+            await sdk.forProject(page.params.region, page.params.project).users.delete($user.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$user.name ? $user.name : 'User'} has been deleted`
             });
             trackEvent(Submit.UserDelete);
-            await goto(`${base}/project-${page.params.project}/auth`);
+            await goto(`${base}/project-${page.params.region}-${page.params.project}/auth`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.UserDelete);

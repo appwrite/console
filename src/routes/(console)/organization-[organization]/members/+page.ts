@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ url, params, route, depends }) => {
     depends(Dependencies.MEMBERS);
     const page = getPage(url);
     const search = getSearch(url);
-    const limit = getLimit(url, route, PAGE_LIMIT);
+    const limit = getLimit('console', url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
 
     return {

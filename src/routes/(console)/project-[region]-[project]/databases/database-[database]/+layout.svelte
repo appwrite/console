@@ -27,7 +27,7 @@
         $showCreate = false;
         await invalidate(Dependencies.DATABASE);
         await goto(
-            `${base}/project-${project}/databases/database-${databaseId}/collection-${event.detail.$id}`
+            `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/collection-${event.detail.$id}`
         );
     }
 
@@ -37,7 +37,9 @@
             callback() {
                 $showCreate = true;
                 if (!page.url.pathname.endsWith(databaseId)) {
-                    goto(`${base}/project-${project}/databases/database-${databaseId}`);
+                    goto(
+                        `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}`
+                    );
                 }
             },
             keys: page.url.pathname.endsWith(databaseId) ? ['c'] : ['c', 'c'],
@@ -49,7 +51,9 @@
             label: 'Create backup policy',
             callback: async () => {
                 if (!page.url.pathname.endsWith('backups')) {
-                    goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
+                    goto(
+                        `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/backups`
+                    );
                 }
                 showCreatePolicy.set(true);
             },
@@ -63,7 +67,9 @@
             label: 'Create manual backup',
             callback: async () => {
                 if (!page.url.pathname.endsWith('backups')) {
-                    goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
+                    goto(
+                        `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/backups`
+                    );
                 }
                 showCreateBackup.set(true);
             },
@@ -76,7 +82,9 @@
         {
             label: 'Go to collections',
             callback() {
-                goto(`${base}/project-${project}/databases/database-${databaseId}`);
+                goto(
+                    `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}`
+                );
             },
             disabled:
                 page.url.pathname.endsWith(databaseId) || page.url.pathname.includes('collection-'),
@@ -86,7 +94,9 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(`${base}/project-${project}/databases/database-${databaseId}/usage`);
+                goto(
+                    `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/usage`
+                );
             },
             disabled:
                 page.url.pathname.includes('/usage') || page.url.pathname.includes('collection-'),
@@ -96,7 +106,9 @@
         {
             label: 'Go to backups',
             callback() {
-                goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
+                goto(
+                    `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/backups`
+                );
             },
             disabled:
                 page.url.pathname.includes('/backups') || page.url.pathname.includes('collection-'),
@@ -106,7 +118,9 @@
         {
             label: 'Go to settings',
             callback() {
-                goto(`${base}/project-${project}/databases/database-${databaseId}/settings`);
+                goto(
+                    `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/settings`
+                );
             },
             disabled:
                 page.url.pathname.includes('/settings') ||

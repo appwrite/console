@@ -19,7 +19,6 @@
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
-    import type { PageData } from './$types';
     import Create from './createUser.svelte';
     import { Badge, Icon, Table, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
@@ -29,9 +28,8 @@
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { View } from '$lib/helpers/load';
 
-    export let data: PageData;
+    export let data;
 
-    const projectId = page.params.project;
     const columns = writable<Column[]>([
         { id: '$id', title: 'User ID', type: 'string', width: 200 },
         { id: 'name', title: 'Name', type: 'string', width: { min: 260 } },
@@ -49,7 +47,9 @@
     ]);
 
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
-        await goto(`${base}/project-${projectId}/auth/user-${event.detail.$id}`);
+        await goto(
+            `${base}/project-${page.params.region}-${page.params.project}/auth/user-${event.detail.$id}`
+        );
     }
 </script>
 
@@ -75,7 +75,9 @@
                 {/each}
             </svelte:fragment>
             {#each data.users.users as user}
-                <Table.Row.Link href={`${base}/project-${projectId}/auth/user-${user.$id}`} {root}>
+                <Table.Row.Link
+                    href={`${base}/project-${page.params.region}-${page.params.project}/auth/user-${user.$id}`}
+                    {root}>
                     {#each $columns as { id } (id)}
                         <Table.Cell column={id} {root}>
                             {#if id === '$id'}
@@ -160,8 +162,10 @@
             total={data.users.total} />
     {:else if data.search}
         <EmptySearch target="users" hidePagination>
-            <Button href={`${base}/project-${projectId}/auth`} size="s" secondary
-                >Clear Search</Button>
+            <Button
+                href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
+                size="s"
+                secondary>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

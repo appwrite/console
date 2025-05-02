@@ -6,12 +6,11 @@
     import { Container } from '$lib/layout';
     import DeleteMembership from '../deleteMembership.svelte';
     import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import { trackEvent } from '$lib/actions/analytics';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Table, Layout, Empty, Card } from '@appwrite.io/pink-svelte';
 
-    export let data: PageData;
+    export let data;
 
     let selectedMembership: Models.Membership;
     let showDelete = false;

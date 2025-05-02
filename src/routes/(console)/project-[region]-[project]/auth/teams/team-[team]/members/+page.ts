@@ -10,17 +10,19 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
     const teamId = params.team;
     const page = getPage(url);
     const search = getSearch(url);
-    const limit = getLimit(url, route, PAGE_LIMIT);
+    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
 
     return {
         offset,
         search,
         limit,
-        memberships: await sdk.forProject.teams.listMemberships(
-            teamId,
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-            search
-        )
+        memberships: await sdk
+            .forProject(params.region, params.project)
+            .teams.listMemberships(
+                teamId,
+                [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+                search
+            )
     };
 };

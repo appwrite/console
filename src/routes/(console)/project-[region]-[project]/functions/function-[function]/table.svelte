@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Id } from '$lib/components';
-    import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
@@ -32,7 +31,7 @@
     import { Menu } from '$lib/components/menu';
 
     export let columns: Column[];
-    export let data: PageData;
+    export let data;
 
     let showDelete = false;
     let showActivate = false;
@@ -58,7 +57,7 @@
     {#each data.deploymentList.deployments as deployment (deployment.$id)}
         <Table.Row.Link
             {root}
-            href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/deployment-${deployment.$id}`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/deployment-${deployment.$id}`}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

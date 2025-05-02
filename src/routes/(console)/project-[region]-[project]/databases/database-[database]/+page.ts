@@ -8,14 +8,16 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     depends(Dependencies.COLLECTIONS);
     const page = getPage(url);
     const search = getSearch(url);
-    const limit = getLimit(url, route, CARD_LIMIT);
-    const view = getView(url, route, View.Grid);
+    const limit = getLimit(params.project, url, route, CARD_LIMIT);
+    const view = getView(params.project, url, route, View.Grid);
     const offset = pageToOffset(page, limit);
-    const collections = await sdk.forProject.databases.listCollections(
-        params.database,
-        [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-        search || undefined
-    );
+    const collections = await sdk
+        .forProject(params.region, params.project)
+        .databases.listCollections(
+            params.database,
+            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+            search || undefined
+        );
 
     return {
         offset,

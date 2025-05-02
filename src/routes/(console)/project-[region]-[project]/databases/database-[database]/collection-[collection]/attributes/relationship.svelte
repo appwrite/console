@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
-    import { ID, Query, type Models, RelationshipType, RelationMutate } from '@appwrite.io/console';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
+    import { ID, type Models, Query, RelationMutate, RelationshipType } from '@appwrite.io/console';
 
     export async function submitRelationship(
         databaseId: string,
@@ -14,16 +15,19 @@
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
-        await sdk.forProject.databases.createRelationshipAttribute(
-            databaseId,
-            collectionId,
-            data.relatedCollection,
-            data.relationType,
-            data.twoWay,
-            data.key,
-            data.twoWayKey ?? ID.unique(),
-            data.onDelete
-        );
+
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.createRelationshipAttribute(
+                databaseId,
+                collectionId,
+                data.relatedCollection,
+                data.relationType,
+                data.twoWay,
+                data.key,
+                data.twoWayKey ?? ID.unique(),
+                data.onDelete
+            );
     }
 
     export async function updateRelationship(
@@ -36,20 +40,21 @@
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
 
-        await sdk.forProject.databases.updateRelationshipAttribute(
-            databaseId,
-            collectionId,
-            originalKey,
-            data.onDelete,
-            data.key !== originalKey ? data.key : undefined
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.updateRelationshipAttribute(
+                databaseId,
+                collectionId,
+                originalKey,
+                data.onDelete,
+                data.key !== originalKey ? data.key : undefined
+            );
     }
 </script>
 
 <script lang="ts">
     import { InputText, InputSelect } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { page } from '$app/state';
     import { Box } from '$lib/components';
     import { collection } from '../store';
     import arrowOne from './arrow-one.svg';
@@ -85,19 +90,10 @@
 
     // Lifecycle hooks
     async function getCollections(search: string = null) {
-        if (search) {
-            const collections = await sdk.forProject.databases.listCollections(
-                databaseId,
-                [Query.orderDesc('')],
-                search
-            );
-            return collections;
-        } else {
-            const collections = await sdk.forProject.databases.listCollections(databaseId, [
-                Query.limit(100)
-            ]);
-            return collections;
-        }
+        const queries = search ? [Query.orderDesc('')] : [Query.limit(100)];
+        return sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.listCollections(databaseId, queries, search);
     }
 
     function updateKeyName() {

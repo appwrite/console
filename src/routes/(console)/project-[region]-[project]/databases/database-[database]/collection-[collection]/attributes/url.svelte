@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
-    import type { Models } from '@appwrite.io/console';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitUrl(
         databaseId: string,
@@ -8,14 +9,16 @@
         key: string,
         data: Partial<Models.AttributeUrl>
     ) {
-        await sdk.forProject.databases.createUrlAttribute(
-            databaseId,
-            collectionId,
-            key,
-            data.required,
-            data.default,
-            data.array
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.createUrlAttribute(
+                databaseId,
+                collectionId,
+                key,
+                data.required,
+                data.default,
+                data.array
+            );
     }
 
     export async function updateUrl(
@@ -24,14 +27,16 @@
         data: Partial<Models.AttributeUrl>,
         originalKey?: string
     ) {
-        await sdk.forProject.databases.updateUrlAttribute(
-            databaseId,
-            collectionId,
-            originalKey,
-            data.required,
-            data.default,
-            data.key !== originalKey ? data.key : undefined
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.updateUrlAttribute(
+                databaseId,
+                collectionId,
+                originalKey,
+                data.required,
+                data.default,
+                data.key !== originalKey ? data.key : undefined
+            );
     }
 </script>
 

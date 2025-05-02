@@ -8,6 +8,7 @@
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
+    import { page } from '$app/stores';
 
     export let showCreate = false;
 
@@ -18,7 +19,9 @@
 
     const create = async () => {
         try {
-            const topic = await sdk.forProject.messaging.createTopic(id ?? ID.unique(), name);
+            const topic = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .messaging.createTopic(id ?? ID.unique(), name);
             name = '';
             showCreate = false;
             showCustomId = false;

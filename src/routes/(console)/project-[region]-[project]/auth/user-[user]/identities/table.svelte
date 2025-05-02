@@ -14,6 +14,7 @@
     import { base } from '$app/paths';
     import { Badge, FloatingActionBar, Table, Typography } from '@appwrite.io/pink-svelte';
     import Confirm from '$lib/components/confirm.svelte';
+    import { page } from '$app/state';
 
     export let columns: Column[];
     export let data: PageData;
@@ -24,7 +25,9 @@
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selectedIds.map((id) => sdk.forProject.users.deleteIdentity(id));
+        const promises = selectedIds.map((id) =>
+            sdk.forProject(page.params.region, page.params.project).users.deleteIdentity(id)
+        );
 
         try {
             await Promise.all(promises);

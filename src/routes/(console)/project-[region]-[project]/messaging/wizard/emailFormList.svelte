@@ -15,6 +15,7 @@
     import { ID, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/state';
 
     let showCustomId = false;
     let showTest = false;
@@ -25,8 +26,7 @@
         const email = selected === 'self' ? $user.email : otherEmail;
         console.log(email);
 
-        // TODO: replace with test method
-        sdk.forProject.messaging.createEmail(
+        sdk.forProject(page.params.region, page.params.project).messaging.createEmail(
             ID.unique(),
             $messageParams[MessagingProviderType.Email]?.subject || undefined,
             $messageParams[MessagingProviderType.Email]?.content || undefined,
@@ -37,8 +37,7 @@
             undefined,
             undefined,
             undefined,
-            $messageParams[MessagingProviderType.Email]?.html || false,
-            undefined
+            $messageParams[MessagingProviderType.Email]?.html || false
         );
     }
 

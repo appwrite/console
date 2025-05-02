@@ -1,5 +1,7 @@
 <script context="module" lang="ts">
     import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
+    import { get } from 'svelte/store';
     import type { Models } from '@appwrite.io/console';
 
     export async function submitBoolean(
@@ -8,14 +10,17 @@
         key: string,
         data: Partial<Models.AttributeBoolean>
     ) {
-        await sdk.forProject.databases.createBooleanAttribute(
-            databaseId,
-            collectionId,
-            key,
-            data.required,
-            data.default,
-            data.array
-        );
+        const $page = get(page);
+        await sdk
+            .forProject($page.params.region, $page.params.project)
+            .databases.createBooleanAttribute(
+                databaseId,
+                collectionId,
+                key,
+                data.required,
+                data.default,
+                data.array
+            );
     }
     export async function updateBoolean(
         databaseId: string,
@@ -23,14 +28,17 @@
         data: Partial<Models.AttributeBoolean>,
         originalKey?: string
     ) {
-        await sdk.forProject.databases.updateBooleanAttribute(
-            databaseId,
-            collectionId,
-            originalKey,
-            data.required,
-            data.default,
-            data.key !== originalKey ? data.key : undefined
-        );
+        const $page = get(page);
+        await sdk
+            .forProject($page.params.region, $page.params.project)
+            .databases.updateBooleanAttribute(
+                databaseId,
+                collectionId,
+                originalKey,
+                data.required,
+                data.default,
+                data.key !== originalKey ? data.key : undefined
+            );
     }
 </script>
 

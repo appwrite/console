@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { AvatarInitials, CardGrid, DropList, DropListItem } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -17,7 +18,9 @@
     async function updateVerificationEmail() {
         showVerificationDropdown = false;
         try {
-            await sdk.forProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
@@ -37,7 +40,9 @@
     async function updateVerificationPhone() {
         showVerificationDropdown = false;
         try {
-            await sdk.forProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
@@ -56,7 +61,9 @@
     }
     async function updateStatus() {
         try {
-            await sdk.forProject.users.updateStatus($user.$id, !$user.status);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .users.updateStatus($user.$id, !$user.status);
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${

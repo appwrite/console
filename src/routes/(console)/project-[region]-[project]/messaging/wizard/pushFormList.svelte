@@ -45,6 +45,7 @@
     import InputFilePicker from '$lib/elements/forms/inputFilePicker.svelte';
     import { Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     let showCustomId = false;
     let showTest = false;
@@ -62,7 +63,7 @@
         console.log(email);
 
         // TODO: replace with test method
-        sdk.forProject.messaging.createPush(
+        sdk.forProject(page.params.region, page.params.project).messaging.createPush(
             ID.unique(),
             $messageParams[MessagingProviderType.Push]?.title || undefined,
             $messageParams[MessagingProviderType.Push]?.body || undefined,

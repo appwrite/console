@@ -19,15 +19,17 @@
 
     async function create() {
         try {
-            const user = await sdk.forProject.teams.createMembership(
-                teamId,
-                roles,
-                email || undefined,
-                undefined,
-                undefined,
-                `${page.url.origin}${base}/invite`,
-                name || undefined
-            );
+            const user = await sdk
+                .forProject(page.params.region, page.params.project)
+                .teams.createMembership(
+                    teamId,
+                    roles,
+                    email || undefined,
+                    undefined,
+                    undefined,
+                    `${page.url.origin}${base}/invite`,
+                    name || undefined
+                );
             addNotification({
                 type: 'success',
                 message: `${name ? name : email} created successfully`

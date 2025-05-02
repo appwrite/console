@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params }) => {
         ? params.period
         : UserUsageRange.ThirtyDays;
     try {
-        return sdk.forProject.users.getUsage(period);
+        return sdk.forProject(params.region, params.project).users.getUsage(period);
     } catch (e) {
         error(e.code, e.message);
     }

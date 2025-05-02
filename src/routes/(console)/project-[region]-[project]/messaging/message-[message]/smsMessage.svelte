@@ -10,6 +10,7 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     export let message: Models.Message & { data: Record<string, string> };
 
@@ -22,13 +23,9 @@
 
     async function update() {
         try {
-            await sdk.forProject.messaging.updateSms(
-                message.$id,
-                undefined,
-                undefined,
-                undefined,
-                content
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.updateSms(message.$id, undefined, undefined, undefined, content);
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({
                 message: 'Message has been updated',

@@ -8,6 +8,7 @@
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Tag } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
+    import { page } from '$app/stores';
 
     export let showCreate = false;
 
@@ -20,7 +21,9 @@
 
     const create = async () => {
         try {
-            const bucket = await sdk.forProject.storage.createBucket(id ? id : ID.unique(), name);
+            const bucket = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .storage.createBucket(id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', bucket);
             addNotification({

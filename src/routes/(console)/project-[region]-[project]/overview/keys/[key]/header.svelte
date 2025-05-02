@@ -10,7 +10,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/overview/keys`}>
+        <CoverTitle href={`${base}/project-${$page.params.region}-${projectId}/overview/keys`}>
             {$key?.name}
         </CoverTitle>
         <Id value={$key?.secret}>API key secret</Id>

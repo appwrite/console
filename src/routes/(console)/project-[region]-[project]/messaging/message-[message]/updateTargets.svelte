@@ -13,6 +13,7 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Alert, Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     export let message: Models.Message & { data: Record<string, unknown> };
     export let selectedTargetsById: Record<string, Models.Target>;
@@ -43,26 +44,17 @@
     async function update() {
         try {
             if (message.providerType == MessagingProviderType.Email) {
-                await sdk.forProject.messaging.updateEmail(
-                    message.$id,
-                    undefined,
-                    undefined,
-                    targetIds
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .messaging.updateEmail(message.$id, undefined, undefined, targetIds);
             } else if (message.providerType == MessagingProviderType.Sms) {
-                await sdk.forProject.messaging.updateSms(
-                    message.$id,
-                    undefined,
-                    undefined,
-                    targetIds
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .messaging.updateSms(message.$id, undefined, undefined, targetIds);
             } else if (message.providerType == MessagingProviderType.Push) {
-                await sdk.forProject.messaging.updatePush(
-                    message.$id,
-                    undefined,
-                    undefined,
-                    targetIds
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .messaging.updatePush(message.$id, undefined, undefined, targetIds);
             }
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({

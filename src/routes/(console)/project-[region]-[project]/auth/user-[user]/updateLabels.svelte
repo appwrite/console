@@ -11,6 +11,7 @@
     import { user } from './store';
     import { Tag, Input, Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     const alphaNumericRegExp = /^[a-zA-Z0-9]+$/;
     let suggestedLabels = ['admin', 'premium', 'mvp'];
@@ -23,7 +24,9 @@
 
     async function updateLabels() {
         try {
-            await sdk.forProject.users.updateLabels($user.$id, labels);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.updateLabels($user.$id, labels);
             await invalidate(Dependencies.USER);
             isDisabled = true;
 

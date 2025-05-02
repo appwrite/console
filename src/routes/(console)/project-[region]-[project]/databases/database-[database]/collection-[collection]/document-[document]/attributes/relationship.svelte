@@ -60,17 +60,17 @@
 
     async function getDocuments(search: string = null) {
         if (search) {
-            const documents = await sdk.forProject.databases.listDocuments(
-                databaseId,
-                attribute.relatedCollection,
-                [Query.startsWith('$id', search), Query.orderDesc('')]
-            );
+            const documents = await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.listDocuments(databaseId, attribute.relatedCollection, [
+                    Query.startsWith('$id', search),
+                    Query.orderDesc('')
+                ]);
             return documents;
         } else {
-            const documents = await sdk.forProject.databases.listDocuments(
-                databaseId,
-                attribute.relatedCollection
-            );
+            const documents = await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.listDocuments(databaseId, attribute.relatedCollection);
             return documents;
         }
     }

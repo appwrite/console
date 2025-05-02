@@ -48,13 +48,15 @@
 
     async function updateData() {
         try {
-            await sdk.forProject.databases.updateDocument(
-                databaseId,
-                collectionId,
-                documentId,
-                $work,
-                $work.$permissions
-            );
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .databases.updateDocument(
+                    databaseId,
+                    collectionId,
+                    documentId,
+                    $work,
+                    $work.$permissions
+                );
 
             invalidate(Dependencies.DOCUMENT);
             trackEvent(Submit.DocumentUpdate);

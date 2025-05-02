@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+    import { get } from 'svelte/store';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
@@ -8,16 +10,18 @@
         key: string,
         data: Partial<Models.AttributeInteger>
     ) {
-        await sdk.forProject.databases.createIntegerAttribute(
-            databaseId,
-            collectionId,
-            key,
-            data.required,
-            data.min,
-            data.max,
-            data.default,
-            data.array
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.createIntegerAttribute(
+                databaseId,
+                collectionId,
+                key,
+                data.required,
+                data.min,
+                data.max,
+                data.default,
+                data.array
+            );
     }
 
     export async function updateInteger(
@@ -26,21 +30,25 @@
         data: Partial<Models.AttributeInteger>,
         originalKey?: string
     ) {
-        await sdk.forProject.databases.updateIntegerAttribute(
-            databaseId,
-            collectionId,
-            originalKey,
-            data.required,
-            data.default,
-            Math.abs(data.min) > Number.MAX_SAFE_INTEGER ? undefined : data.min,
-            Math.abs(data.max) > Number.MAX_SAFE_INTEGER ? undefined : data.max,
-            data.key !== originalKey ? data.key : undefined
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.updateIntegerAttribute(
+                databaseId,
+                collectionId,
+                originalKey,
+                data.required,
+                data.default,
+                Math.abs(data.min) > Number.MAX_SAFE_INTEGER ? undefined : data.min,
+                Math.abs(data.max) > Number.MAX_SAFE_INTEGER ? undefined : data.max,
+                data.key !== originalKey ? data.key : undefined
+            );
     }
 </script>
 
 <script lang="ts">
     import { InputNumber } from '$lib/elements/forms';
+
+    export let editing = false;
 
     export let data: Partial<Models.AttributeInteger> = {
         required: false,
@@ -49,7 +57,6 @@
         default: 0,
         array: false
     };
-    export let editing = false;
 
     import { createConservative } from '$lib/helpers/stores';
     import { Layout, Selector } from '@appwrite.io/pink-svelte';

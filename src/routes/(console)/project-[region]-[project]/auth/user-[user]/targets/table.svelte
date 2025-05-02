@@ -4,8 +4,8 @@
     import type { PageData } from './$types';
     import { columns } from './store';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import ProviderType from '$routes/(console)/project-[project]/messaging/providerType.svelte';
-    import Provider from '$routes/(console)/project-[project]/messaging/provider.svelte';
+    import ProviderType from '$routes/(console)/project-[region]-[project]/messaging/providerType.svelte';
+    import Provider from '$routes/(console)/project-[region]-[project]/messaging/provider.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -25,7 +25,9 @@
         showDelete = false;
 
         const promises = selectedIds.map((id) =>
-            sdk.forProject.users.deleteTarget(page.params.user, id)
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .users.deleteTarget(page.params.user, id)
         );
 
         try {

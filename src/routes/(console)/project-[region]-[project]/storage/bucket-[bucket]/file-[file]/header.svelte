@@ -11,7 +11,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/storage/bucket-${bucketId}`}>
+        <CoverTitle
+            href={`${base}/project-${$page.params.region}-${projectId}/storage/bucket-${bucketId}`}>
             {$file?.name}
         </CoverTitle>
         <Id value={$file?.$id} event="file">{$file?.$id}</Id>

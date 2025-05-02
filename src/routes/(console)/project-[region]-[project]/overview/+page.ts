@@ -6,8 +6,8 @@ import { selectedTab } from './store';
 
 export const load: PageLoad = async ({ params }) => {
     if (get(selectedTab) === 'keys') {
-        redirect(302, `${base}/project-${params.project}/overview/keys`);
+        redirect(302, `${base}/project-${params.region}-${params.project}/overview/keys`);
     } else {
-        redirect(302, `${base}/project-${params.project}/overview/platforms`);
+        redirect(302, `${base}/project-${params.region}-${params.project}/overview/platforms`);
     }
 };

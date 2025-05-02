@@ -21,14 +21,16 @@
 
     async function toggleCollection() {
         try {
-            await sdk.forProject.databases.updateCollection(
-                databaseId,
-                $collection.$id,
-                $collection.name,
-                $collection.$permissions,
-                $collection.documentSecurity,
-                enabled
-            );
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .databases.updateCollection(
+                    databaseId,
+                    $collection.$id,
+                    $collection.name,
+                    $collection.$permissions,
+                    $collection.documentSecurity,
+                    enabled
+                );
             await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: `${$collection.name} has been updated`,

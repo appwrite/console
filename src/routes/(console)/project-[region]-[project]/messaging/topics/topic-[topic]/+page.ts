@@ -22,15 +22,17 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
         limit,
         search,
         query,
-        subscribers: await sdk.forProject.messaging.listSubscribers(
-            params.topic,
-            [
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc(''),
-                ...parsedQueries.values()
-            ],
-            search || undefined
-        )
+        subscribers: await sdk
+            .forProject(params.region, params.project)
+            .messaging.listSubscribers(
+                params.topic,
+                [
+                    Query.limit(limit),
+                    Query.offset(offset),
+                    Query.orderDesc(''),
+                    ...parsedQueries.values()
+                ],
+                search || undefined
+            )
     };
 };

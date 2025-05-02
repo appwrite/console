@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
+    import { page } from '$app/stores';
 
     let userName: string = null;
     onMount(async () => {
@@ -16,7 +17,9 @@
 
     async function updateName() {
         try {
-            await sdk.forProject.users.updateName($user.$id, userName);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .users.updateName($user.$id, userName);
             await invalidate(Dependencies.USER);
             addNotification({
                 message: 'Name has been updated',

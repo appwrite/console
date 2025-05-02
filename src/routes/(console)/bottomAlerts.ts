@@ -21,7 +21,7 @@ if (isCloud) {
         importance: 8,
         cta: {
             text: 'Try now',
-            link: ({ project }) => `${base}/project-${project.$id}/databases`
+            link: ({ project }) => `${base}/project-${project.region}-${project.$id}/databases`
         },
         learnMore: {
             text: 'Learn more',

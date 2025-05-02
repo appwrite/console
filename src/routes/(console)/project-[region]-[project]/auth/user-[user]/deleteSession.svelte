@@ -13,7 +13,9 @@
 
     async function deleteSession() {
         try {
-            await sdk.forProject.users.deleteSession(page.params.user, selectedSessionId);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.deleteSession(page.params.user, selectedSessionId);
             await invalidate(Dependencies.SESSIONS);
             showDelete = false;
             addNotification({

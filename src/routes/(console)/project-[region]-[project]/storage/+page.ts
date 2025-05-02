@@ -4,11 +4,11 @@ import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/
 import { CARD_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, route }) => {
+export const load: PageLoad = async ({ url, route, params }) => {
     const page = getPage(url);
     const search = getSearch(url);
     const view = getView(url, route, View.Grid);
-    const limit = getLimit(url, route, CARD_LIMIT);
+    const limit = getLimit(params.project, url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
 
     return {
@@ -16,9 +16,11 @@ export const load: PageLoad = async ({ url, route }) => {
         limit,
         view,
         search,
-        buckets: await sdk.forProject.storage.listBuckets(
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-            search || undefined
-        )
+        buckets: await sdk
+            .forProject(params.region, params.project)
+            .storage.listBuckets(
+                [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+                search || undefined
+            )
     };
 };

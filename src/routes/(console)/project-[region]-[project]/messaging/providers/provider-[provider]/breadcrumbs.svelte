@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { Breadcrumbs } from '$lib/layout';
     import { organization } from '$lib/stores/organization';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { provider } from './store';
 
     $: breadcrumbs = [
@@ -11,15 +11,15 @@
             title: $organization.name
         },
         {
-            href: `${base}/project-${$project.$id}`,
+            href: `${base}/project-${$project.region}-${$project.$id}`,
             title: $project.name
         },
         {
-            href: `${base}/project-${$project.$id}/messaging`,
+            href: `${base}/project-${$project.region}-${$project.$id}/messaging`,
             title: 'Messaging'
         },
         {
-            href: `${base}/project-${$project.$id}/messaging/providers/provider-${$provider?.$id}`,
+            href: `${base}/project-${$project.region}-${$project.$id}/messaging/providers/provider-${$provider?.$id}`,
             title: $provider?.name
         }
     ];

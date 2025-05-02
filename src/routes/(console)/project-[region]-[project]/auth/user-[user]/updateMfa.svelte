@@ -11,6 +11,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card, Empty, Table } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     let showDelete = false;
     let userMfa: boolean = null;
@@ -21,7 +22,9 @@
 
     async function updateMfa() {
         try {
-            await sdk.forProject.users.updateMfa($user.$id, userMfa);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.updateMfa($user.$id, userMfa);
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `Multi-factor authentication has been ${userMfa ? 'enabled' : 'disabled'}`,

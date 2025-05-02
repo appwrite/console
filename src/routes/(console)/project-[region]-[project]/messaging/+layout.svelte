@@ -32,7 +32,7 @@
             label: 'Go to Topics',
             keys: ['g', 't'],
             callback() {
-                goto(`${base}/project-${$project.$id}/messaging/topics`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/messaging/topics`);
             },
             disabled:
                 page.url.pathname.endsWith('topics') || page.url.pathname.includes('message-'),
@@ -43,7 +43,7 @@
             label: 'Go to Providers',
             keys: ['g', 'p'],
             callback() {
-                goto(`${base}/project-${$project.$id}/messaging/providers`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/messaging/providers`);
             },
             disabled:
                 page.url.pathname.endsWith('providers') || page.url.pathname.includes('message-'),

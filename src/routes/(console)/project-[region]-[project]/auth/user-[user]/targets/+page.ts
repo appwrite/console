@@ -9,26 +9,28 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     depends(Dependencies.USER_TARGETS);
 
     const page = getPage(url);
-    const limit = getLimit(url, route, PAGE_LIMIT);
+    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
 
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
 
-    const targets = await sdk.forProject.users.listTargets(params.user, [
-        Query.limit(limit),
-        Query.offset(offset),
-        Query.orderDesc(''),
-        ...parsedQueries.values()
-    ]);
+    const targets = await sdk
+        .forProject(params.region, params.project)
+        .users.listTargets(params.user, [
+            Query.limit(limit),
+            Query.offset(offset),
+            Query.orderDesc(''),
+            ...parsedQueries.values()
+        ]);
 
     const promisesById: Record<string, Promise<Models.Provider>> = {};
     targets.targets.forEach((target) => {
         if (target.providerId && !promisesById[target.providerId]) {
-            promisesById[target.providerId] = sdk.forProject.messaging.getProvider(
-                target.providerId
-            );
+            promisesById[target.providerId] = sdk
+                .forProject(params.region, params.project)
+                .messaging.getProvider(target.providerId);
         }
     });
 

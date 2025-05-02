@@ -6,6 +6,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import { page } from '$app/state';
 
     export let showActivate = false;
     export let selectedDeployment: Models.Deployment = null;
@@ -14,10 +15,16 @@
 
     const handleSubmit = async () => {
         try {
-            await sdk.forProject.functions.updateFunctionDeployment(
+<<<<<<<< HEAD:src/routes/(console)/project-[region]-[project]/functions/function-[function]/(modals)/activateModal.svelte
+            await sdk.forProject(page.params.region, page.params.project).functions.updateFunctionDeployment(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );
+========
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.updateDeployment(selectedDeployment.resourceId, selectedDeployment.$id);
+>>>>>>>> 93754b342accbdb6db066c33b2addea7b9e92d67:src/routes/(console)/project-[region]-[project]/functions/function-[function]/activate.svelte
             showActivate = false;
             addNotification({
                 type: 'success',

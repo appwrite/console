@@ -18,7 +18,9 @@
 
     async function updateName() {
         try {
-            await sdk.forProject.teams.updateName(page.params.team, teamName);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .teams.updateName(page.params.team, teamName);
             await invalidate(Dependencies.TEAM);
             addNotification({
                 message: 'Name has been updated',

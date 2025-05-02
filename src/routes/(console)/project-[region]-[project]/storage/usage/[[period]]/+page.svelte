@@ -10,7 +10,7 @@
 
 <Container>
     <Usage
-        path={`${base}/project-${page.params.project}/storage/usage`}
+        path={`${base}/project-${page.params.region}-${page.params.project}/storage/usage`}
         {total}
         {count}
         countMetadata={{

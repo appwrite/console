@@ -3,7 +3,7 @@
     import { CardGrid, SvgIcon } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { Layout, Tooltip, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
     import { capitalize } from '$lib/helpers/string';
@@ -41,7 +41,7 @@
     <svelte:fragment slot="actions">
         <Button
             secondary
-            href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
+            href={`${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
             Execute
         </Button>
     </svelte:fragment>

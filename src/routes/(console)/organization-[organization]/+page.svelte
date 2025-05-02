@@ -22,7 +22,7 @@
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
     import { ID, Region } from '@appwrite.io/console';
-    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
+    import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import { onMount, type ComponentType } from 'svelte';
     import { canWriteProjects } from '$lib/stores/roles';
@@ -122,17 +122,16 @@
             trackEvent(Submit.ProjectCreate, {
                 teamId: page.params.organization
             });
-            await goto(`${base}/project-${project.$id}/settings/migrations`);
+            await goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
             openImportWizard();
             loading.set(false);
         } catch (e) {
             trackError(e, Submit.ProjectCreate);
         }
     };
-
     onMount(async () => {
-        if (isCloud) {
-            const regions = await sdk.forConsole.billing.listRegions();
+        if (isCloud && $organization.$id) {
+            const regions = await sdk.forConsole.billing.listRegions($organization.$id);
             regionsStore.set(regions);
             checkPricingRefAndRedirect(page.url.searchParams);
         }

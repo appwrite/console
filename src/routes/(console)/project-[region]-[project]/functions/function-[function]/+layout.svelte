@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/state';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate, goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
@@ -21,28 +21,27 @@
 
     onMount(() => {
         let previousStatus = null;
-        return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            if (previousStatus === message.payload.status) {
-                return;
-            }
-            previousStatus = message.payload.status;
-            if (message.events.includes('functions.*.deployments.*.create')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-
-                return;
-            }
-            if (message.events.includes('functions.*.deployments.*.update')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-                invalidate(Dependencies.FUNCTION);
-
-                return;
-            }
-            if (message.events.includes('functions.*.deployments.*.delete')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-
-                return;
-            }
-        });
+        return realtime
+            .forProject(page.params.region, page.params.project)
+            .subscribe<Models.Deployment>('console', (message) => {
+                if (previousStatus === message.payload.status) {
+                    return;
+                }
+                previousStatus = message.payload.status;
+                if (message.events.includes('functions.*.deployments.*.create')) {
+                    invalidate(Dependencies.DEPLOYMENTS);
+                    return;
+                }
+                if (message.events.includes('functions.*.deployments.*.update')) {
+                    invalidate(Dependencies.DEPLOYMENTS);
+                    invalidate(Dependencies.FUNCTION);
+                    return;
+                }
+                if (message.events.includes('functions.*.deployments.*.delete')) {
+                    invalidate(Dependencies.DEPLOYMENTS);
+                    return;
+                }
+            });
     });
 
     $: $registerCommands([
@@ -50,7 +49,9 @@
             label: 'Create deployment',
             async callback() {
                 if (!page.url.pathname.endsWith($func.$id)) {
-                    await goto(`${base}/project-${$project.$id}/functions/function-${$func.$id}`);
+                    await goto(
+                        `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}`
+                    );
                 }
                 showCreateDeployment.set(true);
             },
@@ -63,7 +64,7 @@
             label: 'Permissions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/functions/function-${$func.$id}/settings#permissions`
+                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#permissions`
                 );
                 scrollBy({ top: -100 });
             },
@@ -75,7 +76,7 @@
             label: 'Events',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/functions/function-${$func.$id}/settings#events`
+                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#events`
                 );
                 scrollBy({ top: -100 });
             },
@@ -87,7 +88,7 @@
             label: 'Variables',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/functions/function-${$func.$id}/settings#variables`
+                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#variables`
                 );
             },
             icon: IconList,
@@ -98,7 +99,7 @@
             label: 'Timeout',
             callback() {
                 goto(
-                    `${base}/project-${$project.$id}/functions/function-${$func.$id}/settings#timeout`
+                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#timeout`
                 );
             },
             icon: IconXCircle,
@@ -109,7 +110,7 @@
             label: 'Schedule',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/functions/function-${$func.$id}/settings#schedule`
+                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings#schedule`
                 );
                 scrollBy({ top: -100 });
             },
@@ -120,7 +121,9 @@
         {
             label: 'Go to deployments',
             callback() {
-                goto(`${base}/project-${$project.$id}/functions/function-${$func.$id}`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}`
+                );
             },
             keys: ['g', 'd'],
             group: 'navigation',
@@ -130,7 +133,9 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(`${base}/project-${$project.$id}/functions/function-${$func.$id}/usage`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/usage`
+                );
             },
             keys: ['g', 'u'],
             group: 'navigation',
@@ -140,7 +145,9 @@
         {
             label: 'Go to executions',
             callback() {
-                goto(`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/executions`
+                );
             },
             keys: ['g', 'e'],
             group: 'navigation',
@@ -150,7 +157,9 @@
         {
             label: 'Go to settings',
             callback() {
-                goto(`${base}/project-${$project.$id}/functions/function-${$func.$id}/settings`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/functions/function-${$func.$id}/settings`
+                );
             },
             keys: ['g', 's'],
             group: 'navigation',

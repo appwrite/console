@@ -13,6 +13,7 @@
     import { started } from '../stores';
     import { showMigrationBox } from '$lib/components/migrationBox.svelte';
     import { addNotification } from '$lib/stores/notifications';
+    import { page } from '$app/stores';
 
     const onExit = () => {
         resetImportStores();
@@ -24,48 +25,53 @@
 
             switch ($provider.provider) {
                 case 'appwrite': {
-                    await sdk.forProject.migrations.createAppwriteMigration(
-                        resources,
-                        $provider.endpoint,
-                        $provider.projectID,
-                        $provider.apiKey
-                    );
+                    await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .migrations.createAppwriteMigration(
+                            resources,
+                            $provider.endpoint,
+                            $provider.projectID,
+                            $provider.apiKey
+                        );
 
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'supabase': {
-                    await sdk.forProject.migrations.createSupabaseMigration(
-                        resources,
-                        $provider.endpoint,
-                        $provider.apiKey,
-                        $provider.host,
-                        $provider.username || 'postgres',
-                        $provider.password,
-                        $provider.port || 5432
-                    );
+                    await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .migrations.createSupabaseMigration(
+                            resources,
+                            $provider.endpoint,
+                            $provider.apiKey,
+                            $provider.host,
+                            $provider.username || 'postgres',
+                            $provider.password,
+                            $provider.port || 5432
+                        );
 
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'firebase': {
-                    await sdk.forProject.migrations.createFirebaseMigration(
-                        resources,
-                        $provider.serviceAccount
-                    );
+                    await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .migrations.createFirebaseMigration(resources, $provider.serviceAccount);
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'nhost': {
-                    await sdk.forProject.migrations.createNHostMigration(
-                        resources,
-                        $provider.subdomain,
-                        $provider.region,
-                        $provider.adminSecret,
-                        $provider.database || $provider.subdomain,
-                        $provider.username || 'postgres',
-                        $provider.password
-                    );
+                    await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .migrations.createNHostMigration(
+                            resources,
+                            $provider.subdomain,
+                            $provider.region,
+                            $provider.adminSecret,
+                            $provider.database || $provider.subdomain,
+                            $provider.username || 'postgres',
+                            $provider.password
+                        );
 
                     invalidate(Dependencies.MIGRATIONS);
                     break;

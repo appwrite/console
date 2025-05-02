@@ -1,8 +1,8 @@
-import { page } from '$app/stores';
-import { derived, writable, type Writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 import { DeploymentDownloadType, type Models } from '@appwrite.io/console';
 import type { Column } from '$lib/helpers/types';
 import { sdk } from '$lib/stores/sdk';
+import { page } from '$app/stores';
 
 export const func = derived(page, ($page) => $page.data.function as Models.Function);
 export const deploymentList = derived(
@@ -144,20 +144,27 @@ export const columns = writable<Column[]>([
 ]);
 
 export function getOutputDownload(funcId: string, deploymentId: string) {
+    const p = get(page);
     return (
-        sdk.forProject.functions.getDeploymentDownload(
-            funcId,
-            deploymentId.toString(),
-            DeploymentDownloadType.Output
-        ) + '&mode=admin'
+        sdk
+            .forProject(p.params.region, p.params.project)
+            .functions.getDeploymentDownload(
+                funcId,
+                deploymentId.toString(),
+                DeploymentDownloadType.Output
+            ) + '&mode=admin'
     );
 }
 export function getSourceDownload(funcId: string, deploymentId: string) {
+    const p = get(page);
+
     return (
-        sdk.forProject.functions.getDeploymentDownload(
-            funcId,
-            deploymentId.toString(),
-            DeploymentDownloadType.Source
-        ) + '&mode=admin'
+        sdk
+            .forProject(p.params.region, p.params.project)
+            .functions.getDeploymentDownload(
+                funcId,
+                deploymentId.toString(),
+                DeploymentDownloadType.Source
+            ) + '&mode=admin'
     );
 }

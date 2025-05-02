@@ -118,7 +118,9 @@
         showDelete = false;
 
         const promises = selectedRows.map((documentId) =>
-            sdk.forProject.databases.deleteDocument(databaseId, collectionId, documentId)
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.deleteDocument(databaseId, collectionId, documentId)
         );
         try {
             await Promise.all(promises);
@@ -179,7 +181,7 @@
         <Table.Row.Link
             {root}
             id={document.$id}
-            href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
             <Table.Cell column="$id" {root}>
                 {#key document.$id}
                     <Id value={document.$id}>
@@ -202,7 +204,7 @@
                                         e.preventDefault();
                                         e.stopPropagation();
                                         goto(
-                                            `${base}/project-${projectId}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
+                                            `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${attr.relatedCollection}/document-${related.$id}`
                                         );
                                     }}>
                                     {#each args as arg, i}

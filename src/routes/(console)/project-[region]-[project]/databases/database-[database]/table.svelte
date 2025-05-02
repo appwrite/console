@@ -27,7 +27,9 @@
         showDelete = false;
 
         const promises = selectedRows.map((collectionId) =>
-            sdk.forProject.databases.deleteCollection(databaseId, collectionId)
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.deleteCollection(databaseId, collectionId)
         );
         try {
             await Promise.all(promises);
@@ -60,7 +62,7 @@
         <Table.Row.Link
             {root}
             id={collection.$id}
-            href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collection.$id}`}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

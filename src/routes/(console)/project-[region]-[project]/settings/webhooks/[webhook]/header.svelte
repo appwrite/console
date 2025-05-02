@@ -10,7 +10,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/settings/webhooks`}>
+        <CoverTitle href={`${base}/project-${$page.params.region}-${projectId}/settings/webhooks`}>
             {$webhook?.name}
         </CoverTitle>
         <Id value={$webhook?.$id} event="webhook">{$webhook?.$id}</Id>

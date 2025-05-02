@@ -22,7 +22,7 @@
                 message: `${$webhook.name} has been deleted`
             });
             trackEvent(Submit.WebhookDelete);
-            await goto(`${base}/project-${$project.$id}/settings/webhooks`);
+            await goto(`${base}/project-${$project.region}-${$project.$id}/settings/webhooks`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.WebhookDelete);

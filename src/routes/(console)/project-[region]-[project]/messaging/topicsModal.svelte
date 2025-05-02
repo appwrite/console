@@ -15,6 +15,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import { getProviderText } from './helper';
+    import { page } from '$app/state';
 
     export let providerType: MessagingProviderType;
     export let show: boolean;
@@ -46,7 +47,9 @@
         if (!show) return;
         const queries = [Query.limit(5), Query.offset(offset)];
 
-        const response = await sdk.forProject.messaging.listTopics(queries, search || undefined);
+        const response = await sdk
+            .forProject(page.params.region, page.params.project)
+            .messaging.listTopics(queries, search || undefined);
 
         if (response.total !== 0) {
             switch (providerType) {

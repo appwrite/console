@@ -37,12 +37,13 @@
     import { getPlatformInfo } from '$lib/helpers/platform';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
+    import { page } from '$app/state';
 
     function createKey() {
         trackEvent(Click.KeyCreateClick, {
             source: 'onboarding'
         });
-        goto(`${base}/project-${projectId}/overview/keys/create`, {
+        goto(`${base}/project-${page.params.region}-${page.params.project}/overview/keys/create`, {
             replaceState: true
         });
     }
@@ -393,7 +394,9 @@
                                     <Card.Button
                                         on:click={() => {
                                             trackEvent(Click.OnboardingSetupDatabaseClick);
-                                            goto(`${base}/project-${projectId}/databases`);
+                                            goto(
+                                                `${base}/project-${page.params.region}-${page.params.project}/databases`
+                                            );
                                         }}
                                         padding="s"
                                         ><Layout.Stack gap="xl"
@@ -486,7 +489,7 @@
                                                             justifyContent="flex-end">
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${projectId}/auth/settings`}
+                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthEmailPasswordClick
@@ -496,7 +499,7 @@
                                                             </Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${projectId}/auth/settings`}
+                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthOauth2Click
@@ -504,7 +507,7 @@
                                                                 }}>OAuth 2</Link.Anchor>
                                                             <Link.Anchor
                                                                 variant="quiet-muted"
-                                                                href={`${base}/project-${projectId}/auth/settings`}
+                                                                href={`${base}/project-${page.params.region}-${page.params.project}/auth/settings`}
                                                                 on:click={() => {
                                                                     trackEvent(
                                                                         Click.OnboardingAuthAllMethodsClick

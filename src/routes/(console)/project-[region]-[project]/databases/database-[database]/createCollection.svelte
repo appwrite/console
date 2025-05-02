@@ -24,11 +24,9 @@
     const create = async () => {
         error = null;
         try {
-            const collection = await sdk.forProject.databases.createCollection(
-                databaseId,
-                id ? id : ID.unique(),
-                name
-            );
+            const collection = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .databases.createCollection(databaseId, id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', collection);
             addNotification({

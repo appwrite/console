@@ -10,11 +10,11 @@
             title: $organization?.name
         },
         {
-            href: `${base}/project-${$project?.$id}`,
+            href: `${base}/project-${$project.region}-${$project?.$id}`,
             title: $project?.name
         },
         {
-            href: `${base}/project-${$project?.$id}/auth`,
+            href: `${base}/project-${$project.region}-${$project?.$id}/auth`,
             title: 'Auth'
         }
     ];

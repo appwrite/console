@@ -6,7 +6,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import { columns } from './store';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import Provider from '../provider.svelte';
     import ProviderType from '../providerType.svelte';
     import { invalidate } from '$app/navigation';
@@ -26,7 +26,9 @@
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selectedIds.map((id) => sdk.forProject.messaging.deleteProvider(id));
+        const promises = selectedIds.map((id) =>
+            sdk.forProject(page.params.region, page.params.project).messaging.deleteProvider(id)
+        );
 
         try {
             await Promise.all(promises);
@@ -68,7 +70,7 @@
             this={$canWriteProviders ? Table.Row.Link : Table.Row.Base}
             id={provider.$id}
             href={$canWriteProviders
-                ? `${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}`
+                ? `${base}/project-${$project.region}-${$project.$id}/messaging/providers/provider-${provider.$id}`
                 : undefined}
             {root}>
             {#each $columns as column}

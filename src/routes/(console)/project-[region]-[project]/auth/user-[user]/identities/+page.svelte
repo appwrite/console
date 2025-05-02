@@ -1,7 +1,6 @@
 <script lang="ts">
     import { PaginationWithLimit, ViewSelector, EmptyFilter } from '$lib/components';
     import { Container } from '$lib/layout';
-    import type { PageData } from './$types';
     import Table from './table.svelte';
     import { Filters, hasPageQueries } from '$lib/components/filters';
     import { View } from '$lib/helpers/load';
@@ -11,7 +10,7 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
 
-    export let data: PageData;
+    export let data;
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Identity ID', type: 'string', width: 200 },

@@ -13,6 +13,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { providerType, messageParams } from './wizard/store';
     import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { page } from '$app/stores';
 
     async function create() {
         try {
@@ -21,31 +22,35 @@
 
             switch ($providerType) {
                 case MessagingProviderType.Email:
-                    response = await sdk.forProject.messaging.createEmail(
-                        messageId,
-                        $messageParams[$providerType].subject,
-                        $messageParams[$providerType].content,
-                        $messageParams[$providerType].topics,
-                        $messageParams[$providerType].users,
-                        $messageParams[$providerType].targets,
-                        undefined,
-                        undefined,
-                        undefined,
-                        $messageParams[$providerType].draft,
-                        $messageParams[$providerType].html,
-                        $messageParams[$providerType].scheduledAt
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.createEmail(
+                            messageId,
+                            $messageParams[$providerType].subject,
+                            $messageParams[$providerType].content,
+                            $messageParams[$providerType].topics,
+                            $messageParams[$providerType].users,
+                            $messageParams[$providerType].targets,
+                            undefined,
+                            undefined,
+                            undefined,
+                            $messageParams[$providerType].draft,
+                            $messageParams[$providerType].html,
+                            $messageParams[$providerType].scheduledAt
+                        );
                     break;
                 case MessagingProviderType.Sms:
-                    response = await sdk.forProject.messaging.createSms(
-                        messageId,
-                        $messageParams[$providerType].content,
-                        $messageParams[$providerType].topics,
-                        $messageParams[$providerType].users,
-                        $messageParams[$providerType].targets,
-                        $messageParams[$providerType].draft,
-                        $messageParams[$providerType].scheduledAt
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.createSms(
+                            messageId,
+                            $messageParams[$providerType].content,
+                            $messageParams[$providerType].topics,
+                            $messageParams[$providerType].users,
+                            $messageParams[$providerType].targets,
+                            $messageParams[$providerType].draft,
+                            $messageParams[$providerType].scheduledAt
+                        );
                     break;
                 case MessagingProviderType.Push:
                     {
@@ -60,24 +65,26 @@
                             });
                         }
 
-                        response = await sdk.forProject.messaging.createPush(
-                            messageId,
-                            $messageParams[$providerType].title,
-                            $messageParams[$providerType].body,
-                            $messageParams[$providerType].topics,
-                            $messageParams[$providerType].users,
-                            $messageParams[$providerType].targets,
-                            customData,
-                            undefined,
-                            fileCompoundId,
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined,
-                            $messageParams[$providerType].draft,
-                            $messageParams[$providerType].scheduledAt
-                        );
+                        response = await sdk
+                            .forProject($page.params.region, $page.params.project)
+                            .messaging.createPush(
+                                messageId,
+                                $messageParams[$providerType].title,
+                                $messageParams[$providerType].body,
+                                $messageParams[$providerType].topics,
+                                $messageParams[$providerType].users,
+                                $messageParams[$providerType].targets,
+                                customData,
+                                undefined,
+                                fileCompoundId,
+                                undefined,
+                                undefined,
+                                undefined,
+                                undefined,
+                                undefined,
+                                $messageParams[$providerType].draft,
+                                $messageParams[$providerType].scheduledAt
+                            );
                     }
                     break;
             }
@@ -102,7 +109,9 @@
                 providerType: $providerType,
                 status: response.status
             });
-            await goto(`${base}/project-${$project.$id}/messaging/message-${response.$id}`);
+            await goto(
+                `${base}/project-${$project.region}-${$project.$id}/messaging/message-${response.$id}`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',

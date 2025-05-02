@@ -41,6 +41,7 @@
     import { capitalize } from '$lib/helpers/string';
     import Ellipse from './components/Ellipse.svelte';
     import Confirm from '$lib/components/confirm.svelte';
+    import { page } from '$app/state';
 
     export let data: PageData;
 
@@ -77,7 +78,7 @@
         const message = `${selectedBackups.length} backup${selectedBackups.length > 1 ? 's have been' : ''} deleted`;
 
         const promises = selectedBackups.map((archiveId) =>
-            sdk.forProject.backups.deleteArchive(archiveId)
+            sdk.forProject(page.params.region, page.params.project).backups.deleteArchive(archiveId)
         );
 
         try {
@@ -106,12 +107,14 @@
         }
 
         try {
-            await sdk.forProject.backups.createRestoration(
-                selectedBackup.$id,
-                ['databases'],
-                newDatabaseInfo.id ?? ID.unique(),
-                newDatabaseInfo.name
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.createRestoration(
+                    selectedBackup.$id,
+                    ['databases'],
+                    newDatabaseInfo.id ?? ID.unique(),
+                    newDatabaseInfo.name
+                );
             addNotification({
                 type: 'success',
                 message: 'Database restore initiated'

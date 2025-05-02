@@ -36,7 +36,7 @@
         <ViewSelector {columns} view={View.Table} hideView />
         {#if $canWriteWebhooks}
             <Button
-                href={`${base}/project-${projectId}/settings/webhooks/create`}
+                href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`}
                 event="create_webhook">
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create webhook
@@ -54,7 +54,7 @@
             {#each data.webhooks.webhooks as webhook}
                 <Table.Row.Link
                     {root}
-                    href={`${base}/project-${projectId}/settings/webhooks/${webhook.$id}`}>
+                    href={`${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/${webhook.$id}`}>
                     {#each $columns as column (column.id)}
                         <Table.Cell column={column.id} {root}>
                             {#if column.id === '$id'}

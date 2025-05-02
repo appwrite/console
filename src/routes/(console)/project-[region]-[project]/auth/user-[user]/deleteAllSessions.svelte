@@ -3,7 +3,6 @@
     import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
-    import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -15,7 +14,9 @@
 
     async function deleteAllSessions() {
         try {
-            await sdk.forProject.users.deleteSessions(page.params.user);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.deleteSessions(page.params.user);
             await invalidate(Dependencies.SESSIONS);
             showDeleteAll = false;
             addNotification({

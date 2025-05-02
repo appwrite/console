@@ -11,7 +11,6 @@
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import { ID, type Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -29,7 +28,7 @@
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    export let data: PageData;
+    export let data;
     let showAdd = false;
     let subscribersByTargetId: Record<string, Models.Subscriber> = {};
     const columns = writable<Column[]>([
@@ -58,11 +57,9 @@
             (targetId) => !(targetId in subscribersByTargetId)
         );
         const promises = targetIds.map(async (targetId) => {
-            const subscriber = await sdk.forProject.messaging.createSubscriber(
-                page.params.topic,
-                ID.unique(),
-                targetId
-            );
+            const subscriber = await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.createSubscriber(page.params.topic, ID.unique(), targetId);
             subscribersByTargetId[targetId] = subscriber;
         });
 
@@ -122,8 +119,7 @@
             </div>
             <Button
                 secondary
-                href={`${base}/project-${page.params.project}/messaging/topics/topic-${page.params.topic}/subscribers`}>
-                Clear Search
+                href={`${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${page.params.topic}/subscribers`}>
             </Button>
         </EmptySearch>
     {:else}

@@ -8,7 +8,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${page.params.project}/functions/templates`}>
+        <CoverTitle
+            href={`${base}/project-${page.params.region}-${page.params.project}/functions/templates`}>
             {$template.name}
         </CoverTitle>
         <Id value={$template.id} event="user">{$template.id}</Id>

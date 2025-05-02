@@ -1,12 +1,25 @@
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
+import { regions } from '$lib/stores/organization';
 
 export const project = derived(
     page,
-    ($page) => $page.data.project as Models.Project & { region?: string }
+    (page) => page.data.project as Models.Project & { region?: string }
 );
+
+export const projectRegion = derived(project, ($project) => {
+    const availableRegions = get(regions);
+    // region is marked as nullable above.
+    if (!availableRegions || !availableRegions.regions || !$project || !$project.region)
+        return null;
+
+    return availableRegions.regions.find((region) => {
+        return $project.region === region.$id;
+    });
+});
+
 export const onboarding = derived(
     project,
     ($project) => $project?.platforms?.length === 0 && $project?.keys?.length === 0

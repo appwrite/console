@@ -1,6 +1,6 @@
 <script lang="ts">
     import { BackupRestoreBox, MigrationBox, UploadBox } from '$lib/components';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
 
@@ -26,20 +26,22 @@
     } from '$lib/stores/roles';
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
-            if (response.events.includes('stats.connections')) {
-                for (const [projectId, value] of Object.entries(response.payload)) {
-                    stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
+        return realtime
+            .forProject($page.params.region, $page.params.project)
+            .subscribe(['project', 'console'], (response) => {
+                if (response.events.includes('stats.connections')) {
+                    for (const [projectId, value] of Object.entries(response.payload)) {
+                        stats.add(projectId, [new Date(response.timestamp).toISOString(), value]);
+                    }
                 }
-            }
-        });
+            });
     });
 
     $: $registerCommands([
         {
             label: 'Go to Auth',
             callback: () => {
-                goto(`${base}/project-${$project.$id}/auth`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/auth`);
             },
             keys: ['g', 'a'],
             group: 'navigation'
@@ -47,7 +49,7 @@
         {
             label: 'Go to Databases',
             callback: () => {
-                goto(`${base}/project-${$project.$id}/databases`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/databases`);
             },
             keys: ['g', 'd'],
             group: 'navigation',
@@ -56,7 +58,7 @@
         {
             label: 'Go to Functions',
             callback: () => {
-                goto(`${base}/project-${$project.$id}/functions`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/functions`);
             },
             keys: ['g', 'f'],
             group: 'navigation',
@@ -65,7 +67,7 @@
         {
             label: 'Go to Messaging',
             callback: () => {
-                goto(`${base}/project-${$project.$id}/messaging`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/messaging`);
             },
             keys: ['g', 'm'],
             disabled: page.url.pathname.endsWith('messaging') || !$canSeeMessages,
@@ -74,7 +76,7 @@
         {
             label: 'Go to Storage',
             callback: () => {
-                goto(`${base}/project-${$project.$id}/storage`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/storage`);
             },
             keys: ['g', 's'],
             group: 'navigation',
@@ -83,7 +85,7 @@
         {
             label: 'Go to Settings',
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings`);
             },
             keys: ['g', 'e'],
             group: 'navigation',
@@ -101,7 +103,7 @@
         {
             label: 'Go to Overview',
             callback: () => {
-                goto(`${base}/project-${$project.$id}`);
+                goto(`${base}/project-${$project.region}-${$project.$id}`);
             },
             keys: ['g', 'o'],
             group: 'navigation'

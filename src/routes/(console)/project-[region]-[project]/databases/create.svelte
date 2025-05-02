@@ -14,6 +14,7 @@
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
     import { Alert, Icon, Tag } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     export let showCreate = false;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -60,14 +61,16 @@
         const totalPoliciesPromise = totalPolicies.map((policy) => {
             cronExpression(policy);
 
-            return sdk.forProject.backups.createPolicy(
-                ID.unique(),
-                ['databases'],
-                policy.retained,
-                policy.schedule,
-                policy.label,
-                resourceId
-            );
+            return sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.createPolicy(
+                    ID.unique(),
+                    ['databases'],
+                    policy.retained,
+                    policy.schedule,
+                    policy.label,
+                    resourceId
+                );
         });
 
         await Promise.all(totalPoliciesPromise);
@@ -77,7 +80,9 @@
     const create = async () => {
         try {
             const databaseId = id ? id : ID.unique();
-            const database = await sdk.forProject.databases.create(databaseId, name);
+            const database = await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.create(databaseId, name);
             await createPolicies(databaseId);
 
             showCreate = false;

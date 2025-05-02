@@ -6,7 +6,7 @@
     import { Button } from '$lib/elements/forms';
     import { isSameDay } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { GRACE_PERIOD_OVERRIDE, isSelfHosted } from '$lib/system';
     import { onMount } from 'svelte';
     import { project } from '../../store';
@@ -30,6 +30,7 @@
     import { capitalize } from '$lib/helpers/string';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/state';
 
     export let data;
     let migration: Models.Migration = null;
@@ -48,12 +49,14 @@
         return 'pending';
     };
 
-    onMount(async () => {
-        sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
-            if (response.events.includes('migrations.*')) {
-                invalidate(Dependencies.MIGRATIONS);
-            }
-        });
+    onMount(() => {
+        return realtime
+            .forProject(page.params.region, page.params.project)
+            .subscribe(['project', 'console'], (response) => {
+                if (response.events.includes('migrations.*')) {
+                    invalidate(Dependencies.MIGRATIONS);
+                }
+            });
     });
 
     $: $registerCommands([

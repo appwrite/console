@@ -18,11 +18,9 @@
 
     const handleDelete = async () => {
         try {
-            await sdk.forProject.databases.deleteDocument(
-                databaseId,
-                page.params.collection,
-                page.params.document
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.deleteDocument(databaseId, page.params.collection, page.params.document);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -30,7 +28,7 @@
             });
             trackEvent(Submit.DocumentDelete);
             await goto(
-                `${base}/project-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}`
+                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}/collection-${page.params.collection}`
             );
         } catch (error) {
             addNotification({

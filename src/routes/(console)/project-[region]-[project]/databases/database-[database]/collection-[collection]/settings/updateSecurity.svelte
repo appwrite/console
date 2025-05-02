@@ -20,14 +20,16 @@
 
     async function updateSecurity() {
         try {
-            await sdk.forProject.databases.updateCollection(
-                databaseId,
-                $collection.$id,
-                $collection.name,
-                $collection.$permissions,
-                collectionDocumentSecurity,
-                $collection.enabled
-            );
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .databases.updateCollection(
+                    databaseId,
+                    $collection.$id,
+                    $collection.name,
+                    $collection.$permissions,
+                    collectionDocumentSecurity,
+                    $collection.enabled
+                );
             await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Security has been updated',

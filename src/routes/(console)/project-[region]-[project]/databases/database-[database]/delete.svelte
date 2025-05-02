@@ -45,7 +45,9 @@
         try {
             const queries = buildQueries();
 
-            collections = await sdk.forProject.databases.listCollections(databaseId, queries);
+            collections = await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.listCollections(databaseId, queries);
 
             const collectionPromises = collections.collections.map(async (collection) => {
                 return {
@@ -65,13 +67,15 @@
 
     const handleDelete = async () => {
         try {
-            await sdk.forProject.databases.delete(databaseId);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.delete(databaseId);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$database.name} has been deleted`
             });
-            await goto(`${base}/project-${page.params.project}/databases`);
+            await goto(`${base}/project-${page.params.region}-${page.params.project}/databases`);
             trackEvent(Submit.DatabaseDelete);
         } catch (error) {
             addNotification({

@@ -39,7 +39,7 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import Aside from './aside.svelte';
 
-    let previousPage: string = `${base}/project-${page.params.project}/functions/function-${page.params.function}/executions`;
+    let previousPage: string = `${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/executions`;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -93,17 +93,19 @@
                 headersObject[name] = value;
             }
 
-            await sdk.forProject.functions.createExecution(
-                func.$id,
-                body,
-                true,
-                path,
-                method,
-                headersObject,
-                isScheduled ? dateTime.toISOString() : undefined
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .functions.createExecution(
+                    func.$id,
+                    body,
+                    true,
+                    path,
+                    method,
+                    headersObject,
+                    isScheduled ? dateTime.toISOString() : undefined
+                );
             await goto(
-                `${base}/project-${page.params.project}/functions/function-${func.$id}/executions`
+                `${base}/project-${page.params.region}-${page.params.project}/functions/function-${func.$id}/executions`
             );
             invalidate(Dependencies.EXECUTIONS);
             addNotification({

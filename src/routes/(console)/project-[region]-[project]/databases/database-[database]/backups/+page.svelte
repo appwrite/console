@@ -9,7 +9,7 @@
     import CreatePolicy from './createPolicy.svelte';
     import { Button } from '$lib/elements/forms';
     import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime, sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { isCloud, isSelfHosted } from '$lib/system';
@@ -22,6 +22,7 @@
     import { getProjectId } from '$lib/helpers/project';
     import { trackEvent } from '$lib/actions/analytics';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -64,7 +65,9 @@
 
     const createManualBackup = async () => {
         try {
-            await sdk.forProject.backups.createArchive(['databases'], data.database.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.createArchive(['databases'], data.database.$id);
             addNotification({
                 type: 'success',
                 message: 'Database backup has started'
@@ -115,14 +118,16 @@
         const totalPoliciesPromise = totalPolicies.map((policy) => {
             cronExpression(policy);
 
-            return sdk.forProject.backups.createPolicy(
-                ID.unique(),
-                ['databases'],
-                policy.retained,
-                policy.schedule,
-                policy.label,
-                data.database.$id
-            );
+            return sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.createPolicy(
+                    ID.unique(),
+                    ['databases'],
+                    policy.retained,
+                    policy.schedule,
+                    policy.label,
+                    data.database.$id
+                );
         });
 
         try {
@@ -156,14 +161,19 @@
     };
 
     onMount(() => {
-        return sdk.forConsole.client.subscribe('console', (response) => {
-            // fast path return.
-            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return realtime
+            .forProject(page.params.region, page.params.project)
+            .subscribe(['project', 'console'], (response) => {
+                // fast path return.
+                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-            if (response.events.includes('archives.*') || response.events.includes('policies.*')) {
-                invalidate(Dependencies.BACKUPS);
-            }
-        });
+                if (
+                    response.events.includes('archives.*') ||
+                    response.events.includes('policies.*')
+                ) {
+                    invalidate(Dependencies.BACKUPS);
+                }
+            });
     });
 </script>
 

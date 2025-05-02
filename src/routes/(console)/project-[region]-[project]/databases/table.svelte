@@ -3,12 +3,10 @@
     import { page } from '$app/state';
     import { Id } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import type { PageData } from './$types';
     import { columns } from './store';
     import { Tooltip, Table } from '@appwrite.io/pink-svelte';
 
-    export let data: PageData;
-    const projectId = page.params.project;
+    export let data;
 
     function getPolicyDescription(cron: string): string {
         const [minute, hour, dayOfMonth, , dayOfWeek] = cron.split(' ');
@@ -29,7 +27,7 @@
     {#each data.databases.databases as database (database.$id)}
         <Table.Row.Link
             {root}
-            href={`${base}/project-${projectId}/databases/database-${database.$id}`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${database.$id}`}>
             {#each $columns as column}
                 <Table.Cell column={column.id} {root}>
                     {#if column.id === '$id'}

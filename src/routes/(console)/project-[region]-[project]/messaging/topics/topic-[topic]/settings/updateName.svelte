@@ -8,14 +8,19 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { page } from '$app/stores';
 
     let name: string = null;
+
     onMount(async () => {
         name ??= $topic.name;
     });
+
     async function updateName() {
         try {
-            await sdk.forProject.messaging.updateTopic($topic.$id, name);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .messaging.updateTopic($topic.$id, name);
             await invalidate(Dependencies.MESSAGING_TOPIC);
             addNotification({
                 message: 'Name has been updated',

@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+    import { get } from 'svelte/store';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
@@ -8,15 +10,17 @@
         key: string,
         data: Partial<Models.AttributeEnum>
     ) {
-        await sdk.forProject.databases.createEnumAttribute(
-            databaseId,
-            collectionId,
-            key,
-            data.elements,
-            data.required,
-            data.default,
-            data.array
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.createEnumAttribute(
+                databaseId,
+                collectionId,
+                key,
+                data.elements,
+                data.required,
+                data.default,
+                data.array
+            );
     }
 
     export async function updateEnum(
@@ -25,15 +29,17 @@
         data: Partial<Models.AttributeEnum>,
         originalKey?: string
     ) {
-        await sdk.forProject.databases.updateEnumAttribute(
-            databaseId,
-            collectionId,
-            originalKey,
-            data.elements,
-            data.required,
-            data.default,
-            data.key !== originalKey ? data.key : undefined
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.updateEnumAttribute(
+                databaseId,
+                collectionId,
+                originalKey,
+                data.elements,
+                data.required,
+                data.default,
+                data.key !== originalKey ? data.key : undefined
+            );
     }
 </script>
 

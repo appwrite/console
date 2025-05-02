@@ -198,7 +198,7 @@
                                                 alignItems="center"
                                                 inline>
                                                 <Button
-                                                    href={`${base}/project-${page.params.project}/functions/templates/template-${template.id}`}
+                                                    href={`${base}/project-${page.params.region}-${page.params.project}/functions/templates/template-${template.id}`}
                                                     text>
                                                     <span class="text">Details</span>
                                                 </Button>
@@ -207,7 +207,7 @@
                                                         title="functions"
                                                         disabled={buttonDisabled}
                                                         buttonType="secondary"
-                                                        buttonHref={`${base}/project-${page.params.project}/functions/create-function/template-${template.id}`}
+                                                        buttonHref={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function/template-${template.id}`}
                                                         showIcon={false}
                                                         buttonText="Create"
                                                         buttonEventData={{

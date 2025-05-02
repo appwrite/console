@@ -46,5 +46,8 @@
         allowCreate={$canWriteKeys}
         href="https://appwrite.io/docs/advanced/platform/api-keys"
         target="API key"
-        on:click={() => goto(`${base}/project-${page.params.project}/overview/keys/create`)} />
+        on:click={() =>
+            goto(
+                `${base}/project-${page.params.region}-${page.params.project}/overview/keys/create`
+            )} />
 {/if}

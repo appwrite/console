@@ -128,7 +128,9 @@
             total={data.functions.total} />
     {:else if data?.search}
         <EmptySearch hidePages bind:search={data.search} target="functions">
-            <Button secondary href={`${base}/project-${page.params.project}/functions`}>
+            <Button
+                secondary
+                href={`${base}/project-${page.params.region}-${page.params.project}/functions`}>
                 Clear search
             </Button>
         </EmptySearch>

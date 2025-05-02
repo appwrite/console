@@ -1277,9 +1277,11 @@ export class Billing {
         );
     }
 
-    async listRegions(): Promise<RegionList> {
+    async listRegions(teamId: string): Promise<RegionList> {
         const path = `/console/regions`;
-        const params = {};
+        const params = {
+            teamId
+        };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'GET',

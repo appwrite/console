@@ -20,14 +20,16 @@
 
     async function updateName() {
         try {
-            await sdk.forProject.databases.updateCollection(
-                databaseId,
-                $collection.$id,
-                collectionName,
-                $collection.$permissions,
-                $collection.documentSecurity,
-                $collection.enabled
-            );
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .databases.updateCollection(
+                    databaseId,
+                    $collection.$id,
+                    collectionName,
+                    $collection.$permissions,
+                    $collection.documentSecurity,
+                    $collection.enabled
+                );
             await invalidate(Dependencies.COLLECTION);
             addNotification({
                 message: 'Name has been updated',

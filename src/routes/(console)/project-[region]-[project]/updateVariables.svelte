@@ -8,7 +8,7 @@
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import PromoteVariableModal from './promoteVariableModal.svelte';
     import CreateVariable from './createVariableModal.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
@@ -165,33 +165,33 @@
             const isConflicting = globalVariable !== undefined;
 
             if (isConflicting) {
-                await sdk.forProject.projectApi.deleteVariable(globalVariable.$id);
-                await sdk.forProject.projectApi.createVariable(
-                    variable.key,
-                    variable.value,
-                    variable.secret
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .projectApi.deleteVariable(globalVariable.$id);
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .projectApi.createVariable(variable.key, variable.value, variable.secret);
                 if (product === 'site') {
-                    await sdk.forProject.sites.deleteVariable(variable.resourceId, variable.$id);
+                    await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .sites.deleteVariable(variable.resourceId, variable.$id);
                 } else {
-                    await sdk.forProject.functions.deleteVariable(
-                        variable.resourceId,
-                        variable.$id
-                    );
+                    await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .functions.deleteVariable(variable.resourceId, variable.$id);
                 }
             } else {
-                await sdk.forProject.projectApi.createVariable(
-                    variable.key,
-                    variable.value,
-                    variable.secret
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .projectApi.createVariable(variable.key, variable.value, variable.secret);
                 if (product === 'site') {
-                    await sdk.forProject.sites.deleteVariable(variable.resourceId, variable.$id);
+                    await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .sites.deleteVariable(variable.resourceId, variable.$id);
                 } else {
-                    await sdk.forProject.functions.deleteVariable(
-                        variable.resourceId,
-                        variable.$id
-                    );
+                    await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .functions.deleteVariable(variable.resourceId, variable.$id);
                 }
             }
 
@@ -210,7 +210,10 @@
                 message: `Variable has been ${isConflicting ? 'overwritten' : 'promoted'}. You can find it in the project settings.`,
                 buttons: [
                     {
-                        method: () => goto(`${base}/project-${page.params.project}/settings`),
+                        method: () =>
+                            goto(
+                                `${base}/project-${page.params.region}-${page.params.project}/settings`
+                            ),
                         name: 'Go to settings'
                     }
                 ]
@@ -250,7 +253,8 @@
         within your project.
     {:else}
         Set the environment variables or secret keys that will be passed to your {product}. Global
-        variables can be found in <Link href={`${base}/project-${$project.$id}/settings#variables`}>
+        variables can be found in <Link
+            href={`${base}/project-${$project.region}-${$project.$id}/settings#variables`}>
             project settings</Link
         >.
     {/if}
@@ -300,7 +304,7 @@
                             {/if}
                             a naming conflict with a global variable. View global variables in
                             <a
-                                href={`${base}/project-${$project.$id}/settings`}
+                                href={`${base}/project-${$project.region}-${$project.$id}/settings`}
                                 title="Project settings"
                                 class="link">
                                 project settings</a

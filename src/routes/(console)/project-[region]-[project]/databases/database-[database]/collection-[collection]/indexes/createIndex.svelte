@@ -72,7 +72,7 @@
         }
 
         try {
-            await sdk.forProject.databases.createIndex(
+            await sdk.forProject(page.params.region, page.params.project).databases.createIndex(
                 databaseId,
                 $collection.$id,
                 key,
@@ -86,7 +86,7 @@
             ]);
 
             goto(
-                `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
+                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
             );
 
             addNotification({

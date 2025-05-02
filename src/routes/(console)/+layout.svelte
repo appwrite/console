@@ -30,7 +30,7 @@
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { addNotification } from '$lib/stores/notifications';
     import { openMigrationWizard } from './(migration-wizard)';
-    import { project } from './project-[project]/store';
+    import { project } from './project-[region]-[project]/store';
     import { feedback } from '$lib/stores/feedback';
     import { hasStripePublicKey, isCloud, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
@@ -171,7 +171,9 @@
                 ({
                     label: kebabToSentenceCase(heading),
                     async callback() {
-                        await goto(`${base}/project-${$project.$id}/auth/security#${heading}`);
+                        await goto(
+                            `${base}/project-${$project.region}-${$project.$id}/auth/security#${heading}`
+                        );
                         scrollBy({ top: -100 });
                     },
                     disabled: !$project?.$id,
@@ -185,7 +187,7 @@
 
             keys: isOnSettingsLayout ? ['g', 'o'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings`);
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.endsWith('settings')),
@@ -197,7 +199,7 @@
 
             keys: isOnSettingsLayout ? ['g', 'd'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings/domains`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings/domains`);
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('domains')),
@@ -208,7 +210,7 @@
             label: 'Go to webhooks',
             keys: isOnSettingsLayout ? ['g', 'w'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings/webhooks`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings/webhooks`);
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('webhooks')),
@@ -220,7 +222,7 @@
             label: 'Go to migrations',
             keys: isOnSettingsLayout ? ['g', 'm'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings/migrations`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings/migrations`);
             },
             disabled:
                 !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('migrations')),
@@ -232,7 +234,7 @@
             label: 'Go to SMTP settings',
             keys: isOnSettingsLayout ? ['g', 's'] : undefined,
             callback: () => {
-                goto(`${base}/project-${$project.$id}/settings/smtp`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/settings/smtp`);
             },
             disabled: !$project?.$id || (isOnSettingsLayout && page.url.pathname.includes('smtp')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
@@ -287,9 +289,9 @@
     }
 
     database.subscribe(async (database) => {
-        if (!database) return;
+        if (!database || !$page.params.region || !$page.params.project) return;
         // the component checks `isCloud` internally.
-        await checkForDatabaseBackupPolicies(database);
+        await checkForDatabaseBackupPolicies($page.params.region, $page.params.project, database);
     });
 
     let currentOrganizationId = null;

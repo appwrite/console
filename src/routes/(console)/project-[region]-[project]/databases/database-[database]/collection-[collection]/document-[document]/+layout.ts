@@ -11,11 +11,9 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     const { collection } = await parent();
 
     try {
-        const document = await sdk.forProject.databases.getDocument(
-            params.database,
-            params.collection,
-            params.document
-        );
+        const document = await sdk
+            .forProject(params.region, params.project)
+            .databases.getDocument(params.database, params.collection, params.document);
 
         /**
          * Sanitize DateTime to remove UTC Timezone section.

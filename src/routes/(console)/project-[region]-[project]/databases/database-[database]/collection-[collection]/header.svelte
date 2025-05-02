@@ -8,10 +8,9 @@
     import { collection } from './store';
     import { isTabletViewport } from '$lib/stores/viewport';
 
-    $: projectId = page.params.project;
     $: databaseId = page.params.database;
     $: collectionId = page.params.collection;
-    $: path = `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
+    $: path = `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}`;
     $: tabs = [
         {
             href: path,
@@ -53,7 +52,8 @@
 <div style:margin-top={$isTabletViewport ? '48px' : 0}>
     <Cover>
         <svelte:fragment slot="header">
-            <CoverTitle href={`${base}/project-${projectId}/databases/database-${databaseId}`}>
+            <CoverTitle
+                href={`${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}`}>
                 {$collection?.name}
             </CoverTitle>
             {#key $collection?.$id}

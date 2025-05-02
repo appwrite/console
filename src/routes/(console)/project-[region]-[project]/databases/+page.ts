@@ -3,19 +3,19 @@ import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/
 import { sdk } from '$lib/stores/sdk';
 import { type Models, Query } from '@appwrite.io/console';
 import { timeFromNow } from '$lib/helpers/date';
-import type { PageLoad } from './$types';
+import type { PageLoad, RouteParams } from './$types';
 import type { BackupPolicy } from '$lib/sdk/backups';
 import { isSelfHosted } from '$lib/system';
 import { isCloud } from '$lib/system';
 import type { Plan } from '$lib/sdk/billing';
 
-export const load: PageLoad = async ({ url, route, depends, parent }) => {
+export const load: PageLoad = async ({ url, route, depends, params, parent }) => {
     depends(Dependencies.DATABASES);
 
     const page = getPage(url);
     const search = getSearch(url);
-    const limit = getLimit(url, route, CARD_LIMIT);
-    const view = getView(url, route, View.Grid);
+    const limit = getLimit(params.project, url, route, CARD_LIMIT);
+    const view = getView(params.project, url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
     // already loaded by parent.
@@ -24,8 +24,9 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
     const { databases, policies, lastBackups } = await fetchDatabasesAndBackups(
         limit,
         offset,
-        currentPlan,
-        search
+        search,
+        params,
+        currentPlan
     );
 
     return {
@@ -39,33 +40,35 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
     };
 };
 
-// TODO: @itznotabug we should improve this!
 async function fetchDatabasesAndBackups(
     limit: number,
     offset: number,
-    currentPlan?: Plan,
-    search?: string
+    params: RouteParams,
+    search?: string | undefined,
+    currentPlan?: Plan
 ) {
     const backupsEnabled = currentPlan?.backupsEnabled ?? true;
 
-    const databases = await sdk.forProject.databases.list(
-        [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
-        search || undefined
-    );
+    const databases = await sdk
+        .forProject(params.region, params.project)
+        .databases.list(
+            [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
+            search || undefined
+        );
 
     let lastBackups: Record<string, string>, policies: Record<string, BackupPolicy[]>;
 
     if (isCloud && backupsEnabled) {
         [policies, lastBackups] = await Promise.all([
-            fetchPolicies(databases),
-            fetchLastBackups(databases)
+            fetchPolicies(databases, params),
+            fetchLastBackups(databases, params)
         ]);
     }
 
     return { databases, policies, lastBackups };
 }
 
-async function fetchPolicies(databases: Models.DatabaseList) {
+async function fetchPolicies(databases: Models.DatabaseList, params: RouteParams) {
     if (isSelfHosted) return {};
 
     const databasePolicies: Record<string, BackupPolicy[]> = {};
@@ -73,12 +76,14 @@ async function fetchPolicies(databases: Models.DatabaseList) {
     await Promise.all(
         databases.databases.map(async (database) => {
             try {
-                const { policies } = await sdk.forProject.backups.listPolicies([
-                    // TODO: are all needed!?
-                    // Query.limit(3),
-                    Query.equal('resourceType', 'database'),
-                    Query.equal('resourceId', database.$id)
-                ]);
+                const { policies } = await sdk
+                    .forProject(params.region, params.project)
+                    .backups.listPolicies([
+                        // TODO: are all needed!?
+                        // Query.limit(3),
+                        Query.equal('resourceType', 'database'),
+                        Query.equal('resourceId', database.$id)
+                    ]);
 
                 if (policies.length > 0) {
                     databasePolicies[database.$id] = policies;
@@ -92,7 +97,7 @@ async function fetchPolicies(databases: Models.DatabaseList) {
     return databasePolicies;
 }
 
-async function fetchLastBackups(databases: Models.DatabaseList) {
+async function fetchLastBackups(databases: Models.DatabaseList, params: RouteParams) {
     if (isSelfHosted) return {};
 
     const lastBackups: Record<string, string> = {};
@@ -100,12 +105,14 @@ async function fetchLastBackups(databases: Models.DatabaseList) {
     await Promise.all(
         databases.databases.map(async (database) => {
             try {
-                const { archives } = await sdk.forProject.backups.listArchives([
-                    Query.limit(1),
-                    Query.orderDesc('$createdAt'),
-                    Query.equal('resourceType', 'database'),
-                    Query.equal('resourceId', database.$id)
-                ]);
+                const { archives } = await sdk
+                    .forProject(params.region, params.project)
+                    .backups.listArchives([
+                        Query.limit(1),
+                        Query.orderDesc('$createdAt'),
+                        Query.equal('resourceType', 'database'),
+                        Query.equal('resourceId', database.$id)
+                    ]);
 
                 if (archives.length > 0) {
                     lastBackups[database.$id] = timeFromNow(archives[0].$createdAt);

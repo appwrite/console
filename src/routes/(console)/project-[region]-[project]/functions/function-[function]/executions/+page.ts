@@ -10,7 +10,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
 
     depends(Dependencies.EXECUTIONS);
     const page = getPage(url);
-    const limit = getLimit(url, route, PAGE_LIMIT);
+    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
 
@@ -22,11 +22,13 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         limit,
         query,
         func,
-        executions: await sdk.forProject.functions.listExecutions(params.function, [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc(''),
-            ...parsedQueries.values()
-        ])
+        executions: await sdk
+            .forProject(params.region, params.project)
+            .functions.listExecutions(params.function, [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ])
     };
 };

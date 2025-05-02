@@ -7,8 +7,7 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import { Typography } from '@appwrite.io/pink-svelte';
 
-    const projectId = page.params.project;
-    const path = `${base}/project-${projectId}/auth`;
+    const path = `${base}/project-${page.params.region}-${page.params.project}/auth`;
     const tabs = [
         {
             href: path,

@@ -9,6 +9,7 @@
     import { Dependencies } from '$lib/constants';
     import { Dialog, Layout } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
+    import { page } from '$app/state';
 
     export let show = false;
     export let message: Models.Message & { data: Record<string, unknown> };
@@ -30,42 +31,48 @@
     const update = async () => {
         try {
             if (message.providerType == MessagingProviderType.Email) {
-                await sdk.forProject.messaging.updateEmail(
-                    message.$id,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    false
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .messaging.updateEmail(
+                        message.$id,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        false
+                    );
             } else if (message.providerType == MessagingProviderType.Sms) {
-                await sdk.forProject.messaging.updateSms(
-                    message.$id,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    false
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .messaging.updateSms(
+                        message.$id,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        false
+                    );
             } else if (message.providerType == MessagingProviderType.Push) {
-                await sdk.forProject.messaging.updatePush(
-                    message.$id,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    false
-                );
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .messaging.updatePush(
+                        message.$id,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        false
+                    );
             }
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({

@@ -17,8 +17,8 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { sdk } from '$lib/stores/sdk';
-    import { onDestroy, onMount } from 'svelte';
+    import { realtime } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
     import { collection } from './store';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateAttribute from './createAttribute.svelte';
@@ -26,30 +26,24 @@
     import type { Option } from './attributes/store';
     import { CreateAttributePanel } from '$lib/commandCenter/panels';
     import { database } from '../store';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/state';
     import CreateIndex from './indexes/createIndex.svelte';
     import { base } from '$app/paths';
     import { canWriteCollections } from '$lib/stores/roles';
     import { IconEye, IconLockClosed, IconPlus, IconPuzzle } from '@appwrite.io/pink-icons-svelte';
 
-    let unsubscribe: { (): void };
-
     onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (
-                response.events.includes('databases.*.collections.*.attributes.*') ||
-                response.events.includes('databases.*.collections.*.indexes.*')
-            ) {
-                invalidate(Dependencies.COLLECTION);
-            }
-        });
-    });
-
-    onDestroy(() => {
-        if (unsubscribe) {
-            unsubscribe();
-        }
+        return realtime
+            .forProject(page.params.region, page.params.project)
+            .subscribe(['project', 'console'], (response) => {
+                if (
+                    response.events.includes('databases.*.collections.*.attributes.*') ||
+                    response.events.includes('databases.*.collections.*.indexes.*')
+                ) {
+                    invalidate(Dependencies.COLLECTION);
+                }
+            });
     });
 
     $: $registerCommands([
@@ -144,7 +138,7 @@
             label: 'Display Name',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#display-name`
+                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#display-name`
                 );
             },
             group: 'collections',
@@ -158,7 +152,7 @@
             label: 'Permissions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#permissions`
+                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#permissions`
                 );
             },
             group: 'collections',
@@ -172,7 +166,7 @@
             label: 'Document security',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#document-security`
+                    `${base}/project-${$project.region}-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#document-security`
                 );
             },
             group: 'collections',

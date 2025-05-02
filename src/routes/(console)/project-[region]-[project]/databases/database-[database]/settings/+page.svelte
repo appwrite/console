@@ -25,9 +25,9 @@
     });
 
     async function loadCollectionCount() {
-        const { total } = await sdk.forProject.databases.listCollections($database.$id, [
-            Query.limit(1)
-        ]);
+        const { total } = await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.listCollections($database.$id, [Query.limit(1)]);
         return total;
     }
 
@@ -39,7 +39,9 @@
 
     async function updateName() {
         try {
-            await sdk.forProject.databases.update(page.params.database, databaseName);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.update(page.params.database, databaseName);
             await invalidate(Dependencies.DATABASE);
             addNotification({
                 message: 'Name has been updated',

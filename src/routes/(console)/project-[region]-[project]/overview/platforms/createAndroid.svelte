@@ -38,7 +38,7 @@
     const updateConfigCode = isCloud
         ? `const val APPWRITE_PROJECT_ID = "${projectId}"`
         : `const val APPWRITE_PROJECT_ID = "${projectId}"
-const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
+const val APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
 
     async function createAndroidPlatform() {

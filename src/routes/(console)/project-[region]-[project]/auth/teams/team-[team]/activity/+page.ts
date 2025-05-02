@@ -6,15 +6,17 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, url, route }) => {
     const page = getPage(url);
-    const limit = getLimit(url, route, PAGE_LIMIT);
+    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
 
     return {
         offset,
         limit,
-        logs: await sdk.forProject.teams.listLogs(params.team, [
-            Query.limit(limit),
-            Query.offset(offset)
-        ])
+        logs: await sdk
+            .forProject(params.region, params.project)
+            .databases.listDocumentLogs(params.database, params.collection, params.document, [
+                Query.limit(limit),
+                Query.offset(offset)
+            ])
     };
 };

@@ -1,3 +1,4 @@
+import { page } from '$app/state';
 import { sdk } from '$lib/stores/sdk';
 import { MessagingProviderType, type Models } from '@appwrite.io/console';
 
@@ -19,8 +20,8 @@ const messageIntervals = new Map<string, ReturnType<typeof setInterval>>();
 
 /** Checks the status of a message and stops polling if it's no longer processing. */
 function checkMessageStatus(message: Models.Message) {
-    sdk.forProject.messaging
-        .getMessage(message.$id)
+    sdk.forProject(page.params.region, page.params.project)
+        .messaging.getMessage(message.$id)
         .then((msg) => {
             if (msg.status !== 'processing') {
                 clearPolling(message.$id);

@@ -1,6 +1,8 @@
 <script context="module" lang="ts">
-    import type { Models } from '@appwrite.io/console';
+    import { get } from 'svelte/store';
+    import { page } from '$app/stores';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitIp(
         databaseId: string,
@@ -8,14 +10,17 @@
         key: string,
         data: Partial<Models.AttributeIp>
     ) {
-        await sdk.forProject.databases.createIpAttribute(
-            databaseId,
-            collectionId,
-            key,
-            data.required,
-            data.default,
-            data.array
-        );
+        const $page = get(page);
+        await sdk
+            .forProject($page.params.region, $page.params.project)
+            .databases.createIpAttribute(
+                databaseId,
+                collectionId,
+                key,
+                data.required,
+                data.default,
+                data.array
+            );
     }
     export async function updateIp(
         databaseId: string,
@@ -23,14 +28,17 @@
         data: Partial<Models.AttributeIp>,
         originalKey?: string
     ) {
-        await sdk.forProject.databases.updateIpAttribute(
-            databaseId,
-            collectionId,
-            originalKey,
-            data.required,
-            data.default,
-            data.key !== originalKey ? data.key : undefined
-        );
+        const $page = get(page);
+        await sdk
+            .forProject($page.params.region, $page.params.project)
+            .databases.updateIpAttribute(
+                databaseId,
+                collectionId,
+                originalKey,
+                data.required,
+                data.default,
+                data.key !== originalKey ? data.key : undefined
+            );
     }
 </script>
 

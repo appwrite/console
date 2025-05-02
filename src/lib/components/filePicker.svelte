@@ -49,20 +49,21 @@
 
     function getPreview(bucketId: string, fileId: string, size: number = 64) {
         return (
-            sdk.forProject.storage.getFilePreview(bucketId, fileId, size, size).toString() +
-            '&mode=admin'
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFilePreview(bucketId, fileId, size, size)
+                .toString() + '&mode=admin'
         );
     }
 
     async function uploadFile() {
         try {
             uploading = true;
-            const file = await sdk.forProject.storage.createFile(
-                selectedBucket,
-                ID.unique(),
-                fileSelector.files[0],
-                [Permission.read(Role.any())]
-            );
+            const file = await sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.createFile(selectedBucket, ID.unique(), fileSelector.files[0], [
+                    Permission.read(Role.any())
+                ]);
             search.set($search === null ? '' : null);
             selectFile(file);
         } catch (e) {
@@ -110,7 +111,9 @@
     let buckets: Promise<Models.BucketList> = loadBuckets();
 
     async function loadBuckets() {
-        const response = await sdk.forProject.storage.listBuckets();
+        const response = await sdk
+            .forProject(page.params.region, page.params.project)
+            .storage.listBuckets();
         const bucket = response.buckets[0] ?? null;
         if (bucket) {
             currentBucket = bucket;
@@ -122,8 +125,9 @@
 
     $: files =
         currentBucket &&
-        sdk.forProject.storage
-            .listFiles(
+        sdk
+            .forProject(page.params.region, page.params.project)
+            .storage.listFiles(
                 currentBucket.$id,
                 [Query.startsWith('mimeType', mimeTypeQuery), Query.orderDesc('$createdAt')],
                 $search || undefined
@@ -218,6 +222,9 @@
                                             <span class="icon-upload" aria-hidden="true"></span>
                                             <span>Upload</span>
                                         {/if}
+                                        ======= external href={`${base}/project-${page.params.region}-${page.params.project}/storage`}>
+                                        Create bucket >>>>>>>
+                                        93754b342accbdb6db066c33b2addea7b9e92d67
                                     </Button>
                                 </Layout.Stack>
                             </Layout.Stack>
@@ -355,7 +362,7 @@
                                 slot="actions"
                                 secondary
                                 external
-                                href={`${base}/project-${page.params.project}/storage`}>
+                                href={`${base}/project-${page.params.region}-${page.params.project}/storage`}>
                                 Create bucket
                             </Button>
                         </Empty>

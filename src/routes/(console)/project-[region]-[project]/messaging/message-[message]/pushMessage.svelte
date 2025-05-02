@@ -11,6 +11,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export let message: Models.Message & { data: Record<string, any> };
@@ -26,10 +27,9 @@
         title = message.data.title;
         body = message.data.body;
         if (message.data?.image) {
-            file = await sdk.forProject.storage.getFile(
-                message.data.image?.bucketId,
-                message.data.image?.fileId
-            );
+            file = await sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFile(message.data.image?.bucketId, message.data.image?.fileId);
         }
 
         const dataEntries: [string, string][] = [];
@@ -49,17 +49,19 @@
                 }
                 return acc;
             }, {});
-            await sdk.forProject.messaging.updatePush(
-                message.$id,
-                undefined,
-                undefined,
-                undefined,
-                title,
-                body,
-                data,
-                undefined,
-                fileCompoundId
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.updatePush(
+                    message.$id,
+                    undefined,
+                    undefined,
+                    undefined,
+                    title,
+                    body,
+                    data,
+                    undefined,
+                    fileCompoundId
+                );
             originalCustomData = structuredClone(customData);
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({

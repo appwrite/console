@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
     import type { Models } from '@appwrite.io/console';
-
+    import { get } from 'svelte/store';
+    import { page } from '$app/state';
     import { sdk } from '$lib/stores/sdk';
 
     export async function submitEmail(
@@ -9,14 +10,16 @@
         key: string,
         data: Partial<Models.AttributeEmail>
     ) {
-        await sdk.forProject.databases.createEmailAttribute(
-            databaseId,
-            collectionId,
-            key,
-            data.required,
-            data.default,
-            data.array
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.createEmailAttribute(
+                databaseId,
+                collectionId,
+                key,
+                data.required,
+                data.default,
+                data.array
+            );
     }
 
     export async function updateEmail(
@@ -25,14 +28,16 @@
         data: Partial<Models.AttributeEmail>,
         originalKey?: string
     ) {
-        await sdk.forProject.databases.updateEmailAttribute(
-            databaseId,
-            collectionId,
-            originalKey,
-            data.required,
-            data.default,
-            data.key !== originalKey ? data.key : undefined
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .databases.updateEmailAttribute(
+                databaseId,
+                collectionId,
+                originalKey,
+                data.required,
+                data.default,
+                data.key !== originalKey ? data.key : undefined
+            );
     }
 </script>
 

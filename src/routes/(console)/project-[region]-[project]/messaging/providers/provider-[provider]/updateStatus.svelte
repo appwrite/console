@@ -12,6 +12,7 @@
     import { provider as providerData } from './store';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { getProviderText } from '../../helper';
+    import { page } from '$app/state';
 
     let enabled: boolean = null;
 
@@ -25,88 +26,76 @@
             const providerId = $providerData.$id;
             switch ($providerData.provider) {
                 case Providers.Twilio:
-                    response = await sdk.forProject.messaging.updateTwilioProvider(
-                        providerId,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateTwilioProvider(providerId, undefined, enabled);
                     break;
                 case Providers.Msg91:
-                    response = await sdk.forProject.messaging.updateMsg91Provider(
-                        providerId,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateMsg91Provider(providerId, undefined, enabled);
                     break;
                 case Providers.Telesign:
-                    response = await sdk.forProject.messaging.updateTelesignProvider(
-                        providerId,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateTelesignProvider(providerId, undefined, enabled);
                     break;
                 case Providers.Textmagic:
-                    response = await sdk.forProject.messaging.updateTextmagicProvider(
-                        providerId,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateTextmagicProvider(providerId, undefined, enabled);
                     break;
                 case Providers.Vonage:
-                    response = await sdk.forProject.messaging.updateVonageProvider(
-                        providerId,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateVonageProvider(providerId, undefined, enabled);
                     break;
                 case Providers.Mailgun:
-                    response = await sdk.forProject.messaging.updateMailgunProvider(
-                        providerId,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateMailgunProvider(
+                            providerId,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            enabled
+                        );
                     break;
                 case Providers.Sendgrid:
-                    response = await sdk.forProject.messaging.updateSendgridProvider(
-                        providerId,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateSendgridProvider(providerId, undefined, enabled);
                     break;
                 case Providers.SMTP:
-                    response = await sdk.forProject.messaging.updateSmtpProvider(
-                        providerId,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateSmtpProvider(
+                            providerId,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            enabled
+                        );
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject.messaging.updateFcmProvider(
-                        providerId,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateFcmProvider(providerId, undefined, enabled);
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject.messaging.updateApnsProvider(
-                        providerId,
-                        undefined,
-                        enabled
-                    );
+                    response = await sdk
+                        .forProject(page.params.region, page.params.project)
+                        .messaging.updateApnsProvider(providerId, undefined, enabled);
                     break;
             }
             await invalidate(Dependencies.MESSAGING_PROVIDER);

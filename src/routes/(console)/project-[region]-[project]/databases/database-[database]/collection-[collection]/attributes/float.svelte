@@ -1,6 +1,8 @@
 <script context="module" lang="ts">
-    import type { Models } from '@appwrite.io/console';
+    import { get } from 'svelte/store';
+    import { page } from '$app/stores';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitFloat(
         databaseId: string,
@@ -8,16 +10,19 @@
         key: string,
         data: Partial<Models.AttributeFloat>
     ) {
-        await sdk.forProject.databases.createFloatAttribute(
-            databaseId,
-            collectionId,
-            key,
-            data.required,
-            data.min,
-            data.max,
-            data.default,
-            data.array
-        );
+        const $page = get(page);
+        await sdk
+            .forProject($page.params.region, $page.params.project)
+            .databases.createFloatAttribute(
+                databaseId,
+                collectionId,
+                key,
+                data.required,
+                data.min,
+                data.max,
+                data.default,
+                data.array
+            );
     }
 
     export async function updateFloat(
@@ -26,16 +31,19 @@
         data: Partial<Models.AttributeFloat>,
         originalKey?: string
     ) {
-        await sdk.forProject.databases.updateFloatAttribute(
-            databaseId,
-            collectionId,
-            originalKey,
-            data.required,
-            data.default,
-            data.min,
-            data.max,
-            data.key !== originalKey ? data.key : undefined
-        );
+        const $page = get(page);
+        await sdk
+            .forProject($page.params.region, $page.params.project)
+            .databases.updateFloatAttribute(
+                databaseId,
+                collectionId,
+                originalKey,
+                data.required,
+                data.default,
+                data.min,
+                data.max,
+                data.key !== originalKey ? data.key : undefined
+            );
     }
 </script>
 

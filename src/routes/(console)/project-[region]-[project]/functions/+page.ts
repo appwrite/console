@@ -3,7 +3,7 @@ import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 
-export const load = async ({ url, depends, route, parent }) => {
+export const load = async ({ url, depends, route, parent, params }) => {
     depends(Dependencies.FUNCTIONS);
     const { templatesList } = await parent();
     const search = getSearch(url);
@@ -14,10 +14,12 @@ export const load = async ({ url, depends, route, parent }) => {
     return {
         offset,
         limit,
-        functions: await sdk.forProject.functions.list(
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-            search
-        ),
+        functions: await sdk
+            .forProject(params.region, params.project)
+            .functions.list(
+                [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+                search
+            ),
         search,
         templatesList
     };

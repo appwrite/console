@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params }) => {
         const period = isValueOfStringEnum(StorageUsageRange, params.period)
             ? params.period
             : StorageUsageRange.ThirtyDays;
-        return sdk.forProject.storage.getUsage(period);
+        return sdk.forProject(params.region, params.project).storage.getUsage(period);
     } catch (e) {
         error(e.code, e.message);
     }

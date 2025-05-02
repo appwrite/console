@@ -13,13 +13,15 @@
     let error: string;
     const onSubmit = async () => {
         try {
-            await sdk.forProject.storage.deleteBucket($bucket.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.deleteBucket($bucket.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$bucket.name} has been deleted`
             });
-            await goto(`${base}/project-${page.params.project}/storage`);
+            await goto(`${base}/project-${page.params.region}-${page.params.project}/storage`);
             trackEvent(Submit.BucketDelete);
         } catch (e) {
             error = e.message;

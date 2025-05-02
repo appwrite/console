@@ -39,7 +39,7 @@
     const updateConfigCode = isCloud
         ? `const APPWRITE_PROJECT_ID = "${projectId}";`
         : `const APPWRITE_PROJECT_ID = "${projectId}";
-const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}";
+const APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}";
         `;
 
     export let platform: PlatformType = PlatformType.Reactnativeandroid;

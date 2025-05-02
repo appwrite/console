@@ -8,6 +8,7 @@
     import { domain } from './store';
     import { consoleVariables } from '$routes/(console)/store';
     import { Alert } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     let error = null;
     const isDomainsEnabled = $consoleVariables?._APP_DOMAIN_ENABLED === true;
@@ -15,11 +16,14 @@
     async function createDomain() {
         try {
             if ($domain.$id) {
-                await sdk.forProject.proxy.deleteRule($domain.$id);
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .proxy.deleteRule($domain.$id);
             }
 
-            // TODO: move to new api methods
-            $domain = await sdk.forProject.proxy.createFunctionRule($domain.domain, $func.$id);
+            $domain = await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.createFunctionRule($domain.domain, $func.$id);
 
             trackEvent(Submit.DomainCreate);
         } catch (e) {

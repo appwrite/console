@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
-    import { Id } from '$lib/components';
+    import { Id, RegionEndpoint } from '$lib/components';
     import { Cover } from '$lib/layout';
     import { project } from '../store';
     import { hasOnboardingDismissed, setHasOnboardingDismissed } from '$lib/helpers/onboarding';
@@ -19,7 +19,10 @@
             <Typography.Title color="--fgcolor-neutral-primary" size="xl">
                 {$project?.name}
             </Typography.Title>
-            <Id value={$project.$id}>{$project.$id}</Id>
+            <Layout.Stack alignItems="center">
+                <Id value={$project.$id}>{$project.$id}</Id>
+                <RegionEndpoint />
+            </Layout.Stack>
         </svelte:fragment>
     </Cover>
 {:else}
@@ -49,7 +52,7 @@
                                 trackEvent('onboarding_hub_platform_dismiss');
                                 await setHasOnboardingDismissed($project.$id);
                                 await invalidate(Dependencies.ORGANIZATION);
-                                goto(`${base}/project-${$project.$id}/overview`);
+                                goto(`${base}/project-${$project.region}-${$project.$id}/overview`);
                             }}>Dismiss this page</Button.Button>
                     {/if}
                 </div>

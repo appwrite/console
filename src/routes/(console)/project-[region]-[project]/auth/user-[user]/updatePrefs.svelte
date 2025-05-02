@@ -10,6 +10,7 @@
     import { user } from './store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     $: if (prefs) {
         if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
@@ -33,7 +34,9 @@
         try {
             let updatedPrefs = Object.fromEntries(prefs);
 
-            await sdk.forProject.users.updatePrefs($user.$id, updatedPrefs);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.updatePrefs($user.$id, updatedPrefs);
             await invalidate(Dependencies.USER);
             arePrefsDisabled = true;
 

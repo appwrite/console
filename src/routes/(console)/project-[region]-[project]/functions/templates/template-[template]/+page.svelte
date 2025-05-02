@@ -92,7 +92,7 @@
                         <ContainerButton
                             title="functions"
                             disabled={buttonDisabled}
-                            buttonHref={`${base}/project-${page.params.project}/functions/create-function/template-${$template.id}`}
+                            buttonHref={`${base}/project-${page.params.region}-${page.params.project}/functions/create-function/template-${$template.id}`}
                             showIcon={false}
                             buttonText="Create function"
                             buttonEvent="create_function" />

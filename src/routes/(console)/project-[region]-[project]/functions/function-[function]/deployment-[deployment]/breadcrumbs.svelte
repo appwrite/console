@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { page } from '$app/stores';
     import { Breadcrumbs } from '$lib/layout';
-    import { project } from '../../../store';
     import { func } from '../store';
     import { deployment } from './store';
 
@@ -10,15 +10,15 @@
             title: '...'
         },
         {
-            href: `${base}/project-${$project?.$id}/functions`,
+            href: `${base}/project-${$page.params.region}-${$page.params.project}/functions`,
             title: 'Functions'
         },
         {
-            href: `${base}/project-${$project?.$id}/functions/function-${$func?.$id}`,
+            href: `${base}/project-${$page.params.region}-${$page.params.project}/functions/function-${$func?.$id}`,
             title: $func?.name
         },
         {
-            href: `${base}/project-${$project?.$id}/functions/function-${$func?.$id}/deployment-${$deployment?.$id}`,
+            href: `${base}/project-${$page.params.region}-${$page.params.project}/functions/function-${$func?.$id}/deployment-${$deployment?.$id}`,
             title: 'Deployment'
         }
     ];

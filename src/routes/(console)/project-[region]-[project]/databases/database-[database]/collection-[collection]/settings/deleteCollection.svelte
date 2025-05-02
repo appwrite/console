@@ -17,7 +17,9 @@
 
     async function handleDelete() {
         try {
-            await sdk.forProject.databases.deleteCollection(databaseId, $collection.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.deleteCollection(databaseId, $collection.$id);
             await invalidate(Dependencies.DATABASE);
             showDelete = false;
             addNotification({
@@ -26,7 +28,7 @@
             });
             trackEvent(Submit.CollectionDelete);
             await goto(
-                `${base}/project-${page.params.project}/databases/database-${page.params.database}`
+                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${page.params.database}`
             );
         } catch (e) {
             error = e.message;

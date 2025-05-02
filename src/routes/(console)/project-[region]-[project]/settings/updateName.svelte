@@ -13,7 +13,6 @@
     import { canWriteProjects } from '$lib/stores/roles';
 
     const endpoint = sdk.forConsole.client.config.endpoint;
-    const projectId = page.params.project;
 
     let name: string = null;
 
@@ -51,7 +50,7 @@
         <Button
             secondary
             event="view_keys"
-            href={`${base}/project-${projectId}/overview/keys#integrations`}>
+            href={`${base}/project-${page.params.region}-${page.params.project}/overview/keys#integrations`}>
             View API keys
         </Button>
     </svelte:fragment>

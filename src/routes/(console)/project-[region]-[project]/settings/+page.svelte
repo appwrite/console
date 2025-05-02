@@ -14,6 +14,7 @@
     import { canWriteProjects } from '$lib/stores/roles';
     import ChangeOrganization from './changeOrganization.svelte';
     import UpdateVariables from '../updateVariables.svelte';
+    import { page } from '$app/state';
 
     export let data;
 
@@ -55,7 +56,9 @@
     });
 
     async function sdkCreateVariable(key: string, value: string, secret: boolean) {
-        await sdk.forProject.projectApi.createVariable(key, value, secret);
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .projectApi.createVariable(key, value, secret);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 
@@ -65,12 +68,16 @@
         value: string,
         secret: boolean
     ) {
-        await sdk.forProject.projectApi.updateVariable(variableId, key, value, secret);
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .projectApi.updateVariable(variableId, key, value, secret);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 
     async function sdkDeleteVariable(variableId: string) {
-        await sdk.forProject.projectApi.deleteVariable(variableId);
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .projectApi.deleteVariable(variableId);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 </script>

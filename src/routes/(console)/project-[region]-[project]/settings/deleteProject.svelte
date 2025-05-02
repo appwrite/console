@@ -8,20 +8,13 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
-    import { onMount } from 'svelte';
-    import { project } from '../store';
     import type { RegionList } from '$lib/sdk/billing';
     import Confirm from '$lib/components/confirm.svelte';
+    import { project, projectRegion } from '../store';
 
     let showDelete = false;
     let name: string = null;
     let error: string;
-    let regions: RegionList;
-    onMount(async () => {
-        if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
-        }
-    });
 
     const handleDelete = async () => {
         try {
@@ -49,9 +42,8 @@
             <svelte:fragment slot="title">
                 <h6 class="u-bold u-trim-1" data-private>{$project.name}</h6>
             </svelte:fragment>
-            {#if isCloud && $project.region && regions?.total}
-                {@const projectRegion = regions.regions.find((r) => r.$id === $project?.region)}
-                <p>Region: {projectRegion.name}</p>
+            {#if isCloud && $projectRegion}
+                <p>Region: {$projectRegion.name}</p>
             {/if}
             <p>Last update: {toLocaleDateTime($project.$updatedAt)}</p>
         </BoxAvatar>

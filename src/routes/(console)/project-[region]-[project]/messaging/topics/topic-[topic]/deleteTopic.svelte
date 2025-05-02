@@ -13,7 +13,9 @@
     let error: string;
     const deleteTopic = async () => {
         try {
-            await sdk.forProject.messaging.deleteTopic($topic.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.deleteTopic($topic.$id);
 
             showDelete = false;
             addNotification({
@@ -21,7 +23,9 @@
                 message: `${$topic.name} has been deleted`
             });
             trackEvent(Submit.MessagingTopicDelete);
-            await goto(`${base}/project-${page.params.project}/messaging/topics`);
+            await goto(
+                `${base}/project-${page.params.region}-${page.params.project}/messaging/topics`
+            );
         } catch (e) {
             error = e.message;
             trackError(e, Submit.MessagingTopicDelete);

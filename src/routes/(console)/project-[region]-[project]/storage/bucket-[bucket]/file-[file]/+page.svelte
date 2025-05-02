@@ -16,6 +16,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { bucket } from '../store';
     import { Alert, Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     let showFileAlert = true;
     onMount(async () => {
@@ -27,10 +28,15 @@
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 640, 300).toString() +
-        '&mode=admin';
+        sdk
+            .forProject(page.params.region, page.params.project)
+            .storage.getFilePreview($file.bucketId, fileId, 640, 300)
+            .toString() + '&mode=admin';
     const getView = (fileId: string) =>
-        sdk.forProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
+        sdk
+            .forProject(page.params.region, page.params.project)
+            .storage.getFileView($file.bucketId, fileId)
+            .toString() + '&mode=admin';
 
     $: if (filePermissions) {
         if (symmetricDifference(filePermissions, $file.$permissions).length) {
@@ -40,19 +46,18 @@
 
     function downloadFile() {
         return (
-            sdk.forProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
-            '&mode=admin'
+            sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.getFileDownload($file.bucketId, $file.$id)
+                .toString() + '&mode=admin'
         );
     }
 
     async function updatePermissions() {
         try {
-            await sdk.forProject.storage.updateFile(
-                $file.bucketId,
-                $file.$id,
-                $file.name,
-                filePermissions
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .storage.updateFile($file.bucketId, $file.$id, $file.name, filePermissions);
             await invalidate(Dependencies.FILE);
             arePermsDisabled = true;
             addNotification({

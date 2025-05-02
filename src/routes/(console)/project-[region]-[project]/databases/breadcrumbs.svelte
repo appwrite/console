@@ -11,11 +11,11 @@
             title: $organization?.name
         },
         {
-            href: `${base}/project-${page.data.project?.$id}`,
+            href: `${base}/project-${page.params.region}-${page.params.project}`,
             title: $project?.name
         },
         {
-            href: `${base}/project-${page.data.project?.$id}/databases`,
+            href: `${base}/project-${page.params.region}-${page.params.project}/databases`,
             title: 'Databases'
         }
     ];

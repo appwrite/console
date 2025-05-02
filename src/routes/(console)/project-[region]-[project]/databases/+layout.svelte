@@ -10,7 +10,7 @@
         {
             label: 'Go to usage',
             callback: () => {
-                goto(`${base}/project-${$project.$id}/databases/usage`);
+                goto(`${base}/project-${$project.region}-${$project.$id}/databases/usage`);
             },
             keys: ['g', 'u'],
             disabled:

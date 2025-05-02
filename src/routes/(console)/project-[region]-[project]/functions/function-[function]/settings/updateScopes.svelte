@@ -11,7 +11,7 @@
     import { func } from '../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
-    import Scopes from '$routes/(console)/project-[project]/overview/keys/scopes.svelte';
+    import Scopes from '$routes/(console)/project-[region]-[project]/overview/keys/scopes.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { Link } from '$lib/elements';
 
@@ -27,26 +27,28 @@
             if (!isValueOfStringEnum(Runtime, $func.runtime)) {
                 throw new Error(`Invalid runtime: ${$func.runtime}`);
             }
-            await sdk.forProject.functions.update(
-                functionId,
-                $func.name,
-                $func.runtime,
-                $func.execute || undefined,
-                $func.events || undefined,
-                $func.schedule || undefined,
-                $func.timeout || undefined,
-                $func.enabled || undefined,
-                $func.logging || undefined,
-                $func.entrypoint || undefined,
-                $func.commands || undefined,
-                functionScopes,
-                $func.installationId || undefined,
-                $func.providerRepositoryId || undefined,
-                $func.providerBranch || undefined,
-                $func.providerSilentMode || undefined,
-                $func.providerRootDirectory || undefined,
-                $func.specification || undefined
-            );
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .functions.update(
+                    functionId,
+                    $func.name,
+                    $func.runtime,
+                    $func.execute || undefined,
+                    $func.events || undefined,
+                    $func.schedule || undefined,
+                    $func.timeout || undefined,
+                    $func.enabled || undefined,
+                    $func.logging || undefined,
+                    $func.entrypoint || undefined,
+                    $func.commands || undefined,
+                    functionScopes,
+                    $func.installationId || undefined,
+                    $func.providerRepositoryId || undefined,
+                    $func.providerBranch || undefined,
+                    $func.providerSilentMode || undefined,
+                    $func.providerRootDirectory || undefined,
+                    $func.specification || undefined
+                );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
                 type: 'success',

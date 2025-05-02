@@ -13,14 +13,18 @@
     let error: string;
     const deleteProvider = async () => {
         try {
-            await sdk.forProject.messaging.deleteProvider($provider.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.deleteProvider($provider.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
                 message: `${$provider.name} has been deleted`
             });
             trackEvent(Submit.MessagingProviderDelete);
-            await goto(`${base}/project-${page.params.project}/messaging/providers`);
+            await goto(
+                `${base}/project-${page.params.region}-${page.params.project}/messaging/providers`
+            );
         } catch (e) {
             error = e.message;
             trackError(e, Submit.MessagingProviderDelete);

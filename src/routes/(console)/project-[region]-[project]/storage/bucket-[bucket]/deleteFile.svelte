@@ -3,8 +3,9 @@
     import Confirm from '$lib/components/confirm.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import { page } from '$app/stores';
+    import type { Models } from '@appwrite.io/console';
 
     export let file: Models.File;
     export let showDelete = false;
@@ -13,7 +14,9 @@
 
     const onSubmit = async () => {
         try {
-            await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .storage.deleteFile(file.bucketId, file.$id);
             showDelete = false;
             dispatch('deleted', file);
             addNotification({

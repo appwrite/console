@@ -11,7 +11,8 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/functions/function-${functionId}`}>
+        <CoverTitle
+            href={`${base}/project-${$page.params.region}-${projectId}/functions/function-${functionId}`}>
             Deployment
         </CoverTitle>
         <Id value={$deployment.$id}>{$deployment.$id}</Id>

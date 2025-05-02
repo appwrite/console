@@ -13,6 +13,7 @@
     import { provider, providerParams } from './wizard/store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Providers } from '../provider.svelte';
+    import { page } from '$app/state';
 
     async function create() {
         try {
@@ -20,7 +21,7 @@
             const providerId = $providerParams[$provider].providerId || ID.unique();
             switch ($provider) {
                 case Providers.Twilio:
-                    response = await sdk.forProject.messaging.createTwilioProvider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createTwilioProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].from,
@@ -30,7 +31,7 @@
                     );
                     break;
                 case Providers.Msg91:
-                    response = await sdk.forProject.messaging.createMsg91Provider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createMsg91Provider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].templateId,
@@ -40,7 +41,7 @@
                     );
                     break;
                 case Providers.Telesign:
-                    response = await sdk.forProject.messaging.createTelesignProvider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createTelesignProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].from,
@@ -50,7 +51,7 @@
                     );
                     break;
                 case Providers.Textmagic:
-                    response = await sdk.forProject.messaging.createTextmagicProvider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createTextmagicProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].from,
@@ -60,7 +61,7 @@
                     );
                     break;
                 case Providers.Vonage:
-                    response = await sdk.forProject.messaging.createVonageProvider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createVonageProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].from,
@@ -70,7 +71,7 @@
                     );
                     break;
                 case Providers.Mailgun:
-                    response = await sdk.forProject.messaging.createMailgunProvider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createMailgunProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].apiKey,
@@ -84,7 +85,7 @@
                     );
                     break;
                 case Providers.Sendgrid:
-                    response = await sdk.forProject.messaging.createSendgridProvider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createSendgridProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].apiKey,
@@ -96,7 +97,7 @@
                     );
                     break;
                 case Providers.SMTP:
-                    response = await sdk.forProject.messaging.createSmtpProvider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createSmtpProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].host,
@@ -114,7 +115,7 @@
                     );
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject.messaging.createFcmProvider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createFcmProvider(
                         providerId,
                         $providerParams[$provider].name,
                         JSON.parse($providerParams[$provider].serviceAccountJSON),
@@ -122,7 +123,7 @@
                     );
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject.messaging.createApnsProvider(
+                    response = await sdk.forProject(page.params.region, page.params.project).messaging.createApnsProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].authKey,
@@ -143,7 +144,7 @@
                 provider: $provider
             });
             await goto(
-                `${base}/project-${$project.$id}/messaging/providers/provider-${response.$id}`
+                `${base}/project-${$project.region)-${$project.$id}/messaging/providers/provider-${response.$id}`
             );
         } catch (error) {
             addNotification({

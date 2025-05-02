@@ -10,11 +10,15 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.MESSAGING_MESSAGE);
 
     try {
-        const message = await sdk.forProject.messaging.getMessage(params.message);
+        const message = await sdk
+            .forProject(params.region, params.project)
+            .messaging.getMessage(params.message);
 
         const topicsById: Record<string, Models.Topic> = {};
         const topicsPromise = Promise.allSettled(
-            message.topics.map((topicId) => sdk.forProject.messaging.getTopic(topicId))
+            message.topics.map((topicId) =>
+                sdk.forProject(params.region, params.project).messaging.getTopic(topicId)
+            )
         ).then((results) => {
             results.forEach((result) => {
                 if (result.status === 'fulfilled') {
@@ -24,8 +28,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         });
 
         const targetsById: Record<string, Models.Target> = {};
-        const targetsPromise = sdk.forProject.messaging
-            .listTargets(params.message)
+        const targetsPromise = sdk
+            .forProject(params.region, params.project)
+            .messaging.listTargets(params.message)
             .then((response) => {
                 response.targets.forEach((target) => {
                     targetsById[target.$id] = target;
@@ -36,15 +41,19 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
         const usersById: Record<string, Models.User<Models.Preferences>> = {};
         const usersPromise = Object.values(targetsById).map((target) =>
-            sdk.forProject.users.get(target.userId).then((user) => {
-                usersById[user.$id] = user;
-            })
+            sdk
+                .forProject(params.region, params.project)
+                .users.get(target.userId)
+                .then((user) => {
+                    usersById[user.$id] = user;
+                })
         );
 
         const messageRecipients: Record<string, Models.User<Models.Preferences>> = {};
         const messageRecipientsPromise = Object.values(message.users).map((userId) =>
-            sdk.forProject.users
-                .get(userId)
+            sdk
+                .forProject(params.region, params.project)
+                .users.get(userId)
                 .then((user) => {
                     messageRecipients[user.$id] = user;
                 })

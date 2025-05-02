@@ -9,8 +9,8 @@ export const load = async ({ params, url, route, depends, parent }) => {
     depends(Dependencies.BACKUPS);
 
     const page = getPage(url);
-    const limit = getLimit(url, route, PAGE_LIMIT);
-    const view = getView(url, route, View.Grid);
+    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
+    const view = getView(params.project, url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
     let backups: BackupArchiveList = { total: 0, archives: [] };
@@ -23,19 +23,23 @@ export const load = async ({ params, url, route, depends, parent }) => {
     if (isCloud && backupsEnabled) {
         try {
             [backups, policies] = await Promise.all([
-                sdk.forProject.backups.listArchives([
-                    Query.limit(limit),
-                    Query.offset(offset),
-                    Query.orderDesc('$createdAt'),
-                    Query.equal('resourceType', 'database'),
-                    Query.equal('resourceId', params.database)
-                ]),
+                sdk
+                    .forProject(params.region, params.project)
+                    .backups.listArchives([
+                        Query.limit(limit),
+                        Query.offset(offset),
+                        Query.orderDesc('$createdAt'),
+                        Query.equal('resourceType', 'database'),
+                        Query.equal('resourceId', params.database)
+                    ]),
 
-                sdk.forProject.backups.listPolicies([
-                    Query.orderDesc('$createdAt'),
-                    Query.equal('resourceType', 'database'),
-                    Query.equal('resourceId', params.database)
-                ])
+                sdk
+                    .forProject(params.region, params.project)
+                    .backups.listPolicies([
+                        Query.orderDesc('$createdAt'),
+                        Query.equal('resourceType', 'database'),
+                        Query.equal('resourceId', params.database)
+                    ])
             ]);
         } catch (e) {
             // ignore

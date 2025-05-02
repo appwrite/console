@@ -7,6 +7,7 @@
     import { AuthenticatorType } from '@appwrite.io/console';
     import { user } from './store';
     import Confirm from '$lib/components/confirm.svelte';
+    import { page } from '$app/state';
 
     export let showDelete = false;
 
@@ -14,7 +15,9 @@
 
     async function deleteProvider() {
         try {
-            await sdk.forProject.users.deleteMfaAuthenticator($user.$id, AuthenticatorType.Totp);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.deleteMfaAuthenticator($user.$id, AuthenticatorType.Totp);
             await invalidate(Dependencies.USER);
             showDelete = false;
             addNotification({

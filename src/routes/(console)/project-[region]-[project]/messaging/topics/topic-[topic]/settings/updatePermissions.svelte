@@ -23,7 +23,9 @@
 
     async function updatePermissions() {
         try {
-            await sdk.forProject.messaging.updateTopic(topicId, undefined, permissions);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .messaging.updateTopic(topicId, undefined, permissions);
             await invalidate(Dependencies.MESSAGING_TOPIC);
             addNotification({
                 message: 'Permissions have been updated',

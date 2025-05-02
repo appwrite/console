@@ -14,6 +14,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { collection } from '../store';
     import { Alert, Link } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     let showDelete = false;
     let permissions = $doc?.$permissions;
@@ -22,13 +23,15 @@
 
     async function updatePermissions() {
         try {
-            await sdk.forProject.databases.updateDocument(
-                $doc.$databaseId,
-                $doc.$collectionId,
-                $doc.$id,
-                $doc.data,
-                permissions
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.updateDocument(
+                    $doc.$databaseId,
+                    $doc.$collectionId,
+                    $doc.$id,
+                    $doc.data,
+                    permissions
+                );
             await invalidate(Dependencies.DOCUMENT);
             arePermsDisabled = true;
             addNotification({

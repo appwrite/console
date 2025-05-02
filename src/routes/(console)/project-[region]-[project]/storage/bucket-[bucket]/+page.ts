@@ -10,15 +10,17 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     depends(Dependencies.FILES);
     const page = getPage(url);
     const search = getSearch(url);
-    const limit = getLimit(url, route, PAGE_LIMIT);
+    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
 
     const [files, organizationUsage] = await Promise.all([
-        sdk.forProject.storage.listFiles(
-            params.bucket,
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
-            search
-        ),
+        sdk
+            .forProject(params.region, params.project)
+            .storage.listFiles(
+                params.bucket,
+                [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
+                search
+            ),
         isCloud && organization?.$id ? sdk.forConsole.billing.listUsage(organization.$id) : null
     ]);
     return {

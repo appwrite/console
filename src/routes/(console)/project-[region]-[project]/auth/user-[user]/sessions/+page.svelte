@@ -1,55 +1,61 @@
 <script lang="ts">
+    import { EmptySearch } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
+    import {
+        TableBody,
+        TableCell,
+        TableCellHead,
+        TableCellText,
+        TableHeader,
+        TableRow,
+        TableScroll
+    } from '$lib/elements/table';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { Browser } from '@appwrite.io/console';
     import DeleteAllSessions from '../deleteAllSessions.svelte';
     import DeleteSessions from '../deleteSession.svelte';
-    import type { PageData } from './$types';
-    import { Badge, Card, Empty, Layout, Table } from '@appwrite.io/pink-svelte';
 
-    export let data: PageData;
-
-    function getBrowser(clientCode: string) {
-        const code = clientCode.toLowerCase();
-        if (!isValueOfStringEnum(Browser, code)) return '';
-        return sdk.forProject.avatars.getBrowser(code, 40, 40);
-    }
+    export let data;
 
     let showDelete = false;
     let showDeleteAll = false;
     let selectedSessionId: string;
+
+    function getBrowser(clientCode: string) {
+        const code = clientCode.toLowerCase();
+        if (!isValueOfStringEnum(Browser, code)) return '';
+
+        return sdk.forConsole.avatars.getBrowser(code, 40, 40);
+    }
 </script>
 
 <Container>
-    {#if data.sessions.total}
-        <Layout.Stack alignItems="flex-end">
+    <ContainerHeader title="Sessions">
+        {#if data.sessions.total}
             <Button secondary on:click={() => (showDeleteAll = true)}>
                 <span class="text">Delete All</span>
             </Button>
-        </Layout.Stack>
-        <Table.Root
-            let:root
-            columns={[
-                { id: 'client' },
-                { id: 'location' },
-                { id: 'ip' },
-                { id: 'actions', width: 40 }
-            ]}>
-            <svelte:fragment slot="header" let:root>
-                <Table.Header.Cell column="client" {root}>Client</Table.Header.Cell>
-                <Table.Header.Cell column="location" {root}>Location</Table.Header.Cell>
-                <Table.Header.Cell column="ip" {root}>IP</Table.Header.Cell>
-                <Table.Header.Cell column="actions" {root} />
-            </svelte:fragment>
-            {#each data.sessions.sessions as session}
-                {@const browser = getBrowser(session.clientCode)}
-                <Table.Row.Base {root}>
-                    <Table.Cell column="client" {root}>
-                        <Layout.Stack direction="row" alignItems="center">
-                            {#if session.clientName}
-                                <div class="avatar is-size-small">
+        {/if}
+    </ContainerHeader>
+    {#if data.sessions.total}
+        <TableScroll>
+            <TableHeader>
+                <TableCellHead width={140}>Browser and device</TableCellHead>
+                <TableCellHead width={140}>Session</TableCellHead>
+                <TableCellHead width={140}>Location</TableCellHead>
+                <TableCellHead width={140}>IP</TableCellHead>
+                <TableCellHead width={30} />
+            </TableHeader>
+            <TableBody>
+                {#each data.sessions.sessions as session}
+                    {@const browser = getBrowser(session.clientCode)}
+                    <TableRow>
+                        <TableCell title="Client">
+                            <div class="u-flex u-gap-12 u-cross-center">
+                                <div class="avatar">
                                     {#if browser}
                                         <img
                                             height="20"
@@ -61,7 +67,8 @@
                                         <span
                                             class="icon-globe-alt"
                                             style="--p-text-size: 1.25rem"
-                                            aria-hidden="true"></span>
+                                            aria-hidden="true">
+                                        </span>
                                     {/if}
                                 </div>
                                 <p class="text">
@@ -69,54 +76,43 @@
                                     {session.clientVersion} on {session.osName}
                                     {session.osVersion}
                                 </p>
-                            {:else}
-                                <span class="avatar is-color-empty"></span>
-                                <p class="text u-trim">Unknown</p>
-                            {/if}
-                            <Badge variant="secondary" content={session.provider} />
-                        </Layout.Stack>
-                    </Table.Cell>
-                    <Table.Cell column="location" {root}>
-                        {#if session.countryCode !== '--'}
-                            {session.countryName}
-                        {:else}
-                            Unknown
-                        {/if}
-                    </Table.Cell>
-                    <Table.Cell column="ip" {root}>
-                        {session.ip}
-                    </Table.Cell>
-                    <Table.Cell column="actions" {root}>
-                        <Button
-                            compact
-                            icon
-                            ariaLabel="Delete item"
-                            on:click={() => {
-                                selectedSessionId = session.$id;
-                                showDelete = true;
-                            }}>
-                            <span class="icon-trash" aria-hidden="true"></span>
-                        </Button>
-                    </Table.Cell>
-                </Table.Row.Base>
-            {/each}
-        </Table.Root>
+                                {#if session.current}
+                                    <Pill success>current session</Pill>
+                                {/if}
+                            </div>
+                        </TableCell>
+
+                        <TableCellText title="Session">{session.clientType}</TableCellText>
+                        <TableCellText title="Location">{session.countryName}</TableCellText>
+                        <TableCellText title="IP">{session.ip}</TableCellText>
+                        <TableCell>
+                            <Button
+                                text
+                                icon
+                                ariaLabel="Delete item"
+                                on:click={() => {
+                                    selectedSessionId = session.$id;
+                                    showDelete = true;
+                                }}>
+                                <span class="icon-trash" aria-hidden="true"></span>
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+                {/each}
+            </TableBody>
+        </TableScroll>
     {:else}
-        <Card.Base padding="none">
-            <Empty
-                title="No sessions available"
-                description="Need a hand? Learn more in our documentation."
-                type="secondary">
-                <svelte:fragment slot="actions">
-                    <Button
-                        external
-                        secondary
-                        href="https://appwrite.io/docs/products/auth/email-password">
-                        Documentation
-                    </Button>
-                </svelte:fragment>
-            </Empty>
-        </Card.Base>
+        <EmptySearch>
+            <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
+                <p class="text u-line-height-1-5">No sessions available</p>
+                <Button
+                    external
+                    secondary
+                    href="https://appwrite.io/docs/products/auth/email-password">
+                    Documentation
+                </Button>
+            </div>
+        </EmptySearch>
     {/if}
 </Container>
 

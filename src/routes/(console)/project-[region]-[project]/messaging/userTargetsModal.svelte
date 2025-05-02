@@ -7,6 +7,7 @@
     import { Accordion, Badge, Card, Empty, Layout, Selector } from '@appwrite.io/pink-svelte';
     import { getProviderText } from './helper';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { page } from '$app/state';
 
     export let title: string;
     export let show: boolean;
@@ -45,7 +46,9 @@
             queries.push(Query.notEqual('phone', ''));
         }
 
-        const response = await sdk.forProject.users.list(queries, search || undefined);
+        const response = await sdk
+            .forProject(page.params.region, page.params.project)
+            .users.list(queries, search || undefined);
 
         totalResults = response.total;
         userResultsById = {};

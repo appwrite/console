@@ -13,7 +13,7 @@ import { PAGE_LIMIT } from '$lib/constants';
 export const load: PageLoad = async ({ depends, params, url, route }) => {
     depends(Dependencies.FUNCTION_DOMAINS);
     const page = getPage(url);
-    const limit = getLimit(url, route, PAGE_LIMIT);
+    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
     const search = getSearch(url);
@@ -26,18 +26,20 @@ export const load: PageLoad = async ({ depends, params, url, route }) => {
         limit,
         query,
         search,
-        domains: await sdk.forProject.proxy.listRules(
-            [
-                Query.equal('type', [RuleType.DEPLOYMENT, RuleType.REDIRECT]),
-                Query.equal('deploymentResourceType', DeploymentResourceType.FUNCTION),
-                Query.equal('deploymentResourceId', params.function),
-                Query.equal('trigger', RuleTrigger.MANUAL),
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc(''),
-                ...parsedQueries.values()
-            ],
-            search || undefined
-        )
+        domains: await sdk
+            .forProject(params.region, params.project)
+            .proxy.listRules(
+                [
+                    Query.equal('type', [RuleType.DEPLOYMENT, RuleType.REDIRECT]),
+                    Query.equal('deploymentResourceType', DeploymentResourceType.FUNCTION),
+                    Query.equal('deploymentResourceId', params.function),
+                    Query.equal('trigger', RuleTrigger.MANUAL),
+                    Query.limit(limit),
+                    Query.offset(offset),
+                    Query.orderDesc(''),
+                    ...parsedQueries.values()
+                ],
+                search || undefined
+            )
     };
 };

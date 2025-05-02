@@ -9,7 +9,6 @@
         EmptyFilter
     } from '$lib/components';
     import { Container } from '$lib/layout';
-    import type { PageData } from './$types';
     import { columns } from './store';
     import { Filters, hasPageQueries } from '$lib/components/filters';
     import CreateProviderDropdown from './createProviderDropdown.svelte';
@@ -20,7 +19,7 @@
     import { View } from '$lib/helpers/load';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
 
-    export let data: PageData;
+    export let data;
 </script>
 
 <Container>
@@ -58,7 +57,9 @@
                 <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no providers that match your search.</p>
             </div>
-            <Button secondary href={`${base}/project-${page.params.project}/messaging/providers`}>
+            <Button
+                secondary
+                href={`${base}/project-${page.params.region}-${page.params.project}/messaging/providers`}>
                 Clear search
             </Button>
         </EmptySearch>

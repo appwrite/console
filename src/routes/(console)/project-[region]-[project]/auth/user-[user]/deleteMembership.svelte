@@ -17,10 +17,9 @@
 
     async function deleteMembership() {
         try {
-            await sdk.forProject.teams.deleteMembership(
-                selectedMembership.teamId,
-                selectedMembership.$id
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .teams.deleteMembership(selectedMembership.teamId, selectedMembership.$id);
             await invalidate(Dependencies.MEMBERSHIPS);
             showDelete = false;
             addNotification({
@@ -29,7 +28,7 @@
             });
             trackEvent(Submit.MemberDelete);
             await goto(
-                `${base}/project-${page.params.project}/auth/user-${selectedMembership.userId}/memberships`
+                `${base}/project-${page.params.region}-${page.params.project}/auth/user-${selectedMembership.userId}/memberships`
             );
         } catch (e) {
             error = e.message;

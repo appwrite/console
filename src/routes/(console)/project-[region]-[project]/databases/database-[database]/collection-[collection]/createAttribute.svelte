@@ -28,13 +28,20 @@
         try {
             await $option.create(databaseId, collectionId, key, data);
 
-            let selectedColumns = preferences.getCustomCollectionColumns(collectionId);
+            let selectedColumns = preferences.getCustomCollectionColumns(
+                page.params.project,
+                collectionId
+            );
             selectedColumns.push(key ?? data?.key);
-            preferences.setCustomCollectionColumns(selectedColumns);
+            preferences.setCustomCollectionColumns(
+                page.params.project,
+                page.route,
+                selectedColumns
+            );
             await invalidate(Dependencies.COLLECTION);
             if (!page.url.pathname.includes('attributes')) {
                 await goto(
-                    `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${collectionId}/attributes`
                 );
             }
             addNotification({

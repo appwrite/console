@@ -32,7 +32,7 @@
         "@stripe/stripe-js": "^3.5.0",
         "ai": "^2.2.37",
         "analytics": "^0.8.16",
-        "@ai-sdk/svelte": "^1.1.22",
+        "@ai-sdk/svelte": "^1.1.24",
         "cron-parser": "^4.9.0",
         "dayjs": "^1.11.13",
         "deep-equal": "^2.2.3",

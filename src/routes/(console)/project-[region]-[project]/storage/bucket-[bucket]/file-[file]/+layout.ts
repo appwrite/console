@@ -12,7 +12,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            file: await sdk.forProject.storage.getFile(params.bucket, params.file)
+            file: await sdk
+                .forProject(params.region, params.project)
+                .storage.getFile(params.bucket, params.file)
         };
     } catch (e) {
         error(e.code, e.message);

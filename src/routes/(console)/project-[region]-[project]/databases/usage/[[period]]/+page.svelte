@@ -19,7 +19,7 @@
 <Container>
     <Layout.Stack gap="l">
         <Usage
-            path={`${base}/project-${page.params.project}/databases/usage`}
+            path={`${base}/project-${page.params.region}-${page.params.project}/databases/usage`}
             {total}
             {count}
             countMetadata={{

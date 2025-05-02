@@ -1,9 +1,9 @@
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-import { getLimit, getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
+import { getSearch } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, route, depends, parent }) => {
+export const load: PageLoad = async ({ url, route, depends, parent, params }) => {
     depends(Dependencies.FUNCTIONS);
 
     const search = getSearch(url);
@@ -52,6 +52,6 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
         useCases,
         search,
         templates,
-        functions: await sdk.forProject.functions.list()
+        functions: await sdk.forProject(params.region, params.project).functions.list()
     };
 };

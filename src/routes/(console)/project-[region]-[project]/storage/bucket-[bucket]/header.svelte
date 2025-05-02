@@ -9,7 +9,7 @@
 
     const projectId = page.params.project;
     const bucketId = page.params.bucket;
-    const path = `${base}/project-${projectId}/storage/bucket-${bucketId}`;
+    const path = `${base}/project-${page.params.region}-${projectId}/storage/bucket-${bucketId}`;
     const tabs = [
         {
             href: path,
@@ -34,7 +34,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/storage`}>
+        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/storage`}>
             {$bucket?.name}
         </CoverTitle>
         {#if $bucket?.$id}

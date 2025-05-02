@@ -14,6 +14,7 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     export let message: Models.Message;
     export let selectedTopicsById: Record<string, Models.Topic>;
@@ -43,11 +44,17 @@
     async function update() {
         try {
             if (message.providerType == MessagingProviderType.Email) {
-                await sdk.forProject.messaging.updateEmail(message.$id, topicIds);
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .messaging.updateEmail(message.$id, topicIds);
             } else if (message.providerType == MessagingProviderType.Sms) {
-                await sdk.forProject.messaging.updateSms(message.$id, topicIds);
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .messaging.updateSms(message.$id, topicIds);
             } else if (message.providerType == MessagingProviderType.Push) {
-                await sdk.forProject.messaging.updatePush(message.$id, topicIds);
+                await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .messaging.updatePush(message.$id, topicIds);
             }
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({

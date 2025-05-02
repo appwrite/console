@@ -19,11 +19,9 @@
     let error: string;
     async function handleDelete() {
         try {
-            await sdk.forProject.databases.deleteAttribute(
-                databaseId,
-                $collection.$id,
-                selectedAttribute.key
-            );
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .databases.deleteAttribute(databaseId, $collection.$id, selectedAttribute.key);
             await invalidate(Dependencies.COLLECTION);
             showDelete = false;
             addNotification({
@@ -32,7 +30,7 @@
             });
             trackEvent(Submit.AttributeDelete);
             await goto(
-                `${base}/project-${page.params.project}/databases/database-${databaseId}/collection-${page.params.collection}/attributes`
+                `${base}/project-${page.params.region}-${page.params.project}/databases/database-${databaseId}/collection-${page.params.collection}/attributes`
             );
         } catch (e) {
             error = e.message;

@@ -9,7 +9,7 @@
 
     const projectId = page.params.project;
     const functionId = page.params.function;
-    const path = `${base}/project-${projectId}/functions/function-${functionId}`;
+    const path = `${base}/project-${page.params.region}-${projectId}/functions/function-${functionId}`;
     const tabs = [
         {
             href: path,
@@ -45,7 +45,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle href={`${base}/project-${projectId}/functions`}>
+        <CoverTitle href={`${base}/project-${page.params.region}-${projectId}/functions`}>
             {$func?.name}
         </CoverTitle>
         {#if $func?.$id}

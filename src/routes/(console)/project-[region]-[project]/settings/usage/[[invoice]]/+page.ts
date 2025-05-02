@@ -1,11 +1,11 @@
 import type { Aggregation, Invoice } from '$lib/sdk/billing';
 import { accumulateUsage } from '$lib/sdk/usage';
-import { getSdkForProject, sdk } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, parent }) => {
-    const { invoice, project } = params;
+    const { invoice, project, region } = params;
     const { organization } = await parent();
 
     let startDate: string = organization.billingCurrentInvoiceDate;
@@ -26,10 +26,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     const [invoices, usage] = await Promise.all([
         sdk.forConsole.billing.listInvoices(organization.$id, [Query.orderDesc('from')]),
-        /**
-         * Workaround because project id might not be populated yet.
-         */
-        getSdkForProject(project).project.getUsage(startDate, endDate)
+        sdk.forProject(region, project).project.getUsage(startDate, endDate)
     ]);
 
     if (invoice) {

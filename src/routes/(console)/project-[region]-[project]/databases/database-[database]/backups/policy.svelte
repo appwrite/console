@@ -9,7 +9,6 @@
     import { Dependencies } from '$lib/constants';
     import { parseExpression } from 'cron-parser';
     import { toLocaleDateTime } from '$lib/helpers/date';
-
     import EmptyDark from '$lib/images/backups/backups-dark.png';
     import EmptyLight from '$lib/images/backups/backups-light.png';
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
@@ -27,6 +26,7 @@
     import { IconDotsHorizontal, IconPlus, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { Confirm } from '$lib/components/index.js';
     import Ellipse from './components/Ellipse.svelte';
+    import { page } from '$app/state';
 
     let showDelete = false;
     let selectedPolicy: BackupPolicy = null;
@@ -39,7 +39,9 @@
 
     async function deletePolicy() {
         try {
-            await sdk.forProject.backups.deletePolicy(selectedPolicy.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .backups.deletePolicy(selectedPolicy.$id);
             addNotification({
                 type: 'success',
                 message: 'Backup policy has been deleted'

@@ -20,13 +20,16 @@
     import UpdateBuildCommand from './updateBuildCommand.svelte';
     import UpdateResourceLimits from './updateResourceLimits.svelte';
     import { isCloud } from '$lib/system';
-    import UpdateVariables from '$routes/(console)/project-[project]/updateVariables.svelte';
+    import UpdateVariables from '$routes/(console)/project-[region]-[project]/updateVariables.svelte';
+    import { page } from '$app/state';
 
     export let data;
     let showAlert = true;
 
     const sdkCreateVariable = async (key: string, value: string, secret?: boolean) => {
-        await sdk.forProject.functions.createVariable(data.function.$id, key, value, secret);
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .functions.createVariable(data.function.$id, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
@@ -36,18 +39,16 @@
         value: string,
         secret?: boolean
     ) => {
-        await sdk.forProject.functions.updateVariable(
-            data.function.$id,
-            variableId,
-            key,
-            value,
-            secret
-        );
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .functions.updateVariable(data.function.$id, variableId, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
     const sdkDeleteVariable = async (variableId: string) => {
-        await sdk.forProject.functions.deleteVariable(data.function.$id, variableId);
+        await sdk
+            .forProject(page.params.region, page.params.project)
+            .functions.deleteVariable(data.function.$id, variableId);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 </script>

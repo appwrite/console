@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
     const data = await parent();
     depends(Dependencies.DEPLOYMENTS);
     const page = getPage(url);
-    const limit = getLimit(url, route, PAGE_LIMIT);
+    const limit = getLimit(params.project, url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     const query = getQuery(url);
 
@@ -21,16 +21,17 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         query,
         installations: data.installations,
         activeDeployment: data.function.deploymentId
-            ? await sdk.forProject.functions.getDeployment(
-                  params.function,
-                  data.function.deploymentId
-              )
+            ? await sdk
+                  .forProject(params.region, params.project)
+                  .functions.getDeployment(params.function, data.function.deploymentId)
             : null,
-        deploymentList: await sdk.forProject.functions.listDeployments(params.function, [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc(''),
-            ...parsedQueries.values()
-        ])
+        deploymentList: await sdk
+            .forProject(params.region, params.project)
+            .functions.listDeployments(params.function, [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ])
     };
 };

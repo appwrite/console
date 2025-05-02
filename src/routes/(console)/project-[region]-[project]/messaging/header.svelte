@@ -7,7 +7,7 @@
     import { Typography } from '@appwrite.io/pink-svelte';
 
     const projectId = page.params.project;
-    const path = `${base}/project-${projectId}/messaging`;
+    const path = `${base}/project-${page.params.region}-${page.params.project}/messaging`;
     const tabs = [
         {
             href: path,

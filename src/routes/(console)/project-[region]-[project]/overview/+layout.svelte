@@ -30,8 +30,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
 
     let period: UsagePeriods = '30d';
-    $: projectId = page.params.project;
-    $: path = `${base}/project-${projectId}/overview`;
+    $: path = `${base}/project-${page.params.region}-${page.params.project}/overview`;
 
     onMount(handle);
     afterNavigate(handle);
@@ -67,7 +66,7 @@
             label: 'Create API Key',
             icon: IconPlus,
             callback() {
-                goto(`${base}/project-[project]/overview/keys/create`);
+                goto(`${base}/project-[region]-[project]/overview/keys/create`);
             },
             keys: ['c', 'k'],
             group: 'integrations',
@@ -105,7 +104,7 @@
                 <Layout.Stack gap="xl" direction={$isSmallViewport ? 'column' : 'row'}>
                     <Card.Link
                         padding="s"
-                        href={`${base}/project-${projectId}/databases`}
+                        href={`${base}/project-${page.params.region}-${page.params.project}/databases`}
                         class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
@@ -127,7 +126,7 @@
                     </Card.Link>
                     <Card.Link
                         padding="s"
-                        href={`${base}/project-${projectId}/storage`}
+                        href={`${base}/project-${page.params.region}-${page.params.project}/storage`}
                         class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
@@ -150,7 +149,7 @@
                     </Card.Link>
                     <Card.Link
                         padding="s"
-                        href={`${base}/project-${projectId}/auth`}
+                        href={`${base}/project-${page.params.region}-${page.params.project}/auth`}
                         class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">
@@ -172,7 +171,7 @@
                     </Card.Link>
                     <Card.Link
                         padding="s"
-                        href={`${base}/project-${projectId}/functions`}
+                        href={`${base}/project-${page.params.region}-${page.params.project}/functions`}
                         class="is-2-columns-large-screen">
                         <div class="grid-item-1">
                             <div class="grid-item-1-start-start">

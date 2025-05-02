@@ -18,7 +18,9 @@
             label: 'Create file',
             async callback() {
                 if (!page.url.pathname.endsWith($bucket.$id)) {
-                    goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/create`);
+                    goto(
+                        `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/create`
+                    );
                 }
             },
             keys: page.url.pathname.endsWith($bucket.$id) ? ['c'] : ['c', 'f'],
@@ -29,7 +31,7 @@
             label: 'Permissions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/settings#permissions`
+                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/settings#permissions`
                 );
                 scrollBy({ top: -100 });
             },
@@ -41,7 +43,7 @@
             label: 'Extensions',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/settings#extensions`
+                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/settings#extensions`
                 );
             },
             group: 'buckets',
@@ -52,7 +54,7 @@
             label: 'File security',
             async callback() {
                 await goto(
-                    `${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/settings#file-security`
+                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/settings#file-security`
                 );
                 scrollBy({ top: -100 });
             },
@@ -63,7 +65,9 @@
         {
             label: 'Go to files',
             callback() {
-                goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}`
+                );
             },
             disabled: page.url.pathname.endsWith($bucket.$id),
             keys: ['g', 'f'],
@@ -73,7 +77,9 @@
         {
             label: 'Go to usage',
             callback() {
-                goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/usage`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/usage`
+                );
             },
             disabled: page.url.pathname.endsWith('usage'),
             keys: ['g', 'u'],
@@ -83,7 +89,9 @@
         {
             label: 'Go to settings',
             callback() {
-                goto(`${base}/project-${$project.$id}/storage/bucket-${$bucket.$id}/settings`);
+                goto(
+                    `${base}/project-${$project.region}-${$project.$id}/storage/bucket-${$bucket.$id}/settings`
+                );
             },
             disabled: page.url.pathname.endsWith('settings') || !$canWriteBuckets,
             keys: ['g', 's'],

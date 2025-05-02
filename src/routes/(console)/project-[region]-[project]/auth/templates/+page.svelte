@@ -58,11 +58,11 @@
         EmailTemplateType,
         EmailTemplateLocale
     } from '@appwrite.io/console';
-    import { Accordion, Layout, Alert, Badge, Link, Typography } from '@appwrite.io/pink-svelte';
+    import { Accordion, Alert, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
 
-    let emailOpen = null;
+    let emailOpen = 'verification';
     $: emailVerificationOpen = emailOpen === 'verification';
     $: emailMagicSessionOpen = emailOpen === 'magicSession';
     $: emailOtpSessionOpen = emailOpen === 'otpSession';

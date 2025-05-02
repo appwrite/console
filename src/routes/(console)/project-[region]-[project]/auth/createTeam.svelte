@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { InputText, Button } from '$lib/elements/forms';
@@ -18,7 +19,9 @@
 
     const create = async () => {
         try {
-            const team = await sdk.forProject.teams.create(id ?? ID.unique(), name);
+            const team = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .teams.create(id ?? ID.unique(), name);
             name = '';
             showCreate = false;
             showCustomId = false;

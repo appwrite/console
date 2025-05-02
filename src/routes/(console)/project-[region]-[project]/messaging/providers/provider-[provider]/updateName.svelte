@@ -9,6 +9,7 @@
     import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
+    import { page } from '$app/stores';
 
     let providerName: string = null;
     onMount(async () => {
@@ -21,64 +22,54 @@
             const providerId = $provider.$id;
             switch ($provider.provider) {
                 case Providers.Twilio:
-                    response = await sdk.forProject.messaging.updateTwilioProvider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateTwilioProvider(providerId, providerName);
                     break;
                 case Providers.Msg91:
-                    response = await sdk.forProject.messaging.updateMsg91Provider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateMsg91Provider(providerId, providerName);
                     break;
                 case Providers.Telesign:
-                    response = await sdk.forProject.messaging.updateTelesignProvider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateTelesignProvider(providerId, providerName);
                     break;
                 case Providers.Textmagic:
-                    response = await sdk.forProject.messaging.updateTextmagicProvider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateTextmagicProvider(providerId, providerName);
                     break;
                 case Providers.Vonage:
-                    response = await sdk.forProject.messaging.updateVonageProvider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateVonageProvider(providerId, providerName);
                     break;
                 case Providers.Mailgun:
-                    response = await sdk.forProject.messaging.updateMailgunProvider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateMailgunProvider(providerId, providerName);
                     break;
                 case Providers.Sendgrid:
-                    response = await sdk.forProject.messaging.updateSendgridProvider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateSendgridProvider(providerId, providerName);
                     break;
                 case Providers.SMTP:
-                    response = await sdk.forProject.messaging.updateSmtpProvider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateSmtpProvider(providerId, providerName);
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject.messaging.updateFcmProvider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateFcmProvider(providerId, providerName);
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject.messaging.updateApnsProvider(
-                        providerId,
-                        providerName
-                    );
+                    response = await sdk
+                        .forProject($page.params.region, $page.params.project)
+                        .messaging.updateApnsProvider(providerId, providerName);
                     break;
             }
             await invalidate(Dependencies.MESSAGING_PROVIDER);

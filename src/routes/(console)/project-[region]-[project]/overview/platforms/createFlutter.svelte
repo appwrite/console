@@ -39,7 +39,7 @@
     const updateConfigCode = isCloud
         ? `static const String APPWRITE_PROJECT_ID = "${projectId}"`
         : `static const String APPWRITE_PROJECT_ID = "${projectId}"
-static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject.client.config.endpoint}"
+static const String APPWRITE_PUBLIC_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"
         `;
 
     export let platform: PlatformType = PlatformType.Flutterandroid;

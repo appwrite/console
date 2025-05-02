@@ -17,14 +17,13 @@
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import { writable } from 'svelte/store';
     import { canWriteTeams } from '$lib/stores/roles';
     import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
-    export let data: PageData;
+    export let data;
 
     const project = page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
@@ -79,7 +78,10 @@
             total={data.teams.total} />
     {:else if data.search}
         <EmptySearch target="teams" search={data.search} hidePagination={data.teams.total === 0}>
-            <Button secondary size="s" href={`${base}/project-${page.params.project}/auth/teams`}>
+            <Button
+                secondary
+                size="s"
+                href={`${base}/project-${page.params.region}-${page.params.project}/auth/teams`}>
                 Clear Search
             </Button>
         </EmptySearch>

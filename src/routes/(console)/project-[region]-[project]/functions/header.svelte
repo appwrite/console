@@ -7,7 +7,7 @@
     import { Typography } from '@appwrite.io/pink-svelte';
 
     $: projectId = page.params.project;
-    $: path = `${base}/project-${projectId}/functions`;
+    $: path = `${base}/project-${page.params.region}-${projectId}/functions`;
     $: tabs = [
         {
             href: path,

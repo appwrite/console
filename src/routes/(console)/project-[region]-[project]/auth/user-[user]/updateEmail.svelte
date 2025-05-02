@@ -8,15 +8,19 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
+    import { page } from '$app/stores';
 
     let userEmail: string = null;
+
     onMount(async () => {
         userEmail ??= $user.email;
     });
 
     async function updateEmail() {
         try {
-            await sdk.forProject.users.updateEmail($user.$id, userEmail);
+            await sdk
+                .forProject($page.params.region, $page.params.project)
+                .users.updateEmail($user.$id, userEmail);
             await invalidate(Dependencies.USER);
             addNotification({
                 message: 'Email has been updated',

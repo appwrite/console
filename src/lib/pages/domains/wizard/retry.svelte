@@ -11,6 +11,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Card, Icon, Layout, Link, Typography } from '@appwrite.io/pink-svelte';
     import { IconExclamationCircle } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     let retrying = false;
     export let showTitle = true;
@@ -21,7 +22,9 @@
     async function retry() {
         try {
             retrying = true;
-            domain = await sdk.forProject.proxy.updateRuleVerification(domain.$id);
+            domain = await sdk
+                .forProject(page.params.region, page.params.project)
+                .proxy.updateRuleVerification(domain.$id);
             invalidate(Dependencies.FUNCTION_DOMAINS);
             addNotification({
                 message:

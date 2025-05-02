@@ -16,7 +16,9 @@
 
     const deleteMessage = async () => {
         try {
-            await sdk.forProject.messaging.delete(message.$id);
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .messaging.delete(message.$id);
             show = false;
             let notificationMessage = '';
             switch (message.status) {
@@ -36,7 +38,7 @@
                 message: notificationMessage
             });
             trackEvent(Submit.MessagingMessageDelete);
-            await goto(`${base}/project-${page.params.project}/messaging`);
+            await goto(`${base}/project-${page.params.region}-${page.params.project}/messaging`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.MessagingMessageDelete);

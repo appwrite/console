@@ -10,8 +10,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     try {
         const [user, userFactors] = await Promise.all([
-            sdk.forProject.users.get(params.user),
-            sdk.forProject.users.listMfaFactors(params.user)
+            sdk.forProject(params.region, params.project).users.get(params.user),
+            sdk.forProject(params.region, params.project).users.listMfaFactors(params.user)
         ]);
 
         return {

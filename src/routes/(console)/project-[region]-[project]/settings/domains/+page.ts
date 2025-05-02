@@ -11,7 +11,7 @@ import { pageToOffset } from '$lib/helpers/load';
 import { getLimit } from '$lib/helpers/load';
 import { getPage } from '$lib/helpers/load';
 
-export const load: PageLoad = async ({ depends, url, route }) => {
+export const load: PageLoad = async ({ depends, url, route, params }) => {
     depends(Dependencies.DOMAINS);
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
@@ -23,10 +23,12 @@ export const load: PageLoad = async ({ depends, url, route }) => {
     queries.set(parsedQueries);
 
     return {
-        rules: await sdk.forProject.proxy.listRules(
-            [Query.equal('type', RuleType.API), Query.equal('trigger', RuleTrigger.MANUAL)],
-            search || undefined
-        ),
+        rules: await sdk
+            .forProject(params.region, params.project)
+            .proxy.listRules(
+                [Query.equal('type', RuleType.API), Query.equal('trigger', RuleTrigger.MANUAL)],
+                search || undefined
+            ),
         offset,
         limit,
         query,

@@ -11,15 +11,15 @@
             title: $organization.name
         },
         {
-            href: `${base}/project-${page.data.project.$id}`,
+            href: `${base}/project-${page.params.region}-${page.params.project}`,
             title: page.data.project.name
         },
         {
-            href: `${base}/project-${page.data.project.$id}/databases`,
+            href: `${base}/project-${page.params.region}-${page.params.project}/databases`,
             title: 'Databases'
         },
         {
-            href: `${base}/project-${page.data.project.$id}/databases/database-${$database.$id}`,
+            href: `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database.$id}`,
             title: $database.name
         }
     ];
