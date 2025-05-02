@@ -7,7 +7,6 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
-    import type { Models } from '@appwrite.io/console';
     import { Alert } from '@appwrite.io/pink-svelte';
 
     const projectId = page.params.project;

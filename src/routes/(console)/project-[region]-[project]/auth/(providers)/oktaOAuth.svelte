@@ -4,7 +4,6 @@
     import { Button, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
     import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
     import { getApiEndpoint } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
     import type { Models } from '@appwrite.io/console';
