@@ -1,9 +1,9 @@
 import { sdk } from '$lib/stores/sdk';
 
-export const load = async () => {
+export const load = async ({ params }) => {
     const [installations, frameworks] = await Promise.all([
-        sdk.forProject(page.params.region, page.params.project).vcs.listInstallations(),
-        sdk.forProject(page.params.region, page.params.project).sites.listFrameworks()
+        sdk.forProject(params.region, params.project).vcs.listInstallations(),
+        sdk.forProject(params.region, params.project).sites.listFrameworks()
     ]);
     return {
         installations,

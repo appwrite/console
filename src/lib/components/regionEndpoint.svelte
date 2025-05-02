@@ -13,7 +13,7 @@
             : '';
 </script>
 
-<Copy value={getProjectEndpoint()} appendTo="parent" copyText="Copy endpoint">
+<Copy value={getProjectEndpoint()} copyText="Copy endpoint">
     <div
         class="flex u-gap-8 u-cross-center interactive-text-output is-buttons-on-top u-text-center"
         style:min-inline-size="0"

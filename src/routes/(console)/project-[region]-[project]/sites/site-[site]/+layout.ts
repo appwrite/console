@@ -8,7 +8,7 @@ export const load = async ({ depends, params }) => {
     depends(Dependencies.SITE);
     try {
         const [site] = await Promise.all([
-            sdk.forProject(page.params.region, page.params.project).sites.get(params.site)
+            sdk.forProject(params.region, params.project).sites.get(params.site)
         ]);
 
         return {
