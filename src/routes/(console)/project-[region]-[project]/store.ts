@@ -1,12 +1,12 @@
-import { page } from '$app/state';
 import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
 import { derived, get, writable } from 'svelte/store';
 import { regions } from '$lib/stores/organization';
+import { page } from '$app/stores';
 
 export const project = derived(
     page,
-    (page) => page.data.project as Models.Project & { region?: string }
+    ($page) => $page.data.project as Models.Project & { region?: string }
 );
 
 export const projectRegion = derived(project, ($project) => {

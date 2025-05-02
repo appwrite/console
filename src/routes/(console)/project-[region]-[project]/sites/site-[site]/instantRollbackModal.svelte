@@ -13,6 +13,7 @@
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { capitalize } from '$lib/helpers/string';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
+    import { page } from '$app/state';
 
     export let show = false;
     export let deployment: Models.Deployment;

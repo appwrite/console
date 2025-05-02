@@ -7,6 +7,7 @@
     import { Dependencies } from '$lib/constants';
     import { Confirm } from '$lib/components';
     import { Typography } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     let {
         show = $bindable(),

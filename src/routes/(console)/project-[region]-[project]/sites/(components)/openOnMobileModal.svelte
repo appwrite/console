@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/state';
     import { Modal } from '$lib/components';
     import Card from '$lib/components/card.svelte';
     import { Button, InputSelect } from '$lib/elements/forms';

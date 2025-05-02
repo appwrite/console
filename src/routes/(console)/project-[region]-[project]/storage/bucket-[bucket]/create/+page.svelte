@@ -45,7 +45,14 @@
         const fileId = id ?? ID.unique();
 
         try {
-            const promise = uploader.uploadFile(page.params.bucket, fileId, files[0], permissions);
+            const promise = uploader.uploadFile(
+                page.params.region,
+                page.params.project,
+                page.params.bucket,
+                fileId,
+                files[0],
+                permissions
+            );
             await goto(
                 `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}`
             );

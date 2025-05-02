@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { Adapter, BuildRuntime, Framework, type Models } from '@appwrite.io/console';
+    import { page } from '$app/state';
 
     export let site: Models.Site;
     let siteName: string = null;

@@ -8,6 +8,7 @@
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
     import CnameTable from '$lib/components/domains/cnameTable.svelte';
+    import { page } from '$app/state';
 
     let {
         show = $bindable(),

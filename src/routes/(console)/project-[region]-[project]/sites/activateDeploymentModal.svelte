@@ -6,6 +6,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { page } from '$app/state';
 
     export let show = false;
     export let selectedDeploymentId: string;

@@ -14,10 +14,11 @@
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
+    import { page } from '$app/state';
 
     export let data;
 
-    $: baseRoute = `${base}/project-${data.project.region}-${data.project.$id}`;
+    $: baseRoute = `${base}/project-${page.params.region}-${page.params.project}`;
     $: network = data.usage.network;
     $: users = data.usage.users;
     $: usersTotal = data.usage.usersTotal;

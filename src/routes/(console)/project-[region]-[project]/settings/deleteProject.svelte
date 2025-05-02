@@ -8,7 +8,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
-    import type { RegionList } from '$lib/sdk/billing';
     import Confirm from '$lib/components/confirm.svelte';
     import { project, projectRegion } from '../store';
 

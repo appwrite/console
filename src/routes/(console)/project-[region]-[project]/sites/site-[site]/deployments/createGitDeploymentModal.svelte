@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { page } from '$app/state';
     import { Modal, Card } from '$lib/components';
     import { Repositories } from '$lib/components/git';
     import { Dependencies } from '$lib/constants';
