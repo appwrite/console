@@ -321,6 +321,7 @@ export type Plan = {
     webhooks: number;
     users: number;
     teams: number;
+    projects: number;
     databases: number;
     buckets: number;
     fileSize: number;
