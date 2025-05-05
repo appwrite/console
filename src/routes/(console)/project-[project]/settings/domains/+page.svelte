@@ -5,8 +5,7 @@
     import { Button } from '$lib/elements/forms';
     import Container from '$lib/layout/container.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
-    import SearchQuery from '$lib/components/searchQuery.svelte';
+    import { Card, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import Table from './table.svelte';
@@ -16,7 +15,11 @@
 </script>
 
 <Container>
-    <ResponsiveContainerHeader hasSearch hideView searchPlaceholder="Search by domain">
+    <ResponsiveContainerHeader
+        hasSearch
+        hideView
+        searchPlaceholder="Search by domain"
+        analyticsSource="settings_domain_overview">
         <Button
             href={`${base}/project-${page.params.project}/settings/domains/add-domain`}
             on:click={() => {
