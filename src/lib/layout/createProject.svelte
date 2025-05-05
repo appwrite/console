@@ -15,7 +15,7 @@
     export let regions: Array<Region> = [];
     export let region: string;
     export let showTitle = true;
-    export let projects: number;
+    export let projects: number = undefined;
 
     let showCustomId = false;
 
@@ -49,7 +49,7 @@
         {#if showTitle}
             <Typography.Title size="l">Create your project</Typography.Title>
         {/if}
-        {#if projects >= $currentPlan?.projects}
+        {#if projects && projects >= $currentPlan?.projects}
             <Alert.Inline status="warning" title="You’ve reached your limit of 2 projects">
                 Extra projects are available on paid plans for an additional fee
                 <svelte:fragment slot="actions">
