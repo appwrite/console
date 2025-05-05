@@ -8,6 +8,7 @@
     export let selected = false;
     export let href: string = null;
     export let event: string = null;
+    export let noscroll = false;
 
     async function handleClick(e: Event) {
         if (event) {
@@ -84,6 +85,7 @@
         <a
             class="tabs-button"
             {href}
+            data-sveltekit-noscroll={noscroll}
             class:is-selected={selected}
             on:click={handleClick}
             tabindex={selected ? 0 : -1}
