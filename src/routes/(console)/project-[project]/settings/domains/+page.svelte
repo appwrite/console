@@ -10,13 +10,13 @@
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import Table from './table.svelte';
+    import { ResponsiveContainerHeader } from '$lib/layout';
 
     let { data } = $props();
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search domain" />
+    <ResponsiveContainerHeader hasSearch hideView searchPlaceholder="Search by domain">
         <Button
             href={`${base}/project-${page.params.project}/settings/domains/add-domain`}
             on:click={() => {
@@ -27,8 +27,7 @@
             <Icon icon={IconPlus} size="s" />
             Add domain
         </Button>
-    </Layout.Stack>
-
+    </ResponsiveContainerHeader>
     {#if data.rules.total}
         <Table domains={data.rules} />
 
