@@ -1,16 +1,21 @@
 <script lang="ts">
-    import { Layout, Typography, Input, Tag, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Input, Tag, Icon, Alert } from '@appwrite.io/pink-svelte';
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { CustomId } from '$lib/components/index.js';
     import type { Region } from '$lib/sdk/billing';
     import { getFlagUrl } from '$lib/helpers/flag';
     import { isCloud } from '$lib/system.js';
+    import { currentPlan } from '$lib/stores/organization';
+    import { Button } from '$lib/elements/forms';
+    import { base } from '$app/paths';
+    import { page } from '$app/state';
 
     export let projectName: string;
     export let id: string;
     export let regions: Array<Region> = [];
     export let region: string;
     export let showTitle = true;
+    export let projects: number;
 
     let showCustomId = false;
 
@@ -43,6 +48,14 @@
     <Layout.Stack direction="column" gap="xxl">
         {#if showTitle}
             <Typography.Title size="l">Create your project</Typography.Title>
+        {/if}
+        {#if projects >= $currentPlan?.projects}
+            <Alert.Inline status="warning" title="You’ve reached your limit of 2 projects">
+                Extra projects are available on paid plans for an additional fee
+                <svelte:fragment slot="actions">
+                    <Button href={`${base}/organization-${page.params.organization}/billing`} external text>Upgrade</Button>
+                </svelte:fragment>
+            </Alert.Inline>
         {/if}
         <Layout.Stack direction="column" gap="xxl">
             <Layout.Stack direction="column" gap="xxl">

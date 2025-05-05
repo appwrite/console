@@ -108,6 +108,7 @@
             alt="Appwrite Logo" />
         <Card.Base variant="primary" padding="l">
             <CreateProject
+                projects={0}
                 regions={isCloud ? data.regions.regions : []}
                 bind:projectName
                 bind:id
