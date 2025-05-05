@@ -179,7 +179,7 @@
                 {@const platforms = filterPlatforms(
                     project.platforms.map((platform) => getPlatformInfo(platform.type))
                 )}
-                <GridItem1 href={`${base}/project-${project.$id}`}>
+                <GridItem1 href={`${base}/project-${project.region}-${project.$id}`}>
                     <svelte:fragment slot="eyebrow">
                         {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                     </svelte:fragment>

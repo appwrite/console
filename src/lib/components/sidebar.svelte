@@ -117,7 +117,7 @@
                 <Tooltip placement="right" disabled={state !== 'icons'}>
                     <a
                         class="progress-card"
-                        href={`/console/project-${project.$id}/get-started`}
+                        href={`/console/project-${project.region}-${project.$id}/get-started`}
                         on:click={() => {
                             trackEvent('click_menu_get_started');
                             sideBarIsOpen = false;
@@ -141,7 +141,7 @@
                 <Layout.Stack direction="column" gap="s">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.$id}/overview`}
+                            href={`/console/project-${project.region}-${project.$id}/overview`}
                             class="link"
                             class:active={page.url.pathname.includes('overview')}
                             on:click={() => {
@@ -171,7 +171,7 @@
                     {#each buildProjectOptions as projectOption}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
-                                href={`/console/project-${project.$id}/${projectOption.slug}`}
+                                href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={page.url.pathname.includes(projectOption.slug)}
                                 on:click={() => {
@@ -202,7 +202,7 @@
                     {#each deployProjectOptions as projectOption}
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
-                                href={`/console/project-${project.$id}/${projectOption.slug}`}
+                                href={`/console/project-${project.region}-${project.$id}/${projectOption.slug}`}
                                 class="link"
                                 class:active={page.url.pathname.includes(projectOption.slug)}
                                 on:click={() => {
@@ -225,7 +225,7 @@
                     <div class="only-mobile">
                         <Tooltip placement="right" disabled={state !== 'icons'}>
                             <a
-                                href={`/console/project-${project.$id}/settings`}
+                                href={`/console/project-${project.region}-${project.$id}/settings`}
                                 on:click={() => {
                                     trackEvent('click_menu_settings');
                                 }}
@@ -283,7 +283,7 @@
                 <div class="only-desktop">
                     <Tooltip placement="right" disabled={state !== 'icons'}>
                         <a
-                            href={`/console/project-${project.$id}/settings`}
+                            href={`/console/project-${project.region}-${project.$id}/settings`}
                             class="link"
                             on:click={() => {
                                 trackEvent('click_menu_settings');
