@@ -16,9 +16,16 @@
     import { getProviderText } from '../../helper';
 
     let files: Record<string, FileList> = {};
-    const inputs = providers[$providerType].providers[$provider].configure;
+    $: inputs = providers[$providerType].providers[$provider].configure;
     let open = false;
 
+    $: {
+        files;
+        $providerType;
+        $provider;
+
+        beforeSubmit();
+    }
     onMount(() => {
         const flattened = [];
         for (const i of inputs) {
@@ -29,7 +36,11 @@
             }
         }
         for (const input of flattened) {
-            if (input.type === 'file' && $providerParams[$provider][input.name].length > 0) {
+            if (
+                input.type === 'file' &&
+                $providerParams[$provider] &&
+                $providerParams[$provider][input.name].length > 0
+            ) {
                 const dataTransfer = new DataTransfer();
                 const f = new File(
                     [$providerParams[$provider][input.name]],
@@ -138,7 +149,9 @@
     </div>
 </WizardStep>
 
-<CreateMember bind:showCreate={$newMemberModal} />
+{#if $newMemberModal}
+    <CreateMember bind:showCreate={$newMemberModal} />
+{/if}
 
 <style lang="scss">
     .need-a-hand {

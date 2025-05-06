@@ -12,6 +12,7 @@
     import { Button, Form } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
+    import { Link } from '@appwrite.io/pink-svelte';
 
     export let inputs: (ProviderInput | ProviderInput[])[];
     export let providerType: MessagingProviderType;
@@ -219,11 +220,11 @@
 <Form onSubmit={update}>
     <CardGrid>
         <svelte:fragment slot="title">Settings</svelte:fragment>
-        Configure the settings to <Button
+        Configure the settings to <Link.Anchor
             href={`https://appwrite.io/docs/products/messaging/${provider}`}
-            external>enable {displayName}</Button> to send {message}, or <Button
-            on:click={() => (newMemberModal = true)}>invite a team member</Button> to complete the provider
-        settings.
+            >enable {displayName}</Link.Anchor> to send {message}, or <Link.Button
+            on:click={() => (newMemberModal = true)}>invite a team member</Link.Button> to complete the
+        provider settings.
         <svelte:fragment slot="aside">
             <!-- Must wait until ready or else the files input won't be set properly -->
             {#if ready}
