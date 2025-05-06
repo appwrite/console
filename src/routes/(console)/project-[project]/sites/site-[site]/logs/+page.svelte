@@ -55,7 +55,7 @@
                 <svelte:fragment slot="actions">
                     <Button
                         external
-                        href="#"
+                        href="https://appwrite.io/docs/products/sites/logs"
                         secondary
                         event="empty_documentation"
                         size="s"

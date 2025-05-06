@@ -5,7 +5,15 @@
     import { protocol } from '$routes/(console)/store';
     import type { Models } from '@appwrite.io/console';
     import { IconDotsHorizontal, IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
-    import { ActionMenu, Icon, Layout, Popover, Table, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        ActionMenu,
+        Badge,
+        Icon,
+        Layout,
+        Popover,
+        Table,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import DeleteDomainModal from './deleteDomainModal.svelte';
     import RetryDomainModal from './retryDomainModal.svelte';
     import { columns } from './store';
@@ -19,7 +27,6 @@
     let showDelete = $state(false);
     let showRetry = $state(false);
     let selectedDomain: Models.ProxyRule = $state(null);
-    let showPreviewDomainModal = $state(false);
 </script>
 
 <Table.Root columns={[...$columns, { id: 'actions', width: 40 }]} let:root>
@@ -39,14 +46,15 @@
                         <Link external href={`${$protocol}${domain.domain}`} variant="quiet" icon>
                             <Typography.Text truncate>
                                 {domain.domain}
+                                {#if domain.status !== 'verified'}
+                                    <Badge
+                                        variant="secondary"
+                                        type="error"
+                                        content="Verification failed"
+                                        size="s" />
+                                {/if}
                             </Typography.Text>
                         </Link>
-                    {:else if column.id === 'redirectUrl'}
-                        <!-- TODO design redirect status code -->
-                        {domain?.redirectUrl || 'No redirect'}
-                        {domain?.redirectStatusCode ? `(${domain.redirectStatusCode})` : ''}
-                    {:else if column.id === 'deploymentVcsProviderBranch'}
-                        {domain.deploymentVcsProviderBranch || '-'}
                     {/if}
                 </Table.Cell>
             {/each}
@@ -69,7 +77,6 @@
                                     <ActionMenu.Item.Button
                                         leadingIcon={IconRefresh}
                                         on:click={(e) => {
-                                            e.preventDefault();
                                             selectedDomain = domain;
                                             showRetry = true;
                                             toggle(e);
@@ -81,12 +88,11 @@
                                     status="danger"
                                     leadingIcon={IconTrash}
                                     on:click={(e) => {
-                                        e.preventDefault();
                                         selectedDomain = domain;
                                         showDelete = true;
                                         toggle(e);
                                         trackEvent(Click.DomainDeleteClick, {
-                                            source: 'sites_domain_overview'
+                                            source: 'settings_domain_overview'
                                         });
                                     }}>
                                     Delete
