@@ -19,7 +19,7 @@
     export let show = false;
     export let isDelete = false;
     export let isUpdatePermissions = false;
-    export let fileToken: Models.ResourceToken;
+    export let fileToken: Models.ResourceToken | null = null;
 
     let expire = null;
 
@@ -36,7 +36,10 @@
         if (isDelete) {
             dispatch('deleted');
         } else {
-            dispatch(fileToken ? 'updated' : 'created', fileToken ? fileToken : expire);
+            dispatch(
+                fileToken ? 'updated' : 'created',
+                fileToken ? { ...fileToken, expire } : { expire }
+            );
         }
         close();
     }

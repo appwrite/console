@@ -33,13 +33,12 @@
         IconKey,
         IconPencil,
         IconPlus,
-        IconTrash,
+        IconTrash
     } from '@appwrite.io/pink-icons-svelte';
+    import FileTokensCopyUrl from './fileTokensCopyUrl.svelte';
     import ManageFileTokenModal, { cleanFormattedDate } from './manageFileToken.svelte';
-    import { copy } from '$lib/helpers/copy';
     import { type Models, Permission, Role } from '@appwrite.io/console';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import SubMenu from '../../../../../../lib/components/menu/subMenu.svelte';
     import { Menu } from '$lib/components/menu';
 
     let showFileAlert = true;
@@ -50,6 +49,7 @@
 
     let showManageToken = false;
     let tokenDeleteMode = false;
+    let showCopyUrlModal = false;
     let tokenPermissionsMode = false;
     let selectedFileToken: Models.ResourceToken | null = null;
 
@@ -92,6 +92,8 @@
                 type: 'error'
             });
             trackError(error, Submit.FileUpdatePermissions);
+        } finally {
+            selectedFileToken = null;
         }
     }
 
@@ -110,6 +112,8 @@
                 type: 'error'
             });
             trackError(error, Submit.FileTokenDelete);
+        } finally {
+            selectedFileToken = null;
         }
     }
 
@@ -131,6 +135,8 @@
                 type: 'error'
             });
             trackError(error, Submit.FileTokenCreate);
+        } finally {
+            selectedFileToken = null;
         }
     }
 
@@ -155,36 +161,6 @@
             trackError(error, Submit.FileTokenUpdate);
         } finally {
             selectedFileToken = null;
-        }
-    }
-
-    async function copyPreviewWithToken(
-        token: Models.ResourceToken,
-        method: 'preview' | 'view' | 'download' = 'preview'
-    ) {
-        try {
-            const { jwt } = await sdk.forProject.tokens.getJWT(token.$id);
-            let url: string;
-
-            if (method === 'view') {
-                url = sdk.forProject.storage.getFileView($file.bucketId, $file.$id);
-            } else if (method === 'download') {
-                url = sdk.forProject.storage.getFileDownload($file.bucketId, $file.$id);
-            } else {
-                url = sdk.forProject.storage.getFilePreview($file.bucketId, $file.$id);
-            }
-
-            await copy(`${url}&token=${jwt}`);
-
-            addNotification({
-                message: 'File URL copied',
-                type: 'success'
-            });
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
         }
     }
 
@@ -307,58 +283,27 @@
                                     <Table.Cell column="actions" {root}>
                                         <Layout.Stack alignItems="flex-end">
                                             <Menu>
-                                                <!-- CTA for menu open -->
                                                 <PinkButton.Button icon variant="ghost">
                                                     <Icon size="s" icon={IconDotsHorizontal} />
                                                 </PinkButton.Button>
 
                                                 <svelte:fragment slot="menu" let:toggle>
                                                     <ActionMenu.Root>
-                                                        <SubMenu>
-                                                            <ActionMenu.Root noPadding>
-                                                                <ActionMenu.Item.Button
-                                                                    leadingIcon={IconDuplicate}
-                                                                    trailingIcon={IconChevronRight}>
-                                                                    Copy URL
-                                                                </ActionMenu.Item.Button>
-                                                            </ActionMenu.Root>
-                                                            <svelte:fragment slot="menu">
-                                                                <ActionMenu.Root noPadding>
-                                                                    <ActionMenu.Item.Button
-                                                                        on:click={(e) => {
-                                                                            toggle(e);
-                                                                            copyPreviewWithToken(
-                                                                                token
-                                                                            );
-                                                                        }}>
-                                                                        Preview
-                                                                    </ActionMenu.Item.Button>
-                                                                    <ActionMenu.Item.Button
-                                                                        on:click={(e) => {
-                                                                            toggle(e);
-                                                                            copyPreviewWithToken(
-                                                                                token,
-                                                                                'view'
-                                                                            );
-                                                                        }}>
-                                                                        View
-                                                                    </ActionMenu.Item.Button>
-                                                                    <ActionMenu.Item.Button
-                                                                        on:click={(e) => {
-                                                                            toggle(e);
-                                                                            copyPreviewWithToken(
-                                                                                token,
-                                                                                'download'
-                                                                            );
-                                                                        }}>
-                                                                        Download
-                                                                    </ActionMenu.Item.Button>
-                                                                </ActionMenu.Root>
-                                                            </svelte:fragment>
-                                                        </SubMenu>
+                                                        <ActionMenu.Root noPadding>
+                                                            <ActionMenu.Item.Button
+                                                                on:click={(e) => {
+                                                                    toggle(e);
+                                                                    showCopyUrlModal = true;
+                                                                    selectedFileToken = token;
+                                                                }}
+                                                                leadingIcon={IconDuplicate}>
+                                                                Copy URL
+                                                            </ActionMenu.Item.Button>
+                                                        </ActionMenu.Root>
                                                         <ActionMenu.Item.Button
                                                             leadingIcon={IconPencil}
                                                             on:click={(e) => {
+                                                                toggle(e);
                                                                 showManageToken = true;
                                                                 selectedFileToken = token;
                                                             }}>
@@ -367,6 +312,7 @@
                                                         <ActionMenu.Item.Button
                                                             leadingIcon={IconKey}
                                                             on:click={(e) => {
+                                                                toggle(e);
                                                                 showManageToken = true;
                                                                 tokenPermissionsMode = true;
                                                                 selectedFileToken = token;
@@ -377,6 +323,7 @@
                                                             status="danger"
                                                             leadingIcon={IconTrash}
                                                             on:click={async (e) => {
+                                                                toggle(e);
                                                                 tokenDeleteMode = true;
                                                                 showManageToken = true;
                                                                 selectedFileToken = token;
@@ -467,6 +414,8 @@
     on:created={({ detail: expiry }) => createFileToken(expiry)}
     on:updated={({ detail: token }) => updateFileToken(token)}
     on:deleted={async () => await deleteFileToken(selectedFileToken)} />
+
+<FileTokensCopyUrl file={$file} token={selectedFileToken} bind:show={showCopyUrlModal} />
 
 <style>
     :global(.tokens-section div) {
