@@ -9,17 +9,18 @@ export function setFilters(localTags: TagValue[], filterCols: FilterData[], $col
     if (!localTags?.length) {
         filterCols.forEach((filter) => {
             resetOptions(filter);
-            cleanOldTags(filter.title);
+            cleanOldTags(filter?.title);
         });
     } else {
         filterCols.forEach((filter) => {
-            if (filter.id.toLowerCase().includes('duration')) {
+            const id = filter?.id?.toLowerCase();
+            if (id?.includes('duration')) {
                 setTimeFilter(filter, $columns);
-            } else if (filter.id.toLocaleLowerCase().includes('size')) {
+            } else if (id?.includes('size')) {
                 setSizeFilter(filter, $columns);
-            } else if (filter.id.toLocaleLowerCase().includes('statuscode')) {
+            } else if (id?.includes('statuscode')) {
                 setStatusCodeFilter(filter, $columns);
-            } else if (filter.id === '$createdAt' || filter.id === '$updatedAt') {
+            } else if (id === '$createdat' || id === '$updatedat') {
                 setDateFilter(filter, $columns);
             } else {
                 setFilterData(filter);
@@ -40,7 +41,7 @@ export function setFilterData(filter: FilterData) {
                 option.checked = values.includes(option.value);
             });
         }
-        cleanOldTags(filter.title);
+        cleanOldTags(filter?.title);
         const newTag = {
             tag: tagData.tag.replace(',', ' or '),
             value: tagData.value
@@ -52,7 +53,7 @@ export function setFilterData(filter: FilterData) {
         });
     } else {
         resetOptions(filter);
-        cleanOldTags(filter.title);
+        cleanOldTags(filter?.title);
     }
 }
 
@@ -76,7 +77,7 @@ export function setTimeFilter(filter: FilterData, columns: Column[]) {
                 value: timeTag.value
             };
 
-            cleanOldTags(filter.title);
+            cleanOldTags(filter?.title);
 
             parsedTags.update((tags) => {
                 tags.push(newTag);
@@ -84,7 +85,7 @@ export function setTimeFilter(filter: FilterData, columns: Column[]) {
             });
         }
     } else {
-        cleanOldTags(filter.title);
+        cleanOldTags(filter?.title);
     }
 }
 
@@ -102,7 +103,7 @@ export function setSizeFilter(filter: FilterData, columns: Column[]) {
             return prev;
         });
         if (sizeRange) {
-            cleanOldTags(filter.title);
+            cleanOldTags(filter?.title);
 
             const newTag = {
                 tag: `**${filter.title}** is **${sizeRange.label}**`,
@@ -114,7 +115,7 @@ export function setSizeFilter(filter: FilterData, columns: Column[]) {
             });
         }
     } else {
-        cleanOldTags(filter.title);
+        cleanOldTags(filter?.title);
     }
 }
 
@@ -127,7 +128,7 @@ export function setStatusCodeFilter(filter: FilterData, columns: Column[]) {
 
         const codeRange = ranges.find((c) => c?.value && c.value === statusCodeTag.value);
         if (codeRange) {
-            cleanOldTags(filter.title);
+            cleanOldTags(filter?.title);
             const newTag = {
                 tag: `**${filter.title}** is **${codeRange.label}**`,
                 value: statusCodeTag.value
@@ -139,7 +140,7 @@ export function setStatusCodeFilter(filter: FilterData, columns: Column[]) {
             });
         }
     } else {
-        cleanOldTags(filter.title);
+        cleanOldTags(filter?.title);
     }
 }
 
@@ -158,7 +159,7 @@ export function setDateFilter(filter: FilterData, columns: Column[]) {
             return prev;
         });
         if (dateRange) {
-            cleanOldTags(filter.title);
+            cleanOldTags(filter?.title);
             const newTag = {
                 tag: `**${filter.title}** is **${dateRange.label}**`,
                 value: dateTag.value
@@ -169,11 +170,12 @@ export function setDateFilter(filter: FilterData, columns: Column[]) {
             });
         }
     } else {
-        cleanOldTags(filter.title);
+        cleanOldTags(filter?.title);
     }
 }
 
 function cleanOldTags(title: string) {
+    if (!title) return;
     parsedTags.update((tags) => {
         tags = tags.filter((tag) => !tag.tag.includes(`**${title}**`));
         return tags;
@@ -181,6 +183,7 @@ function cleanOldTags(title: string) {
 }
 
 export function resetOptions(filter: FilterData) {
+    if (!filter?.options) return;
     filter.options.forEach((option) => {
         option.checked = false;
     });
