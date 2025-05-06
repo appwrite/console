@@ -25,8 +25,12 @@
         APNSProviderParams
     } from './store';
     import TooltipPopover from './tooltipPopover.svelte';
+    import { Icon, Tooltip, Upload, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import { removeFile } from '$lib/helpers/files';
 
     export let files: Record<string, FileList>;
+
     export let input: ProviderInput;
     export let params: Partial<
         | TwilioProviderParams
@@ -100,14 +104,40 @@
         <TooltipPopover slot="info" {popover} {popoverProps} tooltip={input.tooltip} />
     </InputPhone>
 {:else if input.type === 'file'}
-    <InputFile
-        label={input.label}
-        allowedFileExtensions={input.allowedFileExtensions}
-        required={!input.optional}
-        tooltip={input.tooltip}
-        {popover}
-        {popoverProps}
-        bind:files={files[input.name]} />
+    <Upload.Dropzone
+        extensions={['json']}
+        bind:files={files[input.name]}
+        required={!input.optional}>
+        <Layout.Stack alignItems="center" gap="s">
+            <Layout.Stack alignItems="center" gap="s">
+                <Layout.Stack alignItems="center" justifyContent="center" direction="row" gap="s">
+                    <Typography.Text variant="l-500">
+                        Drag and drop service account JSON here or click to upload
+                    </Typography.Text>
+                    <Tooltip>
+                        <Layout.Stack alignItems="center" justifyContent="center" inline>
+                            <Icon icon={IconInfo} size="s" />
+                        </Layout.Stack>
+                        <svelte:fragment slot="tooltip">Only .json files allowed</svelte:fragment>
+                    </Tooltip>
+                </Layout.Stack>
+                <Typography.Caption variant="400">Max file size 10MB</Typography.Caption>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Upload.Dropzone>
+    {#if files[input.name]?.length}
+        <Upload.List
+            bind:files={files[input.name]}
+            on:remove={(e) => (files[input.name] = removeFile(e.detail, files[input.name]))} />
+    {/if}
+    <!--    <InputFile-->
+    <!--        label={input.label}-->
+    <!--        allowedFileExtensions={input.allowedFileExtensions}-->
+    <!--        required={!input.optional}-->
+    <!--        tooltip={input.tooltip}-->
+    <!--        {popover}-->
+    <!--        {popoverProps}-->
+    <!--        bind:files={files[input.name]} />-->
 {:else if input.type === 'switch'}
     <InputSwitch label={input.label} id={input.name} bind:value={params[input.name]}>
         <svelte:fragment slot="description">
