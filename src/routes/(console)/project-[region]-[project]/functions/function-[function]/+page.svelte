@@ -4,7 +4,7 @@
     import { PaginationWithLimit, ViewSelector, EmptyFilter } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { columns, deploymentList, func } from './store';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
@@ -168,25 +168,18 @@
             {/if}
 
             <Layout.Stack gap="l">
-                <Layout.Stack>
-                    <Layout.Stack direction="row" alignItems="center">
-                        <Layout.Stack direction="row" gap="s" wrap="wrap">
-                            <QuickFilters {columns} analyticsSource="function_deployments" />
-                        </Layout.Stack>
-                        <Layout.Stack direction="row" gap="s" inline>
-                            {#if data.deploymentList.total}
-                                <ViewSelector view={View.Table} {columns} hideView />
-                            {/if}
-                            <CreateActionMenu let:toggle installations={data.installations}>
-                                <Button on:click={toggle} event="create_deployment">
-                                    <Icon icon={IconPlus} size="s" slot="start" />
-                                    Create deployment
-                                </Button>
-                            </CreateActionMenu>
-                        </Layout.Stack>
-                    </Layout.Stack>
-                    <ParsedTagList />
-                </Layout.Stack>
+                <ResponsiveContainerHeader
+                    hasFilters
+                    {columns}
+                    hideView
+                    analyticsSource="function_deployments">
+                    <CreateActionMenu let:toggle installations={data.installations}>
+                        <Button on:click={toggle} event="create_deployment">
+                            <Icon icon={IconPlus} size="s" slot="start" />
+                            Create deployment
+                        </Button>
+                    </CreateActionMenu>
+                </ResponsiveContainerHeader>
 
                 {#if data.deploymentList.total}
                     <Table columns={$columns} {data} />
