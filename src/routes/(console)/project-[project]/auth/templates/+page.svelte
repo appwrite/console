@@ -108,7 +108,7 @@
             Learn more
         </Link.Anchor>
         <svelte:fragment slot="aside">
-            <Layout.Stack>
+            <Layout.Stack gap="none">
                 <Accordion
                     title="Verification"
                     bind:open={emailVerificationOpen}
