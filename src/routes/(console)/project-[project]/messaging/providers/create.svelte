@@ -170,15 +170,15 @@
 <Wizard title="Create provider">
     <Form onSubmit={create} isModal={false}>
         <Layout.Stack gap="xxl">
-            {$provider}
             <Fieldset legend="Provider">
                 <Provider />
             </Fieldset>
             <Fieldset legend="Settings">
                 <Settings />
             </Fieldset>
-            <Button submit>Create</Button>
+            <Layout.Stack justifyContent="flex-end" direction="row">
+                <Button submit>Create</Button>
+            </Layout.Stack>
         </Layout.Stack>
     </Form>
 </Wizard>
-<!--<WizardWithSteps title="Create provider" steps={stepsComponents} on:finish={create} />-->
