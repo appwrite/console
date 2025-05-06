@@ -128,8 +128,12 @@
                         e.preventDefault();
                         openEmail('magicSession');
                     }}>
-                    Send an email to users that sign in with a magic URL.
-                    <EmailMagicUrlTemplate />
+                    <Layout.Stack>
+                        <Typography.Text>
+                            Send an email to users that sign in with a magic URL.
+                        </Typography.Text>
+                        <EmailMagicUrlTemplate />
+                    </Layout.Stack>
                 </Accordion>
                 <Accordion
                     title="OTP session"
@@ -138,8 +142,11 @@
                         e.preventDefault();
                         openEmail('otpSession');
                     }}>
-                    Send an email to users that sign in with a email OTP.
-                    <EmailMagicUrlTemplate />
+                    <Layout.Stack>
+                        <Typography.Text>
+                            Send an email to users that sign in with a email OTP.</Typography.Text>
+                        <EmailMagicUrlTemplate />
+                    </Layout.Stack>
                 </Accordion>
                 <Accordion
                     title="Reset password"
@@ -148,8 +155,10 @@
                         e.preventDefault();
                         openEmail('recovery');
                     }}>
-                    Send a recovery email to users that forget their password.
-                    <EmailRecoveryTemplate />
+                    <Layout.Stack>
+                        <Typography.Text>
+                            Send a recovery email to users that forget their password.</Typography.Text>
+                        <EmailRecoveryTemplate /></Layout.Stack>
                 </Accordion>
                 <Accordion
                     title="Invite user"
@@ -158,8 +167,11 @@
                         e.preventDefault();
                         openEmail('invitation');
                     }}>
-                    Send an invitation email to become a member of your project.
-                    <EmailInviteTemplate />
+                    <Layout.Stack>
+                        <Typography.Text>
+                            Send an invitation email to become a member of your project.</Typography.Text>
+                        <EmailInviteTemplate />
+                    </Layout.Stack>
                 </Accordion>
                 <Accordion
                     title="2FA verification"
@@ -168,8 +180,10 @@
                         e.preventDefault();
                         openEmail('mfaChallenge');
                     }}>
-                    Send a two-factor authentication email to a user.
-                    <Email2FaTemplate />
+                    <Layout.Stack>
+                        <Typography.Text>
+                            Send a two-factor authentication email to a user.</Typography.Text>
+                        <Email2FaTemplate /></Layout.Stack>
                 </Accordion>
                 <Accordion
                     title="Session alert"
@@ -178,8 +192,10 @@
                         e.preventDefault();
                         openEmail('sessionAlert');
                     }}>
-                    Send an email to users when a new session is created.
-                    <EmailSessionAlertTemplate />
+                    <Layout.Stack>
+                        <Typography.Text>
+                            Send an email to users when a new session is created.</Typography.Text>
+                        <EmailSessionAlertTemplate /></Layout.Stack>
                 </Accordion>
             </Layout.Stack>
         </svelte:fragment>
