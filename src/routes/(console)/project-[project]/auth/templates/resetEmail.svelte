@@ -44,7 +44,7 @@
     }
 </script>
 
-<Modal onSubmit={reset} {error} bind:show>
+<Modal onSubmit={reset} {error} bind:show title="Reset changes">
     <svelte:fragment slot="title">Reset email template?</svelte:fragment>
     <p class="text">
         Are you sure you want to reset the email template?
@@ -53,6 +53,6 @@
 
     <svelte:fragment slot="footer">
         <Button text secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit>Reset</Button>
+        <Button submit>Reset</Button>
     </svelte:fragment>
 </Modal>

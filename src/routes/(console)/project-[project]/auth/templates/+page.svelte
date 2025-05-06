@@ -102,7 +102,9 @@
             Email templates <Badge variant="secondary" content="Experimental" />
         </svelte:fragment>
         Use templates to send and process account management emails.
-        <Link.Anchor href="https://appwrite.io/docs/advanced/platform/message-templates">
+        <Link.Anchor
+            target="_blank"
+            href="https://appwrite.io/docs/advanced/platform/message-templates">
             Learn more
         </Link.Anchor>
         <svelte:fragment slot="aside">
