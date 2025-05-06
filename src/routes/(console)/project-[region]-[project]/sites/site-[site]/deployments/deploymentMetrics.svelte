@@ -7,6 +7,8 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import { UsageCard } from '$lib/components';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { formatTimeDetailed } from '$lib/helpers/timeConversion';
 
     const now = new Date();
     const rangeOptions = [
@@ -33,17 +35,17 @@
             description: 'Total builds time'
         },
         {
-            id: 'avgTime',
+            id: 'buildsTimeAverage',
             value: null,
             description: 'Avg. builds time'
         },
         {
-            id: 'success',
+            id: 'buildsSuccessTotal',
             value: null,
             description: 'Successful'
         },
         {
-            id: 'failed',
+            id: 'buildsFailedTotal',
             value: null,
             description: 'Failed '
         }
@@ -65,7 +67,21 @@
                     .forProject(page.params.region, page.params.project)
                     .sites.getUsage(page.params.site, range);
                 metrics = metrics.map((metric) => {
-                    metric.value = usage[metric.id] ?? '-';
+                    if (metric.id === 'buildsStorageTotal') {
+                        const size = humanFileSize(usage[metric.id]);
+
+                        metric.value = parseInt(size?.value) > 0 ? size.value + size.unit : '-';
+                    } else if (
+                        metric.id === 'buildsTimeTotal' ||
+                        metric.id === 'buildsTimeAverage'
+                    ) {
+                        const seconds = usage[metric.id] > 0 ? usage[metric.id] / 1000 : 0;
+                        const time = formatTimeDetailed(seconds);
+
+                        metric.value = time !== '0s' ? time : '-';
+                    } else {
+                        metric.value = usage[metric.id] ?? '-';
+                    }
                     return metric;
                 });
                 metrics = metrics;

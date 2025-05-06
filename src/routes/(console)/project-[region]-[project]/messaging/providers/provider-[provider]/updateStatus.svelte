@@ -13,6 +13,7 @@
     import { Typography } from '@appwrite.io/pink-svelte';
     import { getProviderText } from '../../helper';
     import { page } from '$app/state';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     let enabled: boolean = null;
 
@@ -132,9 +133,9 @@
                         bind:value={enabled} />
                 </ul>
                 <div>
-                    <p class="title">
-                        Provider: <Provider noIcon provider={$providerData.provider} />
-                    </p>
+                    <Layout.Stack direction="row" gap="xs">
+                        <span>Provider:</span><Provider noIcon provider={$providerData.provider} />
+                    </Layout.Stack>
                     <p class="title">Type: {getProviderText($providerData.type)}</p>
                     <p>Created: {toLocaleDateTime($providerData.$createdAt)}</p>
                 </div>

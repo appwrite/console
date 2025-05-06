@@ -24,7 +24,7 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.updateRuleVerification(selectedDomain.$id);
-            await invalidate(Dependencies.SITES_DOMAINS);
+            await invalidate(Dependencies.DOMAINS);
             show = false;
             addNotification({
                 type: 'success',

@@ -5,20 +5,26 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
+    import { Fieldset } from '@appwrite.io/pink-svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { writable } from 'svelte/store';
+    import { onMount } from 'svelte';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
 
-    //TODO: enable once combo box is fixed
     // let { data } = $props();
 
     let formComponent: Form;
     let isSubmitting = $state(writable(false));
-
+    let showConnectRepo = $state(false);
     let domainName = $state('');
+
+    onMount(() => {
+        if (page.url.searchParams.has('domain')) {
+            domainName = page.url.searchParams.get('domain');
+        }
+    });
 
     async function addDomain() {
         try {
@@ -43,27 +49,12 @@
 
 <Wizard title="Add domain" href={routeBase} column columnSize="s" confirmExit>
     <Form bind:this={formComponent} onSubmit={addDomain} bind:isSubmitting>
-        <Layout.Stack gap="xxl">
-            <Fieldset legend="Domain">
-                <!-- <Input.ComboBox
-                    label="Domain"
-                    id="domain"
-                    name="domain"
-                    bind:value={domain}
-                    options={data.domains.rules.map((domain) => ({
-                        label: domain.domain,
-                        value: domain.domain
-                    }))}
-                    required
-                    placeholder="appwrite.example.com" /> -->
-                <InputDomain
-                    label="Domain"
-                    id="domain"
-                    bind:value={domainName}
-                    required
-                    placeholder="appwrite.example.com" />
-            </Fieldset>
-        </Layout.Stack>
+        <InputDomain
+            label="Domain"
+            id="domain"
+            bind:value={domainName}
+            required
+            placeholder="appwrite.example.com" />
     </Form>
 
     <svelte:fragment slot="footer">

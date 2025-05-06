@@ -121,14 +121,15 @@
 </svelte:head>
 
 <Modal
-    title={state === 'authenticated' ? 'Request access' : 'Sign up or log in to view this preview'}
+    title={state === 'authenticated' ? 'Access required' : 'Sign up or log in to view this preview'}
     dismissible={false}
     show
-    hideFooter={state !== 'authenticated'}
+    hideFooter
     {error}>
     <span slot="description">
         {#if state === 'authenticated'}
-            Request access to view this preview. You'll gain access once your request is approved.
+            Access is required to view this preview. You'll be able to see it once an admin invites
+            you to the organization.
         {/if}
     </span>
     <Form onSubmit={handleSubmit}>
@@ -225,21 +226,23 @@
                                 {data.account.email}
                             </Typography.Text>
                         </Layout.Stack>
-                        <Link
-                            variant="muted"
-                            on:click={() => {
-                                logout(false);
-                                state = 'login';
-                            }}>Switch account</Link>
+                        <div>
+                            <Link
+                                variant="muted"
+                                on:click={() => {
+                                    logout(false);
+                                    state = 'login';
+                                }}>Switch account</Link>
+                        </div>
                     </Layout.Stack>
                 </Card>
             {/if}
         </Layout.Stack>
     </Form>
 
-    <svelte:fragment slot="footer">
+    <!-- <svelte:fragment slot="footer">
         <Button on:click={requestAccess}>Request access</Button>
-    </svelte:fragment>
+    </svelte:fragment> -->
 </Modal>
 
 <style lang="scss">

@@ -127,7 +127,9 @@
 
 <Modal title="Create Git deployment" bind:show onSubmit={createDeployment} bind:error>
     <span slot="description">
-        Enter a valid commit reference to create a new deployment. <Link href="#">Learn more</Link>
+        Enter a valid commit reference to create a new deployment. <Link
+            href="https://appwrite.io/docs/products/functions/deployments#create-deployment"
+            external>Learn more</Link>
     </span>
     {#if hasRepository}
         {#await load()}

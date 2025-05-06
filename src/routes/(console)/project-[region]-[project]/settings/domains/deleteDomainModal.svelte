@@ -24,7 +24,7 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .proxy.deleteRule(selectedDomain.$id);
-            await invalidate(Dependencies.SITES_DOMAINS);
+            await invalidate(Dependencies.DOMAINS);
             show = false;
             addNotification({
                 type: 'success',
@@ -41,11 +41,7 @@
 <Confirm title="Delete domain" bind:open={show} onSubmit={deleteDomain} bind:error confirmDeletion>
     {#if selectedDomain}
         <Typography.Text variant="m-400">
-            Are you sure you want to delete this domain? You will no longer be able to view your
-            site by visiting:
-        </Typography.Text>
-        <Typography.Text variant="m-500">
-            {selectedDomain.domain}
+            Are you sure you want to delete this domain?
         </Typography.Text>
     {/if}
 </Confirm>
