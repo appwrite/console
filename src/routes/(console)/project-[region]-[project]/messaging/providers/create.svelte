@@ -14,6 +14,9 @@
     import { ID, type Models } from '@appwrite.io/console';
     import { Providers } from '../provider.svelte';
     import { page } from '$app/state';
+    import { Button, Form } from '$lib/elements/forms';
+    import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
+    import Wizard from '$lib/layout/wizard.svelte';
 
     async function create() {
         try {
@@ -174,16 +177,19 @@
             trackError(error, Submit.MessagingProviderCreate);
         }
     }
-
-    const stepsComponents: WizardStepsType = new Map();
-    stepsComponents.set(1, {
-        label: 'Provider',
-        component: Provider
-    });
-    stepsComponents.set(2, {
-        label: 'Settings',
-        component: Settings
-    });
 </script>
 
-<WizardWithSteps title="Create provider" steps={stepsComponents} on:finish={create} />
+<Wizard title="Create provider">
+    <Form onSubmit={create} isModal={false}>
+        <Layout.Stack gap="xxl">
+            {$provider}
+            <Fieldset legend="Provider">
+                <Provider />
+            </Fieldset>
+            <Fieldset legend="Settings">
+                <Settings />
+            </Fieldset>
+            <Button submit>Create</Button>
+        </Layout.Stack>
+    </Form>
+</Wizard>
