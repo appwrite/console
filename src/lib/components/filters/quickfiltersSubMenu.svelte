@@ -34,7 +34,7 @@
 </script>
 
 <div use:melt={$subTrigger}>
-    <ActionMenu.Root noPadding>
+    <ActionMenu.Root>
         <ActionMenu.Item.Button trailingIcon={IconChevronRight}>
             {filter.title}
         </ActionMenu.Item.Button>

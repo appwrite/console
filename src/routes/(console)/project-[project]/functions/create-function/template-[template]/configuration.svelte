@@ -93,7 +93,7 @@
                                         bind:value={variable.value} />
                                 </Layout.Stack>
                                 <Layout.Stack gap="s" justifyContent="flex-end" inline>
-                                    <Popover let:toggle>
+                                    <Popover let:toggle placement="bottom-end">
                                         <Button
                                             secondary
                                             icon
@@ -101,7 +101,7 @@
                                                 e.preventDefault();
                                                 toggle(e);
                                             }}>
-                                            <Icon size="s" icon={IconInfo} /></Button>
+                                            <Icon icon={IconInfo} /></Button>
                                         <p slot="tooltip">{@html variable.description}</p>
                                     </Popover>
                                 </Layout.Stack>
@@ -134,7 +134,7 @@
                                         bind:value={variable.value} />
                                 </Layout.Stack>
                                 <Layout.Stack gap="s" justifyContent="flex-end" inline>
-                                    <Popover let:toggle>
+                                    <Popover let:toggle placement="bottom-end">
                                         <Button
                                             secondary
                                             icon

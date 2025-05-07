@@ -85,7 +85,7 @@
                         </ActionMenu.Item.Button>
                     </ActionMenu.Root>
                     <svelte:fragment slot="menu">
-                        <ActionMenu.Root noPadding>
+                        <ActionMenu.Root>
                             <ActionMenu.Item.Anchor
                                 on:click={toggle}
                                 href={getSourceDownload(deployment.$id)}
