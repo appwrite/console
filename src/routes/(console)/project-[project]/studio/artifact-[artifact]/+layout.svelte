@@ -17,6 +17,7 @@
     import { synapse } from '$lib/components/studio/synapse.svelte';
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '../assets/chat-layout.svelte';
+    import { filesystem } from '$lib/components/editor/filesystem';
 
     const { children } = $props();
 
@@ -38,7 +39,31 @@
             hasChildren: true
         }
     ];
+    synapse.dispatch('synapse', {
+        operation: 'updateWorkDir',
+        params: {
+            workdir: `/artifact/${artifactId}`
+        }
+    });
+    synapse
+        .dispatch('fs', {
+            operation: 'getFolder',
+            params: {
+                folderpath: '.'
+            }
+        })
+        .then((message) => {
+            const data = message.data as Array<{ name: string; isDirectory: boolean }>;
+            if (!Array.isArray(data)) return;
+            for (const { name, isDirectory } of data) {
+                const key = isDirectory ? name + '/' : name;
+                filesystem.update((n) => {
+                    n.push(key);
 
+                    return n;
+                });
+            }
+        });
     let terminalOpen = $state(getTerminalOpenFromPrefs());
     let asideRef: HTMLElement;
     let isResizing = false;

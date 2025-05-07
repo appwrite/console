@@ -35,11 +35,12 @@
             });
             synapse.addEventListener('terminalResponse', ({ message }) => {
                 const { data } = message;
-                term.write(data);
+                if (typeof data === 'string') term.write(data);
             });
             const observer = new ResizeObserver(() => {
                 const { cols, rows } = fitAddon.proposeDimensions();
                 if (term.cols === cols && term.rows === rows) return;
+                if (!Number.isInteger(cols) || !Number.isInteger(rows)) return;
                 term.resize(cols, rows);
                 synapse.dispatch('terminal', {
                     operation: 'updateSize',

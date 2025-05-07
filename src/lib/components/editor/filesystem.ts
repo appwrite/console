@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
 
-export type FileSystem = Record<string, string>;
+export type FileSystem = string[];
 
-export const filesystem = writable<FileSystem>({});
+export const filesystem = writable<FileSystem>([]);

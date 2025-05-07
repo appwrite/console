@@ -44,10 +44,16 @@ export function treeFromFilesystem(files: string[]): TreeItem[] {
     const tree: TreeItem[] = [];
 
     for (const path of files) {
-        const parts = path.split('/');
+        const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
+
+        if (!normalizedPath) continue;
+
+        const parts = normalizedPath.split('/');
         let currentLevel = tree;
 
         parts.forEach((part, index) => {
+            if (!part) return;
+
             const existingItem = currentLevel.find((item) => item.title === part);
 
             if (existingItem) {
@@ -56,7 +62,7 @@ export function treeFromFilesystem(files: string[]): TreeItem[] {
                 }
                 currentLevel = existingItem.children;
             } else {
-                const isFile = index === parts.length - 1;
+                const isFile = index === parts.length - 1 && !path.endsWith('/');
                 const currentPath = parts.slice(0, index + 1).join('/');
                 const newItem: TreeItem = {
                     title: part,

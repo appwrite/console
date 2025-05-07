@@ -41,6 +41,7 @@
     import { filesystem } from '$lib/components/editor/filesystem';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import { getChatWidthFromPrefs, saveChatWidthToPrefs } from '$lib/helpers/studioLayout';
+    import { synapse } from '$lib/components/studio/synapse.svelte';
 
     let hasProjectSidebar = $state(false);
 
@@ -214,6 +215,13 @@
                 ...$filesystem,
                 [action.src]: action.content
             };
+            synapse.dispatch('fs', {
+                operation: 'createFile',
+                params: {
+                    filepath: action.src,
+                    content: action.content
+                }
+            });
         }
     });
 </script>

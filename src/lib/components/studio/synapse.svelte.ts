@@ -1,5 +1,9 @@
 type WebSocketEvent = 'connect' | 'disconnect' | 'reconnect';
-type SynapseMessageType = 'terminal' | 'fs';
+type SynapseMessageType = 'terminal' | 'fs' | 'synapse';
+type SynapseMessageOperations = {
+    operation: 'updateWorkDir';
+    params: { workdir: string };
+};
 type SynapseMessageOperationFileSystem =
     | {
           operation: 'createFile' | 'updateFile';
@@ -28,7 +32,7 @@ type SynapseResponseType = `${SynapseMessageType}Response`;
 type Events = WebSocketEvent | SynapseResponseType;
 type BaseMessage = {
     success: boolean;
-    data: string;
+    data: unknown;
     type: SynapseResponseType;
     requestId: string;
 };
@@ -41,6 +45,7 @@ export class Synapse {
     > = {};
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 10;
+    private requestCounter = 0;
     private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
     public isReconnecting = $state(false);
 
@@ -112,23 +117,41 @@ export class Synapse {
         }
     }
 
-    public dispatch<T extends SynapseMessageType>(
+    public async dispatch<T extends SynapseMessageType>(
         type: T,
         payload: {
+            synapse: SynapseMessageOperations;
             fs: SynapseMessageOperationFileSystem;
             terminal: SynapseMessageOperationTerminal;
         }[T]
-    ) {
+    ): Promise<BaseMessage> {
+        const requestId = String(Date.now().toString() + ++this.requestCounter);
+
         const message = {
             type,
             operation: payload.operation,
             params: payload.params,
-            requestId: Date.now().toString()
+            requestId
         };
-
+        const response = new Promise<BaseMessage>((resolve, reject) => {
+            if (type === 'terminal') resolve(null);
+            const timeout = setTimeout(() => {
+                reject(new Error('Request timed out'));
+            }, 5000);
+            const callback = (message: MessageEvent<string>) => {
+                const response = JSON.parse(message.data);
+                if (!this.isMessage(response)) return;
+                if (response.requestId === requestId) {
+                    resolve(response);
+                    clearTimeout(timeout);
+                    this.ws.removeEventListener('message', callback);
+                }
+            };
+            this.ws.addEventListener('message', callback);
+        });
         this.ws.send(JSON.stringify(message));
 
-        return message;
+        return response;
     }
     public addEventListener(
         event: Events,

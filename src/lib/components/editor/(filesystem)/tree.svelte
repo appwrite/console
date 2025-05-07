@@ -13,19 +13,19 @@
     } = getContext<TreeView>('tree');
 </script>
 
-{#each items as { title, icon, children, path }, i}
-    {@const hasChildren = !!children?.length}
+{#each items as { title, icon, children, path } (path)}
+    {@const isFolder = children !== undefined}
     {@const isRoot = level === 1}
 
     <li style:margin-inline-start={isRoot ? '' : '1rem'}>
         <button
-            data-file={!hasChildren}
+            data-file={!isFolder}
             class:selected={$isSelected(path)}
             use:melt={$item({
                 id: path,
-                hasChildren
+                hasChildren: isFolder
             })}>
-            {#if icon === 'folder' && hasChildren && $isExpanded(path)}
+            {#if icon === 'folder' && isFolder && $isExpanded(path)}
                 <Icon icon={icons['folderOpen']} />
             {:else}
                 <Icon icon={icons[icon]} />

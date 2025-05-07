@@ -6,9 +6,10 @@
 
     type Props = {
         files: string[];
-        onopenfile?: (path: string) => void;
+        onopenfile: (path: string) => void;
+        onopenfolder: (path: string) => void;
     };
-    let { files, onopenfile = null }: Props = $props();
+    let { files, onopenfile, onopenfolder = null }: Props = $props();
 
     const ctx = createTreeView();
     setContext('tree', ctx);
@@ -17,12 +18,14 @@
         elements: { tree },
         states: { selectedItem }
     } = ctx;
-
     const items = $derived(treeFromFilesystem(files));
+
     $effect(() => {
-        if ($selectedItem && onopenfile) {
+        if ($selectedItem) {
             if ($selectedItem.dataset['file'] === 'true') {
                 onopenfile($selectedItem.dataset['id']);
+            } else {
+                onopenfolder($selectedItem.dataset['id']);
             }
         }
     });
