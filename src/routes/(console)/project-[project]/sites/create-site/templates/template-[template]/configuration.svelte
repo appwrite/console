@@ -107,7 +107,7 @@
                                                 e.preventDefault();
                                                 toggle(e);
                                             }}>
-                                            <Icon size="s" icon={IconInfo} /></Button>
+                                            <Icon icon={IconInfo} /></Button>
                                         <ActionMenu.Root slot="tooltip">
                                             <p>{variable.description}</p>
                                         </ActionMenu.Root>
@@ -149,7 +149,7 @@
                                                 e.preventDefault();
                                                 toggle(e);
                                             }}>
-                                            <Icon size="s" icon={IconInfo} /></Button>
+                                            <Icon icon={IconInfo} /></Button>
                                         <ActionMenu.Root slot="tooltip">
                                             <p>{variable.description}</p>
                                         </ActionMenu.Root>
