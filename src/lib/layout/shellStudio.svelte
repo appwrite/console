@@ -209,19 +209,16 @@
         parser.init(text);
     });
 
-    parser.on('complete', (action) => {
+    parser.on('complete', async (action) => {
         if (action.type === 'file') {
-            $filesystem = {
-                ...$filesystem,
-                [action.src]: action.content
-            };
-            synapse.dispatch('fs', {
+            await synapse.dispatch('fs', {
                 operation: 'createFile',
                 params: {
                     filepath: action.src,
                     content: action.content
                 }
             });
+            $filesystem = [...$filesystem, action.src];
         }
     });
 </script>
