@@ -211,8 +211,15 @@
         height: calc(100% - var(--space-4));
         width: 100%;
 
+        background-color: var(--bgcolor-neutral-primary);
+        border: 1px solid var(--border-neutral);
+        border-radius: var(--border-radius-m);
+
         @media (min-width: 768px) {
             height: 100%;
+            background-color: transparent;
+            border: 0;
+            border-radius: 0;
         }
     }
 
