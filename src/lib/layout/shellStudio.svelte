@@ -149,6 +149,10 @@
             if (resizerLeftPosition > maxSize) {
                 resizerLeftPosition = maxSize;
             } else if (resizerLeftPosition < minSize) {
+                if (resizerLeftPosition < minSize - 100) {
+                    showChat.set(false);
+                }
+
                 resizerLeftPosition = minSize;
             }
         }
