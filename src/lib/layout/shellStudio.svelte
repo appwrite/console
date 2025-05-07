@@ -160,8 +160,12 @@
     }
 
     function stopResize() {
+        if (!$showChat) {
+            resizerLeftPosition = 500;
+        }
         const saveWidth = page.data?.subNavigation ? resizerLeftPosition - 24 : resizerLeftPosition;
         saveChatWidthToPrefs(saveWidth);
+
         isResizing = false;
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
