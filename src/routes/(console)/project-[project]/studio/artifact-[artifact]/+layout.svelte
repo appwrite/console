@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Layout, Typography, Divider, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Divider, Icon, Button } from '@appwrite.io/pink-svelte';
     import { isTabSelected } from '$lib/helpers/load';
     import { page } from '$app/state';
     import { Tab, Tabs, Terminal } from '$lib/components';
@@ -15,6 +15,8 @@
         saveTerminalOpenToPrefs
     } from '$lib/helpers/studioLayout';
     import { synapse } from '$lib/components/studio/synapse.svelte';
+    import { showChat } from '$lib/stores/chat';
+    import { default as IconChatLayout } from '../assets/chat-layout.svelte';
 
     const { children } = $props();
 
@@ -91,20 +93,32 @@
 
 <Layout.Stack
     direction="column"
-    height={$isSmallViewport ? 'calc(100vh - 218px)' : 'calc(100vh - 120px)'}
+    height={$isSmallViewport ? 'calc(100vh - 218px)' : 'calc(100vh - 88px)'}
     gap="none">
-    <Layout.Stack direction="column">
-        <Tabs>
-            {#each tabs as tab}
-                <Tab
-                    href={tab.href}
-                    selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                    event={tab.event}>
-                    {tab.title}
-                </Tab>
-            {/each}
-        </Tabs>
-        <Divider />
+    <Layout.Stack direction="column" gap="none">
+        <Layout.Stack gap="xxs" direction="row" alignItems="center">
+            {#if !$showChat}
+                <Button.Button
+                    variant="compact"
+                    color="--fgcolor-neutral-secondary"
+                    on:click={() => {
+                        showChat.set(true);
+                    }}><Icon icon={IconChatLayout} size="l"></Icon></Button.Button>
+            {/if}
+            <Tabs>
+                {#each tabs as tab}
+                    <Tab
+                        href={tab.href}
+                        selected={isTabSelected(tab, page.url.pathname, path, tabs)}
+                        event={tab.event}>
+                        {tab.title}
+                    </Tab>
+                {/each}
+            </Tabs>
+        </Layout.Stack>
+        <div class="divider-wrapper">
+            <Divider />
+        </div>
     </Layout.Stack>
     {@render children()}
     <aside bind:this={asideRef}>
@@ -131,9 +145,8 @@
         background-color: var(--bgcolor-neutral-default);
 
         margin-inline-start: -25px;
-        margin-block-end: calc(-1 * var(--space-9));
+        margin-block-end: calc(-1 * var(--base-8));
         padding: var(--space-3);
-        border-bottom-left-radius: var(--border-radius-m);
         border-bottom-right-radius: var(--border-radius-m);
 
         border: 1px solid var(--border-neutral);
@@ -143,8 +156,8 @@
         bottom: 116px;
 
         @media (min-width: 768px) {
-            width: calc(100% + 2 * var(--space-9));
-            margin-inline-start: calc(-1 * var(--space-9));
+            width: calc(100% + var(--base-16));
+            margin-inline-start: calc(-1 * var(--space-4));
             position: static;
             border: 0;
         }
@@ -155,5 +168,12 @@
 
     .terminal-slider {
         cursor: row-resize;
+    }
+
+    .divider-wrapper {
+        margin-block-start: 7.5px;
+        margin-inline-start: -9px;
+        margin-block-end: 8px;
+        width: calc(100% + 18px);
     }
 </style>

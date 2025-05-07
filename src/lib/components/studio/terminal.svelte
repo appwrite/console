@@ -37,7 +37,7 @@
                 const { data } = message;
                 term.write(data);
             });
-            const observer = new ResizeObserver(([entry]) => {
+            const observer = new ResizeObserver(() => {
                 const { cols, rows } = fitAddon.proposeDimensions();
                 if (term.cols === cols && term.rows === rows) return;
                 term.resize(cols, rows);

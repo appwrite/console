@@ -4,7 +4,7 @@
         IconArrowUp,
         IconChevronDown,
         IconChevronLeft,
-        IconPaperClip,
+        IconPaperClip
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import Conversation from './conversation.svelte';
@@ -111,7 +111,9 @@
                             color="--fgcolor-neutral-tertiary" /></Button.Button>
                 </Layout.Stack>
             </header>
-            <Divider />
+            <div class="divider-wrapper">
+                <Divider />
+            </div>
 
             <Conversation {parser} />
         {/if}
@@ -206,20 +208,29 @@
             '.'
             '.';
         height: calc(100% - var(--space-4));
-        background-color: var(--bgcolor-neutral-primary);
         width: 100%;
+
+        background-color: var(--bgcolor-neutral-primary);
         border: 1px solid var(--border-neutral);
         border-radius: var(--border-radius-m);
 
         @media (min-width: 768px) {
             height: 100%;
+            background-color: transparent;
+            border: 0;
+            border-radius: 0;
         }
     }
 
     header {
         display: grid;
         gap: 1rem;
-        padding: 1rem;
+        padding: var(--base-8);
+    }
+
+    .divider-wrapper {
+        margin-inline-start: calc(-1 * var(--base-24));
+        width: calc(100% + 30px);
     }
 
     .is-visible .chat-content {
@@ -228,8 +239,9 @@
     }
 
     .input {
-        border-top: 1px solid var(--border-neutral);
+        border: 1px solid var(--border-neutral);
         border-radius: var(--border-radius-m);
+        margin-block-end: var(--space-4);
         padding: var(--space-6);
 
         textarea {

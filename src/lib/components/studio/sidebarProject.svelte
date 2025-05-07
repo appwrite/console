@@ -13,7 +13,6 @@
     import { base } from '$app/paths';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
     import type { ComponentType } from 'svelte';
-    import { showChat } from '$lib/stores/chat';
     import { page } from '$app/state';
 
     export let project;
@@ -57,17 +56,6 @@
                 {/if}
             {/each}
         </Layout.Stack>
-        {#if !$isSmallViewport}
-            <ActionMenu.Item.Button
-                on:click={() => {
-                    showChat.set(!$showChat);
-                    if ($isTabletViewport) {
-                        isOpen = false;
-                    }
-                }}>
-                <Icon icon={IconSparkles} />
-            </ActionMenu.Item.Button>
-        {/if}
     </Layout.Stack>
 </nav>
 

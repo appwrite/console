@@ -23,7 +23,6 @@ export function getChatWidthFromPrefs(): number {
 }
 export function saveChatWidthToPrefs(position: number) {
     const currentPrefs = userPreferences();
-
     const newPrefs = {
         ...currentPrefs,
         studioChatWidth: position

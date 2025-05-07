@@ -113,7 +113,7 @@
     let resizerLeftPosition = $state(
         page.data?.subNavigation ? getChatWidthFromPrefs() + 24 : getChatWidthFromPrefs()
     );
-    let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 52);
+    let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 60);
     let chatWidth = $derived(resizerLeftPosition - resizerLeftOffset);
 
     $effect(() => {
@@ -145,18 +145,27 @@
                 : window.innerWidth - 460;
 
             const minSize = 320;
-
             if (resizerLeftPosition > maxSize) {
                 resizerLeftPosition = maxSize;
             } else if (resizerLeftPosition < minSize) {
+                if (resizerLeftPosition < minSize - 100) {
+                    showChat.set(false);
+                }
+
                 resizerLeftPosition = minSize;
+            } else if (resizerLeftPosition > minSize && !$showChat) {
+                showChat.set(true);
             }
         }
     }
 
     function stopResize() {
+        if (!$showChat) {
+            resizerLeftPosition = 500;
+        }
         const saveWidth = page.data?.subNavigation ? resizerLeftPosition - 24 : resizerLeftPosition;
         saveChatWidthToPrefs(saveWidth);
+
         isResizing = false;
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
@@ -336,22 +345,23 @@
                     </Layout.Stack>
                 </Card.Base>
             {:else}
-                <Layout.Stack direction="row" gap="l">
-                    {#if hasProjectSidebar}
-                        <Chat {parser} width={chatWidth} hasSubNavigation={false} />
-                        {#if $showChat}
-                            <div
-                                role="presentation"
-                                class="resizer"
-                                style:left={`${resizerLeftPosition}px`}
-                                bind:this={resizer}
-                                onmousedown={startResize}
-                                ontouchmove={startResize}>
-                            </div>
+                <Card.Base padding="xxs">
+                    <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
+                        {#if hasProjectSidebar}
+                            <Chat {parser} width={chatWidth} hasSubNavigation={false} />
+                            {#if $showChat || isResizing}
+                                <div
+                                    role="presentation"
+                                    class="resizer"
+                                    style:left={`${resizerLeftPosition}px`}
+                                    class:hidden={!$showChat}
+                                    bind:this={resizer}
+                                    onmousedown={startResize}
+                                    ontouchmove={startResize}>
+                                </div>
+                            {/if}
                         {/if}
-                    {/if}
 
-                    <Card.Base>
                         {@const Header = page.data.header}
                         {#if page.data.subNavigation}
                             {@const SubNavigation = page.data.subNavigation}
@@ -372,8 +382,8 @@
                                 {@render children()}
                             </Layout.Stack>
                         {/if}
-                    </Card.Base>
-                </Layout.Stack>
+                    </Layout.Stack>
+                </Card.Base>
             {/if}
         </div>
         {#if hasProjectSidebar}
@@ -472,7 +482,7 @@
 
     .studio-content {
         min-height: calc(100vh - 54px);
-        margin-top: 54px;
+        margin-top: 32px;
         width: 100vw;
 
         padding-right: var(--space-4);
@@ -481,6 +491,7 @@
         @media (min-width: 1024px) {
             width: calc(100vw - 200px);
             margin-left: 200px;
+            margin-top: 54px;
             padding-left: 0;
         }
 
@@ -497,27 +508,30 @@
         cursor: col-resize;
         margin-inline: 10px;
         position: absolute;
-        height: calc(100vh - 82px);
-        margin-block-start: 6px;
-
-        margin-inline-start: 0px;
+        height: calc(100vh - 72px);
+        margin-block-start: calc(-1 * var(--base-8));
+        margin-inline-start: 0;
 
         &::after {
             content: '';
             cursor: col-resize;
             position: absolute;
             height: 100%;
-            width: 2px;
+            width: 1px;
             margin-left: -1px;
             left: 8px;
-            background-color: var(--border-neutral-strong);
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            background-color: var(--border-neutral);
+            opacity: 1;
+            transition: all 0.3s ease-in-out;
         }
 
         &:hover::after {
-            opacity: 1;
+            width: 2px;
+            background-color: var(--border-neutral-strong);
         }
+    }
+    .hidden {
+        opacity: 0;
     }
 
     @media (min-width: 1024px) {
