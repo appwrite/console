@@ -207,10 +207,7 @@
             '.'
             '.';
         height: calc(100% - var(--space-4));
-        background-color: var(--bgcolor-neutral-primary);
         width: 100%;
-        border: 1px solid var(--border-neutral);
-        border-radius: var(--border-radius-m);
 
         @media (min-width: 768px) {
             height: 100%;
@@ -220,7 +217,7 @@
     header {
         display: grid;
         gap: 1rem;
-        padding: 1rem;
+        padding: var(--base-16);
     }
 
     .is-visible .chat-content {

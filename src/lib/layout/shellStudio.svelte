@@ -113,7 +113,7 @@
     let resizerLeftPosition = $state(
         page.data?.subNavigation ? getChatWidthFromPrefs() + 24 : getChatWidthFromPrefs()
     );
-    let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 52);
+    let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 76);
     let chatWidth = $derived(resizerLeftPosition - resizerLeftOffset);
 
     $effect(() => {
@@ -336,22 +336,22 @@
                     </Layout.Stack>
                 </Card.Base>
             {:else}
-                <Layout.Stack direction="row" gap="l">
-                    {#if hasProjectSidebar}
-                        <Chat {parser} width={chatWidth} hasSubNavigation={false} />
-                        {#if $showChat}
-                            <div
-                                role="presentation"
-                                class="resizer"
-                                style:left={`${resizerLeftPosition}px`}
-                                bind:this={resizer}
-                                onmousedown={startResize}
-                                ontouchmove={startResize}>
-                            </div>
+                <Card.Base>
+                    <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
+                        {#if hasProjectSidebar}
+                            <Chat {parser} width={chatWidth} hasSubNavigation={false} />
+                            {#if $showChat}
+                                <div
+                                    role="presentation"
+                                    class="resizer"
+                                    style:left={`${resizerLeftPosition}px`}
+                                    bind:this={resizer}
+                                    onmousedown={startResize}
+                                    ontouchmove={startResize}>
+                                </div>
+                            {/if}
                         {/if}
-                    {/if}
 
-                    <Card.Base>
                         {@const Header = page.data.header}
                         {#if page.data.subNavigation}
                             {@const SubNavigation = page.data.subNavigation}
@@ -372,8 +372,8 @@
                                 {@render children()}
                             </Layout.Stack>
                         {/if}
-                    </Card.Base>
-                </Layout.Stack>
+                    </Layout.Stack>
+                </Card.Base>
             {/if}
         </div>
         {#if hasProjectSidebar}
@@ -497,9 +497,8 @@
         cursor: col-resize;
         margin-inline: 10px;
         position: absolute;
-        height: calc(100vh - 82px);
-        margin-block-start: 6px;
-
+        height: calc(100vh - 72px);
+        margin-block-start: calc(-1 * var(--space-9));
         margin-inline-start: 0px;
 
         &::after {
@@ -507,16 +506,17 @@
             cursor: col-resize;
             position: absolute;
             height: 100%;
-            width: 2px;
+            width: 1px;
             margin-left: -1px;
             left: 8px;
-            background-color: var(--border-neutral-strong);
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            background-color: var(--border-neutral);
+            opacity: 1;
+            transition: all 0.3s ease-in-out;
         }
 
         &:hover::after {
-            opacity: 1;
+            width: 2px;
+            background-color: var(--border-neutral-strong);
         }
     }
 

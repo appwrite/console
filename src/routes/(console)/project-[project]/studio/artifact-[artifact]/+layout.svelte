@@ -100,7 +100,7 @@
     direction="column"
     height={$isSmallViewport ? 'calc(100vh - 218px)' : 'calc(100vh - 120px)'}
     gap="none">
-    <Layout.Stack direction="column">
+    <Layout.Stack direction="column" gap="s">
         <Tabs>
             {#each tabs as tab}
                 <Tab
@@ -150,8 +150,8 @@
         bottom: 116px;
 
         @media (min-width: 768px) {
-            width: calc(100% + 2 * var(--space-9));
-            margin-inline-start: calc(-1 * var(--space-9));
+            width: calc(100% + 2 * var(--space-7));
+            margin-inline-start: calc(-1 * var(--space-4));
             position: static;
             border: 0;
         }
