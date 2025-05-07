@@ -9,7 +9,14 @@
         InputURL
     } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { Fieldset, Layout, Popover, Icon, Accordion } from '@appwrite.io/pink-svelte';
+    import {
+        Fieldset,
+        Layout,
+        Popover,
+        Icon,
+        Accordion,
+        ActionMenu
+    } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { type Component } from 'svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
@@ -101,7 +108,9 @@
                                                 toggle(e);
                                             }}>
                                             <Icon size="s" icon={IconInfo} /></Button>
-                                        <p slot="tooltip">{variable.description}</p>
+                                        <ActionMenu.Root slot="tooltip">
+                                            <p>{variable.description}</p>
+                                        </ActionMenu.Root>
                                     </Popover>
                                 </Layout.Stack>
                             </Layout.Stack>
@@ -141,7 +150,9 @@
                                                 toggle(e);
                                             }}>
                                             <Icon size="s" icon={IconInfo} /></Button>
-                                        <p slot="tooltip">{variable.description}</p>
+                                        <ActionMenu.Root slot="tooltip">
+                                            <p>{variable.description}</p>
+                                        </ActionMenu.Root>
                                     </Popover>
                                 </Layout.Stack>
                             </Layout.Stack>
