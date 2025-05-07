@@ -181,5 +181,6 @@
         margin-block-start: 7.5px;
         margin-inline-start: -9px;
         margin-block-end: 8px;
+        width: calc(100% + 18px);
     }
 </style>
