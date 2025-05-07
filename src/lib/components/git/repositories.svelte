@@ -21,6 +21,7 @@
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { connectGitHub } from '$lib/stores/git';
     import { page } from '$app/state';
+    import Card from '../card.svelte';
 
     let {
         action = $bindable('select'),
@@ -154,7 +155,10 @@
                             );
                         }}
                         bind:value={selectedInstallation} />
-                    <InputSearch placeholder="Search repositories" bind:value={search} />
+                    <InputSearch
+                        placeholder="Search repositories"
+                        bind:value={search}
+                        disabled={!search && !$repositories?.repositories?.length} />
                 </Layout.Stack>
             {/await}
         </Layout.Stack>
@@ -266,7 +270,7 @@
                             </Table.Root>
                         {/snippet}
                     </Paginator>
-                {:else}
+                {:else if search}
                     <EmptySearch hidePages hidePagination bind:search target="repositories">
                         <svelte:fragment slot="actions">
                             {#if search}
@@ -276,6 +280,14 @@
                             {/if}
                         </svelte:fragment>
                     </EmptySearch>
+                {:else}
+                    <Card>
+                        <Layout.Stack alignItems="center" justifyContent="center">
+                            <Typography.Text variation="m-500" color="--fgcolor-neutral-tertiary">
+                                No repositories available
+                            </Typography.Text>
+                        </Layout.Stack>
+                    </Card>
                 {/if}
             {/await}
         {/if}

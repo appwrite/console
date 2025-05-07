@@ -9,7 +9,14 @@
         InputURL
     } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { Fieldset, Layout, Popover, Icon, Accordion } from '@appwrite.io/pink-svelte';
+    import {
+        Fieldset,
+        Layout,
+        Popover,
+        Icon,
+        Accordion,
+        ActionMenu
+    } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import type { Component } from 'svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
@@ -93,7 +100,7 @@
                                         bind:value={variable.value} />
                                 </Layout.Stack>
                                 <Layout.Stack gap="s" justifyContent="flex-end" inline>
-                                    <Popover let:toggle>
+                                    <Popover let:toggle placement="bottom-end">
                                         <Button
                                             secondary
                                             icon
@@ -101,8 +108,10 @@
                                                 e.preventDefault();
                                                 toggle(e);
                                             }}>
-                                            <Icon size="s" icon={IconInfo} /></Button>
-                                        <p slot="tooltip">{@html variable.description}</p>
+                                            <Icon icon={IconInfo} /></Button>
+                                        <ActionMenu.Root slot="tooltip">
+                                            <p>{@html variable.description}</p>
+                                        </ActionMenu.Root>
                                     </Popover>
                                 </Layout.Stack>
                             </Layout.Stack>
@@ -134,7 +143,7 @@
                                         bind:value={variable.value} />
                                 </Layout.Stack>
                                 <Layout.Stack gap="s" justifyContent="flex-end" inline>
-                                    <Popover let:toggle>
+                                    <Popover let:toggle placement="bottom-end">
                                         <Button
                                             secondary
                                             icon
@@ -144,7 +153,9 @@
                                             }}>
                                             <Icon size="s" icon={IconInfo} />
                                         </Button>
-                                        <p slot="tooltip">{@html variable.description}</p>
+                                        <ActionMenu.Root slot="tooltip">
+                                            <p>{@html variable.description}</p>
+                                        </ActionMenu.Root>
                                     </Popover>
                                 </Layout.Stack>
                             </Layout.Stack>

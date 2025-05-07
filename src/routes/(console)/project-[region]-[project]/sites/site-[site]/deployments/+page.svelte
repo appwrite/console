@@ -84,7 +84,7 @@
                 hasFilters
                 analyticsSource="site_deployments"
                 hideView>
-                <Popover padding="none" let:toggle>
+                <Popover padding="none" let:toggle placement="bottom-end">
                     <Button size="s" on:click={toggle}>
                         <Icon size="s" icon={IconPlus} />
                         Create deployment

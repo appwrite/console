@@ -78,7 +78,7 @@
                         <Layout.Stack direction="row" gap="s" alignItems="center" inline>
                             <Menu>
                                 <Button secondary icon text>
-                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                    <Icon icon={IconDotsHorizontal} />
                                 </Button>
                                 <svelte:fragment slot="menu" let:toggle>
                                     <ActionMenu.Root>
