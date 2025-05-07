@@ -415,7 +415,7 @@
     on:updated={({ detail: token }) => updateFileToken(token)}
     on:deleted={async () => await deleteFileToken(selectedFileToken)} />
 
-<FileTokensCopyUrl file={$file} token={selectedFileToken} bind:show={showCopyUrlModal} />
+<FileTokensCopyUrl file={$file} bind:token={selectedFileToken} bind:show={showCopyUrlModal} />
 
 <style>
     :global(.tokens-section div) {

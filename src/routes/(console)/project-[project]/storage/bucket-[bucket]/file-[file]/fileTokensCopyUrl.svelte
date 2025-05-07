@@ -1,11 +1,20 @@
 <script lang="ts">
     import { cachedJwts } from './store';
     import { sdk } from '$lib/stores/sdk';
-    import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { cleanFormattedDate } from './manageFileToken.svelte';
-    import { Alert, Code, Layout, Tabs, Typography } from '@appwrite.io/pink-svelte';
+    import { Modal, Card, CopyInput } from '$lib/components';
+    import { Button, InputSelect, InputText } from '$lib/elements/forms';
+    import {
+        Alert,
+        Code,
+        Icon,
+        Image,
+        Input,
+        Layout,
+        Tabs,
+        Tooltip,
+        Typography
+    } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let file: Models.File;
@@ -73,27 +82,17 @@
         let message = '';
         switch (selectedTab.toLowerCase()) {
             case 'preview':
-                message =
-                    'Use this URL to transform the file with added filtering. Ideal for thumbnails or previews.';
+                message = 'Apply transformations or filters. Good for thumbnails or previews.';
                 break;
             case 'view':
                 message =
-                    'This link allows viewing the file directly in the browser, if supported. Great for documents or images.';
+                    'Open the file in the browser (if supported). Works well for images and documents.';
                 break;
             case 'download':
-                message =
-                    'This URL triggers a direct download of the file. Perfect when you want users to save it locally.';
+                message = 'Download the file directly. Use when users need a local copy.';
                 break;
             default:
                 message = '';
-        }
-
-        if (message) {
-            if (token.expire && token.expire !== '') {
-                message += `<br/><br/><b>URL expires on ${cleanFormattedDate(token.expire)}.</b>`;
-            } else {
-                message += `<br/><br/><b>Note: Token in the URL never expires.</b>`;
-            }
         }
 
         return message;
@@ -112,6 +111,7 @@
             Something went wrong, could not generate the URL.
         </Alert.Inline>
     {:else}
+        {@const tokenUrl = codeSnippets[selectedTab]}
         <Layout.Stack gap="xl">
             <Tabs.Root let:root stretch>
                 {#each ['Preview', 'View', 'Download'] as cat}
@@ -124,15 +124,15 @@
                 {/each}
             </Tabs.Root>
 
-            <Alert.Inline title="Quick tip" status="info">
-                <Typography.Text variant="m-400">
-                    {@html getMoreInfo()}
-                </Typography.Text>
-            </Alert.Inline>
-
-            {#if !error}
-                <Code lang="http" code={codeSnippets[selectedTab]} />
+            <Typography.Text variant="m-400">
+                {getMoreInfo()}
+            </Typography.Text>
+            {#if !token.expire}
+                <Alert.Inline title="No expiration date" status="warning">
+                    This token doesn't expire. Be cautious when sharing links.
+                </Alert.Inline>
             {/if}
+            <CopyInput value={tokenUrl} />
         </Layout.Stack>
     {/if}
     <svelte:fragment slot="footer">

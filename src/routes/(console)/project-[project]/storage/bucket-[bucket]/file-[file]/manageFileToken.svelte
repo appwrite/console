@@ -38,7 +38,7 @@
         } else {
             dispatch(
                 fileToken ? 'updated' : 'created',
-                fileToken ? { ...fileToken, expire } : { expire }
+                fileToken ? { ...fileToken, expire } : expire
             );
         }
         close();
