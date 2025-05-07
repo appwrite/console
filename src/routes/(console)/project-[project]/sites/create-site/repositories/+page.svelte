@@ -57,8 +57,9 @@
                             Missing a repository?
                         </Typography.Text>
                         <Typography.Text variation="m-400">
-                            Check your permissions in GitHub, your repository might be set to
-                            private.
+                            Make sure Appwrite has access to your GitHub repositories. If you chose
+                            specific repos, you may need to update your permissions to include the
+                            missing one.
                         </Typography.Text>
                     </Layout.Stack>
                     <Layout.Stack gap="s" direction="row">

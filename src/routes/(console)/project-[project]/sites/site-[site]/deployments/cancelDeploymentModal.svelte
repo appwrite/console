@@ -36,6 +36,6 @@
     <p data-private>Are you sure you want to cancel this deployment?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showCancel = false)}>Cancel</Button>
-        <Button secondary submit>Continue</Button>
+        <Button submit>Confirm</Button>
     </svelte:fragment>
 </Confirm>
