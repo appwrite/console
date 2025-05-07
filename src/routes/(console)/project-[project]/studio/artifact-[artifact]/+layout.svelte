@@ -98,9 +98,9 @@
 
 <Layout.Stack
     direction="column"
-    height={$isSmallViewport ? 'calc(100vh - 218px)' : 'calc(100vh - 120px)'}
+    height={$isSmallViewport ? 'calc(100vh - 218px)' : 'calc(100vh - 88px)'}
     gap="none">
-    <Layout.Stack direction="column" gap="s">
+    <Layout.Stack direction="column" gap="none">
         <Tabs>
             {#each tabs as tab}
                 <Tab
@@ -111,7 +111,9 @@
                 </Tab>
             {/each}
         </Tabs>
-        <Divider />
+        <div class="divider-wrapper">
+            <Divider />
+        </div>
     </Layout.Stack>
     {@render children()}
     <aside bind:this={asideRef}>
@@ -138,9 +140,8 @@
         background-color: var(--bgcolor-neutral-default);
 
         margin-inline-start: -25px;
-        margin-block-end: calc(-1 * var(--space-9));
+        margin-block-end: calc(-1 * var(--base-8));
         padding: var(--space-3);
-        border-bottom-left-radius: var(--border-radius-m);
         border-bottom-right-radius: var(--border-radius-m);
 
         border: 1px solid var(--border-neutral);
@@ -150,7 +151,7 @@
         bottom: 116px;
 
         @media (min-width: 768px) {
-            width: calc(100% + 2 * var(--space-7));
+            width: calc(100% + var(--base-16));
             margin-inline-start: calc(-1 * var(--space-4));
             position: static;
             border: 0;
@@ -162,5 +163,11 @@
 
     .terminal-slider {
         cursor: row-resize;
+    }
+
+    .divider-wrapper {
+        margin-block-start: 7.5px;
+        margin-inline-start: -9px;
+        margin-block-end: 8px;
     }
 </style>

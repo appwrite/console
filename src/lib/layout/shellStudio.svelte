@@ -113,7 +113,7 @@
     let resizerLeftPosition = $state(
         page.data?.subNavigation ? getChatWidthFromPrefs() + 24 : getChatWidthFromPrefs()
     );
-    let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 76);
+    let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 60);
     let chatWidth = $derived(resizerLeftPosition - resizerLeftOffset);
 
     $effect(() => {
@@ -336,7 +336,7 @@
                     </Layout.Stack>
                 </Card.Base>
             {:else}
-                <Card.Base>
+                <Card.Base padding="xxs">
                     <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
                         {#if hasProjectSidebar}
                             <Chat {parser} width={chatWidth} hasSubNavigation={false} />
@@ -498,8 +498,8 @@
         margin-inline: 10px;
         position: absolute;
         height: calc(100vh - 72px);
-        margin-block-start: calc(-1 * var(--space-9));
-        margin-inline-start: 0px;
+        margin-block-start: calc(-1 * var(--base-8));
+        margin-inline-start: 0;
 
         &::after {
             content: '';

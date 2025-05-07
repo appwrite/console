@@ -112,7 +112,9 @@
                             color="--fgcolor-neutral-tertiary" /></Button.Button>
                 </Layout.Stack>
             </header>
-            <Divider />
+            <div class="divider-wrapper">
+                <Divider />
+            </div>
 
             <Conversation {parser} />
         {/if}
@@ -217,7 +219,12 @@
     header {
         display: grid;
         gap: 1rem;
-        padding: var(--base-16);
+        padding: var(--base-8);
+    }
+
+    .divider-wrapper {
+        margin-inline-start: calc(-1 * var(--base-24));
+        width: calc(100% + 30px);
     }
 
     .is-visible .chat-content {
@@ -226,8 +233,9 @@
     }
 
     .input {
-        border-top: 1px solid var(--border-neutral);
+        border: 1px solid var(--border-neutral);
         border-radius: var(--border-radius-m);
+        margin-block-end: var(--space-4);
         padding: var(--space-6);
 
         textarea {
