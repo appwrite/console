@@ -476,7 +476,7 @@
 
     .studio-content {
         min-height: calc(100vh - 54px);
-        margin-top: 54px;
+        margin-top: 32px;
         width: 100vw;
 
         padding-right: var(--space-4);
@@ -485,6 +485,7 @@
         @media (min-width: 1024px) {
             width: calc(100vw - 200px);
             margin-left: 200px;
+            margin-top: 54px;
             padding-left: 0;
         }
 
