@@ -20,7 +20,7 @@
     import { isCloud } from '$lib/system.js';
     import { tierToPlan } from '$lib/stores/billing.js';
     import type { NavbarProject } from '$lib/components/navbar.svelte';
-    import Chat from '$lib/components/chat/chat.svelte';
+    import Chat from '$lib/components/studio/chat/chat.svelte';
     import {
         IconChevronRight,
         IconLogoutRight,
@@ -35,7 +35,7 @@
     import { logout } from '$lib/helpers/logout';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import { conversation, showChat } from '$lib/stores/chat';
-    import { createStreamParser } from '$lib/components/chat/parser';
+    import { createStreamParser } from '$lib/components/studio/chat/parser';
     import { setContext, type Snippet } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { filesystem } from '$lib/components/editor/filesystem';

@@ -5,7 +5,6 @@
         IconChevronDown,
         IconChevronLeft,
         IconPaperClip,
-        IconSpin
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import Conversation from './conversation.svelte';
@@ -77,7 +76,7 @@
             if (error instanceof Error) {
                 parser.chunk(error.message);
             }
-            console.log(error);
+            console.error(error);
         } finally {
             sending = false;
         }

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Layout, Card, Typography, Divider, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Divider, Icon } from '@appwrite.io/pink-svelte';
     import { isTabSelected } from '$lib/helpers/load';
     import { page } from '$app/state';
     import { Tab, Tabs, Terminal } from '$lib/components';
@@ -14,6 +14,7 @@
         saveTerminalHeightToPrefs,
         saveTerminalOpenToPrefs
     } from '$lib/helpers/studioLayout';
+    import { synapse } from '$lib/components/studio/synapse.svelte';
 
     const { children } = $props();
 
@@ -86,14 +87,6 @@
             $previewFrameRef.style.pointerEvents = '';
         }
     }
-
-    function onmessage(message: MessageEvent, terminal: XTerm) {
-        const response = JSON.parse(message.data);
-
-        if (response?.type !== 'terminalResponse') return;
-
-        terminal.write(response.data);
-    }
 </script>
 
 <Layout.Stack
@@ -128,7 +121,7 @@
                     <Icon icon={IconChevronDoubleUp} color="--fgcolor-neutral-tertiary" />
                 </Layout.Stack>
             </summary>
-            <Terminal height={terminalHeight} {onmessage}></Terminal>
+            <Terminal height={terminalHeight} {synapse}></Terminal>
         </details>
     </aside>
 </Layout.Stack>

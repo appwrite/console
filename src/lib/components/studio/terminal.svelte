@@ -1,43 +1,13 @@
 <script lang="ts">
     import '@xterm/xterm/css/xterm.css';
     import type { Action } from 'svelte/action';
-    import type { Terminal } from '@xterm/xterm';
+    import type { Synapse } from './synapse.svelte';
 
     type Props = {
         height: number;
-        onmessage: (message: MessageEvent, terminal: Terminal) => void | Promise<void>;
+        synapse: Synapse;
     };
-    let { height, onmessage }: Props = $props();
-
-    function connect(term: Terminal) {
-        const socket = new WebSocket(`wss://terminal.appwrite.torsten.work/dummy`);
-
-        socket.onopen = () => {
-            if (socket.readyState === WebSocket.OPEN) {
-                socket.send(
-                    JSON.stringify({
-                        type: 'terminal',
-                        operation: 'updateSize',
-                        params: {
-                            cols: term.cols,
-                            rows: term.rows
-                        },
-                        requestId: Date.now().toString()
-                    })
-                );
-            }
-        };
-
-        socket.onmessage = (msg) => {
-            onmessage(msg, term);
-        };
-
-        socket.onerror = (err) => {
-            console.error('WebSocket error:', err);
-        };
-
-        return socket;
-    }
+    let { height, synapse }: Props = $props();
 
     const terminal: Action = (node) => {
         const init = async () => {
@@ -52,36 +22,46 @@
                 fontFamily: 'Menlo, Monaco, "Courier New", monospace',
                 convertEol: true
             });
-            term.loadAddon(new FitAddon());
+            const fitAddon = new FitAddon();
+            term.loadAddon(fitAddon);
             term.open(node);
-
-            const socket = connect(term);
-            term.onKey(({ domEvent, key }) => {
-                const terminalOperation = {
-                    type: 'terminal',
+            term.onKey(({ key }) => {
+                synapse.dispatch('terminal', {
                     operation: 'createCommand',
                     params: {
                         command: key
-                    },
-                    requestId: Date.now().toString()
-                };
-
-                socket.send(JSON.stringify(terminalOperation));
+                    }
+                });
             });
+            synapse.addEventListener('terminalResponse', ({ message }) => {
+                const { data } = message;
+                term.write(data);
+            });
+            const observer = new ResizeObserver(([entry]) => {
+                const { cols, rows } = fitAddon.proposeDimensions();
+                if (term.cols === cols && term.rows === rows) return;
+                term.resize(cols, rows);
+                synapse.dispatch('terminal', {
+                    operation: 'updateSize',
+                    params: {
+                        rows,
+                        cols
+                    }
+                });
+            });
+            observer.observe(node);
         };
         init();
     };
 </script>
 
-<div class="terminal-container" style:height={`${height}px`}>
-    <div use:terminal></div>
-</div>
+<div class="terminal-container" style:height={`${height}px`} use:terminal></div>
 
 <style>
     .terminal-container {
         padding: var(--space-3);
         border-radius: var(--border-radius-xsmall);
         background-color: black;
-        overflow-y: scroll;
+        overflow: none;
     }
 </style>
