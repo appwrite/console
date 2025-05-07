@@ -145,7 +145,6 @@
                 : window.innerWidth - 460;
 
             const minSize = 320;
-
             if (resizerLeftPosition > maxSize) {
                 resizerLeftPosition = maxSize;
             } else if (resizerLeftPosition < minSize) {
@@ -154,6 +153,8 @@
                 }
 
                 resizerLeftPosition = minSize;
+            } else if (resizerLeftPosition > minSize && !$showChat) {
+                showChat.set(true);
             }
         }
     }
@@ -344,11 +345,12 @@
                     <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
                         {#if hasProjectSidebar}
                             <Chat {parser} width={chatWidth} hasSubNavigation={false} />
-                            {#if $showChat}
+                            {#if $showChat || isResizing}
                                 <div
                                     role="presentation"
                                     class="resizer"
                                     style:left={`${resizerLeftPosition}px`}
+                                    class:hidden={!$showChat}
                                     bind:this={resizer}
                                     onmousedown={startResize}
                                     ontouchmove={startResize}>
@@ -523,6 +525,9 @@
             width: 2px;
             background-color: var(--border-neutral-strong);
         }
+    }
+    .hidden {
+        opacity: 0;
     }
 
     @media (min-width: 1024px) {
