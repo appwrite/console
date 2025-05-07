@@ -8,6 +8,12 @@
     import { IconChevronDoubleUp, IconTerminal } from '@appwrite.io/pink-icons-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import type { Terminal as XTerm } from '@xterm/xterm';
+    import {
+        getTerminalHeightFromPrefs,
+        getTerminalOpenFromPrefs,
+        saveTerminalHeightToPrefs,
+        saveTerminalOpenToPrefs
+    } from '$lib/helpers/studioLayout';
 
     const { children } = $props();
 
@@ -30,10 +36,16 @@
         }
     ];
 
-    let terminalOpen = $state(false);
+    let terminalOpen = $state(getTerminalOpenFromPrefs());
     let asideRef: HTMLElement;
     let isResizing = false;
-    let terminalHeight = $state(300);
+    let terminalHeight = $state(getTerminalHeightFromPrefs());
+
+    $effect(() => {
+        if (terminalOpen !== undefined) {
+            saveTerminalOpenToPrefs(terminalOpen);
+        }
+    });
 
     function startResize() {
         isResizing = true;
@@ -64,6 +76,7 @@
 
     function stopResize() {
         isResizing = false;
+        saveTerminalHeightToPrefs(terminalHeight);
         window.removeEventListener('mousemove', resize);
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);

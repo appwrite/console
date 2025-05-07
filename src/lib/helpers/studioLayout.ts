@@ -5,7 +5,7 @@ import { page } from '$app/state';
 
 const userPreferences = () => get(user)?.prefs;
 
-export function getChatWidthFromPrefs() {
+export function getChatWidthFromPrefs(): number {
     const currentPrefs = userPreferences();
     if (currentPrefs?.studioChatWidth) {
         if (window) {
@@ -17,12 +17,11 @@ export function getChatWidthFromPrefs() {
                 return maxSize;
             }
         }
-        return currentPrefs.studioChatWidth;
+        return parseInt(currentPrefs.studioChatWidth);
     }
     return 500;
 }
 export function saveChatWidthToPrefs(position: number) {
-    console.log({ position });
     const currentPrefs = userPreferences();
 
     const newPrefs = {
@@ -32,4 +31,43 @@ export function saveChatWidthToPrefs(position: number) {
 
     sdk.forConsole.account.updatePrefs(newPrefs);
 }
-//
+
+export function getTerminalHeightFromPrefs(): number {
+    const currentPrefs = userPreferences();
+    if (currentPrefs?.studioTerminalHeight) {
+        if (window) {
+            const maxSize = window.innerHeight - 400;
+
+            if (parseInt(currentPrefs.studioTerminalHeight) > maxSize) {
+                return maxSize;
+            }
+        }
+        return parseInt(currentPrefs.studioTerminalHeight);
+    }
+    return 300;
+}
+
+export function saveTerminalHeightToPrefs(position: number) {
+    const currentPrefs = userPreferences();
+
+    const newPrefs = {
+        ...currentPrefs,
+        studioTerminalHeight: position
+    };
+
+    sdk.forConsole.account.updatePrefs(newPrefs);
+}
+
+export function getTerminalOpenFromPrefs(): boolean {
+    const currentPrefs = userPreferences();
+    return currentPrefs?.studioTerminalOpen as unknown as boolean;
+}
+
+export function saveTerminalOpenToPrefs(isOpen: boolean) {
+    const currentPrefs = userPreferences();
+    const newPrefs = {
+        ...currentPrefs,
+        studioTerminalOpen: isOpen
+    };
+    sdk.forConsole.account.updatePrefs(newPrefs);
+}
