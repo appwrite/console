@@ -14,18 +14,20 @@
     import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Providers } from '../provider.svelte';
     import { Button, Form } from '$lib/elements/forms';
-    import { Fieldset, Layout, Typography, ActionList, Accordion } from '@appwrite.io/pink-svelte';
+    import {
+        Fieldset,
+        Layout,
+        Typography,
+        ActionList,
+        Accordion,
+        Card
+    } from '@appwrite.io/pink-svelte';
     import { providers } from '$routes/(console)/project-[project]/messaging/providers/store';
     import { getProviderText } from '$routes/(console)/project-[project]/messaging/helper';
-    import {
-        ClickableList,
-        ClickableListItem,
-        Collapsible,
-        CollapsibleItem
-    } from '$lib/components';
     import { newMemberModal } from '$lib/stores/organization';
     import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
     import { IconBookOpen, IconInfo, IconUserGroup } from '@appwrite.io/pink-icons-svelte';
+    import { getProviderDisplayNameAndIcon } from '$routes/(console)/project-[project]/messaging/provider.svelte';
 
     let open = false;
 
@@ -195,39 +197,44 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Layout.Stack gap="s">
-            <Typography.Text variant="m-500">Need a hand?</Typography.Text>
-            <ActionList.Root>
-                {#if providers[$providerType].providers[$provider].needAHand}
-                    {@const needAHand = providers[$providerType].providers[$provider].needAHand}
-                    <ActionList.Item.Accordion
-                        title={`How to enable ${getProviderText($provider)} ${
-                            $providerType == MessagingProviderType.Push
-                                ? 'notifications'
-                                : getProviderText($provider)
-                        }?`}
-                        icon={IconInfo}>
-                        <Layout.Stack>
-                            {#each needAHand as p}
-                                <p>
-                                    {@html p}
-                                </p>
-                            {/each}
-                        </Layout.Stack>
-                    </ActionList.Item.Accordion>
-                {/if}
-                <ActionList.Item.Anchor
-                    href={`https://appwrite.io/docs/products/messaging/${$provider}`}
-                    title="Read the full guide in the documentation"
-                    icon={IconBookOpen} />
-                <ActionList.Item.Button
-                    on:click={() => {
-                        $newMemberModal = true;
-                    }}
-                    title="Invite a team member to complete this step"
-                    icon={IconUserGroup} />
-            </ActionList.Root>
-        </Layout.Stack>
+        <Card.Base padding="s">
+            <Layout.Stack gap="s">
+                <Typography.Text variant="m-500">Need a hand?</Typography.Text>
+                <ActionList.Root>
+                    {#if providers[$providerType].providers[$provider].needAHand}
+                        {@const needAHand = providers[$providerType].providers[$provider].needAHand}
+                        <ActionList.Item.Accordion
+                            hasDivider
+                            title={`How to enable ${getProviderText($provider)} ${
+                                $providerType == MessagingProviderType.Push ||
+                                $providerType == MessagingProviderType.Sms
+                                    ? `${getProviderDisplayNameAndIcon($provider).displayName} notifications`
+                                    : getProviderText($provider)
+                            }?`}
+                            icon={IconInfo}>
+                            <Layout.Stack>
+                                {#each needAHand as p}
+                                    <p>
+                                        {@html p}
+                                    </p>
+                                {/each}
+                            </Layout.Stack>
+                        </ActionList.Item.Accordion>
+                    {/if}
+                    <ActionList.Item.Anchor
+                        hasDivider
+                        href={`https://appwrite.io/docs/products/messaging/${$provider}`}
+                        title="Read the guide in the docs"
+                        icon={IconBookOpen} />
+                    <ActionList.Item.Button
+                        on:click={() => {
+                            $newMemberModal = true;
+                        }}
+                        title="Invite a team member"
+                        icon={IconUserGroup} />
+                </ActionList.Root>
+            </Layout.Stack>
+        </Card.Base>
     </svelte:fragment>
     {#if $newMemberModal}
         <CreateMember bind:showCreate={$newMemberModal} />
