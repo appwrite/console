@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Card, Input } from '@appwrite.io/pink-svelte';
+    import { Input } from '@appwrite.io/pink-svelte';
     import { localeCodes } from './store';
 
     export let value = 'en';
@@ -10,14 +10,12 @@
     }));
 </script>
 
-<Card.Base variant="secondary" padding="s">
-    <Input.ComboBox
-        label="Template language"
-        on:change
-        id="language"
-        placeholder="Select a language"
-        name="locale"
-        bind:value
-        required
-        {options} />
-</Card.Base>
+<Input.ComboBox
+    label="Template language"
+    on:change
+    id="language"
+    placeholder="Select a language"
+    name="locale"
+    bind:value
+    required
+    {options} />

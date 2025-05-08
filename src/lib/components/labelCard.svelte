@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Card, Tooltip } from '@appwrite.io/pink-svelte';
+    import { Card, Tooltip, Icon } from '@appwrite.io/pink-svelte';
     import { type ComponentProps } from 'svelte';
     import type Selector from '@appwrite.io/pink-svelte/dist/card/Selector.svelte';
 

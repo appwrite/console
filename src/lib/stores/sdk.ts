@@ -20,7 +20,8 @@ import {
     Teams,
     Users,
     Vcs,
-    Sites
+    Sites,
+    Tokens
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
@@ -57,6 +58,7 @@ const sdkForProject = {
     project: new Project(clientProject),
     projectApi: new ProjectApi(clientProject),
     storage: new Storage(clientProject),
+    tokens: new Tokens(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
     vcs: new Vcs(clientProject),

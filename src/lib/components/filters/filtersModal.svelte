@@ -11,11 +11,19 @@
     } from '$lib/elements/forms';
     import type { Writable } from 'svelte/store';
     import Modal from '../modal.svelte';
-    import { addFilter, generateTag, operators, queries, type TagValue } from './store';
+    import {
+        addFilter,
+        generateTag,
+        operators,
+        queries,
+        ValidOperators,
+        type TagValue
+    } from './store';
     import type { Column } from '$lib/helpers/types';
     import { TagList } from '.';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { addFilterAndApply } from './quickFilters';
 
     export let show = false;
     export let columns: Writable<Column[]>;
@@ -35,9 +43,17 @@
 
     function apply() {
         localQueries.forEach((query) => {
-            addFilter($columns, query.id, query.operator, query.value, query.arrayValues);
+            addFilterAndApply(
+                query.id,
+                $columns.find((c) => c.id === query.id).title,
+                query.operator as ValidOperators,
+                query.value,
+                query.arrayValues,
+                $columns,
+                analyticsSource
+            );
         });
-        queries.apply();
+
         localTags = [];
         localQueries = [];
         trackEvent(Submit.FilterApply, {
@@ -48,7 +64,7 @@
     }
 
     function addCondition() {
-        const newTag = generateTag(selectedColumn, operatorKey, value, arrayValues);
+        const newTag = generateTag(selectedColumn, operatorKey, value || arrayValues);
         if (localTags.some((t) => t.tag === newTag.tag && t.value === newTag.value)) {
             return;
         } else {

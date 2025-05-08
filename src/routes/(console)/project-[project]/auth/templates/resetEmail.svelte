@@ -8,6 +8,7 @@
     import { project } from '../../store';
     import { loadEmailTemplate } from './+page.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
+    import { Dialog, Layout, Alert } from '@appwrite.io/pink-svelte';
 
     export let show = false;
 
@@ -44,15 +45,24 @@
     }
 </script>
 
-<Modal onSubmit={reset} {error} bind:show>
+<Dialog bind:open={show} title="Reset changes">
     <svelte:fragment slot="title">Reset email template?</svelte:fragment>
-    <p class="text">
-        Are you sure you want to reset the email template?
-        <b>Default values will be set in all inputs.</b>
-    </p>
+
+    <Layout.Stack>
+        <p class="text">
+            Are you sure you want to reset the email template?
+            <b>Default values will be set in all inputs.</b>
+        </p>
+
+        {#if error}
+            <Alert.Inline status="warning">{error}</Alert.Inline>
+        {/if}
+    </Layout.Stack>
 
     <svelte:fragment slot="footer">
-        <Button text secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit>Reset</Button>
+        <Layout.Stack direction="row" gap="s" justifyContent="flex-end">
+            <Button text secondary on:click={() => (show = false)}>Cancel</Button>
+            <Button on:click={reset}>Reset</Button>
+        </Layout.Stack>
     </svelte:fragment>
-</Modal>
+</Dialog>

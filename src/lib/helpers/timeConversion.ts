@@ -101,6 +101,12 @@ export function secsToUnit(time: number, unit: Unit) {
  * @returns Formatted string like "3d 4h 30m 23s"
  */
 export function formatTimeDetailed(time: number): string {
+    if (typeof time !== 'number' || time === undefined || time === null) {
+        return '-';
+    }
+    if (time <= 0) {
+        return '0s';
+    }
     const seconds = Math.floor(time % 60);
     const minutes = Math.floor((time / 60) % 60);
     const hours = Math.floor((time / (60 * 60)) % 24);

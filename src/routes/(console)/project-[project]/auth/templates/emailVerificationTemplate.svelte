@@ -7,7 +7,7 @@
     import { Id } from '$lib/components';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Card } from '@appwrite.io/pink-svelte';
 
     const projectId = page.params.project;
 
@@ -36,11 +36,13 @@
     }
 </script>
 
-<Layout.Stack>
-    <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
-    <EmailTemplate bind:loading>
-        <Id value={'{{user}}'}>{'{{user}}'}</Id>
-        <Id value={'{{project}}'}>{'{{project}}'}</Id>
-        <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
-    </EmailTemplate>
-</Layout.Stack>
+<Card.Base variant="secondary" padding="s">
+    <Layout.Stack gap="l">
+        <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
+        <EmailTemplate bind:loading>
+            <Id value={'{{user}}'}>{'{{user}}'}</Id>
+            <Id value={'{{project}}'}>{'{{project}}'}</Id>
+            <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
+        </EmailTemplate>
+    </Layout.Stack>
+</Card.Base>
