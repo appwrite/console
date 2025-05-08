@@ -49,14 +49,14 @@
     <svelte:fragment slot="title">Reset email template?</svelte:fragment>
 
     <Layout.Stack>
-    <p class="text">
-        Are you sure you want to reset the email template?
-        <b>Default values will be set in all inputs.</b>
-    </p>
+        <p class="text">
+            Are you sure you want to reset the email template?
+            <b>Default values will be set in all inputs.</b>
+        </p>
 
-    {#if error}
-        <Alert.Inline status="warning">{error}</Alert.Inline>
-    {/if}
+        {#if error}
+            <Alert.Inline status="warning">{error}</Alert.Inline>
+        {/if}
     </Layout.Stack>
 
     <svelte:fragment slot="footer">
