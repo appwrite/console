@@ -13,6 +13,7 @@
     export let count: Models.Metric[][];
     export let legendData: LegendData[];
     export let showHeader: boolean = true;
+    export let legendNumberFormat: 'comma' | 'abbreviate' = 'comma';
 </script>
 
 <div>
@@ -55,7 +56,10 @@
                     }))} />
 
                 {#if legendData}
-                    <Legend {legendData} />
+                    <Legend
+                        {legendData}
+                        decimalsForAbbreviate={2}
+                        numberFormat={legendNumberFormat} />
                 {/if}
             </div>
         {/if}

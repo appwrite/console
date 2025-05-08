@@ -42,12 +42,12 @@
         </Link>
 
         {#if sortedDomains.length > 1}
-            <Popover padding="none" let:toggle>
+            <Popover padding="none" let:toggle placement="bottom-end">
                 <Tag size="xs" on:click={toggle}>
                     +{sortedDomains.length - 1}
                 </Tag>
                 <svelte:fragment slot="tooltip">
-                    <ActionMenu.Root>
+                    <ActionMenu.Root width="20px">
                         {#each sortedDomains as rule, i}
                             {#if i !== 0}
                                 <ActionMenu.Item.Anchor

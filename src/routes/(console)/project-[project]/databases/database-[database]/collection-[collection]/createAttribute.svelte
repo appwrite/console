@@ -80,7 +80,7 @@
             required />
     {/if}
     {#if selectedOption}
-        <svelte:component this={$option.component} bind:data on:close={() => ($option = null)} />
+        <svelte:component this={$option.component} bind:data onclose={() => ($option = null)} />
     {/if}
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

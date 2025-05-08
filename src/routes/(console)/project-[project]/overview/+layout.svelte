@@ -19,7 +19,6 @@
     import { Container, type UsagePeriods } from '$lib/layout';
     import { onMount, setContext, type Component } from 'svelte';
     import Bandwidth from './bandwidth.svelte';
-    import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
     import { formatNum } from '$lib/helpers/string';
@@ -28,10 +27,11 @@
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { writable, type Writable } from 'svelte/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { isSmallViewport } from '$lib/stores/viewport';
 
-    const projectId = page.params.project;
-    const path = `${base}/project-${projectId}/overview`;
     let period: UsagePeriods = '30d';
+    $: projectId = page.params.project;
+    $: path = `${base}/project-${projectId}/overview`;
 
     onMount(handle);
     afterNavigate(handle);
@@ -95,12 +95,11 @@
 </svelte:head>
 
 <Container overlapCover>
-    <!-- TODO: fix with nicer solution -->
-    <div class="flex-container">
+    <Layout.Stack gap="xxl">
         {#if $usage}
             {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
-            <section class="common-section">
-                <div class="grid-dashboard-1s-2m-6l" style:gap="1rem">
+            <Layout.Stack gap="xl">
+                <Layout.Stack gap="l" direction={$isSmallViewport ? 'column' : 'row'}>
                     <Card.Base
                         class="is-2-columns-medium-screen is-3-columns-large-screen"
                         padding="s">
@@ -111,6 +110,9 @@
                         padding="s">
                         <Requests {period} on:change={(e) => changePeriod(e.detail)} />
                     </Card.Base>
+                </Layout.Stack>
+
+                <Layout.Stack gap="xl" direction={$isSmallViewport ? 'column' : 'row'}>
                     <Card.Link
                         padding="s"
                         href={`${base}/project-${projectId}/databases`}
@@ -204,13 +206,13 @@
                             </div>
                         </div>
                     </Card.Link>
-                    <Card.Base
-                        padding="s"
-                        class="is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">
-                        <Realtime />
-                    </Card.Base>
-                </div>
-            </section>
+                    <!--                    <Card.Base-->
+                    <!--                        padding="s"-->
+                    <!--                        class="is-2-columns-medium-screen is-2-columns-large-screen is-2-rows-large-screen is-location-row-2-end-large-screen">-->
+                    <!--                        <Realtime />-->
+                    <!--                    </Card.Base>-->
+                </Layout.Stack>
+            </Layout.Stack>
         {/if}
 
         <Layout.Stack gap="xl">
@@ -227,25 +229,17 @@
                         href={`${path}/keys`}
                         selected={page.url.pathname === `${path}/keys`}
                         event="keys">API keys</Tab>
-                    <Tab
-                        noscroll
-                        href={`${path}/dev-keys`}
-                        selected={page.url.pathname === `${path}/dev-keys`}
-                        event="keys">Dev keys</Tab>
-                </Tabs>
+                <Tab
+                    noscroll
+                    href={`${path}/dev-keys`}
+                    selected={page.url.pathname === `${path}/dev-keys`}
+                    event="keys">Dev keys</Tab>
+            </Tabs>
                 {#if $action}
                     <svelte:component this={$action} />
                 {/if}
             </Layout.Stack>
             <slot />
         </Layout.Stack>
-    </div>
+    </Layout.Stack>
 </Container>
-
-<style>
-    .flex-container {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-12);
-    }
-</style>

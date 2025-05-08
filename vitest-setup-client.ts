@@ -16,16 +16,14 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 beforeAll(() => {
-    vi.mock('$app/environment', () => ({
-        browser: true
-    }));
     vi.mock('$app/navigation', () => ({
         goto: vi.fn(),
         beforeNavigate: vi.fn()
     }));
     vi.mock('$app/environment', () => ({
         dev: true,
-        browser: true
+        browser: true,
+        building: true
     }));
     vi.mock('$env/static/public', () => import.meta.env);
     vi.mock('$env/dynamic/public', () => ({

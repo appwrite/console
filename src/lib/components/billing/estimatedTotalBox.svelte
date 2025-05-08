@@ -43,7 +43,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" justifyContent="space-between">
             <Typography.Text variant={isDowngrade ? 'm-500' : 'm-400'}
-                >Additional seats ({collaborators?.length})</Typography.Text>
+                >Additional seats ({collaborators?.length ?? 0})</Typography.Text>
             <Typography.Text variant={isDowngrade ? 'm-500' : 'm-400'}
                 >{formatCurrency(extraSeatsCost)}</Typography.Text>
         </Layout.Stack>

@@ -22,6 +22,7 @@ import {
     IconToggle,
     IconViewList
 } from '@appwrite.io/pink-icons-svelte';
+import type { ComponentType } from 'svelte';
 
 export type Option = {
     name:
@@ -51,7 +52,7 @@ export type Option = {
         originalKey: string
     ) => Promise<void>;
     format?: 'email' | 'ip' | 'url' | 'enum';
-    icon: Component;
+    icon: ComponentType;
 };
 
 export const attributeOptions: Option[] = [

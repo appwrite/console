@@ -14,6 +14,8 @@
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
+    export let alertsEnabled = false;
+
     let search: string;
     let selectedAlert: number;
     let alerts: number[] = [];
@@ -72,7 +74,8 @@
         }
     }
 
-    $: isButtonDisabled = symmetricDifference(alerts, $organization.budgetAlerts).length === 0;
+    $: isButtonDisabled =
+        symmetricDifference(alerts, $organization.budgetAlerts).length === 0 || !alertsEnabled;
 </script>
 
 <CardGrid>
@@ -90,6 +93,11 @@
             <Alert.Inline status="info" title="Billing alerts are a Pro plan feature">
                 Upgrade to a Pro plan to manage when you receive billing alerts for your
                 organization.
+            </Alert.Inline>
+        {:else if !$currentPlan.budgetCapEnabled}
+            <Alert.Inline status="info" title="Budget cap disabled">
+                Budget caps are not supported on your current plan. For more information, please
+                reach out to your customer success manager.
             </Alert.Inline>
         {:else}
             {#if alerts.length >= 4}

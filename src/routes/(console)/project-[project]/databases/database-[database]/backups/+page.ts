@@ -5,7 +5,7 @@ import { Query } from '@appwrite.io/console';
 import type { BackupArchive, BackupArchiveList, BackupPolicyList } from '$lib/sdk/backups';
 import { isCloud } from '$lib/system';
 
-export const load = async ({ params, url, route, depends }) => {
+export const load = async ({ params, url, route, depends, parent }) => {
     depends(Dependencies.BACKUPS);
 
     const page = getPage(url);
@@ -16,7 +16,11 @@ export const load = async ({ params, url, route, depends }) => {
     let backups: BackupArchiveList = { total: 0, archives: [] };
     let policies: BackupPolicyList = { total: 0, policies: [] };
 
-    if (isCloud) {
+    // already loaded by parent.
+    const { currentPlan } = await parent();
+    const backupsEnabled = currentPlan?.backupsEnabled ?? true;
+
+    if (isCloud && backupsEnabled) {
         try {
             [backups, policies] = await Promise.all([
                 sdk.forProject.backups.listArchives([

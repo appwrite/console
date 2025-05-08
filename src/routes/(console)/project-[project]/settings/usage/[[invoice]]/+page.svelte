@@ -27,7 +27,8 @@
         data.usage.filesStorageTotal +
         data.usage.deploymentsStorageTotal +
         data.usage.buildsStorageTotal;
-
+    $: imageTransformations = data.usage.imageTransformations;
+    $: imageTransformationsTotal = data.usage.imageTransformationsTotal;
     $: dbReads = data.usage.databasesReads;
     $: dbWrites = data.usage.databasesWrites;
 
@@ -181,7 +182,48 @@
                         ]} />
                 </div>
 
-                <Legend {legendData} />
+                <Legend {legendData} numberFormat="abbreviate" decimalsForAbbreviate={2} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;"></span>
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <svelte:fragment slot="title">Image transformations</svelte:fragment>
+        Total unique image transformations in your project.
+        <svelte:fragment slot="aside">
+            {#if imageTransformations}
+                {@const current = formatNum(imageTransformationsTotal)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{current}</span>
+                            <span class="body-text-1 u-bold">Transformations</span>
+                        </p>
+                    </div>
+                </div>
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Image transformations',
+                            data: [...imageTransformations.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
             {:else}
                 <Card isDashed>
                     <Layout.Stack gap="xs" alignItems="center" justifyContent="center">
