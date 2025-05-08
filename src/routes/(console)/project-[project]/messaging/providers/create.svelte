@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { WizardWithSteps } from '$lib/layout';
+    import { Wizard, WizardWithSteps } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Provider from './wizard/provider.svelte';
     import Settings from './wizard/settings.svelte';
@@ -13,6 +13,8 @@
     import { provider, providerParams } from './wizard/store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Providers } from '../provider.svelte';
+    import { Button, Form } from '$lib/elements/forms';
+    import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
 
     async function create() {
         try {
@@ -165,4 +167,18 @@
     });
 </script>
 
-<WizardWithSteps title="Create provider" steps={stepsComponents} on:finish={create} />
+<Wizard title="Create provider">
+    <Form onSubmit={create} isModal={false}>
+        <Layout.Stack gap="xxl">
+            <Fieldset legend="Provider">
+                <Provider />
+            </Fieldset>
+            <Fieldset legend="Settings">
+                <Settings />
+            </Fieldset>
+            <Layout.Stack justifyContent="flex-end" direction="row">
+                <Button submit>Create</Button>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Form>
+</Wizard>

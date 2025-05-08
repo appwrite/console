@@ -42,7 +42,7 @@ export const columns = writable<Column[]>([
         id: 'buildDuration',
         title: 'Build duration',
         type: 'integer',
-        width: { min: 110, max: 140 },
+        width: { min: 110 },
         elements: [
             {
                 value: 15,

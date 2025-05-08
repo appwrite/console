@@ -107,24 +107,24 @@
                                     alt="Mock Numbers Example" />
                             {/if}
                         </div>
-                        <div class="is-not-mobile u-width-full-line u-height-100-percent">
-                            {#if $app.themeInUse === 'dark'}
-                                <img
-                                    src={MockNumbersDark}
-                                    width="266"
-                                    height="171"
-                                    class="u-image-object-fit-contain u-block u-only-dark u-width-full-line u-height-100-percent"
-                                    style:object-position="top"
-                                    alt="Mock Numbers Example" />
-                            {:else}
-                                <img
-                                    src={MockNumbersLight}
-                                    width="266"
-                                    height="171"
-                                    class="u-image-object-fit-contain u-only-light u-width-full-line u-height-100-percent"
-                                    style:object-position="top"
-                                    alt="Mock Numbers Example" />
-                            {/if}
+                        <div
+                            class="is-not-mobile"
+                            style:background-color="var(--bgcolor-neutral-default)">
+                            <Layout.Stack justifyContent="center" direction="row">
+                                {#if $app.themeInUse === 'dark'}
+                                    <img
+                                        src={MockNumbersDark}
+                                        width="266"
+                                        style:object-position="top"
+                                        alt="Mock Numbers Example" />
+                                {:else}
+                                    <img
+                                        src={MockNumbersLight}
+                                        width="266"
+                                        style:object-position="top"
+                                        alt="Mock Numbers Example" />
+                                {/if}
+                            </Layout.Stack>
                         </div>
                     </svelte:fragment>
                     <svelte:fragment slot="title">{emptyStateTitle}</svelte:fragment>

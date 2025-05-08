@@ -32,6 +32,12 @@
 
     let responseTab: 'logs' | 'errors' | 'headers' | 'body' = $state('logs');
 
+    let href = $derived(
+        product === 'site'
+            ? 'https://appwrite.io/docs/products/sites/logs#log-details'
+            : 'https://appwrite.io/docs/products/functions/develop#logging'
+    );
+
     onMount(() => {
         if (selectedLog?.errors) {
             responseTab = 'errors';
@@ -128,8 +134,8 @@
 
             <Input.Helper state="default">
                 <span>
-                    Missing headers? Check the <Link variant="muted" href="#" external>docs</Link> to
-                    see the supported data and how to log it.
+                    Missing headers? Check the <Link variant="muted" {href} external>docs</Link> to see
+                    the supported data and how to log it.
                 </span>
             </Input.Helper>
         {:else}
@@ -146,12 +152,7 @@
                     Body data is not captured by Appwrite for your user's security and privacy. To
                     display body data in the Logs tab, use <InlineCode
                         code="context.log()"
-                        size="s" />. <Link
-                        external
-                        href="https://appwrite.io/docs/products/functions/develop#logging"
-                        variant="muted">
-                        Learn more</Link
-                    >.
+                        size="s" />. <Link external {href} variant="muted">Learn more</Link>.
                 </Typography.Text>
             </Card>
         {/if}

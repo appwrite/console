@@ -17,6 +17,8 @@
     import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
     import { showCreateBackup, showCreatePolicy } from './backups/store';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
+    import { currentPlan } from '$lib/stores/organization';
+    import { isCloud } from '$lib/system';
 
     const project = page.params.project;
     const databaseId = page.params.database;
@@ -54,7 +56,8 @@
             keys: page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'p'],
             group: 'databases',
             icon: IconPlus,
-            rank: page.url.pathname.endsWith('backups') ? 10 : 0
+            rank: page.url.pathname.endsWith('backups') ? 10 : 0,
+            disabled: !isCloud || !$currentPlan.backupsEnabled
         },
         {
             label: 'Create manual backup',
@@ -67,7 +70,8 @@
             keys: page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'b'],
             group: 'databases',
             icon: IconPlus,
-            rank: page.url.pathname.endsWith('backups') ? 10 : 0
+            rank: page.url.pathname.endsWith('backups') ? 10 : 0,
+            disabled: !isCloud || !$currentPlan.backupsEnabled
         },
         {
             label: 'Go to collections',

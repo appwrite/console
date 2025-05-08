@@ -34,10 +34,12 @@
     }
 
     $: filesList = files?.length
-        ? Array.from(files).map((file) => {
-              let f = file as Partial<File> & { removable: boolean };
-              f.removable = true;
-              return f;
+        ? Array.from(files).map((f) => {
+              return {
+                  ...f,
+                  extension: f.type,
+                  removable: true
+              };
           })
         : [];
 </script>

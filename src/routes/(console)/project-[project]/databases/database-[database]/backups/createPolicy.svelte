@@ -324,7 +324,7 @@
                     variant="secondary"
                     padding="s"
                     --input-background-color="var(--bgcolor-neutral-primary)">
-                    <div class="modal-form">
+                    <div>
                         <div class="u-flex-vertical u-gap-24">
                             <div class="u-flex-vertical u-gap-4">
                                 <Layout.Grid columns={4}>

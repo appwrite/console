@@ -5,18 +5,21 @@
     import { Button } from '$lib/elements/forms';
     import Container from '$lib/layout/container.svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
-    import { Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
-    import SearchQuery from '$lib/components/searchQuery.svelte';
+    import { Card, Empty, Icon } from '@appwrite.io/pink-svelte';
     import { app } from '$lib/stores/app';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import Table from './table.svelte';
+    import { ResponsiveContainerHeader } from '$lib/layout';
 
     let { data } = $props();
 </script>
 
 <Container>
-    <Layout.Stack direction="row" justifyContent="space-between">
-        <SearchQuery placeholder="Search domain" />
+    <ResponsiveContainerHeader
+        hasSearch
+        hideView
+        searchPlaceholder="Search by domain"
+        analyticsSource="settings_domain_overview">
         <Button
             href={`${base}/project-${page.params.project}/settings/domains/add-domain`}
             on:click={() => {
@@ -27,8 +30,7 @@
             <Icon icon={IconPlus} size="s" />
             Add domain
         </Button>
-    </Layout.Stack>
-
+    </ResponsiveContainerHeader>
     {#if data.rules.total}
         <Table domains={data.rules} />
 

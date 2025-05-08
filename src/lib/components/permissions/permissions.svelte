@@ -229,3 +229,14 @@
         </div>
     </article>
 {/if}
+
+<style lang="scss">
+    .table-wrapper {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+</style>

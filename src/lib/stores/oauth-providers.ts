@@ -101,6 +101,12 @@ export const oAuthProviders: Record<string, Provider> = {
         docs: 'https://developers.facebook.com/',
         component: Main
     },
+    figma: {
+        name: 'Figma',
+        icon: 'figma',
+        docs: 'https://www.figma.com/developers/api#access-tokens',
+        component: Main
+    },
     github: {
         name: 'GitHub',
         icon: 'github',

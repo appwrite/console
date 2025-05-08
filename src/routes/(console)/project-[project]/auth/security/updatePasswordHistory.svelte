@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { project } from '../../store';
+    import { tick } from 'svelte';
 
     let passwordHistory = $project?.authPasswordHistory < 1 ? 5 : $project?.authPasswordHistory;
     let passwordHistoryEnabled = ($project?.authPasswordHistory ?? 0) !== 0;
@@ -33,6 +34,14 @@
             });
             trackError(error, Submit.AuthPasswordHistoryUpdate);
         }
+    }
+
+    let maxPasswordInputField: InputNumber | null = null;
+
+    $: if (passwordHistoryEnabled && maxPasswordInputField) {
+        tick().then(() => {
+            maxPasswordInputField.addInputFocus();
+        });
     }
 </script>
 

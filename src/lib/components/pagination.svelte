@@ -20,4 +20,4 @@
     }
 </script>
 
-<Pagination page={currentPage} total={sum} {limit} createLink={getLink} />
+<Pagination page={currentPage} total={sum} {limit} createLink={getLink} type="link" />

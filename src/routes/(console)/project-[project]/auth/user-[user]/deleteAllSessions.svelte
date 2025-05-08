@@ -3,6 +3,7 @@
     import { page } from '$app/state';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import Confirm from '$lib/components/confirm.svelte';
+    import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -30,5 +31,5 @@
 </script>
 
 <Confirm onSubmit={deleteAllSessions} title="Delete member" bind:open={showDeleteAll} bind:error>
-    Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
+    Are you sure you want to delete <b>all of {$user?.name || 'User'}'s sessions?</b>
 </Confirm>
