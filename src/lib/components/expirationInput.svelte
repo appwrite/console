@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Helper, InputDateTime, InputSelect } from '$lib/elements/forms';
+    import { InputDateTime, InputSelect } from '$lib/elements/forms';
     import { isSameDay, isValidDate, toLocaleDate } from '$lib/helpers/date';
 
     function incrementToday(value: number, type: 'day' | 'month' | 'year'): string {
@@ -47,6 +47,9 @@
     ];
 
     export let value: string | null = null;
+    export let dateSelectorLabel: string | undefined = undefined;
+    export let selectorLabel: string | undefined = 'Expiration Date';
+    export let resourceType: string | 'key' | 'token' | undefined = 'key';
 
     function initExpirationSelect() {
         if (value === null || !isValidDate(value)) return null;
@@ -65,6 +68,10 @@
     }
     let expirationSelect = initExpirationSelect();
     let expirationCustom: string | null = value ?? null;
+    $: helper =
+        expirationSelect !== 'custom' && expirationSelect !== null
+            ? `Your ${resourceType} will expire in ${toLocaleDate(value)}`
+            : null;
 
     $: {
         if (!isSameDay(new Date(expirationSelect), new Date(value))) {
@@ -73,13 +80,8 @@
     }
 </script>
 
-<InputSelect bind:value={expirationSelect} {options} id="preset" label="Expiration date">
-    <svelte:fragment slot="helper">
-        {#if expirationSelect !== 'custom' && expirationSelect !== null}
-            <Helper type="neutral">Your key will expire in {toLocaleDate(value)}</Helper>
-        {/if}
-    </svelte:fragment>
+<InputSelect bind:value={expirationSelect} {options} id="preset" label={selectorLabel} {helper}>
 </InputSelect>
 {#if expirationSelect === 'custom'}
-    <InputDateTime required id="expire" label="" bind:value={expirationCustom} />
+    <InputDateTime required id="expire" label={dateSelectorLabel} bind:value={expirationCustom} />
 {/if}

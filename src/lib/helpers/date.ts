@@ -15,11 +15,15 @@ if (browser) {
     dayjs.extend(relativeTime);
 }
 
-export const toLocaleDate = (datetime: string) => {
+export const toLocaleDate = (datetime: string, format: 'dd mm yyyy' | 'default' = 'default') => {
     const date = new Date(datetime);
 
     if (isNaN(date.getTime())) {
         return 'n/a';
+    }
+
+    if (format === 'dd mm yyyy') {
+        return `${date.getDate().toString().padStart(2, '0')} ${date.toLocaleString('en', { month: 'short' })} ${date.getFullYear()}`;
     }
 
     const options: Intl.DateTimeFormatOptions = {
@@ -33,6 +37,7 @@ export const toLocaleDate = (datetime: string) => {
 
 export const toLocaleDateTime = (
     datetime: string | number,
+    is12HourFormat: boolean = false,
     timeZone: string | undefined = undefined
 ) => {
     const date = new Date(datetime);
@@ -48,7 +53,8 @@ export const toLocaleDateTime = (
         day: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
-        hourCycle: 'h23'
+        hourCycle: is12HourFormat ? 'h12' : 'h23',
+        ...(is12HourFormat && { hour12: true })
     };
 
     return date.toLocaleDateString('en', options);

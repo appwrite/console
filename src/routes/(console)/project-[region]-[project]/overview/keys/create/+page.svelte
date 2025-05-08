@@ -4,7 +4,7 @@
     import { InputText } from '$lib/elements/forms/index.js';
     import { Wizard } from '$lib/layout';
     import { Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
-    import ExpirationInput from '../expirationInput.svelte';
+    import { ExpirationInput } from '$lib/components';
     import Scopes from '../scopes.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import Form from '$lib/elements/forms/form.svelte';

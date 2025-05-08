@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { WizardWithSteps } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Provider from './wizard/provider.svelte';
     import Settings from './wizard/settings.svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -10,13 +8,18 @@
     import { base } from '$app/paths';
     import { project } from '../../store';
     import { wizard } from '$lib/stores/wizard';
-    import { provider, providerParams } from './wizard/store';
-    import { ID, type Models } from '@appwrite.io/console';
-    import { Providers } from '../provider.svelte';
+    import { provider, providerParams, providerType } from './wizard/store';
+    import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { getProviderDisplayNameAndIcon, Providers } from '../provider.svelte';
     import { page } from '$app/state';
     import { Button, Form } from '$lib/elements/forms';
-    import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
+    import { ActionList, Card, Fieldset, Layout, Typography } from '@appwrite.io/pink-svelte';
     import Wizard from '$lib/layout/wizard.svelte';
+    import { IconBookOpen, IconInfo, IconUserGroup } from '@appwrite.io/pink-icons-svelte';
+    import { newMemberModal } from '$lib/stores/organization';
+    import { getProviderText } from '../helper';
+    import { providers } from './store';
+    import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
 
     async function create() {
         try {
@@ -179,7 +182,7 @@
     }
 </script>
 
-<Wizard title="Create provider">
+<Wizard title="Create provider" columnSize="l">
     <Form onSubmit={create} isModal={false}>
         <Layout.Stack gap="xxl">
             <Fieldset legend="Provider">
@@ -193,4 +196,47 @@
             </Layout.Stack>
         </Layout.Stack>
     </Form>
+    <svelte:fragment slot="aside">
+        <Card.Base padding="s">
+            <Layout.Stack gap="s">
+                <Typography.Text variant="m-500">Need a hand?</Typography.Text>
+                <ActionList.Root>
+                    {#if providers[$providerType].providers[$provider].needAHand}
+                        {@const needAHand = providers[$providerType].providers[$provider].needAHand}
+                        <ActionList.Item.Accordion
+                            hasDivider
+                            title={`How to enable ${getProviderText($provider)} ${
+                                $providerType == MessagingProviderType.Push ||
+                                $providerType == MessagingProviderType.Sms
+                                    ? `${getProviderDisplayNameAndIcon($provider).displayName} notifications`
+                                    : getProviderText($provider)
+                            }?`}
+                            icon={IconInfo}>
+                            <Layout.Stack>
+                                {#each needAHand as p}
+                                    <p>
+                                        {@html p}
+                                    </p>
+                                {/each}
+                            </Layout.Stack>
+                        </ActionList.Item.Accordion>
+                    {/if}
+                    <ActionList.Item.Anchor
+                        hasDivider
+                        href={`https://appwrite.io/docs/products/messaging/${$provider}`}
+                        title="Read the guide in the docs"
+                        icon={IconBookOpen} />
+                    <ActionList.Item.Button
+                        on:click={() => {
+                            $newMemberModal = true;
+                        }}
+                        title="Invite a team member"
+                        icon={IconUserGroup} />
+                </ActionList.Root>
+            </Layout.Stack>
+        </Card.Base>
+    </svelte:fragment>
+    {#if $newMemberModal}
+        <CreateMember bind:showCreate={$newMemberModal} />
+    {/if}
 </Wizard>
