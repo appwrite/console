@@ -196,7 +196,6 @@
     </Form>
     <svelte:fragment slot="aside">
         <Typography.Text variant="m-500">Need a hand?</Typography.Text>
-        {console.log('match', $providerType == MessagingProviderType.Push)}
         <ActionList.Root>
             {#if providers[$providerType].providers[$provider].needAHand}
                 {@const needAHand = providers[$providerType].providers[$provider].needAHand}
