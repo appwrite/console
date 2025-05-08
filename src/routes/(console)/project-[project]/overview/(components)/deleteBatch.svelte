@@ -51,11 +51,7 @@
     }
 </script>
 
-<Confirm
-    onSubmit={handleDelete}
-    title={`Delete ${label} key`}
-    bind:open={showDelete}
-    bind:error>
+<Confirm onSubmit={handleDelete} title={`Delete ${label} key`} bind:open={showDelete} bind:error>
     <p>
         Are you sure you want to delete <b>{keyIds.length}</b>
         {label} key{keyIds.length > 1 ? 's' : ''}?

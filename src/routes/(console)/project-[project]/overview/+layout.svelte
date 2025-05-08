@@ -52,6 +52,10 @@
         return usage.load(dates.start, dates.end, dates.period);
     }
 
+    function isTabSelected(key: string) {
+        return page.url.pathname === `${path}/${key}`;
+    }
+
     $: $registerCommands([
         {
             label: 'Add platform',
@@ -221,20 +225,20 @@
                 <Tabs>
                     <Tab
                         noscroll
+                        event="platforms"
                         href={`${path}/platforms`}
-                        selected={page.url.pathname === `${path}/platforms`}
-                        event="platforms">Platforms</Tab>
+                        selected={isTabSelected('platforms')}>Platforms</Tab>
                     <Tab
                         noscroll
+                        event="keys"
                         href={`${path}/keys`}
-                        selected={page.url.pathname === `${path}/keys`}
-                        event="keys">API keys</Tab>
-                <Tab
-                    noscroll
-                    href={`${path}/dev-keys`}
-                    selected={page.url.pathname === `${path}/dev-keys`}
-                    event="keys">Dev keys</Tab>
-            </Tabs>
+                        selected={isTabSelected('keys')}>API keys</Tab>
+                    <Tab
+                        noscroll
+                        event="keys"
+                        href={`${path}/dev-keys`}
+                        selected={isTabSelected('dev-keys')}>Dev keys</Tab>
+                </Tabs>
                 {#if $action}
                     <svelte:component this={$action} />
                 {/if}
