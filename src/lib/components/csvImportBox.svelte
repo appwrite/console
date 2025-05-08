@@ -6,9 +6,9 @@
     import { Dependencies } from '$lib/constants';
     import { goto, invalidate } from '$app/navigation';
     import { getProjectId } from '$lib/helpers/project';
-    import { Typography } from '@appwrite.io/pink-svelte';
     import { writable, type Writable } from 'svelte/store';
     import { addNotification } from '$lib/stores/notifications';
+    import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { type Models, type Payload, Query } from '@appwrite.io/console';
 
     type ImportItem = {
@@ -37,13 +37,13 @@
 
         // extract clean message from nested backend error.
         const match = importData.errors.join('').match(/message: '(.*)' Message:/i);
-        const actualMessage = match?.[1];
+        const errorMessage = match?.[1];
 
         const type = importData.status === 'completed' ? 'success' : 'error';
         const message =
             importData.status === 'completed'
                 ? 'CSV import finished successfully.'
-                : `${actualMessage}`;
+                : `${errorMessage}`;
 
         addNotification({
             type,
@@ -161,7 +161,7 @@
 </script>
 
 {#if showCsvImportBox}
-    <div class="box-holder u-flex u-flex-vertical u-gap-16" style="align-items: end">
+    <Layout.Stack direction="column" gap="l" alignItems="flex-end">
         <section class="upload-box">
             <header class="upload-box-header">
                 <h4 class="upload-box-title">
@@ -206,7 +206,7 @@
                 </div>
             {/each}
         </section>
-    </div>
+    </Layout.Stack>
 {/if}
 
 <style lang="scss">
