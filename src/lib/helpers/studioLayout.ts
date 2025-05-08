@@ -70,3 +70,12 @@ export function saveTerminalOpenToPrefs(isOpen: boolean) {
     };
     sdk.forConsole.account.updatePrefs(newPrefs);
 }
+
+export function disableBodySelect() {
+    document.body.style.userSelect = 'none';
+    document.body.style.webkitUserSelect = 'none';
+}
+export function enabledBodySelect() {
+    document.body.style.userSelect = '';
+    document.body.style.webkitUserSelect = '';
+}

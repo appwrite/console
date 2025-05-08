@@ -40,7 +40,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { filesystem } from '$lib/components/editor/filesystem';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
-    import { getChatWidthFromPrefs, saveChatWidthToPrefs } from '$lib/helpers/studioLayout';
+    import {
+        disableBodySelect,
+        enabledBodySelect,
+        getChatWidthFromPrefs,
+        saveChatWidthToPrefs
+    } from '$lib/helpers/studioLayout';
     import { synapse } from '$lib/components/studio/synapse.svelte';
 
     let hasProjectSidebar = $state(false);
@@ -114,7 +119,7 @@
     let resizerLeftPosition = $state(
         page.data?.subNavigation ? getChatWidthFromPrefs() + 24 : getChatWidthFromPrefs()
     );
-    let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 60);
+    let resizerLeftOffset = $state(page.data?.subNavigation ? 52 : 9);
     let chatWidth = $derived(resizerLeftPosition - resizerLeftOffset);
 
     $effect(() => {
@@ -129,7 +134,7 @@
         window.addEventListener('mouseup', stopResize);
         window.addEventListener('touchmove', resize);
         window.addEventListener('touchend', stopResize);
-        document.body.style.userSelect = 'none';
+        disableBodySelect();
 
         if ($previewFrameRef) {
             $previewFrameRef.style.pointerEvents = 'none';
@@ -140,7 +145,7 @@
         if (!isResizing) return;
         if (resizer) {
             resizerLeftPosition =
-                ('touches' in event ? event.touches[0].clientX : event.clientX) - 10;
+                ('touches' in event ? event.touches[0].clientX : event.clientX) - 60;
             const maxSize = page.data?.subNavigation
                 ? window.innerWidth - 660
                 : window.innerWidth - 460;
@@ -172,7 +177,7 @@
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);
         window.removeEventListener('touchend', stopResize);
-        document.body.style.userSelect = '';
+        enabledBodySelect();
 
         if ($previewFrameRef) {
             $previewFrameRef.style.pointerEvents = '';
@@ -489,6 +494,7 @@
         min-height: calc(100vh - 54px);
         margin-top: 32px;
         width: 100vw;
+        position: relative;
 
         padding-right: var(--space-4);
         padding-left: var(--space-4);
