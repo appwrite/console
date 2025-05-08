@@ -1,21 +1,38 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { isCloud } from '$lib/system';
+    import { goto } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { BoxAvatar, CardGrid, Heading, Modal } from '$lib/components';
     import { Button, FormList, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
-    import { isCloud } from '$lib/system';
+    import { getApiEndpoint } from '$lib/stores/sdk';
     import { project, projectRegion } from '../store';
+    import { Client as TempClient, Projects as TempProjects } from '@appwrite.io/console';
 
     let showDelete = false;
     let name: string = null;
 
+    /**
+     * This ensures the underlying client use a region-aware endpoint
+     * to correctly route project deletion requests to the appropriate regional pool.
+     *
+     * The console project itself isn't tied to a region, so its client doesn’t
+     * include one. Without this, deletion requests would default to the manager region.
+     */
+    const temporaryProjects = (region: string) => {
+        const tempClient = new TempClient()
+            .setMode('admin')
+            .setProject('console')
+            .setEndpoint(getApiEndpoint(region));
+
+        return new TempProjects(tempClient);
+    };
+
     const handleDelete = async () => {
         try {
-            await sdk.forConsole.projects.delete($project.$id);
+            await temporaryProjects($project.region).delete($project.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
