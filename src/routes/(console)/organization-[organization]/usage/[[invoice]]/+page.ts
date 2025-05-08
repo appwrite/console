@@ -1,8 +1,8 @@
+import type { Invoice } from '$lib/sdk/billing';
+import { type Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import { type Organization } from '$lib/stores/organization';
-import type { Invoice } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
@@ -33,7 +33,9 @@ export const load: PageLoad = async ({ params, parent }) => {
                 databasesReads: null,
                 databasesWrites: null,
                 databasesReadsTotal: null,
-                databasesWritesTotal: null
+                databasesWritesTotal: null,
+                imageTransformations: null,
+                imageTransformationsTotal: null
             }
         };
     }
@@ -51,7 +53,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
         sdk.forConsole.teams.listMemberships(params.organization, [Query.limit(100)]),
-        sdk.forConsole.billing.getPlan(org.$id)
+        sdk.forConsole.billing.getOrganizationPlan(org.$id)
     ]);
 
     const projectNames: { [key: string]: Models.Project } = {};
@@ -78,15 +80,12 @@ export const load: PageLoad = async ({ params, parent }) => {
         }
     }
 
-    const usersUsageToDate = usage.users.filter((user) => new Date(user.date) < new Date());
-
     return {
         organizationUsage: usage,
         projectNames,
         invoices,
         currentInvoice,
         organizationMembers,
-        plan,
-        usersUsageToDate
+        plan
     };
 };

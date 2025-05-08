@@ -15,6 +15,7 @@
         Accordion,
         ActionMenu,
         Card,
+        Icon,
         Layout,
         Logs,
         Popover,
@@ -25,13 +26,23 @@
     import { formatTimeDetailed } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
     import { app } from '$lib/stores/app';
-    import { getOutputDownload, getSourceDownload } from '../store';
+    import { getOutputDownload, getSourceDownload, showCreateDeployment } from '../store';
+    import { IconDotsHorizontal, IconRefresh, IconTerminal } from '@appwrite.io/pink-icons-svelte';
+    import { Menu } from '$lib/components/menu';
+    import { canWriteFunctions } from '$lib/stores/roles';
+    import { Click, trackEvent } from '$lib/actions/analytics';
+    import DownloadActionMenuItem from '../(components)/downloadActionMenuItem.svelte';
+    import { base } from '$app/paths';
+    import { isCloud } from '$lib/system';
+    import { readOnly } from '$lib/stores/billing';
+    import RedeployModal from '../(modals)/redeployModal.svelte';
 
     export let data;
 
     let showDelete = false;
     let showCancel = false;
     let showActivate = false;
+    let showRedeploy = false;
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe<Models.Deployment>(
@@ -73,7 +84,7 @@
 <Container>
     <DeploymentCard proxyRuleList={data.proxyRuleList} deployment={data.deployment}>
         {#snippet footer()}
-            <Layout.Stack direction="row" inline>
+            <Layout.Stack direction="row" alignItems="center" inline>
                 {#if data.deployment.status === 'processing' || data.deployment.status === 'building' || data.deployment.status === 'waiting'}
                     <Button
                         text
@@ -82,34 +93,35 @@
                         }}>Cancel</Button>
                 {/if}
 
-                {#if !!data.deployment?.sourceSize || !!data.deployment?.sourceSize}
-                    <Popover let:toggle placement="bottom-end">
-                        <Button secondary on:click={toggle}>Download</Button>
-                        <svelte:fragment slot="tooltip" let:toggle>
-                            <ActionMenu.Root noPadding>
-                                <ActionMenu.Item.Anchor
-                                    on:click={toggle}
-                                    href={getSourceDownload(
-                                        page.params.function,
-                                        data.deployment.$id
-                                    )}
-                                    external>
-                                    Download source
-                                </ActionMenu.Item.Anchor>
-
-                                <ActionMenu.Item.Anchor
-                                    disabled={data.deployment?.status !== 'ready'}
-                                    on:click={toggle}
-                                    href={getOutputDownload(
-                                        page.params.function,
-                                        data.deployment.$id
-                                    )}
-                                    external>
-                                    Download output
-                                </ActionMenu.Item.Anchor>
-                            </ActionMenu.Root>
-                        </svelte:fragment>
-                    </Popover>
+                <Menu>
+                    <Button secondary icon text>
+                        <Icon icon={IconDotsHorizontal} />
+                    </Button>
+                    <svelte:fragment slot="menu" let:toggle>
+                        <ActionMenu.Root>
+                            {#if $canWriteFunctions}
+                                <ActionMenu.Item.Button
+                                    trailingIcon={IconRefresh}
+                                    on:click={() => {
+                                        showRedeploy = true;
+                                        trackEvent(Click.FunctionsRedeployClick);
+                                        toggle();
+                                    }}>
+                                    Redeploy
+                                </ActionMenu.Item.Button>
+                            {/if}
+                            {#if !!data.deployment?.sourceSize || !!data.deployment?.sourceSize}
+                                <DownloadActionMenuItem deployment={data.deployment} {toggle} />
+                            {/if}
+                        </ActionMenu.Root>
+                    </svelte:fragment>
+                </Menu>
+                {#if data.func.deploymentId === data.deployment.$id && data.deployment.status === 'ready'}
+                    <Button
+                        href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/executions/execute-function`}
+                        disabled={isCloud && $readOnly}>
+                        Execute
+                    </Button>
                 {/if}
 
                 {#if data.func.deploymentId !== data.deployment.$id && data.deployment.status === 'ready'}
@@ -165,3 +177,7 @@
     selectedDeployment={data.deployment}
     bind:showActivate
     on:activated={() => invalidate(Dependencies.DEPLOYMENTS)} />
+
+{#if showRedeploy}
+    <RedeployModal bind:show={showRedeploy} selectedDeployment={data.deployment} redirect />
+{/if}

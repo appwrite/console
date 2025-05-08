@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { EmptySearch, Paginator } from '$lib/components';
+    import { Empty, EmptySearch, Paginator } from '$lib/components';
     import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
@@ -20,6 +20,7 @@
     import { VCSDetectionType, type Models } from '@appwrite.io/console';
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { connectGitHub } from '$lib/stores/git';
+    import Card from '../card.svelte';
 
     let {
         action = $bindable('select'),
@@ -79,7 +80,6 @@
             selectedRepository = $repositories.repositories[0].id;
             $repository = $repositories.repositories[0];
         }
-
         return $repositories.repositories;
     }
 
@@ -148,7 +148,10 @@
                             );
                         }}
                         bind:value={selectedInstallation} />
-                    <InputSearch placeholder="Search repositories" bind:value={search} />
+                    <InputSearch
+                        placeholder="Search repositories"
+                        bind:value={search}
+                        disabled={!search && !$repositories?.repositories?.length} />
                 </Layout.Stack>
             {/await}
         </Layout.Stack>
@@ -173,7 +176,10 @@
             {:then response}
                 {#if response?.length}
                     <Paginator items={response} hideFooter={response?.length <= 6} limit={6}>
-                        {#snippet children(paginatedItems)}
+                        {#snippet children(
+                            paginatedItems: Models.ProviderRepositoryRuntime[] &
+                                Models.ProviderRepositoryFramework[]
+                        )}
                             <Table.Root columns={1} let:root>
                                 {#each paginatedItems as repo}
                                     <Table.Row.Base {root}>
@@ -257,7 +263,7 @@
                             </Table.Root>
                         {/snippet}
                     </Paginator>
-                {:else}
+                {:else if search}
                     <EmptySearch hidePages hidePagination bind:search target="repositories">
                         <svelte:fragment slot="actions">
                             {#if search}
@@ -267,6 +273,14 @@
                             {/if}
                         </svelte:fragment>
                     </EmptySearch>
+                {:else}
+                    <Card>
+                        <Layout.Stack alignItems="center" justifyContent="center">
+                            <Typography.Text variation="m-500" color="--fgcolor-neutral-tertiary">
+                                No repositories available
+                            </Typography.Text>
+                        </Layout.Stack>
+                    </Card>
                 {/if}
             {/await}
         {/if}

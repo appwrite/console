@@ -28,11 +28,19 @@
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
     import { canWriteMessages } from '$lib/stores/roles';
-    import { Badge, FloatingActionBar, Layout, Table, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Badge,
+        FloatingActionBar,
+        Layout,
+        Link,
+        Table,
+        Typography
+    } from '@appwrite.io/pink-svelte';
     import { Confirm } from '$lib/components';
+    import { onDestroy, onMount } from 'svelte';
+    import { stopPolling, pollMessagesStatus } from './helper';
 
     export let data;
-
     let selected: string[] = [];
     let showDelete = false;
     let deleting = false;
@@ -83,6 +91,16 @@
             showDelete = false;
         }
     }
+
+    onMount(() => {
+        const processingMessages = data.messages.messages.filter(
+            (message) => message.status === 'processing'
+        );
+
+        pollMessagesStatus(processingMessages);
+    });
+
+    onDestroy(stopPolling);
 </script>
 
 <Container>
@@ -134,15 +152,17 @@
                             {:else if column.id === 'providerType'}
                                 <ProviderType type={message.providerType} size="xs" />
                             {:else if column.id === 'status'}
-                                <MessageStatusPill status={message.status} />
-                                {#if message.status === 'failed'}
-                                    <Button
-                                        on:click={(e) => {
-                                            e.preventDefault();
-                                            errors = message.deliveryErrors;
-                                            showFailed = true;
-                                        }}>Details</Button>
-                                {/if}
+                                <Layout.Stack direction="row" gap="s">
+                                    <MessageStatusPill status={message.status} />
+                                    {#if message.status === 'failed'}
+                                        <Link.Button
+                                            on:click={(e) => {
+                                                e.preventDefault();
+                                                errors = message.deliveryErrors;
+                                                showFailed = true;
+                                            }}>Details</Link.Button>
+                                    {/if}
+                                </Layout.Stack>
                             {:else if column.type === 'datetime'}
                                 {#if !message[column.id]}
                                     -

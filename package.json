@@ -21,11 +21,13 @@
         "e2e:ui": "playwright test --ui"
     },
     "dependencies": {
-        "@appwrite.io/console": "https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@61868a9",
+        "@ai-sdk/svelte": "^1.1.22",
+        "@appwrite.io/console": "https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@f76aff1",
+        "@appwrite.io/pink": "0.25.0",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-icons-svelte@bd21ff7f",
         "@appwrite.io/pink-legacy": "^1.0.3",
-        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@1c607c0",
+        "@appwrite.io/pink-svelte": "https://pkg.pr.new/appwrite/pink/@appwrite.io/pink-svelte@504c653",
         "@popperjs/core": "^2.11.8",
         "@sentry/sveltekit": "^8.38.0",
         "@stripe/stripe-js": "^3.5.0",

@@ -4,7 +4,7 @@
 </script>
 
 <Box>
-    <Layout.Stack direction="row" justifyContent="flex-start">
+    <Layout.Stack direction="row" justifyContent="flex-start" alignItems="center">
         <slot name="image" />
         <div>
             <slot name="title" />

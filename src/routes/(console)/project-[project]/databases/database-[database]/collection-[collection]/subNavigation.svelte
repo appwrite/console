@@ -143,8 +143,9 @@
 
     .database-name {
         font-size: var(--font-size-sm);
-        font-weight: 500;
         color: var(--fgcolor-neutral-secondary);
+
+        margin-block-end: 2px;
     }
 
     .collection-content {
@@ -182,7 +183,6 @@
         flex: 1;
         padding-left: 4px;
         font-size: var(--font-size-sm);
-        font-weight: 500;
         color: var(--fgcolor-neutral-secondary);
 
         .is-selected,

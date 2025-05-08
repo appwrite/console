@@ -8,16 +8,22 @@
     import { collection } from './store';
     import { isTabletViewport } from '$lib/stores/viewport';
 
-    const projectId = $derived(page.params.project);
-    const databaseId = $derived(page.params.database);
-    const collectionId = $derived(page.params.collection);
+    let projectId = $derived.by(() => {
+        return page.params.project;
+    });
+    let databaseId = $derived.by(() => {
+        return page.params.database;
+    });
+    let collectionId = $derived.by(() => {
+        return page.params.collection;
+    });
 
-    const path = $derived(
-        `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`
-    );
+    let path = $derived.by(() => {
+        return `${base}/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`;
+    });
 
-    const tabs = $derived.by(() =>
-        [
+    let tabs = $derived.by(() => {
+        return [
             {
                 href: path,
                 title: 'Documents',
@@ -52,8 +58,8 @@
                 event: 'settings',
                 disabled: !$canWriteCollections
             }
-        ].filter((tab) => !tab.disabled)
-    );
+        ].filter((tab) => !tab.disabled);
+    });
 </script>
 
 <div style:margin-top={$isTabletViewport ? '48px' : 0}>

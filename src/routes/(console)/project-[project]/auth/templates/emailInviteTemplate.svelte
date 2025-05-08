@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Id } from '$lib/components';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Card } from '@appwrite.io/pink-svelte';
 
     const projectId = page.params.project;
     let locale = 'en';
@@ -35,12 +35,14 @@
     }
 </script>
 
-<Layout.Stack>
-    <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
-    <EmailTemplate bind:loading>
-        <Id value={'{{team}}'}>{'{{team}}'}</Id>
-        <Id value={'{{user}}'}>{'{{user}}'}</Id>
-        <Id value={'{{project}}'}>{'{{project}}'}</Id>
-        <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
-    </EmailTemplate>
-</Layout.Stack>
+<Card.Base variant="secondary" padding="s">
+    <Layout.Stack>
+        <LocaleOptions on:change={onLocaleChange} bind:value={locale} />
+        <EmailTemplate bind:loading>
+            <Id value={'{{team}}'}>{'{{team}}'}</Id>
+            <Id value={'{{user}}'}>{'{{user}}'}</Id>
+            <Id value={'{{project}}'}>{'{{project}}'}</Id>
+            <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
+        </EmailTemplate>
+    </Layout.Stack>
+</Card.Base>

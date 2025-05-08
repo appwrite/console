@@ -3,7 +3,7 @@ import { Dependencies } from '$lib/constants.js';
 import { isCloud } from '$lib/system';
 import type { Domain, DomainsList } from '$lib/sdk/domains.js';
 
-export const load = async ({ parent, depends, params }) => {
+export const load = async ({ depends, params }) => {
     depends(Dependencies.DOMAINS);
 
     let domain: Domain;

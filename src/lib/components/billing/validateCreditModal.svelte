@@ -19,7 +19,8 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            // const response = await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.billing.getCouponAccount(coupon); //TODO: double check that this is the correct method
 
             if (response.onlyNewOrgs && !isNewOrg) {
                 show = false;
@@ -37,6 +38,14 @@
                     message: 'Credits applied successfully'
                 });
             }
+            couponData = response;
+            dispatch('validation', couponData);
+            coupon = null;
+            show = false;
+            addNotification({
+                type: 'success',
+                message: 'Credits applied successfully'
+            });
         } catch (e) {
             error = e.message;
         }

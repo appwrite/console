@@ -102,11 +102,10 @@
                     </Upload.Dropzone>
                     {#if files}
                         <Upload.List
-                            files={Array.from(files).map((b) => {
+                            files={Array.from(files).map((f) => {
                                 return {
-                                    name: b.name,
-                                    size: b.size,
-                                    extension: b.type,
+                                    ...f,
+                                    extension: f.type,
                                     removable: true
                                 };
                             })}

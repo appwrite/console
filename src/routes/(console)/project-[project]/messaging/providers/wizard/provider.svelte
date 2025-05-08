@@ -12,6 +12,14 @@
     let showCustomId = false;
     let id: string = null;
 
+    $: {
+        name;
+        id;
+        $provider;
+
+        beforeSubmit();
+    }
+
     async function beforeSubmit() {
         switch ($provider) {
             case Providers.Twilio:
@@ -133,9 +141,6 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Provider</svelte:fragment>
-    <div class="u-sep-block-start u-padding-block-end-32"></div>
-
     <InputText
         id="name"
         label="Name"

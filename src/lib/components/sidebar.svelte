@@ -12,7 +12,8 @@
         Button,
         Layout,
         Avatar,
-        Typography
+        Typography,
+        Badge
     } from '@appwrite.io/pink-svelte';
 
     import {
@@ -70,7 +71,6 @@
     }
 
     $: state = $isTabletViewport ? 'closed' : getSidebarState();
-    $: isOnProjectSettings = /^\/console\/project-[a-zA-Z0-9-]+\/settings$/.test(page.url.pathname);
 
     const projectOptions = [
         { name: 'Auth', icon: IconUserGroup, slug: 'auth', category: 'build' },
@@ -78,7 +78,7 @@
         { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
         { name: 'Messaging', icon: IconChatBubble, slug: 'messaging', category: 'build' },
         { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
-        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy' }
+        { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy', badge: 'New' }
     ];
 </script>
 
@@ -209,14 +209,23 @@
                                 on:click={() => {
                                     trackEvent(`click_menu_${projectOption.slug}`);
                                     sideBarIsOpen = false;
-                                }}
-                                ><span class="link-icon"
-                                    ><Icon icon={projectOption.icon} size="s" />
-                                </span><span
+                                }}>
+                                <span class="link-icon">
+                                    <Icon icon={projectOption.icon} size="s" />
+                                </span>
+                                <span
                                     class:no-text={state === 'icons'}
                                     class:has-text={state === 'open'}
-                                    class="link-text">{projectOption.name}</span
-                                ></a>
+                                    class="link-text">
+                                    {projectOption.name}
+                                    {#if projectOption?.badge}
+                                        <Badge
+                                            variant="secondary"
+                                            content={projectOption.badge}
+                                            size="s" />
+                                    {/if}
+                                </span>
+                            </a>
                             <span slot="tooltip">{projectOption.name}</span>
                         </Tooltip>
                     {/each}
@@ -289,7 +298,8 @@
                             on:click={() => {
                                 trackEvent('click_menu_settings');
                             }}
-                            class:active={isOnProjectSettings}
+                            class:active={page.url.pathname.includes('/settings') &&
+                                !page.url.pathname.includes('sites')}
                             ><span class="link-icon"><Icon icon={IconCog} size="s" /></span><span
                                 class:no-text={state === 'icons'}
                                 class:has-text={state === 'open'}
