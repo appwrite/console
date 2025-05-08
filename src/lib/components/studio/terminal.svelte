@@ -33,7 +33,7 @@
                     }
                 });
             });
-            synapse.addEventListener('terminalResponse', ({ message }) => {
+            synapse.addEventListener('terminal', ({ message }) => {
                 const { data } = message;
                 if (typeof data === 'string') term.write(data);
             });

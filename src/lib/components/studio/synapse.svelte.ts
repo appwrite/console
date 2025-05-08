@@ -28,12 +28,12 @@ type SynapseMessageOperationFileSystem =
 type SynapseMessageOperationTerminal =
     | { operation: 'updateSize'; params: { cols: number; rows: number } }
     | { operation: 'createCommand'; params: { command: string } };
-type SynapseResponseType = `${SynapseMessageType}Response`;
-type Events = WebSocketEvent | SynapseResponseType;
+
+type Events = WebSocketEvent | SynapseMessageType;
 type BaseMessage = {
     success: boolean;
     data: unknown;
-    type: SynapseResponseType;
+    type: SynapseMessageType;
     requestId: string;
 };
 
