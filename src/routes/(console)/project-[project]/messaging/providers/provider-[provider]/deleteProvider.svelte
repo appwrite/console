@@ -29,5 +29,5 @@
 </script>
 
 <Confirm onSubmit={deleteProvider} title="Delete provider" bind:open={showDelete} bind:error>
-    Are you sure you want to delete <b>{$provider.name}</b> from '{$project.name}'?
+    <span>Are you sure you want to delete <b>{$provider.name}</b> from '{$project.name}'?</span>
 </Confirm>

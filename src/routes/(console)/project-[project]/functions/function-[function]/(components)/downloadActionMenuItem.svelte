@@ -16,7 +16,7 @@
             <ActionMenu.Item.Button trailingIcon={IconDownload}>Download</ActionMenu.Item.Button>
         </ActionMenu.Root>
         <svelte:fragment slot="menu">
-            <ActionMenu.Root noPadding>
+            <ActionMenu.Root>
                 <ActionMenu.Item.Anchor
                     on:click={toggle}
                     href={getSourceDownload(page.params.function, deployment.$id)}

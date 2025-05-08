@@ -46,9 +46,7 @@
     let showFilters = $state(false);
 
     let filterCols = $derived(
-        $columns
-            .map((col) => (col.filter !== false ? buildFilterCol(col) : null))
-            .filter((f) => f?.options)
+        $columns.map((col) => (col.filter !== false ? buildFilterCol(col) : null)).filter(Boolean)
     );
 
     afterNavigate((p) => {
@@ -109,14 +107,16 @@
                         <SearchQuery placeholder={searchPlaceholder} />
                     {/if}
                     {#if hasFilters && $columns?.length}
-                        <QuickFilters {columns} {analyticsSource} />
+                        <QuickFilters {columns} {analyticsSource} {filterCols} />
                     {/if}
                 </Layout.Stack>
                 <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
                     {#if hasDisplaySettings}
                         <ViewSelector {view} {columns} {hideView} {hideColumns} />
                     {/if}
-                    {@render children()}
+                    {#if children}
+                        {@render children()}
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         {/if}
@@ -138,7 +138,7 @@
         bind:openBottomSheet={showFilters}
         {columns}
         {analyticsSource}
-        bind:filterCols />
+        filterCols={filterCols.filter((f) => f?.options)} />
 {/if}
 
 <!-- SNIPPETS -->

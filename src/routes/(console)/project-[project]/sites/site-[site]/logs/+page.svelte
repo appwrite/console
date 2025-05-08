@@ -3,7 +3,7 @@
     import { EmptyFilter, PaginationWithLimit, ViewSelector } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ResponsiveContainerHeader } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Table from './table.svelte';
@@ -26,16 +26,8 @@
 </script>
 
 <Container>
-    <Layout.Stack>
-        <Layout.Stack direction="row" justifyContent="space-between">
-            <QuickFilters {columns} analyticsSource="site_logs" />
-            {#if data.logs.total}
-                <ViewSelector view={View.Table} {columns} hideView />
-            {/if}
-        </Layout.Stack>
+    <ResponsiveContainerHeader hasFilters {columns} hideView analyticsSource="site_logs" />
 
-        <ParsedTagList />
-    </Layout.Stack>
     {#if data?.logs?.total}
         <Table columns={$columns} logs={data.logs} />
 
@@ -55,7 +47,7 @@
                 <svelte:fragment slot="actions">
                     <Button
                         external
-                        href="#"
+                        href="https://appwrite.io/docs/products/sites/logs"
                         secondary
                         event="empty_documentation"
                         size="s"

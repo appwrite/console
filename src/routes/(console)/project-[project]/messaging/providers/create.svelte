@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { WizardWithSteps } from '$lib/layout';
+    import { Wizard, WizardWithSteps } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Provider from './wizard/provider.svelte';
     import Settings from './wizard/settings.svelte';
@@ -10,9 +10,26 @@
     import { base } from '$app/paths';
     import { project } from '../../store';
     import { wizard } from '$lib/stores/wizard';
-    import { provider, providerParams } from './wizard/store';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { provider, providerParams, providerType } from './wizard/store';
+    import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Providers } from '../provider.svelte';
+    import { Button, Form } from '$lib/elements/forms';
+    import {
+        Fieldset,
+        Layout,
+        Typography,
+        ActionList,
+        Accordion,
+        Card
+    } from '@appwrite.io/pink-svelte';
+    import { providers } from '$routes/(console)/project-[project]/messaging/providers/store';
+    import { getProviderText } from '$routes/(console)/project-[project]/messaging/helper';
+    import { newMemberModal } from '$lib/stores/organization';
+    import CreateMember from '$routes/(console)/organization-[organization]/createMember.svelte';
+    import { IconBookOpen, IconInfo, IconUserGroup } from '@appwrite.io/pink-icons-svelte';
+    import { getProviderDisplayNameAndIcon } from '$routes/(console)/project-[project]/messaging/provider.svelte';
+
+    let open = false;
 
     async function create() {
         try {
@@ -165,4 +182,61 @@
     });
 </script>
 
-<WizardWithSteps title="Create provider" steps={stepsComponents} on:finish={create} />
+<Wizard title="Create provider" columnSize="l">
+    <Form onSubmit={create} isModal={false}>
+        <Layout.Stack gap="xxl">
+            <Fieldset legend="Provider">
+                <Provider />
+            </Fieldset>
+            <Fieldset legend="Settings">
+                <Settings />
+            </Fieldset>
+            <Layout.Stack justifyContent="flex-end" direction="row">
+                <Button submit>Create</Button>
+            </Layout.Stack>
+        </Layout.Stack>
+    </Form>
+    <svelte:fragment slot="aside">
+        <Card.Base padding="s">
+            <Layout.Stack gap="s">
+                <Typography.Text variant="m-500">Need a hand?</Typography.Text>
+                <ActionList.Root>
+                    {#if providers[$providerType].providers[$provider].needAHand}
+                        {@const needAHand = providers[$providerType].providers[$provider].needAHand}
+                        <ActionList.Item.Accordion
+                            hasDivider
+                            title={`How to enable ${getProviderText($provider)} ${
+                                $providerType == MessagingProviderType.Push ||
+                                $providerType == MessagingProviderType.Sms
+                                    ? `${getProviderDisplayNameAndIcon($provider).displayName} notifications`
+                                    : getProviderText($provider)
+                            }?`}
+                            icon={IconInfo}>
+                            <Layout.Stack>
+                                {#each needAHand as p}
+                                    <p>
+                                        {@html p}
+                                    </p>
+                                {/each}
+                            </Layout.Stack>
+                        </ActionList.Item.Accordion>
+                    {/if}
+                    <ActionList.Item.Anchor
+                        hasDivider
+                        href={`https://appwrite.io/docs/products/messaging/${$provider}`}
+                        title="Read the guide in the docs"
+                        icon={IconBookOpen} />
+                    <ActionList.Item.Button
+                        on:click={() => {
+                            $newMemberModal = true;
+                        }}
+                        title="Invite a team member"
+                        icon={IconUserGroup} />
+                </ActionList.Root>
+            </Layout.Stack>
+        </Card.Base>
+    </svelte:fragment>
+    {#if $newMemberModal}
+        <CreateMember bind:showCreate={$newMemberModal} />
+    {/if}
+</Wizard>
