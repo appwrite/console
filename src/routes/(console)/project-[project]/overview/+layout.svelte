@@ -52,6 +52,10 @@
         return usage.load(dates.start, dates.end, dates.period);
     }
 
+    function isTabSelected(key: string) {
+        return page.url.pathname === `${path}/${key}`;
+    }
+
     $: $registerCommands([
         {
             label: 'Add platform',
@@ -67,9 +71,19 @@
             label: 'Create API Key',
             icon: IconPlus,
             callback() {
-                goto(`${base}/project-[project]/overview/keys/create`);
+                goto(`${base}/project-${projectId}/overview/keys/create`);
             },
             keys: ['c', 'k'],
+            group: 'integrations',
+            disabled: !$canWriteProjects
+        },
+        {
+            label: 'Create Dev Key',
+            icon: IconPlus,
+            callback() {
+                goto(`${base}/project-${projectId}/overview/dev-keys/create`);
+            },
+            keys: ['c', 'd', 'k'],
             group: 'integrations',
             disabled: !$canWriteProjects
         }
@@ -205,28 +219,31 @@
             </Layout.Stack>
         {/if}
 
-        <div class="u-margin-block-start-64">
-            <Layout.Stack gap="xl">
-                <Typography.Title>Integrations</Typography.Title>
-                <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
-                    <Tabs>
-                        <Tab
-                            noscroll
-                            href={`${path}/platforms`}
-                            selected={page.url.pathname === `${path}/platforms`}
-                            event="platforms">Platforms</Tab>
-                        <Tab
-                            noscroll
-                            href={`${path}/keys`}
-                            selected={page.url.pathname === `${path}/keys`}
-                            event="keys">API keys</Tab>
-                    </Tabs>
-                    {#if $action}
-                        <svelte:component this={$action} />
-                    {/if}
-                </Layout.Stack>
-                <slot />
+        <Layout.Stack gap="xl">
+            <Typography.Title>Integrations</Typography.Title>
+            <Layout.Stack gap="xl" direction="row" justifyContent="space-between">
+                <Tabs>
+                    <Tab
+                        noscroll
+                        event="platforms"
+                        href={`${path}/platforms`}
+                        selected={isTabSelected('platforms')}>Platforms</Tab>
+                    <Tab
+                        noscroll
+                        event="keys"
+                        href={`${path}/keys`}
+                        selected={isTabSelected('keys')}>API keys</Tab>
+                    <Tab
+                        noscroll
+                        event="keys"
+                        href={`${path}/dev-keys`}
+                        selected={isTabSelected('dev-keys')}>Dev keys</Tab>
+                </Tabs>
+                {#if $action}
+                    <svelte:component this={$action} />
+                {/if}
             </Layout.Stack>
-        </div>
+            <slot />
+        </Layout.Stack>
     </Layout.Stack>
 </Container>
