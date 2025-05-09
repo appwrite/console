@@ -355,45 +355,51 @@
                     </Layout.Stack>
                 </Card.Base>
             {:else}
-                <Card.Base padding="xxs">
-                    <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
-                        {#if hasProjectSidebar}
-                            <Chat {parser} width={chatWidth} hasSubNavigation={false} />
-                            {#if $showChat || isResizing}
+                <div class="studio-wrapper">
+                    <Card.Base padding="xxs">
+                        <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
+                            {#if hasProjectSidebar}
+                                <Chat {parser} width={chatWidth} hasSubNavigation={false} />
+                                {#if $showChat || isResizing}
+                                    <div
+                                        role="presentation"
+                                        class="resizer"
+                                        style:left={`${resizerLeftPosition}px`}
+                                        class:hidden={!$showChat}
+                                        bind:this={resizer}
+                                        onmousedown={startResize}
+                                        ontouchmove={startResize}>
+                                    </div>
+                                {/if}
+                            {/if}
+
+                            {@const Header = page.data.header}
+                            {#if page.data.subNavigation}
+                                {@const SubNavigation = page.data.subNavigation}
+                                <SubNavigation />
                                 <div
-                                    role="presentation"
-                                    class="resizer"
-                                    style:left={`${resizerLeftPosition}px`}
-                                    class:hidden={!$showChat}
-                                    bind:this={resizer}
-                                    onmousedown={startResize}
-                                    ontouchmove={startResize}>
+                                    style:padding-left="200px"
+                                    style:min-height="calc(100vh - 98px)">
+                                    <Layout.Stack>
+                                        {#if page.data?.header}
+                                            <Header />
+                                        {/if}
+                                        {@render children()}
+                                    </Layout.Stack>
+                                </div>
+                            {:else}
+                                <div class="editor-wrapper">
+                                    <Layout.Stack>
+                                        {#if page.data?.header}
+                                            <Header />
+                                        {/if}
+                                        {@render children()}
+                                    </Layout.Stack>
                                 </div>
                             {/if}
-                        {/if}
-
-                        {@const Header = page.data.header}
-                        {#if page.data.subNavigation}
-                            {@const SubNavigation = page.data.subNavigation}
-                            <SubNavigation />
-                            <div style:padding-left="200px" style:min-height="calc(100vh - 98px)">
-                                <Layout.Stack>
-                                    {#if page.data?.header}
-                                        <Header />
-                                    {/if}
-                                    {@render children()}
-                                </Layout.Stack>
-                            </div>
-                        {:else}
-                            <Layout.Stack>
-                                {#if page.data?.header}
-                                    <Header />
-                                {/if}
-                                {@render children()}
-                            </Layout.Stack>
-                        {/if}
-                    </Layout.Stack>
-                </Card.Base>
+                        </Layout.Stack>
+                    </Card.Base>
+                </div>
             {/if}
         </div>
         {#if hasProjectSidebar}
@@ -488,6 +494,10 @@
         padding: var(--space-4);
         z-index: 10;
         background-color: var(--bgcolor-neutral-default);
+    }
+
+    .studio-wrapper {
+        position: relative;
     }
 
     .studio-content {
@@ -600,5 +610,10 @@
         width: 100vw;
         height: 100vh;
         background-color: transparent;
+    }
+
+    .editor-wrapper {
+        flex-grow: 1;
+        padding-inline: var(--space-4);
     }
 </style>

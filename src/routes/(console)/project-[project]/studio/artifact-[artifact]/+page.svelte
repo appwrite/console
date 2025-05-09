@@ -37,8 +37,8 @@
     }
     iframe {
         border: none;
-        width: calc(100% + 2 * var(--base-8));
+        width: calc(100% + 2 * var(--space-7));
         height: 100%;
-        margin-inline-start: calc(-1 * var(--base-8));
+        margin-inline-start: calc(-1 * var(--space-7));
     }
 </style>

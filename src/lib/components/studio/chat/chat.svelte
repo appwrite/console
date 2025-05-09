@@ -169,19 +169,19 @@
 <style lang="scss">
     .chat {
         width: 0;
-        position: fixed;
-        top: 56px;
+        position: absolute;
+        top: 0;
         height: calc(100vh - 56px);
         z-index: 2;
 
         @media (min-width: 768px) {
-            top: 54px;
+            top: 0;
             height: calc(100vh - 70px);
         }
 
         &.sub-navigation {
             @media (max-width: 1024px) {
-                top: 96px;
+                top: 40px;
                 height: calc(100vh - 96px);
             }
         }
@@ -213,6 +213,7 @@
         background-color: var(--bgcolor-neutral-primary);
         border: 1px solid var(--border-neutral);
         border-radius: var(--border-radius-m);
+        padding-inline: var(--space-4);
 
         @media (min-width: 768px) {
             height: 100%;
@@ -225,12 +226,20 @@
     header {
         display: grid;
         gap: 1rem;
-        padding: var(--base-8);
+        padding-block: var(--base-8);
     }
 
     .divider-wrapper {
-        margin-inline-start: calc(-1 * var(--base-24));
-        width: calc(100% + 30px);
+        margin-inline-start: calc(-1 * var(--space-7));
+        width: calc(100% + 2 * var(--space-7));
+    }
+
+    // fix alignment bug in Safari
+    @supports (hanging-punctuation: first) and (font: -apple-system-body) and
+        (-webkit-appearance: none) {
+        .divider-wrapper {
+            margin-block-start: -1.5px;
+        }
     }
 
     .is-visible .chat-content {

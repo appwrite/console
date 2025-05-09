@@ -181,8 +181,8 @@
         bottom: 116px;
 
         @media (min-width: 768px) {
-            width: calc(100% + var(--base-16));
-            margin-inline-start: calc(-1 * var(--space-4));
+            width: calc(100% + 2 * var(--space-7));
+            margin-inline-start: calc(-1 * var(--space-7));
             position: static;
             border: 0;
         }
@@ -197,8 +197,8 @@
 
     .divider-wrapper {
         margin-block-start: 7.5px;
-        margin-inline-start: -9px;
+        margin-inline-start: calc(-1 * var(--space-7));
         margin-block-end: 8px;
-        width: calc(100% + 18px);
+        width: calc(100% + var(--space-10));
     }
 </style>
