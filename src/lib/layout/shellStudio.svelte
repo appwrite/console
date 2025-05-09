@@ -624,5 +624,6 @@
     .editor-wrapper {
         flex-grow: 1;
         padding-inline: var(--space-4);
+        width: 0;
     }
 </style>
