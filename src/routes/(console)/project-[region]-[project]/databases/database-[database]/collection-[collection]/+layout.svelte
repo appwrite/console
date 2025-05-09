@@ -52,7 +52,7 @@
             keys: page.url.pathname.endsWith($collection.$id) ? ['c'] : ['c', 'd'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/create`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/create`
                 );
             },
             icon: IconPlus,
@@ -73,7 +73,7 @@
             keys: ['g', 'd'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}`
                 );
             },
             disabled: page.url.pathname.endsWith($collection.$id),
@@ -84,7 +84,7 @@
             keys: ['g', 'a'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/attributes`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/attributes`
                 );
             },
             disabled: page.url.pathname.endsWith('attributes'),
@@ -95,7 +95,7 @@
             keys: ['g', 'i'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/indexes`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/indexes`
                 );
             },
             disabled: page.url.pathname.endsWith('indexes'),
@@ -106,7 +106,7 @@
             keys: ['g', 'c'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/activity`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/activity`
                 );
             },
             disabled: page.url.pathname.endsWith('activity'),
@@ -117,7 +117,7 @@
             keys: ['g', 'u'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/usage`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/usage`
                 );
             },
             disabled: page.url.pathname.endsWith('usage'),
@@ -128,7 +128,7 @@
             keys: ['g', 's'],
             callback() {
                 goto(
-                    `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
+                    `${base}/project-${page.params.region}-${page.params.project}/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
                 );
             },
             disabled: page.url.pathname.endsWith('settings') || !$canWriteCollections,

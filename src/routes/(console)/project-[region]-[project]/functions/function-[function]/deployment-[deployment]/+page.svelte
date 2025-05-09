@@ -118,7 +118,7 @@
                 </Menu>
                 {#if data.func.deploymentId === data.deployment.$id && data.deployment.status === 'ready'}
                     <Button
-                        href={`${base}/project-${page.params.project}/functions/function-${page.params.function}/executions/execute-function`}
+                        href={`${base}/project-${page.params.region}-${page.params.project}/functions/function-${page.params.function}/executions/execute-function`}
                         disabled={isCloud && $readOnly}>
                         Execute
                     </Button>

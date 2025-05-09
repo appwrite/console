@@ -18,20 +18,23 @@
                 .forProject(page.params.region, page.params.project)
                 .storage.deleteFile($file.bucketId, $file.$id);
             showDelete = false;
-            await goto(
-                `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${$file.bucketId}`
-            );
+
             addNotification({
                 type: 'success',
                 message: `${fileName} has been deleted`
             });
             trackEvent(Submit.FileDelete);
+            await goto(
+                `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${$file.bucketId}`
+            );
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
             trackError(error, Submit.FileDelete);
+        } finally {
+            showDelete = false;
         }
     };
 </script>

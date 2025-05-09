@@ -94,7 +94,10 @@
             single
             href="https://appwrite.io/docs/advanced/platform/webhooks"
             target="webhook"
-            on:click={() => goto(`${base}/project-${projectId}/settings/webhooks/create`)} />
+            on:click={() =>
+                goto(
+                    `${base}/project-${page.params.region}-${page.params.project}/settings/webhooks/create`
+                )} />
     {/if}
 </Container>
 

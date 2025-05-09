@@ -3,7 +3,8 @@
     import { page } from '$app/state';
     import { Breadcrumbs } from '$lib/layout';
     import { organization } from '$lib/stores/organization';
-    import { project } from '../../store';
+    import { project } from '../../../store';
+    import { devKey } from './store';
 
     $: breadcrumbs = [
         {
@@ -15,12 +16,12 @@
             title: $project?.name
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/sites`,
-            title: 'Sites'
+            href: `${base}/project-${page.params.region}-${page.params.project}/overview/dev-keys`,
+            title: 'Dev keys'
         },
         {
-            href: `${base}/project-${page.params.region}-${page.params.project}/sites/site-${page.params.site}`,
-            title: page.params.site
+            href: `${base}/project-${page.params.region}-${page.params.project}/overview/dev-keys/${$devKey?.$id}`,
+            title: $devKey?.name
         }
     ];
 </script>

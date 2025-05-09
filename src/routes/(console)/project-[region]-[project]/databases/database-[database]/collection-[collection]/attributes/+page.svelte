@@ -19,7 +19,7 @@
     import { isRelationship } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
-    import { attributes, type Attributes } from '../store';
+    import { attributes, type Attributes, isCsvImportInProgress } from '../store';
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
@@ -32,10 +32,12 @@
         IconPencil,
         IconPlus,
         IconSwitchHorizontal,
-        IconTrash
+        IconTrash,
+        IconViewList
     } from '@appwrite.io/pink-icons-svelte';
     import type { ComponentProps } from 'svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
+    import CsvDisabled from '../csvDisabled.svelte';
 
     const databaseId = page.params.database;
 
@@ -53,7 +55,7 @@
         ip: IconLocationMarker,
         url: IconLink,
         email: IconLink,
-        enum: IconSwitchHorizontal
+        enum: IconViewList
     };
 
     function getAttributeStatusBadge(status: string): ComponentProps<Badge>['type'] {
@@ -154,45 +156,53 @@
                             : '-'}
                     </Table.Cell>
                     <Table.Cell column="actions" {root}>
-                        <Popover let:toggle padding="none" placement="bottom-end">
-                            <Button text icon ariaLabel="more options" on:click={toggle}>
-                                <Icon icon={IconDotsHorizontal} size="s" />
-                            </Button>
-                            <ActionMenu.Root slot="tooltip">
-                                <ActionMenu.Item.Button
-                                    leadingIcon={IconPencil}
-                                    on:click={() => {
-                                        selectedAttribute = attribute;
-                                        showEdit = true;
-                                        showDropdown[index] = false;
-                                    }}>
-                                    Update
-                                </ActionMenu.Item.Button>
-                                {#if !isRelationship(attribute)}
+                        {#if $isCsvImportInProgress}
+                            <CsvDisabled>
+                                <Button disabled text icon ariaLabel="more options">
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                            </CsvDisabled>
+                        {:else}
+                            <Popover let:toggle padding="none" placement="bottom-end">
+                                <Button text icon ariaLabel="more options" on:click={toggle}>
+                                    <Icon icon={IconDotsHorizontal} size="s" />
+                                </Button>
+                                <ActionMenu.Root slot="tooltip">
                                     <ActionMenu.Item.Button
-                                        leadingIcon={IconPlus}
+                                        leadingIcon={IconPencil}
                                         on:click={() => {
                                             selectedAttribute = attribute;
-                                            showCreateIndex = true;
+                                            showEdit = true;
                                             showDropdown[index] = false;
                                         }}>
-                                        Create index
+                                        Update
                                     </ActionMenu.Item.Button>
-                                {/if}
-                                {#if attribute.status !== 'processing'}
-                                    <ActionMenu.Item.Button
-                                        leadingIcon={IconTrash}
-                                        on:click={() => {
-                                            selectedAttribute = attribute;
-                                            showDelete = true;
-                                            showDropdown[index] = false;
-                                            trackEvent(Click.DatabaseAttributeDelete);
-                                        }}>
-                                        Delete
-                                    </ActionMenu.Item.Button>
-                                {/if}
-                            </ActionMenu.Root>
-                        </Popover>
+                                    {#if !isRelationship(attribute)}
+                                        <ActionMenu.Item.Button
+                                            leadingIcon={IconPlus}
+                                            on:click={() => {
+                                                selectedAttribute = attribute;
+                                                showCreateIndex = true;
+                                                showDropdown[index] = false;
+                                            }}>
+                                            Create index
+                                        </ActionMenu.Item.Button>
+                                    {/if}
+                                    {#if attribute.status !== 'processing'}
+                                        <ActionMenu.Item.Button
+                                            leadingIcon={IconTrash}
+                                            on:click={() => {
+                                                selectedAttribute = attribute;
+                                                showDelete = true;
+                                                showDropdown[index] = false;
+                                                trackEvent(Click.DatabaseAttributeDelete);
+                                            }}>
+                                            Delete
+                                        </ActionMenu.Item.Button>
+                                    {/if}
+                                </ActionMenu.Root>
+                            </Popover>
+                        {/if}
                     </Table.Cell>
                 </Table.Row.Base>
             {/each}

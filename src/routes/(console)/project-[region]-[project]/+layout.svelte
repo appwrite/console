@@ -24,6 +24,7 @@
         canWriteProjects,
         canWriteSites
     } from '$lib/stores/roles';
+    import CsvImportBox from '$lib/components/csvImportBox.svelte';
 
     onMount(() => {
         return realtime
@@ -119,6 +120,7 @@
     <UploadBox />
     <MigrationBox />
     <BackupRestoreBox />
+    <CsvImportBox />
 </div>
 
 <style>

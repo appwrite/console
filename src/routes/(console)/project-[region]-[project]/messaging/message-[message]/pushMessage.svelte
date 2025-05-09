@@ -91,7 +91,7 @@
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid hideFooter={message.status != 'draft'}>
+    <CardGrid hideFooter={message.status !== 'draft'}>
         <div class="grid-1-2-col-1 u-flex-vertical u-cross-start u-gap-16">
             <Typography.Title size="s">Message</Typography.Title>
             <div class="u-flex u-margin-block-start-24 u-width-full-line">

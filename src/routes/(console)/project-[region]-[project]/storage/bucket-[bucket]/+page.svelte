@@ -53,7 +53,7 @@
                 .forProject(page.params.region, page.params.project)
                 .storage.deleteFile(file.bucketId, file.$id);
             await invalidate(Dependencies.FILES);
-            uploader.removeFile(file);
+            await uploader.removeFile(file);
             trackEvent(Submit.FileDelete);
         } catch (error) {
             addNotification({
@@ -222,8 +222,7 @@
         <Empty
             single
             target="file"
-            href="https://appwrite.io/docs/products/storage/upload-download"
-            on:click={() =>
+            on:click={() => {
                 goto(
                     `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`
                 )} />

@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, Id, Modal } from '$lib/components';
+    import { Alert, Confirm, Id } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button as ConsoleButton, InputChoice } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -112,7 +112,6 @@
 
     let selectedRows: string[] = [];
     let showDelete = false;
-    let deleting = false;
 
     async function handleDelete() {
         showDelete = false;
@@ -278,11 +277,7 @@
     </FloatingActionBar>
 {/if}
 
-<Modal
-    title="Delete Documents"
-    bind:show={showDelete}
-    onSubmit={handleDelete}
-    dismissible={!deleting}>
+<Confirm title="Delete Documents" bind:open={showDelete} onSubmit={handleDelete}>
     <div>
         Are you sure you want to delete <b>{selectedRows.length}</b>
         {selectedRows.length > 1 ? 'documents' : 'document'}?
@@ -334,12 +329,4 @@
             <p class="u-bold">This action is irreversible.</p>
         {/if}
     </div>
-
-    <svelte:fragment slot="footer">
-        <ConsoleButton text on:click={() => (showDelete = false)} disabled={deleting}
-            >Cancel</ConsoleButton>
-        <ConsoleButton secondary submit disabled={deleting || (relAttributes?.length && !checked)}>
-            Delete
-        </ConsoleButton>
-    </svelte:fragment>
-</Modal>
+</Confirm>
