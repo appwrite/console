@@ -65,6 +65,12 @@
     let shouldAnimateThemeToggle = $state(false);
     let showAccountMenu = $state(false);
     let activeTheme = $state($app.theme);
+    let isOnEditorPage = $state(false);
+
+    $effect(() => {
+        isOnEditorPage =
+            page.url.pathname.includes('studio') && page.url.pathname.includes('artifact');
+    });
 
     function updateTheme(theme: 'light' | 'dark' | 'auto') {
         const themeInUse =
@@ -359,7 +365,7 @@
                 </Card.Base>
             {:else}
                 <div class="studio-wrapper">
-                    <Card.Base padding={$showChat ? 'xxs' : 's'}>
+                    <Card.Base padding={isOnEditorPage ? 'xxs' : 's'}>
                         <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
                             {#if hasProjectSidebar}
                                 <Chat {parser} width={chatWidth} hasSubNavigation={false} />

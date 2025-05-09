@@ -1,11 +1,22 @@
 <script lang="ts">
-    import { Layout, Typography, Divider, Icon, Button } from '@appwrite.io/pink-svelte';
+    import {
+        Layout,
+        Typography,
+        Divider,
+        Icon,
+        Button,
+        ActionMenu
+    } from '@appwrite.io/pink-svelte';
     import { isTabSelected } from '$lib/helpers/load';
     import { page } from '$app/state';
     import { Tab, Tabs, Terminal } from '$lib/components';
     import { base } from '$app/paths';
     import { isSmallViewport } from '$lib/stores/viewport';
-    import { IconChevronDoubleUp, IconTerminal } from '@appwrite.io/pink-icons-svelte';
+    import {
+        IconChevronDoubleUp,
+        IconChevronDown,
+        IconTerminal
+    } from '@appwrite.io/pink-icons-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import type { Terminal as XTerm } from '@xterm/xterm';
     import {
@@ -18,6 +29,7 @@
     import { showChat } from '$lib/stores/chat';
     import { default as IconChatLayout } from '../assets/chat-layout.svelte';
     import { filesystem } from '$lib/components/editor/filesystem';
+    import { InputSelect } from '$lib/elements/forms/index.js';
 
     const { children } = $props();
 
@@ -121,25 +133,43 @@
     height={$isSmallViewport ? 'calc(100vh - 218px)' : 'calc(100vh - 88px)'}
     gap="none">
     <Layout.Stack direction="column" gap="none">
-        <Layout.Stack gap="xxs" direction="row" alignItems="center">
-            {#if !$showChat}
-                <Button.Button
-                    variant="compact"
-                    color="--fgcolor-neutral-secondary"
-                    on:click={() => {
-                        showChat.set(true);
-                    }}><Icon icon={IconChatLayout} size="l"></Icon></Button.Button>
+        <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Layout.Stack gap="xxs" direction="row" alignItems="center" inline>
+                {#if !$showChat}
+                    <Button.Button
+                        variant="compact"
+                        color="--fgcolor-neutral-secondary"
+                        style="--p-button-padding-block:0"
+                        on:click={() => {
+                            showChat.set(true);
+                        }}><Icon icon={IconChatLayout} size="l"></Icon></Button.Button>
+                {/if}
+                <Tabs>
+                    {#each tabs as tab}
+                        <Tab
+                            href={tab.href}
+                            selected={isTabSelected(tab, page.url.pathname, path, tabs)}
+                            event={tab.event}>
+                            {tab.title}
+                        </Tab>
+                    {/each}
+                </Tabs>
+            </Layout.Stack>
+
+            <ActionMenu.Item.Button trailingIcon={IconChevronDown}
+                >Dashboard</ActionMenu.Item.Button>
+            {#if !$isSmallViewport}
+                <Layout.Stack gap="xxs" direction="row" alignItems="center" inline>
+                    <InputSelect
+                        id="artificat-version"
+                        options={[
+                            { value: '0.2', label: 'v0.2' },
+                            { value: '0.1', label: 'v0.1' }
+                        ]}
+                        value="0.2" />
+                    <Button.Button size="s" variant="primary">Release</Button.Button>
+                </Layout.Stack>
             {/if}
-            <Tabs>
-                {#each tabs as tab}
-                    <Tab
-                        href={tab.href}
-                        selected={isTabSelected(tab, page.url.pathname, path, tabs)}
-                        event={tab.event}>
-                        {tab.title}
-                    </Tab>
-                {/each}
-            </Tabs>
         </Layout.Stack>
         <div class="divider-wrapper">
             <Divider />
