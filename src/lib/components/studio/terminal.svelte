@@ -2,6 +2,7 @@
     import '@xterm/xterm/css/xterm.css';
     import type { Action } from 'svelte/action';
     import type { Synapse } from './synapse.svelte';
+    import { throttle } from '$lib/helpers/functions';
 
     type Props = {
         height: number;
@@ -38,23 +39,21 @@
                 const { data } = message;
                 if (typeof data === 'string') term.write(data);
             });
-            const observer = new ResizeObserver(() => {
+            const resizer = throttle(() => {
                 const { cols, rows } = fitAddon.proposeDimensions();
                 if (term.cols === cols && term.rows === rows) return;
                 if (!Number.isInteger(cols) || !Number.isInteger(rows)) return;
-                term.resize(cols - 1, rows);
+                term.resize(cols - 1, rows - 1);
+                synapse.dispatch('terminal', {
+                    operation: 'updateSize',
+                    params: {
+                        rows: rows - 0.5,
+                        cols: cols - 0.5
+                    }
+                });
+            }, 50);
 
-                if (resizeTimeout) clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    synapse.dispatch('terminal', {
-                        operation: 'updateSize',
-                        params: {
-                            rows,
-                            cols: cols - 1
-                        }
-                    });
-                }, 200);
-            });
+            const observer = new ResizeObserver(resizer);
             observer.observe(node);
         };
         init();
@@ -65,6 +64,8 @@
 
 <style>
     .terminal-container {
+        display: grid;
+        place-content: center;
         padding: var(--space-3);
         border-radius: var(--border-radius-xsmall);
         background-color: black;
