@@ -27,10 +27,16 @@
         const role = permission.split(':')[0];
         const id = permission.split(':')[1].split('/')[0];
         if (role === 'user') {
-            return await sdk.forProject.users.get(id);
+            const user = await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.get(id);
+            return user;
         }
         if (role === 'team') {
-            return await sdk.forProject.teams.get(id);
+            const team = await sdk
+                .forProject(page.params.region, page.params.project)
+                .teams.get(id);
+            return team;
         }
     }
 </script>
@@ -82,7 +88,7 @@
                             {/if}
                             <div>
                                 <Button.Anchor
-                                    href={`${base}/project-${page.params.project}/auth/user-${data?.$id}`}
+                                    href={`${base}/project-${page.params.region}-${page.params.project}/auth/user-${data?.$id}`}
                                     size="xs"
                                     target="_blank"
                                     variant="secondary">
@@ -94,7 +100,7 @@
                             <Typography.Text>Members: {data?.total}</Typography.Text>
                             <div>
                                 <Button.Anchor
-                                    href={`${base}/project-${page.params.project}/auth/teams/team-${data?.$id}`}
+                                    href={`${base}/project-${page.params.region}-${page.params.project}/auth/teams/team-${data?.$id}`}
                                     size="s"
                                     target="_blank"
                                     variant="secondary">

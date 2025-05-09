@@ -1,12 +1,5 @@
-<script lang="ts">
-    import { Icon, Tag } from '@appwrite.io/pink-svelte';
-    import { Copy } from '.';
-    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
-
-    export let value: string;
-    export let event: string = null;
-
-    function truncateText(node: HTMLElement) {
+<script context="module" lang="ts">
+    export function truncateText(node: HTMLElement) {
         const MAX_TRIES = 100;
         let originalText = node.textContent;
         function checkOverflow() {
@@ -46,6 +39,15 @@
             }
         };
     }
+</script>
+
+<script lang="ts">
+    import { Icon, Tag } from '@appwrite.io/pink-svelte';
+    import { Copy } from '.';
+    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+
+    export let value: string;
+    export let event: string = null;
 </script>
 
 <Copy {value} {event}>

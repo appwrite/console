@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { HeaderAlert } from '$lib/layout';
@@ -14,7 +14,7 @@
     $: redirectUrl = `${base}/organization-${$organization?.$id}/billing#payment-history`;
 </script>
 
-{#if $organization?.$id && $organization?.status === teamStatusReadonly && $organization?.remarks === billingLimitOutstandingInvoice && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
+{#if $organization?.$id && $organization?.status === teamStatusReadonly && $organization?.remarks === billingLimitOutstandingInvoice && $readOnly && !hideBillingHeaderRoutes.includes(page.url.pathname)}
     <HeaderAlert type="error" title="Access restricted">
         <svelte:fragment>
             Your organization’s access to resources has been restricted due to unpaid invoices.

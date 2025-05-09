@@ -5,6 +5,7 @@ services:
             context: .
             args:
                 PUBLIC_CONSOLE_MODE: ${PUBLIC_CONSOLE_MODE}
+                PUBLIC_APPWRITE_MULTI_REGION: ${PUBLIC_APPWRITE_MULTI_REGION}
                 PUBLIC_APPWRITE_ENDPOINT: ${PUBLIC_APPWRITE_ENDPOINT}
                 PUBLIC_GROWTH_ENDPOINT: ${PUBLIC_GROWTH_ENDPOINT}
                 PUBLIC_STRIPE_KEY: ${PUBLIC_STRIPE_KEY}
@@ -20,6 +21,7 @@ services:
                       - build/
         environment:
             - PUBLIC_CONSOLE_MODE
+            - PUBLIC_APPWRITE_MULTI_REGION
             - PUBLIC_APPWRITE_ENDPOINT
             - PUBLIC_GROWTH_ENDPOINT
             - PUBLIC_STRIPE_KEY

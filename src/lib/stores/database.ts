@@ -14,7 +14,11 @@ export const backupsBannerId = 'banner:databaseBackups';
 
 export const showPolicyAlert = writable<boolean>(false);
 
-export async function checkForDatabaseBackupPolicies(database: Models.Database) {
+export async function checkForDatabaseBackupPolicies(
+    region: string,
+    projectId: string,
+    database: Models.Database
+) {
     // fast path: return if user dismissed the banner
     if (!shouldShowNotification(backupsBannerId)) return;
 
@@ -23,10 +27,9 @@ export async function checkForDatabaseBackupPolicies(database: Models.Database) 
 
     if (isCloud && backupsEnabled) {
         try {
-            const policies = await sdk.forProject.backups.listPolicies([
-                Query.limit(1),
-                Query.equal('resourceId', database.$id)
-            ]);
+            const policies = await sdk
+                .forProject(region, projectId)
+                .backups.listPolicies([Query.limit(1), Query.equal('resourceId', database.$id)]);
 
             total = policies.total;
         } catch (e) {

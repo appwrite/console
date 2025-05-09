@@ -4,7 +4,6 @@
     import { Card, Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let source = 'empty_state_card';
-    export let noAspectRatio = false;
 </script>
 
 <Card.Base variant="secondary" padding="s" radius="s">

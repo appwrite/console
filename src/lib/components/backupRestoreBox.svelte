@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sdk } from '$lib/stores/sdk';
+    import { realtime } from '$lib/stores/sdk';
     import { type Payload } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
@@ -34,6 +34,7 @@
 
     function showRestoreNotification(newDatabaseId: string, newDatabaseName: string) {
         if (newDatabaseId && newDatabaseName && lastDatabaseRestorationId !== newDatabaseId) {
+            const region = page.params.region;
             const project = page.params.project;
             lastDatabaseRestorationId = newDatabaseId;
 
@@ -45,7 +46,9 @@
                     {
                         name: 'View restored data',
                         method: () => {
-                            goto(`${base}/project-${project}/databases/database-${newDatabaseId}`);
+                            goto(
+                                `${base}/project-${region}-${project}/databases/database-${newDatabaseId}`
+                            );
                         }
                     }
                 ]
@@ -123,16 +126,18 @@
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
         if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
 
-        return sdk.forConsole.client.subscribe('console', (response) => {
-            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+        return realtime
+            .forProject(page.params.region, page.params.project)
+            .subscribe('console', (response) => {
+                if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
-            if (
-                response.events.includes('archives.*') ||
-                response.events.includes('restorations.*')
-            ) {
-                updateOrAddItem(response.payload);
-            }
-        });
+                if (
+                    response.events.includes('archives.*') ||
+                    response.events.includes('restorations.*')
+                ) {
+                    updateOrAddItem(response.payload);
+                }
+            });
     });
 </script>
 

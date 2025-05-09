@@ -61,7 +61,7 @@
         </Layout.Stack>
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Button
-                href={`${base}/project-${page.params.project}/settings/domains/create`}
+                href={`${base}/project-${page.params.region}-${page.params.project}/settings/domains/create`}
                 event="create_user"
                 size="s">
                 <Icon size="s" icon={IconPlus} slot="start" />

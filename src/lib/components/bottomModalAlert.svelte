@@ -13,7 +13,7 @@
     import { BillingPlan } from '$lib/constants';
     import { upgradeURL } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/state';
     import { Click, trackEvent } from '$lib/actions/analytics';
 
@@ -21,7 +21,7 @@
     let openModalOnMobile = false;
 
     function getPageScope(pathname: string) {
-        const isProjectPage = pathname.includes('project-[project]');
+        const isProjectPage = pathname.includes('project-[region]-[project]');
         const isOrganizationPage = pathname.includes('organization-[organization]');
 
         return { isProjectPage, isOrganizationPage };

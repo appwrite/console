@@ -1,15 +1,14 @@
 import { goto } from '$app/navigation';
-import { project } from '$routes/(console)/project-[project]/store';
-import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 import { base } from '$app/paths';
 import { IconChevronRight } from '@appwrite.io/pink-icons-svelte';
+import { page } from '$app/state';
 
 export const topicsSearcher = (async (query: string) => {
-    const { topics } = await sdk.forProject.messaging.listTopics([], query || undefined);
-
-    const projectId = get(project).$id;
+    const { topics } = await sdk
+        .forProject(page.params.region, page.params.project)
+        .messaging.listTopics([], query || undefined);
 
     return topics
         .filter((topic) => topic.name.toLowerCase().includes(query.toLowerCase()))
@@ -19,7 +18,9 @@ export const topicsSearcher = (async (query: string) => {
                     group: 'topics',
                     label: topic.name,
                     callback: () => {
-                        goto(`${base}/project-${projectId}/messaging/topics/topic-${topic.$id}`);
+                        goto(
+                            `${base}/project-${page.params.region}-${page.params.project}/messaging/topics/topic-${topic.$id}`
+                        );
                     },
                     icon: IconChevronRight // TODO: @itznotabug - 'send' no replacement yet.
                 }) as const

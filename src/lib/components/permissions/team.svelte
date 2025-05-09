@@ -15,6 +15,7 @@
         Table,
         Typography
     } from '@appwrite.io/pink-svelte';
+    import { page } from '$app/state';
 
     export let show: boolean;
     export let groups: Writable<Map<string, Permission>>;
@@ -40,10 +41,9 @@
 
     async function request() {
         if (!show) return;
-        results = await sdk.forProject.teams.list(
-            [Query.limit(5), Query.offset(offset)],
-            search || undefined
-        );
+        results = await sdk
+            .forProject(page.params.region, page.params.project)
+            .teams.list([Query.limit(5), Query.offset(offset)], search || undefined);
     }
 
     function onSelection(role: string) {

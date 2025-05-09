@@ -11,7 +11,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { page } from '$app/state';
     import { Typography } from '@appwrite.io/pink-svelte';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
 
     $: $selectedFeedback = feedbackOptions.find((option) => option.type === $feedback.type);
 

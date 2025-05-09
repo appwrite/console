@@ -60,3 +60,5 @@ export const organizationList = derived(
 export const organization = derived(page, ($page) => $page.data?.organization as Organization);
 export const currentPlan = derived(page, ($page) => $page.data?.currentPlan as Plan);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
+
+export const regions = writable<Models.ConsoleRegionList | undefined>(undefined);

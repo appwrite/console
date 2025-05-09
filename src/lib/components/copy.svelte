@@ -9,8 +9,9 @@
     export let event: string = null;
     export let eventContext = 'click_id_tag';
     export let tooltipDisabled = false;
+    export let copyText: string = 'Click to copy';
 
-    let content = 'Click to copy';
+    let content = copyText;
 
     async function handleClick() {
         const success = await copy(value);
