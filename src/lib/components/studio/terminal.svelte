@@ -63,6 +63,6 @@
         padding: var(--space-3);
         border-radius: var(--border-radius-xsmall);
         background-color: black;
-        overflow: none;
+        overflow: hidden;
     }
 </style>
