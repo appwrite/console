@@ -126,18 +126,20 @@
         </Layout.Stack>
     </Upload.Dropzone>
     {#if files[input.name]?.length}
-        <Upload.List
-            bind:files={files[input.name]}
-            on:remove={(e) => (files[input.name] = removeFile(e.detail, files[input.name]))} />
+        {#key files[input.name]}
+            <Upload.List
+                files={files[input.name]?.length
+                    ? Array.from(files[input.name]).map((f) => {
+                          return {
+                              ...f,
+                              extension: f.type,
+                              removable: true
+                          };
+                      })
+                    : []}
+                on:remove={(e) => (files[input.name] = removeFile(e.detail, files[input.name]))} />
+        {/key}
     {/if}
-    <!--    <InputFile-->
-    <!--        label={input.label}-->
-    <!--        allowedFileExtensions={input.allowedFileExtensions}-->
-    <!--        required={!input.optional}-->
-    <!--        tooltip={input.tooltip}-->
-    <!--        {popover}-->
-    <!--        {popoverProps}-->
-    <!--        bind:files={files[input.name]} />-->
 {:else if input.type === 'switch'}
     <InputSwitch label={input.label} id={input.name} bind:value={params[input.name]}>
         <svelte:fragment slot="description">

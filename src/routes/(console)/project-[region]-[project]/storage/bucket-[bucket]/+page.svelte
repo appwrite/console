@@ -222,10 +222,7 @@
         <Empty
             single
             target="file"
-            on:click={() => {
-                goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`
-                )} />
+            href={`${base}/project-${page.params.region}-${page.params.project}/storage/bucket-${page.params.bucket}/create`} />
     {/if}
 </Container>
 

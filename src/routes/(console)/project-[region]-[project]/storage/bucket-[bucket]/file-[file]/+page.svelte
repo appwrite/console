@@ -241,7 +241,7 @@
         </CardGrid>
 
         <div class="tokens-section">
-            <CardGrid hideOverflow>
+            <CardGrid>
                 <svelte:fragment slot="title">File tokens</svelte:fragment>
                 Use tokens to provide public access to the file.
                 <svelte:fragment slot="aside">
@@ -299,8 +299,8 @@
                                                     <ActionMenu.Root>
                                                         <ActionMenu.Root noPadding>
                                                             <ActionMenu.Item.Button
-                                                                on:click={(e) => {
-                                                                    toggle(e);
+                                                                on:click={() => {
+                                                                    toggle();
                                                                     showCopyUrlModal = true;
                                                                     selectedFileToken = token;
                                                                 }}
@@ -310,8 +310,8 @@
                                                         </ActionMenu.Root>
                                                         <ActionMenu.Item.Button
                                                             leadingIcon={IconPencil}
-                                                            on:click={(e) => {
-                                                                toggle(e);
+                                                            on:click={() => {
+                                                                toggle();
                                                                 showManageToken = true;
                                                                 selectedFileToken = token;
                                                             }}>
@@ -319,8 +319,8 @@
                                                         </ActionMenu.Item.Button>
                                                         <ActionMenu.Item.Button
                                                             leadingIcon={IconKey}
-                                                            on:click={(e) => {
-                                                                toggle(e);
+                                                            on:click={() => {
+                                                                toggle();
                                                                 showManageToken = true;
                                                                 tokenPermissionsMode = true;
                                                                 selectedFileToken = token;
@@ -331,7 +331,7 @@
                                                             status="danger"
                                                             leadingIcon={IconTrash}
                                                             on:click={async (e) => {
-                                                                toggle(e);
+                                                                toggle();
                                                                 tokenDeleteMode = true;
                                                                 showManageToken = true;
                                                                 selectedFileToken = token;
