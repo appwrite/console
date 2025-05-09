@@ -518,8 +518,8 @@
 
         &.project-sidebar {
             @media (min-width: 1024px) {
-                width: calc(100vw - 52px);
-                margin-left: 52px;
+                width: calc(100vw - 48px);
+                margin-left: 48px;
             }
         }
     }

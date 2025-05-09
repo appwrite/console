@@ -34,17 +34,18 @@
 
 <nav style:--icon-fill="var(--fgcolor-neutral-tertiary)" class:isOpen>
     <Layout.Stack direction="column" justifyContent="space-between" height="100%">
-        <Layout.Stack gap="xs">
+        <Layout.Stack gap="xs" inline>
             {#each menuItems as menuItem}
                 {#if menuItem.type === 'item'}
                     <ActionMenu.Item.Anchor
-                        style={`background-color: ${
+                        style={`--space-5: 8px; background-color: ${
                             page.url.pathname.includes(menuItem.path)
                                 ? 'var(--overlay-neutral-hover)'
                                 : 'auto'
                         }`}
                         href={`${base}/project-${project.$id}/${menuItem.path}`}
                         leadingIcon={menuItem.icon}
+                        size="l"
                         on:click={() => {
                             if ($isSmallViewport) {
                                 isOpen = false;
@@ -73,8 +74,12 @@
         z-index: 10;
 
         @media (min-width: 768px) {
-            width: 52px;
+            width: 48px;
         }
+    }
+
+    :global(nav > div) {
+        width: 32px !important;
     }
 
     .isOpen {
