@@ -32,7 +32,7 @@
     ];
 </script>
 
-<nav style:--icon-fill="var(--fgcolor-neutral-tertiary)" class:isOpen>
+<nav style:--icon-fill="var(--fgcolor-neutral-tertiary)" class="project-sidebar" class:isOpen>
     <Layout.Stack direction="column" justifyContent="space-between" height="100%">
         <Layout.Stack gap="xs" inline>
             {#each menuItems as menuItem}
@@ -75,12 +75,6 @@
 
         @media (min-width: 768px) {
             width: 48px;
-        }
-    }
-
-    :global(nav > div) {
-        @media (min-width: 768px) {
-            width: 32px !important;
         }
     }
 
