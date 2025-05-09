@@ -41,12 +41,12 @@
                 const { cols, rows } = fitAddon.proposeDimensions();
                 if (term.cols === cols && term.rows === rows) return;
                 if (!Number.isInteger(cols) || !Number.isInteger(rows)) return;
-                term.resize(cols - 1, rows);
+                term.resize(cols - 3, rows);
                 synapse.dispatch('terminal', {
                     operation: 'updateSize',
                     params: {
                         rows,
-                        cols: cols - 1
+                        cols: cols - 3
                     }
                 });
             });
