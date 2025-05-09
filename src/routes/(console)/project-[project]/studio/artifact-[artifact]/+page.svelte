@@ -8,7 +8,7 @@
     import { Layout, Icon } from '@appwrite.io/pink-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
 
-    const previewUrl = 'https://getbootstrap.com/docs/5.3/examples/blog';
+    const previewUrl = 'https://www.aloyoga.com/';
 
     let iframeRef: HTMLIFrameElement | null = null;
     $: previewFrameRef.set(iframeRef);
