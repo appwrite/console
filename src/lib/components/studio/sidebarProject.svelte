@@ -79,7 +79,9 @@
     }
 
     :global(nav > div) {
-        width: 32px !important;
+        @media (min-width: 768px) {
+            width: 32px !important;
+        }
     }
 
     .isOpen {

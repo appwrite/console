@@ -505,7 +505,7 @@
 
     .studio-content {
         min-height: calc(100vh - 54px);
-        margin-top: 32px;
+        margin-top: 56px;
         width: 100vw;
         position: relative;
 
