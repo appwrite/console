@@ -12,17 +12,17 @@
     export let keyIds: string[] = [];
     export let keyType: 'api' | 'dev' = 'api';
 
-    const projectId = page.params.project;
+    let error: string;
 
     const isApiKey = keyType === 'api';
     const label = isApiKey ? 'API' : 'dev';
-    const slug = isApiKey ? 'keys' : 'dev-keys';
-    const event = isApiKey ? Submit.KeyDelete : Submit.DevKeyDelete;
-    const dependency = isApiKey ? Dependencies.KEYS : Dependencies.DEV_KEYS;
-
-    let error: string;
+    const projectId = page.params.project;
 
     async function handleDelete() {
+        const slug = isApiKey ? 'keys' : 'dev-keys';
+        const event = isApiKey ? Submit.KeyDelete : Submit.DevKeyDelete;
+        const dependency = isApiKey ? Dependencies.KEYS : Dependencies.DEV_KEYS;
+
         try {
             await Promise.all(
                 keyIds.map((key) =>
