@@ -57,6 +57,12 @@
             workdir: `/artifact/${artifactId}`
         }
     });
+    synapse.dispatch('terminal', {
+        operation: 'createCommand',
+        params: {
+            command: 'clear && history -c\n'
+        }
+    });
     synapse
         .dispatch('fs', {
             operation: 'getFolder',
