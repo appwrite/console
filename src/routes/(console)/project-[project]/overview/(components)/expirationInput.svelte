@@ -62,15 +62,9 @@
     ];
 
     export let value: string | null = null;
-<<<<<<<< HEAD:src/routes/(console)/project-[project]/overview/(components)/expirationInput.svelte
     export let keyType: 'api' | 'dev' = 'api';
 
     const options = keyType === 'api' ? defaultOptions : limitedOptions;
-========
-    export let dateSelectorLabel: string | undefined = undefined;
-    export let selectorLabel: string | undefined = 'Expiration Date';
-    export let resourceType: string | 'key' | 'token' | undefined = 'key';
->>>>>>>> feat-pink-v2:src/lib/components/expirationInput.svelte
 
     function initExpirationSelect() {
         if (value === null || !isValidDate(value)) {
@@ -91,10 +85,6 @@
     }
     let expirationSelect = initExpirationSelect();
     let expirationCustom: string | null = value ?? null;
-    $: helper =
-        expirationSelect !== 'custom' && expirationSelect !== null
-            ? `Your ${resourceType} will expire in ${toLocaleDate(value)}`
-            : null;
 
     $: {
         if (!isSameDay(new Date(expirationSelect), new Date(value))) {
@@ -108,7 +98,6 @@
             : undefined;
 </script>
 
-<<<<<<<< HEAD:src/routes/(console)/project-[project]/overview/(components)/expirationInput.svelte
 <InputSelect
     required
     {helper}
@@ -117,10 +106,6 @@
     label="Expiration date"
     bind:value={expirationSelect} />
 
-========
-<InputSelect bind:value={expirationSelect} {options} id="preset" label={selectorLabel} {helper}>
-</InputSelect>
->>>>>>>> feat-pink-v2:src/lib/components/expirationInput.svelte
 {#if expirationSelect === 'custom'}
-    <InputDateTime required id="expire" label={dateSelectorLabel} bind:value={expirationCustom} />
+    <InputDateTime required id="expire" label="" bind:value={expirationCustom} />
 {/if}
