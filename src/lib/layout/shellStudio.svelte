@@ -157,7 +157,7 @@
                 ('touches' in event ? event.touches[0].clientX : event.clientX) - 60;
             const maxSize = page.data?.subNavigation
                 ? window.innerWidth - 660
-                : window.innerWidth - 460;
+                : window.innerWidth - 530;
 
             const minSize = 320;
             if (resizerLeftPosition > maxSize) {
