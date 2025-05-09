@@ -25,6 +25,7 @@
         try {
             await sdk.forConsole.projects.update($project.$id, name);
             await invalidate(Dependencies.PROJECT);
+            await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
                 message: 'Project name has been updated'

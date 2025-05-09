@@ -113,15 +113,12 @@
     let isExtensionsDisabled = true;
 
     $: if (permissions) {
-        if (symmetricDifference(permissions, data.bucket.$permissions).length) {
-            $arePermsDisabled = false;
-        } else $arePermsDisabled = true;
+        $arePermsDisabled = !symmetricDifference(permissions, data.bucket.$permissions).length;
     }
 
     $: if (extensions) {
-        if (JSON.stringify(extensions) !== JSON.stringify(data.bucket.allowedFileExtensions)) {
-            isExtensionsDisabled = false;
-        } else isExtensionsDisabled = true;
+        isExtensionsDisabled =
+            JSON.stringify(extensions) === JSON.stringify(data.bucket.allowedFileExtensions);
     }
 
     function toggleBucket() {

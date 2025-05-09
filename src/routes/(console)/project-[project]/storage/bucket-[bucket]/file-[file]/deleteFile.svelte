@@ -13,12 +13,13 @@
     let error: string;
     const deleteFile = async () => {
         try {
+            const fileName = $file.name;
             await sdk.forProject.storage.deleteFile($file.bucketId, $file.$id);
             showDelete = false;
             await goto(`${base}/project-${page.params.project}/storage/bucket-${$file.bucketId}`);
             addNotification({
                 type: 'success',
-                message: `${$file.name} has been deleted`
+                message: `${fileName} has been deleted`
             });
             trackEvent(Submit.FileDelete);
         } catch (error) {

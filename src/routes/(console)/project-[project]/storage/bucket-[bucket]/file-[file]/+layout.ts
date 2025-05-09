@@ -7,11 +7,13 @@ import { error } from '@sveltejs/kit';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.FILE);
+    depends(Dependencies.FILE_TOKENS);
 
     try {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
+            tokens: await sdk.forProject.tokens.list(params.bucket, params.file),
             file: await sdk.forProject.storage.getFile(params.bucket, params.file)
         };
     } catch (e) {
