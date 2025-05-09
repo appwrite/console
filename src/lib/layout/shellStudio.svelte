@@ -113,6 +113,9 @@
         if ($isSmallViewport || page.params.artifact) {
             showChat.set(true);
         }
+        if (!page.params.artifact) {
+            showChat.set(false);
+        }
     });
 
     let resizer = $state(null);
@@ -356,7 +359,7 @@
                 </Card.Base>
             {:else}
                 <div class="studio-wrapper">
-                    <Card.Base padding="xxs">
+                    <Card.Base padding={$showChat ? 'xxs' : 's'}>
                         <Layout.Stack direction="row" gap={$showChat ? 'l' : 'none'}>
                             {#if hasProjectSidebar}
                                 <Chat {parser} width={chatWidth} hasSubNavigation={false} />
