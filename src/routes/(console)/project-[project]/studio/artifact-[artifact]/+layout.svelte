@@ -20,6 +20,8 @@
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
     import type { Terminal as XTerm } from '@xterm/xterm';
     import {
+        disableBodySelect,
+        enabledBodySelect,
         getTerminalHeightFromPrefs,
         getTerminalOpenFromPrefs,
         saveTerminalHeightToPrefs,
@@ -99,7 +101,7 @@
         window.addEventListener('mouseup', stopResize);
         window.addEventListener('touchmove', resize);
         window.addEventListener('touchend', stopResize);
-        document.body.style.userSelect = 'none';
+        disableBodySelect();
         if ($previewFrameRef) {
             $previewFrameRef.style.pointerEvents = 'none';
         }
@@ -127,7 +129,7 @@
         window.removeEventListener('mouseup', stopResize);
         window.removeEventListener('touchmove', resize);
         window.removeEventListener('touchend', stopResize);
-        document.body.style.userSelect = '';
+        enabledBodySelect();
         if ($previewFrameRef) {
             $previewFrameRef.style.pointerEvents = '';
         }
