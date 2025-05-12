@@ -14,6 +14,7 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAppwrite,
+        IconChevronDoubleDown,
         IconChevronDoubleUp,
         IconChevronDown,
         IconPlusSm,
@@ -219,7 +220,9 @@
                         <Icon icon={IconTerminal} color="--fgcolor-neutral-tertiary" />
                         <Typography.Text>Terminals</Typography.Text>
                     </Layout.Stack>
-                    <Icon icon={IconChevronDoubleUp} color="--fgcolor-neutral-tertiary" />
+                    <Icon
+                        icon={terminalOpen ? IconChevronDoubleDown : IconChevronDoubleUp}
+                        color="--fgcolor-neutral-tertiary" />
                 </Layout.Stack>
             </summary>
             <Layout.Stack>
