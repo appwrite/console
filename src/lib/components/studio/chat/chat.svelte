@@ -257,7 +257,7 @@
         }
 
         @media (min-width: 768px) {
-            margin-block-end: var(--space-4);
+            margin-block-end: var(--space-7);
         }
     }
 
