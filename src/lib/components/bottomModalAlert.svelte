@@ -4,7 +4,7 @@
     import { app } from '$lib/stores/app';
     import {
         type BottomModalAlertItem,
-        bottomModalAlerts,
+        bottomModalAlertsConfig,
         dismissBottomModalAlert,
         hideAllModalAlerts
     } from '$lib/stores/bottom-alerts';
@@ -16,6 +16,7 @@
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
+    import { goto } from '$app/navigation';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
@@ -33,22 +34,26 @@
         return alerts
             .sort((a, b) => b.importance - a.importance)
             .filter((alert) => {
-                return (
-                    alert.show &&
-                    shouldShowNotification(alert.id) &&
-                    // if no scope > show in projects & org pages.
-                    ((!alert.scope && (isProjectPage || isOrganizationPage)) ||
-                        // project scope, show only in project pages
-                        (isProjectPage && alert.scope === 'project') ||
-                        // organization scope, show only in organization pages
-                        (isOrganizationPage && alert.scope === 'organization'))
-                );
+                if (!alert.show || !shouldShowNotification(alert.id)) return false;
+
+                switch (alert.scope) {
+                    case 'everywhere':
+                        return true;
+                    case 'project':
+                        return isProjectPage;
+                    case 'organization':
+                        return isOrganizationPage;
+                    default:
+                        return false;
+                }
             });
     }
 
-    $: filteredModalAlerts = filterModalAlerts($bottomModalAlerts, $page.route.id);
+    $: filteredModalAlerts = filterModalAlerts($bottomModalAlertsConfig.alerts, $page.route.id);
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
+
+    $: hasOnlyPrimaryCta = typeof currentModalAlert?.learnMore === 'undefined';
 
     function handleClose() {
         filteredModalAlerts.forEach((alert) => {
@@ -65,6 +70,45 @@
 
     function showPrevious() {
         currentIndex = (currentIndex - 1 + filteredModalAlerts.length) % filteredModalAlerts.length;
+    }
+
+    function getMobileWindowConfig(): {
+        html: boolean;
+        cta: boolean;
+        title: string;
+        message: string;
+    } {
+        const config = $bottomModalAlertsConfig?.mobileSingleLayout;
+        const visibleAlerts = $bottomModalAlertsConfig.alerts.filter((a) => a.show);
+
+        const fallback = {
+            title: 'New features available',
+            message: 'Explore new features to enhance your projects and improve security.'
+        };
+
+        const shouldApplyConfig = config?.enabled === true && visibleAlerts.length === 1;
+
+        return {
+            cta: !!(shouldApplyConfig && config.cta),
+            html: !!(shouldApplyConfig && config.isHtml),
+            title: shouldApplyConfig && config.title ? config.title : fallback.title,
+            message: shouldApplyConfig && config.message ? config.message : fallback.message
+        };
+    }
+
+    function triggerMobileWindowLink() {
+        handleClose();
+
+        const url = $bottomModalAlertsConfig.mobileSingleLayout.cta.link({
+            organization: $organization,
+            project: $project
+        });
+
+        if ($bottomModalAlertsConfig.mobileSingleLayout.cta.external) {
+            window.open(url, '_blank');
+        } else {
+            goto(url);
+        }
     }
 
     function showUpgrade() {
@@ -159,8 +203,8 @@
                         <div
                             class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
                             <Button
-                                secondary
-                                class="button"
+                                secondary={!hasOnlyPrimaryCta}
+                                class={`${hasOnlyPrimaryCta ? 'only-primary-cta' : ''}`}
                                 href={shouldShowUpgrade
                                     ? $upgradeURL
                                     : currentModalAlert.cta.link({
@@ -170,6 +214,12 @@
                                 external={!!currentModalAlert.cta.external}
                                 fullWidthMobile
                                 on:click={() => {
+                                    if (currentModalAlert.cta?.hideOnClick === true) {
+                                        // be careful of this one.
+                                        // once clicked, its gone!
+                                        handleClose();
+                                    }
+
                                     trackEvent('click_promo', {
                                         promo: currentModalAlert.id,
                                         type: shouldShowUpgrade ? 'upgrade' : 'try_now'
@@ -270,7 +320,7 @@
                             <div
                                 class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
                                 <Button
-                                    secondary
+                                    secondary={!hasOnlyPrimaryCta}
                                     class="button"
                                     href={shouldShowUpgrade
                                         ? $upgradeURL
@@ -312,20 +362,32 @@
                 </article>
             </div>
         {:else}
+            {@const mobileConfig = getMobileWindowConfig()}
             <button
                 class:showing={!openModalOnMobile}
                 class="card notification-card u-width-full-line"
-                on:click={() => (openModalOnMobile = true)}>
+                on:click={() => {
+                    if (mobileConfig.cta) {
+                        // navigate manually!
+                        triggerMobileWindowLink();
+                    } else {
+                        openModalOnMobile = true;
+                    }
+                }}>
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
-                        <h3 class="body-text-2 u-bold">New features available</h3>
+                        <h3 class="body-text-2 u-bold">{mobileConfig.title}</h3>
                         <button on:click={hideAllModalAlerts}>
                             <span class="icon-x" />
                         </button>
                     </div>
 
                     <span class="u-width-fit-content">
-                        Explore new features to enhance your projects and improve security.
+                        {#if mobileConfig.html}
+                            {@html mobileConfig.message}
+                        {:else}
+                            {mobileConfig.message}
+                        {/if}
                     </span>
                 </div>
             </button>
@@ -368,6 +430,22 @@
     :global(.theme-dark) .icon-inline-tag {
         background: #1d1d21;
         border: hsl(var(--color-neutral-80)) solid 1px;
+    }
+
+    :global(.main-alert-wrapper .only-primary-cta) {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .showcase-image.u-only-light {
+        border-radius: 8px;
+        border: 0.795px solid var(--border-neutral-strong, #d8d8db);
+    }
+
+    .showcase-image.u-only-dark {
+        border-radius: 8px;
+        border: 0.795px solid var(--border-neutral-strong, #414146);
     }
 
     .u-gap-10 {
