@@ -211,7 +211,7 @@
         @media (min-width: 768px) {
             width: 100%;
             height: 100%;
-            padding-inline: 0;
+            padding-inline: var(--space-4);
             background-color: transparent;
         }
     }
@@ -225,6 +225,11 @@
     .divider-wrapper {
         margin-inline-start: calc(-1 * var(--space-4));
         width: calc(100% + 2 * var(--space-4));
+
+        @media (min-width: 768px) {
+            margin-inline-start: calc(-1 * var(--space-7));
+            width: calc(100% + 2 * var(--space-7));
+        }
     }
 
     // fix alignment bug in Safari

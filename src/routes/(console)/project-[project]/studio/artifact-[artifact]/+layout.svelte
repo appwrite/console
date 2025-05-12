@@ -210,7 +210,7 @@
         </div>
     </Layout.Stack>
     {@render children()}
-    <aside bind:this={asideRef}>
+    <aside bind:this={asideRef} style:padding-block-end={terminalOpen ? 0 : '8px'}>
         <details bind:open={terminalOpen}>
             <summary
                 onmousedown={startResize}
@@ -269,7 +269,7 @@
 
         margin-inline-start: -9px;
         margin-block-end: calc(-1 * var(--base-8));
-        padding: var(--space-3);
+        padding: var(--space-3) 0;
 
         border: 1px solid var(--border-neutral);
         width: 100%;
@@ -287,6 +287,7 @@
     }
     summary {
         cursor: pointer;
+        padding-inline: var(--space-3);
     }
 
     .terminal-slider {
@@ -295,9 +296,9 @@
 
     .terminal-tabs {
         background-color: white;
-        padding: var(--space-4) var(--space-7);
-        margin-inline-start: calc(-1 * var(--space-4));
-        width: calc(100% + 14px);
+        padding: var(--space-4) var(--space-4);
+        margin-inline-start: calc(-1 * var(--space-1));
+        width: calc(100% + 1px);
     }
 
     .divider-wrapper-artifacts {
