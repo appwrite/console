@@ -227,7 +227,7 @@
         switch (action.type) {
             case 'file':
                 await synapse.dispatch('fs', {
-                    operation: 'createFile',
+                    operation: 'updateFile',
                     params: {
                         filepath: action.src,
                         content: action.content
