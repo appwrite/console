@@ -188,8 +188,8 @@
     }
     .chat.minimize-chat {
         top: auto;
-        bottom: var(--space-4);
-        height: 68px;
+        bottom: 0;
+        height: auto;
     }
 
     .chat-placeholder {
@@ -208,18 +208,18 @@
             '.'
             '.';
         height: calc(100% - var(--space-4));
-        width: 100%;
+        width: calc(100% + var(--space-7));
 
         background-color: var(--bgcolor-neutral-primary);
         border: 1px solid var(--border-neutral);
-        border-radius: var(--border-radius-m);
+
         padding-inline: var(--space-4);
 
         @media (min-width: 768px) {
+            width: 100%;
             height: 100%;
             background-color: transparent;
             border: 0;
-            border-radius: 0;
         }
     }
 
@@ -250,13 +250,16 @@
     .input {
         border: 1px solid var(--border-neutral);
         border-radius: var(--border-radius-m);
-        margin-block-end: var(--space-4);
         padding: var(--space-6);
 
         textarea {
             width: 100%;
             min-height: 100px;
             resize: none;
+        }
+
+        @media (min-width: 768px) {
+            margin-block-end: var(--space-4);
         }
     }
 

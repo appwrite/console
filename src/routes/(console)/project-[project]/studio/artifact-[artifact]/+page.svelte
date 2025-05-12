@@ -70,13 +70,22 @@
     }
     iframe {
         border: none;
-        width: calc(100% + 2 * var(--space-7));
         height: 100%;
-        margin-inline-start: calc(-1 * var(--space-7));
+
+        margin-inline-start: calc(-1 * var(--space-4));
+        width: calc(100% + var(--space-7));
+        @media (min-width: 768px) {
+            margin-inline-start: calc(-1 * var(--space-7));
+            width: calc(100% + 2 * var(--space-7));
+        }
     }
 
     .divider-wrapper {
-        margin-inline-start: calc(-1 * var(--space-7));
-        width: calc(100% + var(--space-10));
+        margin-inline-start: calc(-1 * var(--space-4));
+        width: calc(100% + var(--space-7));
+        @media (min-width: 768px) {
+            margin-inline-start: calc(-1 * var(--space-7));
+            width: calc(100% + var(--space-10));
+        }
     }
 </style>

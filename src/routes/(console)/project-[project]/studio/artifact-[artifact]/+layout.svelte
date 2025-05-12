@@ -151,9 +151,20 @@
 
 <Layout.Stack
     direction="column"
-    height={$isSmallViewport ? 'calc(100vh - 218px)' : 'calc(100vh - 88px)'}
+    height={$isSmallViewport ? 'calc(100vh - 163px)' : 'calc(100vh - 88px)'}
     gap="none">
     <Layout.Stack direction="column" gap="none">
+        {#if $isSmallViewport}
+            <Layout.Stack direction="row" gap="none" justifyContent="center">
+                <div style:margin-block-start="4px">
+                    <ActionMenu.Item.Button trailingIcon={IconChevronDown}
+                        >Dashboard</ActionMenu.Item.Button>
+                </div>
+            </Layout.Stack>
+            <div class="divider-wrapper-artifacts">
+                <Divider />
+            </div>
+        {/if}
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
             <Layout.Stack gap="xxs" direction="row" alignItems="center" inline>
                 {#if !$showChat}
@@ -176,21 +187,21 @@
                     {/each}
                 </Tabs>
             </Layout.Stack>
-
-            <ActionMenu.Item.Button trailingIcon={IconChevronDown}
-                >Dashboard</ActionMenu.Item.Button>
             {#if !$isSmallViewport}
-                <Layout.Stack gap="xxs" direction="row" alignItems="center" inline>
-                    <InputSelect
-                        id="artificat-version"
-                        options={[
-                            { value: '0.2', label: 'v0.2' },
-                            { value: '0.1', label: 'v0.1' }
-                        ]}
-                        value="0.2" />
-                    <Button.Button size="s" variant="primary">Release</Button.Button>
-                </Layout.Stack>
+                <ActionMenu.Item.Button trailingIcon={IconChevronDown}
+                    >Dashboard</ActionMenu.Item.Button>
             {/if}
+
+            <Layout.Stack gap="xxs" direction="row" alignItems="center" inline>
+                <InputSelect
+                    id="artificat-version"
+                    options={[
+                        { value: '0.2', label: 'v0.2' },
+                        { value: '0.1', label: 'v0.1' }
+                    ]}
+                    value="0.2" />
+                <Button.Button size="s" variant="primary">Release</Button.Button>
+            </Layout.Stack>
         </Layout.Stack>
         <div class="divider-wrapper">
             <Divider />
@@ -250,20 +261,20 @@
     aside {
         background-color: var(--bgcolor-neutral-default);
 
-        margin-inline-start: -25px;
+        margin-inline-start: -9px;
         margin-block-end: calc(-1 * var(--base-8));
         padding: var(--space-3);
-        border-bottom-right-radius: var(--border-radius-m);
 
         border: 1px solid var(--border-neutral);
-        width: calc(100% - var(--space-7));
+        width: 100%;
 
         position: fixed;
-        bottom: 116px;
+        bottom: 67px;
 
         @media (min-width: 768px) {
             width: calc(100% + 2 * var(--space-7));
             margin-inline-start: calc(-1 * var(--space-7));
+            border-bottom-right-radius: var(--border-radius-m);
             position: static;
             border: 0;
         }
@@ -276,10 +287,22 @@
         cursor: row-resize;
     }
 
+    .divider-wrapper-artifacts {
+        margin-block-start: 12px;
+        margin-block-end: 8px;
+        margin-inline-start: calc(-1 * var(--space-4));
+        width: calc(100% + var(--space-7));
+    }
+
     .divider-wrapper {
         margin-block-start: 7.5px;
-        margin-inline-start: calc(-1 * var(--space-7));
         margin-block-end: 8px;
-        width: calc(100% + var(--space-10));
+        margin-inline-start: calc(-1 * var(--space-4));
+        width: calc(100% + var(--space-7));
+
+        @media (min-width: 768px) {
+            margin-inline-start: calc(-1 * var(--space-7));
+            width: calc(100% + var(--space-10));
+        }
     }
 </style>
