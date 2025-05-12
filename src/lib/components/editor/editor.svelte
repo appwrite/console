@@ -6,13 +6,18 @@
     import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
     import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
     import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
+    import markdownWorker from 'monaco-editor/esm/vs/basic-languages/markdown/markdown?worker';
     import { throttle } from '$lib/helpers/functions';
     import { app } from '$lib/stores/app';
 
+    type Props = {
+        onsave?: (code: string) => void | Promise<void>;
+    };
+
+    let { onsave }: Props = $props();
+
     let editorElement: HTMLDivElement;
     let editor: monaco.editor.IStandaloneCodeEditor;
-
-    const code = `console.log("hello eldad");`;
 
     export function loadCode(code: string, language: string) {
         const model = monaco.editor.createModel(code, language);
@@ -30,9 +35,19 @@
         );
     }
 
+    function save(event: KeyboardEvent) {
+        if (event.key === 's' && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+            onsave(editor.getValue());
+        }
+    }
+
     onMount(async () => {
         self.MonacoEnvironment = {
             getWorker(_workerId: string, label: string) {
+                if (label === 'markdown') {
+                    return new markdownWorker();
+                }
                 if (label === 'json') {
                     return new jsonWorker();
                 }
@@ -55,8 +70,6 @@
             theme: $app.themeInUse === 'light' ? 'vs-light' : 'vs-dark'
         });
 
-        loadCode(code, 'typescript');
-
         const resizer = throttle(() => {
             if (!editorElement) return;
             editor.layout({
@@ -74,10 +87,12 @@
         editor?.dispose();
     });
 
-    $: monaco.editor.setTheme($app.themeInUse === 'light' ? 'vs-light' : 'vs-dark');
+    $effect(() => {
+        monaco.editor.setTheme($app.themeInUse === 'light' ? 'vs-light' : 'vs-dark');
+    });
 </script>
 
-<div class="editor" bind:this={editorElement}></div>
+<div class="editor" role="presentation" bind:this={editorElement} onkeydown={save}></div>
 
 <style>
     .editor {

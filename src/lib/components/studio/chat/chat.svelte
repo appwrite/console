@@ -132,7 +132,7 @@
                     }}></textarea>
                 <div class="options">
                     <Layout.Stack direction="row" justifyContent="flex-end">
-                        <Button.Button icon variant="secondary" size="s">
+                        <Button.Button type="button" icon variant="secondary" size="s">
                             <Icon icon={IconPaperClip} color="--fgcolor-neutral-tertiary" />
                         </Button.Button>
                         <Button.Button
