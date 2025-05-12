@@ -113,7 +113,7 @@
 
     function showUpgrade() {
         const plan = currentModalAlert.plan;
-        const organizationPlan = $organization.billingPlan;
+        const organizationPlan = $organization?.billingPlan;
         switch (plan) {
             case 'free':
                 return false;
@@ -131,7 +131,7 @@
     });
 </script>
 
-{#if filteredModalAlerts.length > 0 && currentModalAlert}
+{#if filteredModalAlerts.length > 0 && currentModalAlert && !$page.url.pathname.includes('console/onboarding')}
     {@const shouldShowUpgrade = showUpgrade()}
     <div class="main-alert-wrapper is-not-mobile">
         <div class="alert-container">
