@@ -224,15 +224,25 @@
     });
 
     parser.on('complete', async (action) => {
-        if (action.type === 'file') {
-            await synapse.dispatch('fs', {
-                operation: 'createFile',
-                params: {
-                    filepath: action.src,
-                    content: action.content
-                }
-            });
-            $filesystem = [...$filesystem, action.src];
+        switch (action.type) {
+            case 'file':
+                await synapse.dispatch('fs', {
+                    operation: 'createFile',
+                    params: {
+                        filepath: action.src,
+                        content: action.content
+                    }
+                });
+                $filesystem = [...$filesystem, action.src];
+                break;
+            case 'shell':
+                synapse.dispatch('terminal', {
+                    operation: 'createCommand',
+                    params: {
+                        command: action.content + '\n'
+                    }
+                });
+                break;
         }
     });
 </script>

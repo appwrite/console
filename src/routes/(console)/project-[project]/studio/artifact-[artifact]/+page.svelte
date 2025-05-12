@@ -5,28 +5,58 @@
         IconExternalLink,
         IconRefresh
     } from '@appwrite.io/pink-icons-svelte';
-    import { Layout, Icon, Divider } from '@appwrite.io/pink-svelte';
+    import { Layout, Icon, Divider, Button } from '@appwrite.io/pink-svelte';
     import { previewFrameRef } from '$routes/(console)/project-[project]/store';
+    import { SvelteURL } from 'svelte/reactivity';
+    import type { EventHandler } from 'svelte/elements';
 
-    const previewUrl = 'https://torsten.work';
+    let previewUrl = new SvelteURL('https://preview.torsten.work');
 
-    let iframeRef: HTMLIFrameElement | null = null;
-    $: previewFrameRef.set(iframeRef);
+    let iframeRef: HTMLIFrameElement | null = $state(null);
+    $effect(() => {
+        previewFrameRef.set(iframeRef);
+    });
+
+    const onsubmit: EventHandler<SubmitEvent, HTMLFormElement> = (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const path = formData.get('path');
+        if (typeof path === 'string') {
+            previewUrl.pathname = path;
+        }
+    };
+
+    let refresh = $state(false);
 </script>
 
 <Layout.Stack direction="column" gap="s">
-    <Layout.Stack direction="row" alignItems="center">
-        <Icon icon={IconRefresh} color="--fgcolor-neutral-tertiary" />
-        <InputText id="previewUrl" value={previewUrl} />
-        <Icon icon={IconDeviceMobile} color="--fgcolor-neutral-tertiary" />
-        <Icon icon={IconExternalLink} color="--fgcolor-neutral-tertiary" />
-    </Layout.Stack>
+    <form {onsubmit}>
+        <Layout.Stack direction="row" alignItems="center">
+            <Button.Button
+                variant="extra-compact"
+                type="button"
+                size="s"
+                on:click={() => (refresh = !refresh)}>
+                <Icon icon={IconRefresh} color="--fgcolor-neutral-tertiary" />
+            </Button.Button>
+            <InputText name="path" id="previewUrl" value={previewUrl.pathname} />
+            <Icon icon={IconDeviceMobile} color="--fgcolor-neutral-tertiary" />
+            <Icon icon={IconExternalLink} color="--fgcolor-neutral-tertiary" />
+        </Layout.Stack>
+    </form>
     <div class="divider-wrapper">
         <Divider />
     </div>
 </Layout.Stack>
 <div class="iframe-container">
-    <iframe src={previewUrl} bind:this={iframeRef} id="preview-iframe" title="preview"></iframe>
+    {#key refresh}
+        <iframe
+            src={previewUrl.toString()}
+            bind:this={iframeRef}
+            id="preview-iframe"
+            title="preview">
+        </iframe>
+    {/key}
 </div>
 
 <style lang="scss">

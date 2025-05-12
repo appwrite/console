@@ -40,6 +40,14 @@
                     }
                 });
             });
+            term.textarea.addEventListener('paste', (e) => {
+                synapse.dispatch('terminal', {
+                    operation: 'createCommand',
+                    params: {
+                        command: e.clipboardData.getData('text/plain')
+                    }
+                });
+            });
             synapse.addEventListener('terminal', ({ message }) => {
                 const { data } = message;
                 if (typeof data === 'string') term.write(data);
