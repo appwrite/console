@@ -1,3 +1,5 @@
+import { OAuthProvider } from '@appwrite.io/console';
+
 type Profile = {
     hasChatLayout: boolean;
     hasAuth: boolean;
@@ -10,6 +12,9 @@ type Profile = {
     hasFullPageSignup: boolean;
     defaultProjectName: string;
     hasChat: boolean;
+    hasGithubLogin: boolean;
+    githubLoginProvider?: string;
+    hasGoogleLogin: boolean;
 };
 
 export const ConsoleCloudProfile: Profile = {
@@ -23,7 +28,10 @@ export const ConsoleCloudProfile: Profile = {
     hasProjectProgressBars: true,
     hasFullPageSignup: false,
     defaultProjectName: 'Appwrite project',
-    hasChat: false
+    hasChat: false,
+    hasGithubLogin: true,
+    githubLoginProvider: OAuthProvider.Github,
+    hasGoogleLogin: false
 };
 
 export const ConsoleSelfhostedProfile: Profile = {
@@ -37,7 +45,9 @@ export const ConsoleSelfhostedProfile: Profile = {
     hasProjectProgressBars: true,
     hasFullPageSignup: false,
     defaultProjectName: 'Appwrite project',
-    hasChat: false
+    hasChat: false,
+    hasGithubLogin: false,
+    hasGoogleLogin: false
 };
 
 export const StudioProfile: Profile = {
@@ -51,5 +61,8 @@ export const StudioProfile: Profile = {
     hasProjectProgressBars: false,
     hasFullPageSignup: true,
     defaultProjectName: 'Imagine project',
-    hasChat: true
+    hasChat: true,
+    hasGithubLogin: true,
+    githubLoginProvider: 'github2',
+    hasGoogleLogin: true
 };

@@ -73,10 +73,23 @@
 
     function onGithubLogin() {
         sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
+            consoleProfile.githubLoginProvider as OAuthProvider,
             window.location.origin,
             window.location.origin,
             ['read:user', 'user:email']
+        );
+    }
+
+    function onGoogleLogin() {
+        sdk.forConsole.account.createOAuth2Session(
+            OAuthProvider.Google,
+            window.location.origin,
+            window.location.origin,
+            [
+                'https://www.googleapis.com/auth/userinfo.email',
+                'https://www.googleapis.com/auth/userinfo.profile',
+                'openid'
+            ]
         );
     }
 </script>
@@ -121,9 +134,18 @@
                         target="_blank"
                         rel="noopener noreferrer">General Terms of Use</Link.Anchor
                     >.</InputChoice>
+                <div></div>
                 <Button fullWidth submit {disabled}>Sign up</Button>
-                {#if isCloud}
+                {#if isCloud && (consoleProfile.hasGithubLogin || consoleProfile.hasGoogleLogin)}
                     <span class="with-separators eyebrow-heading-3">or</span>
+                {/if}
+                {#if isCloud && consoleProfile.hasGoogleLogin}
+                    <Button fullWidth on:click={onGoogleLogin} {disabled}>
+                        <span class="icon-google" aria-hidden="true"></span>
+                        <span class="text">Sign in with Google</span>
+                    </Button>
+                {/if}
+                {#if isCloud && consoleProfile.hasGithubLogin}
                     <Button fullWidth on:click={onGithubLogin} {disabled}>
                         <span class="icon-github" aria-hidden="true"></span>
                         <span class="text">Sign up with GitHub</span>
