@@ -204,7 +204,7 @@
                 <Layout.Stack direction="row" justify="space-between">
                     <Layout.Stack direction="row" alignItems="center" gap="xs">
                         <Icon icon={IconTerminal} color="--fgcolor-neutral-tertiary" />
-                        <Typography.Text>Terminal</Typography.Text>
+                        <Typography.Text>Terminals</Typography.Text>
                     </Layout.Stack>
                     <Icon icon={IconChevronDoubleUp} color="--fgcolor-neutral-tertiary" />
                 </Layout.Stack>
