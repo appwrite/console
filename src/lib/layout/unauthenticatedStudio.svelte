@@ -8,14 +8,16 @@
 
 <main class="full-page-signup">
     <div class="modal">
-        <Card.Base padding="s">
-            <Layout.Stack direction="column">
+        <Card.Base padding="m">
+            <Layout.Stack direction="column" gap="xl">
                 <Layout.Stack direction="row" justifyContent="center">
                     <div class="icon-container">
                         <svelte:component this={IconImagine}></svelte:component>
                     </div>
                 </Layout.Stack>
-                <Typography.Title size="m">{title}</Typography.Title>
+                <Layout.Stack direction="row" justifyContent="center">
+                    <Typography.Title size="m">{title}</Typography.Title>
+                </Layout.Stack>
                 <slot />
             </Layout.Stack>
         </Card.Base>
@@ -41,10 +43,11 @@
 
         .icon-container {
             color: var(--fgcolor-neutral-primary);
+            margin-block-end: calc(-1 * var(--space-4));
         }
         :global(.icon-container svg) {
-            width: 36px;
-            height: 36px;
+            width: 48px;
+            height: 48px;
         }
     }
 
