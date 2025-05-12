@@ -158,13 +158,6 @@
     class:is-visible={$showChat}
     style:width={$showChat ? `${width}px` : 0}>
 </div>
-{#if $isSmallViewport}
-    <button
-        type="button"
-        class="overlay-button"
-        aria-label="Close chat"
-        class:overlay={!minimizeChat}></button>
-{/if}
 
 <style lang="scss">
     .chat {
@@ -211,7 +204,7 @@
         width: calc(100% + var(--space-7));
 
         background-color: var(--bgcolor-neutral-primary);
-        border: 1px solid var(--border-neutral);
+        border: 0;
 
         padding-inline: var(--space-4);
 
@@ -219,7 +212,6 @@
             width: 100%;
             height: 100%;
             background-color: transparent;
-            border: 0;
         }
     }
 
@@ -230,8 +222,12 @@
     }
 
     .divider-wrapper {
-        margin-inline-start: calc(-1 * var(--space-7));
-        width: calc(100% + 2 * var(--space-7));
+        margin-inline-start: calc(-1 * var(--space-4));
+        width: calc(100% + 2 * var(--space-4));
+        @media (min-width: 768px) {
+            margin-inline-start: calc(-1 * var(--space-7));
+            width: calc(100% + 2 * var(--space-7));
+        }
     }
 
     // fix alignment bug in Safari

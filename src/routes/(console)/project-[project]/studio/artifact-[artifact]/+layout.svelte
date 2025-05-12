@@ -151,7 +151,7 @@
 
 <Layout.Stack
     direction="column"
-    height={$isSmallViewport ? 'calc(100vh - 163px)' : 'calc(100vh - 88px)'}
+    height={$isSmallViewport ? 'calc(100vh - 154px)' : 'calc(100vh - 88px)'}
     gap="none">
     <Layout.Stack direction="column" gap="none">
         {#if $isSmallViewport}
