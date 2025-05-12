@@ -68,5 +68,5 @@ export const StudioProfile: Profile = {
     hasGithubLogin: true,
     githubLoginProvider: 'github2',
     hasGoogleLogin: true,
-    hasAccountLogin: true
+    hasAccountLogin: false
 };
